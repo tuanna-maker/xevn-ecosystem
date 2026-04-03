@@ -1,0 +1,355 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Professional SaaS Blue Theme */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Deep professional blue */
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Light gray-blue for secondary */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    /* Teal accent for highlights */
+    --accent: 173 80% 40%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Success, Warning states */
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar - Professional dark blue */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 18%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 20%;
+    --sidebar-ring: 221 83% 53%;
+    --sidebar-muted: 215 16% 60%;
+
+    /* Custom HRM colors */
+    --hrm-recruitment: 280 65% 60%;
+    --hrm-attendance: 173 80% 40%;
+    --hrm-payroll: 38 92% 50%;
+    --hrm-employee: 221 83% 53%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 40%));
+    --gradient-accent: linear-gradient(135deg, hsl(173 80% 40%), hsl(173 80% 30%));
+    --gradient-sidebar: linear-gradient(180deg, hsl(222 47% 11%), hsl(222 47% 8%));
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 221 83% 60%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 173 80% 45%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 76% 40%;
+    --success-foreground: 222 47% 11%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 222 47% 11%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 221 83% 60%;
+
+    --sidebar-background: 222 47% 5%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 221 83% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 15%;
+    --sidebar-ring: 221 83% 60%;
+    --sidebar-muted: 215 16% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* SaaS Data Table Styles */
+  .saas-table {
+    @apply w-full text-sm;
+  }
+
+  .saas-table th {
+    @apply bg-muted/50 font-semibold text-left px-2 md:px-3 py-2 border-b text-muted-foreground uppercase text-xs tracking-wider;
+  }
+
+  .saas-table td {
+    @apply px-2 md:px-3 py-2 border-b border-border/50;
+  }
+
+  .saas-table tr:hover td {
+    @apply bg-muted/30;
+  }
+
+  /* Status badges */
+  .status-badge {
+    @apply inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-active {
+    @apply bg-success/10 text-success;
+  }
+
+  .status-pending {
+    @apply bg-warning/10 text-warning;
+  }
+
+  .status-inactive {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  /* Card hover effects */
+  .card-interactive {
+    @apply transition-all duration-200 hover:shadow-lg hover:border-primary/20 cursor-pointer;
+  }
+
+  /* Kanban column */
+  .kanban-column {
+    @apply bg-muted/30 rounded-lg p-2 md:p-3 min-h-[300px] md:min-h-[400px];
+  }
+
+  .kanban-card {
+    @apply bg-card rounded-lg p-2 md:p-3 shadow-sm border border-border/50 mb-2 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/30;
+  }
+
+  /* Sidebar animation */
+  .sidebar-link {
+    @apply flex items-center gap-2 md:gap-3 px-3 py-2 md:py-2.5 rounded-lg text-sidebar-foreground/80 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-foreground;
+  }
+
+  .sidebar-link.active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground font-medium;
+  }
+
+  /* Stats card */
+  .stats-card {
+    @apply bg-card rounded-xl p-3 md:p-5 border border-border/50 shadow-sm;
+  }
+
+  .stats-card-icon {
+    @apply w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 md:mb-6;
+  }
+
+  .page-title {
+    @apply text-xl md:text-2xl font-bold text-foreground;
+  }
+
+  /* Action bar */
+  .action-bar {
+    @apply flex items-center gap-2 md:gap-3 flex-wrap;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3 p-3 md:p-4 bg-card rounded-lg border border-border/50 mb-3 md:mb-4;
+  }
+
+  /* Responsive table wrapper */
+  .table-responsive {
+    @apply overflow-x-auto -mx-3 md:mx-0;
+  }
+
+  .table-responsive > table {
+    @apply min-w-[640px] md:min-w-0;
+  }
+
+  /* Mobile card list alternative to tables */
+  .mobile-card-list {
+    @apply space-y-2 md:hidden;
+  }
+
+  .mobile-card-item {
+    @apply bg-card rounded-lg p-3 border border-border/50;
+  }
+
+  /* Desktop table */
+  .desktop-table {
+    @apply hidden md:block;
+  }
+
+  /* Scrollable tab bar for mobile */
+  .mobile-scroll-tabs {
+    @apply flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .mobile-scroll-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Touch-friendly tap targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* iOS-specific: prevent zoom on input focus */
+@supports (-webkit-touch-callout: none) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* Mobile table improvements */
+@media (max-width: 768px) {
+  .saas-table th,
+  .saas-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+/* XeVN Shared Utilities (port from portal unified) */
+@layer utilities {
+  /**
+   * X-BOS Safe Area — đối xứng tuyệt đối hai rìa (Bộ luật đối xứng V2).
+   * Trục px-8 (32px) → px-12 (48px); không kéo vượt 3rem.
+   */
+  .xevn-safe-inline {
+    padding-left: clamp(2rem, 4vw + 1rem, 3rem);
+    padding-right: clamp(2rem, 4vw + 1rem, 3rem);
+  }
+
+  /** Workflow Canvas — nền slate-50 + lưới chấm 20px */
+  .bg-workflow-canvas-dots {
+    background-color: rgb(248 250 252); /* slate-50 */
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgb(148 163 184 / 0.16) 1px,
+      transparent 0
+    );
+    background-size: 20px 20px;
+  }
+}

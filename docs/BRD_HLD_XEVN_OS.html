@@ -1,0 +1,537 @@
+<!DOCTYPE html><html><head>
+      <title>BRD_HLD_XEVN_OS</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////Users/uranus/.cursor/extensions/shd101wyy.markdown-preview-enhanced-0.8.22-universal/crossnote/dependencies/katex/katex.min.css">
+      
+      
+      <script type="text/javascript" src="file:////Users/uranus/.cursor/extensions/shd101wyy.markdown-preview-enhanced-0.8.22-universal/crossnote/dependencies/mermaid/mermaid.min.js" charset="UTF-8"></script>
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="tài-liệu-yêu-cầu-nghiệp-vụ--thiết-kế-mức-cao-brd--hld">Tài liệu Yêu cầu Nghiệp vụ &amp; Thiết kế Mức cao </h1>
+<h2 id="hệ-sinh-thái-xevn-os">Hệ sinh thái XeVN OS </h2>
+<table>
+<thead>
+<tr>
+<th>Thuộc tính</th>
+<th>Giá trị</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phiên bản tài liệu</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>Ngày hiệu lực</td>
+<td>2026-03-25</td>
+</tr>
+<tr>
+<td>Phạm vi</td>
+<td>Toàn bộ nền tảng XeVN OS</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-tóm-tắt-điều-hành">1. Tóm tắt điều hành </h2>
+<p>XeVN OS là nền tảng vận hành tập đoàn phục vụ mô hình <strong>quản trị tập trung — vận hành phân tán</strong>: một lõi điều phối giữ dữ liệu chuẩn dùng chung cho định danh, danh mục, chính sách và KPI; các phân hệ nghiệp vụ triển khai theo domain nhưng <strong>tiêu thụ</strong> dữ liệu chuẩn từ lõi và <strong>phản hồi</strong> sự kiện vận hành về trung tâm để giám sát, cảnh báo và báo cáo tổng hợp.</p>
+<p>Tài liệu này ghi nhận yêu cầu nghiệp vụ ở mức tổ chức và đồng thời cố định <strong>thiết kế mức cao (HLD)</strong> để các đội sản phẩm, kỹ thuật và tích hợp dùng chung một ngôn ngữ kiến trúc.</p>
+<hr>
+<h2 id="2-bối-cảnh-nghiệp-vụ--phạm-vi">2. Bối cảnh nghiệp vụ &amp; Phạm vi </h2>
+<h3 id="21-stakeholder-chính">2.1 Stakeholder chính </h3>
+<ul>
+<li><strong>Ban Tổng Giám đốc / Điều hành tập đoàn</strong>: cần tầm nhìn đa công ty, KPI và cảnh báo nóng.</li>
+<li><strong>Khối quản trị (Corporate / X-BOS)</strong>: sở hữu master data, phân quyền, menu hệ thống, chuẩn danh mục.</li>
+<li><strong>Các đơn vị vận hành (vệ tinh)</strong>: HRM, TRSPORT, LGTS, EXPRESS, X-SCM, X-OFFICE, X-FINANCE, CRM, X-MAINTENANCE — vận hành giao dịch theo domain.</li>
+<li><strong>Công nghệ thông tin &amp; An ninh</strong>: đảm bảo SSO, phân tách tenant, giám sát và tuân thủ.</li>
+</ul>
+<h3 id="22-phạm-vi-chức-năng-mức-brd">2.2 Phạm vi chức năng </h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Định danh &amp; đa công ty</td>
+<td>Mô hình holding: nhiều pháp nhân/đơn vị thành viên dưới một tập đoàn; lọc và phân quyền theo phạm vi.</td>
+</tr>
+<tr>
+<td>Master Data Management</td>
+<td>Danh mục động, định mức tham chiếu, metadata gán cho từng phân hệ.</td>
+</tr>
+<tr>
+<td>Chính sách KPI &amp; giám sát</td>
+<td>Định nghĩa chỉ số, tần suất, người sở hữu; dashboard điều hành và tuân thủ.</td>
+</tr>
+<tr>
+<td>Tích hợp phân hệ</td>
+<td>API ổn định, phiên bản hóa, hợp đồng dữ liệu rõ ràng giữa lõi và vệ tinh.</td>
+</tr>
+<tr>
+<td>Cảnh báo &amp; phản hồi vận hành</td>
+<td>Tập trung cảnh báo từ vi phạm ngưỡng/định mức tại vệ tinh về dashboard tập đoàn.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-ngoài-phạm-vi-giai-đoạn-hiện-tại-của-tài-liệu">2.3 Ngoài phạm vi </h3>
+<p>Chi tiết triển khai từng màn hình UI, ma trận quyền chi tiết đến từng nút, và lược đồ vật lý từng bảng — được giao cho tài liệu chi tiết.</p>
+<hr>
+<h2 id="3-kiến-trúc-tổng-thể--system-landscape">3. Kiến trúc tổng thể — System Landscape </h2>
+<h3 id="31-mô-hình-hub-and-spoke-trục-và-nan-hoa">3.1 Mô hình Hub-and-Spoke </h3>
+<p><strong>X-BOS</strong> là trung tâm điều phối. X-BOS giữ dữ liệu dùng chung (định danh, danh mục, cấu hình phân hệ, chính sách truy cập) và các chuẩn KPI để các nơi khác dùng chung.</p>
+<p>Các <strong>phân hệ vệ tinh</strong> làm nghiệp vụ theo domain của mình, nhưng không tự tạo bản master “nguồn chính” cho dữ liệu danh mục. Phân hệ chỉ đồng bộ hoặc lấy theo hợp đồng từ X-BOS.</p>
+<h4 id="311-sơ-đồ-tổng-quát-khung-kiến-trúc-xevn-os">3.1.1 Sơ đồ tổng quát khung kiến trúc XeVN OS </h4>
+<p><img src="./images/Gemini_Generated_Image_fvey8mfvey8mfvey.png" alt="Sơ đồ tổng quát khung kiến trúc XeVN OS"></p>
+<p><strong>Luồng nổi bật</strong></p>
+<ul>
+<li><strong>Hai chiều (nét liền trên sơ đồ):</strong> mọi vệ tinh trao đổi <strong>danh mục / định mức / phiên bản</strong> với XDOP; không nhân bản master tại spoke làm nguồn chính.</li>
+<li><strong>Một chiều cảnh báo (nét đứt):</strong> vi phạm ngưỡng tại TRSPORT (và các spoke khác theo cấu hình) <strong>hội tụ</strong> về <strong>Hot Point Alert</strong> trên dashboard điều hành.</li>
+</ul>
+<p>Dưới đây là <strong>minh họa tổng thể</strong> (ảnh) giúp trình chiếu in hoặc xem nhanh khi renderer Mermaid bị giới hạn kích thước:</p>
+<p><img src="./images/Gemini_Generated_Image_xq3q8qxq3q8qxq3q.png" alt="Sơ đồ điều phối dữ liệu Tập đoàn XeVN OS"></p>
+<h4 id="312-sơ-đồ-hubspoke-rút-gọn">3.1.2 Sơ đồ Hub–Spoke rút gọn </h4>
+<p><img src="./images/Gemini_Generated_Image_lfej9plfej9plfej.png" alt="Mô hình quan hệ Hub-and-Spoke trong hệ sinh thái XeVN OS"></p>
+<p><strong>Nguyên tắc quản trị dữ liệu</strong></p>
+<ul>
+<li><strong>Ghi (write) danh mục chuẩn</strong>: ưu tiên tại X-BOS (hoặc luồng phê duyệt xong <strong>cam kết</strong> tại hub).</li>
+<li><strong>Đọc (read) tại vệ tinh</strong>: qua API phiên bản hóa; cache có thời hạn được phép nhưng phải <strong>invalidate</strong> khi hub phát hành phiên bản mới.</li>
+<li><strong>Giao dịch nghiệp vụ</strong> (đơn hàng, chuyến xe, phiếu kho, v.v.) thuộc bounded context của từng vệ tinh; <strong>tham chiếu</strong> mã danh mục và định danh do hub cấp.</li>
+</ul>
+<h3 id="32-core--satellite--bảng-ánh-xạ-phân-hệ">3.2 Core &amp; Satellite — Bảng ánh xạ phân hệ </h3>
+<table>
+<thead>
+<tr>
+<th>Mã phân hệ</th>
+<th>Tên gọi</th>
+<th>Vai trò vệ tinh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HRM</td>
+<td>Nhân sự</td>
+<td>Tổ chức, nhân sự, hợp đồng — tham chiếu cấp bậc, phòng ban, chức vụ từ hub.</td>
+</tr>
+<tr>
+<td>TRSPORT</td>
+<td>Vận tải</td>
+<td>Điều độ, tuyến, phương tiện — tham chiếu loại xe, tuyến, đối tượng vận chuyển.</td>
+</tr>
+<tr>
+<td>LGTS</td>
+<td>Hậu cần &amp; Kho</td>
+<td>Tồn kho, vị trí — tham chiếu loại kho, ĐVT, vị trí.</td>
+</tr>
+<tr>
+<td>EXPRESS</td>
+<td>Chuyển phát</td>
+<td>SLA khu vực, dịch vụ — tham chiếu danh mục dịch vụ/vùng.</td>
+</tr>
+<tr>
+<td>X-SCM</td>
+<td>Chuỗi cung ứng</td>
+<td>Nhà cung cấp, nguyên vật liệu — tham chiếu phân loại NCC/nguyên vật.</td>
+</tr>
+<tr>
+<td>X-OFFICE</td>
+<td>Văn phòng — Trình ký</td>
+<td>Quy trình văn bản — tham chiếu loại văn bản, mức khẩn.</td>
+</tr>
+<tr>
+<td>X-FINANCE</td>
+<td>Tài chính</td>
+<td>Giao dịch, tài khoản — tham chiếu loại giao dịch, kế hoạch.</td>
+</tr>
+<tr>
+<td>CRM</td>
+<td>Khách hàng</td>
+<td>Phân khúc, nguồn khách — tham chiếu từ hub.</td>
+</tr>
+<tr>
+<td>X-MAINTENANCE</td>
+<td>Bảo trì</td>
+<td>Loại bảo trì, tần suất — tham chiếu từ hub.</td>
+</tr>
+<tr>
+<td>X-BOS</td>
+<td>Quản trị lõi</td>
+<td>Trung tâm MDM, IAM, cấu hình menu, tiêu chí giám sát toàn nhóm.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-công-cụ-và-thành-phần-dùng-chung--lý-do-kiến-trúc">3.3 Công cụ và thành phần dùng chung — Lý do kiến trúc </h3>
+<p>Các ứng dụng frontend và các phần dùng chung được phát triển theo cùng một chuẩn để:</p>
+<table>
+<thead>
+<tr>
+<th>Tiêu chí</th>
+<th>Giải thích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cập nhật đồng bộ khi có thay đổi giao diện</strong></td>
+<td>Ví dụ thay đổi màn hình và component dùng chung đi cùng nhau.</td>
+</tr>
+<tr>
+<td><strong>Dùng chung design system và kiểu dữ liệu tham chiếu</strong></td>
+<td>Giảm việc mỗi app tự làm một phiên bản khác nhau.</td>
+</tr>
+<tr>
+<td><strong>Giảm rủi ro sai lệch giữa các app</strong></td>
+<td>Các đội cùng làm theo một chuẩn thống nhất.</td>
+</tr>
+<tr>
+<td><strong>Tăng tốc vòng phát hành trong nội bộ</strong></td>
+<td>Chỉ thay những phần có liên quan, tránh ảnh hưởng lan rộng không cần thiết.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-thiết-kế-mức-cao-hld--bốn-lớp-kiến-trúc">4. Thiết kế mức cao — Bốn lớp kiến trúc </h2>
+<h3 id="41-sơ-đồ-tổng-thể-bốn-lớp">4.1 Sơ đồ tổng thể bốn lớp </h3>
+<p><img src="./images/Gemini_Generated_Image_5n7wer5n7wer5n7w.png" alt="Sơ đồ tổng thể bốn lớp kiến trúc XeVN OS"></p>
+<h3 id="42-presentation-layer-lớp-hiển-thị">4.2 Presentation Layer </h3>
+<p><strong>Mục tiêu:</strong> giao diện <strong>thống nhất</strong> trên web và mobile. Ưu tiên kiểu thiết kế tối giản: chữ rõ ràng, khoảng cách đều, phản hồi nhanh khi người dùng thao tác.</p>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Web Portal</td>
+<td>Ứng dụng điều hành, MDM “đọc/cấu hình” theo quyền, dashboard tập đoàn.</td>
+</tr>
+<tr>
+<td>Mobile App</td>
+<td>Tác vụ hiện trường, duyệt nhanh, nhận cảnh báo; dùng chung design token và pattern component.</td>
+</tr>
+<tr>
+<td>Design System</td>
+<td>Thư viện component dùng chung (ví dụ <code>@xevn/ui</code>), màu sắc/spacing/typography theo token; cấm phá vỡ token ở tầng ứng dụng.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-integration--gateway-layer">4.3 Integration &amp; Gateway Layer </h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Chức năng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>API Gateway</strong></td>
+<td>Điểm vào duy nhất cho client; routing tới dịch vụ X-BOS hoặc phân hệ; rate limit, WAF, logging tương quan request-id.</td>
+</tr>
+<tr>
+<td><strong>SSO</strong></td>
+<td>Đăng nhập tập trung; phiên làm việc không lưu mật khẩu trên client dài hạn dạng thô.</td>
+</tr>
+<tr>
+<td><strong>JWT</strong></td>
+<td>Chứa tenant/company, roles, scopes API; thời gian sống ngắn, làm mới có kiểm soát; truyền qua header chuẩn.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-service-layer-business-logic">4.4 Service Layer </h3>
+<p>Các <strong>dịch vụ nghiệp vụ</strong> tách theo từng phần nghiệp vụ riêng, nhưng <strong>liên kết</strong> với nhau thông qua:</p>
+<ul>
+<li><strong>Hợp đồng API</strong> phiên bản hóa (v1, v2).</li>
+<li><strong>Shared DNA Packages</strong>: thư viện dùng chung cho quy tắc định mức, mapper KPI, validator mã danh mục — để tránh mỗi repo tự làm một kiểu (có thể chia sẻ nội bộ theo cơ chế thống nhất).</li>
+</ul>
+<p><strong>X-BOS Services</strong> tập trung: registry phân hệ, category, giá trị danh mục, gán danh mục cho phân hệ, IAM, audit.</p>
+<p><strong>Satellite Services</strong> tập trung: xử lý giao dịch theo domain và <strong>gửi</strong> sự kiện khi có vi phạm ngưỡng hoặc trạng thái cần cảnh báo tập đoàn.</p>
+<h3 id="45-data-layer">4.5 Data Layer </h3>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PostgreSQL (tập trung)</strong></td>
+<td>Một cụm với <strong>phân tách schema theo module</strong> để ràng buộc ownership rõ ràng, vẫn dễ join có kiểm soát cho báo cáo và DBA.</td>
+</tr>
+<tr>
+<td><strong>Data Warehouse / Analytics</strong></td>
+<td>Đồng bộ định kỳ hoặc near real-time từ OLTP và event; lớp <strong>hợp nhất</strong> cho dashboard điều hành và báo cáo đa công ty.</td>
+</tr>
+<tr>
+<td><strong>Event log / stream (tuỳ chọn)</strong></td>
+<td>Phục vụ cảnh báo real-time và phân tích hành vi; tách tải đọc nặng khỏi OLTP.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-luồng-dữ-liệu-nghiệp-vụ-trọng-yếu">5. Luồng dữ liệu nghiệp vụ trọng yếu </h2>
+<h3 id="51-master-data-injection-bơm-danh-mục-từ-hub">5.1 Master Data Injection </h3>
+<p><strong>Mục tiêu:</strong> khi X-BOS cập nhật danh mục (thêm/sửa/khóa giá trị), vệ tinh <strong>không cần phát hành lại mã</strong> chỉ để “hardcode” danh mục.</p>
+<div class="mermaid">sequenceDiagram
+  participant Admin as Quản trị X-BOS
+  participant Hub as X-BOS MDM API
+  participant Cache as Cache vệ tinh (tuỳ chọn)
+  participant Sat as Dịch vụ vệ tinh
+  participant UI as UI phân hệ
+
+  Admin-&gt;&gt;Hub: Cập nhật Category / Version bump
+  Hub-&gt;&gt;Hub: Ghi DB + tăng schema version
+  Hub--&gt;&gt;Sat: Webhook / Poll version (signed)
+  Sat-&gt;&gt;Hub: GET categories?since=version
+  Hub--&gt;&gt;Sat: Delta hoặc full snapshot
+  Sat-&gt;&gt;Cache: Ghi cache có TTL + etag
+  Sat-&gt;&gt;UI: API nghiệp vụ trả dropdown theo cache mới
+</div><p><strong>Cơ chế then chốt</strong></p>
+<ul>
+<li><strong>Phiên bản hóa</strong> danh mục (version/etag) trên mỗi nhóm category.</li>
+<li>Vệ tinh chỉ lưu <strong>bản đệm</strong>; nguồn định tính vẫn là hub.</li>
+<li>Form động có thể dựa trên <strong>metadata</strong> (kiểu trường, bắt buộc, danh sách giá trị) do hub phát hành — UI render theo contract, không nhúng business list cố định.</li>
+</ul>
+<h3 id="52-real-time-alerting-flow-vi-phạm-vệ-tinh--dashboard-nóng">5.2 Real-time Alerting Flow </h3>
+<p><strong>Mục tiêu:</strong> vi phạm định mức tại TRSPORT (hoặc vệ tinh khác) <strong>hội tụ</strong> về kênh cảnh báo tập đoàn (Hot Point Alert) trên dashboard điều hành.</p>
+<div class="mermaid">flowchart LR
+  subgraph Satellite["Vệ tinh — ví dụ TRSPORT"]
+    Rule["Rule Engine / Định mức"]
+    Viol["Sự kiện vi phạm"]
+  end
+
+  subgraph Bus["Luồng sự kiện"]
+    EVT["Event Bus / Stream"]
+  end
+
+  subgraph Hub2["Hub giám sát"]
+    Agg["Alert Aggregator"]
+    Rank["Ưu tiên &amp; dedupe"]
+    Store["Alert Store"]
+  end
+
+  subgraph Dash["Dashboard tập đoàn"]
+    Hot["Hot Point Alert"]
+  end
+
+  Rule --&gt; Viol
+  Viol --&gt; EVT
+  EVT --&gt; Agg
+  Agg --&gt; Rank
+  Rank --&gt; Store
+  Store --&gt; Hot
+</div><p><strong>Nguyên tắc</strong></p>
+<ul>
+<li>Sự kiện mang <strong>tenant</strong>, <strong>mã phân hệ</strong>, <strong>mã vi phạm</strong>, <strong>mức nghiêm trọng</strong>, <strong>thời gian</strong>, <strong>tham chiếu KPI/định mức</strong> từ hub.</li>
+<li><strong>Aggregator</strong> gom trùng, giảm nhiễu (dedupe) và sắp xếp theo SLA phản hồi.</li>
+<li>Dashboard chỉ đọc từ <strong>store cảnh báo đã chuẩn hóa</strong>, không truy vấn trực tiếp OLTP vệ tinh cho mục đích hiển thị real-time quy mô lớn.</li>
+</ul>
+<hr>
+<h2 id="6-yêu-cầu-phi-chức-năng-nfr">6. Yêu cầu phi chức năng </h2>
+<h3 id="61-tính-sẵn-sàng-cao-high-availability">6.1 Tính sẵn sàng cao </h3>
+<ul>
+<li>API Gateway và dịch vụ lõi <strong>triển khai đa instance</strong>; health check và graceful shutdown.</li>
+<li>Cơ sở dữ liệu: replica đọc cho báo cáo; backup theo RPO/RTO thỏa thuận với tập đoàn.</li>
+<li>Chiến lược <strong>degrade</strong>: khi hub MDM chậm, vệ tinh vẫn vận hành với cache đã biết + cờ “dữ liệu danh mục có thể cũ” (theo chính sách).</li>
+</ul>
+<h3 id="62-khả-năng-mở-rộng-scalability">6.2 Khả năng mở rộng </h3>
+<ul>
+<li>Scale ngang <strong>stateless</strong> cho tầng gateway và microservice theo tải.</li>
+<li>Tách workload <strong>đọc nặng</strong> (warehouse) khỏi <strong>ghi OLTP</strong>.</li>
+<li>Phân hệ vệ tinh có thể scale độc lập theo mùa vụ nghiệp vụ.</li>
+</ul>
+<h3 id="63-bảo-mật-đa-lớp">6.3 Bảo mật đa lớp </h3>
+<table>
+<thead>
+<tr>
+<th>Lớp</th>
+<th>Biện pháp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Biên mạng</td>
+<td>WAF, TLS end-to-end, phân vùng DMZ cho gateway.</td>
+</tr>
+<tr>
+<td>Định danh</td>
+<td>SSO tập trung, MFA theo nhóm quyền nhạy cảm.</td>
+</tr>
+<tr>
+<td>Ứng dụng</td>
+<td>RBAC/ABAC, kiểm tra tenant trên mọi API ghi.</td>
+</tr>
+<tr>
+<td>Dữ liệu</td>
+<td>Mã hóa at-rest trên storage nhạy cảm; mask log; audit trail thay đổi master data.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="64-uiux-thống-nhất-unified-design-system">6.4 UI/UX thống nhất </h3>
+<ul>
+<li>Một hệ token và thư viện component dùng chung; mọi app mới <strong>bắt buộc</strong> kế thừa.</li>
+<li>Trạng thái tải, trống dữ liệu, lỗi — cùng ngôn ngữ hình ảnh.</li>
+<li>Accessibility: tương phản, focus, nhãn cho trình đọc màn hình trên các luồng chính.</li>
+</ul>
+<hr>
+<h2 id="7-ma-trận-truy-vết-brd--hld">7. Ma trận truy vết BRD → HLD </h2>
+<table>
+<thead>
+<tr>
+<th>Yêu cầu nghiệp vụ</th>
+<th>Thành phần HLD đáp ứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single source of truth cho danh mục</td>
+<td>X-BOS MDM + schema <code>xbos_*</code> + API phiên bản</td>
+</tr>
+<tr>
+<td>Phân hệ độc lập triển khai</td>
+<td>Satellite services + schema riêng + gateway routing</td>
+</tr>
+<tr>
+<td>Dashboard điều hành &amp; cảnh báo nóng</td>
+<td>Warehouse + Alert Aggregator + Presentation</td>
+</tr>
+<tr>
+<td>Đồng bộ trải nghiệm đa kênh</td>
+<td>Design System + code/công cụ dùng chung</td>
+</tr>
+<tr>
+<td>Bảo mật tập đoàn</td>
+<td>Gateway + SSO/OAuth2 + JWT + RBAC theo tenant</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-điều-kiện-thành-công--chỉ-số-đo-lường">8. Điều kiện thành công &amp; chỉ số đo lường </h2>
+<table>
+<thead>
+<tr>
+<th>Chỉ số</th>
+<th>Mục tiêu định hướng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thời gian đồng bộ danh mục sau khi hub cập nhật</td>
+<td>Theo SLA</td>
+</tr>
+<tr>
+<td>Tỷ lệ lệnh gọi API từ client có tenant hợp lệ</td>
+<td>100% tại production</td>
+</tr>
+<tr>
+<td>Thời gian hiển thị cảnh báo nóng trên dashboard</td>
+<td>Gần thời gian thực</td>
+</tr>
+<tr>
+<td>Mức độ tái sử dụng component design system</td>
+<td>≥ 90% màn hình mới không tự phát triển component trùng chức năng</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-phụ-lục--thuật-ngữ">9. Phụ lục — Thuật ngữ </h2>
+<table>
+<thead>
+<tr>
+<th>Thuật ngữ</th>
+<th>Định nghĩa ngắn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hub</td>
+<td>X-BOS — lõi điều phối và MDM.</td>
+</tr>
+<tr>
+<td>Spoke</td>
+<td>Phân hệ vệ tinh nghiệp vụ.</td>
+</tr>
+<tr>
+<td>MDM</td>
+<td>Master Data Management — quản trị dữ liệu chủ.</td>
+</tr>
+<tr>
+<td>Shared DNA</td>
+<td>Gói logic/kiểu dùng chung giữa dịch vụ và client.</td>
+</tr>
+<tr>
+<td>Tenant</td>
+<td>Đơn vị tách dữ liệu.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><em>Tài liệu này là baseline kiến trúc; mọi thay đổi breaking API hoặc mô hình tenant phải được ghi nhận phiên bản và kế hoạch tương thích ngược.</em></p>
+
+      </div>
+      
+      
+    
+    
+    <script type="module">
+// TODO: If ZenUML gets integrated into mermaid in the future,
+//      we can remove the following lines.
+
+
+var MERMAID_CONFIG = ({"startOnLoad":false});
+if (typeof MERMAID_CONFIG !== 'undefined') {
+  MERMAID_CONFIG.startOnLoad = false
+  MERMAID_CONFIG.cloneCssStyles = false
+  MERMAID_CONFIG.theme = "default"
+}
+
+mermaid.initialize(MERMAID_CONFIG || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('div.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+} else {
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+}
+</script>
+    
+    
+    
+  
+    </body></html>

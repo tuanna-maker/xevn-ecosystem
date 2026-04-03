@@ -1,0 +1,644 @@
+<!DOCTYPE html><html><head>
+      <title>BRD_X_BOS_CORE_DYNAMIC</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////Users/uranus/.cursor/extensions/shd101wyy.markdown-preview-enhanced-0.8.22-universal/crossnote/dependencies/katex/katex.min.css">
+      
+      
+      <script type="text/javascript" src="file:////Users/uranus/.cursor/extensions/shd101wyy.markdown-preview-enhanced-0.8.22-universal/crossnote/dependencies/mermaid/mermaid.min.js" charset="UTF-8"></script>
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="tài-liệu-yêu-cầu-nghiệp-vụ-brd">Tài liệu Yêu cầu Nghiệp vụ </h1>
+<h2 id="phân-hệ-x-bos--hệ-gen-quản-trị-tập-đoàn-dynamic-core">Phân hệ X-BOS: lõi quản trị tập đoàn </h2>
+<table>
+<thead>
+<tr>
+<th>Thuộc tính</th>
+<th>Giá trị</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sản phẩm</td>
+<td>X-BOS</td>
+</tr>
+<tr>
+<td>Hệ sinh thái</td>
+<td>XeVN OS</td>
+</tr>
+<tr>
+<td>Phiên bản tài liệu</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Ngày</td>
+<td>2026-03-25</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-tóm-tắt-điều-hành">1. Tóm tắt điều hành </h2>
+<p>X-BOS là <strong>lõi điều phối</strong> của mô hình holding: không phải bộ chức năng “đóng khung” trong mã nguồn, mà là <strong>cỗ máy tự tiến hóa</strong> dựa trên <strong>Dynamic Engine</strong> — mọi cấu trúc dữ liệu chủ (thực thể tổ chức, danh mục, KPI, chính sách) đều có thể được <strong>khai báo và mở rộng</strong> mà không cần triển khai lại phần mềm cho từng thay đổi ngữ nghĩa nghiệp vụ.</p>
+<p>Nền tảng kỹ thuật tham chiếu: <strong>mô hình thuộc tính mở rộng (EAV / metadata-driven)</strong> cho phép người dùng quản trị định nghĩa trường, kiểu dữ liệu, ràng buộc và biểu mẫu; hệ thống <strong>tự sinh</strong> giao diện nhập liệu và luồng xác thực theo cấu hình.</p>
+<hr>
+<h2 id="2-phạm-vi--ranh-giới">2. Phạm vi và ranh giới </h2>
+<table>
+<thead>
+<tr>
+<th>Trong phạm vi X-BOS</th>
+<th>Ngoài phạm vi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Định nghĩa DNA tổ chức &amp; danh mục dùng chung</td>
+<td>Giao dịch vận hành theo domain</td>
+</tr>
+<tr>
+<td>IAM tập trung, chính sách, KPI &amp; ngưỡng tham chiếu</td>
+<td>Tính toán KPI thực tế tại từng phân hệ</td>
+</tr>
+<tr>
+<td>Workflow phê duyệt cấp tập đoàn</td>
+<td>Quy trình nghiệp vụ thuần túy tại từng vệ tinh</td>
+</tr>
+<tr>
+<td>Nhật ký kiểm toán cấu hình &amp; phát hành phiên bản</td>
+<td>Nhật ký giao dịch chi tiết tại OLTP từng phân hệ</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="21-kiến-trúc-tổng-thể-x-bos-core--luồng-chính">2.1 Kiến trúc tổng thể X-BOS Core &amp; luồng chính </h2>
+<h3 id="211-triết-lý-hub-and-spoke-và-vị-trí-x-bos">2.1.1 Triết lý Hub-and-Spoke và vị trí X-BOS </h3>
+<p>X-BOS Core là <strong>Holding Core / Hub</strong> theo mô hình <strong>Hub-and-Spoke</strong>:</p>
+<ul>
+<li><strong>Hub (X-BOS):</strong> là nơi phát hành và quản trị “DNA vận hành” của tập đoàn (Org schema, Custom Fields schema, Master Data categories, KPI/Policy thresholds, và chính sách governance).</li>
+<li><strong>Spoke (vệ tinh nghiệp vụ):</strong> HRM, TRSPORT, LGTS, EXPRESS, X-SCM, X-OFFICE, X-FINANCE, CRM, X-MAINTENANCE… vận hành giao dịch theo domain nhưng <strong>không tự quyết định cấu trúc dữ liệu master</strong>.</li>
+<li><strong>Presentation phía trên:</strong> Web Portal (và các kênh khác như Mobile App) tiêu thụ schema/contract từ X-BOS để render đúng màn hình theo thời điểm phiên bản đang hoạt động.</li>
+</ul>
+<blockquote>
+<p>Hệ quả quan trọng về sản phẩm: Portal và các vệ tinh luôn nhìn “cùng một ngôn ngữ dữ liệu”, vì contract schema/metadata được X-BOS phát hành theo version.</p>
+</blockquote>
+<h3 id="212-system-landscape-mermaid">2.1.2 System Landscape </h3>
+<p><img src="./images/Gemini_Generated_Image_x3ltatx3ltatx3lt.png" alt="System Landscape — Hub-and-Spoke X-BOS Core"></p>
+<h3 id="213-bản-đồ-api-contract-cách-portal-và-vệ-tinh-liên-kết">2.1.3 Bản đồ API Contract </h3>
+<p>X-BOS phát hành <strong>hợp đồng dữ liệu (DNA/Schema Contract)</strong> và API được Portal/Spoke tiêu thụ theo version:</p>
+<ul>
+<li><strong>Org schema &amp; org chart:</strong>
+<ul>
+<li><code>GET /org-units/tree</code> (đọc cây, render nhanh)</li>
+<li><code>GET /org-units/{id}</code> (đọc node + custom fields)</li>
+<li><code>POST /org-units</code> (tạo node; validate cha–con; chống cycle)</li>
+<li><code>PATCH /org-units/{id}</code> (cập nhật node + custom values)</li>
+</ul>
+</li>
+<li><strong>Metadata (custom fields schema):</strong>
+<ul>
+<li><code>GET /metadata/attributes?entityType=org_unit</code></li>
+<li><code>POST /metadata/attributes</code> (thêm trường động)</li>
+<li><code>PATCH /metadata/attributes/{id}</code> (cập nhật cấu hình trường)</li>
+<li><code>GET /metadata/contract?schemaVersion=...</code> (đóng gói contract để cache/invalidate)</li>
+</ul>
+</li>
+<li><strong>MDM DNA contract (categories):</strong>
+<ul>
+<li><code>GET /dna/contract?tenantId=...</code> (trả về categories theo phạm vi)</li>
+<li><code>POST /category-items/bulk-upsert</code> (bulk nhập giá trị)</li>
+<li><code>POST /category-items</code> / <code>DELETE /category-items/{id}</code> (CRUD giá trị)</li>
+</ul>
+</li>
+<li><strong>Governance &amp; Audit:</strong>
+<ul>
+<li><code>POST /governance/workflows/{workflowId}/start</code> (khởi chạy workflow phê duyệt)</li>
+<li><code>GET /audit?entityType=...&amp;entityId=...</code> (truy vết cấu hình)</li>
+<li><code>POST /version/publish</code> (publish bản version sau duyệt)</li>
+</ul>
+</li>
+<li><strong>Hot Point Alert:</strong>
+<ul>
+<li><code>POST /alerts/violation-ingest</code> (ingest sự kiện từ vệ tinh)</li>
+<li><code>GET /alerts/hot-point</code> (Portal Cockpit đọc)</li>
+</ul>
+</li>
+</ul>
+<h3 id="214-luồng-chính-key-data-flows">2.1.4 Luồng chính </h3>
+<h4 id="a-master-data-dna-injection-categories--portal--spoke">A) Cập nhật danh mục DNA </h4>
+<p><strong>Mục tiêu:</strong> khi X-BOS publish phiên bản categories mới, Portal và các vệ tinh tự cập nhật dropdown/select mà không cần đổi code.</p>
+<div class="mermaid">sequenceDiagram
+  participant Admin as Quản trị X-BOS
+  participant Hub as X-BOS (MDM + Version Publisher)
+  participant Api as API Gateway
+  participant Portal as Portal
+  participant Sat as Vệ tinh (Spoke)
+
+  Admin-&gt;&gt;Hub: Cập nhật category_definition/category_item (bulk hoặc in-place)
+  Hub-&gt;&gt;Hub: Bump schemaVersion + ghi audit + invalidation event
+  Hub--&gt;&gt;Api: Contract mới theo version (ETag/signed)
+  Api--&gt;&gt;Portal: GET /dna/contract (cache miss hoặc etag đổi)
+  Api--&gt;&gt;Sat: GET /dna/contract (đồng bộ theo module)
+  Portal--&gt;&gt;Portal: Render dropdown bằng danh sách category_items
+  Sat--&gt;&gt;Sat: Render form dynamic theo contract
+</div><p><strong>Luật sản phẩm:</strong> mỗi contract trả về <code>schemaVersion</code> và <code>publishedAt</code>; client cache theo version và chỉ invalid khi version thay đổi.</p>
+<h4 id="b-metadata-publishing-custom-fields-schema--dynamic-form">B) Metadata Publishing </h4>
+<p><strong>Mục tiêu:</strong> khi quản trị thêm trường động cho org_unit, Portal/Org form cập nhật ngay theo schema version mới.</p>
+<div class="mermaid">sequenceDiagram
+  participant Admin as Quản trị
+  participant Hub as X-BOS (Metadata Engine)
+  participant Api as API Gateway
+  participant Portal as Portal
+
+  Admin-&gt;&gt;Hub: POST /metadata/attributes (thêm trường)
+  Hub-&gt;&gt;Hub: Validate key uniqueness + validationJson + version bump
+  Hub-&gt;&gt;Hub: Ghi audit + publish metadata contract
+  Hub--&gt;&gt;Api: metadata contract (schemaVersion mới)
+  Api--&gt;&gt;Portal: GET /metadata/contract?schemaVersion=...
+  Portal--&gt;&gt;Portal: DynamicForm re-render (Input/Select/Date/Checkbox)
+</div><p><strong>Chi tiết kiểm soát dữ liệu:</strong> trường <code>dataType=select</code> phải có “nguồn lựa chọn” (refCategoryCode hoặc optionsJson). <code>dataType=boolean</code> không cần options list; chỉ cần nhãn bật/tắt và ràng buộc required (nếu có).</p>
+<h4 id="c-dynamic-org-engine-org-chart-tree--validate-chacon">C) Dynamic Org Engine </h4>
+<p><strong>Mục tiêu:</strong> Portal hiển thị org chart tức thời và đảm bảo dữ liệu tổ chức luôn hợp lệ theo quan hệ cha–con 1:1.</p>
+<div class="mermaid">sequenceDiagram
+  participant Portal as Portal Org UI
+  participant Api as API Gateway
+  participant Hub as X-BOS (Org Engine)
+  participant DB as PostgreSQL (org_unit)
+
+  Portal-&gt;&gt;Api: GET /org-units/tree?tenantId=...&amp;root=...
+  Api-&gt;&gt;Hub: Query tree (Recursive CTE)
+  Hub-&gt;&gt;DB: SELECT org_unit (RLS áp dụng)
+  DB--&gt;&gt;Hub: Result tree (path)
+  Hub--&gt;&gt;Api: JSON tree/adjacency list
+  Api--&gt;&gt;Portal: Render React Flow / Tree-view
+
+  Portal-&gt;&gt;Api: POST /org-units (tạo node con)
+  Api-&gt;&gt;Hub: Validate cha–con + chống cycle
+  Hub-&gt;&gt;DB: INSERT org_unit + audit_log
+  DB--&gt;&gt;Hub: OK
+  Hub--&gt;&gt;Api: 201 + node id
+  Api--&gt;&gt;Portal: Refresh tree (versioned)
+</div><h4 id="d-real-time-alerting-flow-vi-phạm--hot-point-alert-trên-dashboard">D) Real-time Alerting Flow (vi phạm → Hot Point Alert trên Dashboard) </h4>
+<p><strong>Mục tiêu:</strong> các vi phạm/threshold breach tại vệ tinh hội tụ về <strong>một điểm điều hành duy nhất</strong> (Hot Point Alert), giúp Cockpit ra quyết định nhanh.</p>
+<div class="mermaid">sequenceDiagram
+  participant Sat as Spoke (ví dụ TRSPORT)
+  participant Api as API Gateway/Event ingress
+  participant Hub as X-BOS (Alert Aggregator)
+  participant HP as Hot Point Alert
+  participant Portal as Cockpit
+
+  Sat-&gt;&gt;Api: POST /alerts/violation-ingest (event payload)
+  Api-&gt;&gt;Hub: Verify token + tenant + module
+  Hub-&gt;&gt;Hub: Normalize event (ruleId, severity, occurredAt)
+  Hub-&gt;&gt;HP: Dedupe + Rank + persist alert snapshot
+  Hub--&gt;&gt;Api: 202 Accepted
+  Portal-&gt;&gt;Api: GET /alerts/hot-point
+  Api--&gt;&gt;Portal: Render Hot Point Alert (sắp xếp theo ưu tiên)
+</div><p><strong>Payload chuẩn hóa (bắt buộc có):</strong> <code>tenantId</code>, <code>moduleCode</code>, <code>entityRef</code> (ví dụ orgUnitId), <code>ruleId</code>, <code>severity</code>, <code>metricSnapshot</code>, <code>occurredAt</code>, <code>correlationId</code>.</p>
+<h4 id="e-governance--audit-workflow-publish--version-publisher">E) Governance &amp; Audit </h4>
+<p><strong>Mục tiêu:</strong> mọi thay đổi cấu hình nhạy cảm (metadata/schema/contract/policy) có vết kiểm toán và có thể rollback bằng version.</p>
+<div class="mermaid">sequenceDiagram
+  participant Admin as Người quản trị
+  participant Hub as X-BOS Governance + Version
+  participant Portal as Admin UI
+  participant AUD as Audit Trail
+
+  Admin-&gt;&gt;Portal: Thực hiện sửa cấu hình
+  Portal-&gt;&gt;Hub: POST /governance/workflows/.../start
+  Hub-&gt;&gt;Hub: Tạo draft version + ghi pending audit
+  Hub--&gt;&gt;Portal: trạng thái pending + bước duyệt
+  Admin--&gt;&gt;Hub: Approve/Reject
+  Hub-&gt;&gt;AUD: Commit publish version + diff snapshot
+  Hub--&gt;&gt;Portal: Contract publishedAt + schemaVersion
+</div><h3 id="215-liên-kết-với-portal-what-portal-phải-tiêu-thụ">2.1.5 Liên kết với Portal</h3>
+<p>Portal không tự dựng schema tĩnh. Portal chỉ:</p>
+<ul>
+<li><strong>Đọc schema/contract từ X-BOS</strong> trước khi render form/bảng dropdown.</li>
+<li><strong>Hiển thị org chart</strong> bằng dữ liệu cây lấy từ X-BOS.</li>
+<li><strong>Đọc Hot Point Alert</strong> theo thời gian thực/near-real-time để hỗ trợ quyết định.</li>
+</ul>
+<p>Để đảm bảo “logic liên kết trong chính phần mềm”, Portal cần tuân thủ:</p>
+<ol>
+<li>Tất cả màn hình có dropdown/select từ DNA phải gọi contract version của X-BOS, không dùng danh sách hard-code.</li>
+<li>Các màn hình “tạo/sửa đơn vị” phải dùng Dynamic Form renderer dựa trên metadata schema contract.</li>
+<li>Mỗi thay đổi cấu hình có publish version; client cache chỉ sống tới <code>publishedAt</code> tương ứng.</li>
+</ol>
+<h3 id="216-liên-kết-với-các-kênhứng-dụng-khác-không-chỉ-portal">2.1.6 Liên kết với các kênh/ứng dụng khác </h3>
+<p>Ngoài Web Portal, X-BOS Core tiếp tục đóng vai trò hub contract cho các kênh và hệ thống sau:</p>
+<ul>
+<li><strong>Mobile App / Kiosk / App hiện trường:</strong> tiêu thụ <code>metadata/contract</code> và <code>dna/contract</code> theo <code>schemaVersion</code> để render form &amp; dropdown đồng nhất; không phát sinh logic tạo field/danh mục “tự thân”.</li>
+<li><strong>Satellite Services (vệ tinh nghiệp vụ):</strong> dùng contract để chuẩn hóa biểu mẫu tham chiếu (orgId, categoryCode, customAttributes) và phát sự kiện vi phạm/threshold breach về <code>POST /alerts/violation-ingest</code> để hội tụ Hot Point Alert.</li>
+<li><strong>ETL / Analytics / Data Warehouse:</strong> tiêu thụ event stream (org change, category publish, policy publish, alert snapshot) để xây dựng lớp báo cáo theo “thời điểm version”; phục vụ truy vết khi đối chiếu số liệu.</li>
+<li><strong>B2B/đối tác tích hợp (nếu có):</strong> truy cập qua API Gateway với contract dạng read-only (categories, org chart, policy snapshots) theo scope, tránh phụ thuộc vào schema nội bộ.</li>
+</ul>
+<p>Nguyên tắc ràng buộc: mọi kênh chỉ cache tới <code>publishedAt/schemaVersion</code> do X-BOS công bố; khi X-BOS publish version mới thì invalidate theo version đó.</p>
+<h3 id="217-eventpayload-contracts-phục-vụ-triển-khai-không-đoán-mò">2.1.7 Contract cho event/payload </h3>
+<p>Trong triển khai enterprise, dev thường bị kẹt ở chỗ: “event/payload phải chứa trường nào để server/analytics render đúng?”. Vì vậy X-BOS Core cần cố định <strong>contract</strong> cho các luồng dữ liệu trọng yếu dưới dạng JSON contract (schema) và ví dụ payload thực thi.</p>
+<h4 id="a-violation-event-spoke--x-bos-alert-ingest">A) Violation Event </h4>
+<p><strong>Endpoint tham chiếu:</strong> <code>POST /alerts/violation-ingest</code></p>
+<p><strong>Contract tối thiểu (bắt buộc có):</strong></p>
+<ul>
+<li><code>tenantId</code> (string/UUID): phạm vi holding</li>
+<li><code>moduleCode</code> (string): mã phân hệ phát sự kiện (TRSPORT/LGTS/…)</li>
+<li><code>occurredAt</code> (ISO datetime): thời điểm xảy ra tại hệ vệ tinh (UTC trước khi lưu)</li>
+<li><code>entityRef</code> (object): tham chiếu thực thể liên quan (ví dụ <code>orgUnitId</code>, <code>routeId</code>, <code>vehicleId</code>…)</li>
+<li><code>ruleId</code> (string): định danh rule/định mức/phép tính tạo vi phạm</li>
+<li><code>severity</code> (<code>low|medium|high|critical</code>)</li>
+<li><code>metricSnapshot</code> (object): dữ liệu đo tại thời điểm vi phạm (giá trị thực, ngưỡng, đơn vị…)</li>
+<li><code>correlationId</code> (string): id tương quan trace xuyên suốt</li>
+</ul>
+<p><strong>Ví dụ payload:</strong></p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"tenantId"</span><span class="token operator">:</span> <span class="token string">"tenant-xevn-holding"</span><span class="token punctuation">,</span>
+  <span class="token property">"moduleCode"</span><span class="token operator">:</span> <span class="token string">"TRSPORT"</span><span class="token punctuation">,</span>
+  <span class="token property">"occurredAt"</span><span class="token operator">:</span> <span class="token string">"2026-03-25T09:15:00Z"</span><span class="token punctuation">,</span>
+  <span class="token property">"entityRef"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"orgUnitId"</span><span class="token operator">:</span> <span class="token string">"org-logistics"</span><span class="token punctuation">,</span>
+    <span class="token property">"routeId"</span><span class="token operator">:</span> <span class="token string">"route-12"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"ruleId"</span><span class="token operator">:</span> <span class="token string">"TRSPORT_FILL_RATE_MIN"</span><span class="token punctuation">,</span>
+  <span class="token property">"severity"</span><span class="token operator">:</span> <span class="token string">"high"</span><span class="token punctuation">,</span>
+  <span class="token property">"metricSnapshot"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"metricCode"</span><span class="token operator">:</span> <span class="token string">"fill_rate"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">0.62</span><span class="token punctuation">,</span>
+    <span class="token property">"unit"</span><span class="token operator">:</span> <span class="token string">"%"</span><span class="token punctuation">,</span>
+    <span class="token property">"threshold"</span><span class="token operator">:</span> <span class="token number">0.7</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"correlationId"</span><span class="token operator">:</span> <span class="token string">"trsport-2026-03-25T09:15:00Z-8f1c"</span>
+<span class="token punctuation">}</span>
+</code></pre><p><strong>Quy tắc chuẩn hóa server (bắt buộc áp dụng):</strong></p>
+<ul>
+<li><code>occurredAt</code> luôn được parse về UTC trước khi lưu snapshot</li>
+<li><code>ruleId</code> phải map được tới định danh rule trong KPI/Policy catalog của X-BOS (nếu không map → ghi log “unknown rule”, vẫn lưu event nhưng giảm ưu tiên hiển thị)</li>
+<li><code>severity</code> là rule-driven (không lấy từ client)</li>
+</ul>
+<h4 id="b-hot-point-alert-snapshot-x-bos--portal-cockpit">B) Hot Point Alert Snapshot </h4>
+<p><strong>Endpoint tham chiếu:</strong> <code>GET /alerts/hot-point</code></p>
+<p><strong>Contract snapshot tối thiểu:</strong></p>
+<ul>
+<li><code>hotPointId</code> (string)</li>
+<li><code>tenantId</code></li>
+<li><code>moduleCodes</code> (string[])</li>
+<li><code>createdAt</code> (ISO)</li>
+<li><code>summary</code> (string): tóm tắt dạng câu ngắn cho người dùng</li>
+<li><code>ranking</code> (number): điểm ưu tiên (severity + recency + impact weight)</li>
+<li><code>items</code> (array): danh sách violation/event thành phần (có thể giới hạn theo <code>limit</code>)</li>
+</ul>
+<p><strong>Ví dụ snapshot:</strong></p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"hotPointId"</span><span class="token operator">:</span> <span class="token string">"hp-2026-03-25-TRSPORT-1"</span><span class="token punctuation">,</span>
+  <span class="token property">"tenantId"</span><span class="token operator">:</span> <span class="token string">"tenant-xevn-holding"</span><span class="token punctuation">,</span>
+  <span class="token property">"moduleCodes"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"TRSPORT"</span><span class="token punctuation">,</span> <span class="token string">"LGTS"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"createdAt"</span><span class="token operator">:</span> <span class="token string">"2026-03-25T09:18:42Z"</span><span class="token punctuation">,</span>
+  <span class="token property">"summary"</span><span class="token operator">:</span> <span class="token string">"Tỷ lệ lấp đầy tuyến HU-01 giảm dưới ngưỡng 0.7"</span><span class="token punctuation">,</span>
+  <span class="token property">"ranking"</span><span class="token operator">:</span> <span class="token number">98.4</span><span class="token punctuation">,</span>
+  <span class="token property">"items"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"correlationId"</span><span class="token operator">:</span> <span class="token string">"trsport-2026-03-25T09:15:00Z-8f1c"</span><span class="token punctuation">,</span>
+      <span class="token property">"entityRef"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"orgUnitId"</span><span class="token operator">:</span> <span class="token string">"org-logistics"</span><span class="token punctuation">,</span> <span class="token property">"routeId"</span><span class="token operator">:</span> <span class="token string">"route-12"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"severity"</span><span class="token operator">:</span> <span class="token string">"high"</span><span class="token punctuation">,</span>
+      <span class="token property">"occurredAt"</span><span class="token operator">:</span> <span class="token string">"2026-03-25T09:15:00Z"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre><h4 id="c-version-publish-contract--audit-event-workflow--publisher">C) Version Publish Contract &amp; Audit Event (Workflow → Publisher) </h4>
+<p><strong>Mục tiêu:</strong> mọi thay đổi cấu hình nhạy cảm đều phải có thể truy vết và rollback theo version.</p>
+<p><strong>Contract “publish” tối thiểu:</strong></p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"tenantId"</span><span class="token operator">:</span> <span class="token string">"tenant-xevn-holding"</span><span class="token punctuation">,</span>
+  <span class="token property">"artifactType"</span><span class="token operator">:</span> <span class="token string">"metadata|category|policy|org-schema"</span><span class="token punctuation">,</span>
+  <span class="token property">"artifactKey"</span><span class="token operator">:</span> <span class="token string">"org_unit"</span><span class="token punctuation">,</span>
+  <span class="token property">"previousVersion"</span><span class="token operator">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
+  <span class="token property">"newVersion"</span><span class="token operator">:</span> <span class="token number">17</span><span class="token punctuation">,</span>
+  <span class="token property">"publishedAt"</span><span class="token operator">:</span> <span class="token string">"2026-03-25T10:00:00Z"</span><span class="token punctuation">,</span>
+  <span class="token property">"publisher"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"actorType"</span><span class="token operator">:</span> <span class="token string">"user|service"</span><span class="token punctuation">,</span> <span class="token property">"actorId"</span><span class="token operator">:</span> <span class="token string">"admin-001"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"correlationId"</span><span class="token operator">:</span> <span class="token string">"publish-org_unit-17-20260325T1000Z"</span>
+<span class="token punctuation">}</span>
+</code></pre><p><strong>Ràng buộc audit:</strong></p>
+<ul>
+<li>Trước publish: tạo draft version + diff snapshot</li>
+<li>Khi approve: commit publish + ghi diff vào <code>audit_log</code></li>
+<li>Khi reject: không publish</li>
+</ul>
+<h4 id="d-contract-cache-keys-chuẩn-invalidate-theo-version">D) Contract cache keys </h4>
+<ul>
+<li><code>dna:contract:{tenantId}:{artifactKey}:{schemaVersion}</code></li>
+<li><code>metadata:contract:{tenantId}:{entityType}:{schemaVersion}</code></li>
+<li><code>alerts:hotpoint-snapshot:{tenantId}:{dayBucket}</code></li>
+</ul>
+<p>Invalidation duy nhất theo: <strong>publish version mới</strong> → invalidate theo <code>schemaVersion</code> cũ (hoặc tăng version key).</p>
+<hr>
+<h2 id="3-trình-quản-trị-thực-thể-tổ-chức-động-dynamic-org-engine">3. Trình quản trị thực thể tổ chức động </h2>
+<h3 id="31-mục-tiêu-nghiệp-vụ">3.1 Mục tiêu nghiệp vụ </h3>
+<p>Cho phép khai báo và duy trì <strong>cây tổ chức đa tầng</strong> phản ánh đúng pháp lý và vận hành holding: <strong>Công ty mẹ (Holding)</strong> → <strong>Công ty con</strong> → <strong>Khối / Phân hệ nội bộ</strong> → <strong>Phòng ban</strong> (và các tầng mở rộng theo chính sách nội bộ), với khả năng <strong>mở rộng thuộc tính</strong> mà không sửa mã.</p>
+<h3 id="32-cấu-trúc-đa-tầng--logic-quan-hệ">3.2 Cấu trúc đa tầng &amp; logic quan hệ </h3>
+<ul>
+<li><strong>Thực thể gốc:</strong> <em>Đơn vị tổ chức</em> (Org Unit) là nút trong sơ đồ; mỗi nút thuộc một <strong>loại tầng</strong> (ví dụ: Holding, Subsidiary, Division, Department) được định nghĩa trong metadata — không cố định cứng trong code.</li>
+<li><strong>Quan hệ cha–con:</strong> Mặc định <strong>1 cha – 1 con trực tiếp</strong> trên một nhánh (cây phân cấp); không cho phép một nút có nhiều cha đồng thời trong cùng một cây điều hành (tránh xung đột báo cáo). Trường hợp ma trận (nhân sự kiêm nhiệm) xử lý ở lớp <strong>phân bổ vai trò</strong>, không làm “vỡ” cây tổ chức.</li>
+<li><strong>Org Chart:</strong> Hiển thị dạng <strong>cây</strong> (tree) và <strong>sơ đồ</strong> (graph read-only) theo quyền; hỗ trợ lọc theo công ty / khối / thời điểm hiệu lực.</li>
+</ul>
+<p><img src="./images/Gemini_Generated_Image_ld5pwold5pwold5p.png" alt="Sơ đồ động Org Unit (Meta → Runtime)"></p>
+<h3 id="33-trường-dữ-liệu-chuẩn">3.3 Trường dữ liệu chuẩn </h3>
+<p>Áp dụng cho mỗi đơn vị, tối thiểu các nhóm:</p>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Ví dụ trường</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Định danh</td>
+<td>Mã đơn vị, tên đầy đủ, tên viết tắt</td>
+</tr>
+<tr>
+<td>Pháp lý</td>
+<td>Mã số thuế, người đại diện pháp luật, giấy phép kinh doanh</td>
+</tr>
+<tr>
+<td>Địa lý</td>
+<td>Địa chỉ trụ sở, mã bưu chính, quốc gia / tỉnh</td>
+</tr>
+<tr>
+<td>Tài chính</td>
+<td>Vốn điều lệ, tỷ lệ sở hữu, niên độ tài chính</td>
+</tr>
+<tr>
+<td>Hiệu lực</td>
+<td>Ngày hiệu lực / ngày kết thúc, trạng thái</td>
+</tr>
+</tbody>
+</table>
+<p>Các trường chuẩn được định nghĩa trong <strong>schema phiên bản hóa</strong>; thay đổi nhãn / bắt buộc / validation do quản trị cấu hình trong phạm vi quyền.</p>
+<h3 id="34-custom-fields-eav--form-động">3.4 Custom Fields &amp; form động </h3>
+<ul>
+<li>Người dùng được phép <strong>thêm trường</strong> gắn với loại thực thể (hoặc với từng loại Org Unit): <strong>Text, Number, Date, Boolean</strong>, và mở rộng <strong>Select</strong> (tham chiếu danh mục DNA).</li>
+<li><strong>Không</strong> yêu cầu release mới khi thêm trường: engine đọc metadata và <strong>render lại</strong> form, bảng danh sách và API (theo hợp đồng phiên bản).</li>
+<li>Ràng buộc: giới hạn độ dài, định dạng, bắt buộc / tùy chọn, điều kiện hiển thị theo rule khai báo.</li>
+</ul>
+<div class="mermaid">sequenceDiagram
+  participant Admin as Quản trị
+  participant Meta as Metadata Service
+  participant UI as Form Engine
+  participant API as Config API
+
+  Admin-&gt;&gt;Meta: Thêm Custom Field (kiểu + rule)
+  Meta-&gt;&gt;Meta: Lưu schema + version
+  Meta-&gt;&gt;UI: Push schema mới
+  UI-&gt;&gt;UI: Render form động
+  Meta-&gt;&gt;API: Xuất contract field cho vệ tinh đọc
+</div><hr>
+<h2 id="4-engine-danh-mục-dna-master-data-management">4. Danh mục DNA </h2>
+<h3 id="41-vai-trò">4.1 Vai trò </h3>
+<p>X-BOS là <strong>nguồn phát hành</strong> danh mục dùng chung (DNA): loại xe, tuyến, cấp bậc, chức vụ, loại chi phí… — được <strong>định danh</strong>, <strong>phiên bản hóa</strong> và <strong>phân vùng phạm vi</strong> sử dụng.</p>
+<h3 id="42-cơ-chế-bơm-dữ-liệu-xuống-vệ-tinh">4.2 Cơ chế “bơm” dữ liệu xuống vệ tinh </h3>
+<ul>
+<li>Mỗi danh mục có <strong>mã</strong>, <strong>kiểu giá trị</strong>, <strong>trạng thái</strong>, <strong>phiên bản schema</strong> và <strong>danh sách giá trị</strong> (hoặc tham chiếu động).</li>
+<li>Vệ tinh <strong>không</strong> tự tạo nguồn master trùng nghĩa; chúng đồng bộ qua API / sự kiện theo <strong>hợp đồng</strong> (pull theo version, push delta, hoặc webhook — chi tiết kỹ thuật ở tài liệu tích hợp).</li>
+</ul>
+<h3 id="43-phân-vùng-sử-dụng">4.3 Phạm vi áp dụng </h3>
+<table>
+<thead>
+<tr>
+<th>Phạm vi</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Toàn tập đoàn</td>
+<td>Danh mục áp dụng đồng nhất cho mọi pháp nhân trong holding</td>
+</tr>
+<tr>
+<td>Theo công ty con</td>
+<td>Chỉ hiệu lực trong phạm vi một hoặc nhiều đơn vị được chọn</td>
+</tr>
+<tr>
+<td>Kết hợp</td>
+<td>Danh mục “khung” toàn nhóm + giá trị “lá” theo công ty</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-trải-nghiệm-người-dùng">4.4 Trải nghiệm người dùng </h3>
+<ul>
+<li><strong>Bulk Entry (dạng bảng tính):</strong> Nhập / dán nhiều dòng danh mục cùng lúc, kiểm tra lỗi theo lô, xác nhận một lần — giảm thời gian khai báo đầu kỳ và đợt chỉnh quy mô lớn.</li>
+<li><strong>In-place Creation (thêm nhanh tại chỗ):</strong> Tại màn hình CRUD lớn (ví dụ nhân sự, đơn hàng tham chiếu danh mục), mở <strong>Drawer</strong> để tạo nhanh giá trị danh mục phụ mà <strong>không rời</strong> luồng chính; sau khi lưu, giá trị mới <strong>xuất hiện ngay</strong> trong dropdown / lookup.</li>
+</ul>
+<p><img src="./images/Gemini_Generated_Image_219age219age219a.png" alt="Sync Logic — Bulk Entry / In-place Creation cho danh mục DNA"></p>
+<hr>
+<h2 id="5-quản-trị-kpi--chính-sách-global-policy--kpi-engine">5. Quản trị KPI &amp; chính sách </h2>
+<h3 id="51-tham-số-hóa">5.1 Tham số hóa </h3>
+<ul>
+<li><strong>KPI:</strong> Định nghĩa tên, nhóm, <strong>loại giá trị KPI</strong> (để hiểu đúng đơn vị), đơn vị đo, tần suất, chủ sở hữu, <strong>công thức tham chiếu (tùy chọn)</strong> (biểu thức hoặc tham chiếu engine tính toán — chi tiết LLD), ngưỡng cảnh báo.</li>
+<li><strong>Chính sách:</strong> Tham số điều kiện (ví dụ định mức tiêu hao, mức chiết khấu, hạn mức) gắn <strong>phạm vi áp dụng</strong> (tập đoàn / công ty / phân hệ) và quy định thưởng/phạt theo khoảng mức (có thể gồm nhiều hình thức phạt).</li>
+<li><strong>Gán KPI theo tổ chức:</strong> cấu hình KPI áp dụng cho nhân sự theo từng kỳ, theo chuỗi giao việc trên cây tổ chức; khi gán tại một node org thì áp dụng cho toàn bộ nhân sự thuộc nhánh (theo dõi tới từng cá nhân).</li>
+</ul>
+<h3 id="52-versioning--hiệu-lực">5.2 Versioning &amp; hiệu lực </h3>
+<ul>
+<li>Mọi thay đổi chính sách / công thức / ngưỡng tạo <strong>phiên bản mới</strong> (v1 → v2), kèm <strong>khoảng thời gian hiệu lực</strong> và lý do / phê duyệt (nếu bật workflow).</li>
+<li>Truy vấn lịch sử: ai tạo, ai sửa, trạng thái duyệt, diff tham số — phục vụ kiểm toán và điều tra sai lệch.</li>
+</ul>
+<h3 id="53-hội-tụ-cảnh-báo-hot-point">5.3 Hội tụ cảnh báo </h3>
+<ul>
+<li>Vệ tinh phát <strong>sự kiện vi phạm</strong> (ngưỡng KPI, định mức, SLA) theo chuẩn định danh.</li>
+<li>X-BOS <strong>tổng hợp</strong>, <strong>khử trùng</strong>, <strong>xếp hạng</strong> và đẩy lên <strong>Hot Point Alert</strong> trên dashboard tập đoàn — một điểm nhìn cho lãnh đạo, không phải từng console rời.</li>
+</ul>
+<div class="mermaid">flowchart TB
+  subgraph Sat["Vệ tinh"]
+    V[Rule / Đo lường thực tế]
+    E[Sự kiện vi phạm]
+  end
+
+  subgraph XBOS["X-BOS"]
+    AGG[Tổng hợp &amp; phân loại]
+    HP[Hot Point Alert]
+  end
+
+  V --&gt; E
+  E --&gt;|Chuẩn hóa metadata| AGG
+  AGG --&gt; HP
+</div><hr>
+<h2 id="6-module-bổ-trợ-quyền-lực-advanced-governance">6. Quản trị, audit và quyền truy cập </h2>
+<h3 id="61-workflow-designer">6.1 Workflow Designer </h3>
+<ul>
+<li>Trình thiết kế quy trình <strong>ký duyệt tập trung</strong> cho các thay đổi cấu hình nhạy cảm: danh mục DNA, ngưỡng KPI, phân quyền, cấu trúc tổ chức.</li>
+<li>Hỗ trợ bước duyệt, phân nhánh, ủy quyền, SLA bước; tích hợp với nhật ký và phiên bản (chỉ <strong>cam kết</strong> khi duyệt xong — tùy cấu hình).</li>
+</ul>
+<h3 id="62-audit-trail-nhật-ký-biến-động-gen">6.2 Audit Trail </h3>
+<p>Ghi nhận tối thiểu:</p>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Nội dung ghi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ai</td>
+<td>Định danh người / dịch vụ / API key</td>
+</tr>
+<tr>
+<td>Làm gì</td>
+<td>Loại thao tác</td>
+</tr>
+<tr>
+<td>Trên đâu</td>
+<td>Thực thể, khóa logic, phiên bản</td>
+</tr>
+<tr>
+<td>Khi nào</td>
+<td>Timestamp chuẩn, timezone tập đoàn</td>
+</tr>
+<tr>
+<td>Giá trị</td>
+<td>Before / after</td>
+</tr>
+</tbody>
+</table>
+<p>Mục tiêu: truy vết <strong>gen cấu hình</strong> — mọi thay đổi “DNA” đều có vết.</p>
+<h3 id="63-central-iam--sso">6.3 Central IAM &amp; SSO </h3>
+<ul>
+<li><strong>Một đăng nhập</strong> (OIDC / OAuth2) cho toàn hệ sinh thái; JWT / session có <strong>tenant</strong>, <strong>role</strong>, <strong>scope API</strong>.</li>
+<li><strong>Ma trận quyền</strong> tập trung cho người dùng và nhóm, map tới <strong>10 phân hệ vệ tinh</strong> + X-BOS: menu, thao tác, dữ liệu theo phạm vi tổ chức.</li>
+<li>Chính sách mật khẩu, MFA, khóa phiên — thống nhất tại lõi.</li>
+</ul>
+<hr>
+<h2 id="7-tiêu-chuẩn-uiux-apple-esque-enterprise">7. Tiêu chuẩn UI/UX </h2>
+<table>
+<thead>
+<tr>
+<th>Nguyên tắc</th>
+<th>Thể hiện</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tối giản</td>
+<td>Typography rõ cấp bậc, ít họa tiết; một hành động chính rõ ràng mỗi màn</td>
+</tr>
+<tr>
+<td>Layering</td>
+<td>Shadow mềm, tách lớp card / drawer / modal; backdrop blur cho ngữ cảnh phụ</td>
+</tr>
+<tr>
+<td>Mật độ thông tin</td>
+<td>Bảng sâu có sticky header, cột cố định, tóm tắt dòng; tree-view cho org và danh mục phân cấp</td>
+</tr>
+<tr>
+<td>Nhất quán</td>
+<td>Design system dùng chung token; form động vẫn tuân layout grid và trạng thái lỗi thống nhất</td>
+</tr>
+<tr>
+<td>Hiệu năng cảm nhận</td>
+<td>Skeleton, progressive disclosure, tách bước khai báo phức tạp</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-ma-trận-truy-vết-yêu-cầu">8. Ma trận truy vết yêu cầu </h2>
+<table>
+<thead>
+<tr>
+<th>Nhóm BRD</th>
+<th>Thành phần cốt lõi</th>
+<th>Ghi chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Org động</td>
+<td>EAV, cây cha-con, form sinh tự động</td>
+<td>Không hard-code tầng tổ chức</td>
+</tr>
+<tr>
+<td>MDM DNA</td>
+<td>Phạm vi toàn nhóm / theo công ty, bulk, in-place</td>
+<td>Đồng bộ xuống vệ tinh có contract</td>
+</tr>
+<tr>
+<td>KPI &amp; Policy</td>
+<td>Công thức, ngưỡng, versioning</td>
+<td>Hot Point là đích hội tụ cảnh báo</td>
+</tr>
+<tr>
+<td>Governance</td>
+<td>Workflow, audit, IAM</td>
+<td>Kiểm soát thay đổi gen</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-điều-kiện-chấp-nhận-tóm-tắt">9. Điều kiện chấp nhận </h2>
+<ul>
+<li>Quản trị có thể <strong>thêm trường tùy chỉnh</strong> và <strong>thấy form cập nhật</strong> mà không cần build mới từ đội phát triển ứng dụng cho từng trường đơn lẻ.</li>
+<li>Danh mục DNA có <strong>phạm vi</strong> và <strong>phiên bản</strong>; vệ tinh nhận đồng bộ theo số hiệu phiên bản đã thỏa thuận.</li>
+<li>Thay đổi chính sách / KPI tạo <strong>version mới</strong> và <strong>lịch sử hiệu lực</strong>; có thể gắn workflow phê duyệt.</li>
+<li>Mọi thao tác cấu hình trọng yếu ghi <strong>audit trail</strong> đủ mức điều tra.</li>
+<li>IAM &amp; SSO phục vụ <strong>toàn bộ</strong> phân hệ trong lộ trình XeVN OS.</li>
+</ul>
+<hr>
+<p><em>Tài liệu này là baseline BRD cho X-BOS Dynamic Core; chi tiết màn hình, API contract và lược đồ vật lý nằm ở PRD/LLD và tài liệu tích hợp từng vệ tinh.</em></p>
+
+      </div>
+      
+      
+    
+    
+    <script type="module">
+// TODO: If ZenUML gets integrated into mermaid in the future,
+//      we can remove the following lines.
+
+
+var MERMAID_CONFIG = ({"startOnLoad":false});
+if (typeof MERMAID_CONFIG !== 'undefined') {
+  MERMAID_CONFIG.startOnLoad = false
+  MERMAID_CONFIG.cloneCssStyles = false
+  MERMAID_CONFIG.theme = "default"
+}
+
+mermaid.initialize(MERMAID_CONFIG || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('div.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+} else {
+  await mermaid.run({
+    nodes: document.querySelectorAll('div.mermaid')
+  })
+}
+</script>
+    
+    
+    
+  
+    </body></html>

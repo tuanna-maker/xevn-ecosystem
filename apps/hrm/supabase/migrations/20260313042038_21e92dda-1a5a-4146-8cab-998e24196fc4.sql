@@ -1,0 +1,1 @@
+INSERT INTO platform_admins (user_id, email) VALUES ('be34b878-3a08-4e2e-9ded-0bf485959f33', 'nguyentuantruong@gmail.com');

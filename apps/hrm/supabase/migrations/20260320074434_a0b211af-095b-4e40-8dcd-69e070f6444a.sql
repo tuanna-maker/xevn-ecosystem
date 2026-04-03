@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD COLUMN meeting_url text, ADD COLUMN meeting_platform text;

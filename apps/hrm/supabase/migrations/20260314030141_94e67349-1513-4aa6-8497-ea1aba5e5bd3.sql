@@ -1,0 +1,1 @@
+UPDATE auth.users SET email = 'admin@unitel.com.la', email_confirmed_at = now(), updated_at = now() WHERE id = 'dd4d8157-2092-4899-ae3f-5a1496fbd8cb';
