@@ -83,8 +83,8 @@ export function AppHeader() {
   // Get breadcrumb items based on current route
   const getBreadcrumbs = () => {
     // Normalize path for cases where React Router exposes full pathname with base prefix.
-    // Our routeMap uses paths without `/hr` prefix.
-    const currentPath = location.pathname.replace(/^\/hr(?=\/|$)/, '');
+    // Our routeMap uses paths without `/hr` or `/hrm` prefix.
+    const currentPath = location.pathname.replace(/^\/hrm?(?=\/|$)/, '');
     const routeInfo = routeMap[currentPath];
     
     if (!routeInfo) {
@@ -138,7 +138,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 md:left-64 bg-card border-b border-border flex items-center justify-between h-16 px-3 md:px-6 z-40">
+    <header className="z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-border bg-card px-3 md:px-6">
       {/* Left Section - Mobile Menu & Breadcrumb */}
       <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
         {/* Mobile Menu Trigger - hidden since bottom nav exists */}

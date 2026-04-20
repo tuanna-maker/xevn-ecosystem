@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export interface UserPermission {
@@ -25,7 +25,7 @@ export function usePermissions() {
       }
       return (data || []) as UserPermission[];
     },
-    enabled: !!user && !!currentCompanyId,
+    enabled: !!user && !!currentCompanyId && isSupabaseConfigured,
     staleTime: 5 * 60 * 1000, // Cache for 5 min
   });
 
@@ -41,7 +41,7 @@ export function usePermissions() {
       if (error) return null;
       return data as string | null;
     },
-    enabled: !!user && !!currentCompanyId,
+    enabled: !!user && !!currentCompanyId && isSupabaseConfigured,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -81,6 +81,7 @@ export function usePermissions() {
 export function useSystemRoles() {
   return useQuery({
     queryKey: ['system-roles'],
+    enabled: isSupabaseConfigured,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('system_roles' as any)
@@ -120,6 +121,6 @@ export function useRolePermissions(roleId: string | null) {
       if (error) throw error;
       return (data || []) as any[];
     },
-    enabled: !!roleId,
+    enabled: !!roleId && isSupabaseConfigured,
   });
 }

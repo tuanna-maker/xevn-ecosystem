@@ -8,9 +8,8 @@ import { Outlet } from 'react-router-dom';
  */
 const ExecutiveDashboardLayout: React.FC = () => {
   return (
-    <div className="min-h-screen w-full">
-      {/* Full-width main content - NO padding, NO sidebar */}
-      <main className="w-full min-h-screen">
+    <div className="flex h-dvh w-full flex-col overflow-hidden">
+      <main className="min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden">
         <Outlet />
       </main>
     </div>

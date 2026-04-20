@@ -77,51 +77,50 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   const titles: Record<HrmWorkspaceMenuKey, { title: string; subtitle: string }> = {
       dashboard: {
         title: 'Tổng quan HRM',
-        subtitle:
-          'Chỉ số nhanh, lối tắt nghiệp vụ và tình trạng kỳ lương — giao diện shell portal (dữ liệu minh họa).',
+        subtitle: 'Chỉ số nhanh, lối tắt nghiệp vụ và tình trạng kỳ lương.',
       },
       employees: {
         title: 'Nhân sự',
-        subtitle: 'Danh sách nhân sự, hồ sơ, phân bổ theo phòng/ban (prototype trong portal shell).',
+        subtitle: 'Danh sách nhân sự, hồ sơ và phân bổ theo phòng ban.',
       },
       company: {
         title: 'Phòng/Ban & Công ty',
-        subtitle: 'Khai báo cây phòng/ban theo pháp nhân và sơ đồ tổ chức (prototype).',
+        subtitle: 'Cây phòng ban theo pháp nhân và sơ đồ tổ chức.',
       },
       recruitment: {
         title: 'Tuyển dụng',
-        subtitle: 'Kế hoạch tuyển, chiến dịch, ứng viên — badge menu đồng bộ số việc chờ xử lý (minh họa).',
+        subtitle: 'Kế hoạch tuyển dụng, chiến dịch và ứng viên.',
       },
-      attendance: { title: 'Chấm công', subtitle: 'Ca làm, bảng công, đơn nghỉ (prototype).' },
-      payroll: { title: 'Tiền lương', subtitle: 'Bảng lương, template, phụ cấp/khấu trừ (prototype).' },
-      contracts: { title: 'Hợp đồng', subtitle: 'Hợp đồng lao động, phụ lục (prototype).' },
-      insurance: { title: 'Bảo hiểm', subtitle: 'BHXH/BHYT/BHTN, hồ sơ tham gia (prototype).' },
-      decisions: { title: 'Quyết định', subtitle: 'Quyết định nhân sự (prototype).' },
+      attendance: { title: 'Chấm công', subtitle: 'Ca làm, bảng công và đơn nghỉ.' },
+      payroll: { title: 'Tiền lương', subtitle: 'Bảng lương, mẫu tính, phụ cấp và khấu trừ.' },
+      contracts: { title: 'Hợp đồng', subtitle: 'Hợp đồng lao động và phụ lục.' },
+      insurance: { title: 'Bảo hiểm', subtitle: 'BHXH, BHYT, BHTN và hồ sơ tham gia.' },
+      decisions: { title: 'Quyết định', subtitle: 'Quyết định nhân sự.' },
       hrm_ai: {
         title: 'UniAI',
-        subtitle: 'Trợ lý AI cho HCNS: soạn văn bản, checklist, giải thích chính sách (prototype).',
+        subtitle: 'Trợ lý cho HCNS: soạn văn bản, checklist và giải thích chính sách.',
       },
       tasks: {
         title: 'Công việc',
-        subtitle: 'Theo dõi công việc được giao, hạn xử lý và ưu tiên (prototype).',
+        subtitle: 'Theo dõi việc được giao, hạn xử lý và mức ưu tiên.',
       },
       processes: {
         title: 'Quy trình & chính sách',
-        subtitle: 'Sổ quy trình nội bộ, phiên bản và ngày hiệu lực (prototype).',
+        subtitle: 'Sổ quy trình nội bộ, phiên bản và ngày hiệu lực.',
       },
       internal_services: {
         title: 'Dịch vụ nội bộ',
-        subtitle: 'Yêu cầu hành chính, cấp phát, hỗ trợ — trạng thái duyệt (prototype).',
+        subtitle: 'Yêu cầu hành chính, cấp phát, hỗ trợ và trạng thái duyệt.',
       },
       tools_equipment: {
         title: 'Công cụ & thiết bị',
-        subtitle: 'Tài sản, CCDC, mốc kiểm định và người giữ (prototype).',
+        subtitle: 'Tài sản, CCDC, mốc kiểm định và người phụ trách.',
       },
-      reports: { title: 'Báo cáo', subtitle: 'Báo cáo nhân sự tổng hợp (prototype).' },
-      settings: { title: 'Cấu hình HRM', subtitle: 'Thiết lập hệ thống HRM (prototype).' },
+      reports: { title: 'Báo cáo', subtitle: 'Báo cáo nhân sự tổng hợp.' },
+      settings: { title: 'Cấu hình HRM', subtitle: 'Thiết lập hệ thống HRM.' },
       guide: {
         title: 'Hướng dẫn sử dụng',
-        subtitle: 'Mục lục hướng dẫn theo từng phân hệ — tương ứng app HRM (/hr/guide).',
+        subtitle: 'Mục lục hướng dẫn theo từng phân hệ.',
       },
   };
 
@@ -577,7 +576,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>Tổng quỹ lương kỳ</p>
-                      <p className="mt-1 text-sm text-slate-500">Tháng 03/2026 — toàn pháp nhân minh họa</p>
+                      <p className="mt-1 text-sm text-slate-500">Tháng 03/2026 — toàn pháp nhân</p>
                     </div>
                     <span className="rounded-full border border-xevn-border bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
                       Đã khóa sổ C&B
@@ -599,9 +598,6 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                       <p className="text-xs text-slate-500">~10,5% tổng quỹ</p>
                     </div>
                   </div>
-                  <p className={`mt-6 text-sm text-slate-500 ${SETTINGS_CONTROL_TEXT}`}>
-                    Số liệu minh họa theo layout dashboard HRM; kết nối API sẽ thay thế khi tích hợp.
-                  </p>
                 </div>
                 <div
                   className={`border border-xevn-border bg-white/80 p-5 shadow-soft backdrop-blur-md lg:col-span-5 ${SETTINGS_RADIUS_CARD}`}

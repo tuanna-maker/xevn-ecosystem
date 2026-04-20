@@ -15,14 +15,7 @@ export default defineConfig({
     port: 5175,
     strictPort: true,
     proxy: {
-      // Dev handoff HRM: expose HRM app at portal path `/hrm/*` (web-portal origin).
-      // HRM app itself is mounted under `/hr`, so we rewrite prefix.
-      '/hrm': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/hrm/, '/hr'),
-      },
-      // Also proxy `/hr` because HRM HTML may reference assets/routes under its basename `/hr`.
+      // HRM (base `/hr/`): HTML + HMR + assets đều đi qua prefix này khi nhúng iframe từ portal.
       '/hr': {
         target: 'http://localhost:8080',
         changeOrigin: true,

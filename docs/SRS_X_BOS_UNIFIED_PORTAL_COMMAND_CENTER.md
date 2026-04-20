@@ -1,6 +1,6 @@
 # SRS — X-BOS Unified Portal (Command Center)
 
-*Tài liệu tuân thủ chuẩn dự án trong `.cursorrule` (Documentation Standards + UI/UX Apple Touch).*
+*Tài liệu tuân thủ chuẩn dự án trong `.cursorrules` (Documentation Standards + UI/UX Apple Touch + quy tắc sơ đồ BPMN-liked / PlantUML).*
 
 ## 1. Purpose
 
@@ -41,53 +41,55 @@ Portal không thay thế logic nghiệp vụ sâu của từng vệ tinh; Portal
 
 ---
 
-## 3. Activity Diagram (Mermaid — Swimlanes)
+## 3. Activity Diagram (Mermaid tổng quan)
 
-Sơ đồ dưới đây tách **Người dùng | UI | API | DB** theo chuẩn SRS trong `.cursorrule`. Luồng nghiệp vụ: xác thực → lấy scope tổ chức → hội tụ dữ liệu Portal → render Command Center.
+Sơ đồ thể hiện cùng một luồng nghiệp vụ, tách theo vai trò **Người dùng | UI | API / Portal | Lưu trữ / nguồn dữ liệu**. Hình thoi là điểm rẽ nhánh điều kiện (XOR): xác thực -> đọc scope tổ chức -> hội tụ workspace -> lọc **dataScope** -> render Command Center.
 
 ```mermaid
 flowchart TB
-  subgraph U["Người dùng"]
-    U1[Mở Command Center]
-    U2[Chọn icon phân hệ trên Rail]
-    U3[Xem / thao tác Action Card]
+  subgraph L_U["Người dùng"]
+    U1((Mở<br/>Command Center))
+    U2["Chọn icon<br/>phân hệ (Rail)"]
+    U3["Xem / thao tác<br/>Action Card"]
   end
 
-  subgraph FE["UI"]
-    F1[Skeleton → chờ payload]
-    F2[Rail + Workspace + token UI]
-    F3[Toast / Empty / lỗi mạng]
+  subgraph L_UI["UI"]
+    F1["Skeleton chờ<br/>payload"]
+    F2["Rail + Workspace<br/>+ state UI"]
+    F3["Toast<br/>lỗi xác thực / mạng"]
   end
 
-  subgraph API["API"]
-    A1[Validate token + session]
-    A2[GET rail — menu theo quyền]
-    A3[GET workspace — cards + widgets]
-    A4[Lọc theo dataScope]
+  subgraph L_API["API / Portal"]
+    A1["Validate<br/>token + session"]
+    A2["GET Rail<br/>menu theo quyền"]
+    A3["GET Workspace<br/>cards + widgets"]
+    A4["Lọc theo<br/>dataScope"]
   end
 
-  subgraph DB["DB"]
-    D1[(Identity / session)]
-    D2[(Membership + Org Tree)]
-    D3[(Portal aggregate / cache)]
-    D4[(Đồng bộ vệ tinh → aggregate)]
+  subgraph L_DB["Lưu trữ / nguồn dữ liệu"]
+    D1[(Identity /<br/>session)]
+    D2[(Membership +<br/>Org Tree)]
+    D3[(Portal aggregate<br/>/ cache)]
+    D4[(Đồng bộ vệ tinh<br/>→ aggregate)]
   end
 
   U1 --> F1
   F1 --> A1
-  A1 --> D1
-  A1 --> A2
+  A1 --> G1{"Token / session<br/>hợp lệ?"}
+  G1 -->|Không — 401 / 403| F3
+  G1 -->|Có| D1
+  D1 --> A2
   A2 --> D2
   A2 --> A3
+  D4 -.->|cập nhật| D3
   A3 --> D3
-  D4 --> D3
-  A3 --> A4
+  A3 --> G2{"Workspace aggregate<br/>sẵn sàng?"}
+  G2 -->|Không — 5xx / timeout| F3
+  G2 -->|Có| A4
   A4 --> D2
-  A3 --> F2
+  A4 --> F2
   U2 --> F2
   U3 --> F2
-  A1 -.->|401/403| F3
-  A3 -.->|5xx/timeout| F3
 ```
 
 ---
@@ -189,9 +191,9 @@ flowchart TB
 | V4 | **Self-Focus (NV)** | Chỉ task/KPI/alert gán cho user hoặc nhóm hợp lệ | Không hiển thị dữ liệu ngang hàng khác phòng | — |
 | V5 | **Aggregation** | Không trùng `dedupeKey`; trạng thái đã map | Điều chỉnh đếm hoặc ghi log cảnh báo đồng bộ | Nội bộ / banner “Đang làm mới dữ liệu” |
 
-### 5.4 UI Style Rule (Command Center) — khớp `.cursorrule`
+### 5.4 UI Style Rule (Command Center) — khớp `.cursorrules`
 
-- **Màu & brand:** dùng **design token** (PRIMARY / ACCENT / SURFACE / BACKGROUND); không hardcode hex trong code — tham chiếu bảng token trong hệ thiết kế XEVN (mặc định XEVN Blue trong `.cursorrule`).
+- **Màu & brand:** dùng **design token** (PRIMARY / ACCENT / SURFACE / BACKGROUND); không hardcode hex trong code — tham chiếu bảng token trong hệ thiết kế XEVN (mặc định XEVN Blue trong `.cursorrules`).
 - **Trạng thái DNA (hiển thị):** Active, Pending, Error, Frozen — map sang token trạng thái, không gán mã màu trực tiếp trong component.
 - **Elevation:** `radius-card` 12px, `shadow-soft` cho card, `shadow-overlay` cho Drawer/Modal; glass: `backdrop-blur-md` + surface bán trong suốt cho vùng sticky/header khi áp dụng.
 - **Icon:** Lucide React, size **20px**, **stroke 1.5** (Rail và nút chính).

@@ -21,27 +21,32 @@ const data = [
   { name: 'Chi nhánh Hà Nội - Phòng kế toán', value: 100, color: '#06b6d4' },
 ];
 
+const ROW_HEIGHT = 34;
+const CHART_PAD = 72;
+
 export function RecruitmentBarChart() {
   const { t } = useTranslation();
+  const chartHeight = Math.min(480, Math.max(260, data.length * ROW_HEIGHT + CHART_PAD));
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart 
-        data={data} 
-        layout="vertical" 
-        margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+    <ResponsiveContainer width="100%" height={chartHeight}>
+      <BarChart
+        data={data}
+        layout="vertical"
+        margin={{ top: 8, right: 28, left: 4, bottom: 8 }}
       >
         <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} className="stroke-muted" />
-        <XAxis 
-          type="number" 
-          tick={{ fontSize: 10 }} 
+        <XAxis
+          type="number"
+          tick={{ fontSize: 11 }}
           className="text-muted-foreground"
         />
-        <YAxis 
-          type="category" 
-          dataKey="name" 
-          width={150}
-          tick={{ fontSize: 9 }}
+        <YAxis
+          type="category"
+          dataKey="name"
+          width={236}
+          interval={0}
+          tick={{ fontSize: 10 }}
           className="text-muted-foreground"
         />
         <Tooltip

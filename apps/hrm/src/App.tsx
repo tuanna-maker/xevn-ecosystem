@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -38,8 +38,15 @@ import InternalServices from "./pages/InternalServices";
 import ToolsEquipment from "./pages/ToolsEquipment";
 import { HRMChatWidget } from "./components/ai/HRMChatWidget";
 import { PlatformAdminRoute } from "./components/auth/PlatformAdminRoute";
+import { getHrmPortalMode } from "./lib/hrmPortalMode";
 
 const queryClient = new QueryClient();
+
+function OptionalHRMChatWidget() {
+  const location = useLocation();
+  if (getHrmPortalMode(location.search)) return null;
+  return <HRMChatWidget />;
+}
 
 // Apply branding color on app load
 const applyBrandingColor = () => {
@@ -65,6 +72,8 @@ const applyBrandingColor = () => {
 };
 
 const App = () => {
+  const routerBasename = "/hr";
+
   useEffect(() => {
     applyBrandingColor();
   }, []);
@@ -75,7 +84,10 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter basename="/hr">
+          <BrowserRouter
+            basename={routerBasename}
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+          >
             <AuthProvider>
               <Routes>
                 {/* Public routes */}
@@ -123,7 +135,7 @@ const App = () => {
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
-              <HRMChatWidget />
+              <OptionalHRMChatWidget />
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

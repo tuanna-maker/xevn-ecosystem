@@ -1,0 +1,462 @@
+<!DOCTYPE html><html><head>
+      <title>WBS_XEVN_OPERATIONS_MODULE</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\ADMIN\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.22-universal\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="kế-hoạch-phân-rã-công-việc-wbs">Kế hoạch phân rã công việc (WBS) </h1>
+<h2 id="phân-hệ-quản-lý-vận-hành--xevn">Phân hệ Quản lý vận hành — XeVN </h2>
+<table>
+<thead>
+<tr>
+<th>Thuộc tính</th>
+<th>Giá trị</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dự án</td>
+<td>Triển khai phân hệ Quản lý vận hành</td>
+</tr>
+<tr>
+<td>Phạm vi đợt 1</td>
+<td>Các chức năng vận hành xe tuyến đến hết <strong>Thiết lập giá nhiên liệu</strong> (theo thỏa thuận với khách hàng)</td>
+</tr>
+<tr>
+<td>Đối tượng tài liệu</td>
+<td>Khách hàng, ban dự án, điều hành vận tải</td>
+</tr>
+<tr>
+<td>Phiên bản</td>
+<td>2.1</td>
+</tr>
+</tbody>
+</table>
+<p><em>Nguyên tắc <strong>Web Portal gán danh mục — phân hệ tải và bổ sung danh mục riêng</strong> được chốt tại mục <strong>§3.1.1</strong> trong <code>docs/BRD_XEVN_OPERATIONS_MODULE.md</code> và nhắc lại ở Phần <strong>C.6</strong> dưới đây.</em></p>
+<hr>
+<h2 id="phần-a--danh-mục-chức-năng-đợt-1">Phần A — Danh mục chức năng (đợt 1) </h2>
+<p>Các <strong>nhóm năng lực</strong> cần có sau triển khai đợt 1:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">STT</th>
+<th>Nhóm chức năng</th>
+<th>Mô tả ngắn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">1</td>
+<td><strong>Bảng tải</strong></td>
+<td>Theo dõi trạng thái xe và lái xe theo từng nhóm trạng thái vận hành; lọc theo tuyến, ngày, tìm kiếm.</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td><strong>Thiết lập bảng tải và băng tải</strong></td>
+<td>Cấu hình khung giờ / chuyến theo tuyến (mặc định hoặc thủ công); quản lý lịch sử thiết lập băng tải thủ công và hủy áp dụng.</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td><strong>Thiết lập tuyến</strong></td>
+<td>Quản lý tuyến, lộ trình và điểm dừng động; thêm, sửa, xóa theo quyền.</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td><strong>Thiết lập điểm đón trả</strong></td>
+<td>Tạo và sửa điểm trên biểu mẫu; tra cứu danh sách có lọc; xem chi tiết, sửa, xóa, in.</td>
+</tr>
+<tr>
+<td style="text-align:right">5</td>
+<td><strong>Tài khoản nhân viên vận hành</strong></td>
+<td>Tạo và cập nhật hồ sơ gắn với tài khoản đăng nhập do hệ thống chung cấp; danh sách nhân viên.</td>
+</tr>
+<tr>
+<td style="text-align:right">6</td>
+<td><strong>Phân quyền phần mềm</strong></td>
+<td>Gán quyền sử dụng các phần phân hệ vận hành theo vai trò và phạm vi được phép.</td>
+</tr>
+<tr>
+<td style="text-align:right">7</td>
+<td><strong>Nhật ký thiết lập</strong></td>
+<td>Xem lịch sử thay đổi cấu hình và thao tác quan trọng (người thực hiện, thời gian, nội dung thay đổi).</td>
+</tr>
+<tr>
+<td style="text-align:right">8</td>
+<td><strong>Lệnh điều xe</strong></td>
+<td>Lập lệnh <strong>xe tăng cường</strong>; lập lệnh <strong>xe đi tour</strong> (khách hàng, lịch trình, điểm đón động, thanh toán, chọn xe).</td>
+</tr>
+<tr>
+<td style="text-align:right">9</td>
+<td><strong>Lịch và bảng công lái xe</strong></td>
+<td>Xem tổng hợp lịch lái theo tuyến và ngày; xem bảng công theo tháng và chi tiết chấm công từng ngày.</td>
+</tr>
+<tr>
+<td style="text-align:right">10</td>
+<td><strong>Bảo dưỡng sửa chữa (BDSC)</strong></td>
+<td>Lịch bảo dưỡng theo tháng / xe; danh sách phiếu chờ; xem và cập nhật chi tiết phiếu; in phiếu.</td>
+</tr>
+<tr>
+<td style="text-align:right">11</td>
+<td><strong>Vệ sinh nội thất chuyên sâu</strong></td>
+<td>Lịch và thao tác tương tự kênh BDSC, tách báo cáo theo loại công việc VSNT.</td>
+</tr>
+<tr>
+<td style="text-align:right">12</td>
+<td><strong>Giá nhiên liệu</strong></td>
+<td>Nhập ma trận giá theo vùng và loại nhiên liệu, có thời điểm hiệu lực; xem và tra cứu lịch sử điều chỉnh.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="phần-b--danh-sách-kịch-bản-sử-dụng-theo-từng-màn-hình-nghiệp-vụ">Phần B — Danh sách kịch bản sử dụng (theo từng màn hình nghiệp vụ) </h2>
+<p>Mỗi dòng là <strong>một luồng công việc độc lập</strong> trên giao diện, tương ứng <strong>một màn hình</strong> cần hoàn thành trong đợt 1. Tổng <strong>18</strong> kịch bản.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">STT</th>
+<th>Tên màn hình / kịch bản</th>
+<th>Người dùng chính</th>
+<th>Mục đích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">1</td>
+<td><strong>Bảng tải</strong></td>
+<td>Điều hành</td>
+<td>Xem danh sách xe và lái xe theo từng tab trạng thái; lọc và tìm kiếm.</td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td><strong>Thiết lập bảng tải</strong></td>
+<td>Điều hành / Quản trị</td>
+<td>Cấu hình và lưu bảng tải (chế độ mặc định hoặc thủ công, sinh khung giờ / chuyến).</td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td><strong>Lịch sử thiết lập băng tải</strong></td>
+<td>Điều hành</td>
+<td>Xem lịch sử thiết lập băng tải thủ công; hủy áp dụng khi được phép.</td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td><strong>Thiết lập tuyến</strong></td>
+<td>Quản trị vận hành</td>
+<td>Thêm, sửa, xóa tuyến và điểm dừng trên lộ trình.</td>
+</tr>
+<tr>
+<td style="text-align:right">5</td>
+<td><strong>Biểu mẫu điểm đón trả</strong></td>
+<td>Quản trị vận hành</td>
+<td>Tạo hoặc cập nhật một điểm đón trả (gắn tuyến, loại điểm, địa chỉ, liên hệ).</td>
+</tr>
+<tr>
+<td style="text-align:right">6</td>
+<td><strong>Danh sách điểm đón trả</strong></td>
+<td>Điều hành</td>
+<td>Tra cứu toàn bộ điểm có lọc và phân trang; mở chi tiết.</td>
+</tr>
+<tr>
+<td style="text-align:right">7</td>
+<td><strong>Chi tiết điểm đón trả</strong></td>
+<td>Điều hành</td>
+<td>Xem đầy đủ; sửa hoặc xóa; in.</td>
+</tr>
+<tr>
+<td style="text-align:right">8</td>
+<td><strong>Thiết lập tài khoản nhân viên</strong></td>
+<td>Quản trị</td>
+<td>Tạo / cập nhật nhân viên vận hành và liên kết tài khoản đăng nhập.</td>
+</tr>
+<tr>
+<td style="text-align:right">9</td>
+<td><strong>Phân quyền phần mềm</strong></td>
+<td>Quản trị</td>
+<td>Gán hoặc thu hồi quyền theo vai trò và phạm vi.</td>
+</tr>
+<tr>
+<td style="text-align:right">10</td>
+<td><strong>Nhật ký thiết lập</strong></td>
+<td>Quản trị / Kiểm toán nội bộ</td>
+<td>Tra cứu nhật ký thay đổi cấu hình.</td>
+</tr>
+<tr>
+<td style="text-align:right">11</td>
+<td><strong>Lệnh xe tăng cường</strong></td>
+<td>Điều hành</td>
+<td>Lập lệnh tăng cường (xe, lái, tuyến, khung giờ, lý do).</td>
+</tr>
+<tr>
+<td style="text-align:right">12</td>
+<td><strong>Lệnh xe đi tour</strong></td>
+<td>Điều hành</td>
+<td>Lập lệnh tour (khách, lịch, điểm đón động, thanh toán, xe nếu có).</td>
+</tr>
+<tr>
+<td style="text-align:right">13</td>
+<td><strong>Tổng hợp lịch lái xe theo tuyến</strong></td>
+<td>Điều hành / Nhân sự vận hành</td>
+<td>Xem bảng tổng hợp theo ngày và tuyến.</td>
+</tr>
+<tr>
+<td style="text-align:right">14</td>
+<td><strong>Bảng công lái xe</strong></td>
+<td>Điều hành</td>
+<td>Xem lưới công theo tháng; mở chi tiết chấm công từng ngày.</td>
+</tr>
+<tr>
+<td style="text-align:right">15</td>
+<td><strong>Lịch BDSC và danh sách chờ</strong></td>
+<td>Điều hành / Kỹ thuật</td>
+<td>Xem lịch bảo dưỡng và danh sách phiếu chờ xử lý.</td>
+</tr>
+<tr>
+<td style="text-align:right">16</td>
+<td><strong>Chi tiết phiếu BDSC</strong></td>
+<td>Điều hành</td>
+<td>Xem và cập nhật phiếu; in phiếu.</td>
+</tr>
+<tr>
+<td style="text-align:right">17</td>
+<td><strong>Lịch vệ sinh nội thất chuyên sâu</strong></td>
+<td>Điều hành</td>
+<td>Quản lý lịch và thao tác VSNT (bố cục tương tự kênh BDSC).</td>
+</tr>
+<tr>
+<td style="text-align:right">18</td>
+<td><strong>Thiết lập giá nhiên liệu</strong></td>
+<td>Quản trị</td>
+<td>Nhập phiên bản giá; ma trận theo vùng và loại nhiên liệu; lịch sử.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="phần-c--cấu-trúc-phân-rã-công-việc-wbs">Phần C — Cấu trúc phân rã công việc (WBS) </h2>
+<h3 id="c1-quản-trị-dự-án">C.1 Quản trị dự án </h3>
+<ul>
+<li>Khởi động dự án, họp định kỳ với khách hàng.</li>
+<li>Chốt phạm vi đợt 1 và cách xử lý thay đổi phạm vi.</li>
+<li>Phân vai trò trách nhiệm (RACI), theo dõi rủi ro và vướng mắc.</li>
+<li>Báo cáo tiến độ theo tuần / theo mốc.</li>
+</ul>
+<p><strong>Kết quả:</strong> Kế hoạch tổng thể, biên bản họp, nhật ký rủiều — vận hành.</p>
+<hr>
+<h3 id="c2-làm-rõ-và-thống-nhất-nghiệp-vụ">C.2 Làm rõ và thống nhất nghiệp vụ </h3>
+<ul>
+<li>Thu thập quy trình vận hành hiện tại (điều hành xe, tuyến, lệnh, lịch lái, bảo dưỡng).</li>
+<li>Thống nhất từ ngữ và quy tắc nghiệp vụ với khách hàng.</li>
+<li>Phân định phạm vi <strong>có</strong> / <strong>không</strong> trong đợt 1 (ví dụ: quản lý khách hàng vé / hợp đồng; định mức nhiên liệu theo xe nếu thuộc đợt sau).</li>
+</ul>
+<p><strong>Kết quả:</strong> Tài liệu mô tả nghiệp vụ và phạm vi đã ký nhận.</p>
+<hr>
+<h3 id="c3-chốt-tài-liệu-làm-căn-cứ-triển-khai">C.3 Chốt tài liệu làm căn cứ triển khai </h3>
+<ul>
+<li>Duyệt yêu cầu nghiệp vụ tổng quan (BRD).</li>
+<li>Duyệt đặc tả chi tiết chức năng và kịch bản kiểm thử chấp nhận (SRS).</li>
+<li>Duyệt phương án triển khai kỹ thuật và tích hợp (tài liệu kỹ thuật nội bộ — khách hàng ký phần liên quan phạm vi và nghiệm thu).</li>
+</ul>
+<p><strong>Kết quả:</strong> Bộ tài liệu đã được phê duyệt làm cơ sở build và nghiệm thu.</p>
+<hr>
+<h3 id="c4-thiết-kế-chi-tiết-và-chuẩn-bị-vận-hành-thử">C.4 Thiết kế chi tiết và chuẩn bị vận hành thử </h3>
+<ul>
+<li>Hoàn thiện mô hình dữ liệu và luồng xử lý chi tiết (do đội kỹ thuật thực hiện).</li>
+<li>Chuẩn bị môi trường dùng thử và môi trường chính thức theo kế hoạch.</li>
+<li>Chuẩn bị kế hoạch chuyển đổi dữ liệu nếu có.</li>
+</ul>
+<p><strong>Kết quả:</strong> Môi trường sẵn sàng; kế hoạch chuyển đổi và go-live.</p>
+<hr>
+<h3 id="c5-triển-khai-chức-năng-đợt-1-theo-phần-a-và-b">C.5 Triển khai chức năng đợt 1 (theo Phần A và B) </h3>
+<p>Gói công việc gắn với <strong>từng nhóm màn hình</strong> đã thống nhất:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Gói</th>
+<th>Nội dung giao cho đội triển khai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right"><strong>1</strong></td>
+<td>Bảng tải (kịch bản số 1).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>2</strong></td>
+<td>Thiết lập bảng tải và lịch sử băng tải (kịch bản 2 và 3).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>3</strong></td>
+<td>Thiết lập tuyến (kịch bản 4).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>4</strong></td>
+<td>Điểm đón trả: biểu mẫu, danh sách, chi tiết (kịch bản 5, 6, 7).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>5</strong></td>
+<td>Tài khoản nhân viên, phân quyền, nhật ký thiết lập (kịch bản 8, 9, 10).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>6</strong></td>
+<td>Lệnh xe tăng cường và lệnh tour (kịch bản 11 và 12).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>7</strong></td>
+<td>Tổng hợp lịch lái và bảng công (kịch bản 13 và 14).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>8</strong></td>
+<td>BDSC: lịch và danh sách chờ; chi tiết phiếu; VSNT (kịch bản 15, 16, 17).</td>
+</tr>
+<tr>
+<td style="text-align:right"><strong>9</strong></td>
+<td>Thiết lập giá nhiên liệu (kịch bản 18).</td>
+</tr>
+</tbody>
+</table>
+<p>Mỗi gói kết thúc khi: giao diện đúng phạm vi, luồng nghiệp vụ chạy được trên môi trường thử, có bằng chứng kiểm thử nội bộ và khách hàng có thể xem demo theo kế hoạch.</p>
+<hr>
+<h3 id="c6-tích-hợp-với-hệ-thống-chung-nếu-áp-dụng">C.6 Tích hợp với hệ thống chung (nếu áp dụng) </h3>
+<ul>
+<li>Đăng nhập thống nhất và phân quyền theo tổ chức.</li>
+<li><strong>Nguyên tắc danh mục (bắt buộc thống nhất với toàn hệ sinh thái):</strong> Web Portal <strong>gán</strong> danh mục dùng chung cho từng <strong>đối tượng</strong> và cho <strong>phân hệ Vận hành</strong> (ví dụ tuyến, điểm, vùng, loại nhiên liệu, loại xe, đơn vị tổ chức… tùy cấu hình tập đoàn). Phân hệ Vận hành <strong>mặc định phải tải và sử dụng</strong> đúng các danh mục đã được gán; <strong>đồng thời</strong> được phép có <strong>danh mục / tham số riêng</strong> nội bộ vận hành (bảng tải, ca, phiếu BDSC, …) miễn không trái quy tắc chung và không nhân đôi “nguồn chuẩn” thuộc phạm vi Portal.</li>
+<li>Thông báo (email / tin nhắn) theo chính sách đã chốt.</li>
+</ul>
+<p><strong>Kết quả:</strong> Các luồng tích hợp đã kiểm chứng với bên cung cấp nền tảng; kiểm thử có checklist <strong>danh mục Portal gán vs danh mục riêng vận hành</strong>.</p>
+<hr>
+<h3 id="c7-kiểm-thử-và-nghiệm-thu">C.7 Kiểm thử và nghiệm thu </h3>
+<ul>
+<li>Kiểm thử chức năng theo từng kịch bản Phần B.</li>
+<li>Kiểm thử hiệu năng và bảo mật ở mức đã thỏa thuận trong hợp đồng / phụ lục.</li>
+<li><strong>UAT:</strong> khách hàng chạy kịch bản theo vai trò; ghi nhận lỗi và xử lý; ký biên bản nghiệm thu chấp nhận.</li>
+</ul>
+<p><strong>Kết quả:</strong> Biên bản UAT; danh sách lỗi đã đóng; xác nhận đạt tiêu chí nghiệm thu đợt 1.</p>
+<hr>
+<h3 id="c8-đưa-vào-vận-hành-đào-tạo-hỗ-trợ-sau-go-live">C.8 Đưa vào vận hành, đào tạo, hỗ trợ sau go-live </h3>
+<ul>
+<li>Kế hoạch cắt sang hệ thống mới và phương án quay lại nếu sự cố.</li>
+<li>Đào tạo người dùng (điều hành, quản trị, kỹ thuật xe — theo danh sách khách hàng cung cấp).</li>
+<li>Bàn giao tài liệu hướng dẫn sử dụng và quy trình vận hành.</li>
+<li>Hỗ trợ tập trung sau ngày go-live (thời hạn theo hợp đồng).</li>
+</ul>
+<p><strong>Kết quả:</strong> Biên bản go-live; tài liệu đào tạo; kết thúc giai đoạn hỗ trợ theo cam kết.</p>
+<hr>
+<h2 id="phần-d--các-mốc-đề-xuất-chốt-với-khách-hàng">Phần D — Các mốc đề xuất chốt với khách hàng </h2>
+<table>
+<thead>
+<tr>
+<th>Mốc</th>
+<th>Nội dung</th>
+<th>Điều kiện coi là đạt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M1</strong></td>
+<td>Phê duyệt tài liệu nghiệp vụ và phạm vi</td>
+<td>Khách hàng ký / xác nhận bằng văn bản</td>
+</tr>
+<tr>
+<td><strong>M2</strong></td>
+<td>Hoàn thành triển khai đủ <strong>18 kịch bản</strong> Phần B</td>
+<td>Chạy thử thành công trên môi trường UAT theo danh mục đã chốt</td>
+</tr>
+<tr>
+<td><strong>M3</strong></td>
+<td>Nghiệm thu UAT</td>
+<td>Đạt tiêu chí chấp nhận đã ghi trong đặc tả / phụ lục nghiệm thu</td>
+</tr>
+<tr>
+<td><strong>M4</strong></td>
+<td>Go-live đợt 1</td>
+<td>Đưa phân hệ vào sử dụng thật theo kế hoạch</td>
+</tr>
+<tr>
+<td><strong>M5</strong></td>
+<td>Kết thúc hỗ trợ sau go-live</td>
+<td>Không còn lỗi chặn sản xuất; bàn giao xong tài liệu</td>
+</tr>
+</tbody>
+</table>
+<p><em>(Mở rộng sau đợt 1 — ví dụ: quản lý đơn hàng hóa, kho, giao nhận tại chỗ, thuê ngoài, báo cáo chốt ca nâng cao — được chốt ở giai đoạn và hợp đồng riêng.)</em></p>
+<hr>
+<h2 id="phần-e--lịch-tham-chiếu-có-thể-điều-chỉnh-theo-hợp-đồng">Phần E — Lịch tham chiếu (có thể điều chỉnh theo hợp đồng) </h2>
+<table>
+<thead>
+<tr>
+<th>Giai đoạn</th>
+<th>Thời lượng gợi ý</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Làm rõ nghiệp vụ và phê duyệt tài liệu</td>
+<td>2–4 tuần</td>
+</tr>
+<tr>
+<td>Thiết kế chi tiết và môi trường</td>
+<td>1–2 tuần</td>
+</tr>
+<tr>
+<td>Triển khai gói 1–3 (bảng tải, thiết lập tuyến / điểm / băng tải)</td>
+<td>3–4 tuần</td>
+</tr>
+<tr>
+<td>Triển khai gói 4–6 (điểm đón trả, tài khoản, quyền, nhật ký, lệnh xe)</td>
+<td>3–4 tuần</td>
+</tr>
+<tr>
+<td>Triển khai gói 7–9 (lịch lái, BDSC, VSNT, giá nhiên liệu)</td>
+<td>3–4 tuần</td>
+</tr>
+<tr>
+<td>Kiểm thử tích hợp, UAT, chỉnh sửa</td>
+<td>2–3 tuần</td>
+</tr>
+<tr>
+<td>Go-live và hỗ trợ sau vận hành</td>
+<td>Theo cam kết</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="phần-f--điều-kiện-cần-phía-khách-hàng">Phần F — Điều kiện cần phía khách hàng </h2>
+<ul>
+<li>Cung cấp đúng hạn <strong>danh mục dữ liệu nền</strong> (tuyến, xe, lái xe, địa bàn, vùng giá nhiên liệu, …) theo format thống nhất.</li>
+<li>Cử <strong>người phụ trách nghiệp vụ</strong> và <strong>người tham gia UAT</strong> theo từng vai trò.</li>
+<li>Phê duyệt kịp thời các quyết định phạm vi và ngoại lệ nghiệp vụ phát sinh.</li>
+<li>Cấp quyền truy cập hệ thống chung (đăng nhập, phân quyền) theo quy trình tập đoàn nếu có.</li>
+</ul>
+<hr>
+<p><em>Tài liệu này mô tả công việc và kết quả từ góc nhìn <strong>nghiệp vụ và quản lý dự án</strong>. Chi tiết kỹ thuật triển khai do đội dự án thực hiện theo tài liệu nội bộ đã phê duyệt và không thay thế hợp đồng / phụ lục pháp lý.</em></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

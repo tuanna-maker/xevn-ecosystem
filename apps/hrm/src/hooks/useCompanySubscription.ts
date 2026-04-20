@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export interface CompanySubscription {
@@ -34,7 +34,7 @@ export function useCompanySubscription() {
       if (error) throw error;
       return data as unknown as CompanySubscription | null;
     },
-    enabled: !!currentCompanyId,
+    enabled: !!currentCompanyId && isSupabaseConfigured,
   });
 }
 
@@ -103,6 +103,6 @@ export function useCanAddEmployee() {
         reason: current >= max ? 'employee_limit' : '',
       };
     },
-    enabled: !!currentCompanyId,
+    enabled: !!currentCompanyId && isSupabaseConfigured,
   });
 }

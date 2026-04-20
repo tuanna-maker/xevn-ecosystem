@@ -21,7 +21,6 @@ import {
   FileSignature,
 } from 'lucide-react';
 import {
-  NAV_SUBSIDEBAR_HELPER_CLASS,
   NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS,
   NAV_SUBSIDEBAR_ITEM_IDLE_CLASS,
   NAV_SUBSIDEBAR_TITLE_CLASS,
@@ -108,7 +107,6 @@ export const HrmSidebar: React.FC = () => {
     >
       <div className="mb-4">
         <h2 className={NAV_SUBSIDEBAR_TITLE_CLASS}>HRM</h2>
-        <p className={NAV_SUBSIDEBAR_HELPER_CLASS}>Router: /command-center/hrm/… · App độc lập: /hr/…</p>
       </div>
       <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto">
         <p className={`${sectionLabelClass} mb-1`}>Menu chính</p>

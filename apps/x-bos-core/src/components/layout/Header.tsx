@@ -5,7 +5,7 @@ export function Header() {
   const { globalSearch, setGlobalSearch } = useXbosStore();
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-black/[0.06] bg-white/65 px-8 backdrop-blur-nav">
+    <header className="z-20 flex h-16 w-full shrink-0 items-center gap-4 border-b border-black/[0.06] bg-white/65 px-8 backdrop-blur-nav">
       <div className="relative flex-1 max-w-xl">
         <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-muted" />
         <input

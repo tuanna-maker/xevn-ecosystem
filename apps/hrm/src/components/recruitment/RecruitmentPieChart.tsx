@@ -31,14 +31,14 @@ export function RecruitmentPieChart({ candidates }: RecruitmentPieChartProps) {
   ].filter(item => item.value > 0);
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
+    <ResponsiveContainer width="100%" height={200}>
       <PieChart>
         <Pie
           data={stageData}
           cx="50%"
           cy="50%"
-          innerRadius={60}
-          outerRadius={100}
+          innerRadius={44}
+          outerRadius={74}
           paddingAngle={2}
           dataKey="value"
           label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}

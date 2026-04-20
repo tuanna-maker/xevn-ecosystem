@@ -65,7 +65,7 @@ export function MobileBottomNav() {
   const { hasAnyPermission } = usePermissions();
 
   const isActive = (path: string) => {
-    const currentPath = location.pathname.replace(/^\/hr(?=\/|$)/, '');
+    const currentPath = location.pathname.replace(/^\/hrm?(?=\/|$)/, '');
     if (path === '/') return currentPath === '/';
     return currentPath === path || currentPath.startsWith(`${path}/`);
   };

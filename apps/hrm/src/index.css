@@ -5,6 +5,11 @@
 @tailwind utilities;
 
 @layer base {
+  /* Đồng bộ mật độ chữ với web-portal (~87.5%) */
+  html {
+    font-size: 87.5%;
+  }
+
   :root {
     /* Professional SaaS Blue Theme */
     --background: 210 20% 98%;

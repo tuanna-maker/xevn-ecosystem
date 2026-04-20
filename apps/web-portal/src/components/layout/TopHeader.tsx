@@ -45,7 +45,7 @@ const TopHeader: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-64 right-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white xevn-safe-inline shadow-soft backdrop-blur-md">
+    <header className="z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-slate-200 bg-white xevn-safe-inline shadow-soft backdrop-blur-md">
       {/* Left Section - Global Company Filter */}
       <div className="flex items-center gap-4">
         <div className="relative" ref={companyDropdownRef}>

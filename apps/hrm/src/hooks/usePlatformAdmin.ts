@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function useIsPlatformAdmin() {
@@ -12,7 +12,7 @@ export function useIsPlatformAdmin() {
       if (error) return false;
       return data as boolean;
     },
-    enabled: !!user,
+    enabled: !!user && isSupabaseConfigured,
   });
 }
 

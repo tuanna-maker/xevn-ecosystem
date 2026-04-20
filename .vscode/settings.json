@@ -1,0 +1,15 @@
+{
+  "plantuml.includePaths": [
+    "${workspaceFolder}/docs/plantuml/stdlib"
+  ],
+  "plantuml.includepaths": [
+    "${workspaceFolder}/docs/plantuml/stdlib"
+  ],
+  "markdown-preview-enhanced.enableExtendedTableSyntax": true,
+  "markdown-preview-enhanced.enableHTML5Embed": true,
+  "markdown-preview-enhanced.enableLinkify": true,
+  "markdown-preview-enhanced.HTML5EmbedUseLinkSyntax": true,
+  "markdown-preview-enhanced.plantumlJarPath": "C:\\Users\\ADMIN\\Downloads\\plantuml-1.2026.2.jar",
+  "markdown-preview-enhanced.previewColorScheme": "systemColorScheme",
+  "markdown-preview-enhanced.previewMode": "Previews Only"
+}

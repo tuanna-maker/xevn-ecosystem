@@ -8,8 +8,8 @@ import { Building2, LayoutDashboard, ArrowRight } from 'lucide-react';
  */
 const UnifiedShellPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full bg-[#F9FAFB] flex flex-col">
-      <header className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-soft">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-[#F9FAFB]">
+      <header className="shrink-0 border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-soft">
         <div className="xevn-safe-inline py-6 flex items-center justify-between max-w-[1920px] mx-auto w-full">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E40AF] to-slate-900 flex items-center justify-center shadow-md">
@@ -24,7 +24,7 @@ const UnifiedShellPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center px-8 py-16">
+      <main className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto overflow-x-hidden px-8 py-16">
         <div className="max-w-lg w-full text-center space-y-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#1E40AF]/10 text-[#1E40AF]">
             <LayoutDashboard className="w-10 h-10" strokeWidth={1.5} />

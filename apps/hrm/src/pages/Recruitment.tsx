@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -101,6 +102,7 @@ import { CandidatesTab } from '@/components/recruitment/CandidatesTab';
 import { InterviewsTab } from '@/components/recruitment/InterviewsTab';
 import { RecruitmentReportsTab } from '@/components/recruitment/RecruitmentReportsTab';
 import { PermissionGate } from '@/components/auth/PermissionGate';
+import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 
 // Recruitment plan form schema
 const recruitmentPlanSchema = z.object({
@@ -330,6 +332,8 @@ const recruitmentCampaigns = [
 
 
 export default function Recruitment() {
+  const location = useLocation();
+  const portalEmbed = getHrmPortalMode(location.search);
   const { t } = useTranslation();
   const topNavTabs = getTopNavTabs(t);
   const jobsMenuItems = getJobsMenuItems(t);
@@ -593,9 +597,16 @@ export default function Recruitment() {
   const months = Array.from({ length: 7 }, (_, i) => t('recruitment.month', { num: i + 1 }));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] animate-fade-in">
+    <div
+      className={cn(
+        'flex w-full max-w-full flex-col animate-fade-in',
+        portalEmbed
+          ? 'min-h-0 min-w-0 flex-1'
+          : 'h-[calc(100vh-120px)]',
+      )}
+    >
       {/* Top Navigation Bar with colored icons - Pill Style */}
-      <div className="bg-background border-b px-3 md:px-6 py-2 md:py-3 flex-shrink-0">
+      <div className="flex-shrink-0 border-b bg-background px-3 py-2 md:px-6 md:py-3">
         <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide pb-1">
           {topNavTabs.map((tab) => {
             const TabIcon = tab.icon;
@@ -783,16 +794,23 @@ export default function Recruitment() {
         </div>
       </div>
 
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto p-3 md:p-6">
+        {/* Main Content — portal: chỉ cuộn dọc trong khung; tránh overflow-auto gây thanh ngang giữa trang */}
+        <div
+          className={cn(
+            'min-w-0 flex-1 p-3 md:p-6',
+            portalEmbed
+              ? 'min-h-0 overflow-x-hidden overflow-y-auto'
+              : 'overflow-auto',
+          )}
+        >
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">{t('recruitment.dashboardTitle')}</h2>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-lg font-semibold tracking-tight md:text-xl">{t('recruitment.dashboardTitle')}</h2>
               <PermissionGate module="recruitment" action="create">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button size="sm" className="shrink-0">
+                  <Plus className="mr-1.5 h-3.5 w-3.5" />
                   {t('recruitment.createJobPosting')}
                 </Button>
               </PermissionGate>
@@ -805,130 +823,160 @@ export default function Recruitment() {
                 <TabsTrigger value="board">{t('recruitment.boardTab')}</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="dashboard" className="mt-4 space-y-6">
-                {/* Top Stats Cards */}
-                <div className="grid grid-cols-4 gap-4">
-                  <Card className="border-l-4 border-l-blue-500">
-                    <CardContent className="pt-4">
-                      <p className="text-sm text-muted-foreground">{t('recruitment.target')}</p>
-                      <p className="text-3xl font-bold text-blue-600">86</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-l-4 border-l-purple-500">
-                    <CardContent className="pt-4">
-                      <p className="text-sm text-muted-foreground">{t('recruitment.cvApplied')}</p>
-                      <p className="text-3xl font-bold text-purple-600">{candidateStats.total}</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-l-4 border-l-orange-500">
-                    <CardContent className="pt-4">
-                      <p className="text-sm text-muted-foreground">{t('recruitment.interviewed')}</p>
-                      <p className="text-3xl font-bold text-orange-600">{candidateStats.interview + candidateStats.offer + candidateStats.hired}</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-l-4 border-l-green-500">
-                    <CardContent className="pt-4">
-                      <p className="text-sm text-muted-foreground">{t('recruitment.hired')}</p>
-                      <p className="text-3xl font-bold text-green-600">{candidateStats.hired}</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-3 gap-4">
-                  {/* Left Column - Line Chart */}
-                  <div className="col-span-2 space-y-4">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base">{t('recruitment.recruitmentChart')}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <RecruitmentLineChart />
-                      </CardContent>
-                    </Card>
-
-                    {/* Pie Chart */}
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base">{t('recruitment.recruitmentChartByStatus')}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <RecruitmentPieChart candidates={candidates} />
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Right Column - Cost Cards & Bar Chart */}
-                  <div className="space-y-4">
-                    {/* Cost Cards */}
-                    <Card className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20">
-                      <CardContent className="pt-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                          <DollarSign className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">{t('recruitment.avgCostPerCandidate')}</p>
-                          <p className="text-xl font-bold text-purple-600">990.000 đ</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-950/20 dark:to-orange-900/20">
-                      <CardContent className="pt-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
-                          <DollarSign className="w-5 h-5 text-orange-600" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">{t('recruitment.costTopCV')}</p>
-                          <p className="text-xl font-bold text-orange-600">13.395.000 đ</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-r from-cyan-50 to-cyan-100 dark:from-cyan-950/20 dark:to-cyan-900/20">
-                      <CardContent className="pt-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                          <DollarSign className="w-5 h-5 text-cyan-600" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">{t('recruitment.cost24h')}</p>
-                          <p className="text-xl font-bold text-cyan-600">2.756.804 đ</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Bar Chart */}
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base">{t('recruitment.recruitmentChartByDept')}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <RecruitmentBarChart />
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">{t('recruitment.recentActivity')}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {candidates.slice(0, 5).map((candidate) => (
-                        <div key={candidate.id} className="flex items-center gap-3 pb-3 border-b last:border-0 last:pb-0">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs">
-                            {candidate.fullName.split(' ').pop()?.charAt(0)}
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{candidate.fullName}</p>
-                            <p className="text-xs text-muted-foreground">{t('recruitment.appliedForPosition', { position: candidate.position })}</p>
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(candidate.appliedDate).toLocaleDateString('vi-VN')}
+              <TabsContent value="dashboard" className="mt-3 space-y-3">
+                {/*
+                  Bố cục kiểu analytics (Stripe / GA): KPI = một dải mỏng; metric cần nhãn dài = full width;
+                  biểu đồ cần chiều ngang (bar ngang) = full width; pie + feed = một hàng 2 cột.
+                */}
+                <Card className="overflow-hidden shadow-sm">
+                  <CardContent className="p-0">
+                    <div className="grid grid-cols-2 divide-x divide-border sm:grid-cols-4">
+                      {(
+                        [
+                          {
+                            label: t('recruitment.target'),
+                            value: '86',
+                            bar: 'bg-blue-500',
+                            tint: 'bg-blue-500/[0.06]',
+                            valueClass: 'text-blue-600',
+                          },
+                          {
+                            label: t('recruitment.cvApplied'),
+                            value: String(candidateStats.total),
+                            bar: 'bg-purple-500',
+                            tint: 'bg-purple-500/[0.06]',
+                            valueClass: 'text-purple-600',
+                          },
+                          {
+                            label: t('recruitment.interviewed'),
+                            value: String(candidateStats.interview + candidateStats.offer + candidateStats.hired),
+                            bar: 'bg-orange-500',
+                            tint: 'bg-orange-500/[0.06]',
+                            valueClass: 'text-orange-600',
+                          },
+                          {
+                            label: t('recruitment.hired'),
+                            value: String(candidateStats.hired),
+                            bar: 'bg-green-500',
+                            tint: 'bg-green-500/[0.06]',
+                            valueClass: 'text-green-600',
+                          },
+                        ] as const
+                      ).map((k) => (
+                        <div
+                          key={k.label}
+                          className={cn('relative min-w-0 px-2.5 py-2 sm:px-3 sm:py-2.5', k.tint)}
+                        >
+                          <span
+                            className={cn('absolute left-0 top-2 bottom-2 w-0.5 rounded-full sm:top-2.5 sm:bottom-2.5', k.bar)}
+                            aria-hidden
+                          />
+                          <div className="pl-2">
+                            <p className="line-clamp-2 text-[10px] font-medium leading-tight text-muted-foreground sm:line-clamp-1 sm:text-xs">
+                              {k.label}
+                            </p>
+                            <p className={cn('text-lg font-bold tabular-nums leading-tight sm:text-xl', k.valueClass)}>
+                              {k.value}
+                            </p>
                           </div>
                         </div>
                       ))}
                     </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="shadow-sm">
+                  <CardContent className="p-0">
+                    <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
+                      <div className="flex gap-3 px-4 py-3 bg-purple-500/[0.05]">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-500/15">
+                          <DollarSign className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium leading-snug text-muted-foreground">
+                            {t('recruitment.avgCostPerCandidate')}
+                          </p>
+                          <p className="text-base font-bold tabular-nums text-purple-600 sm:text-lg">990.000 đ</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 px-4 py-3 bg-orange-500/[0.05]">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500/15">
+                          <DollarSign className="h-4 w-4 text-orange-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium leading-snug text-muted-foreground">
+                            {t('recruitment.costTopCV')}
+                          </p>
+                          <p className="text-base font-bold tabular-nums text-orange-600 sm:text-lg">13.395.000 đ</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 px-4 py-3 bg-cyan-500/[0.05]">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15">
+                          <DollarSign className="h-4 w-4 text-cyan-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium leading-snug text-muted-foreground">
+                            {t('recruitment.cost24h')}
+                          </p>
+                          <p className="text-base font-bold tabular-nums text-cyan-600 sm:text-lg">2.756.804 đ</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="shadow-sm">
+                  <CardHeader className="space-y-0 px-4 py-2 pb-0">
+                    <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChart')}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-3 pb-3 pt-1 sm:px-4">
+                    <RecruitmentLineChart />
+                  </CardContent>
+                </Card>
+
+                <div className="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-2">
+                  <Card className="min-w-0 shadow-sm">
+                    <CardHeader className="space-y-0 px-4 py-2 pb-0">
+                      <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChartByStatus')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-3 pb-3 pt-1 sm:px-4">
+                      <RecruitmentPieChart candidates={candidates} />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="min-w-0 shadow-sm">
+                    <CardHeader className="px-4 py-2">
+                      <CardTitle className="text-sm font-semibold">{t('recruitment.recentActivity')}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-4 pb-3 pt-0">
+                      <div className="divide-y divide-border">
+                        {candidates.slice(0, 5).map((candidate) => (
+                          <div key={candidate.id} className="flex items-center gap-3 py-2.5 first:pt-0">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                              {candidate.fullName.split(' ').pop()?.charAt(0)}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium">{candidate.fullName}</p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                {t('recruitment.appliedForPosition', { position: candidate.position })}
+                              </p>
+                            </div>
+                            <div className="shrink-0 text-xs text-muted-foreground">
+                              {new Date(candidate.appliedDate).toLocaleDateString('vi-VN')}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card className="min-w-0 shadow-sm">
+                  <CardHeader className="space-y-0 px-4 py-2 pb-0">
+                    <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChartByDept')}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="min-w-0 px-2 pb-3 pt-1 sm:px-4">
+                    <RecruitmentBarChart />
                   </CardContent>
                 </Card>
               </TabsContent>

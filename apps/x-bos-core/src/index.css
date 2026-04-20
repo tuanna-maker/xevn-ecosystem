@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Đồng bộ mật độ chữ với web-portal (~87.5%) */
+html {
+  font-size: 87.5%;
+}
+
 @layer components {
   .input-apple {
     @apply w-full rounded-xl border border-black/[0.06] bg-white/90 px-3 py-2.5 text-sm shadow-sm outline-none transition focus:ring-2 focus:ring-xevn-primary/20;

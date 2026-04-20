@@ -9,7 +9,7 @@ export function Sidebar() {
   const policyOpen = location.pathname === '/policy' || location.pathname.startsWith('/policy/');
 
   return (
-    <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col border-r border-black/[0.06] bg-white/72 backdrop-blur-nav shadow-glass">
+    <aside className="fixed left-0 top-0 z-30 flex h-dvh w-64 flex-col border-r border-black/[0.06] bg-white/72 backdrop-blur-nav shadow-glass">
       <div className="flex items-center gap-3 border-b border-black/[0.06] px-5 py-5">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-xevn-primary to-blue-600 text-white shadow-md">
           <GitBranch className="h-5 w-5" />

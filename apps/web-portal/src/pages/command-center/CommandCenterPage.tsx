@@ -98,9 +98,6 @@ import { RACI_LETTER_MEANINGS, RACI_ORG_COLUMNS, RACI_SOURCE_FILE } from '../../
 import { OrgGradeOrgChart } from '../../components/org/OrgGradeOrgChart';
 import {
   AutoResizeTextarea,
-  NAV_RAIL_ICON_CAPTION_CLASS,
-  NAV_RAIL_IDENTITY_BLOCK_GAP,
-  NAV_RAIL_MODULE_STACK,
   NAV_SUBSIDEBAR_HELPER_CLASS,
   NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS,
   NAV_SUBSIDEBAR_ITEM_IDLE_CLASS,
@@ -125,6 +122,7 @@ import {
   XEVN_VIEWPORT_PADDING,
 } from './settings-form-pattern';
 import { WorkspaceLayout } from './WorkspaceLayout';
+import { CommandCenterModuleRail } from './CommandCenterModuleRail';
 import { WorkflowCanvas, formatWorkflowDrawerDetails } from './WorkflowCanvas';
 import { HrmSidebar } from '../../modules/hrm/HrmSidebar';
 import { hrmPortalPath } from '../../modules/hrm/paths';
@@ -868,16 +866,6 @@ function seedDepartmentsForCompany(companyId: string): LegalDepartmentRow[] {
   };
   return seeds[companyId] ?? [];
 }
-
-const moduleIcons: Record<string, LucideIcon> = {
-  group: LayoutGrid,
-  finance: Wallet,
-  accounting: Calculator,
-  hrm: Users,
-  business: TrendingUp,
-  fleet: Truck,
-  system: Settings,
-};
 
 const companySetupSubMenus: Array<{ key: CompanySetupMenuKey; label: string; Icon: LucideIcon }> = [
   {
@@ -1715,7 +1703,7 @@ const CommandCenterPage: React.FC = () => {
       return next;
     });
     void publishVersionChange('infrastructure-foundation-category', foundationForm);
-    setPublishMessage('Đã lưu danh mục nền và phạm vi áp dụng (mock).');
+    setPublishMessage('Đã lưu danh mục nền và phạm vi áp dụng.');
   }
 
   function toggleFoundationCompany(companyId: string) {
@@ -1783,7 +1771,7 @@ const CommandCenterPage: React.FC = () => {
       return next;
     });
     void publishVersionChange('dept-system-foundation-template', deptSystemForm);
-    setPublishMessage('Đã lưu khung phòng/ban & phạm vi ORG GRADE (mock).');
+    setPublishMessage('Đã lưu khung phòng ban và phạm vi ORG GRADE.');
   }
 
   function toggleDeptSystemCompany(companyId: string) {
@@ -2469,12 +2457,12 @@ const CommandCenterPage: React.FC = () => {
                   <table className={`min-w-[880px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tên pháp nhân</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Cấp bậc</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trực thuộc</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                        <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên pháp nhân</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Cấp bậc</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Trực thuộc</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Trạng thái</th>
+                        <th className="px-3 py-2 text-right text-sm font-medium text-slate-500">Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2909,13 +2897,13 @@ const CommandCenterPage: React.FC = () => {
                   <table className={`min-w-[760px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">
                           Họ tên/Tên tổ chức
                         </th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã định danh</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tỷ lệ (%)</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Giá trị góp vốn</th>
-                        <th className="px-3 py-2 text-center text-xs font-medium text-slate-500">Action</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã định danh</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tỷ lệ (%)</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Giá trị góp vốn</th>
+                        <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2999,12 +2987,12 @@ const CommandCenterPage: React.FC = () => {
                   <table className={`min-w-[880px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tên tài liệu</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã số</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ngày cấp</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ngày hết hạn</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">File</th>
-                        <th className="px-3 py-2 text-center text-xs font-medium text-slate-500">Action</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên tài liệu</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã số</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Ngày cấp</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Ngày hết hạn</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">File</th>
+                        <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -3583,16 +3571,16 @@ const CommandCenterPage: React.FC = () => {
                       <table className="min-w-[900px] w-full text-base text-xevn-text">
                         <thead className="bg-white/70 backdrop-blur-md">
                           <tr>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Mã danh mục
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Tên danh mục
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Phạm vi (pháp nhân)
                             </th>
-                            <th className="px-4 py-3 text-right text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-right text-base font-medium text-slate-500">
                               Thao tác
                             </th>
                           </tr>
@@ -3643,25 +3631,25 @@ const CommandCenterPage: React.FC = () => {
                       <table className="min-w-[1100px] w-full text-base text-xevn-text">
                         <thead className="bg-white/70 backdrop-blur-md">
                           <tr>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Mã điểm
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Tên hạ tầng
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Loại hình
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Đơn vị trực thuộc
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Sức chứa
                             </th>
-                            <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                               Trạng thái
                             </th>
-                            <th className="px-4 py-3 text-right text-[15px] font-medium text-slate-500">
+                            <th className="px-4 py-3 text-right text-base font-medium text-slate-500">
                               Thao tác
                             </th>
                           </tr>
@@ -4562,7 +4550,7 @@ const CommandCenterPage: React.FC = () => {
             <div className={SETTINGS_SECTION_STACK}>
               <SettingSectionHeader
                 title="Hệ thống phân quyền"
-                subtitle="Ma trận theo module — prototype căn RACI Option 1 (khách hàng); chọn vai trò để cấu hình Xem / Ghi / Xóa / Duyệt và phạm vi dữ liệu"
+                subtitle="Ma trận theo module và vai trò: cấu hình quyền xem, ghi, xóa, duyệt và phạm vi dữ liệu."
               />
               <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
                 <h4 className={`mb-2 ${SETTINGS_SECTION_TITLE_CLASS}`}>Chuẩn RACI & cột chức danh</h4>
@@ -4769,22 +4757,22 @@ const CommandCenterPage: React.FC = () => {
                   <table className="min-w-[920px] w-full text-base font-normal text-xevn-text">
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                           Mã quy trình
                         </th>
-                        <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                           Tên quy trình
                         </th>
-                        <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                           Đơn vị áp dụng
                         </th>
-                        <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                           Số bước
                         </th>
-                        <th className="px-4 py-3 text-left text-[15px] font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
                           SLA tổng (giờ)
                         </th>
-                        <th className="px-4 py-3 text-right text-[15px] font-medium text-slate-500">
+                        <th className="px-4 py-3 text-right text-base font-medium text-slate-500">
                           Thao tác
                         </th>
                       </tr>
@@ -5235,10 +5223,10 @@ const CommandCenterPage: React.FC = () => {
                 <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
                   <thead className="bg-white/70 backdrop-blur-md">
                     <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tên văn bản</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Version</th>
-                      <th className="px-3 py-2 text-center text-xs font-medium text-slate-500">Hiệu lực</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên văn bản</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Version</th>
+                      <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Hiệu lực</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -5300,10 +5288,10 @@ const CommandCenterPage: React.FC = () => {
                 <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
                   <thead className="bg-white/70 backdrop-blur-md">
                     <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Metric Key</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đơn vị</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tiền tệ</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Độ chính xác</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Metric Key</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn vị</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tiền tệ</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Độ chính xác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -5365,9 +5353,9 @@ const CommandCenterPage: React.FC = () => {
                 <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
                   <thead className="bg-white/70 backdrop-blur-md">
                     <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã giá</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Diễn giải</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đơn giá</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã giá</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Diễn giải</th>
+                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn giá</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -6884,8 +6872,8 @@ const CommandCenterPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-xevn-background text-xevn-text">
-      <header className="sticky top-0 z-20 border-b border-xevn-border bg-xevn-surface/80 shadow-soft backdrop-blur-md">
+    <div className="flex h-dvh flex-col overflow-hidden bg-xevn-background text-xevn-text">
+      <header className="shrink-0 z-20 border-b border-xevn-border bg-xevn-surface/80 shadow-soft backdrop-blur-md">
         <div className={`flex w-full flex-wrap items-center justify-between gap-4 ${XEVN_VIEWPORT_PADDING} py-4`}>
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-xevn-primary text-white shadow-soft">
@@ -6940,7 +6928,8 @@ const CommandCenterPage: React.FC = () => {
       </header>
 
       <WorkspaceLayout
-        mainClassName={selectedModule === SYSTEM_SETTINGS ? 'lg:max-h-[calc(100dvh-10.5rem)]' : undefined}
+        className="min-h-0 flex-1"
+        mainClassName={selectedModule === 'hrm' ? '!overflow-hidden' : undefined}
         secondarySidebar={
           selectedModule === SYSTEM_SETTINGS
             ? renderSettingsSidebar()
@@ -6949,100 +6938,11 @@ const CommandCenterPage: React.FC = () => {
               : undefined
         }
         rail={
-        <aside className="flex w-full shrink-0 flex-col items-stretch">
-          <div
-            className={`flex w-full flex-col items-center border border-xevn-border bg-xevn-surface/90 px-3 py-6 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}
-          >
-            <div
-              className={`flex w-full flex-col items-center ${NAV_RAIL_MODULE_STACK}`}
-            >
-            {railItems.map((m) => {
-              const Icon = moduleIcons[m.moduleCode] ?? LayoutDashboard;
-              const onHrmRoute =
-                matchPath({ path: '/command-center/hrm/*', end: false }, location.pathname) != null;
-              const isActive =
-                (m.moduleCode === 'group' && selectedModule === 'all' && !onHrmRoute) ||
-                (m.moduleCode === 'system' && selectedModule === SYSTEM_SETTINGS) ||
-                (m.moduleCode === 'hrm' && (selectedModule === 'hrm' || onHrmRoute)) ||
-                (m.moduleCode !== 'group' &&
-                  m.moduleCode !== 'system' &&
-                  m.moduleCode !== 'hrm' &&
-                  selectedModule === m.moduleCode);
-
-              const inner = (
-                <span
-                  className={`flex h-12 w-12 items-center justify-center rounded-full border transition ${
-                    m.disabled
-                      ? 'cursor-not-allowed border-dashed border-slate-200 text-slate-300'
-                      : isActive
-                        ? 'border-xevn-primary bg-xevn-primary/10 text-xevn-primary shadow-sm'
-                        : 'border-transparent text-xevn-textSecondary hover:border-xevn-border hover:bg-slate-50'
-                  }`}
-                  title={m.disabled ? m.disabledReason : m.label}
-                >
-                  <Icon
-                    className="h-5 w-5"
-                    strokeWidth={RAIL_STROKE}
-                    aria-hidden
-                  />
-                </span>
-              );
-
-              if (m.disabled) {
-                return (
-                  <div
-                    key={m.moduleCode}
-                    className={`flex flex-col items-center ${NAV_RAIL_IDENTITY_BLOCK_GAP}`}
-                  >
-                    {inner}
-                    <span
-                      className={`${NAV_RAIL_ICON_CAPTION_CLASS} text-slate-400`}
-                    >
-                      {m.label}
-                    </span>
-                  </div>
-                );
-              }
-
-              return (
-                <button
-                  key={m.moduleCode}
-                  type="button"
-                  onClick={() => {
-                    if (m.moduleCode === 'system') {
-                      setSelectedModule(SYSTEM_SETTINGS);
-                      navigate('/command-center');
-                      return;
-                    }
-                    if (m.moduleCode === 'group') {
-                      setSelectedModule('all');
-                      navigate('/command-center');
-                      return;
-                    }
-                    if (m.moduleCode === 'hrm') {
-                      setSelectedModule('hrm');
-                      navigate(hrmPortalPath('dashboard'));
-                      return;
-                    }
-                    setSelectedModule(m.moduleCode);
-                    navigate('/command-center');
-                  }}
-                  className={`flex flex-col items-center ${NAV_RAIL_IDENTITY_BLOCK_GAP} rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-xevn-accent`}
-                >
-                  {inner}
-                  <span
-                    className={`${NAV_RAIL_ICON_CAPTION_CLASS} ${
-                      isActive ? 'font-bold text-xevn-primary' : ''
-                    }`}
-                  >
-                    {m.label}
-                  </span>
-                </button>
-              );
-            })}
-            </div>
-          </div>
-        </aside>
+          <CommandCenterModuleRail
+            railItems={railItems}
+            selectedModule={selectedModule}
+            setSelectedModule={setSelectedModule}
+          />
         }
       >
         {selectedModule === SYSTEM_SETTINGS ? (
@@ -7079,14 +6979,14 @@ const CommandCenterPage: React.FC = () => {
               {/* Widgets */}
               <section className="grid gap-6 sm:grid-cols-3">
                 <div className={`border border-xevn-border bg-xevn-surface p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                  <p className="text-sm font-medium text-xevn-textSecondary">Task_Counter</p>
+                  <p className="text-base font-medium text-xevn-textSecondary">Task_Counter</p>
                   <p className="mt-2 text-3xl font-semibold text-xevn-text">
                     {taskCounts.all}
                   </p>
-                  <p className="mt-1 text-xs text-xevn-textSecondary">
+                  <p className="mt-1 text-sm text-xevn-textSecondary">
                     Việc đang xử lý (đã lọc phạm vi)
                   </p>
-                  <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  <div className="mt-4 flex flex-wrap gap-2 text-sm">
                     <span className="rounded-lg bg-slate-100 px-2 py-1">
                       TÀI CHÍNH: {taskCounts.finance}
                     </span>
@@ -7106,13 +7006,13 @@ const CommandCenterPage: React.FC = () => {
                 </div>
 
                 <div className={`border border-xevn-border bg-xevn-surface p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                  <p className="text-sm font-medium text-xevn-textSecondary">KPI_Sparkline</p>
+                  <p className="text-base font-medium text-xevn-textSecondary">KPI_Sparkline</p>
                   <div className="mt-2 flex items-end justify-between gap-2">
                     <div>
                       <p className="text-2xl font-semibold text-xevn-primary">
                         {kpiSeries[kpiSeries.length - 1]?.value}%
                       </p>
-                      <p className="text-xs text-xevn-textSecondary">
+                      <p className="text-sm text-xevn-textSecondary">
                         {persona === 'employee' ? 'KPI cá nhân' : 'Tổng hợp tập đoàn'}
                       </p>
                     </div>
@@ -7121,8 +7021,8 @@ const CommandCenterPage: React.FC = () => {
                 </div>
 
                 <div className={`border border-xevn-border bg-xevn-surface p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                  <p className="text-sm font-medium text-xevn-textSecondary">Alert_List</p>
-                  <ul className="mt-3 max-h-28 space-y-2 overflow-auto text-sm">
+                  <p className="text-base font-medium text-xevn-textSecondary">Alert_List</p>
+                  <ul className="mt-3 max-h-28 space-y-2 overflow-auto text-base leading-snug">
                     {scopedAlerts.length === 0 ? (
                       <li className="text-xevn-textSecondary">Không có cảnh báo trong phạm vi.</li>
                     ) : (
@@ -7159,7 +7059,7 @@ const CommandCenterPage: React.FC = () => {
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h2 className={SETTINGS_SECTION_TITLE_CLASS}>Action Cards</h2>
-                    <p className="body-text text-sm text-xevn-textSecondary">
+                    <p className="body-text text-base text-xevn-textSecondary">
                       Lọc theo phân hệ đang chọn trên thanh điều hướng
                     </p>
                   </div>
@@ -7186,7 +7086,7 @@ const CommandCenterPage: React.FC = () => {
                             navigate('/command-center');
                           }
                         }}
-                        className={`rounded-lg px-3 py-2 text-sm font-medium transition active:scale-95 ${
+                        className={`rounded-lg px-3 py-2 text-base font-medium transition active:scale-95 ${
                           selectedModule === code
                             ? 'bg-xevn-primary text-white'
                             : 'bg-slate-100 text-xevn-textSecondary hover:bg-slate-200'
@@ -7212,21 +7112,21 @@ const CommandCenterPage: React.FC = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <span
-                              className={`rounded-md px-2 py-0.5 text-xs font-medium ${priorityClass(task.priority)}`}
+                              className={`rounded-md px-2 py-0.5 text-sm font-medium ${priorityClass(task.priority)}`}
                             >
                               {priorityLabel(task.priority)}
                             </span>
-                            <span className="text-xs text-xevn-textSecondary">
+                            <span className="text-sm text-xevn-textSecondary">
                               {task.sourceSystem} · {task.moduleCode}
                             </span>
                           </div>
                           <p className="mt-1 font-medium text-xevn-text">{task.title}</p>
                           {task.subtitle && (
-                            <p className="body-text mt-0.5 text-sm text-xevn-textSecondary">
+                            <p className="body-text mt-0.5 text-base text-xevn-textSecondary">
                               {task.subtitle}
                             </p>
                           )}
-                          <p className="mt-2 text-xs text-xevn-textSecondary">
+                          <p className="mt-2 text-sm text-xevn-textSecondary">
                             Người nhận: {task.assigneeName}
                             {task.dueAt && (
                               <>
@@ -7239,14 +7139,14 @@ const CommandCenterPage: React.FC = () => {
                         <div className="flex shrink-0 gap-2">
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 rounded-lg border border-xevn-border bg-xevn-surface px-3 py-2 text-sm font-medium text-xevn-text transition active:scale-95 hover:bg-slate-50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-xevn-border bg-xevn-surface px-3 py-2 text-base font-medium text-xevn-text transition active:scale-95 hover:bg-slate-50"
                           >
                             Mở chi tiết
                             <ChevronRight className="h-4 w-4" strokeWidth={RAIL_STROKE} />
                           </button>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 rounded-lg bg-xevn-primary px-3 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95 hover:opacity-90"
+                            className="inline-flex items-center gap-1 rounded-lg bg-xevn-primary px-3 py-2 text-base font-medium text-white shadow-sm transition active:scale-95 hover:opacity-90"
                           >
                             Xử lý nhanh
                             <RefreshCw className="h-4 w-4" strokeWidth={RAIL_STROKE} />

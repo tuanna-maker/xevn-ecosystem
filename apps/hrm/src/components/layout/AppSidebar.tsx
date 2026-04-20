@@ -147,7 +147,7 @@ function MobileSidebarContent({ onClose }: { onClose: () => void }) {
   [hasAnyPermission]);
 
   const isActive = (path: string) => {
-    const currentPath = location.pathname.replace(/^\/hr(?=\/|$)/, '');
+    const currentPath = location.pathname.replace(/^\/hrm?(?=\/|$)/, '');
     if (path === '/') return currentPath === '/';
     return currentPath === path || currentPath.startsWith(`${path}/`);
   };
@@ -357,7 +357,7 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-50 h-screen w-64 bg-sidebar flex-col border-r border-sidebar-border hidden md:flex'
+        'fixed left-0 top-0 z-50 h-dvh w-64 flex-col border-r border-sidebar-border bg-sidebar hidden md:flex'
       )}
       style={{ background: 'var(--gradient-sidebar)' }}
     >

@@ -18,6 +18,7 @@ const getSavedLanguage = () => {
 };
 
 i18n.use(initReactI18next).init({
+  debug: false,
   resources: {
     vi: { translation: vi },
     en: { translation: en },

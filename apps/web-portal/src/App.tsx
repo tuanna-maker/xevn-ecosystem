@@ -35,7 +35,7 @@ const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
 const App: React.FC = () => {
   return (
     <GlobalFilterProvider>
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           {/* Unified Shell → Cockpit (dashboard) → sau đó mới mở /dashboard/* (MainLayout) */}
           <Route path="/" element={<ExecutiveDashboardLayout />}>

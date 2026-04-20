@@ -1,0 +1,51 @@
+' =============================================================================
+' XeVN — BPMN 2.0 skinparam (Activity diagram)
+' Đồng bộ với khối **nhúng** trong docs/SRS_X_BOS_UNIFIED_PORTAL_COMMAND_CENTER.md §3
+' (SRS không dùng !include để dán được lên plantuml.com.)
+'
+' Local / nhiều diagram: !include docs/plantuml/stdlib/bpmn/bpmn.puml
+' =============================================================================
+
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam wrapWidth 200
+skinparam shadowing false
+skinparam roundcorner 14
+skinparam conditionStyle diamond
+skinparam ConditionEndStyle diamond
+
+skinparam ArrowColor #3A3A3C
+skinparam ArrowThickness 1
+skinparam activityArrow {
+  FontColor #636366
+  FontSize 10
+}
+
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #D1D1D6
+  BorderThickness 1.2
+  FontColor #1D1D1F
+  FontSize 11
+  DiamondBackgroundColor #ECECF0
+  DiamondBorderColor #8E8E93
+  DiamondFontColor #1D1D1F
+  DiamondFontSize 14
+  DiamondFontStyle bold
+  BackgroundColor<<BPMN_UserTask>> #FFFFFF
+  BorderColor<<BPMN_UserTask>> #007AFF
+  FontColor<<BPMN_UserTask>> #1D1D1F
+  BackgroundColor<<BPMN_ServiceTask>> #FFFFFF
+  BorderColor<<BPMN_ServiceTask>> #34C759
+  FontColor<<BPMN_ServiceTask>> #1D1D1F
+  BackgroundColor<<BPMN_Data>> #FFFFFF
+  BorderColor<<BPMN_Data>> #8E8E93
+  FontColor<<BPMN_Data>> #1D1D1F
+}
+
+skinparam note {
+  BackgroundColor #FAFAFA
+  BorderColor #E5E5EA
+  FontColor #636366
+  FontSize 10
+}

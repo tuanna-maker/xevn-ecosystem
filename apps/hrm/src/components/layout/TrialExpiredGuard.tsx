@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, ArrowUpRight, CheckCircle, Star, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,8 +10,10 @@ import { useCompanySubscription, useUpgradePlan } from '@/hooks/useCompanySubscr
 import { useActiveSubscriptionPlans, SubscriptionPlan } from '@/hooks/useSubscriptionPlans';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 
 export function TrialExpiredGuard({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
   const { i18n } = useTranslation();
   const isEn = i18n.language === 'en';
   const { data: subscription, isLoading } = useCompanySubscription();
@@ -18,6 +21,8 @@ export function TrialExpiredGuard({ children }: { children: React.ReactNode }) {
   const upgradePlan = useUpgradePlan();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+
+  if (getHrmPortalMode(location.search)) return <>{children}</>;
 
   const formatPrice = (price: number) => new Intl.NumberFormat('vi-VN').format(price) + 'đ';
 

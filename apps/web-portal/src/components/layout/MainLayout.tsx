@@ -14,14 +14,16 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="flex h-dvh flex-col overflow-hidden bg-slate-50">
       <Sidebar />
-      <TopHeader />
-      <main className="ml-64 pt-16 min-h-screen">
-        <div className="xevn-safe-inline py-6">
-          <Outlet />
-        </div>
-      </main>
+      <div className="ml-64 flex min-h-0 min-w-0 flex-1 flex-col">
+        <TopHeader />
+        <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="xevn-safe-inline py-6">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 };

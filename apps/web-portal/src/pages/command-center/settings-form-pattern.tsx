@@ -9,7 +9,7 @@
  *
  * Input: `SETTINGS_RADIUS_INPUT`; thẻ khối: `SETTINGS_RADIUS_CARD`; shadow: shadow-soft; sticky: backdrop-blur-md.
  * Sticky Workspace header (tiêu đề + tìm kiếm): `WORKSPACE_STICKY_HEADER_ROW` + `WORKSPACE_STICKY_HEADER_AXIS_H` — luôn `items-center`, cùng chiều cao slot.
- * Typography: `SETTINGS_PAGE_TITLE_CLASS` → `SETTINGS_SECTION_TITLE_CLASS` → `SETTINGS_LABEL_CLASS` (16px); Navigation: `NAV_*` (Rail + Sub-sidebar, 15px).
+ * Typography: `SETTINGS_PAGE_TITLE_CLASS` → `SETTINGS_SECTION_TITLE_CLASS` → `SETTINGS_LABEL_CLASS` (16px); Navigation: `NAV_*` (Rail + Sub-sidebar, 15px). Bảng workspace: tiêu đề cột dùng `text-sm` (tránh `text-xs` trên laptop).
  */
 
 import React, { useEffect, useRef } from 'react';
@@ -115,6 +115,19 @@ export const NAV_SUBSIDEBAR_ITEM_BASE_CLASS =
 export const NAV_SUBSIDEBAR_ITEM_IDLE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLASS} font-normal text-slate-500`;
 
 export const NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLASS} font-bold text-xevn-primary`;
+
+/**
+ * Nhãn dưới icon rail (Command Center): cố ý 13px + tracking-tight để thị giác cân với mục menu con 15px
+ * (thường là chữ thường); chữ IN HOA trên nền hẹp trông “nặng” hơn nếu cùng 15px.
+ */
+export const NAV_RAIL_MODULE_CAPTION_IDLE_CLASS =
+  'w-full max-w-full text-center text-balance text-[13px] font-normal leading-snug tracking-tight text-slate-500 break-words hyphens-auto';
+
+export const NAV_RAIL_MODULE_CAPTION_ACTIVE_CLASS =
+  'w-full max-w-full text-center text-balance text-[13px] font-bold leading-snug tracking-tight text-xevn-primary break-words hyphens-auto';
+
+export const NAV_RAIL_MODULE_CAPTION_DISABLED_CLASS =
+  'w-full max-w-full text-center text-balance text-[13px] font-normal leading-snug tracking-tight text-slate-400 break-words hyphens-auto';
 
 /** Chiều ngang cột Sub-sidebar (X-BOS): 280px desktop; hẹp hơn khi viewport &lt;1200px */
 export const NAV_SUBSIDEBAR_WIDTH_CLASS =

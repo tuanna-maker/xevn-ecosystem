@@ -393,40 +393,33 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in" ref={dashboardRef}>
-      {/* Greeting Header */}
-      <div className="flex flex-col gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-foreground">{t('dashboard.welcomeBack')} 👋</h1>
-          <p className="text-muted-foreground mt-1 text-sm">{t('dashboard.systemOverview')}</p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-[140px] md:w-[160px] bg-background">
-              <CalendarDays className="w-4 h-4 mr-2 text-muted-foreground" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {timePeriods.map((period) => (
-                <SelectItem key={period.value} value={period.value}>{period.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5" disabled={isExporting}>
-                {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                <span className="hidden sm:inline">{t('dashboard.exportReport')}</span>
-                <ChevronDown className="w-3 h-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleExportPDF}>
-                <FileText className="w-4 h-4 mr-2" />
-                {t('dashboard.exportPDF')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+          <SelectTrigger className="w-[140px] md:w-[160px] bg-background">
+            <CalendarDays className="w-4 h-4 mr-2 text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {timePeriods.map((period) => (
+              <SelectItem key={period.value} value={period.value}>{period.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-1.5" disabled={isExporting}>
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span className="hidden sm:inline">{t('dashboard.exportReport')}</span>
+              <ChevronDown className="w-3 h-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleExportPDF}>
+              <FileText className="w-4 h-4 mr-2" />
+              {t('dashboard.exportPDF')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Period Indicator */}

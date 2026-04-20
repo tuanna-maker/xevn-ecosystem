@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
 
 export interface SubscriptionPlan {
   id: string;
@@ -24,6 +24,7 @@ export interface SubscriptionPlan {
 export function useSubscriptionPlans() {
   return useQuery({
     queryKey: ['subscription-plans'],
+    enabled: isSupabaseConfigured,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subscription_plans' as any)
@@ -38,6 +39,7 @@ export function useSubscriptionPlans() {
 export function useActiveSubscriptionPlans() {
   return useQuery({
     queryKey: ['subscription-plans-active'],
+    enabled: isSupabaseConfigured,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subscription_plans' as any)

@@ -5,8 +5,8 @@ export function hrmPortalPath(view: string): string {
   return `${HRM_PORTAL_BASE}/${view}`;
 }
 
-/** Base path khi “mount HRM Shell” riêng qua reverse-proxy trong web-portal */
-export const HRM_PROXY_BASE = '/hrm';
+/** Base path khi nhúng HRM qua proxy web-portal — phải trùng `base` của apps/hrm (`/hr/`) */
+export const HRM_PROXY_BASE = '/hr';
 
 export function hrmProxyPath(
   view: string,
