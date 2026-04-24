@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id            String         @id @default(uuid())
+  code          String         @unique
+  name          String
+  legalEntities LegalEntity[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model LegalEntity {
+  id         String   @id @default(uuid())
+  tenantId   String
+  code       String
+  name       String
+  status     String   @default("active")
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId, status])
+}
+
+model ConfigOrigin {
+  id           String                @id @default(uuid())
+  tenantId     String
+  moduleCode   String
+  originCode   String
+  status       String                @default("draft")
+  versions     ConfigOriginVersion[]
+  variants     ConfigVariant[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  @@unique([tenantId, moduleCode, originCode])
+  @@index([tenantId, moduleCode, status])
+}
+
+model ConfigOriginVersion {
+  id             String       @id @default(uuid())
+  originId       String
+  version        Int
+  contractJson   Json
+  status         String       @default("published")
+  publishedAt    DateTime?
+  origin         ConfigOrigin @relation(fields: [originId], references: [id])
+  fields         ConfigOriginField[]
+
+  @@unique([originId, version])
+}
+
+model ConfigOriginField {
+  id              String              @id @default(uuid())
+  originVersionId String
+  blockCode       String
+  fieldCode       String
+  fieldContractJson Json
+  originVersion   ConfigOriginVersion @relation(fields: [originVersionId], references: [id])
+
+  @@unique([originVersionId, fieldCode])
+  @@index([originVersionId, blockCode])
+}
+
+model ConfigVariant {
+  id            String                 @id @default(uuid())
+  tenantId      String
+  moduleCode    String
+  originCode    String
+  legalEntityId String
+  status        String                 @default("draft")
+  originId      String?
+  origin        ConfigOrigin?          @relation(fields: [originId], references: [id])
+  versions      ConfigVariantVersion[]
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  @@unique([tenantId, moduleCode, originCode, legalEntityId])
+  @@index([tenantId, moduleCode, legalEntityId, status])
+}
+
+model ConfigVariantVersion {
+  id          String        @id @default(uuid())
+  variantId   String
+  version     Int
+  diffJson    Json
+  status      String        @default("published")
+  publishedAt DateTime?
+  variant     ConfigVariant @relation(fields: [variantId], references: [id])
+
+  @@unique([variantId, version])
+}
+
+model ConfigCategory {
+  id             String               @id @default(uuid())
+  tenantId       String
+  categoryCode   String
+  contractJson   Json
+  items          ConfigCategoryItem[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@unique([tenantId, categoryCode])
+}
+
+model ConfigCategoryItem {
+  id          String         @id @default(uuid())
+  categoryId  String
+  itemCode    String
+  labelJson   Json
+  payloadJson Json
+  scope       String         @default("global")
+  scopeId     String?
+  category    ConfigCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([categoryId, itemCode, scope, scopeId])
+}
+
+model EffectiveConfigSnapshot {
+  id            String   @id @default(uuid())
+  tenantId      String
+  moduleCode    String
+  originCode    String
+  legalEntityId String?
+  versionJson   Json
+  effectiveJson Json
+  etag          String
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, moduleCode, originCode, legalEntityId, createdAt])
+}
+
+model HrmEmployeeProfile {
+  id            String                      @id @default(uuid())
+  tenantId      String
+  legalEntityId String
+  employeeCode  String
+  fullName      String
+  metadataValues HrmEmployeeMetadataValue[]
+  createdAt     DateTime                    @default(now())
+  updatedAt     DateTime                    @updatedAt
+
+  @@unique([tenantId, employeeCode])
+  @@index([tenantId, legalEntityId])
+}
+
+model HrmEmployeeMetadataValue {
+  id                       String             @id @default(uuid())
+  employeeProfileId        String
+  fieldCode                String
+  valueJson                Json
+  effectiveConfigVersionJson Json
+  employeeProfile          HrmEmployeeProfile @relation(fields: [employeeProfileId], references: [id])
+  updatedAt                DateTime           @updatedAt
+
+  @@unique([employeeProfileId, fieldCode])
+  @@index([fieldCode])
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  tenantId      String
+  actorUserId   String?
+  action        String
+  artifactType  String
+  artifactKey   String
+  correlationId String?
+  payloadJson   Json
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, artifactType, artifactKey, createdAt])
+}
