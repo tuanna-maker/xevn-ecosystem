@@ -35,6 +35,7 @@ model LegalEntity {
 model ConfigOrigin {
   id           String                @id @default(uuid())
   tenantId     String
+  ownerModuleCode String              @default("xbos")
   moduleCode   String
   originCode   String
   status       String                @default("draft")
@@ -43,8 +44,8 @@ model ConfigOrigin {
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
 
-  @@unique([tenantId, moduleCode, originCode])
-  @@index([tenantId, moduleCode, status])
+  @@unique([tenantId, ownerModuleCode, moduleCode, originCode])
+  @@index([tenantId, ownerModuleCode, moduleCode, status])
 }
 
 model ConfigOriginVersion {
@@ -75,6 +76,7 @@ model ConfigOriginField {
 model ConfigVariant {
   id            String                 @id @default(uuid())
   tenantId      String
+  ownerModuleCode String               @default("xbos")
   moduleCode    String
   originCode    String
   legalEntityId String
@@ -85,8 +87,8 @@ model ConfigVariant {
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
 
-  @@unique([tenantId, moduleCode, originCode, legalEntityId])
-  @@index([tenantId, moduleCode, legalEntityId, status])
+  @@unique([tenantId, ownerModuleCode, moduleCode, originCode, legalEntityId])
+  @@index([tenantId, ownerModuleCode, moduleCode, legalEntityId, status])
 }
 
 model ConfigVariantVersion {

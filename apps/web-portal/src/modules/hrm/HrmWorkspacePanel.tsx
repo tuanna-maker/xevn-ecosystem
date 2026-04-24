@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  CheckCircle,
   Users,
   UserPlus,
   Clock,
@@ -9,6 +10,7 @@ import {
   Search,
   Download,
   BarChart3,
+  GitPullRequest,
 } from 'lucide-react';
 import type { Company, Employee } from '../../data/mock-data';
 import { ENTITY_LEVEL_LABELS, mockEmployees, mockCompanies } from '../../data/mock-data';
@@ -50,6 +52,38 @@ import {
 } from './mock-data';
 
 const RAIL_STROKE = 1.5;
+
+const HRM_METADATA_CHANGE_REQUESTS: Array<{
+  id: string;
+  employeeName: string;
+  legalEntityName: string;
+  configVersion: string;
+  reason: string;
+  fields: string[];
+  ageHours: number;
+  slaHours: number;
+}> = [
+  {
+    id: 'hrm-meta-cr-001',
+    employeeName: 'Nguyễn Văn Tài',
+    legalEntityName: 'XeVN Logistics',
+    configVersion: 'employee_profile:1:1',
+    reason: 'Bổ sung hạng GPLX FC theo yêu cầu vận hành container',
+    fields: ['driver_license_class', 'employee_identity_number'],
+    ageHours: 3,
+    slaHours: 24,
+  },
+  {
+    id: 'hrm-meta-cr-002',
+    employeeName: 'Trần Thị Kho',
+    legalEntityName: 'XeVN Express',
+    configVersion: 'employee_profile:1:0',
+    reason: 'Cập nhật nhóm nhân sự kho bãi sau điều chuyển phòng ban',
+    fields: ['employment_group'],
+    ageHours: 11,
+    slaHours: 24,
+  },
+];
 
 const SettingSectionHeader: React.FC<{ title: string; subtitle?: React.ReactNode }> = ({
   title,
@@ -652,6 +686,72 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                     ))}
                   </ul>
                 </div>
+              </div>
+
+              <div className={`${HRM_TABLE_SHELL}`}>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-xevn-border bg-white/70 px-4 py-3 backdrop-blur-md">
+                  <div className="flex items-center gap-2">
+                    <GitPullRequest className="h-5 w-5 text-xevn-primary" strokeWidth={RAIL_STROKE} />
+                    <div>
+                      <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>
+                        Hàng chờ duyệt thay đổi hồ sơ nhân sự
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Portal thống kê hoạt động phân hệ HRM theo workflow cấu hình từ X-BOS.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
+                    {HRM_METADATA_CHANGE_REQUESTS.length} yêu cầu chờ xử lý
+                  </span>
+                </div>
+                <table className={HRM_TABLE_CLASS}>
+                  <thead className="bg-white/70 backdrop-blur-md">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Nhân sự</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Pháp nhân</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Field thay đổi</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Lý do</th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">SLA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {HRM_METADATA_CHANGE_REQUESTS.map((request) => (
+                      <tr key={request.id} className="border-t border-xevn-border">
+                        <td className="px-3 py-2">
+                          <div className="font-medium text-xevn-text">{request.employeeName}</div>
+                          <div className="font-mono text-xs text-slate-500">{request.configVersion}</div>
+                        </td>
+                        <td className="px-3 py-2 text-slate-700">{request.legalEntityName}</td>
+                        <td className="px-3 py-2">
+                          <div className="flex flex-wrap gap-1">
+                            {request.fields.map((fieldCode) => (
+                              <span
+                                key={fieldCode}
+                                className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-600"
+                              >
+                                {fieldCode}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="max-w-[18rem] px-3 py-2 text-slate-600">{request.reason}</td>
+                        <td className="px-3 py-2 text-right">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
+                              request.ageHours > request.slaHours * 0.75
+                                ? 'bg-rose-50 text-rose-700'
+                                : 'bg-emerald-50 text-emerald-700'
+                            }`}
+                          >
+                            <CheckCircle className="h-3.5 w-3.5" strokeWidth={RAIL_STROKE} />
+                            {request.ageHours}h / {request.slaHours}h
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
               <div className={`${HRM_TABLE_SHELL}`}>

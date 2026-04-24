@@ -2,6 +2,8 @@ export type ConfigDataType = 'text' | 'number' | 'date' | 'select' | 'phone' | '
 
 export type ConfigScope = 'global' | 'legal_entity';
 
+export type ConfigLayer = 'xbos' | 'module' | 'tenant' | 'legal_entity';
+
 export type ValidationRules = {
   required?: boolean;
   min?: number;
@@ -49,6 +51,8 @@ export type ConfigOrigin = {
   tenantId: string;
   moduleCode: string;
   originCode: string;
+  ownerLayer: ConfigLayer;
+  inheritanceMode?: 'root' | 'extends_xbos';
   originVersion: number;
   status: 'draft' | 'published';
   blocks: ConfigBlockContract[];
@@ -60,6 +64,8 @@ export type ConfigVariant = {
   tenantId: string;
   moduleCode: string;
   originCode: string;
+  ownerLayer: ConfigLayer;
+  inheritsFromOrigin?: boolean;
   legalEntityId: string;
   variantVersion: number;
   status: 'draft' | 'published';

@@ -8,6 +8,8 @@ export const CONFIG_ORIGINS: ConfigOrigin[] = [{
   tenantId,
   moduleCode,
   originCode,
+  ownerLayer: 'xbos',
+  inheritanceMode: 'root',
   originVersion: 1,
   status: 'published',
   blocks: [
@@ -83,6 +85,8 @@ export const CONFIG_VARIANTS: ConfigVariant[] = [
     moduleCode,
     originCode,
     legalEntityId: 'comp-002',
+    ownerLayer: 'module',
+    inheritsFromOrigin: true,
     variantVersion: 1,
     status: 'published',
     diffJson: {
@@ -108,6 +112,8 @@ export const CONFIG_VARIANTS: ConfigVariant[] = [
     moduleCode,
     originCode,
     legalEntityId: 'comp-003',
+    ownerLayer: 'module',
+    inheritsFromOrigin: true,
     variantVersion: 1,
     status: 'published',
     diffJson: {
