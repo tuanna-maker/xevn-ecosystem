@@ -2,7 +2,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
   Users,
   UserPlus,
   Clock,
@@ -13,6 +12,7 @@ import {
 } from 'lucide-react';
 import type { Company, Employee } from '../../data/mock-data';
 import { ENTITY_LEVEL_LABELS, mockEmployees, mockCompanies } from '../../data/mock-data';
+import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import {
   SETTINGS_COL,
   SETTINGS_CONTROL_TEXT,
@@ -73,6 +73,7 @@ export interface HrmWorkspacePanelProps {
 
 export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }: HrmWorkspacePanelProps) {
   const navigate = useNavigate();
+  const { selectedCompany } = useGlobalFilter();
   const hrmLegalEntities = legalEntityListProp ?? mockCompanies;
   const titles: Record<HrmWorkspaceMenuKey, { title: string; subtitle: string }> = {
       dashboard: {
@@ -125,7 +126,17 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   };
 
   const meta = titles[view];
-  const hrmEmployees = mockEmployees.slice(0, 10);
+  const visibleEmployees =
+    selectedCompany && selectedCompany.id !== 'all'
+      ? mockEmployees.filter((_, index) => {
+          const companyIndex = index % Math.max(1, hrmLegalEntities.length);
+          return hrmLegalEntities[companyIndex]?.id === selectedCompany.id;
+        })
+      : mockEmployees;
+  const hrmEmployees = visibleEmployees.slice(0, 10);
+  const activeEmployeeCount = visibleEmployees.filter((employee) => employee.status === 'active').length;
+  const selectedCompanyLabel =
+    selectedCompany && selectedCompany.id !== 'all' ? selectedCompany.name : 'Toàn tập đoàn XeVN';
 
   const openHrmApp = (path: string) => {
     window.location.href = path;
@@ -481,6 +492,27 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
 
         <div className="xevn-safe-inline w-full min-w-0 flex-1 min-h-[min(520px,72vh)] overflow-y-auto overflow-x-hidden pb-6 pt-6">
           <SettingSectionHeader title={meta.title} subtitle={meta.subtitle} />
+
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className={`rounded-input border border-xevn-border bg-white px-4 py-3 shadow-soft`}>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Phạm vi Portal</p>
+              <p className="mt-1 truncate text-base font-semibold text-xevn-text" title={selectedCompanyLabel}>
+                {selectedCompanyLabel}
+              </p>
+            </div>
+            <div className={`rounded-input border border-xevn-border bg-white px-4 py-3 shadow-soft`}>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Nhân sự trong phạm vi</p>
+              <p className="mt-1 text-base font-semibold tabular-nums text-xevn-primary">
+                {visibleEmployees.length} hồ sơ
+              </p>
+            </div>
+            <div className={`rounded-input border border-xevn-border bg-white px-4 py-3 shadow-soft`}>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Đang làm việc</p>
+              <p className="mt-1 text-base font-semibold tabular-nums text-emerald-700">
+                {activeEmployeeCount} Active
+              </p>
+            </div>
+          </div>
 
           {renderActionBar()}
 

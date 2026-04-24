@@ -10,7 +10,7 @@ export function KpiLayout() {
             Quản trị KPI
           </h1>
           <p className="mt-1 text-sm text-xevn-muted">
-            Quản lý khai báo KPI, gán KPI theo cấp nhân sự, và theo dõi tiến độ theo kỳ.
+            Quản lý khai báo KPI, gán KPI theo phạm vi tổ chức, phân bổ KPI cá nhân và theo dõi tiến độ theo kỳ.
           </p>
         </div>
         <KpiTabs />

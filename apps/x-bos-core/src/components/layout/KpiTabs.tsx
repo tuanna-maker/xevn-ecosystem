@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { ClipboardList, Target, TrendingUp } from 'lucide-react';
+import { ClipboardList, GitBranch, Target, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 export function KpiTabs() {
   const tabs = [
     { to: '/kpi', label: 'Khai báo KPI', icon: ClipboardList, end: true },
-    { to: '/kpi/assign', label: 'Gán KPI', icon: Target, end: false },
+    { to: '/kpi/org-assign', label: 'Gán KPI theo tổ chức', icon: Target, end: false },
+    { to: '/kpi/assign', label: 'Phân bổ cá nhân', icon: GitBranch, end: false },
     { to: '/kpi/tracking', label: 'Theo dõi tiến độ', icon: TrendingUp, end: false },
   ];
 

@@ -166,6 +166,15 @@ type PermissionMatrixRow = {
 
 type PermissionRoleDef = { id: string; label: string };
 
+type WorkflowRiskSeverity = 'error' | 'warning';
+
+type WorkflowRiskCheck = {
+  code: string;
+  severity: WorkflowRiskSeverity;
+  messageVi: string;
+  stepId?: string;
+};
+
 const PERMISSION_MODULE_META: ReadonlyArray<{
   key: PermissionModuleKey;
   title: string;
@@ -820,6 +829,131 @@ function buildWorkflowDestinationOptions(
     });
   }
   return o;
+}
+
+function analyzeWorkflowGraphRisks(form: WorkflowDefinition): WorkflowRiskCheck[] {
+  const risks: WorkflowRiskCheck[] = [];
+  const steps = form.steps.slice().sort((a, b) => a.order - b.order);
+  const stepIds = new Set(steps.map((step) => step.id));
+  const validDestinations = new Set<string>([
+    WF_NODE_START,
+    WF_NODE_END_OK,
+    WF_NODE_END_REJECT,
+    WF_NODE_BOD,
+    ...stepIds,
+  ]);
+
+  const startStep = steps[0];
+  if (!startStep) {
+    return [
+      {
+        code: 'WF_EMPTY_GRAPH',
+        severity: 'error',
+        messageVi: 'Quy trình chưa có bước xử lý nào.',
+      },
+    ];
+  }
+
+  const outgoing = new Map<string, string[]>();
+  steps.forEach((step) => {
+    ensureTransitions(step.transitions).forEach((transition) => {
+      if (!validDestinations.has(transition.destinationId)) {
+        risks.push({
+          code: 'WF_DESTINATION_NOT_FOUND',
+          severity: 'error',
+          stepId: step.id,
+          messageVi: `Bước ${step.order} có đích ${transition.destinationId || '—'} không tồn tại.`,
+        });
+        return;
+      }
+      if (stepIds.has(transition.destinationId)) {
+        outgoing.set(step.id, [...(outgoing.get(step.id) ?? []), transition.destinationId]);
+      }
+    });
+  });
+
+  const reachable = new Set<string>([startStep.id]);
+  const queue = [startStep.id];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) continue;
+    for (const next of outgoing.get(current) ?? []) {
+      if (reachable.has(next)) continue;
+      reachable.add(next);
+      queue.push(next);
+    }
+  }
+
+  steps.forEach((step) => {
+    if (!reachable.has(step.id)) {
+      risks.push({
+        code: 'WF_UNREACHABLE_STEP',
+        severity: 'warning',
+        stepId: step.id,
+        messageVi: `Bước ${step.order} chưa có đường đi từ bước bắt đầu.`,
+      });
+    }
+  });
+
+  const terminalIds = new Set([WF_NODE_END_OK, WF_NODE_END_REJECT, WF_NODE_BOD]);
+  steps.forEach((step) => {
+    const canReachTerminal = (() => {
+      const seen = new Set<string>();
+      const stack = [step.id];
+      while (stack.length > 0) {
+        const current = stack.pop();
+        if (!current || seen.has(current)) continue;
+        seen.add(current);
+        const currentStep = steps.find((candidate) => candidate.id === current);
+        if (!currentStep) continue;
+        for (const transition of ensureTransitions(currentStep.transitions)) {
+          if (terminalIds.has(transition.destinationId)) return true;
+          if (stepIds.has(transition.destinationId)) stack.push(transition.destinationId);
+        }
+      }
+      return false;
+    })();
+
+    if (!canReachTerminal) {
+      risks.push({
+        code: 'WF_NO_TERMINAL_PATH',
+        severity: 'warning',
+        stepId: step.id,
+        messageVi: `Bước ${step.order} chưa có đường đi tới Hoàn thành / Từ chối / BOD.`,
+      });
+    }
+  });
+
+  const cycleVisited = new Set<string>();
+  const inStack = new Set<string>();
+  const cycleSteps = new Set<string>();
+  const visit = (nodeId: string) => {
+    cycleVisited.add(nodeId);
+    inStack.add(nodeId);
+    for (const next of outgoing.get(nodeId) ?? []) {
+      if (!cycleVisited.has(next)) {
+        visit(next);
+      } else if (inStack.has(next)) {
+        cycleSteps.add(nodeId);
+        cycleSteps.add(next);
+      }
+    }
+    inStack.delete(nodeId);
+  };
+  steps.forEach((step) => {
+    if (!cycleVisited.has(step.id)) visit(step.id);
+  });
+  cycleSteps.forEach((stepId) => {
+    const step = steps.find((candidate) => candidate.id === stepId);
+    risks.push({
+      code: 'WF_CYCLE_DETECTED',
+      severity: 'warning',
+      stepId,
+      messageVi: `Bước ${step?.order ?? stepId} nằm trong vòng lặp; cần xác nhận policy cho phép loop-back.`,
+    });
+  });
+
+  return risks;
 }
 
 type CompanyDetailTab = 'legal' | 'departments' | 'personnel';
@@ -2563,6 +2697,7 @@ const CommandCenterPage: React.FC = () => {
       deptSystemDetailOpen: deptSystemDetailId !== null,
       deptSystemDetailName: deptSystemForm?.nameVi ?? '',
     });
+    const workflowRiskFindings = workflowForm ? analyzeWorkflowGraphRisks(workflowForm) : [];
     const showCompanyFormStickyNav =
       activeSettingsMenu === 'company_member_units' && companySettingsView === 'form';
     const showFoundationDetailStickyNav =
@@ -4796,6 +4931,53 @@ const CommandCenterPage: React.FC = () => {
                   title={workflowEditId === 'new' ? 'Thêm quy trình' : 'Chi tiết quy trình'}
                   subtitle="Mỗi bước có ba luồng: Đồng ý, Từ chối và chuyển cấp BOD; sơ đồ luồng phản ánh đúng cấu hình các bước bên dưới"
                 />
+                <div
+                  className={`border p-4 shadow-soft ${
+                    workflowRiskFindings.some((risk) => risk.severity === 'error')
+                      ? 'border-rose-200 bg-rose-50/80'
+                      : workflowRiskFindings.length > 0
+                        ? 'border-amber-200 bg-amber-50/80'
+                        : 'border-emerald-200 bg-emerald-50/80'
+                  } ${SETTINGS_RADIUS_CARD}`}
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Kiểm tra graph quy trình</h4>
+                      <p className="mt-1 text-sm text-slate-600">
+                        Prototype SRS: phát hiện đích không tồn tại, bước không reachable, thiếu terminal path và cycle/loop.
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold tabular-nums text-slate-600 shadow-sm">
+                      {workflowRiskFindings.length} cảnh báo
+                    </span>
+                  </div>
+                  {workflowRiskFindings.length > 0 ? (
+                    <div className="mt-3 grid gap-2">
+                      {workflowRiskFindings.map((risk) => (
+                        <div
+                          key={`${risk.code}-${risk.stepId ?? 'workflow'}`}
+                          className="rounded-input border border-white/80 bg-white/80 px-3 py-2 text-sm shadow-sm"
+                        >
+                          <span
+                            className={`mr-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                              risk.severity === 'error'
+                                ? 'bg-rose-100 text-rose-700'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}
+                          >
+                            {risk.severity.toUpperCase()}
+                          </span>
+                          <span className="font-mono text-xs text-slate-500">{risk.code}</span>
+                          <p className="mt-1 text-slate-700">{risk.messageVi}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm font-medium text-emerald-700">
+                      Graph hợp lệ cho prototype: có đường tới terminal và không phát hiện cycle.
+                    </p>
+                  )}
+                </div>
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
                   <h4 className={`mb-4 ${SETTINGS_SECTION_TITLE_CLASS}`}>Thông tin chung quy trình</h4>
                   <div className={SETTINGS_SECTION_GRID}>
@@ -4936,6 +5118,47 @@ const CommandCenterPage: React.FC = () => {
                   >
                     Sơ đồ luồng
                   </button>
+                </div>
+                <div
+                  className={`border p-4 shadow-soft ${
+                    workflowRiskFindings.length > 0
+                      ? 'border-amber-200 bg-amber-50/80'
+                      : 'border-emerald-200 bg-emerald-50/80'
+                  } ${SETTINGS_RADIUS_CARD}`}
+                >
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Cảnh báo đồ thị quy trình</h4>
+                      <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                        Kiểm tra reachable graph, destination node, terminal path và cycle theo SRS Workflow.
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-white/70 bg-white px-3 py-1 text-xs font-semibold tabular-nums text-slate-700 shadow-sm">
+                      {workflowRiskFindings.length} cảnh báo
+                    </span>
+                  </div>
+                  {workflowRiskFindings.length > 0 ? (
+                    <div className="mt-3 grid gap-2">
+                      {workflowRiskFindings.map((risk) => (
+                        <div
+                          key={`${risk.code}-${risk.stepId ?? 'workflow'}`}
+                          className={`rounded-input border bg-white px-3 py-2 text-sm ${
+                            risk.severity === 'error'
+                              ? 'border-rose-200 text-rose-800'
+                              : 'border-amber-200 text-amber-900'
+                          }`}
+                        >
+                          <span className="font-mono text-xs font-semibold">{risk.code}</span>
+                          <span className="mx-2 text-slate-300">·</span>
+                          <span>{risk.messageVi}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm font-medium text-emerald-800">
+                      Đồ thị hợp lệ ở mức prototype: các bước reachable và có đường tới terminal node.
+                    </p>
+                  )}
                 </div>
                 {workflowDetailTab === 'graph' ? (
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
