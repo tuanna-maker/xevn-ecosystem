@@ -59,6 +59,27 @@ export type SaveEmployeeMetadataValuesResponse = {
   errors: FieldValidationError[];
 };
 
+export type EmployeeMetadataChangeRequest = {
+  id: string;
+  tenantId: string;
+  employeeId: string;
+  legalEntityId: string;
+  status: 'pending_approval' | 'approved' | 'rejected';
+  requestedBy: string;
+  reason: string;
+  values: Record<string, string | number | boolean | null>;
+  effectiveConfigVersion: string;
+  errors: FieldValidationError[];
+  createdAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+};
+
+export type CreateMetadataChangeRequestResponse = {
+  request?: EmployeeMetadataChangeRequest;
+  errors: FieldValidationError[];
+};
+
 const fallbackEmployeeMetadataForm = (employeeId: string, legalEntityId: string): EmployeeMetadataFormResponse => ({
   employeeId,
   effectiveConfigVersion: `fallback:employee_profile:${legalEntityId}`,
@@ -165,33 +186,83 @@ function validateFallback(
     });
 }
 
-export async function saveEmployeeMetadataValues(
-  employeeId: string,
-  legalEntityId: string,
-  values: Record<string, string>,
-  tenantId = 'tenant-xevn-holding',
-): Promise<SaveEmployeeMetadataValuesResponse> {
+export async function saveEmployeeMetadataValues(input: {
+  tenantId?: string;
+  legalEntityId: string;
+  employeeId: string;
+  values: Record<string, string>;
+}): Promise<SaveEmployeeMetadataValuesResponse> {
+  const tenantId = input.tenantId ?? 'tenant-xevn-holding';
   try {
-    const response = await fetch(`${API_BASE_URL}/hrm/employees/${encodeURIComponent(employeeId)}/metadata-values`, {
+    const response = await fetch(`${API_BASE_URL}/hrm/employees/${encodeURIComponent(input.employeeId)}/metadata-values`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tenantId, legalEntityId, values }),
+      body: JSON.stringify({ tenantId, legalEntityId: input.legalEntityId, values: input.values }),
     });
     if (!response.ok) throw new Error(`API ${response.status}`);
     return (await response.json()) as SaveEmployeeMetadataValuesResponse;
   } catch {
-    const fallbackForm = fallbackEmployeeMetadataForm(employeeId, legalEntityId);
-    const errors = validateFallback(fallbackForm, values);
+    const fallbackForm = fallbackEmployeeMetadataForm(input.employeeId, input.legalEntityId);
+    const errors = validateFallback(fallbackForm, input.values);
     if (errors.length > 0) return { errors };
     return {
       errors: [],
       record: {
         tenantId,
-        employeeId,
-        legalEntityId,
+        employeeId: input.employeeId,
+        legalEntityId: input.legalEntityId,
         effectiveConfigVersion: fallbackForm.effectiveConfigVersion,
-        values,
+        values: input.values,
         updatedAt: new Date().toISOString(),
+      },
+    };
+  }
+}
+
+export async function createEmployeeMetadataChangeRequest(input: {
+  tenantId?: string;
+  legalEntityId: string;
+  employeeId: string;
+  values: Record<string, string>;
+  requestedBy?: string;
+  reason?: string;
+}): Promise<CreateMetadataChangeRequestResponse> {
+  const tenantId = input.tenantId ?? 'tenant-xevn-holding';
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/hrm/employees/${encodeURIComponent(input.employeeId)}/metadata-change-requests`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId,
+          legalEntityId: input.legalEntityId,
+          values: input.values,
+          requestedBy: input.requestedBy ?? 'hr-portal-user',
+          reason: input.reason ?? 'Cập nhật thông tin động từ hồ sơ HRM',
+        }),
+      },
+    );
+    if (!response.ok) throw new Error(`API ${response.status}`);
+    return (await response.json()) as CreateMetadataChangeRequestResponse;
+  } catch {
+    const fallbackForm = fallbackEmployeeMetadataForm(input.employeeId, input.legalEntityId);
+    const errors = validateFallback(fallbackForm, input.values);
+    if (errors.length > 0) return { errors };
+    return {
+      errors: [],
+      request: {
+        id: `fallback-cr-${Date.now()}`,
+        tenantId,
+        employeeId: input.employeeId,
+        legalEntityId: input.legalEntityId,
+        status: 'pending_approval',
+        requestedBy: input.requestedBy ?? 'hr-portal-user',
+        reason: input.reason ?? 'Cập nhật thông tin động từ hồ sơ HRM',
+        values: input.values,
+        effectiveConfigVersion: fallbackForm.effectiveConfigVersion,
+        errors: [],
+        createdAt: new Date().toISOString(),
       },
     };
   }

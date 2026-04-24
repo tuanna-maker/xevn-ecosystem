@@ -167,6 +167,23 @@ model HrmEmployeeMetadataValue {
   @@index([fieldCode])
 }
 
+model HrmEmployeeMetadataChangeRequest {
+  id                         String   @id @default(uuid())
+  tenantId                   String
+  employeeId                 String
+  legalEntityId              String
+  status                     String   @default("pending_approval")
+  requestedBy                String?
+  approvedBy                 String?
+  valuesJson                 Json
+  errorsJson                 Json?
+  effectiveConfigVersionJson Json
+  createdAt                  DateTime @default(now())
+  approvedAt                 DateTime?
+
+  @@index([tenantId, employeeId, status, createdAt])
+}
+
 model AuditLog {
   id            String   @id @default(uuid())
   tenantId      String

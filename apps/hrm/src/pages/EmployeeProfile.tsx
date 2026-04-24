@@ -196,13 +196,20 @@ export default function EmployeeProfile() {
       legalEntityId: employee.company_id ?? 'comp-001',
       employeeId: employee.id,
       values: metadataValues,
+      reason: 'HR cập nhật hồ sơ nhân sự theo cấu hình X-BOS',
+      requestedBy: 'hr-portal-user',
+      autoApprove: false,
     });
     if (result.errors.length > 0) {
       setMetadataErrors(Object.fromEntries(result.errors.map((item) => [item.fieldCode, item])));
       setMetadataMessage('Chưa thể lưu. Vui lòng kiểm tra các trường cấu hình động.');
       return;
     }
-    setMetadataMessage('Đã lưu thông tin động theo cấu hình X-BOS.');
+    setMetadataMessage(
+      result.approved
+        ? 'Đã lưu thông tin động theo cấu hình X-BOS.'
+        : `Đã tạo yêu cầu duyệt ${result.request?.id ?? ''}. Dữ liệu sẽ có hiệu lực sau khi phê duyệt.`,
+    );
   }, [employee, metadataValues]);
 
   // Save pinned tabs to localStorage

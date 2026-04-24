@@ -1,4 +1,4 @@
-import { IsObject, IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString } from 'class-validator';
 
 export class SaveEmployeeMetadataValuesDto {
   @IsString()
@@ -9,4 +9,23 @@ export class SaveEmployeeMetadataValuesDto {
 
   @IsObject()
   values!: Record<string, string | number | boolean | null>;
+}
+
+export class SubmitEmployeeMetadataChangeDto extends SaveEmployeeMetadataValuesDto {
+  @IsString()
+  @IsOptional()
+  reason?: string;
+
+  @IsString()
+  @IsOptional()
+  actorUserId?: string;
+}
+
+export class ApproveEmployeeMetadataChangeDto {
+  @IsString()
+  tenantId = 'tenant-xevn-holding';
+
+  @IsString()
+  @IsOptional()
+  approverUserId?: string;
 }
