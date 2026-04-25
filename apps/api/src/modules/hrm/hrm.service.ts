@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import type { FieldValidationError } from '../config/config.types';
+import { HRM_REPOSITORY, type HrmRepository } from './hrm.repository';
 
 export type EmployeeMetadataValueRecord = {
   tenantId: string;
@@ -36,10 +37,10 @@ export type EmployeeMetadataChangeRequest = {
 
 @Injectable()
 export class HrmService {
-  private readonly metadataValues = new Map<string, EmployeeMetadataValueRecord>();
-  private readonly changeRequests = new Map<string, EmployeeMetadataChangeRequest>();
-
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject(HRM_REPOSITORY) private readonly repository: HrmRepository,
+  ) {}
 
   getEmployeeMetadataForm(input: {
     tenantId: string;
@@ -52,7 +53,7 @@ export class HrmService {
       originCode: 'employee_profile',
       legalEntityId: input.legalEntityId,
     });
-    const record = this.metadataValues.get(this.key(input.tenantId, input.employeeId));
+    const record = this.repository.getMetadataValues(input.tenantId, input.employeeId);
 
     return {
       employeeId: input.employeeId,
@@ -87,7 +88,7 @@ export class HrmService {
       values: input.values,
       updatedAt: new Date().toISOString(),
     };
-    this.metadataValues.set(this.key(input.tenantId, input.employeeId), record);
+    this.repository.saveMetadataValues(record);
     return { record, errors: [] };
   }
 
@@ -137,7 +138,7 @@ export class HrmService {
         reason: 'Payload không đạt validation theo effective config.',
       });
     }
-    this.changeRequests.set(request.id, request);
+    this.repository.saveMetadataChangeRequest(request);
     return request;
   }
 
@@ -146,11 +147,7 @@ export class HrmService {
     employeeId?: string;
     status?: EmployeeMetadataChangeStatus;
   }): EmployeeMetadataChangeRequest[] {
-    return [...this.changeRequests.values()]
-      .filter((request) => request.tenantId === input.tenantId)
-      .filter((request) => (input.employeeId ? request.employeeId === input.employeeId : true))
-      .filter((request) => (input.status ? request.status === input.status : true))
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return this.repository.listMetadataChangeRequests(input);
   }
 
   approveMetadataChangeRequest(input: {
@@ -158,7 +155,7 @@ export class HrmService {
     requestId: string;
     actorUserId: string;
   }): EmployeeMetadataChangeRequest {
-    const request = this.changeRequests.get(input.requestId);
+    const request = this.repository.getMetadataChangeRequest(input.requestId);
     if (!request || request.tenantId !== input.tenantId) {
       throw new Error(`Không tìm thấy yêu cầu thay đổi ${input.requestId}.`);
     }
@@ -181,11 +178,7 @@ export class HrmService {
       at: now,
       reason: request.status === 'approved' ? 'Đã duyệt và ghi metadata values.' : 'Validation lại thất bại khi duyệt.',
     });
-    this.changeRequests.set(request.id, request);
+    this.repository.saveMetadataChangeRequest(request);
     return request;
-  }
-
-  private key(tenantId: string, employeeId: string): string {
-    return `${tenantId}:${employeeId}`;
   }
 }

@@ -1,5 +1,5 @@
 /** HRM workspace — mount bởi router `/command-center/hrm/:view`, không nhồi vào CommandCenterPage. */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle,
@@ -50,40 +50,14 @@ import {
   HRM_MOCK_TOOLS_EQUIPMENT,
   HRM_MOCK_GUIDE_CHAPTERS,
 } from './mock-data';
+import {
+  approveHrmMetadataChangeRequest,
+  fetchHrmMetadataChangeRequests,
+  fallbackHrmMetadataChangeRequests,
+  type HrmMetadataChangeRequestView,
+} from './hrmApiClient';
 
 const RAIL_STROKE = 1.5;
-
-const HRM_METADATA_CHANGE_REQUESTS: Array<{
-  id: string;
-  employeeName: string;
-  legalEntityName: string;
-  configVersion: string;
-  reason: string;
-  fields: string[];
-  ageHours: number;
-  slaHours: number;
-}> = [
-  {
-    id: 'hrm-meta-cr-001',
-    employeeName: 'Nguyễn Văn Tài',
-    legalEntityName: 'XeVN Logistics',
-    configVersion: 'employee_profile:1:1',
-    reason: 'Bổ sung hạng GPLX FC theo yêu cầu vận hành container',
-    fields: ['driver_license_class', 'employee_identity_number'],
-    ageHours: 3,
-    slaHours: 24,
-  },
-  {
-    id: 'hrm-meta-cr-002',
-    employeeName: 'Trần Thị Kho',
-    legalEntityName: 'XeVN Express',
-    configVersion: 'employee_profile:1:0',
-    reason: 'Cập nhật nhóm nhân sự kho bãi sau điều chuyển phòng ban',
-    fields: ['employment_group'],
-    ageHours: 11,
-    slaHours: 24,
-  },
-];
 
 const SettingSectionHeader: React.FC<{ title: string; subtitle?: React.ReactNode }> = ({
   title,
@@ -108,6 +82,10 @@ export interface HrmWorkspacePanelProps {
 export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }: HrmWorkspacePanelProps) {
   const navigate = useNavigate();
   const { selectedCompany } = useGlobalFilter();
+  const [metadataRequests, setMetadataRequests] = useState<HrmMetadataChangeRequestView[]>(
+    fallbackHrmMetadataChangeRequests,
+  );
+  const [metadataQueueMessage, setMetadataQueueMessage] = useState('');
   const hrmLegalEntities = legalEntityListProp ?? mockCompanies;
   const titles: Record<HrmWorkspaceMenuKey, { title: string; subtitle: string }> = {
       dashboard: {
@@ -172,8 +150,30 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   const selectedCompanyLabel =
     selectedCompany && selectedCompany.id !== 'all' ? selectedCompany.name : 'Toàn tập đoàn XeVN';
 
+  const metadataRequestRows = metadataRequests;
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchHrmMetadataChangeRequests('tenant-xevn-holding').then((items) => {
+      if (!cancelled) setMetadataRequests(items);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const openHrmApp = (path: string) => {
     window.location.href = path;
+  };
+
+  const approveMetadataRequest = async (requestId: string) => {
+    const result = await approveHrmMetadataChangeRequest(requestId);
+    if (result.status === 'approved') {
+      setMetadataRequests((prev) => prev.filter((request) => request.id !== requestId));
+      setMetadataQueueMessage(`Đã duyệt yêu cầu ${requestId}.`);
+    } else {
+      setMetadataQueueMessage(`Yêu cầu ${requestId} chưa thể duyệt: ${result.status}.`);
+    }
   };
 
   const renderActionBar = () => {
@@ -702,7 +702,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                     </div>
                   </div>
                   <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
-                    {HRM_METADATA_CHANGE_REQUESTS.length} yêu cầu chờ xử lý
+                    {metadataRequestRows.length} yêu cầu chờ xử lý
                   </span>
                 </div>
                 <table className={HRM_TABLE_CLASS}>
@@ -712,11 +712,11 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                       <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Pháp nhân</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Field thay đổi</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Lý do</th>
-                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">SLA</th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">SLA / Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {HRM_METADATA_CHANGE_REQUESTS.map((request) => (
+                    {metadataRequestRows.map((request) => (
                       <tr key={request.id} className="border-t border-xevn-border">
                         <td className="px-3 py-2">
                           <div className="font-medium text-xevn-text">{request.employeeName}</div>
@@ -737,21 +737,37 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                         </td>
                         <td className="max-w-[18rem] px-3 py-2 text-slate-600">{request.reason}</td>
                         <td className="px-3 py-2 text-right">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
-                              request.ageHours > request.slaHours * 0.75
-                                ? 'bg-rose-50 text-rose-700'
-                                : 'bg-emerald-50 text-emerald-700'
-                            }`}
-                          >
-                            <CheckCircle className="h-3.5 w-3.5" strokeWidth={RAIL_STROKE} />
-                            {request.ageHours}h / {request.slaHours}h
-                          </span>
+                          <div className="flex flex-col items-end gap-2">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold ${
+                                request.ageHours > request.slaHours * 0.75
+                                  ? 'bg-rose-50 text-rose-700'
+                                  : 'bg-emerald-50 text-emerald-700'
+                              }`}
+                            >
+                              <CheckCircle className="h-3.5 w-3.5" strokeWidth={RAIL_STROKE} />
+                              {request.ageHours}h / {request.slaHours}h
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                void approveMetadataRequest(request.id);
+                              }}
+                              className="rounded-input bg-xevn-primary px-3 py-1.5 text-xs font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95"
+                            >
+                              Duyệt
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                {metadataQueueMessage ? (
+                  <div className="border-t border-xevn-border bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">
+                    {metadataQueueMessage}
+                  </div>
+                ) : null}
               </div>
 
               <div className={`${HRM_TABLE_SHELL}`}>
