@@ -7,6 +7,7 @@ import { MasterDataPage } from '@/pages/MasterDataPage';
 import { KpiLayout } from '@/pages/kpi/KpiLayout';
 import { KpiDefinitionsPage } from '@/pages/kpi/KpiDefinitionsPage';
 import { KpiAssignmentsPage } from '@/pages/kpi/KpiAssignmentsPage';
+import { KpiOrgAssignmentsPage } from '@/pages/kpi/KpiOrgAssignmentsPage';
 import { KpiProgressPage } from '@/pages/kpi/KpiProgressPage';
 import { PolicyLayout } from '@/pages/policy/PolicyLayout';
 import { PolicyManagementPage } from '@/pages/kpi/PolicyManagementPage';
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/master-data" element={<MasterDataPage />} />
           <Route path="/kpi" element={<KpiLayout />}>
             <Route index element={<KpiDefinitionsPage />} />
+            <Route path="org-assign" element={<KpiOrgAssignmentsPage />} />
             <Route path="assign" element={<KpiAssignmentsPage />} />
             <Route path="tracking" element={<KpiProgressPage />} />
           </Route>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
@@ -70,6 +70,12 @@ import { EmployeeAssets } from '@/components/employee/EmployeeAssets';
 import { EmployeeRewardsDiscipline } from '@/components/employee/EmployeeRewardsDiscipline';
 import { EmployeeJobList } from '@/components/employee/EmployeeJobList';
 import { PermissionGate } from '@/components/auth/PermissionGate';
+import {
+  fetchEmployeeMetadataForm,
+  saveEmployeeMetadataValues,
+  type EmployeeMetadataForm,
+  type FieldValidationError,
+} from '@/services/xevnApiClient';
 
 // Helper function to format date
 const formatDate = (dateString: string | null) => {
@@ -139,11 +145,32 @@ export default function EmployeeProfile() {
   const [activeTab, setActiveTab] = useState('general');
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isEditLoading, setIsEditLoading] = useState(false);
+  const [metadataForm, setMetadataForm] = useState<EmployeeMetadataForm | null>(null);
+  const [metadataValues, setMetadataValues] = useState<Record<string, string>>({});
+  const [metadataErrors, setMetadataErrors] = useState<Record<string, FieldValidationError>>({});
+  const [metadataMessage, setMetadataMessage] = useState('');
   
   // Fetch employee from database
   const { employee, isLoading, error, refetch } = useEmployee(id);
   const { updateEmployee } = useEmployees();
   const { departments } = useDepartments();
+
+  useEffect(() => {
+    if (!id || !employee) return;
+    const legalEntityId = employee.company_id ?? 'comp-001';
+    void fetchEmployeeMetadataForm({
+      tenantId: 'tenant-xevn-holding',
+      legalEntityId,
+      employeeId: id,
+    }).then((form) => {
+      setMetadataForm(form);
+      setMetadataValues(
+        Object.fromEntries(
+          Object.entries(form.values ?? {}).map(([key, value]) => [key, value == null ? '' : String(value)]),
+        ),
+      );
+    });
+  }, [employee, id]);
 
   const handleEditSubmit = useCallback(async (data: EmployeeFormData & { company_id?: string }) => {
     if (!employee) return false;
@@ -159,6 +186,31 @@ export default function EmployeeProfile() {
       setIsEditLoading(false);
     }
   }, [employee, updateEmployee, refetch]);
+
+  const handleSaveDynamicMetadata = useCallback(async () => {
+    if (!employee) return;
+    setMetadataMessage('');
+    setMetadataErrors({});
+    const result = await saveEmployeeMetadataValues({
+      tenantId: 'tenant-xevn-holding',
+      legalEntityId: employee.company_id ?? 'comp-001',
+      employeeId: employee.id,
+      values: metadataValues,
+      reason: 'HR cập nhật hồ sơ nhân sự theo cấu hình X-BOS',
+      requestedBy: 'hr-portal-user',
+      autoApprove: false,
+    });
+    if (result.errors.length > 0) {
+      setMetadataErrors(Object.fromEntries(result.errors.map((item) => [item.fieldCode, item])));
+      setMetadataMessage('Chưa thể lưu. Vui lòng kiểm tra các trường cấu hình động.');
+      return;
+    }
+    setMetadataMessage(
+      result.approved
+        ? 'Đã lưu thông tin động theo cấu hình X-BOS.'
+        : `Đã tạo yêu cầu duyệt ${result.request?.id ?? ''}. Dữ liệu sẽ có hiệu lực sau khi phê duyệt.`,
+    );
+  }, [employee, metadataValues]);
 
   // Save pinned tabs to localStorage
   const updatePinnedTabs = (newPinned: string[]) => {

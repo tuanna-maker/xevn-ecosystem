@@ -2,9 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Users,
-  Truck,
-  Wallet,
   ChevronRight,
   Clock,
   AlertTriangle,
@@ -13,7 +10,6 @@ import {
   CircleUser,
   Building2,
   User,
-  Settings,
   ShieldCheck,
   GitBranch,
   FileText,
@@ -34,8 +30,6 @@ import {
   Network,
   Warehouse,
   LayoutGrid,
-  Calculator,
-  TrendingUp,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -55,10 +49,8 @@ import {
   ENTITY_LEVEL_LABELS,
   ENTITY_LEVEL_SELECT_ORDER,
   type Company,
-  type Employee,
   type EntityLevelCode,
   mockCompanies,
-  mockEmployees,
 } from '../../data/mock-data';
 import {
   getMockEffectiveEmployeeMetadataDefaults,
@@ -173,6 +165,15 @@ type PermissionMatrixRow = {
 };
 
 type PermissionRoleDef = { id: string; label: string };
+
+type WorkflowRiskSeverity = 'error' | 'warning';
+
+type WorkflowRiskCheck = {
+  code: string;
+  severity: WorkflowRiskSeverity;
+  messageVi: string;
+  stepId?: string;
+};
 
 const PERMISSION_MODULE_META: ReadonlyArray<{
   key: PermissionModuleKey;
@@ -370,6 +371,20 @@ type InfrastructureFormState = Omit<InfrastructureSiteRow, 'id'>;
 
 type InfrastructureBaseBlockCode = 'general' | 'location' | 'capacity';
 type InfrastructureCustomBlockCode = string;
+type InfrastructureBaseFieldCode = Exclude<keyof InfrastructureFormState, 'customFields'>;
+
+type InfrastructureValidationError = {
+  fieldCode: InfrastructureBaseFieldCode | string;
+  errorCode:
+    | 'REQUIRED'
+    | 'INVALID_NUMBER'
+    | 'INVALID_EMAIL'
+    | 'INVALID_PHONE'
+    | 'OPTION_NOT_ALLOWED'
+    | 'OUT_OF_FOUNDATION_SCOPE';
+  messageVi: string;
+  meta?: Record<string, string | number | boolean | string[]>;
+};
 
 type InfrastructureCustomFieldDef = {
   id: string;
@@ -405,6 +420,25 @@ const INFRA_STATUS_LABELS: Record<InfrastructureSiteStatus, string> = {
 };
 
 const INFRA_CUSTOM_FIELD_FORM_CODE = 'company_infrastructure';
+
+const INFRA_REQUIRED_BASE_FIELDS: ReadonlyArray<{
+  fieldCode: InfrastructureBaseFieldCode;
+  labelVi: string;
+}> = [
+  { fieldCode: 'name', labelVi: 'Tên hạ tầng' },
+  { fieldCode: 'siteCode', labelVi: 'Mã định danh' },
+  { fieldCode: 'operatingEntityId', labelVi: 'Đơn vị trực thuộc' },
+  { fieldCode: 'ownerLegalEntityId', labelVi: 'Pháp nhân sở hữu' },
+  { fieldCode: 'capacitySummary', labelVi: 'Tóm tắt sức chứa' },
+];
+
+function pushInfrastructureError(
+  errors: InfrastructureValidationError[],
+  error: InfrastructureValidationError,
+) {
+  if (errors.some((x) => x.fieldCode === error.fieldCode)) return;
+  errors.push(error);
+}
 
 function slugifyKeyPart(input: string): string {
   const noDiacritics = input.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -475,6 +509,126 @@ function infrastructureRowToForm(r: InfrastructureSiteRow): InfrastructureFormSt
   const { id, ...rest } = r;
   void id;
   return normalizeInfrastructureFormForEntity(rest);
+}
+
+function validateInfrastructureForm(
+  form: InfrastructureFormState,
+  effectiveOptions: ReturnType<typeof getMockEffectiveInfrastructureOptions>,
+  customFieldDefs: InfrastructureCustomFieldDef[],
+  legalEntities: Company[],
+  inFoundationScope: boolean,
+): InfrastructureValidationError[] {
+  const errors: InfrastructureValidationError[] = [];
+
+  INFRA_REQUIRED_BASE_FIELDS.forEach(({ fieldCode, labelVi }) => {
+    if (!String(form[fieldCode] ?? '').trim()) {
+      pushInfrastructureError(errors, {
+        fieldCode,
+        errorCode: 'REQUIRED',
+        messageVi: `${labelVi} là bắt buộc.`,
+      });
+    }
+  });
+
+  if (form.operatingEntityId && !inFoundationScope) {
+    pushInfrastructureError(errors, {
+      fieldCode: 'operatingEntityId',
+      errorCode: 'OUT_OF_FOUNDATION_SCOPE',
+      messageVi: 'Pháp nhân này chưa nằm trong phạm vi danh mục nền hạ tầng.',
+      meta: { legalEntityId: form.operatingEntityId },
+    });
+  }
+
+  if (!effectiveOptions.facilityTypes.includes(form.facilityType)) {
+    pushInfrastructureError(errors, {
+      fieldCode: 'facilityType',
+      errorCode: 'OPTION_NOT_ALLOWED',
+      messageVi: 'Loại hạ tầng không thuộc options effective config của pháp nhân.',
+      meta: { allowed: [...effectiveOptions.facilityTypes] },
+    });
+  }
+
+  if (!effectiveOptions.statuses.includes(form.status)) {
+    pushInfrastructureError(errors, {
+      fieldCode: 'status',
+      errorCode: 'OPTION_NOT_ALLOWED',
+      messageVi: 'Trạng thái không thuộc options effective config của pháp nhân.',
+      meta: { allowed: [...effectiveOptions.statuses] },
+    });
+  }
+
+  if (
+    form.ownerLegalEntityId &&
+    !legalEntities.some((entity) => entity.id === form.ownerLegalEntityId)
+  ) {
+    pushInfrastructureError(errors, {
+      fieldCode: 'ownerLegalEntityId',
+      errorCode: 'OPTION_NOT_ALLOWED',
+      messageVi: 'Pháp nhân sở hữu không tồn tại trong danh sách đơn vị thành viên.',
+    });
+  }
+
+  if (form.areaSqm.trim() && Number.isNaN(Number(form.areaSqm))) {
+    pushInfrastructureError(errors, {
+      fieldCode: 'areaSqm',
+      errorCode: 'INVALID_NUMBER',
+      messageVi: 'Diện tích phải là số hợp lệ.',
+    });
+  }
+
+  if (form.hotline.trim() && !/^[0-9+\-().\s]{8,20}$/.test(form.hotline.trim())) {
+    pushInfrastructureError(errors, {
+      fieldCode: 'hotline',
+      errorCode: 'INVALID_PHONE',
+      messageVi: 'Hotline chỉ gồm số và ký tự + - ( ) trong khoảng 8-20 ký tự.',
+    });
+  }
+
+  customFieldDefs
+    .filter((field) => field.visible)
+    .forEach((field) => {
+      const rawValue = form.customFields?.[field.fieldCode] ?? '';
+      const value = rawValue.trim();
+      if (!value) return;
+
+      if (field.dataType === 'number' && Number.isNaN(Number(value))) {
+        pushInfrastructureError(errors, {
+          fieldCode: field.fieldCode,
+          errorCode: 'INVALID_NUMBER',
+          messageVi: `${field.labelVi} phải là số hợp lệ.`,
+        });
+      }
+
+      if (field.dataType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        pushInfrastructureError(errors, {
+          fieldCode: field.fieldCode,
+          errorCode: 'INVALID_EMAIL',
+          messageVi: `${field.labelVi} phải đúng định dạng email.`,
+        });
+      }
+
+      if (field.dataType === 'phone' && !/^[0-9+\-().\s]{8,20}$/.test(value)) {
+        pushInfrastructureError(errors, {
+          fieldCode: field.fieldCode,
+          errorCode: 'INVALID_PHONE',
+          messageVi: `${field.labelVi} phải đúng định dạng số điện thoại.`,
+        });
+      }
+
+      if (field.dataType === 'select') {
+        const allowedOptions = parseMetadataSelectOptions(field.selectConfig ?? '');
+        if (allowedOptions.length > 0 && !allowedOptions.includes(value)) {
+          pushInfrastructureError(errors, {
+            fieldCode: field.fieldCode,
+            errorCode: 'OPTION_NOT_ALLOWED',
+            messageVi: `${field.labelVi} không thuộc danh sách options được cấu hình.`,
+            meta: { allowed: allowedOptions },
+          });
+        }
+      }
+    });
+
+  return errors;
 }
 
 function getInitialInfrastructureSites(): InfrastructureSiteRow[] {
@@ -675,6 +829,131 @@ function buildWorkflowDestinationOptions(
     });
   }
   return o;
+}
+
+function analyzeWorkflowGraphRisks(form: WorkflowDefinition): WorkflowRiskCheck[] {
+  const risks: WorkflowRiskCheck[] = [];
+  const steps = form.steps.slice().sort((a, b) => a.order - b.order);
+  const stepIds = new Set(steps.map((step) => step.id));
+  const validDestinations = new Set<string>([
+    WF_NODE_START,
+    WF_NODE_END_OK,
+    WF_NODE_END_REJECT,
+    WF_NODE_BOD,
+    ...stepIds,
+  ]);
+
+  const startStep = steps[0];
+  if (!startStep) {
+    return [
+      {
+        code: 'WF_EMPTY_GRAPH',
+        severity: 'error',
+        messageVi: 'Quy trình chưa có bước xử lý nào.',
+      },
+    ];
+  }
+
+  const outgoing = new Map<string, string[]>();
+  steps.forEach((step) => {
+    ensureTransitions(step.transitions).forEach((transition) => {
+      if (!validDestinations.has(transition.destinationId)) {
+        risks.push({
+          code: 'WF_DESTINATION_NOT_FOUND',
+          severity: 'error',
+          stepId: step.id,
+          messageVi: `Bước ${step.order} có đích ${transition.destinationId || '—'} không tồn tại.`,
+        });
+        return;
+      }
+      if (stepIds.has(transition.destinationId)) {
+        outgoing.set(step.id, [...(outgoing.get(step.id) ?? []), transition.destinationId]);
+      }
+    });
+  });
+
+  const reachable = new Set<string>([startStep.id]);
+  const queue = [startStep.id];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) continue;
+    for (const next of outgoing.get(current) ?? []) {
+      if (reachable.has(next)) continue;
+      reachable.add(next);
+      queue.push(next);
+    }
+  }
+
+  steps.forEach((step) => {
+    if (!reachable.has(step.id)) {
+      risks.push({
+        code: 'WF_UNREACHABLE_STEP',
+        severity: 'warning',
+        stepId: step.id,
+        messageVi: `Bước ${step.order} chưa có đường đi từ bước bắt đầu.`,
+      });
+    }
+  });
+
+  const terminalIds = new Set([WF_NODE_END_OK, WF_NODE_END_REJECT, WF_NODE_BOD]);
+  steps.forEach((step) => {
+    const canReachTerminal = (() => {
+      const seen = new Set<string>();
+      const stack = [step.id];
+      while (stack.length > 0) {
+        const current = stack.pop();
+        if (!current || seen.has(current)) continue;
+        seen.add(current);
+        const currentStep = steps.find((candidate) => candidate.id === current);
+        if (!currentStep) continue;
+        for (const transition of ensureTransitions(currentStep.transitions)) {
+          if (terminalIds.has(transition.destinationId)) return true;
+          if (stepIds.has(transition.destinationId)) stack.push(transition.destinationId);
+        }
+      }
+      return false;
+    })();
+
+    if (!canReachTerminal) {
+      risks.push({
+        code: 'WF_NO_TERMINAL_PATH',
+        severity: 'warning',
+        stepId: step.id,
+        messageVi: `Bước ${step.order} chưa có đường đi tới Hoàn thành / Từ chối / BOD.`,
+      });
+    }
+  });
+
+  const cycleVisited = new Set<string>();
+  const inStack = new Set<string>();
+  const cycleSteps = new Set<string>();
+  const visit = (nodeId: string) => {
+    cycleVisited.add(nodeId);
+    inStack.add(nodeId);
+    for (const next of outgoing.get(nodeId) ?? []) {
+      if (!cycleVisited.has(next)) {
+        visit(next);
+      } else if (inStack.has(next)) {
+        cycleSteps.add(nodeId);
+        cycleSteps.add(next);
+      }
+    }
+    inStack.delete(nodeId);
+  };
+  steps.forEach((step) => {
+    if (!cycleVisited.has(step.id)) visit(step.id);
+  });
+  cycleSteps.forEach((stepId) => {
+    const step = steps.find((candidate) => candidate.id === stepId);
+    risks.push({
+      code: 'WF_CYCLE_DETECTED',
+      severity: 'warning',
+      stepId,
+      messageVi: `Bước ${step?.order ?? stepId} nằm trong vòng lặp; cần xác nhận policy cho phép loop-back.`,
+    });
+  });
+
+  return risks;
 }
 
 type CompanyDetailTab = 'legal' | 'departments' | 'personnel';
@@ -1129,6 +1408,9 @@ const CommandCenterPage: React.FC = () => {
   const [infraForm, setInfraForm] = useState<InfrastructureFormState>(() =>
     createEmptyInfrastructureForm(),
   );
+  const [infraValidationErrors, setInfraValidationErrors] = useState<InfrastructureValidationError[]>(
+    [],
+  );
   const [infrastructureFieldsConfigOpen, setInfrastructureFieldsConfigOpen] = useState(false);
   const [infrastructureFieldsConfigEntityId, setInfrastructureFieldsConfigEntityId] = useState<
     string | null
@@ -1307,6 +1589,13 @@ const CommandCenterPage: React.FC = () => {
     if (!entityId) return [];
     return (infrastructureCustomBlocksByEntity[entityId] ?? []).slice().sort((a, b) => a.order - b.order);
   }, [infraForm.operatingEntityId, infrastructureCustomBlocksByEntity]);
+
+  const infraValidationErrorByField = useMemo(() => {
+    return infraValidationErrors.reduce<Record<string, InfrastructureValidationError>>((acc, error) => {
+      acc[error.fieldCode] = error;
+      return acc;
+    }, {});
+  }, [infraValidationErrors]);
 
   const infraBlockTitleOverridesForEntity = useMemo(() => {
     const entityId = infraForm.operatingEntityId;
@@ -1832,6 +2121,7 @@ const CommandCenterPage: React.FC = () => {
     closeFoundationCategoryDetail();
     setInfrastructureEditId('new');
     setInfraForm(createEmptyInfrastructureForm());
+    setInfraValidationErrors([]);
     setInfrastructureView('detail');
   }
 
@@ -1842,10 +2132,26 @@ const CommandCenterPage: React.FC = () => {
     closeFoundationCategoryDetail();
     setInfrastructureEditId(id);
     setInfraForm(infrastructureRowToForm(row));
+    setInfraValidationErrors([]);
     setInfrastructureView('detail');
   }
 
   async function saveInfrastructureSite() {
+    const validationErrors = validateInfrastructureForm(
+      infraForm,
+      infraEffectiveOptions,
+      infraCustomFieldDefsForEntity,
+      legalEntityList,
+      operatingEntityInFoundationScope,
+    );
+    setInfraValidationErrors(validationErrors);
+    if (validationErrors.length > 0) {
+      setPublishMessage(
+        `Chưa thể lưu điểm hạ tầng. Có ${validationErrors.length} lỗi field-level theo contract.`,
+      );
+      return;
+    }
+
     const nextRow: InfrastructureSiteRow = {
       id: infrastructureEditId === 'new' ? `inf-${Date.now()}` : infrastructureEditId!,
       ...infraForm,
@@ -2285,6 +2591,92 @@ const CommandCenterPage: React.FC = () => {
     const dateClass = `${inputClass} cursor-pointer pr-10 [color-scheme:light] [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-10 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0`;
     const deptInputClass = `min-w-0 w-full max-w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`;
     const deptSelectClass = `${deptInputClass} appearance-none cursor-pointer bg-white pr-10`;
+    const infraFieldClass = (fieldCode: string, baseClass = deptInputClass) =>
+      `${baseClass} ${
+        infraValidationErrorByField[fieldCode] ? 'border-rose-400 focus:ring-rose-200' : ''
+      }`;
+    const renderInfraFieldError = (fieldCode: string) => {
+      const error = infraValidationErrorByField[fieldCode];
+      if (!error) return null;
+      return (
+        <span className="text-xs font-medium text-rose-600">
+          {error.messageVi}{' '}
+          <code className="font-mono text-[11px] text-rose-500">({error.fieldCode}/{error.errorCode})</code>
+        </span>
+      );
+    };
+    const renderInfraCustomField = (f: InfrastructureCustomFieldDef) => {
+      const value = infraForm.customFields?.[f.fieldCode] ?? '';
+      const setVal = (v: string) => setInfraCustomFieldValue(f.fieldCode, v);
+
+      return (
+        <label key={f.id} className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}>
+          <span className={SETTINGS_LABEL_CLASS}>{f.labelVi}</span>
+          {f.dataType === 'text' ? (
+            <AutoResizeTextarea
+              aria-label={f.labelVi}
+              value={value}
+              onChange={(v) => setVal(v)}
+              className={infraFieldClass(f.fieldCode)}
+            />
+          ) : null}
+          {f.dataType === 'number' ? (
+            <input
+              type="number"
+              value={value}
+              onChange={(e) => setVal(e.target.value)}
+              className={infraFieldClass(f.fieldCode)}
+            />
+          ) : null}
+          {f.dataType === 'date' ? (
+            <input
+              type="date"
+              value={value}
+              onChange={(e) => setVal(e.target.value)}
+              className={infraFieldClass(f.fieldCode)}
+            />
+          ) : null}
+          {f.dataType === 'phone' ? (
+            <input
+              type="tel"
+              value={value}
+              onChange={(e) => setVal(e.target.value)}
+              className={infraFieldClass(f.fieldCode)}
+            />
+          ) : null}
+          {f.dataType === 'email' ? (
+            <input
+              type="email"
+              value={value}
+              onChange={(e) => setVal(e.target.value)}
+              className={infraFieldClass(f.fieldCode)}
+            />
+          ) : null}
+          {f.dataType === 'select' ? (
+            <div className="relative min-w-0">
+              <select
+                value={value}
+                onChange={(e) => setVal(e.target.value)}
+                className={infraFieldClass(f.fieldCode, deptSelectClass)}
+              >
+                <option value="">— Chọn —</option>
+                {parseMetadataSelectOptions(f.selectConfig ?? '').map((o) => (
+                  <option key={o} value={o}>
+                    {o}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                strokeWidth={RAIL_STROKE}
+                aria-hidden
+              />
+            </div>
+          ) : null}
+          {renderInfraFieldError(f.fieldCode)}
+        </label>
+      );
+    };
     const orgGradeBandSurface: Record<OrgGradeBand, string> = {
       yellow: 'bg-amber-50/90 border-amber-200',
       orange: 'bg-orange-50/90 border-orange-200',
@@ -2305,6 +2697,7 @@ const CommandCenterPage: React.FC = () => {
       deptSystemDetailOpen: deptSystemDetailId !== null,
       deptSystemDetailName: deptSystemForm?.nameVi ?? '',
     });
+    const workflowRiskFindings = workflowForm ? analyzeWorkflowGraphRisks(workflowForm) : [];
     const showCompanyFormStickyNav =
       activeSettingsMenu === 'company_member_units' && companySettingsView === 'form';
     const showFoundationDetailStickyNav =
@@ -3740,8 +4133,9 @@ const CommandCenterPage: React.FC = () => {
                         aria-label={infraUiMerged.fields.name?.ariaLabel ?? 'Tên hạ tầng'}
                         value={infraForm.name}
                         onChange={(v) => setInfraForm((s) => ({ ...s, name: v }))}
-                        className={deptInputClass}
+                        className={infraFieldClass('name')}
                       />
+                      {renderInfraFieldError('name')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                       <span className={SETTINGS_LABEL_CLASS}>{infraUiMerged.fields.siteCode?.labelVi ?? 'Mã định danh'}</span>
@@ -3750,8 +4144,9 @@ const CommandCenterPage: React.FC = () => {
                         placeholder={infraUiMerged.fields.siteCode?.placeholder ?? 'VD: KHO-SGN-01'}
                         value={infraForm.siteCode}
                         onChange={(v) => setInfraForm((s) => ({ ...s, siteCode: v }))}
-                        className={`tabular-nums ${deptInputClass}`}
+                        className={infraFieldClass('siteCode', `tabular-nums ${deptInputClass}`)}
                       />
+                      {renderInfraFieldError('siteCode')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                       <span className={SETTINGS_LABEL_CLASS}>
@@ -3766,7 +4161,7 @@ const CommandCenterPage: React.FC = () => {
                               facilityType: e.target.value as InfrastructureFacilityType,
                             }))
                           }
-                          className={deptSelectClass}
+                          className={infraFieldClass('facilityType', deptSelectClass)}
                         >
                           {infraEffectiveOptions.facilityTypes.map((k) => (
                             <option key={k} value={k}>
@@ -3780,6 +4175,7 @@ const CommandCenterPage: React.FC = () => {
                           aria-hidden
                         />
                       </div>
+                      {renderInfraFieldError('facilityType')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                       <span className={SETTINGS_LABEL_CLASS}>
@@ -3796,7 +4192,7 @@ const CommandCenterPage: React.FC = () => {
                                   }),
                                 )
                           }
-                          className={deptSelectClass}
+                          className={infraFieldClass('operatingEntityId', deptSelectClass)}
                           aria-label={infraUiMerged.fields.operatingEntityId?.ariaLabel ?? 'Đơn vị trực thuộc'}
                         >
                           <option value="">— Chọn đơn vị —</option>
@@ -3812,6 +4208,7 @@ const CommandCenterPage: React.FC = () => {
                           aria-hidden
                         />
                       </div>
+                      {renderInfraFieldError('operatingEntityId')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                       <span className={SETTINGS_LABEL_CLASS}>
@@ -3826,7 +4223,7 @@ const CommandCenterPage: React.FC = () => {
                               status: e.target.value as InfrastructureSiteStatus,
                             }))
                           }
-                          className={deptSelectClass}
+                          className={infraFieldClass('status', deptSelectClass)}
                         >
                           {infraEffectiveOptions.statuses.map((k) => (
                             <option key={k} value={k}>
@@ -3840,6 +4237,7 @@ const CommandCenterPage: React.FC = () => {
                           aria-hidden
                         />
                       </div>
+                      {renderInfraFieldError('status')}
                     </label>
                     <div className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                       <span className={SETTINGS_LABEL_CLASS}>Mã bản ghi nội bộ</span>
@@ -3851,79 +4249,7 @@ const CommandCenterPage: React.FC = () => {
                     </div>
                     {infraCustomFieldDefsForEntity
                       .filter((f) => f.blockCode === 'general' && f.visible)
-                      .map((f) => {
-                        const value = infraForm.customFields?.[f.fieldCode] ?? '';
-                        const setVal = (v: string) => setInfraCustomFieldValue(f.fieldCode, v);
-                        return (
-                          <label
-                            key={f.id}
-                            className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}
-                          >
-                            <span className={SETTINGS_LABEL_CLASS}>{f.labelVi}</span>
-                            {f.dataType === 'text' ? (
-                              <AutoResizeTextarea
-                                aria-label={f.labelVi}
-                                value={value}
-                                onChange={(v) => setVal(v)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'number' ? (
-                              <input
-                                type="number"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'date' ? (
-                              <input
-                                type="date"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'phone' ? (
-                              <input
-                                type="tel"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'email' ? (
-                              <input
-                                type="email"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'select' ? (
-                              <div className="relative min-w-0">
-                                <select
-                                  value={value}
-                                  onChange={(e) => setVal(e.target.value)}
-                                  className={deptSelectClass}
-                                >
-                                  <option value="">— Chọn —</option>
-                                  {parseMetadataSelectOptions(f.selectConfig ?? '').map((o) => (
-                                    <option key={o} value={o}>
-                                      {o}
-                                    </option>
-                                  ))}
-                                </select>
-                                <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-                                  strokeWidth={RAIL_STROKE}
-                                  aria-hidden
-                                />
-                              </div>
-                            ) : null}
-                          </label>
-                        );
-                      })}
+                      .map((f) => renderInfraCustomField(f))}
                   </div>
                 </div>
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
@@ -3936,8 +4262,9 @@ const CommandCenterPage: React.FC = () => {
                         placeholder={infraUiMerged.fields.gpsCoords?.placeholder ?? 'lat, lng'}
                         value={infraForm.gpsCoords}
                         onChange={(v) => setInfraForm((s) => ({ ...s, gpsCoords: v }))}
-                        className={`tabular-nums ${deptInputClass}`}
+                        className={infraFieldClass('gpsCoords', `tabular-nums ${deptInputClass}`)}
                       />
+                      {renderInfraFieldError('gpsCoords')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span8}`}>
                       <span className={SETTINGS_LABEL_CLASS}>
@@ -3947,8 +4274,9 @@ const CommandCenterPage: React.FC = () => {
                         aria-label={infraUiMerged.fields.addressDetail?.ariaLabel ?? 'Địa chỉ chi tiết'}
                         value={infraForm.addressDetail}
                         onChange={(v) => setInfraForm((s) => ({ ...s, addressDetail: v }))}
-                        className={deptInputClass}
+                        className={infraFieldClass('addressDetail')}
                       />
+                      {renderInfraFieldError('addressDetail')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                       <span className={SETTINGS_LABEL_CLASS}>{infraUiMerged.fields.hotline?.labelVi ?? 'Hotline điểm'}</span>
@@ -3956,8 +4284,9 @@ const CommandCenterPage: React.FC = () => {
                         aria-label={infraUiMerged.fields.hotline?.ariaLabel ?? 'Hotline điểm'}
                         value={infraForm.hotline}
                         onChange={(v) => setInfraForm((s) => ({ ...s, hotline: v }))}
-                        className={`tabular-nums ${deptInputClass}`}
+                        className={infraFieldClass('hotline', `tabular-nums ${deptInputClass}`)}
                       />
+                      {renderInfraFieldError('hotline')}
                     </label>
                     {infraUiMerged.fields.directManager?.visible === false ? null : (
                       <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
@@ -3968,8 +4297,9 @@ const CommandCenterPage: React.FC = () => {
                           aria-label={infraUiMerged.fields.directManager?.ariaLabel ?? 'Quản lý trực tiếp'}
                           value={infraForm.directManager}
                           onChange={(v) => setInfraForm((s) => ({ ...s, directManager: v }))}
-                          className={deptInputClass}
+                          className={infraFieldClass('directManager')}
                         />
+                        {renderInfraFieldError('directManager')}
                       </label>
                     )}
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
@@ -3983,7 +4313,7 @@ const CommandCenterPage: React.FC = () => {
                           onChange={(e) =>
                             setInfraForm((s) => ({ ...s, leaseLegalEndDate: e.target.value }))
                           }
-                          className={dateClass}
+                          className={infraFieldClass('leaseLegalEndDate', dateClass)}
                         />
                         <Calendar
                           className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
@@ -3991,82 +4321,11 @@ const CommandCenterPage: React.FC = () => {
                           aria-hidden
                         />
                       </div>
+                      {renderInfraFieldError('leaseLegalEndDate')}
                     </label>
                     {infraCustomFieldDefsForEntity
                       .filter((f) => f.blockCode === 'location' && f.visible)
-                      .map((f) => {
-                        const value = infraForm.customFields?.[f.fieldCode] ?? '';
-                        const setVal = (v: string) => setInfraCustomFieldValue(f.fieldCode, v);
-                        return (
-                          <label
-                            key={f.id}
-                            className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}
-                          >
-                            <span className={SETTINGS_LABEL_CLASS}>{f.labelVi}</span>
-                            {f.dataType === 'text' ? (
-                              <AutoResizeTextarea
-                                aria-label={f.labelVi}
-                                value={value}
-                                onChange={(v) => setVal(v)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'number' ? (
-                              <input
-                                type="number"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'date' ? (
-                              <input
-                                type="date"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'phone' ? (
-                              <input
-                                type="tel"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'email' ? (
-                              <input
-                                type="email"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'select' ? (
-                              <div className="relative min-w-0">
-                                <select
-                                  value={value}
-                                  onChange={(e) => setVal(e.target.value)}
-                                  className={deptSelectClass}
-                                >
-                                  <option value="">— Chọn —</option>
-                                  {parseMetadataSelectOptions(f.selectConfig ?? '').map((o) => (
-                                    <option key={o} value={o}>
-                                      {o}
-                                    </option>
-                                  ))}
-                                </select>
-                                <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-                                  strokeWidth={RAIL_STROKE}
-                                  aria-hidden
-                                />
-                              </div>
-                            ) : null}
-                          </label>
-                        );
-                      })}
+                      .map((f) => renderInfraCustomField(f))}
                   </div>
                 </div>
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
@@ -4080,8 +4339,9 @@ const CommandCenterPage: React.FC = () => {
                         aria-label={infraUiMerged.fields.areaSqm?.ariaLabel ?? 'Diện tích m2'}
                         value={infraForm.areaSqm}
                         onChange={(v) => setInfraForm((s) => ({ ...s, areaSqm: v }))}
-                        className={`tabular-nums ${deptInputClass}`}
+                        className={infraFieldClass('areaSqm', `tabular-nums ${deptInputClass}`)}
                       />
+                      {renderInfraFieldError('areaSqm')}
                     </label>
                     {infraUiMerged.fields.palletOrVehicleMax?.visible === false ? null : (
                       <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
@@ -4092,8 +4352,9 @@ const CommandCenterPage: React.FC = () => {
                           aria-label={infraUiMerged.fields.palletOrVehicleMax?.ariaLabel ?? 'Pallet hoặc xe tối đa'}
                           value={infraForm.palletOrVehicleMax}
                           onChange={(v) => setInfraForm((s) => ({ ...s, palletOrVehicleMax: v }))}
-                          className={deptInputClass}
+                          className={infraFieldClass('palletOrVehicleMax')}
                         />
+                        {renderInfraFieldError('palletOrVehicleMax')}
                       </label>
                     )}
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
@@ -4106,7 +4367,7 @@ const CommandCenterPage: React.FC = () => {
                           onChange={(e) =>
                             setInfraForm((s) => ({ ...s, ownerLegalEntityId: e.target.value }))
                           }
-                          className={deptSelectClass}
+                          className={infraFieldClass('ownerLegalEntityId', deptSelectClass)}
                           aria-label={infraUiMerged.fields.ownerLegalEntityId?.ariaLabel ?? 'Pháp nhân sở hữu'}
                         >
                           <option value="">— Chọn pháp nhân —</option>
@@ -4122,6 +4383,7 @@ const CommandCenterPage: React.FC = () => {
                           aria-hidden
                         />
                       </div>
+                      {renderInfraFieldError('ownerLegalEntityId')}
                     </label>
                     <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}>
                       <span className={SETTINGS_LABEL_CLASS}>
@@ -4131,84 +4393,13 @@ const CommandCenterPage: React.FC = () => {
                         aria-label={infraUiMerged.fields.capacitySummary?.ariaLabel ?? 'Tóm tắt sức chứa'}
                         value={infraForm.capacitySummary}
                         onChange={(v) => setInfraForm((s) => ({ ...s, capacitySummary: v }))}
-                        className={deptInputClass}
+                        className={infraFieldClass('capacitySummary')}
                       />
+                      {renderInfraFieldError('capacitySummary')}
                     </label>
                     {infraCustomFieldDefsForEntity
                       .filter((f) => f.blockCode === 'capacity' && f.visible)
-                      .map((f) => {
-                        const value = infraForm.customFields?.[f.fieldCode] ?? '';
-                        const setVal = (v: string) => setInfraCustomFieldValue(f.fieldCode, v);
-                        return (
-                          <label
-                            key={f.id}
-                            className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}
-                          >
-                            <span className={SETTINGS_LABEL_CLASS}>{f.labelVi}</span>
-                            {f.dataType === 'text' ? (
-                              <AutoResizeTextarea
-                                aria-label={f.labelVi}
-                                value={value}
-                                onChange={(v) => setVal(v)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'number' ? (
-                              <input
-                                type="number"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'date' ? (
-                              <input
-                                type="date"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'phone' ? (
-                              <input
-                                type="tel"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'email' ? (
-                              <input
-                                type="email"
-                                value={value}
-                                onChange={(e) => setVal(e.target.value)}
-                                className={deptInputClass}
-                              />
-                            ) : null}
-                            {f.dataType === 'select' ? (
-                              <div className="relative min-w-0">
-                                <select
-                                  value={value}
-                                  onChange={(e) => setVal(e.target.value)}
-                                  className={deptSelectClass}
-                                >
-                                  <option value="">— Chọn —</option>
-                                  {parseMetadataSelectOptions(f.selectConfig ?? '').map((o) => (
-                                    <option key={o} value={o}>
-                                      {o}
-                                    </option>
-                                  ))}
-                                </select>
-                                <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-                                  strokeWidth={RAIL_STROKE}
-                                  aria-hidden
-                                />
-                              </div>
-                            ) : null}
-                          </label>
-                        );
-                      })}
+                      .map((f) => renderInfraCustomField(f))}
                   </div>
                 </div>
                 {infraCustomBlocksForEntity
@@ -4225,79 +4416,7 @@ const CommandCenterPage: React.FC = () => {
                       >
                         <h4 className={`mb-4 ${SETTINGS_SECTION_TITLE_CLASS}`}>{block.labelVi}</h4>
                         <div className={SETTINGS_SECTION_GRID}>
-                          {fields.map((f) => {
-                            const value = infraForm.customFields?.[f.fieldCode] ?? '';
-                            const setVal = (v: string) => setInfraCustomFieldValue(f.fieldCode, v);
-                            return (
-                              <label
-                                key={f.id}
-                                className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}
-                              >
-                                <span className={SETTINGS_LABEL_CLASS}>{f.labelVi}</span>
-                                {f.dataType === 'text' ? (
-                                  <AutoResizeTextarea
-                                    aria-label={f.labelVi}
-                                    value={value}
-                                    onChange={(v) => setVal(v)}
-                                    className={deptInputClass}
-                                  />
-                                ) : null}
-                                {f.dataType === 'number' ? (
-                                  <input
-                                    type="number"
-                                    value={value}
-                                    onChange={(e) => setVal(e.target.value)}
-                                    className={deptInputClass}
-                                  />
-                                ) : null}
-                                {f.dataType === 'date' ? (
-                                  <input
-                                    type="date"
-                                    value={value}
-                                    onChange={(e) => setVal(e.target.value)}
-                                    className={deptInputClass}
-                                  />
-                                ) : null}
-                                {f.dataType === 'phone' ? (
-                                  <input
-                                    type="tel"
-                                    value={value}
-                                    onChange={(e) => setVal(e.target.value)}
-                                    className={deptInputClass}
-                                  />
-                                ) : null}
-                                {f.dataType === 'email' ? (
-                                  <input
-                                    type="email"
-                                    value={value}
-                                    onChange={(e) => setVal(e.target.value)}
-                                    className={deptInputClass}
-                                  />
-                                ) : null}
-                                {f.dataType === 'select' ? (
-                                  <div className="relative min-w-0">
-                                    <select
-                                      value={value}
-                                      onChange={(e) => setVal(e.target.value)}
-                                      className={deptSelectClass}
-                                    >
-                                      <option value="">— Chọn —</option>
-                                      {parseMetadataSelectOptions(f.selectConfig ?? '').map((o) => (
-                                        <option key={o} value={o}>
-                                          {o}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    <ChevronDown
-                                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-                                      strokeWidth={RAIL_STROKE}
-                                      aria-hidden
-                                    />
-                                  </div>
-                                ) : null}
-                              </label>
-                            );
-                          })}
+                          {fields.map((f) => renderInfraCustomField(f))}
                         </div>
                       </div>
                     );
@@ -4812,6 +4931,53 @@ const CommandCenterPage: React.FC = () => {
                   title={workflowEditId === 'new' ? 'Thêm quy trình' : 'Chi tiết quy trình'}
                   subtitle="Mỗi bước có ba luồng: Đồng ý, Từ chối và chuyển cấp BOD; sơ đồ luồng phản ánh đúng cấu hình các bước bên dưới"
                 />
+                <div
+                  className={`border p-4 shadow-soft ${
+                    workflowRiskFindings.some((risk) => risk.severity === 'error')
+                      ? 'border-rose-200 bg-rose-50/80'
+                      : workflowRiskFindings.length > 0
+                        ? 'border-amber-200 bg-amber-50/80'
+                        : 'border-emerald-200 bg-emerald-50/80'
+                  } ${SETTINGS_RADIUS_CARD}`}
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Kiểm tra graph quy trình</h4>
+                      <p className="mt-1 text-sm text-slate-600">
+                        Prototype SRS: phát hiện đích không tồn tại, bước không reachable, thiếu terminal path và cycle/loop.
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold tabular-nums text-slate-600 shadow-sm">
+                      {workflowRiskFindings.length} cảnh báo
+                    </span>
+                  </div>
+                  {workflowRiskFindings.length > 0 ? (
+                    <div className="mt-3 grid gap-2">
+                      {workflowRiskFindings.map((risk) => (
+                        <div
+                          key={`${risk.code}-${risk.stepId ?? 'workflow'}`}
+                          className="rounded-input border border-white/80 bg-white/80 px-3 py-2 text-sm shadow-sm"
+                        >
+                          <span
+                            className={`mr-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                              risk.severity === 'error'
+                                ? 'bg-rose-100 text-rose-700'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}
+                          >
+                            {risk.severity.toUpperCase()}
+                          </span>
+                          <span className="font-mono text-xs text-slate-500">{risk.code}</span>
+                          <p className="mt-1 text-slate-700">{risk.messageVi}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm font-medium text-emerald-700">
+                      Graph hợp lệ cho prototype: có đường tới terminal và không phát hiện cycle.
+                    </p>
+                  )}
+                </div>
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
                   <h4 className={`mb-4 ${SETTINGS_SECTION_TITLE_CLASS}`}>Thông tin chung quy trình</h4>
                   <div className={SETTINGS_SECTION_GRID}>
@@ -4952,6 +5118,47 @@ const CommandCenterPage: React.FC = () => {
                   >
                     Sơ đồ luồng
                   </button>
+                </div>
+                <div
+                  className={`border p-4 shadow-soft ${
+                    workflowRiskFindings.length > 0
+                      ? 'border-amber-200 bg-amber-50/80'
+                      : 'border-emerald-200 bg-emerald-50/80'
+                  } ${SETTINGS_RADIUS_CARD}`}
+                >
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Cảnh báo đồ thị quy trình</h4>
+                      <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                        Kiểm tra reachable graph, destination node, terminal path và cycle theo SRS Workflow.
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-white/70 bg-white px-3 py-1 text-xs font-semibold tabular-nums text-slate-700 shadow-sm">
+                      {workflowRiskFindings.length} cảnh báo
+                    </span>
+                  </div>
+                  {workflowRiskFindings.length > 0 ? (
+                    <div className="mt-3 grid gap-2">
+                      {workflowRiskFindings.map((risk) => (
+                        <div
+                          key={`${risk.code}-${risk.stepId ?? 'workflow'}`}
+                          className={`rounded-input border bg-white px-3 py-2 text-sm ${
+                            risk.severity === 'error'
+                              ? 'border-rose-200 text-rose-800'
+                              : 'border-amber-200 text-amber-900'
+                          }`}
+                        >
+                          <span className="font-mono text-xs font-semibold">{risk.code}</span>
+                          <span className="mx-2 text-slate-300">·</span>
+                          <span>{risk.messageVi}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm font-medium text-emerald-800">
+                      Đồ thị hợp lệ ở mức prototype: các bước reachable và có đường tới terminal node.
+                    </p>
+                  )}
                 </div>
                 {workflowDetailTab === 'graph' ? (
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
