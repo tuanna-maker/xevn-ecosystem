@@ -1,7 +1,5 @@
 import { createContext, useContext } from 'react';
 
-const STORAGE_KEY = 'xevn-command-center-rail-pinned';
-
 /** Màn rộng (2xl+): rail luôn đủ chỗ; dưới 2xl (md+): cho phép thu gọn + hover. */
 export const WORKSPACE_RAIL_WIDE_MEDIA = '(min-width: 1536px)';
 export const WORKSPACE_RAIL_MD_MEDIA = '(min-width: 768px)';

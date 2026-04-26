@@ -42,7 +42,7 @@ const PartnersPage: React.FC = () => {
   // Get company name by ID
   const getCompanyName = (companyId: string) => {
     const company = mockCompanies.find((c) => c.id === companyId);
-    return company?.shortName || companyId;
+    return company?.code || companyId;
   };
 
   // Table columns

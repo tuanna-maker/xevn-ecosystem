@@ -6,6 +6,7 @@ export interface PageHeaderProps {
   subtitle?: string;
   icon: React.ReactNode;
   actions?: React.ReactNode;
+  showCompanyFilter?: boolean;
   className?: string;
 }
 
@@ -14,6 +15,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   icon,
   actions,
+  showCompanyFilter,
   className,
 }) => {
   return (
@@ -26,7 +28,16 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {subtitle && <p className="text-xevn-textSecondary mt-1">{subtitle}</p>}
           </div>
         </div>
-        {actions && <div>{actions}</div>}
+        {(showCompanyFilter || actions) && (
+          <div className="flex items-center gap-3">
+            {showCompanyFilter && (
+              <div className="h-10 rounded-lg border border-xevn-border bg-xevn-surface px-3 text-sm text-xevn-textSecondary inline-flex items-center">
+                Toàn Tập đoàn
+              </div>
+            )}
+            {actions}
+          </div>
+        )}
       </div>
     </div>
   );

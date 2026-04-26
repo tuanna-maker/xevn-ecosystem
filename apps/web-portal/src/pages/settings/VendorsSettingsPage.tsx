@@ -196,7 +196,7 @@ const VendorsSettingsPage: React.FC = () => {
       key: 'creditLimit',
       header: 'Hạn mức CN',
       width: '130px',
-      render: (value) => (
+      render: (value: Vendor['creditLimit']) => (
         <div className="flex items-center gap-1">
           {value ? (
             <span className="text-sm font-medium text-emerald-600">
