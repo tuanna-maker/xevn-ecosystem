@@ -1,8 +1,15 @@
 import React, { useMemo } from 'react';
 import { Building2, Info } from 'lucide-react';
-import { PageHeader, TreeView, InfoBanner, Container, Section, StatCard } from '@xevn/ui';
+import { PageHeader, TreeView, InfoBanner, Container, Section, StatCard, type TreeViewProps } from '@xevn/ui';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { mockOrgStructure, mockCompanies, type OrganizationNode } from '../../data/mock-data';
+
+const toTreeItems = (nodes: OrganizationNode[]): TreeViewProps['items'] =>
+  nodes.map((node) => ({
+    id: node.id,
+    label: `${node.name} (${node.employees})`,
+    children: node.children ? toTreeItems(node.children) : undefined,
+  }));
 
 const OrganizationPage: React.FC = () => {
   const { selectedCompany } = useGlobalFilter();
@@ -18,7 +25,7 @@ const OrganizationPage: React.FC = () => {
 
     // Create a simplified structure for single company view
     if (company) {
-      return [{
+      const scopedStructure: OrganizationNode[] = [{
         id: company.id,
         name: company.name,
         type: 'company',
@@ -48,10 +55,13 @@ const OrganizationPage: React.FC = () => {
           },
         ]
       }];
+      return scopedStructure;
     }
 
     return [];
   }, [selectedCompany.id]);
+
+  const treeItems = useMemo(() => toTreeItems(filteredOrgStructure), [filteredOrgStructure]);
 
   return (
     <Container>
@@ -114,7 +124,7 @@ const OrganizationPage: React.FC = () => {
 
           {filteredOrgStructure.length > 0 ? (
             <TreeView
-              items={filteredOrgStructure as any}
+              items={treeItems}
             />
           ) : (
             <div className="text-center py-12 text-slate-500">

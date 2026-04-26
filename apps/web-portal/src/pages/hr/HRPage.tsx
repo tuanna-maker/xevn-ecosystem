@@ -5,6 +5,7 @@ import {
   Briefcase,
   GraduationCap,
   TrendingDown,
+  Info,
 } from 'lucide-react';
 import {
   PageHeader,
@@ -31,9 +32,6 @@ const HRPage: React.FC = () => {
     return mockEmployees.filter((emp) => emp.id.startsWith(selectedCompany.id));
   }, [selectedCompany]);
 
-  // Filter and search
-  const filteredEmployees = companyEmployees;
-
   // Statistics
   const stats = useMemo(() => {
     const total = companyEmployees.length;
@@ -42,7 +40,7 @@ const HRPage: React.FC = () => {
       (e) => e.status === 'probation'
     ).length;
     const resigned = companyEmployees.filter(
-      (e) => e.status === 'resigned'
+      (e) => e.status === 'terminated'
     ).length;
 
     const newHires = companyEmployees.filter((e) => {
@@ -87,7 +85,7 @@ const HRPage: React.FC = () => {
       render: (value, record) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-xevn-primary/10 flex items-center justify-center text-xevn-primary font-semibold">
-            {value.charAt(0)}
+            {String(value).charAt(0)}
           </div>
           <div>
             <div className="font-medium text-xevn-text">{value}</div>
@@ -119,7 +117,9 @@ const HRPage: React.FC = () => {
         const config = {
           active: { color: 'success' as const, label: 'Đang làm' },
           probation: { color: 'warning' as const, label: 'Thử việc' },
-          resigned: { color: 'danger' as const, label: 'Đã nghỉ' },
+          inactive: { color: 'neutral' as const, label: 'Tạm ngưng' },
+          'on-leave': { color: 'warning' as const, label: 'Nghỉ phép' },
+          terminated: { color: 'danger' as const, label: 'Đã nghỉ' },
         };
         const { color, label } = config[value as keyof typeof config];
         return <Badge variant={color}>{label}</Badge>;

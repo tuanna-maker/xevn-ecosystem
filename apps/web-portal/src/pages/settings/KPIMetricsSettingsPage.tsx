@@ -154,7 +154,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
       sortable: true,
       width: '120px',
       render: (value) => (
-        <Badge variant={categoryColors[value] || 'neutral'} size="sm">
+        <Badge variant={categoryColors[String(value)] || 'neutral'} size="sm">
           {value}
         </Badge>
       ),
@@ -166,7 +166,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
       width: '120px',
       render: (value, item) => (
         <span className="font-semibold text-emerald-600">
-          {formatValue(value, item.unit)}
+          {formatValue(Number(value), item.unit)}
         </span>
       ),
     },
@@ -176,7 +176,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
       width: '120px',
       render: (value, item) => (
         <span className="text-amber-600">
-          {formatValue(value, item.unit)}
+          {formatValue(Number(value), item.unit)}
         </span>
       ),
     },
@@ -186,7 +186,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
       width: '120px',
       render: (value, item) => (
         <span className="text-red-600">
-          {formatValue(value, item.unit)}
+          {formatValue(Number(value), item.unit)}
         </span>
       ),
     },

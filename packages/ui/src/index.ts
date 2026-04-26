@@ -15,4 +15,5 @@ export { Section, type SectionProps } from './components/Section';
 export { Breadcrumbs, type BreadcrumbsProps } from './components/Breadcrumbs';
 export { cn } from './lib/utils';
 export * from './design-tokens';
-export type { Column, SortDirection, SortConfig, PageLayoutProps } from './types';
+export type { Column } from './components/DataTable';
+export type { SortDirection, SortConfig, PageLayoutProps } from './types';

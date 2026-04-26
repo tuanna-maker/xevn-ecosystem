@@ -5,6 +5,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: 'primary' | 'outline' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  icon?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 }
@@ -13,6 +14,7 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
   isLoading = false,
+  icon,
   className,
   children,
   ...props
@@ -53,7 +55,10 @@ export const Button: React.FC<ButtonProps> = ({
           Processing...
         </span>
       ) : (
-        children
+        <>
+          {icon && <span className="mr-2 inline-flex items-center">{icon}</span>}
+          {children}
+        </>
       )}
     </button>
   );

@@ -135,7 +135,7 @@ const VehicleTypesSettingsPage: React.FC = () => {
       width: '120px',
       render: (value) => (
         <span className="font-mono text-xs bg-slate-800 text-white px-2 py-1 rounded">
-          {value}
+          {String(value)}
         </span>
       ),
     },
@@ -143,8 +143,8 @@ const VehicleTypesSettingsPage: React.FC = () => {
       key: 'name',
       header: 'Tên loại phương tiện',
       sortable: true,
-      render: (value) => (
-        <span className="font-semibold text-slate-800">{value}</span>
+      render: (_, item) => (
+        <span className="font-semibold text-slate-800">{item.name}</span>
       ),
     },
     {
@@ -163,10 +163,10 @@ const VehicleTypesSettingsPage: React.FC = () => {
       header: 'Tải trọng',
       sortable: true,
       width: '100px',
-      render: (value) => (
+      render: (_, item) => (
         <div className="flex items-center gap-1 text-slate-600">
           <Weight size={14} />
-          <span className="text-sm">{value ? `${value} tấn` : '-'}</span>
+          <span className="text-sm">{item.payloadCapacity ? `${item.payloadCapacity} tấn` : '-'}</span>
         </div>
       ),
     },
@@ -175,10 +175,10 @@ const VehicleTypesSettingsPage: React.FC = () => {
       header: 'Định mức NL',
       sortable: true,
       width: '130px',
-      render: (value) => (
+      render: (_, item) => (
         <div className="flex items-center gap-1 text-amber-600">
           <Fuel size={14} />
-          <span className="text-sm font-medium">{value} L/100km</span>
+          <span className="text-sm font-medium">{item.fuelConsumptionNorm} L/100km</span>
         </div>
       ),
     },
@@ -186,9 +186,9 @@ const VehicleTypesSettingsPage: React.FC = () => {
       key: 'requiredLicense',
       header: 'Bằng lái',
       width: '80px',
-      render: (value) => (
-        <Badge variant={value === 'FC' ? 'danger' : value === 'C' ? 'warning' : 'info'} size="sm">
-          {value}
+      render: (_, item) => (
+        <Badge variant={item.requiredLicense === 'FC' ? 'danger' : item.requiredLicense === 'C' ? 'warning' : 'info'} size="sm">
+          {item.requiredLicense}
         </Badge>
       ),
     },

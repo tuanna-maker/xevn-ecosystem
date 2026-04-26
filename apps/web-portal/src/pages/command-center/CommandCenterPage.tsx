@@ -2,9 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Users,
-  Truck,
-  Wallet,
   ChevronRight,
   Clock,
   AlertTriangle,
@@ -13,7 +10,6 @@ import {
   CircleUser,
   Building2,
   User,
-  Settings,
   ShieldCheck,
   GitBranch,
   FileText,
@@ -34,8 +30,6 @@ import {
   Network,
   Warehouse,
   LayoutGrid,
-  Calculator,
-  TrendingUp,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -55,10 +49,8 @@ import {
   ENTITY_LEVEL_LABELS,
   ENTITY_LEVEL_SELECT_ORDER,
   type Company,
-  type Employee,
   type EntityLevelCode,
   mockCompanies,
-  mockEmployees,
 } from '../../data/mock-data';
 import {
   getMockEffectiveEmployeeMetadataDefaults,

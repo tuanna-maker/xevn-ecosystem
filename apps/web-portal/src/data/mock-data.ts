@@ -1,5 +1,6 @@
 export interface Customer {
   id: string;
+  fromCompanyId: 'trsport' | 'lgts' | 'x-maintenance' | 'x-express';
   code: string;
   name: string;
   type: 'corporate' | 'individual';
@@ -18,8 +19,10 @@ export interface Partner {
   name: string;
   type: 'supplier' | 'distributor' | 'service';
   industry: string;
+  email: string;
   contactPerson: string;
   phone: string;
+  relatedCompanies: string[];
   totalContracts: number;
   totalValue: number;
   status: 'active' | 'inactive' | 'pending';
@@ -34,7 +37,7 @@ export interface Employee {
   department: string;
   email: string;
   phone: string;
-  status: 'active' | 'inactive' | 'on-leave' | 'terminated';
+  status: 'active' | 'inactive' | 'on-leave' | 'terminated' | 'probation' | 'resigned';
   employmentType: 'full-time' | 'part-time' | 'contract';
   joinDate: string;
   salary: number;
@@ -156,6 +159,7 @@ export const mockCompanies: Company[] = [
 export const mockCustomers: Customer[] = [
   {
     id: 'cust-001',
+    fromCompanyId: 'trsport',
     code: 'CUST-001',
     name: 'Công ty TNHH Vận Tải Việt Nam',
     type: 'corporate',
@@ -169,6 +173,7 @@ export const mockCustomers: Customer[] = [
   },
   {
     id: 'cust-002',
+    fromCompanyId: 'lgts',
     code: 'CUST-002',
     name: 'Công ty CP Logistics Hà Nội',
     type: 'corporate',
@@ -182,6 +187,7 @@ export const mockCustomers: Customer[] = [
   },
   {
     id: 'cust-003',
+    fromCompanyId: 'x-express',
     code: 'CUST-003',
     name: 'Cá nhân Lê Văn C',
     type: 'individual',
@@ -203,8 +209,10 @@ export const mockPartners: Partner[] = [
     name: 'Công ty TNHH Nhà cung cấp ABC',
     type: 'supplier',
     industry: 'Nguyên vật liệu',
+    email: 'abc.supplier@xevn.vn',
     contactPerson: 'Phạm Văn D',
     phone: '0911111111',
+    relatedCompanies: ['trsport', 'lgts'],
     totalContracts: 12,
     totalValue: 2500000000,
     status: 'active',
@@ -216,8 +224,10 @@ export const mockPartners: Partner[] = [
     name: 'Công ty CP Phân phối XYZ',
     type: 'distributor',
     industry: 'Thiết bị',
+    email: 'xyz.distributor@xevn.vn',
     contactPerson: 'Ngô Thị E',
     phone: '0922222222',
+    relatedCompanies: ['all'],
     totalContracts: 8,
     totalValue: 1800000000,
     status: 'active',

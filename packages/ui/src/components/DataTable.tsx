@@ -1,19 +1,58 @@
 import React from 'react';
 import { cn } from '../lib/utils';
 
+type ColumnRender<T, V = T[keyof T]> = {
+  bivarianceHack(value: V, item: T): React.ReactNode;
+}['bivarianceHack'];
+
+export interface Column<T> {
+  key: Extract<keyof T, string>;
+  header: string;
+  render?: ColumnRender<T>;
+  sortable?: boolean;
+  width?: string;
+}
+
 export interface DataTableProps<T> {
-  columns: { key: string; header: string; render?: (item: T) => React.ReactNode }[];
+  columns: Column<T>[];
   data: T[];
   emptyMessage?: string;
   className?: string;
+  keyExtractor?: (item: T, index: number) => React.Key;
+  onRowClick?: (item: T) => void;
+  searchPlaceholder?: string;
+  actions?: React.ReactNode;
 }
 
-export const DataTable: React.FC<DataTableProps<any>> = ({
+const renderCellValue = (value: unknown): React.ReactNode => {
+  if (React.isValidElement(value)) {
+    return value;
+  }
+
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return String(value);
+  }
+
+  if (value == null) {
+    return '';
+  }
+
+  return JSON.stringify(value);
+};
+
+export const DataTable = <T extends object>({
   columns,
   data,
   emptyMessage = 'Không tìm thấy dữ liệu',
   className,
-}) => {
+  keyExtractor,
+  onRowClick,
+  actions,
+}: DataTableProps<T>) => {
   if (data.length === 0) {
     return (
       <div className="text-center py-12 bg-xevn-surface rounded-xl border border-xevn-border">
@@ -28,32 +67,45 @@ export const DataTable: React.FC<DataTableProps<any>> = ({
   }
 
   return (
-    <div className={cn('overflow-x-auto', className)}>
-      <table className="min-w-full divide-y divide-xevn-border">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                className="px-6 py-3 text-left text-xs font-medium text-xevn-textSecondary uppercase tracking-wider"
-              >
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-xevn-border">
-          {data.map((row, index) => (
-            <tr key={index} className="hover:bg-xevn-surface/50 transition-colors">
+    <div className={cn('space-y-4', className)}>
+      {actions && <div className="flex justify-end">{actions}</div>}
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-xevn-border">
+          <thead>
+            <tr>
               {columns.map((column) => (
-                <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-xevn-text">
-                  {column.render ? column.render(row) : row[column.key as keyof typeof row]}
-                </td>
+                <th
+                  key={column.key}
+                  className="px-6 py-3 text-left text-xs font-medium text-xevn-textSecondary uppercase tracking-wider"
+                  style={column.width ? { width: column.width } : undefined}
+                >
+                  {column.header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-xevn-border">
+            {data.map((row, index) => (
+              <tr
+                key={keyExtractor ? keyExtractor(row, index) : index}
+                className={cn(
+                  'hover:bg-xevn-surface/50 transition-colors',
+                  onRowClick && 'cursor-pointer'
+                )}
+                onClick={() => onRowClick?.(row)}
+              >
+                {columns.map((column) => (
+                  <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-xevn-text">
+                    {column.render
+                      ? column.render(row[column.key], row)
+                      : renderCellValue(row[column.key])}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -15,7 +15,6 @@ import {
   Zap,
   AlertTriangle,
   Activity,
-  Info,
   Bell,
 } from 'lucide-react';
 import { Container } from '@xevn/ui';
@@ -23,7 +22,6 @@ import {
   mockExecutiveDashboardStats,
   mockModuleCards,
   mockAlerts,
-  mockChartData,
 } from '../../data/mockExecutiveDashboardData';
 import { PORTAL_UNLOCK_STORAGE_KEY } from '../../constants/portal-flow';
 
@@ -301,23 +299,6 @@ const ModuleCard: React.FC<{ card: typeof mockModuleCards[0] }> = ({ card }) => 
       case 'warning': return 'bg-yellow-500';
       case 'danger': return 'bg-red-500';
       default: return 'bg-gray-500';
-    }
-  };
-
-  // Determine card background based on module
-  const getCardBackground = () => {
-    switch (card.id) {
-      case 'x-bos': return 'from-slate-800 to-slate-900';
-      case 'trsport': return 'from-blue-900 to-blue-950';
-      case 'lgs': return 'from-cyan-900 to-cyan-950';
-      case 'express': return 'from-purple-900 to-purple-950';
-      case 'x-scm': return 'from-indigo-900 to-indigo-950';
-      case 'x-office': return 'from-gray-800 to-gray-900';
-      case 'x-finance': return 'from-emerald-900 to-emerald-950';
-      case 'hrm': return 'from-rose-900 to-rose-950';
-      case 'crm': return 'from-violet-900 to-violet-950';
-      case 'x-maintenance': return 'from-amber-900 to-amber-950';
-      default: return 'from-slate-800 to-slate-900';
     }
   };
 

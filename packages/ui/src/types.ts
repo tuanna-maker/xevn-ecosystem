@@ -1,30 +1,10 @@
-export interface Column<T> {
-  key: string;
-  label: string;
-  render?: (value: T[keyof T], item: T) => React.ReactNode;
-  width?: string;
-}
+export type { Column, DataTableProps } from './components/DataTable';
 
 export type SortDirection = 'asc' | 'desc';
 
 export interface SortConfig<T> {
   key: keyof T;
   direction: SortDirection;
-}
-
-export interface DataTableProps<T> {
-  columns: Column<T>[];
-  data: T[];
-  searchPlaceholder?: string;
-  emptyMessage?: string;
-  onRowClick?: (item: T) => void;
-  onSort?: (sortConfig: SortConfig<T>) => void;
-  sortConfig?: SortConfig<T>;
-  responsive?: {
-    mobile?: 'card' | 'scroll';
-    tablet?: 'scroll' | 'table';
-    desktop?: 'table';
-  };
 }
 
 export interface StatCardProps {
