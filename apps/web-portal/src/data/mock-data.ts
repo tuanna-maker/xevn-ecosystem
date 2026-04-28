@@ -38,6 +38,7 @@ export interface Employee {
   employmentType: 'full-time' | 'part-time' | 'contract';
   joinDate: string;
   salary: number;
+  companyId?: string;
 }
 
 export interface OrganizationNode {
@@ -239,6 +240,7 @@ export const mockEmployees: Employee[] = [
     employmentType: 'full-time',
     joinDate: '2020-01-15',
     salary: 50000000,
+    companyId: 'comp-001',
   },
   {
     id: 'emp-002',
@@ -252,8 +254,50 @@ export const mockEmployees: Employee[] = [
     employmentType: 'full-time',
     joinDate: '2023-03-20',
     salary: 15000000,
+    companyId: 'comp-001',
   },
-  // Add more mock employees as needed
+  {
+    id: 'emp-003',
+    code: 'EMP-003',
+    fullName: 'Lê Văn Hà Nội',
+    position: 'Trưởng phòng',
+    department: 'Phòng Kỹ thuật',
+    email: 'hanoi.le@xevn.vn',
+    phone: '0903333333',
+    status: 'active',
+    employmentType: 'full-time',
+    joinDate: '2021-05-10',
+    salary: 25000000,
+    companyId: 'comp-002',
+  },
+  {
+    id: 'emp-004',
+    code: 'EMP-004',
+    fullName: 'Phạm Thị Đà Nẵng',
+    position: 'Kế toán trưởng',
+    department: 'Phòng Kế toán',
+    email: 'danang.pham@xevn.vn',
+    phone: '0904444444',
+    status: 'active',
+    employmentType: 'full-time',
+    joinDate: '2022-11-15',
+    salary: 20000000,
+    companyId: 'comp-003',
+  },
+  {
+    id: 'emp-005',
+    code: 'EMP-005',
+    fullName: 'Hoàng Văn Cần Thơ',
+    position: 'Nhân viên kỹ thuật',
+    department: 'Phòng Bảo trì',
+    email: 'cantho.hoang@xevn.vn',
+    phone: '0905555555',
+    status: 'active',
+    employmentType: 'part-time',
+    joinDate: '2024-01-05',
+    salary: 10000000,
+    companyId: 'comp-004',
+  },
 ];
 
 export const mockOrgStructure: OrganizationNode[] = [

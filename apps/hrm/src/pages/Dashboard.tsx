@@ -153,7 +153,7 @@ export default function Dashboard() {
 
   // Total payroll from real salary data
   const totalPayroll = useMemo(() => employees.reduce((sum, e) => sum + (e.salary || 0), 0), [employees]);
-  
+
   // Estimate tax & insurance from actual salary
   const totalTax = Math.round(totalPayroll * 0.1);
   const totalInsurance = Math.round(totalPayroll * 0.105);
@@ -215,7 +215,7 @@ export default function Dashboard() {
     const now = new Date();
     const months: { month: string; value: number }[] = [];
     const monthCount = selectedPeriod === 'year' ? 12 : selectedPeriod === 'quarter' ? 3 : 6;
-    
+
     for (let i = monthCount - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const label = `T${d.getMonth() + 1}`;
@@ -244,7 +244,7 @@ export default function Dashboard() {
   const getPeriodDates = (period: string) => {
     const now = new Date();
     let currentStart: Date, previousStart: Date, previousEnd: Date;
-    
+
     if (period === 'week') {
       const dayOfWeek = now.getDay() || 7;
       currentStart = new Date(now);

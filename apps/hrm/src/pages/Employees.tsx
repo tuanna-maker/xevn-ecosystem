@@ -13,8 +13,9 @@ import {
   Eye,
   Archive,
   Loader2,
+  Users,
 } from 'lucide-react';
-import { PageHeader } from '@/components/common/PageHeader';
+import { PageHeader as XePageHeader } from '@xevn/ui';
 import { DataTable } from '@/components/common/DataTable';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -306,9 +307,10 @@ export default function Employees() {
 
   return (
     <div className="space-y-4 md:space-y-6 animate-fade-in">
-      <PageHeader
+      <XePageHeader
         title={t('employees.title')}
         subtitle={`${t('employees.subtitle')} - ${employees.length}`}
+        icon={<Users className="h-5 w-5 text-xevn-primary" strokeWidth={1.5} />}
         actions={
           <div className="flex items-center gap-2 flex-wrap">
             <PermissionGate module="employees" action="delete">
@@ -335,9 +337,7 @@ export default function Employees() {
                 onClick={() => {
                   if (employeeLimit && !employeeLimit.canAdd) {
                     toast.error(
-                      i18n.language === 'en'
-                        ? `Employee limit reached (${employeeLimit.current}/${employeeLimit.max}). Please upgrade your plan.`
-                        : `Đã đạt giới hạn nhân viên (${employeeLimit.current}/${employeeLimit.max}). Vui lòng nâng cấp gói dịch vụ.`
+                      `Đã đạt giới hạn nhân viên (${employeeLimit.current}/${employeeLimit.max}). Vui lòng nâng cấp gói dịch vụ.`
                     );
                     return;
                   }

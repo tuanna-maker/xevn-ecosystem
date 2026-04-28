@@ -1,53 +1,44 @@
 /** HRM workspace — mount bởi router `/command-center/hrm/:view`, không nhồi vào CommandCenterPage. */
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
+import type { Company } from '../../data/mock-data';
+import { mockCompanies } from '../../data/mock-data';
+import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import {
-  LayoutDashboard,
-  Users,
-  UserPlus,
-  Clock,
-  Wallet,
-  Search,
-  Download,
-  BarChart3,
-} from 'lucide-react';
-import type { Company, Employee } from '../../data/mock-data';
-import { ENTITY_LEVEL_LABELS, mockEmployees, mockCompanies } from '../../data/mock-data';
-import {
-  SETTINGS_COL,
   SETTINGS_CONTROL_TEXT,
-  SETTINGS_FIELD_SHELL,
-  SETTINGS_LABEL_CLASS,
   SETTINGS_PAGE_SUBTITLE_CLASS,
   SETTINGS_PAGE_TITLE_CLASS,
   SETTINGS_RADIUS_CARD,
-  SETTINGS_RADIUS_INPUT,
-  SETTINGS_SECTION_GRID,
   WORKSPACE_STICKY_HEADER_ROW,
   WORKSPACE_STICKY_HEADER_AXIS_H,
   WORKSPACE_STICKY_SEARCH_SHELL_CLASS,
 } from '../../pages/command-center/settings-form-pattern';
 import type { HrmWorkspaceMenuKey } from './types';
 import { hrmPortalPath } from './paths';
-import { getParentEntityLabel } from './entity-utils';
 import {
   HRM_TABLE_SHELL,
-  HRM_TABLE_CLASS,
-  HRM_MOCK_RECRUITMENT,
-  HRM_MOCK_ATTENDANCE,
-  HRM_MOCK_PAYROLL,
-  HRM_MOCK_CONTRACTS,
-  HRM_MOCK_INSURANCE,
-  HRM_MOCK_DECISIONS,
-  HRM_MOCK_REPORTS,
-  HRM_MOCK_PENDING_PAYROLL,
-  HRM_MOCK_AI_SESSIONS,
-  HRM_MOCK_TASKS,
   HRM_MOCK_PROCESSES,
   HRM_MOCK_SERVICE_REQUESTS,
   HRM_MOCK_TOOLS_EQUIPMENT,
-  HRM_MOCK_GUIDE_CHAPTERS,
 } from './mock-data';
+import { EmployeesView } from './views/employees/EmployeesView';
+import { AttendanceView } from './views/attendance/AttendanceView';
+import { PayrollView } from './views/payroll/PayrollView';
+import { ContractsView } from './views/contracts/ContractsView';
+import { InsuranceView } from './views/insurance/InsuranceView';
+import { DecisionsView } from './views/decisions/DecisionsView';
+import { RecruitmentView } from './views/recruitment/RecruitmentView';
+import { DashboardView } from './views/dashboard/DashboardView';
+import { ReportsView } from './views/reports/ReportsView';
+import { ProcessesView } from './views/processes/ProcessesView';
+import { InternalServicesView } from './views/internal-services/InternalServicesView';
+import { ToolsEquipmentView } from './views/tools-equipment/ToolsEquipmentView';
+import { GuideView } from './views/guide/GuideView';
+import { UniAIView } from './views/ai/UniAIView';
+import { TasksView } from './views/tasks/TasksView';
+import { CompanyView } from './views/company/CompanyView';
+import { SettingsView } from './views/settings/SettingsView';
 
 const RAIL_STROKE = 1.5;
 
@@ -73,6 +64,8 @@ export interface HrmWorkspacePanelProps {
 
 export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }: HrmWorkspacePanelProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  useGlobalFilter();
   const hrmLegalEntities = legalEntityListProp ?? mockCompanies;
   const titles: Record<HrmWorkspaceMenuKey, { title: string; subtitle: string }> = {
       dashboard: {
@@ -80,8 +73,8 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         subtitle: 'Chỉ số nhanh, lối tắt nghiệp vụ và tình trạng kỳ lương.',
       },
       employees: {
-        title: 'Nhân sự',
-        subtitle: 'Danh sách nhân sự, hồ sơ và phân bổ theo phòng ban.',
+        title: 'Quản lý nhân viên',
+        subtitle: 'Danh sách nhân viên, hồ sơ nhân sự và thông tin liên quan.',
       },
       company: {
         title: 'Phòng/Ban & Công ty',
@@ -125,77 +118,99 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   };
 
   const meta = titles[view];
-  const hrmEmployees = mockEmployees.slice(0, 10);
+
+  const searchParams = new URLSearchParams(location.search);
+  const employeeDraft = searchParams.get('createEmployee') === '1';
+
+  const setPanelParams = (next: Record<string, string | null>) => {
+    const params = new URLSearchParams(location.search);
+    for (const [k, v] of Object.entries(next)) {
+      if (v == null || v === '') params.delete(k);
+      else params.set(k, v);
+    }
+    const qs = params.toString();
+    navigate(`${location.pathname}${qs ? `?${qs}` : ''}`, { replace: false });
+  };
 
   const openHrmApp = (path: string) => {
-    window.location.href = path;
+    /**
+     * Trước đây HRM trong portal mở “app HRM gốc” (/hr/*).
+     * Giờ portal render native, nên các CTA sẽ điều hướng nội bộ trong `/command-center/hrm/:view`.
+     */
+    const normalized = path.replace(/\/+$/, '');
+    const suffix = normalized.replace(/^\/hr(?=\/|$)/, '') || '/';
+    const routeToView: Record<string, HrmWorkspaceMenuKey> = {
+      '/': 'dashboard',
+      '/employees': 'employees',
+      '/company': 'company',
+      '/recruitment': 'recruitment',
+      '/attendance': 'attendance',
+      '/payroll': 'payroll',
+      '/contracts': 'contracts',
+      '/insurance': 'insurance',
+      '/decisions': 'decisions',
+      '/reports': 'reports',
+      '/settings': 'settings',
+      '/ai': 'hrm_ai',
+      '/tasks': 'tasks',
+      '/processes': 'processes',
+      '/internal-services': 'internal_services',
+      '/tools-equipment': 'tools_equipment',
+      '/guide': 'guide',
+    };
+    const target = routeToView[suffix] ?? 'dashboard';
+    navigate(hrmPortalPath(target));
+  };
+
+  const openIframeVersion = () => {
+    const params = new URLSearchParams(location.search);
+    params.set('iframe', '1');
+    navigate(`${location.pathname}?${params.toString()}`, { replace: false });
   };
 
   const renderActionBar = () => {
     switch (view) {
       case 'dashboard':
-        return (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">Điều hướng nhanh tới các phân hệ chính của HRM.</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/employees')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
-              >
-                Nhân sự
-              </button>
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/recruitment')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
-              >
-                Tuyển dụng
-              </button>
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/attendance')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
-              >
-                Chấm công
-              </button>
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/payroll')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
-              >
-                Tiền lương
-              </button>
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/reports')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
-              >
-                Báo cáo
-              </button>
-            </div>
-          </div>
-        );
+        // Dashboard điều hướng bằng các thẻ (tiles) bên trong view.
+        return null;
       case 'employees':
         return (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">
-              Đang xem danh sách nhân sự mẫu trong portal. Để thao tác đầy đủ, mở ứng dụng HRM.
-            </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => openHrmApp('/hr/employees')}
-                className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
+                onClick={() => setPanelParams({ modal: 'trash' })}
+                className="inline-flex items-center gap-2 rounded-full border border-xevn-border bg-white px-4 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50 shadow-sm"
               >
-                Thêm nhân sự
+                <div className="w-5 h-5 flex items-center justify-center border border-slate-300 rounded bg-slate-50">
+                  <div className="w-2.5 h-3 border-2 border-slate-400 rounded-sm" />
+                </div>
+                Đã xóa (0)
               </button>
               <button
                 type="button"
-                onClick={() => openHrmApp('/hr/employees')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2.5 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
+                onClick={() => setPanelParams({ modal: 'import' })}
+                className="inline-flex items-center gap-2 rounded-full border border-xevn-border bg-white px-4 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50 shadow-sm"
               >
-                Mở HRM / Nhân sự
+                <span className="text-xs font-bold">↑</span>
+                Import Excel
+              </button>
+              <button
+                type="button"
+                onClick={() => setPanelParams({ modal: 'export' })}
+                className="inline-flex items-center gap-2 rounded-full border border-xevn-border bg-white px-4 py-2 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50 shadow-sm"
+              >
+                <span className="text-xs font-bold">↓</span>
+                Xuất
+              </button>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPanelParams({ createEmployee: employeeDraft ? null : '1', employeeId: null })}
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-xevn-primary px-5 text-[13px] font-bold text-white shadow-md shadow-blue-200 transition active:scale-95 hover:opacity-90"
+              >
+                + Thêm nhân viên
               </button>
             </div>
           </div>
@@ -225,48 +240,29 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           </div>
         );
       case 'contracts':
-        return (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">Hợp đồng và phụ lục (bao gồm thử việc/chính thức) quản lý trong HRM.</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/contracts')}
-                className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
-              >
-                Mở HRM / Hợp đồng
-              </button>
-            </div>
-          </div>
-        );
+        return null;
       case 'insurance':
         return (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">BHXH/BHYT/BHTN và hồ sơ tham gia được đồng bộ trong HRM.</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/insurance')}
-                className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
-              >
-                Mở HRM / Bảo hiểm
-              </button>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => window.open('/hr/insurance', '_blank')}
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-xevn-primary px-4 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
+            >
+              Mở HRM / Bảo hiểm
+            </button>
           </div>
         );
       case 'decisions':
         return (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">Quyết định nhân sự và trạng thái ban hành / chờ ký số trong HRM.</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/decisions')}
-                className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
-              >
-                Mở HRM / Quyết định
-              </button>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => window.open('/hr/decisions', '_blank')}
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-xevn-primary px-4 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
+            >
+              Mở HRM / Quyết định
+            </button>
           </div>
         );
       case 'attendance':
@@ -457,9 +453,10 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
     }
   };
 
+
   return (
       <div
-        className={`flex min-w-0 min-h-0 flex-1 flex-col overflow-hidden border border-xevn-border bg-white/50 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}
+        className={`flex min-w-0 min-h-0 flex-1 flex-col overflow-hidden border border-xevn-border bg-xevn-surface shadow-soft ${SETTINGS_RADIUS_CARD}`}
       >
         <div className={WORKSPACE_STICKY_HEADER_ROW}>
           <div className="flex w-full min-h-10 items-center gap-3">
@@ -473,298 +470,34 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
               <Search className="h-4 w-4 shrink-0 text-xevn-textSecondary" strokeWidth={RAIL_STROKE} />
               <input
                 className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate-400 ${SETTINGS_CONTROL_TEXT}`}
-                placeholder="Tìm nhanh trong module HRM..."
+                placeholder="Tìm nhanh trong HRM..."
               />
             </div>
           </div>
         </div>
 
         <div className="xevn-safe-inline w-full min-w-0 flex-1 min-h-[min(520px,72vh)] overflow-y-auto overflow-x-hidden pb-6 pt-6">
-          <SettingSectionHeader title={meta.title} subtitle={meta.subtitle} />
-
-          {renderActionBar()}
-
-          {view === 'dashboard' ? (
-            <div className="mt-4 space-y-6">
-              <div className="flex flex-wrap items-center justify-end gap-3">
-                <span
-                  className={`inline-flex h-10 items-center rounded-lg border border-xevn-border bg-white px-4 ${SETTINGS_CONTROL_TEXT} text-slate-600`}
-                >
-                  Kỳ xem: Tháng này
-                </span>
-                <button
-                  type="button"
-                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-xevn-border bg-white px-4 font-semibold text-xevn-primary shadow-soft transition active:scale-95 hover:bg-slate-50"
-                  onClick={() => openHrmApp('/hr/reports')}
-                >
-                  <Download className="h-4 w-4 shrink-0" strokeWidth={RAIL_STROKE} />
-                  Xuất báo cáo
-                </button>
+          {/* Dashboard gọn: bỏ tiêu đề để tăng diện tích làm việc */}
+          {/* Header & Actions Row - Unified on one line */}
+          {(view === 'dashboard' || view === 'contracts' || view === 'insurance' || view === 'decisions') ? null : (
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className={SETTINGS_PAGE_TITLE_CLASS}>{meta.title}</h3>
+                {meta.subtitle && (
+                  <div className={SETTINGS_PAGE_SUBTITLE_CLASS}>{meta.subtitle}</div>
+                )}
               </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                {[
-                  {
-                    label: 'Nhân sự',
-                    hint: 'Hồ sơ & phân bổ',
-                    Icon: Users,
-                    surface: 'border-emerald-200 bg-emerald-50/90',
-                    iconClass: 'text-emerald-700',
-                  },
-                  {
-                    label: 'Tuyển dụng',
-                    hint: 'Ứng viên & pipeline',
-                    Icon: UserPlus,
-                    surface: 'border-xevn-primary/25 bg-blue-50/90',
-                    iconClass: 'text-xevn-primary',
-                  },
-                  {
-                    label: 'Chấm công',
-                    hint: 'Ca & bảng công',
-                    Icon: Clock,
-                    surface: 'border-amber-200 bg-amber-50/90',
-                    iconClass: 'text-amber-800',
-                  },
-                  {
-                    label: 'Tiền lương',
-                    hint: 'Kỳ chi & thuế',
-                    Icon: Wallet,
-                    surface: 'border-rose-200 bg-rose-50/90',
-                    iconClass: 'text-rose-700',
-                  },
-                  {
-                    label: 'Báo cáo',
-                    hint: 'Thống kê tổng hợp',
-                    Icon: BarChart3,
-                    surface: 'border-cyan-200 bg-cyan-50/90',
-                    iconClass: 'text-cyan-800',
-                  },
-                ].map(({ label, hint, Icon, surface, iconClass }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => {
-                      const map: Record<string, HrmWorkspaceMenuKey> = {
-                        'Nhân sự': 'employees',
-                        'Tuyển dụng': 'recruitment',
-                        'Chấm công': 'attendance',
-                        'Tiền lương': 'payroll',
-                        'Báo cáo': 'reports',
-                      };
-                      const k = map[label];
-                      if (k) navigate(hrmPortalPath(k));
-                    }}
-                    className={`flex items-center gap-3 rounded-xl border p-4 text-left shadow-soft transition active:scale-95 hover:brightness-[1.02] ${surface}`}
-                  >
-                    <span
-                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/80 shadow-sm ${iconClass}`}
-                    >
-                      <Icon className="h-6 w-6" strokeWidth={RAIL_STROKE} />
-                    </span>
-                    <span className="min-w-0">
-                      <span className={`block font-semibold text-xevn-text ${SETTINGS_CONTROL_TEXT}`}>{label}</span>
-                      <span className="mt-1 block text-sm text-slate-600">{hint}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-stretch">
-                <div
-                  className={`flex flex-col justify-between border border-xevn-border bg-white p-5 shadow-soft lg:col-span-7 ${SETTINGS_RADIUS_CARD}`}
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>Tổng quỹ lương kỳ</p>
-                      <p className="mt-1 text-sm text-slate-500">Tháng 03/2026 — toàn pháp nhân</p>
-                    </div>
-                    <span className="rounded-full border border-xevn-border bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-                      Đã khóa sổ C&B
-                    </span>
-                  </div>
-                  <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Tổng lương gross</p>
-                      <p className="mt-1 text-2xl font-semibold tabular-nums text-xevn-text">299 tỷ ₫</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Thuế TNCN</p>
-                      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-700">30 tỷ ₫</p>
-                      <p className="text-xs text-slate-500">~10% quỹ khả dụng</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">BHXH/BHYT/BHTN</p>
-                      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-700">31 tỷ ₫</p>
-                      <p className="text-xs text-slate-500">~10,5% tổng quỹ</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className={`border border-xevn-border bg-white/80 p-5 shadow-soft backdrop-blur-md lg:col-span-5 ${SETTINGS_RADIUS_CARD}`}
-                >
-                  <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>Thống kê nhân sự</p>
-                  <ul className="mt-4 space-y-3">
-                    {[
-                      { k: 'Tổng nhân sự', v: '312' },
-                      { k: 'Đang làm việc', v: '298' },
-                      { k: 'Mới trong kỳ', v: '6' },
-                      { k: 'Phòng/Ban hoạt động', v: '24' },
-                    ].map((row) => (
-                      <li
-                        key={row.k}
-                        className="flex items-center justify-between gap-4 border-b border-xevn-border/80 pb-3 last:border-0 last:pb-0"
-                      >
-                        <span className="text-sm text-slate-600">{row.k}</span>
-                        <span className="text-lg font-semibold tabular-nums text-xevn-primary">{row.v}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className={`${HRM_TABLE_SHELL}`}>
-                <table className={HRM_TABLE_CLASS}>
-                  <thead className="bg-white/70 backdrop-blur-md">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Lô bảng lương</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đơn vị</th>
-                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Số nhân sự</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Điểm nghẽn</th>
-                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {HRM_MOCK_PENDING_PAYROLL.map((row) => (
-                      <tr key={row.id} className="border-t border-xevn-border">
-                        <td className="px-3 py-2 font-mono text-sm font-medium text-xevn-primary">{row.batch}</td>
-                        <td className="px-3 py-2 text-slate-700">{row.entity}</td>
-                        <td className="px-3 py-2 text-right tabular-nums">{row.employees}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.blocker}</td>
-                        <td className="px-3 py-2 text-right">
-                          <button
-                            type="button"
-                            className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                            onClick={() => openHrmApp('/hr/payroll')}
-                          >
-                            Mở kỳ lương
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="flex items-center gap-2">
+                {renderActionBar()}
               </div>
             </div>
-          ) : null}
+          )}
 
-          {view === 'hrm_ai' ? (
-            <div className="mt-4 space-y-4">
-              <div
-                className={`border border-xevn-border bg-gradient-to-br from-cyan-50/90 to-white p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}
-              >
-                <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>Gợi ý nhanh</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {[
-                    'Soạn thông báo thay đổi chính sách nghỉ phép',
-                    'Checklist onboard nhân sự mới trong 7 ngày',
-                    'Tóm tắt khác biệt HĐ thử việc vs chính thức',
-                  ].map((q) => (
-                    <button
-                      key={q}
-                      type="button"
-                      className="rounded-full border border-xevn-accent/40 bg-white px-4 py-2 text-left text-sm font-medium text-xevn-text shadow-sm transition active:scale-95 hover:bg-cyan-50/80"
-                      onClick={() => openHrmApp('/hr/ai')}
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className={HRM_TABLE_SHELL}>
-                <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                  <thead className="bg-white/70 backdrop-blur-md">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phiên gần đây</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Người dùng</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Thời điểm</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Kết quả</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {HRM_MOCK_AI_SESSIONS.map((row) => (
-                      <tr key={row.id} className="border-t border-xevn-border">
-                        <td className="px-3 py-2 font-medium text-xevn-text">{row.topic}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.user}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.when}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.outcome}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : null}
+          {view === 'dashboard' ? <DashboardView /> : null}
 
-          {view === 'tasks' ? (
-            <div className={HRM_TABLE_SHELL}>
-                <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Công việc</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phụ trách</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Hạn</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ưu tiên</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_TASKS.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.title}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.assignee}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.due}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.priority === 'Cao'
-                              ? 'font-medium text-rose-700'
-                              : row.priority === 'Trung bình'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.priority}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Đang làm'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Chờ phản hồi'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/tasks')}
-                        >
-                          Mở chi tiết
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null}
+          {view === 'hrm_ai' ? <UniAIView /> : null}
+
+          {view === 'tasks' ? <TasksView /> : null}
 
           {view === 'processes' ? (
             <div className={HRM_TABLE_SHELL}>
@@ -907,519 +640,51 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
             </div>
           ) : null}
 
-          {view === 'guide' ? (
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-              {HRM_MOCK_GUIDE_CHAPTERS.map((ch) => (
-                <div
-                  key={ch.id}
-                  className={`border border-xevn-border bg-white/80 p-5 shadow-soft backdrop-blur-md ${SETTINGS_RADIUS_CARD}`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h4 className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>{ch.title}</h4>
-                    <span className="shrink-0 rounded-full bg-xevn-primary/10 px-2 py-0.5 text-xs font-semibold text-xevn-primary">
-                      {ch.steps} bước
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{ch.summary}</p>
-                  <button
-                    type="button"
-                    className="mt-4 text-[15px] font-semibold text-xevn-primary hover:underline"
-                    onClick={() => openHrmApp('/hr/guide')}
-                  >
-                    Mở hướng dẫn
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : null}
+          {view === 'guide' ? <GuideView /> : null}
 
-          {view === 'company' ? (
-            <div className={`overflow-x-auto border border-xevn-border bg-white mt-4 ${SETTINGS_RADIUS_CARD}`}>
-              <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tên pháp nhân</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Cấp bậc</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trực thuộc</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hrmLegalEntities.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium tabular-nums text-xevn-text">{row.code}</td>
-                      <td className="px-3 py-2">{row.name}</td>
-                      <td className="px-3 py-2">
-                        {row.entityLevel ? ENTITY_LEVEL_LABELS[row.entityLevel] : '—'}
-                      </td>
-                      <td className="px-3 py-2 text-slate-600">
-                        {getParentEntityLabel(row.parentEntityId, hrmLegalEntities) || '—'}
-                      </td>
-                      <td className="px-3 py-2">
-                        <span className={row.status === 'active' ? 'font-medium text-emerald-700' : 'text-slate-500'}>
-                          {row.status === 'active' ? 'Hoạt động' : 'Ngừng'}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/company')}
-                        >
-                          Chỉnh sửa
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null}
+          {view === 'company' ? <CompanyView legalEntities={hrmLegalEntities} openHrmApp={openHrmApp} /> : null}
 
           {view === 'employees' ? (
-            <div className={`overflow-x-auto border border-xevn-border bg-white mt-4 ${SETTINGS_RADIUS_CARD}`}>
-              <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã NV</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Họ tên</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chức vụ</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phòng/Ban</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ngày vào</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hrmEmployees.map((row: Employee) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.code}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.fullName}</td>
-                      <td className="px-3 py-2 text-slate-700">{row.position}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.department}</td>
-                      <td className="px-3 py-2">
-                        <span className={row.status === 'active' ? 'font-medium text-emerald-700' : 'text-slate-500'}>
-                          {row.status === 'active' ? 'Đang làm' : row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-slate-600">
-                        {new Date(row.joinDate).toLocaleDateString('vi-VN')}
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/employees')}
-                        >
-                          Xem hồ sơ
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <EmployeesView />
           ) : null}
 
           {view === 'recruitment' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={HRM_TABLE_CLASS}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chiến dịch</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phòng/Ban</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Chỉ tiêu</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Ứng viên pipeline</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_RECRUITMENT.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.campaign}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.department}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.need}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.pipeline}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Đang tuyển'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Tạm dừng'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/recruitment')}
-                        >
-                          Mở pipeline
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <RecruitmentView openHrmApp={openHrmApp} />
           ) : null}
 
           {view === 'attendance' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={HRM_TABLE_CLASS}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Kỳ công</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Pháp nhân / Đơn vị</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Ngày công chuẩn</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Nghỉ phép (giờ)</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Đi muộn (lượt)</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái kỳ</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_ATTENDANCE.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.period}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.entity}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.workdays}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.leave}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.late}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.locked === 'Đã khóa kỳ'
-                              ? 'font-medium text-emerald-700'
-                              : row.locked === 'Mở chỉnh sửa'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.locked}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/attendance')}
-                        >
-                          Mở kỳ
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AttendanceView openHrmApp={openHrmApp} />
           ) : null}
 
           {view === 'payroll' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={HRM_TABLE_CLASS}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Kỳ chi trả</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phạm vi</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Tổng quỹ (gross)</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Duyệt</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ngày chi</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_PAYROLL.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.period}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.entity}</td>
-                      <td className="px-3 py-2 text-right font-medium tabular-nums text-xevn-text">{row.gross}</td>
-                      <td className="px-3 py-2 text-slate-700">{row.approved}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.payDate}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Sẵn sàng chi'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Nháp'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/payroll')}
-                        >
-                          Xem bảng lương
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <PayrollView openHrmApp={openHrmApp} />
           ) : null}
 
           {view === 'contracts' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Số hợp đồng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Nhân sự</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Loại</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Hiệu lực từ</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Hết hạn</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_CONTRACTS.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.code}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.employee}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.type}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.start}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.end}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Hiệu lực'
-                              ? 'font-medium text-emerald-700'
-                              : row.status.startsWith('Hết hạn')
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/contracts')}
-                        >
-                          Mở hồ sơ
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ContractsView openHrmApp={openHrmApp} />
           ) : null}
 
           {view === 'insurance' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={HRM_TABLE_CLASS}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã tham chiếu</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đối tượng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chế độ đóng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Kỳ áp dụng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đồng bộ</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_INSURANCE.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.ref}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.employee}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.regime}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.period}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.sync === 'Đồng bộ VSSID' || row.sync === 'Đã nộp'
-                              ? 'font-medium text-emerald-700'
-                              : row.sync === 'Chờ xác nhận'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.sync}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/insurance')}
-                        >
-                          Chi tiết
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <InsuranceView openHrmApp={openHrmApp} />
           ) : null}
 
           {view === 'decisions' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Số quyết định</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ngày ban hành</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Loại</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phạm vi</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tóm tắt</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_DECISIONS.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.number}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.date}</td>
-                      <td className="px-3 py-2 text-slate-700">{row.kind}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.subject}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.summary}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Đã ban hành'
-                              ? 'font-medium text-emerald-700'
-                              : 'text-amber-700'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/decisions')}
-                        >
-                          Xem quyết định
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DecisionsView openHrmApp={openHrmApp} />
           ) : null}
 
-          {view === 'reports' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Báo cáo</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chu kỳ</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Lần chạy gần nhất</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Kênh phân phối</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {HRM_MOCK_REPORTS.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.name}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.cadence}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.lastRun}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.channel}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Thành công'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Đang chạy'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/reports')}
-                        >
-                          Lịch sử
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null}
+          {view === 'reports' ? <ReportsView /> : null}
 
-          {view === 'settings' ? (
-            <div
-              className={`border border-xevn-border bg-white/70 mt-4 p-4 shadow-soft backdrop-blur-md ${SETTINGS_RADIUS_CARD}`}
-            >
-              <div className={`${SETTINGS_SECTION_GRID} gap-y-4`}>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Ngày công chuẩn / tháng</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="22"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Giờ làm việc mặc định / ngày</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="8,0 giờ"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Làm tròn công</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="0,25 bước — nửa ngày"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span8}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Webhook đồng bộ chấm công thiết bị</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="https://api.xevn.local/hrm/attendance/device-ingest"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Khóa kỳ lương tự động</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="Ngày 25 hàng tháng"
-                  />
-                </label>
-              </div>
-            </div>
-          ) : null}
+          {view === 'processes' ? <ProcessesView /> : null}
+
+          {view === 'internal_services' ? <InternalServicesView /> : null}
+
+          {view === 'tools_equipment' ? <ToolsEquipmentView /> : null}
+
+          {view === 'guide' ? <GuideView /> : null}
+
+          {view === 'hrm_ai' ? <UniAIView /> : null}
+
+          {view === 'settings' ? <SettingsView /> : null}
         </div>
       </div>
     );

@@ -11,7 +11,7 @@ import my from './locales/my.json';
 // Get saved language with fallback
 const getSavedLanguage = () => {
   try {
-    return localStorage.getItem('language') || 'en';
+    return localStorage.getItem('language') || 'vi';
   } catch {
     return 'vi';
   }
@@ -28,7 +28,7 @@ i18n.use(initReactI18next).init({
     my: { translation: my },
   },
   lng: getSavedLanguage(),
-  fallbackLng: 'en',
+  fallbackLng: 'vi',
   interpolation: {
     escapeValue: false,
   },

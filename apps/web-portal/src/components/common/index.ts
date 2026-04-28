@@ -6,6 +6,7 @@ export { Badge, type BadgeProps } from '@xevn/ui';
 export { StatCard, InfoCard, type StatCardProps } from '@xevn/ui';
 export { DataTable, type DataTableProps, type Column } from '@xevn/ui';
 export { PageHeader, type PageHeaderProps } from '@xevn/ui';
+export { PageLayout, type PageLayoutProps } from '@xevn/ui';
 export { TreeView, type TreeViewProps } from '@xevn/ui';
 export { InfoBanner, type InfoBannerProps } from '@xevn/ui';
 export { Skeleton, type SkeletonProps } from '@xevn/ui';
