@@ -72,6 +72,8 @@ export const ContractsView: React.FC = () => {
   const [activeModal, setActiveModal] = useState<'import' | 'export' | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [filterState, setFilterState] = useState({
     status: [] as string[],
     effective_from: '',
@@ -218,29 +220,33 @@ export const ContractsView: React.FC = () => {
   };
 
   const filteredContracts = useMemo(() => {
-    let result = HRM_MOCK_CONTRACTS.map(c => ({
+    let result = contractsDb.map(c => ({
       ...c,
-      employee_name: c.employee,
-      employee_code: c.code,
-      contract_type: c.type,
-      department: 'Phòng HCNS',
-      effective_date: c.start,
-      expiry_date: c.end,
     }));
 
     if (searchQuery) {
       result = result.filter(c => 
-        c.employee_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.employee_code.toLowerCase().includes(searchQuery.toLowerCase())
+        (c.employee_name?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (c.employee_code?.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
     if (activeCategory !== 'all') {
-      if (activeCategory === '3year') result = result.filter(c => c.contract_type.includes('36 tháng'));
-      if (activeCategory === 'probation') result = result.filter(c => c.contract_type.toLowerCase().includes('thử việc'));
+      if (activeCategory === '3year') result = result.filter(c => c.contract_type?.includes('36 tháng'));
+      if (activeCategory === 'probation') result = result.filter(c => c.contract_type?.toLowerCase().includes('thử việc'));
     }
 
     return result;
+  }, [contractsDb, searchQuery, activeCategory]);
+
+  const totalPages = Math.ceil(filteredContracts.length / pageSize);
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredContracts.slice(start, start + pageSize);
+  }, [filteredContracts, currentPage, pageSize]);
+
+  useEffect(() => {
+    setCurrentPage(1);
   }, [searchQuery, activeCategory]);
 
   return (
@@ -440,7 +446,7 @@ export const ContractsView: React.FC = () => {
                   <input 
                     type="checkbox" 
                     onChange={handleSelectAll}
-                    checked={selectedIds.length === filteredContracts.length && filteredContracts.length > 0}
+                    checked={selectedIds.length === paginatedData.length && paginatedData.length > 0}
                     className="w-4 h-4 rounded border-slate-300 text-xevn-primary focus:ring-xevn-primary transition-all cursor-pointer" 
                   />
                 </th>
@@ -455,8 +461,8 @@ export const ContractsView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {filteredContracts.length > 0 ? (
-                filteredContracts.map((row) => {
+              {paginatedData.length > 0 ? (
+                paginatedData.map((row) => {
                   const isSelected = selectedIds.includes(row.id);
                   return (
                     <tr key={row.id} className={`hover:bg-blue-50/20 transition-colors group ${isSelected ? 'bg-blue-50/30' : ''}`}>
@@ -491,12 +497,17 @@ export const ContractsView: React.FC = () => {
                       <td className="px-4 py-4 whitespace-nowrap">
                         {(() => {
                           const s = row.status;
-                          const color = s === 'Hiệu lực' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                        s === 'Chờ ký số' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                        'bg-amber-50 text-amber-600 border-amber-100';
+                          const statusConfig: Record<string, { label: string; color: string }> = {
+                            active: { label: 'Hiệu lực', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+                            draft: { label: 'Dự thảo', color: 'bg-slate-50 text-slate-500 border-slate-200' },
+                            expired: { label: 'Hết hạn', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+                          };
+                          
+                          const config = statusConfig[s] || { label: s, color: 'bg-slate-50 text-slate-600 border-slate-200' };
+                          
                           return (
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black border shadow-sm ${color}`}>
-                              {s}
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black border shadow-sm ${config.color}`}>
+                              {config.label}
                             </span>
                           );
                         })()}
@@ -546,22 +557,35 @@ export const ContractsView: React.FC = () => {
         {/* Pagination Footer */}
         <div className="flex items-center justify-between border-t border-slate-50 bg-slate-50/30 px-6 py-4">
           <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-            Hiển thị 1 - {filteredContracts.length} trong số {filteredContracts.length} bản ghi
+            Hiển thị {filteredContracts.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredContracts.length)} trong số {filteredContracts.length} bản ghi
           </div>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Số hàng:</span>
-              <select className="h-8 rounded-full border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 focus:outline-none focus:ring-4 focus:ring-xevn-primary/10 transition-all">
+              <select
+                value={pageSize}
+                onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+                className="h-8 rounded-full border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 focus:outline-none focus:ring-4 focus:ring-xevn-primary/10 transition-all"
+              >
                 <option>10</option>
                 <option>20</option>
                 <option>50</option>
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <button disabled className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-300 disabled:opacity-50 transition-all">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 disabled:opacity-40 hover:border-xevn-primary hover:text-xevn-primary transition-all shadow-sm"
+              >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <button disabled className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-300 disabled:opacity-50 transition-all">
+              <span className="text-[11px] font-black text-slate-500 min-w-[60px] text-center">{currentPage} / {Math.max(1, totalPages)}</span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 disabled:opacity-40 hover:border-xevn-primary hover:text-xevn-primary transition-all shadow-sm"
+              >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>

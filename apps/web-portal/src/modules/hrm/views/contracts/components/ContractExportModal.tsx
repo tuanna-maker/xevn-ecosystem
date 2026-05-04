@@ -182,7 +182,6 @@ export const ContractExportModal: React.FC<ContractExportModalProps> = ({ open, 
                   <input 
                     type="checkbox" 
                     checked={selectedColumns.includes(col.key)}
-                    onChange={() => setSelectedIds(prev => prev.includes(col.key) ? prev.filter(k => k !== col.key) : [...prev, col.key])}
                     className="sr-only" 
                     onChange={(e) => {
                       if (e.target.checked) setSelectedColumns([...selectedColumns, col.key]);

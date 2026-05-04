@@ -216,29 +216,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           </div>
         );
       case 'recruitment':
-        return (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">
-              Pipeline và chiến dịch tuyển dụng thực tế được quản lý trong HRM.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/recruitment')}
-                className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
-              >
-                Tạo chiến dịch
-              </button>
-              <button
-                type="button"
-                onClick={() => openHrmApp('/hr/recruitment')}
-                className="inline-flex items-center gap-2 rounded-lg border border-xevn-border bg-white px-3 py-2.5 text-sm font-semibold text-xevn-text transition active:scale-95 hover:bg-slate-50"
-              >
-                Mở HRM / Tuyển dụng
-              </button>
-            </div>
-          </div>
-        );
+        return null;
       case 'contracts':
         return null;
       case 'insurance':
@@ -479,7 +457,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         <div className="xevn-safe-inline w-full min-w-0 flex-1 min-h-[min(520px,72vh)] overflow-y-auto overflow-x-hidden pb-6 pt-6">
           {/* Dashboard gọn: bỏ tiêu đề để tăng diện tích làm việc */}
           {/* Header & Actions Row - Unified on one line */}
-          {(view === 'dashboard' || view === 'contracts' || view === 'insurance' || view === 'decisions') ? null : (
+          {(view === 'dashboard' || view === 'contracts' || view === 'insurance' || view === 'decisions' || view === 'recruitment') ? null : (
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
                 <h3 className={SETTINGS_PAGE_TITLE_CLASS}>{meta.title}</h3>
