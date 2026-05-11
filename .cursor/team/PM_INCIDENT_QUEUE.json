@@ -1339,5 +1339,59 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1778496296553",
+    "detectedAt": "2026-05-11T10:44:56.550Z",
+    "source": "hook:afterShellExecution",
+    "command": "git checkout -b \"feature/ecosystem-wave-full-cutover\"; if (!$?) { exit 1 }; git add -A; if (!$?) { exit 1 }; $msg = @'\nfeat: cut over ecosystem to full FE-BE-DB multi-tenant architecture\n\nMigrate from legacy mock-driven modules to a production-ready multi-tenant baseline with API-backed master data, KPI engine, realistic seeding scripts, deployment assets, and governance documentation for end-to-end delivery.\n'@; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg; if (!$?) { exit 1 }; git push -u origin HEAD; if (!$?) { exit 1 }; git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496314739",
+    "detectedAt": "2026-05-11T10:45:14.736Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496348655",
+    "detectedAt": "2026-05-11T10:45:48.652Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add scripts/security-scan-staged.mjs && $msg = @'\nfeat: cut over ecosystem to full FE-BE-DB multi-tenant architecture\n\nMigrate from legacy mock-driven modules to a production-ready multi-tenant baseline with API-backed master data, KPI engine, realistic seeding scripts, deployment assets, and governance documentation for end-to-end delivery.\n'@; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg; if (!$?) { exit 1 }; git push -u origin HEAD; if (!$?) { exit 1 }; git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496356009",
+    "detectedAt": "2026-05-11T10:45:56.005Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add scripts/security-scan-staged.mjs; if (!$?) { exit 1 }; $msg = @'\nfeat: cut over ecosystem to full FE-BE-DB multi-tenant architecture\n\nMigrate from legacy mock-driven modules to a production-ready multi-tenant baseline with API-backed master data, KPI engine, realistic seeding scripts, deployment assets, and governance documentation for end-to-end delivery.\n'@; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg; if (!$?) { exit 1 }; git push -u origin HEAD; if (!$?) { exit 1 }; git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496389356",
+    "detectedAt": "2026-05-11T10:46:29.353Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add scripts/security-scan-staged.mjs; if (!$?) { exit 1 }; $msg = @'\nfeat: cut over ecosystem to full FE-BE-DB multi-tenant architecture\n\nMigrate from legacy mock-driven modules to a production-ready multi-tenant baseline with API-backed master data, KPI engine, realistic seeding scripts, deployment assets, and governance documentation for end-to-end delivery.\n'@; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg; if (!$?) { exit 1 }; git push -u origin HEAD; if (!$?) { exit 1 }; git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496534827",
+    "detectedAt": "2026-05-11T10:48:54.824Z",
+    "source": "hook:afterShellExecution",
+    "command": "git diff -- .cursor/team/AGENT_MESSAGE_BUS.md .cursor/team/PM_INCIDENT_QUEUE.json .cursor/team/TEMPLATE_REMINDERS.md",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]
