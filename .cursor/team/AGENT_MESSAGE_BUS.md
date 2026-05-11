@@ -3802,3 +3802,11 @@ Migrate from legacy mock-driven modules to a production-ready multi-tenant basel
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
+## 2026-05-11T10:50:03.259Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git branch --list && git status --short --branch`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO

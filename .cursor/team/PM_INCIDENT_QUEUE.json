@@ -1393,5 +1393,14 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1778496603261",
+    "detectedAt": "2026-05-11T10:50:03.259Z",
+    "source": "hook:afterShellExecution",
+    "command": "git branch --list && git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]
