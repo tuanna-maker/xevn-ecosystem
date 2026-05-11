@@ -1,0 +1,24 @@
+---
+description: Require structured, reusable knowledge updates for all agent roles
+alwaysApply: true
+---
+
+# Knowledge Quality Rule
+
+When updating role memory or shared lessons, entries must be structured and evidence-oriented.
+
+Required fields per KB entry:
+- `Context`
+- `Action`
+- `Outcome`
+- `Evidence`
+- `Reuse-tag`
+
+Quality policy:
+- Write concise, reusable lessons; avoid generic diary-style updates.
+- Never include secrets or credentials in KB files.
+- Prefer patterns that can be reused across projects.
+
+Freshness policy:
+- If a role has no meaningful KB update after major work cycles, PM must trigger reminder/escalation.
+- Repeated defects should produce preventive KB entries linked to defect records.

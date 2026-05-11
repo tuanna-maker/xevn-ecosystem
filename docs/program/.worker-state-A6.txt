@@ -1,0 +1,8 @@
+{
+    "to":  "A6",
+    "reason":  "Recruitment FE - UI binding + build pass",
+    "task":  "DEV-R2",
+    "priority":  "MEDIUM",
+    "queueId":  "Q-B-004",
+    "phase":  "B"
+}

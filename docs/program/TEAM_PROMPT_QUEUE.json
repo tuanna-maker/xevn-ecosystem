@@ -1,0 +1,13 @@
+{
+  "updatedAt": "2026-04-24T17:25:00+07:00",
+  "globalInstruction": "Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step.",
+  "agents": {
+    "A2": "BA-Process: refine acceptance criteria and branch coverage for active phase tasks.",
+    "A3": "BA-Data: refine data validation, traceability, and deterministic error semantics.",
+    "A4": "Dev-BE: plan backend implementation/test hardening for assigned module.",
+    "A5": "Dev-Mobile: plan integration checkpoints with current API contracts.",
+    "A6": "Dev-FE: plan API binding, error-state handling, and build verification.",
+    "A7": "QA-Auto: plan contract/regression checks and defect triage loop.",
+    "A8": "QA-UAT: plan UAT scenario run, expected evidence, and blocker checks."
+  }
+}

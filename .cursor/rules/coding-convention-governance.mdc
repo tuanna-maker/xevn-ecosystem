@@ -1,0 +1,22 @@
+---
+description: Enforce coding conventions, maintainability standards, and review-ready implementation quality
+alwaysApply: true
+---
+
+# Coding Convention and Maintainability Rule
+
+## Core standards
+- Follow language/framework idioms and project style guides.
+- Use explicit naming and cohesive module boundaries.
+- Avoid dead code, duplicate logic, and hidden side effects.
+- Keep functions focused and testable.
+
+## Safety standards
+- No silent exception swallowing.
+- No TODO/FIXME left in production-critical paths without tracker reference.
+- No unsafe type usage in typed codebases when strict alternatives exist.
+
+## Review gate
+- Changes must include rationale ("why"), not only mechanical edits.
+- Any risky refactor must include regression test coverage.
+- No DONE claim without reproducible build/test evidence.

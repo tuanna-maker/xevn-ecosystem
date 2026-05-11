@@ -1,0 +1,61 @@
+{
+    "generatedAt":  "2026-04-24T17:37:27",
+    "activePhase":  "B",
+    "team":  {
+                 "PM":  [
+                            "A9 runs queue+incident orchestration"
+                        ],
+                 "SA":  [
+                            "A1 validates architecture/signoff against active phase"
+                        ],
+                 "BA":  [
+                            "A2/A3 refine acceptance+traceability"
+                        ],
+                 "DEV":  [
+                             "A4/A5/A6 execute backend/frontend tasks from queue"
+                         ],
+                 "QA":  [
+                            "A7/A8 execute regression/UAT and raise defects"
+                        ]
+             },
+    "queue":  [
+                  {
+                      "to":  "A9",
+                      "reason":  "Perform PM-Tech gate review and close wave",
+                      "task":  "PM-GATE",
+                      "priority":  "HIGH"
+                  },
+                  {
+                      "to":  "A2",
+                      "reason":  "Recruitment - acceptance/usecase matrix",
+                      "task":  "BA-R1",
+                      "priority":  "MEDIUM",
+                      "queueId":  "Q-B-002",
+                      "phase":  "B"
+                  },
+                  {
+                      "to":  "A4",
+                      "reason":  "Recruitment - API+migration+tests pass",
+                      "task":  "DEV-R1",
+                      "priority":  "MEDIUM",
+                      "queueId":  "Q-B-003",
+                      "phase":  "B"
+                  },
+                  {
+                      "to":  "A6",
+                      "reason":  "Recruitment FE - UI binding + build pass",
+                      "task":  "DEV-R2",
+                      "priority":  "MEDIUM",
+                      "queueId":  "Q-B-004",
+                      "phase":  "B"
+                  },
+                  {
+                      "to":  "A7",
+                      "reason":  "Recruitment - e2e + defects closed",
+                      "task":  "QA-R1",
+                      "priority":  "MEDIUM",
+                      "queueId":  "Q-B-005",
+                      "phase":  "B"
+                  }
+              ]
+}

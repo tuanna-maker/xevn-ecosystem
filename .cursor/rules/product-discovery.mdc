@@ -1,0 +1,20 @@
+---
+description: Enforce world-class product discovery before committing major implementation scope
+alwaysApply: true
+---
+
+# Product Discovery Rule
+
+For significant features or programs, teams must produce a discovery package before full delivery execution.
+
+Required discovery outputs:
+- Problem statement with business impact and target users.
+- Success metrics (north star + leading indicators + guardrails).
+- User/job-to-be-done segmentation and priority rationale.
+- Constraints map (budget, timeline, compliance, integration boundaries).
+- Hypothesis list with measurable validation criteria.
+
+Minimum quality bar:
+- No vague goals ("better UX", "faster") without measurable targets.
+- No roadmap commitment without explicit out-of-scope definition.
+- No major build decision without at least one validated alternative.

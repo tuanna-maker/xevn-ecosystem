@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/before-shell-security-check.mjs",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "node .cursor/hooks/before-push-protected-branch-check.mjs",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "node .cursor/hooks/before-push-branch-naming-check.mjs",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/session-start.mjs",
+        "timeout": 10
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "node .cursor/hooks/after-shell-execution.mjs",
+        "timeout": 10
+      }
+    ]
+  }
+}

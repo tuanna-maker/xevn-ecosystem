@@ -1,0 +1,1047 @@
+window.__DASHBOARD_DATA__ = {
+  "generatedAt": "2026-04-24T10:37:26.902Z",
+  "summary": {
+    "totalAgents": 10,
+    "activeAgents": 9,
+    "doneAgents": 1,
+    "totalSprintTasks": 19,
+    "doneSprintTasks": 15,
+    "totalTraceabilityRows": 16,
+    "doneTraceabilityRows": 15,
+    "openDefects": 1
+  },
+  "waveSnapshot": {
+    "Timestamp": "2026-04-24 16:21:08",
+    "Current wave": "5",
+    "Wave 1 done": "True",
+    "Wave 2 done": "True",
+    "Wave 3 done": "True",
+    "Wave 4 done": "True",
+    "No open blocker/critical": "True",
+    "Wave 1": "SA + BA freeze",
+    "Wave 2": "DEV implementation",
+    "Wave 3": "QA cycles",
+    "Wave 4": "Release/Gate close",
+    "Wave 5": "All 4 waves complete"
+  },
+  "pmDispatchQueue": {
+    "generatedAt": "2026-04-24T10:37:26.282Z",
+    "freezeReady": true,
+    "devReady": true,
+    "qaReady": true,
+    "activePhase": "B",
+    "phaseSummary": [
+      {
+        "phase": "A",
+        "total": 7,
+        "done": 7,
+        "open": 0
+      },
+      {
+        "phase": "B",
+        "total": 5,
+        "done": 1,
+        "open": 4
+      },
+      {
+        "phase": "C",
+        "total": 5,
+        "done": 0,
+        "open": 5
+      },
+      {
+        "phase": "D",
+        "total": 5,
+        "done": 0,
+        "open": 5
+      },
+      {
+        "phase": "E",
+        "total": 4,
+        "done": 0,
+        "open": 4
+      }
+    ],
+    "upcomingQueuePreview": [
+      {
+        "phase": "C",
+        "task": "SA-C1",
+        "to": "A1",
+        "module": "Contracts/Insurance",
+        "priority": "MEDIUM"
+      },
+      {
+        "phase": "C",
+        "task": "BA-C1",
+        "to": "A2",
+        "module": "Contracts/Insurance",
+        "priority": "MEDIUM"
+      },
+      {
+        "phase": "C",
+        "task": "DEV-C1",
+        "to": "A4",
+        "module": "Contracts/Insurance",
+        "priority": "MEDIUM"
+      }
+    ],
+    "queue": [
+      {
+        "to": "A9",
+        "reason": "Perform PM-Tech gate review and close wave",
+        "task": "PM-GATE",
+        "priority": "HIGH"
+      },
+      {
+        "to": "A2",
+        "reason": "Recruitment - acceptance/usecase matrix",
+        "task": "BA-R1",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-002",
+        "phase": "B"
+      },
+      {
+        "to": "A4",
+        "reason": "Recruitment - API+migration+tests pass",
+        "task": "DEV-R1",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-003",
+        "phase": "B"
+      },
+      {
+        "to": "A6",
+        "reason": "Recruitment FE - UI binding + build pass",
+        "task": "DEV-R2",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-004",
+        "phase": "B"
+      },
+      {
+        "to": "A7",
+        "reason": "Recruitment - e2e + defects closed",
+        "task": "QA-R1",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-005",
+        "phase": "B"
+      }
+    ]
+  },
+  "teamMailbox": {
+    "generatedAt": "2026-04-24T17:37:16",
+    "activePhase": "B",
+    "team": {
+      "PM": [
+        "A9 runs queue+incident orchestration"
+      ],
+      "SA": [
+        "A1 validates architecture/signoff against active phase"
+      ],
+      "BA": [
+        "A2/A3 refine acceptance+traceability"
+      ],
+      "DEV": [
+        "A4/A5/A6 execute backend/frontend tasks from queue"
+      ],
+      "QA": [
+        "A7/A8 execute regression/UAT and raise defects"
+      ]
+    },
+    "queue": [
+      {
+        "to": "A9",
+        "reason": "Perform PM-Tech gate review and close wave",
+        "task": "PM-GATE",
+        "priority": "HIGH"
+      },
+      {
+        "to": "A2",
+        "reason": "Recruitment - acceptance/usecase matrix",
+        "task": "BA-R1",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-002",
+        "phase": "B"
+      },
+      {
+        "to": "A4",
+        "reason": "Recruitment - API+migration+tests pass",
+        "task": "DEV-R1",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-003",
+        "phase": "B"
+      },
+      {
+        "to": "A6",
+        "reason": "Recruitment FE - UI binding + build pass",
+        "task": "DEV-R2",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-004",
+        "phase": "B"
+      },
+      {
+        "to": "A7",
+        "reason": "Recruitment - e2e + defects closed",
+        "task": "QA-R1",
+        "priority": "MEDIUM",
+        "queueId": "Q-B-005",
+        "phase": "B"
+      }
+    ]
+  },
+  "controlTower": [
+    {
+      "agent": "A1",
+      "role": "SA",
+      "work": "Validated Attendance/Payroll SA signoff + froze Recruitment v1 scope/non-goals",
+      "status": "DONE",
+      "lastUpdate": "2026-04-23 02:20",
+      "waitingOn": "PM ACK for BA-R1 dispatch"
+    },
+    {
+      "agent": "A2",
+      "role": "BA-Process",
+      "work": "Re-validate attendance acceptance package for phase close and handoff final QA-UAT",
+      "status": "IN_PROGRESS",
+      "lastUpdate": "2026-04-23 01:55",
+      "waitingOn": "QA-N2 evidence"
+    },
+    {
+      "agent": "A3",
+      "role": "BA-Data",
+      "work": "Re-validate payroll lifecycle traceability and align with latest API implementation",
+      "status": "IN_PROGRESS",
+      "lastUpdate": "2026-04-23 01:55",
+      "waitingOn": "Dev/API delta"
+    },
+    {
+      "agent": "A4",
+      "role": "Dev-BE-Lead",
+      "work": "Own API + DB + contract direction, and technical handoff to FE/Mobile",
+      "status": "READY",
+      "lastUpdate": "2026-04-22 23:21",
+      "waitingOn": "PM dispatch"
+    },
+    {
+      "agent": "A5",
+      "role": "Dev-FE",
+      "work": "Implement and integrate web flows from approved BE contracts",
+      "status": "READY",
+      "lastUpdate": "2026-04-23 00:10",
+      "waitingOn": "A4 contract packet"
+    },
+    {
+      "agent": "A6",
+      "role": "Dev-Mobile",
+      "work": "Implement and integrate mobile flows from approved BE contracts",
+      "status": "READY",
+      "lastUpdate": "2026-04-23 00:10",
+      "waitingOn": "A4 contract packet"
+    },
+    {
+      "agent": "A7",
+      "role": "QA-Auto",
+      "work": "Build/maintain automated contract and regression suite",
+      "status": "READY",
+      "lastUpdate": "2026-04-22 22:25",
+      "waitingOn": "A4/A5/A6 evidence"
+    },
+    {
+      "agent": "A8",
+      "role": "QA-UAT",
+      "work": "Run end-to-end UAT scenarios and signoff evidence",
+      "status": "READY",
+      "lastUpdate": "2026-04-23 02:04",
+      "waitingOn": "QA-Auto pass + BA acceptance"
+    },
+    {
+      "agent": "A9",
+      "role": "PM-Tech Auditor",
+      "work": "Continuous incident intake and dispatch quality supervision",
+      "status": "READY",
+      "lastUpdate": "2026-04-23 00:55",
+      "waitingOn": "none"
+    },
+    {
+      "agent": "A10",
+      "role": "Technical Manager",
+      "work": "Governance for architecture, coding standards, infra, and security",
+      "status": "READY",
+      "lastUpdate": "2026-04-23 01:00",
+      "waitingOn": "none"
+    }
+  ],
+  "sprintBoard": [
+    {
+      "id": "SA-N1",
+      "role": "SA",
+      "task": "Freeze boundaries and NFR for Attendance/Payroll v1",
+      "owner": "SA",
+      "status": "DONE"
+    },
+    {
+      "id": "SA-R1",
+      "role": "SA",
+      "task": "Freeze Recruitment v1 scope/non-goals aligned with TechSpec/SRS/backlog",
+      "owner": "SA",
+      "status": "DONE"
+    },
+    {
+      "id": "BA-N1",
+      "role": "BA",
+      "task": "Attendance acceptance + validation matrix",
+      "owner": "BA-Process",
+      "status": "DONE"
+    },
+    {
+      "id": "BA-N2",
+      "role": "BA",
+      "task": "Payroll lifecycle acceptance + traceability rows",
+      "owner": "BA-Data",
+      "status": "DONE"
+    },
+    {
+      "id": "BA-R2",
+      "role": "BA",
+      "task": "Recruitment process-flow acceptance package with measurable ACs",
+      "owner": "BA-Process",
+      "status": "READY_FOR_SA"
+    },
+    {
+      "id": "DEV-N1",
+      "role": "BE-HRM",
+      "task": "Attendance module API + migration + tests",
+      "owner": "Dev-BE-HRM",
+      "status": "DONE"
+    },
+    {
+      "id": "DEV-N2",
+      "role": "BE-HRM",
+      "task": "Payroll module API completeness + e2e",
+      "owner": "Dev-BE-HRM",
+      "status": "DONE"
+    },
+    {
+      "id": "DEV-R1",
+      "role": "BE-HRM",
+      "task": "Recruitment module hardening tests + deterministic behavior lock",
+      "owner": "Dev-BE-HRM",
+      "status": "DONE"
+    },
+    {
+      "id": "DEV-C1",
+      "role": "BE-HRM",
+      "task": "Contracts/Insurance module hardening tests + deterministic behavior lock",
+      "owner": "Dev-BE-HRM",
+      "status": "DONE"
+    },
+    {
+      "id": "DEV-D1",
+      "role": "BE-HRM",
+      "task": "Operations module hardening tests + app wiring regression lock",
+      "owner": "Dev-BE-HRM",
+      "status": "DONE"
+    },
+    {
+      "id": "DEV-N3",
+      "role": "FE",
+      "task": "HRM screens binding for Attendance/Payroll",
+      "owner": "Dev-FE",
+      "status": "DONE"
+    },
+    {
+      "id": "DEV-R2",
+      "role": "FE",
+      "task": "Recruitment API-first integration (requisitions/candidates/interviews)",
+      "owner": "Dev-FE",
+      "status": "IN_PROGRESS"
+    },
+    {
+      "id": "DEV-C2",
+      "role": "FE",
+      "task": "Contracts/Insurance API-first integration",
+      "owner": "Dev-FE",
+      "status": "IN_PROGRESS"
+    },
+    {
+      "id": "DEV-D2",
+      "role": "FE",
+      "task": "Operations tasks/reports API-first integration",
+      "owner": "Dev-FE",
+      "status": "IN_PROGRESS"
+    },
+    {
+      "id": "QA-N1",
+      "role": "QA",
+      "task": "Attendance/Payroll contract + regression suite",
+      "owner": "QA-Auto",
+      "status": "DONE"
+    },
+    {
+      "id": "QA-N2",
+      "role": "QA",
+      "task": "UAT script for Attendance/Payroll business flow",
+      "owner": "QA-UAT",
+      "status": "DONE"
+    },
+    {
+      "id": "QA-R1",
+      "role": "QA-Auto",
+      "task": "Recruitment API contract/regression suite",
+      "owner": "QA-Auto",
+      "status": "DONE"
+    },
+    {
+      "id": "QA-C1",
+      "role": "QA-Auto",
+      "task": "Contracts/Insurance API contract/regression suite",
+      "owner": "QA-Auto",
+      "status": "DONE"
+    },
+    {
+      "id": "QA-D1",
+      "role": "QA-Auto",
+      "task": "Operations API contract/regression suite",
+      "owner": "QA-Auto",
+      "status": "DONE"
+    }
+  ],
+  "defects": [
+    {
+      "id": "DEF-BASE-001",
+      "severity": "Medium",
+      "module": "HRM Web Bundle",
+      "description": "Some chunks still > 500k after optimization.",
+      "owner": "Dev-FE",
+      "status": "Open",
+      "retestEvidence": "Pending next optimization sprint"
+    },
+    {
+      "id": "DEF-QA-A7-001",
+      "severity": "Low",
+      "module": "HRM API Test Suite",
+      "description": "Regression test expansion initially failed on payroll close-status expectation mismatch (`HRM-PAY-405` vs actual `HRM-PAY-004`).",
+      "owner": "QA-Auto (A7)",
+      "status": "Closed",
+      "retestEvidence": "`npm test -- --runInBand` in `apps/api/hrm-api`: 9/9 suites passed, 26/26 tests passed (2026-04-22 22:25)"
+    }
+  ],
+  "traceability": [
+    {
+      "useCase": "UC-HRM-01 Health",
+      "api": "`GET /api/hrm`",
+      "db": "n/a",
+      "fe": "HRM shell health usage",
+      "test": "API test pass",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-02 Platform admin",
+      "api": "`POST /api/hrm/admin/platform-admin`",
+      "db": "`platform_admins`",
+      "fe": "Platform Admin screen",
+      "test": "HRM tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-03 Company admin",
+      "api": "`POST /api/hrm/admin/company-admin`",
+      "db": "`user_company_memberships`",
+      "fe": "Platform Admin/Company",
+      "test": "HRM tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-04 Invite employees",
+      "api": "`POST /api/hrm/admin/invite-employee`",
+      "db": "auth + memberships",
+      "fe": "Onboarding/Admin",
+      "test": "HRM tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-05 Reset user",
+      "api": "`POST /api/hrm/admin/reset-user-password`",
+      "db": "profiles/memberships/admins",
+      "fe": "Admin user mgmt",
+      "test": "HRM tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-06 Pull catalog",
+      "api": "`POST /api/hrm/catalog-sync/pull/:key`",
+      "db": "`synced_catalogs`, `sync_audit_logs`",
+      "fe": "HRM sync banner",
+      "test": "sim full pass",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-07 Get synced catalog",
+      "api": "`GET /api/hrm/catalog-sync/:key`",
+      "db": "`synced_catalogs`",
+      "fe": "HRM consumers",
+      "test": "sim full pass",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-HRM-08 List synced catalogs",
+      "api": "`GET /api/hrm/catalog-sync`",
+      "db": "`synced_catalogs`",
+      "fe": "HRM consumers",
+      "test": "sim full pass",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-XBOS-01 Health",
+      "api": "`GET /api/xbos`",
+      "db": "n/a",
+      "fe": "XBOS shell",
+      "test": "API test pass",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-XBOS-02 Bootstrap",
+      "api": "`POST /api/xbos/config-sync/bootstrap-xevn`",
+      "db": "`config_catalogs`, `config_catalog_items`",
+      "fe": "XBOS sync banner",
+      "test": "sim full pass",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-XBOS-03 Get catalog",
+      "api": "`GET /api/xbos/config-sync/catalog/:key`",
+      "db": "`config_catalogs`, items",
+      "fe": "Metadata consumers",
+      "test": "API tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-XBOS-04 List catalogs",
+      "api": "`GET /api/xbos/config-sync/catalogs`",
+      "db": "`config_catalogs`, items",
+      "fe": "Metadata/KPI pages",
+      "test": "API tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "UC-XBOS-05 Publish metadata",
+      "api": "`POST /api/xbos/config-sync/catalog/:key/publish`",
+      "db": "catalogs + audit",
+      "fe": "Admin/metadata",
+      "test": "API tests",
+      "status": "DONE"
+    },
+    {
+      "useCase": "HRM Attendance full flow",
+      "api": "`POST/GET/PATCH /api/hrm/attendance/records*`",
+      "db": "`attendance_records`, `attendance_events`, `leave_requests`",
+      "fe": "Attendance pages (API binding pending)",
+      "test": "BA acceptance package finalized with measurable AC-ATT-01..10 (HTTP code + deterministic `HRM-ATT-*` + DB delta checks); phase A close pending QA-UAT evidence only",
+      "status": "DONE"
+    },
+    {
+      "useCase": "HRM Payroll lifecycle + traceability (BA-N2)",
+      "api": "`POST /api/hrm/payroll/periods` -> `draft`, `GET /api/hrm/payroll/periods`, `POST /api/hrm/payroll/periods/:periodId/process` (`draft` -> `processing`), `POST /api/hrm/payroll/periods/:periodId/close` (`processing` -> `closed`)",
+      "db": "`payroll_periods`",
+      "fe": "Payroll periods list/setup, payroll processing, payroll close flow",
+      "test": "BA closure AC-PAY-01..08 locked: deterministic transitions/errors (`HRM-PAY-*`), immutable `closed`, deterministic list envelope, and explicit no-mutation checks on invalid/not-found paths",
+      "status": "DONE"
+    },
+    {
+      "useCase": "HRM Recruitment full flow (phase B BA package)",
+      "api": "`POST/GET /api/hrm/recruitment/requisitions`, `POST/GET /api/hrm/recruitment/candidates`, `POST /api/hrm/recruitment/interviews`, `PATCH /api/hrm/recruitment/interviews/:interviewId/status`",
+      "db": "`job_requisitions`, `recruitment_candidates`, `recruitment_interviews`",
+      "fe": "Recruitment pages",
+      "test": "BA package AC-REC-01..12 published with measurable success/error outcomes (`HRM-REC-404/405/406`, `HRM-AUTH-001`, validation fallback) + DB effects for all write/fail branches",
+      "status": "READY_FOR_SA"
+    }
+  ],
+  "agentActivity": {
+    "rows": [
+      {
+        "agent": "A1",
+        "signalCount": 9,
+        "lastSeen": "2026-04-23 02:20",
+        "lastTopic": "A1 SA -> PM/A2/A3/A4/A6/A7/A8 | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A2",
+        "signalCount": 28,
+        "lastSeen": "2026-04-24 17:36",
+        "lastTopic": "A2 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A3",
+        "signalCount": 8,
+        "lastSeen": "2026-04-24 17:36",
+        "lastTopic": "A3 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A4",
+        "signalCount": 40,
+        "lastSeen": "2026-04-24 17:36",
+        "lastTopic": "A4 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A5",
+        "signalCount": 4,
+        "lastSeen": "2026-04-24 17:36",
+        "lastTopic": "A5 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A6",
+        "signalCount": 32,
+        "lastSeen": "2026-04-24 17:37",
+        "lastTopic": "A6 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A7",
+        "signalCount": 25,
+        "lastSeen": "2026-04-24 17:24",
+        "lastTopic": "A7 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A8",
+        "signalCount": 18,
+        "lastSeen": "2026-04-24 17:36",
+        "lastTopic": "A8 Worker -> PM (A9) | HIGH",
+        "currentTasks": []
+      },
+      {
+        "agent": "A9",
+        "signalCount": 416,
+        "lastSeen": "2026-04-24 17:37",
+        "lastTopic": "A9 PM-Tech -> Team | INFO",
+        "currentTasks": []
+      }
+    ],
+    "timeline": [
+      {
+        "time": "2026-04-24 17:37",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:37",
+        "topic": "A6 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A6",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A4 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A4",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A2 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A2",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A9 PM-Tech -> Team | HIGH",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A8 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A8",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A5 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A5",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "A3 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A3",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A6 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A6",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A4 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A4",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A2 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A2",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:40",
+        "topic": "A9 PM -> SA/BA/Dev/QA/QC/TM | HIGH",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:36",
+        "topic": "QA Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:35",
+        "topic": "A4 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A4",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:34",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:34",
+        "topic": "A2 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A2",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:34",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:34",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:34",
+        "topic": "A6 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A6",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:33",
+        "topic": "A4 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A4",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:33",
+        "topic": "A2 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A2",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:33",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:33",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:32",
+        "topic": "A6 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A6",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:32",
+        "topic": "A4 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A4",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:32",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:32",
+        "topic": "A2 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A2",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:32",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:32",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:31",
+        "topic": "A6 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A6",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:31",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:31",
+        "topic": "A2 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A2",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:31",
+        "topic": "A4 Worker -> PM (A9) | HIGH",
+        "agents": [
+          "A4",
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:31",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      },
+      {
+        "time": "2026-04-24 17:31",
+        "topic": "A9 PM-Tech -> Team | INFO",
+        "agents": [
+          "A9"
+        ]
+      }
+    ]
+  },
+  "agentMessageBusHeadings": [
+    "2026-04-24 17:33 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:40 | Technical-Manager -> Dev-BE / Dev-FE / Dev-Mobile | HIGH",
+    "2026-04-24 17:33 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:33 | A2 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:33 | A4 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:40 | BA-Process -> QA/UAT | HIGH",
+    "2026-04-24 17:34 | A6 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:34 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:34 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:34 | A2 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:34 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:35 | A4 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:36 | QA Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:35 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:40 | A9 PM -> SA/BA/Dev/QA/QC/TM | HIGH",
+    "2026-04-24 17:35 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:35 | A2 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:35 | A4 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:35 | A6 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:35 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:36 | A3 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:36 | A5 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:36 | A8 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:36 | A9 PM-Tech -> Team | HIGH",
+    "2026-04-24 17:36 | A2 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:36 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:36 | A9 PM-Tech -> Team | INFO",
+    "2026-04-24 17:36 | A4 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:37 | A6 Worker -> PM (A9) | HIGH",
+    "2026-04-24 17:37 | A9 PM-Tech -> Team | INFO"
+  ],
+  "projectJournalHeadings": [
+    "Journal Rules",
+    "2026-04-24 17:40 - PM Dispatch Wave B2 Activated",
+    "2026-04-23 02:25 - BA Phase A Closure + Recruitment BA Package",
+    "2026-04-23 02:15 - QA-N2 UAT Lane Execution (New Modules) Blocked by Runtime Mismatch",
+    "2026-04-23 01:20 - SA-N1 Freeze Finalized (Attendance/Payroll)",
+    "2026-04-22 22:15 - Program OS Setup",
+    "2026-04-22 22:25 - Full Module Backlog Activated",
+    "2026-04-22 22:30 - Agent Visibility Control Tower Online",
+    "2026-04-22 22:55 - 4-Wave Autopilot Added",
+    "2026-04-22 22:49 - Real DB Migration Applied (PM-Tech Gate)",
+    "2026-04-22 23:05 - PMO HTML Dashboard Added",
+    "2026-04-22 22:42 - Attendance BE v1 Implemented",
+    "2026-04-22 22:05 - Full Verification Snapshot",
+    "2026-04-22 20:00 - 22:00 - Day 1-30 Execution Completion",
+    "2026-04-23 01:35 - PM Full-Project Queue Activation"
+  ],
+  "agentRooms": [
+    {
+      "agent": "A1",
+      "role": "SA",
+      "path": "docs/program/agent-rooms/A1.md",
+      "lastUpdated": "N/A",
+      "tail": "# Agent A1 Room\n\nLast updated: N/A\n\n## 2026-04-24T17:15:34+07:00 | EXECUTION\n- Architecture validation focus: confirm Recruitment Phase B preserves bounded-context ownership by keeping candidate lifecycle state transitions, interview scheduling, and requisition status updates authoritative in `hrm-api` while exposing only integration-safe projections to downstream consumers.\n- Next technical decision to verify: whether interview status progression should be enforced via a centralized domain state machine (single transition policy service + DB constraint) versus distributed controller/service checks, with decision criteria based on consistency guarantees, auditability, and cross-module extensibility.\n"
+    },
+    {
+      "agent": "A10",
+      "role": "Technical Manager",
+      "path": "docs/program/agent-rooms/A10.md",
+      "lastUpdated": "N/A",
+      "tail": "# Agent A10 Room\n\nLast updated: N/A\n"
+    },
+    {
+      "agent": "A2",
+      "role": "BA-Process",
+      "path": "docs/program/agent-rooms/A2.md",
+      "lastUpdated": "2026-04-24 17:37:16",
+      "tail": "## [2026-04-24 17:35:47] ACK\n- From: Worker\n- Message: Intake tasks: BA-R1 (queue changed)\n\n\n## [2026-04-24 17:35:48] EXECUTION\n- From: Worker\n- Message: Executed lane command: Write-Output 'BA process validation cycle'; pnpm ops:pm:queue\n\n\n## [2026-04-24 17:36:08] IDLE\n- From: Worker\n- Message: Queue changed but no assigned tasks.\n\n\n## [2026-04-24 17:36:22] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=BA-R1, Priority=MEDIUM, Reason=Recruitment - acceptance/usecase matrix\n\n\n## [2026-04-24 17:36:28] ACK\n- From: Worker\n- Message: Intake tasks: BA-R1 (queue changed)\n\n\n## [2026-04-24 17:36:28] EXECUTION\n- From: Worker\n- Message: Executed lane command: Write-Output 'BA process validation cycle'; pnpm ops:pm:queue\n\n\n## [2026-04-24 17:36:30] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=BA-R1 Priority=MEDIUM Reason=Recruitment - acceptance/usecase matrix\n\n\n## [2026-04-24 17:37:16] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=BA-R1 Priority=MEDIUM Reason=Recruitment - acceptance/usecase matrix\n\n"
+    },
+    {
+      "agent": "A3",
+      "role": "BA-Data",
+      "path": "docs/program/agent-rooms/A3.md",
+      "lastUpdated": "2026-04-24 17:37:19",
+      "tail": "## [2026-04-24 17:32:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | BA-Data: refine data validation, traceability, and deterministic error semantics.\n\n\n## [2026-04-24 17:33:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | BA-Data: refine data validation, traceability, and deterministic error semantics.\n\n\n## [2026-04-24 17:34:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | BA-Data: refine data validation, traceability, and deterministic error semantics.\n\n\n## [2026-04-24 17:35:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | BA-Data: refine data validation, traceability, and deterministic error semantics.\n\n\n## [2026-04-24 17:36:18] ACK\n- From: Worker\n- Message: Intake tasks: BAD-B2-DATA-RULES (queue changed)\n\n\n## [2026-04-24 17:36:19] EXECUTION\n- From: Worker\n- Message: Executed lane command: Write-Output 'BA data traceability cycle'; pnpm ops:pm:queue\n\n\n## [2026-04-24 17:36:39] IDLE\n- From: Worker\n- Message: Queue changed but no assigned tasks.\n\n\n## [2026-04-24 17:37:19] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | BA-Data: refine data validation, traceability, and deterministic error semantics.\n\n"
+    },
+    {
+      "agent": "A4",
+      "role": "Dev-BE-Lead",
+      "path": "docs/program/agent-rooms/A4.md",
+      "lastUpdated": "2026-04-24 17:37:16",
+      "tail": "## [2026-04-24 17:35:43] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R1 Priority=MEDIUM Reason=Recruitment - API+migration+tests pass\n\n\n## [2026-04-24 17:35:51] ACK\n- From: Worker\n- Message: Intake tasks: DEV-R1 (queue changed)\n\n\n## [2026-04-24 17:35:59] EXECUTION\n- From: Worker\n- Message: Executed lane command: pnpm --filter hrm-api test -- --runInBand\n\n\n## [2026-04-24 17:36:22] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R1, Priority=MEDIUM, Reason=Recruitment - API+migration+tests pass\n\n\n## [2026-04-24 17:36:30] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R1 Priority=MEDIUM Reason=Recruitment - API+migration+tests pass\n\n\n## [2026-04-24 17:36:59] ACK\n- From: Worker\n- Message: Intake tasks: DEV-R1 (periodic cycle)\n\n\n## [2026-04-24 17:37:06] EXECUTION\n- From: Worker\n- Message: Executed lane command: pnpm --filter hrm-api test -- --runInBand\n\n\n## [2026-04-24 17:37:16] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R1 Priority=MEDIUM Reason=Recruitment - API+migration+tests pass\n\n"
+    },
+    {
+      "agent": "A5",
+      "role": "Dev-FE",
+      "path": "docs/program/agent-rooms/A5.md",
+      "lastUpdated": "2026-04-24 17:37:22",
+      "tail": "## [2026-04-24 17:32:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | Dev-Mobile: plan integration checkpoints with current API contracts.\n\n\n## [2026-04-24 17:33:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | Dev-Mobile: plan integration checkpoints with current API contracts.\n\n\n## [2026-04-24 17:34:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | Dev-Mobile: plan integration checkpoints with current API contracts.\n\n\n## [2026-04-24 17:35:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | Dev-Mobile: plan integration checkpoints with current API contracts.\n\n\n## [2026-04-24 17:36:18] ACK\n- From: Worker\n- Message: Intake tasks: DEVMOB-B2-RECRUITMENT-READINESS (queue changed)\n\n\n## [2026-04-24 17:36:22] EXECUTION\n- From: Worker\n- Message: Executed lane command: pnpm --filter xbos-api test -- --runInBand\n\n\n## [2026-04-24 17:36:42] IDLE\n- From: Worker\n- Message: Queue changed but no assigned tasks.\n\n\n## [2026-04-24 17:37:22] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | Dev-Mobile: plan integration checkpoints with current API contracts.\n\n"
+    },
+    {
+      "agent": "A6",
+      "role": "Dev-Mobile",
+      "path": "docs/program/agent-rooms/A6.md",
+      "lastUpdated": "2026-04-24 17:37:16",
+      "tail": "## [2026-04-24 17:35:43] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R2 Priority=MEDIUM Reason=Recruitment FE - UI binding + build pass\n\n\n## [2026-04-24 17:35:53] ACK\n- From: Worker\n- Message: Intake tasks: DEV-R2 (queue changed)\n\n\n## [2026-04-24 17:36:02] EXECUTION\n- From: Worker\n- Message: Executed lane command: pnpm --filter web-portal build\n\n\n## [2026-04-24 17:36:22] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R2, Priority=MEDIUM, Reason=Recruitment FE - UI binding + build pass\n\n\n## [2026-04-24 17:36:30] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R2 Priority=MEDIUM Reason=Recruitment FE - UI binding + build pass\n\n\n## [2026-04-24 17:37:02] ACK\n- From: Worker\n- Message: Intake tasks: DEV-R2 (periodic cycle)\n\n\n## [2026-04-24 17:37:14] EXECUTION\n- From: Worker\n- Message: Executed lane command: pnpm --filter web-portal build\n\n\n## [2026-04-24 17:37:16] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=DEV-R2 Priority=MEDIUM Reason=Recruitment FE - UI binding + build pass\n\n"
+    },
+    {
+      "agent": "A7",
+      "role": "QA-Auto",
+      "path": "docs/program/agent-rooms/A7.md",
+      "lastUpdated": "2026-04-24 17:37:17",
+      "tail": "## [2026-04-24 17:32:35] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:33:22] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:34:09] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:34:56] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:35:43] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:36:22] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1, Priority=MEDIUM, Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:36:30] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n\n## [2026-04-24 17:37:17] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=QA-R1 Priority=MEDIUM Reason=Recruitment - e2e + defects closed\n\n"
+    },
+    {
+      "agent": "A8",
+      "role": "QA-UAT",
+      "path": "docs/program/agent-rooms/A8.md",
+      "lastUpdated": "2026-04-24 17:37:23",
+      "tail": "## [2026-04-24 17:32:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | QA-UAT: plan UAT scenario run, expected evidence, and blocker checks.\n\n\n## [2026-04-24 17:33:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | QA-UAT: plan UAT scenario run, expected evidence, and blocker checks.\n\n\n## [2026-04-24 17:34:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | QA-UAT: plan UAT scenario run, expected evidence, and blocker checks.\n\n\n## [2026-04-24 17:35:38] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | QA-UAT: plan UAT scenario run, expected evidence, and blocker checks.\n\n\n## [2026-04-24 17:36:18] ACK\n- From: Worker\n- Message: Intake tasks: QC-B2-GATE-PACK (queue changed)\n\n\n## [2026-04-24 17:36:23] EXECUTION\n- From: Worker\n- Message: Executed lane command: powershell -ExecutionPolicy Bypass -File ./scripts/simulate-hrm-uat-business-flow.ps1\n\n\n## [2026-04-24 17:36:43] IDLE\n- From: Worker\n- Message: Queue changed but no assigned tasks.\n\n\n## [2026-04-24 17:37:23] PLANNING\n- From: Worker\n- Message: Prompt source: Always run in PLAN -> EXECUTE -> EVIDENCE cycle. If no new task, produce a micro-plan for current phase and next actionable step. | QA-UAT: plan UAT scenario run, expected evidence, and blocker checks.\n\n"
+    },
+    {
+      "agent": "A9",
+      "role": "PM-Tech Auditor",
+      "path": "docs/program/agent-rooms/A9.md",
+      "lastUpdated": "2026-04-24 17:37:16",
+      "tail": "## [2026-04-24 17:34:56] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=PM-GATE Priority=HIGH Reason=Perform PM-Tech gate review and close wave\n\n\n## [2026-04-24 17:35:43] HEARTBEAT\n- From: A9 PM-Tech\n- Message: Phase=B, Queue=5, mailbox refreshed.\n\n\n## [2026-04-24 17:35:43] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=PM-GATE Priority=HIGH Reason=Perform PM-Tech gate review and close wave\n\n\n## [2026-04-24 17:36:22] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=PM-GATE, Priority=HIGH, Reason=Perform PM-Tech gate review and close wave\n\n\n## [2026-04-24 17:36:30] HEARTBEAT\n- From: A9 PM-Tech\n- Message: Phase=B, Queue=5, mailbox refreshed.\n\n\n## [2026-04-24 17:36:30] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=PM-GATE Priority=HIGH Reason=Perform PM-Tech gate review and close wave\n\n\n## [2026-04-24 17:37:16] HEARTBEAT\n- From: A9 PM-Tech\n- Message: Phase=B, Queue=5, mailbox refreshed.\n\n\n## [2026-04-24 17:37:16] DISPATCH\n- From: A9 PM-Tech\n- Message: Task=PM-GATE Priority=HIGH Reason=Perform PM-Tech gate review and close wave\n\n"
+    }
+  ]
+};

@@ -1,0 +1,62 @@
+---
+description: PM Auto Mode — sau mỗi Task/subagent xong phải tự thu thập trạng thái và dispatch bước kế, không dừng ở một câu xác nhận.
+alwaysApply: true
+---
+
+# PM Auto Mode (xevn-ecosystem)
+
+Khi dự án đang vận hành theo **PM Auto Mode** (user đã bật), vai trò PM trong repo này **không được kết thúc lượt chỉ bằng một dòng xác nhận** sau khi có kết quả Task/subagent hoặc thông báo hoàn thành từ hệ thống.
+
+## Sau mỗi lần Task/subagent hoàn thành (bắt buộc)
+
+1. **Thu thập tín hiệu** (theo thứ tự):
+   - Đọc vài dòng cuối của `.cursor/team/inbox/subagent-stop.jsonl` nếu file tồn tại (sự kiện hook gần nhất).
+   - Đọc **đoạn cuối** `docs/program/AGENT_MESSAGE_BUS.md` (khoảng 120–200 dòng cuối hoặc tìm `ack_status` / `work_item_id` mới nhất).
+   - Đọc `docs/program/TEAM_LIVE_STATUS.md` để biết cycle đang ở đâu.
+2. **Phân tích ngắn** (nội bộ): `ack_status` / role tiếp theo là gì (`READY_FOR_QA`, `PASS_TO_PM`, `PASS_TO_BA`, …), có blocker không.
+3. **Hành động tiếp** trong **cùng phiên** khi còn quota công cụ:
+   - `READY_FOR_QA` → gọi Task `qa` (hoặc lane tương ứng) retest ngay.
+   - `PASS_TO_PM` → quyết định backlog kế (`docs/program/AGENT_MESSAGE_BUS.md` + TM proposal nếu có), gọi Task role phù hợp (`dev-be`, `dev-fe`, `qc`, …) hoặc cập nhật bus nếu chỉ cần ghi nhận chốt.
+   - Blocker P0 / đổi scope lớn / rủi ro cao → mới hỏi user theo chính sách PM Auto Mode đã thỏa thuận.
+4. **Ghi nhận sau cùng** (không thay thế bước 1–3): cập nhật bus / live status khi có thay đổi trạng thái đáng kể.
+
+## Chế độ “Composer Agent chạy nối tiếp” (Cursor hooks)
+
+- File **`.cursor/team/PM_ORCHESTRATION_MODE`**: dòng đầu `RUN` = bật vòng tự động; `STOP` = tắt (mặc định an toàn).
+- Hook **`stop`** (`stop-pm-orchestration.mjs`): khi một vòng Agent **kết thúc bình thường** (`status: completed`), Cursor có thể **tự submit** prompt tiếp theo qua `followup_message` (giới hạn `loop_limit` trong `hooks.json`, có thể chỉnh; thêm env `PM_STOP_LOOP_MAX` nếu cần).
+- Hook **`subagentStop`**: vẫn inject followup khi subagent xong; `loop_limit` đã nới để nối nhiều lần hơn trong một phiên.
+- Khi đã bật `RUN`, PM vẫn phải tuân thủ bảng trên (đọc bus → dispatch); `STOP` để cắt vòng lặp billing / tránh chạy vô hạn.
+
+## Giới hạn sản phẩm (Cursor)
+
+- Vòng `stop`/`subagentStop` **không** chạy nếu phiên bị abort/error theo logic script (script chỉ followup khi `completed` cho `stop`).
+- `loop_limit` / `PM_STOP_LOOP_MAX` là **phanh an toàn**; không thay cho quyết định “DONE” trong bus.
+- Rule này bổ sung cho `team-orchestration.mdc`: rule này **ưu tiên hành vi liên tục** sau completion, tránh “im re” giữa các batch.
+
+## Độ trễ / SLO lượt PM (tránh “taking longer than expected” sau auto-followup)
+
+- **Ưu tiên tốc độ hơn bài luận:** trong **3 lần gọi công cụ đầu** của lượt PM sau follow-up, phải có **ít nhất một** trong: đọc **đuôi** `docs/program/AGENT_MESSAGE_BUS.md` (≈120–200 dòng cuối hoặc `grep ack_status|READY_FOR_QA|PASS_TO_PM` theo `work_item_id`), hoặc đọc **`Bus tail`** đã inject trong prompt (hook `stop-pm-orchestration.mjs`).
+- **Không** “lên plan” dài khi bus đã có `READY_FOR_QA` rõ ràng: **gọi Task `qa` (hoặc lane tương đương) ngay**, kèm `work_item_id` + đường dẫn evidence từ handoff Dev-BE; sau đó mới tóm tắt cho user.
+- **Không** dispatch trùng: nếu bus **đã** có `PM -> QA` `DISPATCHED` cho cùng `work_item_id` và chưa có verdict QA sau đó, **không** gọi thêm Task QA trùng — chờ verdict hoặc đọc lại inbox/subagent.
+- **Đồng bộ live status** khi `ack_status` đổi (tránh snapshot `TEAM_LIVE_STATUS` cũ làm hook hiểu nhầm).
+- Nếu cần im lặng có chủ đích (tiết kiệm quota): ghi `STOP` vào `.cursor/team/PM_ORCHESTRATION_MODE` thay vì để PM “suy nghĩ” thêm trong chat.
+
+- **Hiển thị subagent:** Cursor **không** hiện “subagent đang chạy” chỉ vì có prompt auto-followup. Subagent/Task chỉ khi **agent gọi tool Task** (hoặc bạn chạy tay). Công việc vẫn có thể đã được ghi vào `AGENT_MESSAGE_BUS.md` từ phiên khác — **đọc đuôi bus** trước khi kết luận “không làm việc”.
+
+- **Idle sau `PASS_TO_PM`:** nếu đuôi bus là `QA -> PM` + `PASS_TO_PM` và **không** còn `READY_FOR_QA` mở phía sau → **không** gọi Task QA lại; ghi **`PM -> ALL`** idle/backlog hoặc đề xuất **`STOP`** hook — tránh phiên PM “suy nghĩ” dài mà không có việc mới.
+
+## Tự nhìn việc cần làm thêm (bắt buộc)
+
+- PM phải **chủ động quét việc còn thiếu** sau mỗi vòng, không chờ user nhắc:
+  - backlog mở trên bus/live status
+  - test gap/manual smoke còn treo
+  - cleanup kỹ thuật ảnh hưởng release (schema legacy, auth scope, flaky runbook, seed thiếu lane)
+  - handoff chưa khép vòng (`READY_FOR_*` không có verdict sau thời gian hợp lý)
+- Với mỗi việc phát hiện thêm, PM phải làm quyết định 2 bước:
+  1) **Cần thiết theo cách điều hành hiện tại hay không** (ưu tiên business impact + release risk + blocker chain).
+  2) Nếu **cần thiết**: **dispatch team ngay trong cùng phiên** (dev-be/dev-fe/dev-mobile/qa/qc/tm) + ghi bus; không chỉ ghi note.
+- Chỉ giữ lại backlog mà **không dispatch ngay** khi việc đó thật sự:
+  - ngoài scope sprint hiện tại, hoặc
+  - không tạo rủi ro ngắn hạn cho quality/release, hoặc
+  - thiếu quyết định sản phẩm bắt buộc từ user.
+- Mỗi mục chưa dispatch phải có lý do ngắn dạng: `defer_reason`, `owner`, `trigger_to_reopen`.

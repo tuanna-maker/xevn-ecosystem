@@ -1,0 +1,28 @@
+---
+description: Enforce pull-request based git flow with controlled branching, reviews, and safe merge strategy
+alwaysApply: true
+---
+
+# Git Flow Governance Rule
+
+## Branching policy
+- Do not commit directly to protected branches (`main`, `master`, `release/*`).
+- Use short-lived working branches with clear names:
+  - `feature/<work-item>-<short-title>`
+  - `fix/<work-item>-<short-title>`
+  - `chore/<short-title>`
+
+## Pull request policy
+- Every non-trivial change must go through a PR.
+- PR must include scope summary, risk notes, and evidence paths.
+- PR must pass required checks (build/test/security) before merge.
+- PR must have required review approvals for the repository policy.
+
+## Merge policy
+- Prefer squash merge for feature/fix branches unless repository policy says otherwise.
+- Do not force-push protected branches.
+- Resolve review comments before final merge.
+
+## Release safety
+- No merge to protected branch when critical defects or security blockers remain open.
+- QC Go/No-Go evidence is required for release-impacting changes.

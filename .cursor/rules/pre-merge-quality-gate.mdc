@@ -1,0 +1,21 @@
+---
+description: Require a complete pre-merge quality checklist before QC gate and release recommendation
+alwaysApply: true
+---
+
+# Pre-Merge Quality Gate Rule
+
+For all non-trivial changes, the team must complete a pre-merge checklist.
+
+Mandatory checklist scope:
+- Senior engineering (SOLID and maintainability)
+- Security and information safety
+- Performance and reliability
+- Business correctness and acceptance evidence
+- UI/UX and accessibility (when applicable)
+- Test/build/release evidence
+
+Enforcement:
+- No QC Go recommendation without completed checklist and evidence paths.
+- Missing critical checklist sections force `NOT-READY`.
+- Any waiver must include owner, rationale, and expiry.

@@ -1,0 +1,26 @@
+---
+description: Standardize team decision cadence, role accountability, and evidence-first governance
+alwaysApply: true
+---
+
+# Team Decision Cadence Rule
+
+Operate with predictable governance rhythm so individual roles and the whole team stay aligned.
+
+Cadence requirements:
+- Daily: status pulse, blocker ownership, next checkpoint.
+- Weekly: strategy/risk review, KPI review, lessons consolidation.
+- Gate-based: Go/No-Go review with QA + QC evidence before release.
+
+Role accountability:
+- PM: scope, priority, delivery risk, stakeholder alignment.
+- SA: architecture integrity and non-functional boundaries.
+- BA roles: requirement precision and traceability readiness.
+- Dev-BE Lead: API/data direction and technical coordination for FE/Mobile.
+- Dev-FE/Mobile: UX/app delivery and integration correctness.
+- QA: defect and validation confidence.
+- QC: compliance and final quality signoff integrity.
+
+No-accept rules:
+- No task closure without owner + evidence + reviewer.
+- No release recommendation without explicit residual risk statement.

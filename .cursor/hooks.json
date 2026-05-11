@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/before-shell-security-check.mjs",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "node .cursor/hooks/before-push-protected-branch-check.mjs",
+        "timeout": 10,
+        "failClosed": true
+      },
+      {
+        "command": "node .cursor/hooks/before-push-branch-naming-check.mjs",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/session-start.mjs",
+        "timeout": 10
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "node .cursor/hooks/after-shell-execution.mjs",
+        "timeout": 10
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "node .cursor/hooks/subagent-stop.mjs",
+        "timeout": 15,
+        "loop_limit": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/stop-pm-orchestration.mjs",
+        "timeout": 15,
+        "loop_limit": 12
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "node .cursor/hooks/post-tool-template-reminder.mjs",
+        "timeout": 10
+      }
+    ]
+  }
+}

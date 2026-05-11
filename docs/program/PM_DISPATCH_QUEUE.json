@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-04-24T10:37:29.371Z",
+  "freezeReady": true,
+  "devReady": true,
+  "qaReady": true,
+  "activePhase": "B",
+  "phaseSummary": [
+    {
+      "phase": "A",
+      "total": 7,
+      "done": 7,
+      "open": 0
+    },
+    {
+      "phase": "B",
+      "total": 5,
+      "done": 1,
+      "open": 4
+    },
+    {
+      "phase": "C",
+      "total": 5,
+      "done": 0,
+      "open": 5
+    },
+    {
+      "phase": "D",
+      "total": 5,
+      "done": 0,
+      "open": 5
+    },
+    {
+      "phase": "E",
+      "total": 4,
+      "done": 0,
+      "open": 4
+    }
+  ],
+  "upcomingQueuePreview": [
+    {
+      "phase": "C",
+      "task": "SA-C1",
+      "to": "A1",
+      "module": "Contracts/Insurance",
+      "priority": "MEDIUM"
+    },
+    {
+      "phase": "C",
+      "task": "BA-C1",
+      "to": "A2",
+      "module": "Contracts/Insurance",
+      "priority": "MEDIUM"
+    },
+    {
+      "phase": "C",
+      "task": "DEV-C1",
+      "to": "A4",
+      "module": "Contracts/Insurance",
+      "priority": "MEDIUM"
+    }
+  ],
+  "queue": [
+    {
+      "to": "A9",
+      "reason": "Perform PM-Tech gate review and close wave",
+      "task": "PM-GATE",
+      "priority": "HIGH"
+    },
+    {
+      "to": "A2",
+      "reason": "Recruitment - acceptance/usecase matrix",
+      "task": "BA-R1",
+      "priority": "MEDIUM",
+      "queueId": "Q-B-002",
+      "phase": "B"
+    },
+    {
+      "to": "A4",
+      "reason": "Recruitment - API+migration+tests pass",
+      "task": "DEV-R1",
+      "priority": "MEDIUM",
+      "queueId": "Q-B-003",
+      "phase": "B"
+    },
+    {
+      "to": "A6",
+      "reason": "Recruitment FE - UI binding + build pass",
+      "task": "DEV-R2",
+      "priority": "MEDIUM",
+      "queueId": "Q-B-004",
+      "phase": "B"
+    },
+    {
+      "to": "A7",
+      "reason": "Recruitment - e2e + defects closed",
+      "task": "QA-R1",
+      "priority": "MEDIUM",
+      "queueId": "Q-B-005",
+      "phase": "B"
+    }
+  ]
+}

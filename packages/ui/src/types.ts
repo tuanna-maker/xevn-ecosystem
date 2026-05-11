@@ -1,8 +1,12 @@
 export interface Column<T> {
   key: string;
-  label: string;
-  render?: (value: T[keyof T], item: T) => React.ReactNode;
+  header?: string;
+  label?: string;
+  render?: {
+    bivarianceHack(value: any, item: T): React.ReactNode;
+  }['bivarianceHack'];
   width?: string;
+  sortable?: boolean;
 }
 
 export type SortDirection = 'asc' | 'desc';
@@ -15,8 +19,11 @@ export interface SortConfig<T> {
 export interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
+  keyExtractor?: (item: T, index: number) => string;
   searchPlaceholder?: string;
   emptyMessage?: string;
+  className?: string;
+  actions?: React.ReactNode;
   onRowClick?: (item: T) => void;
   onSort?: (sortConfig: SortConfig<T>) => void;
   sortConfig?: SortConfig<T>;
@@ -29,10 +36,18 @@ export interface DataTableProps<T> {
 
 export interface StatCardProps {
   title: string;
-  value: string;
-  icon: React.ReactNode;
-  trend?: number;
+  value: string | number;
+  icon?: React.ReactNode;
+  subtitle?: string;
+  color?: string;
+  trend?:
+    | number
+    | {
+        value: number;
+        isPositive: boolean;
+      };
   trendLabel?: string;
+  className?: string;
 }
 
 export interface InfoBannerProps {
@@ -42,9 +57,11 @@ export interface InfoBannerProps {
 }
 
 export interface BadgeProps {
-  children: string;
-  variant?: 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+  children: React.ReactNode;
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'neutral';
   dot?: boolean;
+  size?: 'sm' | 'md';
+  className?: string;
 }
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -52,6 +69,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   className?: string;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 export interface CardProps {
@@ -63,6 +82,9 @@ export interface PageHeaderProps {
   title: string;
   subtitle?: string;
   icon: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+  showCompanyFilter?: boolean;
 }
 
 export interface TreeViewProps {

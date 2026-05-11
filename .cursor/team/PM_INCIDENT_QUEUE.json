@@ -1,0 +1,1343 @@
+[
+  {
+    "id": "INC-1777691389152",
+    "detectedAt": "2026-05-02T03:09:49.138Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\xbos-api\" && node -e \"const fs=require('fs');const p='perf-budget/ci-baseline.json';fs.mkdirSync('perf-budget',{recursive:true});fs.writeFileSync(p,JSON.stringify({version:1,routes:{'GET /api/xbos':{baselineMaxMs:500,tier:'health'},'GET /api/xbos/config-sync/catalog/:catalogKey':{baselineMaxMs:500,tier:'mockedSync'}}},null,2));\" && pnpm exec jest --runInBand src/perf-budget/ci.perf-budget.spec.ts 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777691415651",
+    "detectedAt": "2026-05-02T03:10:15.628Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\xbos-api\"; if (-not (Test-Path perf-budget)) { New-Item -ItemType Directory -Path perf-budget }; @'\n{\"version\":1,\"routes\":{\"GET /api/xbos\":{\"baselineMaxMs\":500,\"tier\":\"health\"},\"GET /api/xbos/config-sync/catalog/:catalogKey\":{\"baselineMaxMs\":500,\"tier\":\"mockedSync\"}}}\n'@ | Set-Content -Path perf-budget/ci-baseline.json -Encoding utf8; pnpm exec jest --runInBand src/perf-budget/ci.perf-budget.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777691416340",
+    "detectedAt": "2026-05-02T03:10:16.326Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\xbos-api\"; pnpm run test -- --runInBand src/perf-budget/ci.perf-budget.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777691420241",
+    "detectedAt": "2026-05-02T03:10:20.227Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777691431883",
+    "detectedAt": "2026-05-02T03:10:31.878Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777691437255",
+    "detectedAt": "2026-05-02T03:10:37.246Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand src/perf-budget/ci.perf-budget.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777691437792",
+    "detectedAt": "2026-05-02T03:10:37.782Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\xbos-api\"; pnpm exec jest --runInBand src/perf-budget/ci.perf-budget.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777692130771",
+    "detectedAt": "2026-05-02T03:22:10.763Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand src/perf-budget/ci.perf-budget.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777692141899",
+    "detectedAt": "2026-05-02T03:22:21.892Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777692273492",
+    "detectedAt": "2026-05-02T03:24:33.483Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm run test -- --runInBand && pnpm run build && pnpm run test:perf-budget",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777692286675",
+    "detectedAt": "2026-05-02T03:24:46.669Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"cd /d \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\" && pnpm run test -- --runInBand && pnpm run build && pnpm run test:perf-budget\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777692404328",
+    "detectedAt": "2026-05-02T03:26:44.321Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"cd /d \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\" && pnpm run test -- --runInBand\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777697454548",
+    "detectedAt": "2026-05-02T04:50:54.541Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\web-portal\" && pnpm install && pnpm test && pnpm lint && pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777697658928",
+    "detectedAt": "2026-05-02T04:54:18.922Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\web-portal\"; pnpm test; pnpm lint; pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777710067305",
+    "detectedAt": "2026-05-02T08:21:07.301Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm test",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777748730050",
+    "detectedAt": "2026-05-02T19:05:30.041Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter xbos-api audit --audit-level=high; pnpm --filter hrm-api audit --audit-level=high; pnpm --filter web-portal audit --audit-level=high",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777748814378",
+    "detectedAt": "2026-05-02T19:06:54.374Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter web-portal audit --prod --dev",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777748820999",
+    "detectedAt": "2026-05-02T19:07:00.995Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm audit --filter hrm-api --audit-level high",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777748821546",
+    "detectedAt": "2026-05-02T19:07:01.542Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm audit --filter xbos-api --audit-level high",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777748923682",
+    "detectedAt": "2026-05-02T19:08:43.676Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777748952334",
+    "detectedAt": "2026-05-02T19:09:12.330Z",
+    "source": "hook:afterShellExecution",
+    "command": "git diff -- apps/api/hrm-api/package.json apps/api/xbos-api/package.json package.json pnpm-lock.yaml",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777749002312",
+    "detectedAt": "2026-05-02T19:10:02.307Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm lint",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777749050959",
+    "detectedAt": "2026-05-02T19:10:50.956Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm test",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777749121918",
+    "detectedAt": "2026-05-02T19:12:01.913Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm lint",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777749220469",
+    "detectedAt": "2026-05-02T19:13:40.462Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm test",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777749275781",
+    "detectedAt": "2026-05-02T19:14:35.776Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777749275932",
+    "detectedAt": "2026-05-02T19:14:35.927Z",
+    "source": "hook:afterShellExecution",
+    "command": "git diff -- apps/web/web-portal/package.json apps/web/web-portal/eslint.config.cjs package.json pnpm-lock.yaml docs/program/AGENT_MESSAGE_BUS.md",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802578139",
+    "detectedAt": "2026-05-03T10:02:58.133Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm run test -- --runInBand; if ($LASTEXITCODE -ne 0) { pnpm exec jest --runInBand; exit $LASTEXITCODE }; pnpm run build; exit $LASTEXITCODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802584389",
+    "detectedAt": "2026-05-03T10:03:04.376Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm run build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802699965",
+    "detectedAt": "2026-05-03T10:04:59.950Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\web-portal\"; pnpm lint; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; pnpm build; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; pnpm test; exit $LASTEXITCODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802742221",
+    "detectedAt": "2026-05-03T10:05:42.216Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\web-portal\"; Start-Sleep -Seconds 2; if (Test-Path dist) { Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue }; pnpm build; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; pnpm test; exit $LASTEXITCODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802743090",
+    "detectedAt": "2026-05-03T10:05:43.082Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\web-portal\"; pnpm test",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802743102",
+    "detectedAt": "2026-05-03T10:05:43.099Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\web-portal\"; pnpm lint; pnpm build; pnpm test",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802954659",
+    "detectedAt": "2026-05-03T10:09:14.655Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"; pnpm lint; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777802996916",
+    "detectedAt": "2026-05-03T10:09:56.914Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"; pnpm lint 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777803018498",
+    "detectedAt": "2026-05-03T10:10:18.496Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"; pnpm lint; if (Test-Path dist) { Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue }; pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777803044329",
+    "detectedAt": "2026-05-03T10:10:44.326Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"; pnpm lint; echo \"EXIT: $LASTEXITCODE\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777803070223",
+    "detectedAt": "2026-05-03T10:11:10.221Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"; pnpm lint; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777803129475",
+    "detectedAt": "2026-05-03T10:12:09.473Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm lint",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777803172080",
+    "detectedAt": "2026-05-03T10:12:52.078Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm install\nSet-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"\npnpm why node-fetch\npnpm lint\nif (Test-Path dist) { Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue }\npnpm build\nWrite-Host \"lint_exit=$LASTEXITCODE (after build)\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777813426674",
+    "detectedAt": "2026-05-03T13:03:46.670Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\" && pnpm install",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777816069378",
+    "detectedAt": "2026-05-03T13:47:49.375Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm audit && pnpm lint && pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777816097138",
+    "detectedAt": "2026-05-03T13:48:17.134Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm lint",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777816177819",
+    "detectedAt": "2026-05-03T13:49:37.816Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777860160186",
+    "detectedAt": "2026-05-04T02:02:40.178Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\" && pnpm run test -- --runInBand src/spreadsheet/ src/app.module.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777860564656",
+    "detectedAt": "2026-05-04T02:09:24.652Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\" && pnpm add exceljs@4.4.0",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777860609616",
+    "detectedAt": "2026-05-04T02:10:09.614Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm --filter hrm-api test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777860616723",
+    "detectedAt": "2026-05-04T02:10:16.720Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777860689179",
+    "detectedAt": "2026-05-04T02:11:29.176Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm --filter hrm-api run build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777860735582",
+    "detectedAt": "2026-05-04T02:12:15.579Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm --filter hrm-api run build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777861992880",
+    "detectedAt": "2026-05-04T02:33:12.877Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\" && pnpm run test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777865590522",
+    "detectedAt": "2026-05-04T03:33:10.519Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\"; pnpm lint; pnpm build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777876695729",
+    "detectedAt": "2026-05-04T06:38:15.725Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\" && npm test -- --testPathPattern=\"settings-catalogs|app.module.spec\" --no-cache 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777876707882",
+    "detectedAt": "2026-05-04T06:38:27.878Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; npm test -- --testPathPattern=\"settings-catalogs|app.module.spec\" --no-cache 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777876722272",
+    "detectedAt": "2026-05-04T06:38:42.270Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; npm test -- --testPathPattern=\"settings-catalogs\" --no-cache 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777876814422",
+    "detectedAt": "2026-05-04T06:40:14.419Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; npx jest \"catalog-sync.controller.spec\" --no-cache 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777884294869",
+    "detectedAt": "2026-05-04T08:44:54.865Z",
+    "source": "hook:afterShellExecution",
+    "command": "curl.exe -sS --max-time 5 \"http://localhost:3001/api/hrm\" && echo \"\" && curl.exe -sS --max-time 5 \"http://localhost:3002/api/xbos\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777884327778",
+    "detectedAt": "2026-05-04T08:45:27.775Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference='Stop';\nfunction Publish-Catalog($catalogKey, $tenantId, $companyId, $name, $domain, $itemsJson) {\n  $uri = \"http://localhost:3002/api/xbos/config-sync/catalog/$catalogKey/publish\";\n  $payload = @{ tenantId=$tenantId; companyId=$companyId; name=$name; domain=$domain; assignedTo=@('hrm','web-portal'); items=$itemsJson; actor='pm-seed' } | ConvertTo-Json -Depth 8;\n  Invoke-RestMethod -Method Post -Uri $uri -Headers @{ 'x-internal-api-key'='xevn-dev-internal-key'; 'Content-Type'='application/json' } -Body $payload | Out-Null;\n}\n$profiles = @(\n  @{ tenant='acme'; company='acme-hn'; legalName='ACME Logistics Vietnam' },\n  @{ tenant='nova'; company='nova-hcm'; legalName='Nova Retail Group' }\n);\nforeach ($p in $profiles) {\n  Publish-Catalog 'departments' $p.tenant $p.company 'Departments' 'organization' @(\n    @{code='hr';label='Human Resources';status='active'},\n    @{code='ops';label='Operations';status='active'},\n    @{code='fin';label='Finance';status='active'},\n    @{code='wh';label='Warehouse';status='active'}\n  );\n  Publish-Catalog 'positions' $p.tenant $p.company 'Positions' 'organization' @(\n    @{code='hr_manager';label='HR Manager';status='active'},\n    @{code='payroll_exec';label='Payroll Executive';status='active'},\n    @{code='warehouse_supervisor';label='Warehouse Supervisor';status='active'},\n    @{code='recruiter';label='Recruiter';status='active'}\n  );\n  Publish-Catalog 'insurance_providers' $p.tenant $p.company 'Insurance Providers' 'compliance' @(\n    @{code='vbhx';label='Bao Hiem Xa Hoi Viet Nam';status='active'},\n    @{code='pvi';label='PVI Insurance';status='active'},\n    @{code='bao_viet';label='Bao Viet';status='active'}\n  );\n  Publish-Catalog 'contract_types' $p.tenant $p.company 'Contract Types' 'hr-policy' @(\n    @{code='indefinite';label='Indefinite-term';status='active'},\n    @{code='fixed_12m';label='Fixed-term 12 months';status='active'},\n    @{code='probation_2m';label='Probation 2 months';status='active'}\n  );\n  Publish-Catalog 'legal_entities' $p.tenant $p.company 'Legal Entities' 'organization' @(\n    @{code='head_office';label=$p.legalName;status='active'},\n    @{code='branch_hcm';label=($p.legalName + ' - HCM Branch');status='active'}\n  );\n\n  Invoke-RestMethod -Method Post -Uri 'http://localhost:3001/api/hrm/settings-catalogs/sync-from-xbos' -Headers @{ 'x-internal-api-key'='xevn-dev-internal-key'; 'x-tenant-id'=$p.tenant; 'x-company-id'=$p.company; 'Content-Type'='application/json' } -Body '{}' | Out-Null;\n\n  $extPayload = @{ items=@(@{ code='night_shift_allowance'; label='Night Shift Allowance'; status='active' }, @{ code='oncall_bonus'; label='On-call Bonus'; status='active' }) } | ConvertTo-Json -Depth 8;\n  Invoke-RestMethod -Method Post -Uri 'http://localhost:3001/api/hrm/settings-catalogs/positions/extension-items' -Headers @{ 'x-internal-api-key'='xevn-dev-internal-key'; 'x-tenant-id'=$p.tenant; 'x-company-id'=$p.company; 'Content-Type'='application/json' } -Body $extPayload | Out-Null;\n}\nWrite-Output 'Seeded XBOS catalogs + synced HRM for tenants: acme/acme-hn, nova/nova-hcm';",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777884399287",
+    "detectedAt": "2026-05-04T08:46:39.283Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference='Stop'; docker rm -f xevn-pg 2>$null | Out-Null; docker run -d --name xevn-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres -p 54329:5432 postgres:16 | Out-Null; Start-Sleep -Seconds 4; docker exec xevn-pg psql -U postgres -c \"CREATE DATABASE xevn_hrm;\" | Out-Null; docker exec xevn-pg psql -U postgres -c \"CREATE DATABASE xevn_xbos;\" | Out-Null; Write-Output \"postgres_ready\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777885172900",
+    "detectedAt": "2026-05-04T08:59:32.896Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference='SilentlyContinue'; Stop-Process -Id 39308 -Force; Stop-Process -Id 2488 -Force; $ErrorActionPreference='Stop'; docker rm -f xevn-pg | Out-Null; docker run -d --name xevn-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres -p 54329:5432 postgres:16 | Out-Null; Start-Sleep -Seconds 5; docker exec xevn-pg psql -U postgres -tc \"SELECT 1 FROM pg_database WHERE datname='xevn_hrm'\" | Select-String 1 | Out-Null; if ($LASTEXITCODE -ne 0) { docker exec xevn-pg psql -U postgres -c \"CREATE DATABASE xevn_hrm;\" | Out-Null }; docker exec xevn-pg psql -U postgres -tc \"SELECT 1 FROM pg_database WHERE datname='xevn_xbos'\" | Select-String 1 | Out-Null; if ($LASTEXITCODE -ne 0) { docker exec xevn-pg psql -U postgres -c \"CREATE DATABASE xevn_xbos;\" | Out-Null }; Write-Output \"postgres_ready\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777885251483",
+    "detectedAt": "2026-05-04T09:00:51.480Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777885269883",
+    "detectedAt": "2026-05-04T09:01:09.880Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777885295843",
+    "detectedAt": "2026-05-04T09:01:35.840Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ports = @(3001,3002); foreach ($p in $ports) { $lines = netstat -ano | Select-String \":$p\" | Select-String \"LISTENING\"; foreach ($ln in $lines) { $parts = ($ln -replace '\\s+',' ').Trim().Split(' '); $pid = $parts[-1]; if ($pid -match '^[0-9]+$') { try { Stop-Process -Id ([int]$pid) -Force -ErrorAction Stop; Write-Output \"killed port $p pid $pid\" } catch {} } } }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777885351998",
+    "detectedAt": "2026-05-04T09:02:31.994Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777885592724",
+    "detectedAt": "2026-05-04T09:06:32.720Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886432248",
+    "detectedAt": "2026-05-04T09:20:32.244Z",
+    "source": "hook:afterShellExecution",
+    "command": "psql --version",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886450551",
+    "detectedAt": "2026-05-04T09:20:50.549Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:PGPASSWORD='app1/5^S0CEpvYwC1(#YN1UoJ'; docker run --rm -e PGPASSWORD postgres:16 psql -h 113.20.107.184 -p 6432 -U postgres -d xevn_hrm -c \"select current_database() as db, current_user as db_user, now() as server_time;\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886466799",
+    "detectedAt": "2026-05-04T09:21:06.796Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:PGPASSWORD='app1/5^S0CEpvYwC1(#YN1UoJ'; docker run --rm -e PGPASSWORD postgres:16 psql -h 113.20.107.184 -p 6432 -U app1 -d xevn_hrm -c \"select current_database() as db, current_user as db_user, now() as server_time;\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886598424",
+    "detectedAt": "2026-05-04T09:23:18.420Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886643979",
+    "detectedAt": "2026-05-04T09:24:03.977Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886702306",
+    "detectedAt": "2026-05-04T09:25:02.300Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777886778568",
+    "detectedAt": "2026-05-04T09:26:18.565Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777887701051",
+    "detectedAt": "2026-05-04T09:41:41.047Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777887766189",
+    "detectedAt": "2026-05-04T09:42:46.186Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\" -XbosApi \"http://localhost:3102\" -HrmApi \"http://localhost:3101\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777887790525",
+    "detectedAt": "2026-05-04T09:43:10.521Z",
+    "source": "hook:afterShellExecution",
+    "command": "$pids = 31400,29008,25688,25748; foreach ($pid in $pids) { try { Stop-Process -Id $pid -Force -ErrorAction Stop } catch {} }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888229905",
+    "detectedAt": "2026-05-04T09:50:29.899Z",
+    "source": "hook:afterShellExecution",
+    "command": "function ProbeCurl($name, $url, $headers=@()) { $tmp = [System.IO.Path]::GetTempFileName(); $args = @('-sS','--max-time','12','-o',$tmp,'-w','%{http_code}',$url) + $headers; $code = & curl.exe @args; $exit = $LASTEXITCODE; $body = Get-Content -Raw $tmp; Remove-Item $tmp -Force; if ($exit -eq 0) { Write-Output \"[$name] HTTP $code\"; if ($body) { Write-Output $body } } else { Write-Output \"[$name] CURL_EXIT $exit HTTP $code\"; if ($body) { Write-Output $body } } }\nProbeCurl 'hrm health' 'http://localhost:3001/api/hrm';\nProbeCurl 'xbos health' 'http://localhost:3002/api/xbos';\n$h = @('-H','x-internal-api-key: xevn-dev-internal-key');\nProbeCurl 'xbos catalogs list' 'http://localhost:3002/api/xbos/config-sync/catalogs?target=hrm&tenantId=demo-tenant-a&companyId=demo-company-a' $h;\nProbeCurl 'xbos catalog get vehicle_types' 'http://localhost:3002/api/xbos/config-sync/catalog/vehicle_types?target=hrm&tenantId=demo-tenant-a&companyId=demo-company-a' $h;\nProbeCurl 'hrm catalog-sync list' 'http://localhost:3001/api/hrm/catalog-sync' $h;\nProbeCurl 'hrm catalog-sync get vehicle_types' 'http://localhost:3001/api/hrm/catalog-sync/vehicle_types' $h;\nProbeCurl 'hrm settings-catalogs overview' 'http://localhost:3001/api/hrm/settings-catalogs' $h;",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888243256",
+    "detectedAt": "2026-05-04T09:50:43.253Z",
+    "source": "hook:afterShellExecution",
+    "command": "function ProbeCurl($name, $url, $headers=@()) { $tmp = [System.IO.Path]::GetTempFileName(); $args = @('-sS','--max-time','12','-o',$tmp,'-w','%{http_code}',$url) + $headers; $code = & curl.exe @args; $exit = $LASTEXITCODE; $body = Get-Content -Raw $tmp; Remove-Item $tmp -Force; if ($exit -eq 0) { Write-Output \"[$name] HTTP $code\"; if ($body) { Write-Output $body } } else { Write-Output \"[$name] CURL_EXIT $exit HTTP $code\"; if ($body) { Write-Output $body } } }\n$h = @('-H','x-internal-api-key: xevn-dev-internal-key','-H','x-tenant-id: demo-tenant-a','-H','x-company-id: demo-company-a');\nProbeCurl 'hrm catalog-sync list scoped' 'http://localhost:3001/api/hrm/catalog-sync' $h;\nProbeCurl 'hrm catalog-sync get vehicle_types scoped' 'http://localhost:3001/api/hrm/catalog-sync/vehicle_types' $h;\nProbeCurl 'hrm settings-catalogs overview scoped' 'http://localhost:3001/api/hrm/settings-catalogs' $h;",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888258396",
+    "detectedAt": "2026-05-04T09:50:58.392Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run seed:xevn:db",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888276906",
+    "detectedAt": "2026-05-04T09:51:16.903Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888604643",
+    "detectedAt": "2026-05-04T09:56:44.640Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888713384",
+    "detectedAt": "2026-05-04T09:58:33.379Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -ExecutionPolicy Bypass -File \"scripts/dev/seed-xbos-hrm-multitenant.ps1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777888838069",
+    "detectedAt": "2026-05-04T10:00:38.066Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ProgressPreference='SilentlyContinue';\n$tests = @(\n  @{name='health-3001'; url='http://localhost:3001/health'; headers=@{}},\n  @{name='health-3002'; url='http://localhost:3002/health'; headers=@{}},\n  @{name='xbos-catalogs-acme'; url='http://localhost:3001/api/xbos/config-sync/catalogs?target=hrm&tenantId=acme&companyId=acme-hn'; headers=@{}},\n  @{name='xbos-assets-acme-noauth'; url='http://localhost:3001/api/xbos/assets?tenantId=acme&companyId=acme-hn'; headers=@{}},\n  @{name='xbos-assets-acme-internal'; url='http://localhost:3001/api/xbos/assets?tenantId=acme&companyId=acme-hn'; headers=@{'x-internal-key'='dev-internal-key';'x-module-code'='hrm'}},\n  @{name='hrm-settings-acme'; url='http://localhost:3002/api/hrm/settings-catalogs'; headers=@{'x-tenant-id'='acme';'x-company-id'='acme-hn'}},\n  @{name='xbos-catalogs-nova'; url='http://localhost:3001/api/xbos/config-sync/catalogs?target=hrm&tenantId=nova&companyId=nova-hcm'; headers=@{}},\n  @{name='xbos-assets-nova-noauth'; url='http://localhost:3001/api/xbos/assets?tenantId=nova&companyId=nova-hcm'; headers=@{}},\n  @{name='xbos-assets-nova-internal'; url='http://localhost:3001/api/xbos/assets?tenantId=nova&companyId=nova-hcm'; headers=@{'x-internal-key'='dev-internal-key';'x-module-code'='hrm'}},\n  @{name='hrm-settings-nova'; url='http://localhost:3002/api/hrm/settings-catalogs'; headers=@{'x-tenant-id'='nova';'x-company-id'='nova-hcm'}}\n);\nforeach ($t in $tests) {\n  Write-Output \"=== $($t.name) ===\";\n  $hargs = @();\n  foreach ($k in $t.headers.Keys) { $hargs += @('-H',\"$k: $($t.headers[$k])\") }\n  & curl.exe -sS -m 20 -i $hargs $t.url;\n  Write-Output \"\";\n}",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911103551",
+    "detectedAt": "2026-05-04T16:11:43.548Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand src/catalog-sync/catalog-sync.controller.spec.ts src/settings-catalogs/settings-catalogs.service.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911104124",
+    "detectedAt": "2026-05-04T16:11:44.121Z",
+    "source": "hook:afterShellExecution",
+    "command": "node ./scripts/migrate-status.mjs hrm",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911104217",
+    "detectedAt": "2026-05-04T16:11:44.212Z",
+    "source": "hook:afterShellExecution",
+    "command": "node ./scripts/migrate-status.mjs xbos",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911104586",
+    "detectedAt": "2026-05-04T16:11:44.583Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm run test -- --runInBand src/config-sync/config-sync.controller.spec.ts src/config-sync/config-sync.service.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911114447",
+    "detectedAt": "2026-05-04T16:11:54.444Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter xbos-api run build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911115730",
+    "detectedAt": "2026-05-04T16:11:55.727Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter hrm-api run build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911127260",
+    "detectedAt": "2026-05-04T16:12:07.251Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter hrm-api run test -- --runInBand src/catalog-sync/catalog-sync.controller.spec.ts src/settings-catalogs/settings-catalogs.service.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911127500",
+    "detectedAt": "2026-05-04T16:12:07.497Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter xbos-api run test -- --runInBand src/config-sync/config-sync.controller.spec.ts src/config-sync/config-sync.service.spec.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911153722",
+    "detectedAt": "2026-05-04T16:12:33.718Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3002/api/xbos).StatusCode } catch { $_.Exception.Message; exit 1 }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911153841",
+    "detectedAt": "2026-05-04T16:12:33.834Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3001/api/hrm).StatusCode } catch { $_.Exception.Message; exit 1 }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911166496",
+    "detectedAt": "2026-05-04T16:12:46.494Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3002/api/xbos).StatusCode } catch { Write-Output $_.Exception.Message; exit 1 }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911166510",
+    "detectedAt": "2026-05-04T16:12:46.508Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3001/api/hrm).StatusCode } catch { Write-Output $_.Exception.Message; exit 1 }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911179493",
+    "detectedAt": "2026-05-04T16:12:59.491Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3002/api/xbos).StatusCode } catch { Write-Output $Error[0].Exception.Message; exit 1 }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911179524",
+    "detectedAt": "2026-05-04T16:12:59.521Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3001/api/hrm).StatusCode } catch { Write-Output $Error[0].Exception.Message; exit 1 }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911519624",
+    "detectedAt": "2026-05-04T16:18:39.621Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm test -- config-sync",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911519870",
+    "detectedAt": "2026-05-04T16:18:39.867Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm test -- catalog-sync settings-catalogs",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911673429",
+    "detectedAt": "2026-05-04T16:21:13.427Z",
+    "source": "hook:afterShellExecution",
+    "command": "Start-Sleep -Seconds 4",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911690179",
+    "detectedAt": "2026-05-04T16:21:30.176Z",
+    "source": "hook:afterShellExecution",
+    "command": "$h = @{\"x-internal-api-key\"=\"xevn-dev-internal-key\"}; $h2 = @{\"x-internal-api-key\"=\"xevn-dev-internal-key\";\"x-tenant-id\"=\"xevn\";\"x-company-id\"=\"holding\"}; $r1 = Invoke-RestMethod -Method Post -Uri \"http://localhost:3002/api/xbos/config-sync/bootstrap-xevn\" -Headers $h; $r2 = Invoke-RestMethod -Method Get -Uri \"http://localhost:3002/api/xbos/config-sync/catalogs?target=hrm&tenantId=xevn&companyId=holding\" -Headers $h; $r3 = Invoke-RestMethod -Method Post -Uri \"http://localhost:3001/api/hrm/settings-catalogs/sync-from-xbos\" -Headers $h2; $r4 = Invoke-RestMethod -Method Get -Uri \"http://localhost:3001/api/hrm/catalog-sync\" -Headers $h2; $r5 = Invoke-RestMethod -Method Get -Uri \"http://localhost:3001/api/hrm/settings-catalogs\" -Headers $h2; [pscustomobject]@{bootstrap=$r1; xbosList=$r2; hrmSync=$r3; hrmCatalogSyncList=$r4; hrmSettings=$r5} | ConvertTo-Json -Depth 8",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911974671",
+    "detectedAt": "2026-05-04T16:26:14.669Z",
+    "source": "hook:afterShellExecution",
+    "command": "netstat -ano | findstr \":3001 :3002\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911983375",
+    "detectedAt": "2026-05-04T16:26:23.372Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Location; Get-ChildItem -Name -ErrorAction SilentlyContinue | Select-Object -First 15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911988557",
+    "detectedAt": "2026-05-04T16:26:28.555Z",
+    "source": "hook:afterShellExecution",
+    "command": "pwd; dir",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911994554",
+    "detectedAt": "2026-05-04T16:26:34.551Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"cd /d %USERPROFILE%\\OneDrive && dir /b\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777911999103",
+    "detectedAt": "2026-05-04T16:26:39.101Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"dir /s /b %USERPROFILE%\\OneDrive\\*xevn-ecosystem\\package.json 2>nul\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912004517",
+    "detectedAt": "2026-05-04T16:26:44.515Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"for /d %i in (%USERPROFILE%\\OneDrive\\*) do @if exist \\\"%i\\Vibe Coding\\projects\\xevn-ecosystem\\package.json\\\" echo %i\\Vibe Coding\\projects\\xevn-ecosystem\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912013504",
+    "detectedAt": "2026-05-04T16:26:53.502Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"$r = Get-ChildItem -LiteralPath $env:USERPROFILE\\OneDrive -Directory -ErrorAction SilentlyContinue | ForEach-Object { $p = Join-Path $_.FullName 'Vibe Coding\\projects\\xevn-ecosystem\\package.json'; if (Test-Path -LiteralPath $p) { Split-Path $p } }; $r | Select-Object -First 1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912021639",
+    "detectedAt": "2026-05-04T16:27:01.635Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"if exist \\\"%USERPROFILE%\\Documents\\Vibe Coding\\projects\\xevn-ecosystem\\package.json\\\" echo FOUND_DOCS && if exist \\\"%USERPROFILE%\\OneDrive\\Documents\\Vibe Coding\\projects\\xevn-ecosystem\\package.json\\\" echo FOUND_OD\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912028571",
+    "detectedAt": "2026-05-04T16:27:08.569Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c cd",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912033799",
+    "detectedAt": "2026-05-04T16:27:13.796Z",
+    "source": "hook:afterShellExecution",
+    "command": "taskkill /PID 26832 /F & taskkill /PID 45264 /F",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912038635",
+    "detectedAt": "2026-05-04T16:27:18.632Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"taskkill /PID 26832 /F & taskkill /PID 45264 /F\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912079743",
+    "detectedAt": "2026-05-04T16:27:59.740Z",
+    "source": "hook:afterShellExecution",
+    "command": "Start-Sleep -Seconds 20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777912541605",
+    "detectedAt": "2026-05-04T16:35:41.602Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/web/web-portal\" test",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777913356709",
+    "detectedAt": "2026-05-04T16:49:16.706Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Ta?i li??u\\Vibe Coding\\projects\\xevn-ecosystem\" && pnpm install && pnpm --filter vite_react_shadcn_ts test && pnpm --filter vite_react_shadcn_ts lint && pnpm --filter vite_react_shadcn_ts build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777913431201",
+    "detectedAt": "2026-05-04T16:50:31.197Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --filter vite_react_shadcn_ts build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777914286994",
+    "detectedAt": "2026-05-04T17:04:46.991Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/web/hrm\" exec tsc --noEmit",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777963908535",
+    "detectedAt": "2026-05-05T06:51:48.532Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" exec tsc --noEmit",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777964428895",
+    "detectedAt": "2026-05-05T07:00:28.892Z",
+    "source": "hook:afterShellExecution",
+    "command": "$h = @{ 'x-internal-api-key'='xevn-dev-internal-key'; 'x-tenant-id'='xevn'; 'x-company-id'='holding' }; Invoke-RestMethod -Uri 'http://localhost:3001/api/hrm/employees?company_id=holding&page=1&page_size=20' -Headers $h | ConvertTo-Json -Depth 5",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777965489720",
+    "detectedAt": "2026-05-05T07:18:09.717Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" exec tsc --noEmit",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777966145401",
+    "detectedAt": "2026-05-05T07:29:05.397Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777967346554",
+    "detectedAt": "2026-05-05T07:49:06.550Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777967403733",
+    "detectedAt": "2026-05-05T07:50:03.730Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777967413580",
+    "detectedAt": "2026-05-05T07:50:13.577Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" test -- --runInBand --passWithNoTests",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777967422590",
+    "detectedAt": "2026-05-05T07:50:22.587Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" test --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777967458098",
+    "detectedAt": "2026-05-05T07:50:58.095Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/hrm-api\" run test -- --runInBand",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777967768258",
+    "detectedAt": "2026-05-05T07:56:08.254Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777969184200",
+    "detectedAt": "2026-05-05T08:19:44.197Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -NoProfile -Command \"$headers = @{ 'x-internal-api-key'='xevn-dev-internal-key'; 'x-tenant-id'='xevn'; 'x-company-id'='holding'; 'Content-Type'='application/json' }; Invoke-RestMethod -Method Post -Uri 'http://localhost:3001/api/hrm/settings-catalogs/seed/employee-profile-template' -Headers $headers -Body '{}' | ConvertTo-Json -Depth 8\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777969273774",
+    "detectedAt": "2026-05-05T08:21:13.772Z",
+    "source": "hook:afterShellExecution",
+    "command": "taskkill /PID 31060 /F && taskkill /PID 25304 /F && taskkill /PID 13552 /F",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777969282635",
+    "detectedAt": "2026-05-05T08:21:22.632Z",
+    "source": "hook:afterShellExecution",
+    "command": "taskkill /PID 31060 /F; taskkill /PID 25304 /F; taskkill /PID 13552 /F",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777971209077",
+    "detectedAt": "2026-05-05T08:53:29.074Z",
+    "source": "hook:afterShellExecution",
+    "command": "powershell -Command \"try { (Invoke-WebRequest -UseBasicParsing http://localhost:3001/metrics).StatusCode } catch { $_.Exception.Message }\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777971216509",
+    "detectedAt": "2026-05-05T08:53:36.506Z",
+    "source": "hook:afterShellExecution",
+    "command": "try { (Invoke-WebRequest -UseBasicParsing http://localhost:3001/metrics).StatusCode } catch { $_.Exception.Message }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777971309030",
+    "detectedAt": "2026-05-05T08:55:09.027Z",
+    "source": "hook:afterShellExecution",
+    "command": "$pids = @(19436,34504); foreach ($pid in $pids) { try { Stop-Process -Id $pid -Force -ErrorAction Stop } catch {} }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777972826104",
+    "detectedAt": "2026-05-05T09:20:26.101Z",
+    "source": "hook:afterShellExecution",
+    "command": "node -e \"const {Client}=require('pg'); (async()=>{const c=new Client({host:'113.20.107.184',port:6432,user:'app1',password:'5^S0CEpvYwC1(#YN1UoJ',database:'xevn_hrm'}); await c.connect(); await c.query(`DELETE FROM public.hrm_catalog_extension_items WHERE tenant_id <> 'xevn'`); await c.query(`DELETE FROM public.hrm_catalog_field_removal_requests WHERE tenant_id <> 'xevn'`); const r=await c.query('select distinct tenant_id from public.hrm_catalog_extension_items order by 1'); console.log(JSON.stringify(r.rows)); await c.end();})().catch(e=>{console.error(e.message); process.exit(1);});\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777972836854",
+    "detectedAt": "2026-05-05T09:20:36.850Z",
+    "source": "hook:afterShellExecution",
+    "command": "node -e 'const {Client}=require(\"pg\"); (async()=>{const c=new Client({host:\"113.20.107.184\",port:6432,user:\"app1\",password:\"5^S0CEpvYwC1(#YN1UoJ\",database:\"xevn_hrm\"}); await c.connect(); await c.query(\"DELETE FROM public.hrm_catalog_extension_items WHERE tenant_id <> ''xevn''\"); await c.query(\"DELETE FROM public.hrm_catalog_field_removal_requests WHERE tenant_id <> ''xevn''\"); const r=await c.query(\"select distinct tenant_id from public.hrm_catalog_extension_items order by 1\"); console.log(JSON.stringify(r.rows)); await c.end();})().catch(e=>{console.error(e.message); process.exit(1);});'",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777972844883",
+    "detectedAt": "2026-05-05T09:20:44.881Z",
+    "source": "hook:afterShellExecution",
+    "command": "node -e \"const {Client}=require('pg'); (async()=>{ const c=new Client({host:'113.20.107.184',port:6432,user:'app1',password:'5^S0CEpvYwC1(#YN1UoJ',database:'xevn_hrm'}); await c.connect(); await c.query(\\\"DELETE FROM public.hrm_catalog_extension_items WHERE tenant_id <> 'xevn'\\\"); await c.query(\\\"DELETE FROM public.hrm_catalog_field_removal_requests WHERE tenant_id <> 'xevn'\\\"); const r=await c.query('select distinct tenant_id from public.hrm_catalog_extension_items order by 1'); console.log(JSON.stringify(r.rows)); await c.end(); })().catch(e=>{ console.error(e.message); process.exit(1); });\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777972857825",
+    "detectedAt": "2026-05-05T09:20:57.822Z",
+    "source": "hook:afterShellExecution",
+    "command": "$js = @'\nconst { Client } = require(\"pg\");\n(async () => {\n  const c = new Client({ host: \"113.20.107.184\", port: 6432, user: \"app1\", password: \"5^S0CEpvYwC1(#YN1UoJ\", database: \"xevn_hrm\" });\n  await c.connect();\n  await c.query(\"DELETE FROM public.hrm_catalog_extension_items WHERE tenant_id <> 'xevn'\");\n  await c.query(\"DELETE FROM public.hrm_catalog_field_removal_requests WHERE tenant_id <> 'xevn'\");\n  const r = await c.query(\"SELECT DISTINCT tenant_id FROM public.hrm_catalog_extension_items ORDER BY 1\");\n  console.log(JSON.stringify(r.rows));\n  await c.end();\n})().catch((e) => { console.error(e.message); process.exit(1); });\n'@; node -e $js",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777990316101",
+    "detectedAt": "2026-05-05T14:11:56.098Z",
+    "source": "hook:afterShellExecution",
+    "command": "$headers = @{ 'x-internal-api-key'='xevn-dev-internal-key' }; Invoke-RestMethod -Method Get -Uri 'http://localhost:3002/api/xbos/infrastructure/summary?tenantId=xevn&companyId=holding' -Headers $headers | ConvertTo-Json -Depth 6",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777990564643",
+    "detectedAt": "2026-05-05T14:16:04.639Z",
+    "source": "hook:afterShellExecution",
+    "command": "pnpm --dir \"apps/api/xbos-api\" exec tsc -p tsconfig.json --noEmit",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777990581910",
+    "detectedAt": "2026-05-05T14:16:21.907Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:DB_HOST='113.20.107.184'; $env:DB_PORT='6432'; $env:DB_USER='app1'; $env:DB_PASSWORD='5^S0CEpvYwC1(#YN1UoJ'; node -e \"const pg=require('pg'); const dbs=['xevn_hrm','xevn_xbos']; (async()=>{for(const d of dbs){const c=new pg.Client({host:process.env.DB_HOST,port:+process.env.DB_PORT,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:d,ssl:false}); await c.connect(); const t=await c.query(\\\"select table_name from information_schema.columns where table_schema='public' and column_name='tenant_id' order by table_name\\\"); const out=[]; for(const r of t.rows){const q=await c.query('select count(*)::int as c from public.'+r.table_name+' where tenant_id <> $1',['xevn']); out.push({table:r.table_name, non_xevn:q.rows[0].c});} console.log(JSON.stringify({database:d, tables:out},null,2)); await c.end();}})().catch(e=>{console.error(e);process.exit(1);});\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777990790139",
+    "detectedAt": "2026-05-05T14:19:50.137Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:DB_HOST='113.20.107.184'; $env:DB_PORT='6432'; $env:DB_USER='app1'; $env:DB_PASSWORD='5^S0CEpvYwC1(#YN1UoJ'; $env:DB_NAME='xevn_xbos'; node \"scripts/rollup-infra-summary.mjs\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777990886528",
+    "detectedAt": "2026-05-05T14:21:26.525Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777995212563",
+    "detectedAt": "2026-05-05T15:33:32.561Z",
+    "source": "hook:afterShellExecution",
+    "command": "$headers = @{ 'x-internal-api-key'='xevn-dev-internal-key'; 'x-tenant-id'='xevn'; 'x-company-id'='holding'; 'Content-Type'='application/json' }; $body = @{ foundationCategories=@(@{id='fcat-xevn'; code='XEVN'; nameVi='XEVN Infra'; description='master'; appliesToCompanyIds=@('holding')}); sites=@(); blockTitleOverridesByEntity=@{}; customBlocksByEntity=@{}; customFieldDefsByEntity=@{} } | ConvertTo-Json -Depth 8; Invoke-RestMethod -Method Put -Uri 'http://localhost:3002/api/xbos/infrastructure/settings' -Headers $headers -Body $body | ConvertTo-Json -Depth 6",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777996008675",
+    "detectedAt": "2026-05-05T15:46:48.672Z",
+    "source": "hook:afterShellExecution",
+    "command": "$h=@{'x-internal-api-key'='xevn-dev-internal-key';'x-tenant-id'='xevn';'x-company-id'='holding'}; Invoke-RestMethod -Method Delete -Uri 'http://localhost:3002/api/xbos/business-master/positions/items/pos-test' -Headers $h | ConvertTo-Json -Depth 5",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777996008804",
+    "detectedAt": "2026-05-05T15:46:48.801Z",
+    "source": "hook:afterShellExecution",
+    "command": "$h=@{'x-internal-api-key'='xevn-dev-internal-key'}; Invoke-RestMethod -Method Get -Uri 'http://localhost:3002/api/xbos/business-master/positions/items?tenantId=xevn&companyId=holding' -Headers $h | ConvertTo-Json -Depth 6",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777996770241",
+    "detectedAt": "2026-05-05T15:59:30.239Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:DB_HOST='113.20.107.184'; $env:DB_PORT='6432'; $env:DB_USER='app1'; $env:DB_PASSWORD='5^S0CEpvYwC1(#YN1UoJ'; node -e \"const pg=require('pg'); (async()=>{const c=new pg.Client({host:process.env.DB_HOST,port:+process.env.DB_PORT,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:'xevn_hrm',ssl:false}); await c.connect(); const a=await c.query(\\\"select company_id,count(*)::int c from public.employees where company_id in ('holding','trsport','logistics','finance','services') group by company_id order by company_id\\\"); const b=await c.query(\\\"select status,count(*)::int c from public.employees where company_id in ('holding','trsport','logistics','finance','services') group by status order by status\\\"); console.log(JSON.stringify({by_company:a.rows,by_status:b.rows},null,2)); await c.end();})();\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1777998257711",
+    "detectedAt": "2026-05-05T16:24:17.705Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:DB_HOST='113.20.107.184'; $env:DB_PORT='6432'; $env:DB_USER='app1'; $env:DB_PASSWORD='5^S0CEpvYwC1(#YN1UoJ'; node -e \"const pg=require('pg'); (async()=>{const c=new pg.Client({host:process.env.DB_HOST,port:+process.env.DB_PORT,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:'xevn_hrm',ssl:false}); await c.connect(); const start=new Date(); start.setDate(start.getDate()-89); const day=start.toISOString().slice(0,10); const q=async(sql)=> (await c.query(sql,[day])).rows[0].c; const out={from_date:day, attendance:+await q('select count(*)::int c from public.attendance_records where attendance_date >= $1::date'), service_requests:+await q('select count(*)::int c from public.service_requests where request_date >= $1::date'), tasks:+await q('select count(*)::int c from public.hrm_tasks where due_date >= $1::date'), requisitions:+await q('select count(*)::int c from public.job_requisitions where created_at::date >= $1::date'), candidates:+await q('select count(*)::int c from public.recruitment_candidates where created_at::date >= $1::date'), interviews:+await q('select count(*)::int c from public.recruitment_interviews where created_at::date >= $1::date'), payroll_periods:+await q('select count(*)::int c from public.payroll_periods where created_at::date >= $1::date')}; console.log(JSON.stringify(out,null,2)); await c.end();})();\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496225311",
+    "detectedAt": "2026-05-11T10:43:45.305Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496225341",
+    "detectedAt": "2026-05-11T10:43:45.336Z",
+    "source": "hook:afterShellExecution",
+    "command": "git diff --stat",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778496278843",
+    "detectedAt": "2026-05-11T10:44:38.840Z",
+    "source": "hook:afterShellExecution",
+    "command": "git checkout -b \"feature/ecosystem-wave-full-cutover\" && git add -A && git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m \"$(cat <<'EOF'\nfeat: cut over ecosystem to full FE-BE-DB multi-tenant architecture\n\nMigrate from legacy mock-driven modules to a production-ready multi-tenant baseline with API-backed master data, KPI engine, realistic seeding scripts, deployment assets, and governance documentation for end-to-end delivery.\nEOF\n)\" && git push -u origin HEAD && git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  }
+]

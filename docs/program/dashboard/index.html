@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XeVN PMO Dashboard</title>
+    <style>
+      :root { --bg:#0b1020; --panel:#121a33; --muted:#9ca8c7; --text:#e9efff; --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444; --info:#3b82f6; }
+      body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+      .wrap{max-width:1400px;margin:0 auto;padding:16px}
+      .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+      .badges{display:flex;gap:8px;flex-wrap:wrap}
+      .badge{background:#1b264d;border:1px solid #2e3e77;padding:6px 10px;border-radius:999px;font-size:12px}
+      .tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+      .tab{cursor:pointer;background:#1a2550;border:1px solid #31427c;padding:8px 12px;border-radius:10px}
+      .tab.active{background:#27408e}
+      .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}
+      .card{background:var(--panel);border:1px solid #24335f;border-radius:12px;padding:12px}
+      .kpi{font-size:24px;font-weight:700}
+      .muted{color:var(--muted);font-size:12px}
+      table{width:100%;border-collapse:collapse}
+      th,td{border-bottom:1px solid #22315c;padding:8px;text-align:left;font-size:12px}
+      th{color:#b9c4e6}
+      .status{padding:4px 8px;border-radius:999px;font-size:11px;display:inline-block}
+      .done{background:#13361f;color:#8df3a8}
+      .progress{background:#3a2d0e;color:#ffd48a}
+      .blocked{background:#4a1010;color:#ffb2b2}
+      .running{background:#142f52;color:#9fd0ff}
+      .hidden{display:none}
+      .live-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+      .agent-tile{background:#0f1730;border:1px solid #2a3a6d;border-radius:12px;padding:10px}
+      .agent-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+      .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+      .dot.running{background:#22c55e;box-shadow:0 0 0 6px rgba(34,197,94,.15)}
+      .dot.idle{background:#f59e0b}
+      .pill{background:#1a2550;border:1px solid #334581;border-radius:999px;padding:2px 8px;font-size:11px}
+      .rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+      .room-card{background:#0f1730;border:1px solid #2a3a6d;border-radius:12px;padding:10px;min-height:250px;display:flex;flex-direction:column}
+      .room-card.changed{border-color:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.2)}
+      .room-title{font-size:14px;font-weight:700;margin-bottom:4px}
+      .room-sub{font-size:11px;color:var(--muted);margin-bottom:8px}
+      .new-badge{display:inline-block;margin-left:8px;padding:2px 6px;border-radius:999px;font-size:10px;background:#16391f;color:#8df3a8;border:1px solid #245a34}
+      .room-log{white-space:pre-wrap;background:#0a1228;border:1px solid #24335f;border-radius:8px;padding:8px;max-height:240px;overflow:auto;font-size:11px;line-height:1.4}
+      .gantt{display:flex;gap:8px;align-items:center}
+      .bar{height:10px;border-radius:999px;background:#2c3f79;overflow:hidden;width:180px}
+      .fill{height:100%;background:var(--info)}
+      .log{max-height:420px;overflow:auto}
+      .footer{margin-top:8px;font-size:12px;color:var(--muted)}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <h2>XeVN Project Control Dashboard (Microsoft-Style PMO)</h2>
+        <div id="genAt" class="muted">Loading...</div>
+      </div>
+      <div class="badges" id="waveBadges"></div>
+      <div class="tabs" id="tabs"></div>
+      <div id="view-overview"></div>
+      <div id="view-schedule" class="hidden"></div>
+      <div id="view-resources" class="hidden"></div>
+      <div id="view-workflow" class="hidden"></div>
+      <div id="view-quality" class="hidden"></div>
+      <div id="view-logs" class="hidden"></div>
+      <div id="view-mailbox" class="hidden"></div>
+      <div id="view-live" class="hidden"></div>
+      <div id="view-rooms" class="hidden"></div>
+      <div class="footer" id="liveStatus">Live mode: waiting for server connection...</div>
+    </div>
+    <script src="./dashboard-data.js"></script>
+    <script>
+      const tabs = [
+        ["overview","Overview"],
+        ["schedule","Schedule/Gantt"],
+        ["resources","Resources/Agents"],
+        ["workflow","Workflow & Dependencies"],
+        ["quality","Quality, Risk, Defect"],
+        ["logs","Agent Logs & History"],
+        ["mailbox","Team Mailbox"],
+        ["live","Agent Live Monitor"],
+        ["rooms","Agent Rooms (9 Chats)"],
+      ];
+      let active = "overview";
+      function statusClass(s){
+        const u=(s||"").toUpperCase();
+        if(u==="DONE"||u==="PASS") return "done";
+        if(u==="IN_PROGRESS"||u==="RUNNING"||u==="READY") return "running";
+        if(u==="BLOCKED"||u==="FAIL") return "blocked";
+        return "progress";
+      }
+      function renderTabs(){
+        const t = document.getElementById("tabs");
+        t.innerHTML = tabs.map(([id,label])=>`<button class="tab ${id===active?"active":""}" onclick="switchTab('${id}')">${label}</button>`).join("");
+      }
+      function switchTab(id){
+        active=id; renderTabs();
+        for (const [k] of tabs){ document.getElementById(`view-${k}`).classList.toggle("hidden", k!==id); }
+      }
+      function kpiCard(title,val,sub){ return `<div class="card"><div class="muted">${title}</div><div class="kpi">${val}</div><div class="muted">${sub||""}</div></div>`; }
+      function relativeTime(text){
+        const dt = new Date(text);
+        if (Number.isNaN(dt.getTime())) return text || "N/A";
+        const sec = Math.max(0, Math.floor((Date.now() - dt.getTime())/1000));
+        if (sec < 60) return `${sec}s ago`;
+        const min = Math.floor(sec/60);
+        if (min < 60) return `${min}m ago`;
+        const h = Math.floor(min/60);
+        return `${h}h ago`;
+      }
+      function scrollAgentRoomLogsToBottom(){
+        const logs = document.querySelectorAll(".room-log");
+        logs.forEach((el) => {
+          el.scrollTop = el.scrollHeight;
+        });
+      }
+      async function loadData(){
+        return new Promise((resolve, reject) => {
+          const id = "dash-data-script";
+          const old = document.getElementById(id);
+          if (old) old.remove();
+          const s = document.createElement("script");
+          s.id = id;
+          s.src = "./dashboard-data.js?ts=" + Date.now();
+          s.onload = () => {
+            if (window.__DASHBOARD_DATA__) resolve(window.__DASHBOARD_DATA__);
+            else reject(new Error("No dashboard data found"));
+          };
+          s.onerror = () => reject(new Error("Failed to load dashboard-data.js"));
+          document.body.appendChild(s);
+        });
+      }
+      function render(data){
+        document.getElementById("genAt").textContent = `Updated: ${new Date(data.generatedAt).toLocaleString()}`;
+        const w=data.waveSnapshot||{};
+        document.getElementById("waveBadges").innerHTML = Object.entries(w).map(([k,v])=>`<span class="badge">${k}: <b>${v}</b></span>`).join("");
+
+        document.getElementById("view-overview").innerHTML = `
+          <div class="grid">
+            ${kpiCard("Active Agents", data.summary.activeAgents, `of ${data.summary.totalAgents}`)}
+            ${kpiCard("Done Sprint Tasks", data.summary.doneSprintTasks, `of ${data.summary.totalSprintTasks}`)}
+            ${kpiCard("Traceability DONE", data.summary.doneTraceabilityRows, `of ${data.summary.totalTraceabilityRows}`)}
+            ${kpiCard("Open Defects", data.summary.openDefects, "blocker/critical monitored")}
+          </div>
+          <div class="card">
+            <h3>Live Dispatch Queue</h3>
+            <div class="muted">Active phase: ${(data.pmDispatchQueue && data.pmDispatchQueue.activePhase) || "N/A"}</div>
+            <table><thead><tr><th>To</th><th>Task</th><th>Priority</th><th>Reason</th></tr></thead>
+            <tbody>
+              ${((data.pmDispatchQueue && data.pmDispatchQueue.queue) || []).map(q=>`<tr><td>${q.to}</td><td>${q.task}</td><td><span class="status ${statusClass(q.priority)}">${q.priority}</span></td><td>${q.reason}</td></tr>`).join("")}
+            </tbody></table>
+          </div>
+          <div class="card">
+            <h3>Live Agent Activity</h3>
+            <table><thead><tr><th>Agent</th><th>Role</th><th>Work</th><th>Status</th><th>Last Update</th><th>Waiting On</th></tr></thead>
+            <tbody>
+              ${data.controlTower.map(a=>`<tr><td>${a.agent}</td><td>${a.role}</td><td>${a.work}</td><td><span class="status ${statusClass(a.status)}">${a.status}</span></td><td>${a.lastUpdate}</td><td>${a.waitingOn}</td></tr>`).join("")}
+            </tbody></table>
+          </div>`;
+
+        const scheduleRows = data.sprintBoard.map(s=>{
+          const done = (s.status||"").toUpperCase()==="DONE";
+          const fill = done?100:((s.status||"").toUpperCase()==="IN_PROGRESS"?60:10);
+          return `<tr><td>${s.id}</td><td>${s.owner}</td><td>${s.task}</td><td><div class="gantt"><div class="bar"><div class="fill" style="width:${fill}%"></div></div>${fill}%</div></td><td><span class="status ${statusClass(s.status)}">${s.status}</span></td></tr>`;
+        }).join("");
+        document.getElementById("view-schedule").innerHTML = `<div class="card"><h3>Schedule / Gantt (Task Progress)</h3><table><thead><tr><th>ID</th><th>Owner</th><th>Task</th><th>Progress</th><th>Status</th></tr></thead><tbody>${scheduleRows}</tbody></table></div>`;
+
+        const resourceRows = data.controlTower.map(a=>`<tr><td>${a.agent}</td><td>${a.role}</td><td>${a.work}</td><td><span class="status ${statusClass(a.status)}">${a.status}</span></td></tr>`).join("");
+        document.getElementById("view-resources").innerHTML = `<div class="card"><h3>Resource Plan (8+ Agents)</h3><table><thead><tr><th>Agent</th><th>Role</th><th>Assigned Work</th><th>Status</th></tr></thead><tbody>${resourceRows}</tbody></table></div>`;
+
+        const flow = data.sprintBoard.map(s=>`<tr><td>${s.id}</td><td>${s.role}</td><td>${s.task}</td><td>${s.owner}</td><td><span class="status ${statusClass(s.status)}">${s.status}</span></td></tr>`).join("");
+        document.getElementById("view-workflow").innerHTML = `<div class="card"><h3>Workflow / Dependency Chain</h3><table><thead><tr><th>Work Item</th><th>Lane</th><th>Work</th><th>Owner</th><th>Status</th></tr></thead><tbody>${flow}</tbody></table></div>`;
+
+        const defectRows = data.defects.map(d=>`<tr><td>${d.id}</td><td>${d.severity}</td><td>${d.module}</td><td>${d.description}</td><td>${d.owner}</td><td><span class="status ${statusClass(d.status)}">${d.status}</span></td></tr>`).join("");
+        const traceRows = data.traceability.slice(0,15).map(t=>`<tr><td>${t.useCase}</td><td>${t.api}</td><td>${t.db}</td><td><span class="status ${statusClass(t.status)}">${t.status}</span></td></tr>`).join("");
+        document.getElementById("view-quality").innerHTML = `
+          <div class="card"><h3>Defect Register</h3><table><thead><tr><th>ID</th><th>Severity</th><th>Module</th><th>Description</th><th>Owner</th><th>Status</th></tr></thead><tbody>${defectRows}</tbody></table></div>
+          <div class="card"><h3>Traceability Health (Top Rows)</h3><table><thead><tr><th>Use Case</th><th>API</th><th>DB</th><th>Status</th></tr></thead><tbody>${traceRows}</tbody></table></div>`;
+
+        document.getElementById("view-logs").innerHTML = `
+          <div class="card log"><h3>Agent Message Bus (latest headings)</h3><ul>${data.agentMessageBusHeadings.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+          <div class="card log"><h3>Project Journal (latest headings)</h3><ul>${data.projectJournalHeadings.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+
+        const mailbox = data.teamMailbox || {};
+        const agentEntries = Object.entries(mailbox.agents || {});
+        document.getElementById("view-mailbox").innerHTML = `
+          <div class="card">
+            <h3>Team Mailbox Assignments</h3>
+            <div class="muted">Generated: ${mailbox.generatedAt || "N/A"} | Active phase: ${mailbox.activePhase || "N/A"}</div>
+            <table>
+              <thead><tr><th>Agent</th><th>Assignments</th></tr></thead>
+              <tbody>
+                ${agentEntries.map(([agent, tasks]) => {
+                  const list = (tasks || []).map(t => `<li><b>${t.task || "-"}</b> [${t.priority || "-"}] - ${t.reason || "-"}</li>`).join("");
+                  return `<tr><td>${agent}</td><td>${list ? `<ul>${list}</ul>` : "-"}</td></tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>`;
+
+        const act = (data.agentActivity && data.agentActivity.rows) || [];
+        const timeline = (data.agentActivity && data.agentActivity.timeline) || [];
+        const liveTiles = act.map(a => {
+          const active = (a.signalCount || 0) > 0;
+          const tasks = (a.currentTasks && a.currentTasks.length) ? a.currentTasks.join(", ") : "No assigned task";
+          return `<div class="agent-tile">
+            <div class="agent-head">
+              <div><b>${a.agent}</b></div>
+              <span class="dot ${active ? "running" : "idle"}"></span>
+            </div>
+            <div class="muted">Last signal: ${a.lastSeen || "N/A"}</div>
+            <div class="muted">Signals: <span class="pill">${a.signalCount || 0}</span></div>
+            <div class="muted">Mailbox tasks: ${tasks}</div>
+            <div class="muted">Last topic: ${a.lastTopic || "N/A"}</div>
+          </div>`;
+        }).join("");
+        const timelineRows = timeline.map(t => `<tr><td>${t.time || "-"}</td><td>${(t.agents || []).join(", ")}</td><td>${t.topic || "-"}</td></tr>`).join("");
+        document.getElementById("view-live").innerHTML = `
+          <div class="card">
+            <h3>Agent Live Activity (Realtime Signals)</h3>
+            <div class="muted">Green dot = has activity signal in message bus history; mailbox task list shows current assignments.</div>
+            <div class="live-grid">${liveTiles || "<div class='muted'>No agent signals found.</div>"}</div>
+          </div>
+          <div class="card">
+            <h3>Recent Activity Timeline</h3>
+            <table><thead><tr><th>Time</th><th>Agents</th><th>Event</th></tr></thead><tbody>${timelineRows}</tbody></table>
+          </div>`;
+
+        const rooms = (data.agentRooms || []).filter(r => /^A[1-9]$/.test((r.agent || "").toUpperCase()));
+        const roomByAgent = new Map(rooms.map(r => [String(r.agent || "").toUpperCase(), r]));
+        const orderedAgents = ["A1","A2","A3","A4","A5","A6","A7","A8","A9"];
+        const prev = JSON.parse(localStorage.getItem("agentRoomLastUpdated") || "{}");
+        const next = {};
+        const roomCards = orderedAgents.map(id => {
+          const r = roomByAgent.get(id) || { agent: id, role: "Unknown Role", lastUpdated: "N/A", tail: "(No activity yet)" };
+          const changed = prev[id] && prev[id] !== (r.lastUpdated || "");
+          next[id] = r.lastUpdated || "";
+          return `<div class="room-card ${changed ? "changed" : ""}">
+            <div class="room-title">${r.role || "Unknown Role"} ${changed ? '<span class="new-badge">NEW</span>' : ""}</div>
+            <div class="room-sub">Last updated: ${r.lastUpdated || "N/A"} (${relativeTime(r.lastUpdated)}) | ${r.path || "docs/program/agent-rooms/" + id + ".md"}</div>
+            <div class="room-log">${r.tail || "(No activity yet)"}</div>
+          </div>`;
+        }).join("");
+        localStorage.setItem("agentRoomLastUpdated", JSON.stringify(next));
+        document.getElementById("view-rooms").innerHTML = `
+          <div class="card">
+            <h3>Agent Rooms (9 Role Panels)</h3>
+            <div class="muted">Each panel auto-loads recent work history for one role. Refresh interval follows dashboard auto-refresh.</div>
+            <div class="rooms-grid">${roomCards}</div>
+          </div>`;
+        scrollAgentRoomLogsToBottom();
+      }
+      async function loop(){
+        try {
+          const data = await loadData();
+          render(data);
+          const el = document.getElementById("liveStatus");
+          if (el) el.textContent = "Live mode: connected and synced.";
+        } catch (e) {
+          document.getElementById("genAt").textContent = "Dashboard data unavailable (run: pnpm ops:dashboard:data)";
+          const el = document.getElementById("liveStatus");
+          if (el) el.textContent = "Live mode: data unavailable.";
+        }
+      }
+      function connectLiveUpdates(){
+        try {
+          const es = new EventSource("/events");
+          es.addEventListener("connected", () => {
+            const el = document.getElementById("liveStatus");
+            if (el) el.textContent = "Live mode: connected (event stream).";
+          });
+          es.addEventListener("dashboard-updated", () => {
+            loop();
+          });
+          es.onerror = () => {
+            const el = document.getElementById("liveStatus");
+            if (el) el.textContent = "Live mode: disconnected. Start `pnpm ops:dashboard:live` and open via localhost.";
+          };
+        } catch {
+          const el = document.getElementById("liveStatus");
+          if (el) el.textContent = "Live mode unavailable in file://. Use localhost live server.";
+        }
+      }
+      renderTabs(); switchTab(active); loop(); connectLiveUpdates();
+    </script>
+  </body>
+</html>

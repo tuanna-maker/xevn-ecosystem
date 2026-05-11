@@ -5,18 +5,74 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --filter=./apps/*",
+    "dev": "turbo run dev --filter=./apps/web/*",
+    "dev:web": "turbo run dev --filter=./apps/web/*",
+    "dev:api": "turbo run dev --filter=./apps/api/*",
     "dev:all": "turbo run dev",
     "dev:x-bos": "turbo run dev --filter=x-bos",
+    "dev:hrm-api": "turbo run dev --filter=hrm-api",
+    "dev:xbos-api": "turbo run dev --filter=xbos-api",
     "dev:ui": "turbo run dev --filter=@xevn/ui",
+    "migrate:hrm:status": "node ./scripts/migrate-status.mjs hrm",
+    "migrate:xbos:status": "node ./scripts/migrate-status.mjs xbos",
+    "migrate:hrm:apply": "node ./scripts/migrate-apply.mjs hrm",
+    "migrate:xbos:apply": "node ./scripts/migrate-apply.mjs xbos",
+    "sim:xevn:cross-system": "powershell -ExecutionPolicy Bypass -File ./scripts/simulate-xevn-cross-system.ps1",
+    "sim:xevn:full": "powershell -ExecutionPolicy Bypass -File ./scripts/simulate-xevn-full-two-subsystems.ps1",
+    "seed:xevn:db": "node ./scripts/seed-xevn-postgres.mjs",
+    "seed:hrm:100-employees": "node ./scripts/seed-hrm-100-employees.mjs",
+    "seed:ecosystem:full": "node ./scripts/seed-full-ecosystem.mjs",
+    "seed:ecosystem:timeline-90d": "node ./scripts/seed-ecosystem-timeline-90d.mjs",
+    "seed:xevn:cleanup-single-tenant": "node ./scripts/cleanup-single-tenant.mjs",
+    "seed:xevn:verify-single-tenant": "node ./scripts/verify-single-tenant.mjs",
+    "ops:infra:benchmark-latency": "node ./scripts/benchmark-infra-latency.mjs",
+    "ops:infra:rollup-summary": "node ./scripts/rollup-infra-summary.mjs",
+    "ops:dashboard:data": "node ./scripts/generate-dashboard-data.mjs",
+    "ops:dashboard:watch": "powershell -ExecutionPolicy Bypass -File ./scripts/dashboard-data-watch.ps1",
+    "ops:dashboard:live": "node ./scripts/dashboard-live-server.mjs",
+    "ops:pm:queue": "node ./scripts/generate-dispatch-queue.mjs",
+    "ops:pm:autopilot": "powershell -ExecutionPolicy Bypass -File ./scripts/pm-tech-autopilot.ps1",
+    "ops:pm:autopilot:watch": "powershell -ExecutionPolicy Bypass -File ./scripts/pm-tech-autopilot.ps1 -Watch",
+    "ops:worker:a2": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A2",
+    "ops:worker:a3": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A3",
+    "ops:worker:a4": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A4",
+    "ops:worker:a5": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A5",
+    "ops:worker:a6": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A6",
+    "ops:worker:a7": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A7",
+    "ops:worker:a8": "powershell -ExecutionPolicy Bypass -File ./scripts/member-worker.ps1 -Agent A8",
+    "ops:team:loop": "powershell -ExecutionPolicy Bypass -File ./scripts/team-autonomous-loop.ps1",
+    "ops:team:loop:watch": "powershell -ExecutionPolicy Bypass -File ./scripts/team-autonomous-loop.ps1 -Watch",
+    "ops:team:compact": "powershell -ExecutionPolicy Bypass -File ./scripts/team-compact-orchestrator.ps1",
+    "ops:team:compact:watch": "powershell -ExecutionPolicy Bypass -File ./scripts/team-compact-orchestrator.ps1 -Watch",
+    "release:hypercare:check": "powershell -ExecutionPolicy Bypass -File ./scripts/release-hypercare-check.ps1",
+    "release:hypercare:smoke": "powershell -ExecutionPolicy Bypass -File ./scripts/release-hypercare-check.ps1 -RunSmoke",
+    "ops:agent:dashboard": "powershell -ExecutionPolicy Bypass -File ./scripts/agent-dashboard.ps1",
+    "ops:agent:watch": "powershell -ExecutionPolicy Bypass -File ./scripts/agent-dashboard.ps1 --watch",
+    "ops:wave:status": "powershell -ExecutionPolicy Bypass -File ./scripts/wave-autopilot.ps1",
+    "ops:wave:watch": "powershell -ExecutionPolicy Bypass -File ./scripts/wave-autopilot.ps1 -Watch",
+    "ops:wave:watch:checks": "powershell -ExecutionPolicy Bypass -File ./scripts/wave-autopilot.ps1 -Watch -RunChecks",
+    "security:scan": "node ./scripts/security-scan-repo.mjs",
+    "security:scan:staged": "node ./scripts/security-scan-staged.mjs",
+    "security:hooks:install": "node ./scripts/install-git-hooks.mjs",
+    "test:perf-budget": "pnpm --filter hrm-api run test:perf-budget && pnpm --filter xbos-api run test:perf-budget",
     "lint": "turbo run lint",
-    "type-check": "turbo run type-check"
+    "type-check": "pnpm -r --if-present run type-check"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
     "eslint": "^8.57.0",
+    "turbo": "^2.0.0",
     "typescript": "^5.9.3",
-    "vite": "^5.4.21",
-    "turbo": "^2.0.0"
+    "vite": "^5.4.21"
+  },
+  "dependencies": {
+    "pg": "^8.20.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "picomatch@<2.3.2": "2.3.2",
+      "picomatch@>=4.0.0 <4.0.4": "4.0.4",
+      "node-fetch@<=2.6.6": "2.6.7"
+    }
   }
 }

@@ -1,0 +1,9 @@
+{
+    "id":  "INC-1777019475133",
+    "detectedAt":  "2026-04-24T08:31:15.129Z",
+    "source":  "hook:afterShellExecution",
+    "command":  "node --check \".cursor/hooks/session-start.mjs\" \u0026\u0026 node --check \".cursor/hooks/after-shell-execution.mjs\" \u0026\u0026 node --check \".cursor/hooks/subagent-stop.mjs\"",
+    "exitCode":  null,
+    "severity":  "MEDIUM",
+    "status":  "NEW"
+}

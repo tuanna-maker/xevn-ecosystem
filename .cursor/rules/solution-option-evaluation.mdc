@@ -1,0 +1,20 @@
+---
+description: Force structured option analysis with trade-offs and decision rationale across architecture and delivery
+alwaysApply: true
+---
+
+# Solution Option Evaluation Rule
+
+Before selecting a technical or product approach, evaluate multiple options explicitly.
+
+Required decision package:
+- Option A/B/C summary (scope, complexity, risk, cost, timeline).
+- Trade-off matrix (performance, reliability, security, scalability, maintainability).
+- Failure modes and mitigation plan per option.
+- Recommended option with decision rationale and assumptions.
+- Verification plan for post-decision validation.
+
+Decision controls:
+- No "single-path by default" for high-impact decisions.
+- Record unresolved assumptions and owner.
+- Escalate conflicting priorities to PM + SA + Technical Manager.

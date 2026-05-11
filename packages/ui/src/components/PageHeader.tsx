@@ -6,6 +6,7 @@ export interface PageHeaderProps {
   subtitle?: string;
   icon: React.ReactNode;
   actions?: React.ReactNode;
+  showCompanyFilter?: boolean;
   className?: string;
 }
 
