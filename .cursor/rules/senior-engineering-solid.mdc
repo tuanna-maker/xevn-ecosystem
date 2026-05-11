@@ -1,0 +1,32 @@
+---
+description: Enforce senior engineering mindset with SOLID principles, clean boundaries, and long-term maintainability
+alwaysApply: true
+---
+
+# Senior Engineering SOLID Rule
+
+Apply this rule to all implementation and refactoring work.
+
+## SOLID baseline
+- **S (Single Responsibility):** each module/class/function has one clear reason to change.
+- **O (Open/Closed):** extend behavior via composition/abstraction, avoid risky edits to stable cores.
+- **L (Liskov Substitution):** subtype behavior must remain contract-compatible.
+- **I (Interface Segregation):** prefer small focused interfaces over large generic contracts.
+- **D (Dependency Inversion):** depend on abstractions at boundaries, not concrete infrastructure details.
+
+## Senior code quality checks
+- Keep domain logic separated from transport/framework concerns.
+- Prefer explicit contracts and deterministic error semantics.
+- Design for testability: seams, mocks/stubs, and observable outcomes.
+- Minimize coupling and hidden global state.
+- Document non-obvious trade-offs in decision records.
+
+## Anti-patterns (reject)
+- God objects/modules with mixed responsibilities.
+- Business logic buried in controllers/views.
+- Tight coupling to external SDKs across core domain.
+- Large functions with implicit side effects and no tests.
+
+## Acceptance
+- No major change marked DONE without SOLID-oriented review notes.
+- Refactors must reduce complexity or improve reliability measurably.

@@ -1,0 +1,14 @@
+﻿{
+  "version": 1,
+  "refreshProcedure": "From apps/api/xbos-api: run `pnpm exec jest --runInBand src/perf-budget/ci.perf-budget.spec.ts` on reference hardware, record max wall ms per route (warm-up 2, sample 7), set baselineMaxMs to at least the observed max (rounded up). Health tier uses ×1.15; mockedSync uses ×1.20.",
+  "routes": {
+    "GET /api/xbos": {
+      "baselineMaxMs": 40,
+      "tier": "health"
+    },
+    "GET /api/xbos/config-sync/catalog/:catalogKey": {
+      "baselineMaxMs": 65,
+      "tier": "mockedSync"
+    }
+  }
+}

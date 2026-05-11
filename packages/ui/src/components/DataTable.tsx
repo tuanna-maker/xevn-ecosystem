@@ -1,11 +1,40 @@
 import React from 'react';
 import { cn } from '../lib/utils';
+import type { Column } from '../types';
 
 export interface DataTableProps<T> {
-  columns: { key: string; header: string; render?: (item: T) => React.ReactNode }[];
+  columns: Column<T>[];
   data: T[];
+  keyExtractor?: (item: T, index: number) => string;
+  searchPlaceholder?: string;
   emptyMessage?: string;
   className?: string;
+  actions?: React.ReactNode;
+  onRowClick?: (item: T) => void;
+}
+
+function renderFallbackValue(value: unknown): React.ReactNode {
+  if (value == null) {
+    return '-';
+  }
+
+  if (React.isValidElement(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' || typeof value === 'number') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? 'Có' : 'Không';
+  }
+
+  return JSON.stringify(value);
 }
 
 export const DataTable: React.FC<DataTableProps<any>> = ({
@@ -13,6 +42,9 @@ export const DataTable: React.FC<DataTableProps<any>> = ({
   data,
   emptyMessage = 'Không tìm thấy dữ liệu',
   className,
+  actions,
+  onRowClick,
+  keyExtractor,
 }) => {
   if (data.length === 0) {
     return (
@@ -29,25 +61,40 @@ export const DataTable: React.FC<DataTableProps<any>> = ({
 
   return (
     <div className={cn('overflow-x-auto', className)}>
+      {actions ? (
+        <div className="mb-4 flex items-center justify-end">
+          {actions}
+        </div>
+      ) : null}
       <table className="min-w-full divide-y divide-xevn-border">
         <thead>
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
+                style={column.width ? { width: column.width } : undefined}
                 className="px-6 py-3 text-left text-xs font-medium text-xevn-textSecondary uppercase tracking-wider"
               >
-                {column.header}
+                {column.header ?? column.label ?? column.key}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-xevn-border">
           {data.map((row, index) => (
-            <tr key={index} className="hover:bg-xevn-surface/50 transition-colors">
+            <tr
+              key={keyExtractor ? keyExtractor(row, index) : index}
+              className={cn(
+                'transition-colors',
+                onRowClick ? 'cursor-pointer hover:bg-xevn-surface/50' : 'hover:bg-xevn-surface/50'
+              )}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+            >
               {columns.map((column) => (
                 <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-xevn-text">
-                  {column.render ? column.render(row) : row[column.key as keyof typeof row]}
+                  {column.render
+                    ? column.render(row[column.key as keyof typeof row], row)
+                    : renderFallbackValue(row[column.key as keyof typeof row])}
                 </td>
               ))}
             </tr>

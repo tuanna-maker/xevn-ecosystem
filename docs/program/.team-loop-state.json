@@ -1,0 +1,6 @@
+{
+    "lastQueueHash":  "[\r\n    {\r\n        \"to\":  \"A9\",\r\n        \"reason\":  \"Perform PM-Tech gate review and close wave\",\r\n        \"task\":  \"PM-GATE\",\r\n        \"priority\":  \"HIGH\"\r\n    },\r\n    {\r\n        \"to\":  \"A2\",\r\n        \"reason\":  \"Recruitment - acceptance/usecase matrix\",\r\n        \"task\":  \"BA-R1\",\r\n        \"priority\":  \"MEDIUM\",\r\n        \"queueId\":  \"Q-B-002\",\r\n        \"phase\":  \"B\"\r\n    },\r\n    {\r\n        \"to\":  \"A4\",\r\n        \"reason\":  \"Recruitment - API+migration+tests pass\",\r\n        \"task\":  \"DEV-R1\",\r\n        \"priority\":  \"MEDIUM\",\r\n        \"queueId\":  \"Q-B-003\",\r\n        \"phase\":  \"B\"\r\n    },\r\n    {\r\n        \"to\":  \"A6\",\r\n        \"reason\":  \"Recruitment FE - UI binding + build pass\",\r\n        \"task\":  \"DEV-R2\",\r\n        \"priority\":  \"MEDIUM\",\r\n        \"queueId\":  \"Q-B-004\",\r\n        \"phase\":  \"B\"\r\n    },\r\n    {\r\n        \"to\":  \"A7\",\r\n        \"reason\":  \"Recruitment - e2e + defects closed\",\r\n        \"task\":  \"QA-R1\",\r\n        \"priority\":  \"MEDIUM\",\r\n        \"queueId\":  \"Q-B-005\",\r\n        \"phase\":  \"B\"\r\n    }\r\n]",
+    "assignedAtByTask":  {
+
+                         }
+}

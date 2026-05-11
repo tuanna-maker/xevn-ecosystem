@@ -23,3 +23,6 @@ pnpm-debug.log*
 
 # Test / coverage
 coverage
+
+# Cursor PM hook — local dedupe cursor (machine-specific)
+.cursor/team/inbox/subagent-stop-dedupe-state.json

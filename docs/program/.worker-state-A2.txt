@@ -1,0 +1,8 @@
+{
+    "to":  "A2",
+    "reason":  "Recruitment - acceptance/usecase matrix",
+    "task":  "BA-R1",
+    "priority":  "MEDIUM",
+    "queueId":  "Q-B-002",
+    "phase":  "B"
+}

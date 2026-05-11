@@ -1,0 +1,67 @@
+name: hrm-quality-gate
+
+on:
+  pull_request:
+    paths:
+      - "apps/api/hrm-api/**"
+      - "apps/web/hrm/**"
+      - ".github/workflows/hrm-quality-gate.yml"
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "apps/api/hrm-api/**"
+      - "apps/web/hrm/**"
+      - ".github/workflows/hrm-quality-gate.yml"
+
+jobs:
+  hrm-api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api/hrm-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            apps/api/hrm-api/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Unit test
+        run: pnpm test -- --runInBand
+      - name: Build
+        run: pnpm build
+
+  hrm-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web/hrm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Unit test
+        run: pnpm test
+      - name: Build
+        run: pnpm build

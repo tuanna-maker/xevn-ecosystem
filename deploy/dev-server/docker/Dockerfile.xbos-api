@@ -1,0 +1,16 @@
+FROM node:22-alpine
+
+WORKDIR /app
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/api/xbos-api/package.json apps/api/xbos-api/package.json
+COPY apps/api/xbos-api/tsconfig*.json apps/api/xbos-api/
+RUN pnpm install --frozen-lockfile --filter xbos-api...
+
+COPY apps/api/xbos-api apps/api/xbos-api
+RUN pnpm --filter xbos-api build
+
+EXPOSE 3002
+CMD ["pnpm", "--filter", "xbos-api", "start:prod"]
+

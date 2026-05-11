@@ -1,0 +1,34 @@
+services:
+  web-portal:
+    image: node:22-alpine
+    container_name: xevn-web-portal-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/web-portal dev --host 0.0.0.0 --port 5175"
+    ports:
+      - "8088:5175"
+    restart: unless-stopped
+
+  hrm-web:
+    image: node:22-alpine
+    container_name: xevn-hrm-web-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/hrm dev --host 0.0.0.0 --port 8080"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  xbos-core:
+    image: node:22-alpine
+    container_name: xevn-xbos-core-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/x-bos-core dev --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    restart: unless-stopped
+

@@ -1,0 +1,21 @@
+---
+description: Enforce UI/UX quality, accessibility, consistency, and interaction reliability for web/mobile interfaces
+alwaysApply: true
+---
+
+# UIUX Quality and Accessibility Rule
+
+## UX quality
+- User flows must provide clear state transitions (loading, success, empty, error).
+- Interactions must have predictable feedback and error recovery paths.
+- Avoid disruptive behavior and inconsistent navigation patterns.
+
+## Accessibility baseline
+- Ensure keyboard and screen-reader friendly interaction where applicable.
+- Maintain sufficient contrast and readable typography.
+- Avoid relying on color-only communication for critical states.
+
+## Product polish
+- Keep visual/system consistency across components and screens.
+- Prevent UI regressions with targeted checks for key journeys.
+- No UI feature marked DONE without UX acceptance evidence.

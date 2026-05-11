@@ -1,0 +1,20 @@
+---
+description: Require complete business analysis with deterministic flows, rules, and acceptance criteria
+alwaysApply: true
+---
+
+# Business Analysis Excellence Rule
+
+Every non-trivial module must have analysis that is testable, traceable, and implementation-ready.
+
+Required BA outputs:
+- Use-case catalog (happy path, alternate path, exception path).
+- Business rule matrix (`condition -> action -> outcome`).
+- Data contract matrix (field semantics, validation, ownership, source of truth).
+- Acceptance criteria with explicit pass/fail evidence.
+- Traceability map from requirement -> implementation -> test.
+
+Execution standards:
+- No ambiguous terms without operational definition.
+- Every validation/error branch must have deterministic behavior.
+- Every handoff from BA to Dev/QA must include entry/exit criteria.

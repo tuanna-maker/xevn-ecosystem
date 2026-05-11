@@ -1,0 +1,8 @@
+{
+    "to":  "A7",
+    "reason":  "Recruitment - e2e + defects closed",
+    "task":  "QA-R1",
+    "priority":  "MEDIUM",
+    "queueId":  "Q-B-005",
+    "phase":  "B"
+}

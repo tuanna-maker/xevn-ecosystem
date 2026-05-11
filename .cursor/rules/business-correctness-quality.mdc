@@ -1,0 +1,20 @@
+---
+description: Enforce business correctness with deterministic flows, validation branches, and acceptance traceability
+alwaysApply: true
+---
+
+# Business Correctness Rule
+
+## Requirement integrity
+- Every implemented behavior must map to an approved requirement/use case.
+- Cover happy, alternate, and exception paths.
+- Keep business rule evaluation deterministic and explicit.
+
+## Validation and error quality
+- Validation rules must be explicit and testable.
+- Error semantics must be stable and actionable for consumers.
+- No hidden branch logic without documented rule ownership.
+
+## Acceptance traceability
+- No feature closure without acceptance criteria evidence.
+- Requirement -> implementation -> test mapping must be complete for core flows.

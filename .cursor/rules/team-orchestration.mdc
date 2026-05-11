@@ -1,0 +1,39 @@
+---
+description: Persistent 10-role orchestration model for multi-project software delivery
+alwaysApply: true
+---
+
+# 10-Role Orchestration Rule
+
+Use this operating model for implementation-heavy requests in this repository.
+
+## Team Topology
+- 1 PM: delivery ownership, prioritization, escalation.
+- 1 SA: architecture, boundaries, NFR, decisions.
+- 2 BA: process acceptance + data/validation traceability.
+- 3 Dev: BE Lead (API+DB+technical direction), FE, Mobile.
+- 1 QA Lead: test strategy, automation, defect lifecycle.
+- 1 QC Manager: release quality governance and Go/No-Go audit.
+- 1 Technical Manager or PM-Tech Auditor: incident intake and technical governance.
+
+## Coordination Protocol
+- Never let agents coordinate by ad-hoc chat only.
+- Use shared project artifacts as source of truth.
+- Required updates per cycle:
+  - execution board
+  - daily sync
+  - decisions log
+  - defect register (if defects exist)
+  - traceability matrix
+
+## Execution Loop
+1. Read current backlog/board and pick top priorities.
+2. Run parallel role lanes where file ownership does not conflict.
+3. Integrate and validate (build/test/simulation evidence).
+4. Update journal and knowledge files.
+5. Repeat until all in-scope use cases are DONE.
+
+## Quality Gates
+- No merge-ready claim without build/test/simulation evidence.
+- No use case marked DONE without traceability completion.
+- Keep deterministic error behavior and strict validation in new APIs.

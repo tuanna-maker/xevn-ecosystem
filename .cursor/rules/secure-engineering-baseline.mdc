@@ -1,0 +1,22 @@
+---
+description: Enforce secure-by-default engineering for auth, data protection, dependency risk, and release safety
+alwaysApply: true
+---
+
+# Security and Information Safety Rule
+
+## Mandatory controls
+- No hardcoded secrets, tokens, credentials, or private keys in code/docs.
+- Validate and sanitize all external inputs.
+- Apply least privilege for service access and data operations.
+- Use authenticated and authorized access for protected operations.
+
+## Data protection
+- Minimize sensitive data exposure in logs and error responses.
+- Mask/redact confidential fields in telemetry and debug artifacts.
+- Avoid storing sensitive data unless explicitly required and controlled.
+
+## Dependency and release safety
+- No unresolved critical/high vulnerabilities at release gate.
+- Track dependency/security exceptions with owner and expiry.
+- Security-impacting changes require verification evidence.

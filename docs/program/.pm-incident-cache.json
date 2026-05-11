@@ -1,0 +1,13 @@
+[
+    "372426.txt|web-portal:dev: 12:38:37 AM [vite] Internal server error: Failed to resolve import \"@xevn/ui\" from \"src/pages/dashboard/ExecutiveDashboardPage.tsx\". Does the file exist?",
+    "372426.txt|web-portal:dev: 12:38:37 AM [vite] Internal server error: Failed to resolve import \"@xevn/ui\" from \"src/pages/customers/CustomersPage.tsx\". Does the file exist?",
+    "372426.txt|web-portal:dev: 12:38:37 AM [vite] Internal server error: Failed to resolve import \"@xevn/ui\" from \"src/pages/partners/PartnersPage.tsx\". Does the file exist?",
+    "48.txt|x-bos:dev: error when starting dev server:",
+    "48.txt|x-bos:dev: Error: EPERM: operation not permitted, rmdir \u0027C:\\Users\\ADMIN\\OneDrive\\Tài liệu u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\x-bos-core\\node_modules\\.vite\\deps\u0027",
+    "48.txt|x-bos:dev:  ELIFECYCLE  Command failed with exit code 1.",
+    "48.txt|vite_react_shadcn_ts:dev: error when starting dev server:",
+    "48.txt|vite_react_shadcn_ts:dev: Error: EPERM: operation not permitted, rmdir \u0027C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\\node_modules\\.vite\\deps\u0027",
+    "48.txt|vite_react_shadcn_ts:dev:  ELIFECYCLE  Command failed with exit code 1.",
+    "48.txt|ERROR  run failed: command  exited (1)",
+    "48.txt| ELIFECYCLE  Command failed with exit code 1."
+]

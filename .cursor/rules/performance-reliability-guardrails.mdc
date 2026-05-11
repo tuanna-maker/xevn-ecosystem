@@ -1,0 +1,21 @@
+---
+description: Enforce performance, resilience, and operability guardrails across backend, frontend, and mobile
+alwaysApply: true
+---
+
+# Performance and Reliability Guardrails Rule
+
+## Performance
+- Define measurable targets (latency, throughput, render time, startup time) per module.
+- Avoid unbounded loops/queries and unnecessary heavy computation on critical paths.
+- Use efficient data access patterns and pagination where relevant.
+
+## Reliability
+- Add timeout/retry/circuit-breaker strategy for unstable dependencies.
+- Ensure idempotency for retry-prone write operations when applicable.
+- Ensure graceful degradation and clear fallback behavior.
+
+## Operability
+- Emit useful logs/metrics/traces for incident triage.
+- No major feature closure without runtime verification plan.
+- Regressions in critical performance KPIs block gate signoff unless waived.

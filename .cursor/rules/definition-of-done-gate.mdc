@@ -1,0 +1,37 @@
+---
+description: Enforce strict Definition of Done so no delivery is marked DONE unless scope, quality, security, and signoff gates are fully closed
+alwaysApply: true
+---
+
+# Definition of Done Gate Rule
+
+Use this as a hard governance gate for all projects and modules.
+
+## DONE is allowed only when all conditions are true
+1) Scope closure:
+- 100% committed in-scope work items are `DONE`.
+- No remaining `TODO`, `IN_PROGRESS`, `BLOCKED`, `READY_FOR_*` in committed scope.
+
+2) Quality and security closure:
+- Required build/test checks pass.
+- Security gate passes with no unresolved critical/high issues (or approved waiver record).
+- Business correctness, performance, and UI/UX acceptance evidence are attached.
+
+3) Delivery governance closure:
+- Required QA and QC gate decision is `GO` (or `GO WITH CONDITIONS` with all conditions closed).
+- Required PM/SA/BA/QA/QC signoffs are recorded.
+
+4) Evidence closure:
+- Evidence paths are present and reproducible.
+- Traceability is complete from requirement -> implementation -> test.
+
+## Forced status mapping
+- If any condition above is false, status must be `NOT DONE` (or `PARTIAL/IN DELIVERY`).
+- Claiming `DONE` while conditions are open is non-compliant.
+
+## Exception policy
+- Any temporary exception requires:
+  - explicit owner
+  - rationale
+  - expiry date
+  - mitigation and follow-up task

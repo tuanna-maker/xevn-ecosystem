@@ -4,7 +4,9 @@ import { cn } from '../lib/utils';
 export interface StatCardProps {
   title: string;
   value: string | number;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
+  subtitle?: string;
+  color?: string;
   trend?: {
     value: number;
     isPositive: boolean;
@@ -16,6 +18,8 @@ export const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
   icon,
+  subtitle,
+  color,
   trend,
   className,
 }) => {
@@ -27,7 +31,11 @@ export const StatCard: React.FC<StatCardProps> = ({
       )}
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="p-3 bg-xevn-primary/10 rounded-lg">{icon}</div>
+        {icon ? (
+          <div className="p-3 bg-xevn-primary/10 rounded-lg">{icon}</div>
+        ) : (
+          <div />
+        )}
         {trend && (
           <div
             className={cn(
@@ -41,7 +49,8 @@ export const StatCard: React.FC<StatCardProps> = ({
       </div>
       <div className="space-y-1">
         <p className="text-sm text-xevn-textSecondary">{title}</p>
-        <p className="text-3xl font-bold text-xevn-text">{value}</p>
+        <p className={cn('text-3xl font-bold text-xevn-text', color)}>{value}</p>
+        {subtitle ? <p className="text-xs text-xevn-textSecondary">{subtitle}</p> : null}
       </div>
     </div>
   );

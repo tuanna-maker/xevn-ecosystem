@@ -1,0 +1,28 @@
+---
+description: Enforce deterministic cross-role handoff packets for PM-SA-BA-Dev-QA-QC collaboration
+alwaysApply: true
+---
+
+# Handoff Packet Rule
+
+All cross-role handoffs must use a complete packet. Missing fields means INVALID-HANDOFF.
+
+Required fields:
+- `work_item_id`
+- `from_role`
+- `to_role`
+- `entry_criteria`
+- `exit_criteria`
+- `evidence_path`
+- `needed_by`
+- `ack_status`
+
+Execution policy:
+- PM dispatch must include owner, deadline window, and next reviewer.
+- Dev-BE Lead handoff to FE/Mobile must include API contract notes and version impact.
+- QA handoff to QC must include defect status and test evidence.
+- QC Go/No-Go must reference concrete evidence paths.
+
+Acceptance policy:
+- No DONE status without evidence and traceability mapping.
+- Any ambiguity must be escalated to PM and logged to the project decisions log.
