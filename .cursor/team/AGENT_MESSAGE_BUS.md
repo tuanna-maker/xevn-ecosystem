@@ -3810,3 +3810,357 @@ Migrate from legacy mock-driven modules to a production-ready multi-tenant basel
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
+## 2026-05-11T10:50:41.870Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git add .cursor/team/AGENT_MESSAGE_BUS.md .cursor/team/PM_INCIDENT_QUEUE.json; if (!$?) { exit 1 }; $msg = @'
+chore: update runtime team bus before main merge
+
+Persist latest auto-generated PM hook events so merged main branch matches current orchestration state.
+'@; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m $msg; if (!$?) { exit 1 }; git checkout main; if (!$?) { exit 1 }; git pull --ff-only origin main; if (!$?) { exit 1 }; git merge --no-ff feature/ecosystem-wave-full-cutover -m "merge: integrate ecosystem-wave-full-cutover into main"; if (!$?) { exit 1 }; git push origin main; if (!$?) { exit 1 }; git status --short --branch`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-12T15:44:43.106Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem" && pnpm install && pnpm run build:hrm-mobile && pnpm run test:hrm-mobile`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-12T15:46:50.454Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm install; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-12T15:47:36.520Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm run test:hrm-mobile`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-12T15:52:33.282Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\mobile\hrm-mobile"; pnpm remove expo-network; pnpm add "expo-network@~6.1.0"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-12T16:01:13.900Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-12T16:15:02.767Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:06:29.332Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api" && pnpm add @nestjs/websockets@^11.0.1 @nestjs/platform-socket.io@^11.0.1 socket.io@^4.8.1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:06:29.333Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\mobile\hrm-mobile" && pnpm add socket.io-client@^4.8.1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:11:59.324Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api"; pnpm test -- --passWithNoTests 2>&1 | Select-Object -Last 40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:12:09.358Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm run test:hrm-mobile 2>&1 | Select-Object -Last 35`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:22:27.182Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api"; pnpm add firebase-admin@^13.0.0`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:23:11.827Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api"; pnpm test 2>&1 | Select-Object -Last 25`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:23:57.592Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\mobile\hrm-mobile"; pnpm add expo-notifications@~0.29.14 expo-constants@~16.0.2`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:25:31.632Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:40:34.017Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; node --env-file=./apps/api/hrm-api/.env.example ./scripts/migrate-apply.mjs hrm 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:40:40.072Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; node --env-file=./deploy/dev-server/.env.example ./scripts/migrate-apply.mjs hrm 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:46:37.217Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm add -D dotenv@^16.4.5 -w`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:47:56.176Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; node ./scripts/migrate-apply.mjs hrm 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:56:00.053Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`node --check "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\scripts\migrate-env-loader.mjs"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:56:55.753Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`node --check "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\scripts\migrate-apply.mjs" && node --check "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\scripts\migrate-status.mjs"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T02:57:10.618Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; $env:DATABASE_URL_HRM=''; $env:DB_HOST=''; node ./scripts/migrate-apply.mjs hrm 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:09:11.903Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; Remove-Item env:\XEVN_DB_PASSWORD -ErrorAction SilentlyContinue; node ./scripts/migrate-apply.mjs hrm 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:16:18.965Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm install; pnpm --filter hrm-api exec nest build; pnpm --filter xbos-api exec nest build`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:20:43.044Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm run migrate:hrm:apply:with-deploy-env; pnpm run migrate:xbos:apply:with-deploy-env`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:32:26.671Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; pnpm --filter hrm-api exec nest build 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:39:22.456Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\mobile\hrm-mobile" && npx tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:39:22.471Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\web\hrm" && npx tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T03:53:30.730Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api"; npx jest src/operations/operations.service.spec.ts --no-cache 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T04:01:09.674Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api"; npx jest src/settings-catalogs/settings-catalogs.service.spec.ts --no-cache 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:15:12.135Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`ssh -V 2>&1; python --version 2>&1; python3 --version 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:15:38.023Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Get-Content "c:\Users\ADMIN\OneDrive\TĂ i liá»‡u\Vibe Coding\projects\xevn-ecosystem\deploy\dev-server\.env"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:16:24.757Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "C:\Users\ADMIN\OneDrive\T`u00e0i li`u1ec7u\Vibe Coding\projects\xevn-ecosystem"; Get-Content "deploy\dev-server\.env" -ErrorAction Stop`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:17:07.177Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`echo y | plink -ssh root@14.225.217.232 -pw "1T4dTddMh0tbzFwBCIlu" -batch "echo CONNECTED && uname -a && docker --version 2>&1 && docker compose version 2>&1 && ls /opt/ 2>&1"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:18:15.762Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`plink -ssh root@14.225.217.232 -pw "1T4dTddMh0tbzFwBCIlu" -hostkey "SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo" "cd /opt/xevn-ecosystem && git pull origin main 2>&1"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:19:14.894Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent (Get-Location).Path))
+Set-Location $root
+git add -A
+git status --short`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:19:27.433Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent (Get-Location).Path))
+Set-Location $root
+git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "feat: hrm-api with leave/notifications/realtime + mobile app + deploy workflow"
+git push origin main 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:19:37.906Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git -C "C:\Users\ADMIN\OneDrive\Ta`u{00e0}i li`u{1ec7}u\Vibe Coding\projects\xevn-ecosystem" rev-parse HEAD 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:19:56.192Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Get-Location; cd ..; cd ..; cd ..; Get-Location; git status --short 2>&1 | head -3`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:21:01.672Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git add -A && git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "feat: hrm-api notifications/realtime/leave-requests + mobile app + deploy workflow" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:21:15.850Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git add -A; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "feat: hrm-api notifications/realtime/leave-requests + mobile app + deploy workflow" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:21:35.330Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cat scripts/security-scan-staged.mjs 2>&1 | Select-String "Generic|pattern|regex|secret" -Context 2`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:22:14.334Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Get-Content scripts/security-scan-staged.mjs`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO

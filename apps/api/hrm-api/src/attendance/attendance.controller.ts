@@ -4,6 +4,10 @@ import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { AttendanceService } from './attendance.service';
+import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
+import { DecideLeaveRequestDto } from './dto/decide-leave-request.dto';
+import { ListLeaveRequestsQueryDto } from './dto/list-leave-requests.query.dto';
+import { LeaveRequestsService } from './leave-requests.service';
 import { CreateAttendanceUpdateRequestDto } from './dto/create-attendance-update-request.dto';
 import { DecideAttendanceUpdateRequestDto } from './dto/decide-attendance-update-request.dto';
 import { CreateAttendanceRecordDto } from './dto/create-attendance-record.dto';
@@ -14,7 +18,10 @@ import { UpdateAttendanceStatusDto } from './dto/update-attendance-status.dto';
 
 @Controller('attendance')
 export class AttendanceController {
-  constructor(private readonly attendanceService: AttendanceService) {}
+  constructor(
+    private readonly attendanceService: AttendanceService,
+    private readonly leaveRequestsService: LeaveRequestsService,
+  ) {}
 
   private assertBusinessAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
@@ -135,5 +142,55 @@ export class AttendanceController {
     return this.attendanceService
       .deleteUpdateRequest(requestId)
       .then((data) => ok(data, 'HRM-ATT-REQ-205', 'Attendance update request deleted'));
+  }
+
+  @Post('leave-requests')
+  createLeaveRequest(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Body() body: CreateLeaveRequestDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    return this.leaveRequestsService
+      .createLeaveRequest(body)
+      .then((data) => ok(data, 'HRM-LEAVE-201', 'Leave request created'));
+  }
+
+  @Get('leave-requests')
+  listLeaveRequests(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Query() query: ListLeaveRequestsQueryDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    return this.leaveRequestsService
+      .listLeaveRequests(query)
+      .then((data) => ok(data, 'HRM-LEAVE-200', 'Leave requests listed'));
+  }
+
+  @Post('leave-requests/:requestId/approve')
+  approveLeaveRequest(
+    @Param('requestId') requestId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Body() body: DecideLeaveRequestDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    return this.leaveRequestsService
+      .approveLeaveRequest(requestId, body)
+      .then((data) => ok(data, 'HRM-LEAVE-203', 'Leave request approved'));
+  }
+
+  @Post('leave-requests/:requestId/reject')
+  rejectLeaveRequest(
+    @Param('requestId') requestId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Body() body: DecideLeaveRequestDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    return this.leaveRequestsService
+      .rejectLeaveRequest(requestId, body)
+      .then((data) => ok(data, 'HRM-LEAVE-204', 'Leave request rejected'));
   }
 }

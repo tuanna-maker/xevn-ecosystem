@@ -1,29 +1,60 @@
 import pg from 'pg';
+import { loadMigrateEnv, explainEnvFailure, effectiveDatabaseUrl } from './migrate-env-loader.mjs';
 
 const { Client } = pg;
-
-const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD'];
-for (const key of required) {
-  if (!process.env[key]) {
-    throw new Error(`Missing required env: ${key}`);
-  }
-}
 
 const target = process.argv[2];
 if (!target || (target !== 'hrm' && target !== 'xbos')) {
   throw new Error("Usage: node ./scripts/migrate-status.mjs <hrm|xbos>");
 }
 
-const database = target === 'hrm' ? 'xevn_hrm' : 'xevn_xbos';
+const { loaded: loadedEnvFiles } = loadMigrateEnv(target);
 
-const client = new Client({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database,
-  ssl: false,
-});
+const database = target === 'hrm' ? 'xevn_hrm' : 'xevn_xbos';
+const databaseUrl = effectiveDatabaseUrl(
+  target === 'hrm' ? process.env.DATABASE_URL_HRM : process.env.DATABASE_URL_XBOS,
+);
+
+const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD'];
+if (!databaseUrl) {
+  const missing = required.filter((k) => !process.env[k]);
+  if (missing.length > 0) {
+    const urlKey = target === 'hrm' ? 'DATABASE_URL_HRM' : 'DATABASE_URL_XBOS';
+    const example =
+      target === 'hrm' ? 'apps/api/hrm-api/.env.example' : 'apps/api/xbos-api/.env.example';
+    const detail = explainEnvFailure(target, { loaded: loadedEnvFiles });
+    throw new Error(
+      [
+        `Missing DB config: need ${urlKey} or all of ${required.join(', ')}. Thiếu: ${missing.join(', ')}.`,
+        detail.hint,
+        `Tham chiếu: ${example}`,
+        `Đã nạp .env: ${detail.loaded_env_files.length ? detail.loaded_env_files.join('; ') : '(không có file nào tồn tại)'}`,
+        `Đã kiểm tra: ${JSON.stringify(detail.checked_files)}`,
+        `cwd=${detail.cwd} repoRoot=${detail.repoRoot} ${detail.node_version}`,
+      ].join(' '),
+    );
+  }
+}
+
+if (
+  !databaseUrl &&
+  (!process.env.DB_PASSWORD?.trim() || process.env.DB_PASSWORD.trim() === 'replace_me')
+) {
+  throw new Error(
+    'DB_PASSWORD vẫn là replace_me hoặc trống. Thêm mật khẩu thật vào deploy/dev-server/.env.local (gitignore), hoặc biến môi trường XEVN_DB_PASSWORD, hoặc sửa deploy/dev-server/.env.',
+  );
+}
+
+const client = databaseUrl
+  ? new Client({ connectionString: databaseUrl, ssl: false })
+  : new Client({
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database,
+      ssl: false,
+    });
 
 async function tableExists(name) {
   const res = await client.query(
@@ -66,7 +97,7 @@ async function main() {
         {
           success: true,
           target,
-          database,
+          database: databaseUrl ? `(connection string → ${database})` : database,
           schema_migrations_exists: schemaMigrationsExists,
           applied_migrations: appliedMigrations,
           public_tables: tables,

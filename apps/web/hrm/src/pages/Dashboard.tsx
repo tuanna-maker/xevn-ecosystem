@@ -64,6 +64,7 @@ import {
 } from 'recharts';
 import { toast } from 'sonner';
 import { ExpiringContractsAlert } from '@/components/dashboard/ExpiringContractsAlert';
+import { HrmApiReminders } from '@/components/dashboard/HrmApiReminders';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -825,6 +826,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
+
+              <HrmApiReminders />
 
               {/* Newest Employees */}
               <div className="space-y-2">

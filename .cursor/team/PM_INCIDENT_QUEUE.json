@@ -1402,5 +1402,383 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1778496641877",
+    "detectedAt": "2026-05-11T10:50:41.870Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add .cursor/team/AGENT_MESSAGE_BUS.md .cursor/team/PM_INCIDENT_QUEUE.json; if (!$?) { exit 1 }; $msg = @'\nchore: update runtime team bus before main merge\n\nPersist latest auto-generated PM hook events so merged main branch matches current orchestration state.\n'@; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg; if (!$?) { exit 1 }; git checkout main; if (!$?) { exit 1 }; git pull --ff-only origin main; if (!$?) { exit 1 }; git merge --no-ff feature/ecosystem-wave-full-cutover -m \"merge: integrate ecosystem-wave-full-cutover into main\"; if (!$?) { exit 1 }; git push origin main; if (!$?) { exit 1 }; git status --short --branch",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778600683108",
+    "detectedAt": "2026-05-12T15:44:43.106Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\" && pnpm install && pnpm run build:hrm-mobile && pnpm run test:hrm-mobile",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778600810457",
+    "detectedAt": "2026-05-12T15:46:50.454Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm install; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778600856524",
+    "detectedAt": "2026-05-12T15:47:36.520Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm run test:hrm-mobile",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778601153285",
+    "detectedAt": "2026-05-12T15:52:33.282Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\"; pnpm remove expo-network; pnpm add \"expo-network@~6.1.0\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778601673902",
+    "detectedAt": "2026-05-12T16:01:13.900Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778602502770",
+    "detectedAt": "2026-05-12T16:15:02.767Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778637989337",
+    "detectedAt": "2026-05-13T02:06:29.333Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\" && pnpm add socket.io-client@^4.8.1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778638319328",
+    "detectedAt": "2026-05-13T02:11:59.324Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm test -- --passWithNoTests 2>&1 | Select-Object -Last 40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778638329362",
+    "detectedAt": "2026-05-13T02:12:09.358Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm run test:hrm-mobile 2>&1 | Select-Object -Last 35",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778638947185",
+    "detectedAt": "2026-05-13T02:22:27.182Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm add firebase-admin@^13.0.0",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778638991831",
+    "detectedAt": "2026-05-13T02:23:11.827Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; pnpm test 2>&1 | Select-Object -Last 25",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778639037598",
+    "detectedAt": "2026-05-13T02:23:57.592Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\"; pnpm add expo-notifications@~0.29.14 expo-constants@~16.0.2",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778639131636",
+    "detectedAt": "2026-05-13T02:25:31.632Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm run build:hrm-mobile; pnpm run test:hrm-mobile",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778640034021",
+    "detectedAt": "2026-05-13T02:40:34.017Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; node --env-file=./apps/api/hrm-api/.env.example ./scripts/migrate-apply.mjs hrm 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778640040075",
+    "detectedAt": "2026-05-13T02:40:40.072Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; node --env-file=./deploy/dev-server/.env.example ./scripts/migrate-apply.mjs hrm 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778640397221",
+    "detectedAt": "2026-05-13T02:46:37.217Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm add -D dotenv@^16.4.5 -w",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778640476179",
+    "detectedAt": "2026-05-13T02:47:56.176Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; node ./scripts/migrate-apply.mjs hrm 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778640960056",
+    "detectedAt": "2026-05-13T02:56:00.053Z",
+    "source": "hook:afterShellExecution",
+    "command": "node --check \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\scripts\\migrate-env-loader.mjs\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778641015756",
+    "detectedAt": "2026-05-13T02:56:55.753Z",
+    "source": "hook:afterShellExecution",
+    "command": "node --check \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\scripts\\migrate-apply.mjs\" && node --check \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\scripts\\migrate-status.mjs\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778641030621",
+    "detectedAt": "2026-05-13T02:57:10.618Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; $env:DATABASE_URL_HRM=''; $env:DB_HOST=''; node ./scripts/migrate-apply.mjs hrm 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778641751906",
+    "detectedAt": "2026-05-13T03:09:11.903Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; Remove-Item env:\\XEVN_DB_PASSWORD -ErrorAction SilentlyContinue; node ./scripts/migrate-apply.mjs hrm 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778642178968",
+    "detectedAt": "2026-05-13T03:16:18.965Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm install; pnpm --filter hrm-api exec nest build; pnpm --filter xbos-api exec nest build",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778642443047",
+    "detectedAt": "2026-05-13T03:20:43.044Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm run migrate:hrm:apply:with-deploy-env; pnpm run migrate:xbos:apply:with-deploy-env",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778643146675",
+    "detectedAt": "2026-05-13T03:32:26.671Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; pnpm --filter hrm-api exec nest build 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778643562461",
+    "detectedAt": "2026-05-13T03:39:22.456Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\" && npx tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778643562479",
+    "detectedAt": "2026-05-13T03:39:22.471Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\web\\hrm\" && npx tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778644410733",
+    "detectedAt": "2026-05-13T03:53:30.730Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; npx jest src/operations/operations.service.spec.ts --no-cache 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778644869677",
+    "detectedAt": "2026-05-13T04:01:09.674Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\api\\hrm-api\"; npx jest src/settings-catalogs/settings-catalogs.service.spec.ts --no-cache 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660112139",
+    "detectedAt": "2026-05-13T08:15:12.135Z",
+    "source": "hook:afterShellExecution",
+    "command": "ssh -V 2>&1; python --version 2>&1; python3 --version 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660138025",
+    "detectedAt": "2026-05-13T08:15:38.023Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"c:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\\deploy\\dev-server\\.env\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660184759",
+    "detectedAt": "2026-05-13T08:16:24.757Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"C:\\Users\\ADMIN\\OneDrive\\T`u00e0i li`u1ec7u\\Vibe Coding\\projects\\xevn-ecosystem\"; Get-Content \"deploy\\dev-server\\.env\" -ErrorAction Stop",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660227180",
+    "detectedAt": "2026-05-13T08:17:07.177Z",
+    "source": "hook:afterShellExecution",
+    "command": "echo y | plink -ssh root@14.225.217.232 -pw \"1T4dTddMh0tbzFwBCIlu\" -batch \"echo CONNECTED && uname -a && docker --version 2>&1 && docker compose version 2>&1 && ls /opt/ 2>&1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660295764",
+    "detectedAt": "2026-05-13T08:18:15.762Z",
+    "source": "hook:afterShellExecution",
+    "command": "plink -ssh root@14.225.217.232 -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\" \"cd /opt/xevn-ecosystem && git pull origin main 2>&1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660354897",
+    "detectedAt": "2026-05-13T08:19:14.894Z",
+    "source": "hook:afterShellExecution",
+    "command": "$root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent (Get-Location).Path))\nSet-Location $root\ngit add -A\ngit status --short",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660367435",
+    "detectedAt": "2026-05-13T08:19:27.433Z",
+    "source": "hook:afterShellExecution",
+    "command": "$root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent (Get-Location).Path))\nSet-Location $root\ngit commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m \"feat: hrm-api with leave/notifications/realtime + mobile app + deploy workflow\"\ngit push origin main 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660377908",
+    "detectedAt": "2026-05-13T08:19:37.906Z",
+    "source": "hook:afterShellExecution",
+    "command": "git -C \"C:\\Users\\ADMIN\\OneDrive\\Ta`u{00e0}i li`u{1ec7}u\\Vibe Coding\\projects\\xevn-ecosystem\" rev-parse HEAD 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660396195",
+    "detectedAt": "2026-05-13T08:19:56.192Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Location; cd ..; cd ..; cd ..; Get-Location; git status --short 2>&1 | head -3",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660461675",
+    "detectedAt": "2026-05-13T08:21:01.672Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add -A && git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m \"feat: hrm-api notifications/realtime/leave-requests + mobile app + deploy workflow\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660475853",
+    "detectedAt": "2026-05-13T08:21:15.850Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add -A; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m \"feat: hrm-api notifications/realtime/leave-requests + mobile app + deploy workflow\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660495334",
+    "detectedAt": "2026-05-13T08:21:35.330Z",
+    "source": "hook:afterShellExecution",
+    "command": "cat scripts/security-scan-staged.mjs 2>&1 | Select-String \"Generic|pattern|regex|secret\" -Context 2",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660534337",
+    "detectedAt": "2026-05-13T08:22:14.334Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content scripts/security-scan-staged.mjs",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]

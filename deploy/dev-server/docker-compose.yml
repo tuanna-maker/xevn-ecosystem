@@ -7,7 +7,7 @@ services:
       - ../..:/app
     command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/web-portal dev --host 0.0.0.0 --port 5175"
     ports:
-      - "8088:5175"
+      - "${WEB_PORTAL_PORT:-8088}:5175"
     restart: unless-stopped
 
   hrm-web:
@@ -18,7 +18,7 @@ services:
       - ../..:/app
     command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/hrm dev --host 0.0.0.0 --port 8080"
     ports:
-      - "8080:8080"
+      - "${HRM_WEB_PORT:-8080}:8080"
     restart: unless-stopped
 
   xbos-core:
@@ -29,6 +29,21 @@ services:
       - ../..:/app
     command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/x-bos-core dev --host 0.0.0.0 --port 5173"
     ports:
-      - "5173:5173"
+      - "${XBOS_CORE_PORT:-5173}:5173"
+    restart: unless-stopped
+
+  # HRM API pilot — env chung deploy/dev-server/.env rồi override apps/api/hrm-api/.env
+  hrm-api:
+    image: node:22-alpine
+    container_name: xevn-hrm-api-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+    env_file:
+      - ../../deploy/dev-server/.env
+      - ../../apps/api/hrm-api/.env
+    ports:
+      - "${HRM_API_PORT:-3001}:3001"
+    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm run dev:hrm-api"
     restart: unless-stopped
 

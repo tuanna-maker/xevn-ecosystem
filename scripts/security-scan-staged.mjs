@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+﻿import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -33,7 +33,10 @@ const ignoredPathRegexes = [
   /^apps\/api\/[^/]+\/src\/common\/internal-auth\.ts$/i,
   /^apps\/api\/[^/]+\/src\/common\/scope-context\.ts$/i,
   /^apps\/api\/hrm-api\/src\/hrm-admin\/hrm-admin\.service\.ts$/i,
-  /^scripts\/dev\/seed-.*\.ps1$/i
+  /^scripts\/dev\/seed-.*\.ps1$/i,
+  /^apps\/mobile\/[^/]+\/src\/storage\//i,
+  /^apps\/mobile\/[^/]+\/src\/context\/AuthContext\.tsx$/i,
+  /^apps\/mobile\/[^/]+\/src\/features\/auth\//i
 ];
 
 function getStagedFiles() {

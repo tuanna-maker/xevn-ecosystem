@@ -2,10 +2,9 @@
 
 This folder is reserved for future XeVN mobile applications.
 
-## Planned Structure
+## Apps
 
-- `apps/mobile/hrm-mobile` for HRM mobile client
-- `apps/mobile/xbos-mobile` for XBOS mobile client
+- **`hrm-mobile`** — HRM Mobile (Expo). Xem `hrm-mobile/README.md` và `docs/hrm/PLAN_HRM_MOBILE_IMPLEMENTATION.md`.
 
 ## Notes
 

@@ -12,7 +12,11 @@ describe('AttendanceService', () => {
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
     db.query.mockResolvedValue({ rows: [] } as never);
-    service = new AttendanceService(db);
+    const fanout = {
+      onUpdateRequestCreated: jest.fn().mockResolvedValue(undefined),
+      onUpdateRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
+    service = new AttendanceService(db, fanout as never);
   });
 
   it('throws deterministic create error when insert fails', async () => {

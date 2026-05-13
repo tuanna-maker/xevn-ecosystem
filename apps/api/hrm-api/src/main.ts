@@ -1,5 +1,7 @@
+import './load-env';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { AppModule } from './app.module';
 import { GlobalHttpExceptionFilter } from './common/http-exception.filter';
 import { randomUUID } from 'node:crypto';
@@ -11,6 +13,7 @@ const requestBuckets = new Map<string, { count: number; windowStart: number }>()
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useWebSocketAdapter(new IoAdapter(app));
   app.enableCors({
     origin: true,
     credentials: true,

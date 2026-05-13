@@ -911,6 +911,91 @@ export async function deleteAttendanceUpdateRequest(requestId: string) {
   });
 }
 
+export type HrmLeaveRequest = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  employee_code: string | null;
+  employee_name: string | null;
+  leave_type: string;
+  start_date: string;
+  end_date: string;
+  reason: string | null;
+  status: string;
+  requested_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  department: string | null;
+  position: string | null;
+  total_days: string;
+  handover_to: string | null;
+  handover_tasks: string | null;
+  approver_employee_id: string | null;
+  rejected_reason: string | null;
+};
+
+export async function listLeaveRequests(params: { company_id: string; status?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", params.company_id);
+  if (params.status) search.set("status", params.status);
+  return requestHrm<{ data: HrmLeaveRequest[] }>(
+    `/api/hrm/attendance/leave-requests?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createLeaveRequest(payload: Record<string, unknown>) {
+  return requestHrm<HrmLeaveRequest>("/api/hrm/attendance/leave-requests", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function approveLeaveRequest(
+  requestId: string,
+  payload: { reviewer_name: string; reviewer_employee_id?: string },
+) {
+  return requestHrm<HrmLeaveRequest>(`/api/hrm/attendance/leave-requests/${requestId}/approve`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function rejectLeaveRequest(
+  requestId: string,
+  payload: { reviewer_name: string; reviewer_employee_id?: string; rejected_reason?: string },
+) {
+  return requestHrm<HrmLeaveRequest>(`/api/hrm/attendance/leave-requests/${requestId}/reject`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export type HrmInboxNotification = {
+  id: string;
+  company_id: string;
+  event_type: string;
+  payload: unknown;
+  recipient_employee_id: string | null;
+  read_at: string | null;
+  created_at: string;
+};
+
+export async function listHrmInboxNotifications(params: {
+  company_id: string;
+  employee_id: string;
+  limit?: number;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", params.company_id);
+  search.set("employee_id", params.employee_id);
+  if (params.limit != null) search.set("limit", String(params.limit));
+  return requestHrm<{ total: number; data: HrmInboxNotification[] }>(
+    `/api/hrm/notifications/inbox?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
 export type HrmServiceRequest = {
   id: string;
   company_id: string;

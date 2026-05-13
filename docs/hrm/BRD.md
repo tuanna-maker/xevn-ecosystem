@@ -5,10 +5,16 @@
 | Mục | Giá trị |
 |---|---|
 | Tên tài liệu | BRD Phân hệ HRM |
-| Phiên bản | 2.2 |
+| Phiên bản | 2.3 |
 | Trạng thái | Chính thức |
-| Ngày hiệu lực | 2026-05-04 |
+| Ngày hiệu lực | 2026-05-12 |
 | Phạm vi | Phân hệ HRM trong hệ sinh thái XeVN |
+
+## 1.1 Quy tắc giao hàng phần mềm (bắt buộc)
+
+1. **Cập nhật tài liệu trước, rồi mới triển khai code** trong cùng nhánh/PR có liên quan: BRD → SRS → TechSpec (và bản mobile tương ứng nếu chạm mobile). Code **phải bám** đặc tả đã ghi; nếu phát hiện lệch thực tế, **sửa tài liệu trước** rồi mới đổi hành vi phần mềm (trừ hotfix an ninh có ghi rõ ngoại lệ trong PR).
+2. **Không hardcode tenant** (hay mã định danh tenant “sản phẩm”) trong logic nghiệp vụ: phạm vi runtime lấy từ JWT / header `x-tenant-id` theo `docs/ecosystem/TECHSPEC.md`. Tenant **master** hiện triển khai đơn tenant chỉ dùng cho **bootstrap** (DDL mặc định catalog, seed khi thiếu header) qua biến môi trường `MASTER_TENANT_ID` / `DEFAULT_TENANT_ID` — xem `docs/hrm/TECHSPEC.md`.
+3. Các luồng **gửi đơn → người có thẩm quyền nhận tin → quyết định → người gửi nhận phản hồi** trên Postgres (`hrm-api`) dùng **một pipeline thông báo** (realtime + inbox DB + webhook + push tuỳ cấu hình); mở rộng luồng mới phải tái sử dụng pipeline đó (đã mô tả kỹ thuật trong TechSpec).
 
 ## 2. Tóm Tắt Điều Hành
 
@@ -83,6 +89,10 @@ Mọi nghiệp vụ HRM phải tuân thủ bộ quy tắc **chung toàn hệ sin
 | UC-HRM-06 | Đồng bộ dữ liệu dùng chung từ XBOS | Dịch vụ HRM |
 | UC-HRM-07 | Lấy dữ liệu dùng chung đã đồng bộ theo khóa | FE/Dịch vụ |
 | UC-HRM-08 | Liệt kê dữ liệu dùng chung đã đồng bộ | FE/Dịch vụ |
+| UC-HRM-09 | Vòng đời đơn chỉnh sửa chấm công (Postgres / HRM API) + thông báo | Nhân viên / Quản lý |
+| UC-HRM-10 | Vòng đời đơn nghỉ phép (Postgres / HRM API) + thông báo | Nhân viên / Quản lý |
+| UC-HRM-11 | Vòng đời yêu cầu dịch vụ (operations) + thông báo | Nhân viên / Quản lý |
+| UC-HRM-12 | Đọc hộp thư thông báo nghiệp vụ (`hrm_inbox_notifications`) | Người dùng trong phạm vi công ty |
 
 ## 8. Luồng Nghiệp Vụ Tổng Quan
 
@@ -101,6 +111,9 @@ Mọi nghiệp vụ HRM phải tuân thủ bộ quy tắc **chung toàn hệ sin
 | BR-HRM-03 | Nghiệp vụ cần dữ liệu dùng chung | Lấy từ XBOS thông qua đồng bộ | Dữ liệu nhất quán liên phân hệ |
 | BR-HRM-04 | Mời nhân viên hàng loạt có lỗi từng bản ghi | Xử lý theo từng bản ghi | Không dừng toàn bộ lô |
 | BR-HRM-05 | Lỗi nghiệp vụ/xác thực | Trả mã lỗi chuẩn | Giao diện xử lý nhất quán |
+| BR-HRM-06 | Đơn nghiệp vụ được tạo trên HRM API (chấm công chỉnh sửa, nghỉ phép, yêu cầu dịch vụ, …) | Sau khi ghi DB thành công, hệ thống phát sự kiện theo pipeline chuẩn | Người có quyền trong phạm vi công ty nhận được tín hiệu (inbox / realtime / push nếu bật) |
+| BR-HRM-07 | Đơn được duyệt hoặc từ chối | Cập nhật trạng thái + phát sự kiện kết thúc | Người gửi (và phạm vi công ty) nhận thông báo lưu DB tối thiểu qua inbox |
+| BR-HRM-08 | Triển khai đơn tenant master | Cấu hình tenant/company bootstrap qua env, không gắn cứng trong code | Chuẩn bị mở rộng đa tenant theo header/JWT từng request |
 
 ## 10. Yêu Cầu Dữ Liệu Mức Nghiệp Vụ
 
@@ -128,6 +141,13 @@ Mọi nghiệp vụ HRM phải tuân thủ bộ quy tắc **chung toàn hệ sin
 
 ## 13. Tiêu Chí Chấp Nhận
 
-- Tất cả use case UC-HRM-01..08 được đặc tả và kiểm thử đầy đủ.
+- Tất cả use case UC-HRM-01..08 và bổ sung pilot UC-HRM-09..12 (SRS) được đặc tả và kiểm thử theo phạm vi triển khai.
+- Quy tắc mục **1.1** được tuân thủ trên mọi PR có thay đổi hành vi.
 - Luồng nghiệp vụ phản ánh đúng vai trò HRM trong hệ sinh thái.
 - Dữ liệu dùng chung được sử dụng nhất quán, không còn dùng thuật ngữ pha tạp.
+
+## 14. Tài Liệu Kèm Theo — Ứng Dụng Di Động HRM
+
+- BRD mobile: `docs/hrm/BRD_MOBILE.md`
+- SRS mobile: `docs/hrm/SRS_MOBILE.md`
+- TechSpec mobile: `docs/hrm/TECHSPEC_MOBILE.md`

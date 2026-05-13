@@ -75,9 +75,11 @@ Mọi app trong monorepo có đọc/ghi dữ liệu nghiệp vụ theo tenant: A
 - `docs/ecosystem/BRD.md`
 - `docs/ecosystem/SRS.md`
 
-## 9. Chuẩn kỹ thuật multi-tenant mở rộng (xevn master tenant)
+## 9. Chuẩn kỹ thuật multi-tenant mở rộng (tenant master qua cấu hình)
 
-- `MASTER_TENANT_ID` là cờ cấu hình nền (mặc định `xevn`) dùng cho bootstrap dữ liệu mặc định, **không** dùng để ép mọi runtime về một tenant duy nhất.
+- `MASTER_TENANT_ID` và/hoặc `DEFAULT_TENANT_ID` là **biến môi trường triển khai** dùng cho bootstrap (ví dụ DDL catalog snapshot, seed khi thiếu header), **không** thay thế phạm vi runtime: mọi API nghiệp vụ vẫn khóa theo JWT / `x-tenant-id` / `resolveScopeContext` từng request.
+- **Không** hardcode slug tenant sản phẩm trong logic ứng dụng; giá trị “một tenant hiện tại = tenant master” chỉ xuất hiện trong **cấu hình** (env, secret manager), không trong mã nguồn cố định.
+- `DEFAULT_COMPANY_ID` / `DEFAULT_COMPANY_HEADER_ID` (tuỳ triển khai) dùng cho bootstrap schema liên quan company scope — tách với header `x-company-id` runtime.
 - Runtime flow cấm mọi lệnh xóa dữ liệu tenant chéo kiểu `DELETE ... WHERE tenant_id <> ...`.
 - Mọi API nghiệp vụ phải truyền scope xuyên suốt `controller -> service -> db query` theo cặp `(tenant_id, company_id)`.
 - Cleanup tenant chéo (nếu cần vận hành) chỉ cho phép qua script/endpoint admin có bảo vệ tường minh (flag + auth nội bộ).

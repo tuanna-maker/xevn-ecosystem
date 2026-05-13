@@ -12,7 +12,10 @@ describe('OperationsService', () => {
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
     db.query.mockResolvedValue({ rows: [] } as never);
-    service = new OperationsService(db);
+    service = new OperationsService(db, {
+      onServiceRequestCreated: jest.fn().mockResolvedValue(undefined),
+      onServiceRequestDecided: jest.fn().mockResolvedValue(undefined),
+    } as never);
   });
 
   it('throws deterministic not found when updating missing task', async () => {

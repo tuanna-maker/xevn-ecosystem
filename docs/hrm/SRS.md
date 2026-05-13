@@ -4,14 +4,16 @@
 
 Đặc tả yêu cầu phần mềm cho HRM theo mức triển khai, bảo đảm:
 
-- đồng nhất hoàn toàn với BRD HRM 2.2,
+- đồng nhất hoàn toàn với BRD HRM **2.3**,
 - phản ánh thực tế HRM là một phân hệ nghiệp vụ trong hệ sinh thái,
 - sử dụng thuật ngữ Việt hóa đầy đủ,
 - đặc tả rõ nhánh điều kiện if/else, kiểm tra hợp lệ, thành công/thất bại, mã lỗi.
 
 ### 1.1 Tham chiếu bắt buộc — phạm vi dữ liệu toàn hệ
 
-Mọi use case HRM có truy cập dữ liệu theo tenant phải **bổ sung** hành vi từ `UC-ECO-SCOPE-01` và `UC-ECO-SCOPE-02` trong `docs/ecosystem/SRS.md` (và quy tắc nghiệp vụ `docs/ecosystem/BRD.md`). Không lặp lại toàn văn; khi bổ sung phân hệ khác trong hệ sinh thái, chỉ cần tham chiếu cùng bộ tài liệu ecosystem.
+### 1.0 Quy tắc giao hàng (bắt buộc)
+
+SRS là **nguồn đặc tả** cho kiểm thử và triển khai: mọi thay đổi hành vi API/UI phải **cập nhật SRS (và BRD/TechSpec liên quan) trước hoặc cùng commit** với code; không code “trước rồi mới bổ sung tài liệu sau” ngoại trừ hotfix có ghi rõ trong PR.
 
 ## 2. Danh Sách Use Case Chuẩn
 
@@ -25,6 +27,10 @@ Mọi use case HRM có truy cập dữ liệu theo tenant phải **bổ sung** h
 | UC-HRM-06 | Đồng bộ dữ liệu dùng chung từ XBOS | `POST /api/hrm/catalog-sync/pull` |
 | UC-HRM-07 | Lấy dữ liệu dùng chung theo khóa | `GET /api/hrm/catalog-sync/catalog/:catalogKey?target=...` |
 | UC-HRM-08 | Liệt kê dữ liệu dùng chung theo phân hệ đích | `GET /api/hrm/catalog-sync/catalogs?target=...` |
+| UC-HRM-09 | Vòng đời đơn chỉnh sửa chấm công + thông báo | `POST/GET/PATCH/DELETE /api/hrm/attendance/update-requests...`; sau ghi DB: fanout `attendance_update_request.*` |
+| UC-HRM-10 | Vòng đời đơn nghỉ phép + thông báo | `POST/GET /api/hrm/attendance/leave-requests`, `POST .../:id/approve|reject`; fanout `leave_request.*` |
+| UC-HRM-11 | Vòng đời yêu cầu dịch vụ + thông báo | `POST|GET|... /api/hrm/operations/service-requests...`; fanout `service_request.*` |
+| UC-HRM-12 | Đọc hộp thư thông báo | `GET /api/hrm/notifications/inbox?company_id=&employee_id=`; `PATCH .../inbox/:id/read` |
 
 ## 3. Luồng Nghiệp Vụ Tổng Quát (Sequence)
 
@@ -106,6 +112,27 @@ sequenceDiagram
 - If phân hệ đích không hợp lệ -> `HRM-ERR-TARGET-INVALID`.
 - Else -> trả danh sách theo điều kiện lọc.
 
+### UC-HRM-09 — Vòng đời đơn chỉnh sửa chấm công + thông báo
+
+- If thiếu quyền nghiệp vụ hoặc sai `company_id` UUID -> `HRM-ERR-FORBIDDEN` / `HRM-ERR-VALIDATION` theo nhánh.
+- Else khi tạo đơn thành công -> ghi DB + fanout sự kiện `attendance_update_request.created` (Socket.IO + `hrm_inbox_notifications` broadcast theo công ty + webhook + push theo cấu hình).
+- Else khi duyệt/từ chối -> cập nhật DB + fanout `attendance_update_request.approved|rejected` (một bản ghi broadcast + một bản ghi có `recipient_employee_id` = người gửi nếu có UUID nhân viên).
+
+### UC-HRM-10 — Vòng đời đơn nghỉ phép + thông báo
+
+- If validation DTO thất bại -> `HRM-ERR-VALIDATION`.
+- Else khi tạo đơn -> fanout `leave_request.created` theo cùng pipeline UC-HRM-09.
+- Else khi duyệt/từ chối -> fanout `leave_request.approved|rejected`; body quyết định dùng `reviewer_name` (và tuỳ chọn `reviewer_employee_id`).
+
+### UC-HRM-11 — Vòng đời yêu cầu dịch vụ + thông báo
+
+- If tạo/duyệt/từ chối hợp lệ -> cập nhật `service_requests` + fanout `service_request.created|approved|rejected` (cùng pipeline; nếu `employee_id` NULL thì không tạo bản ghi inbox đích danh cho nhân viên khi quyết định, vẫn có broadcast công ty).
+
+### UC-HRM-12 — Đọc hộp thư thông báo
+
+- If thiếu `company_id` / `employee_id` UUID hợp lệ -> `HRM-ERR-VALIDATION`.
+- Else -> trả danh sách `hrm_inbox_notifications` mà `recipient_employee_id IS NULL` (broadcast công ty) **hoặc** bằng `employee_id` người xem (tin cá nhân).
+
 ## 5. Ma Trận Kiểm Tra Hợp Lệ Dữ Liệu
 
 | Thành phần | Quy tắc | Mã lỗi |
@@ -166,6 +193,12 @@ sequenceDiagram
 
 ## 10. Tiêu Chí Chấp Nhận
 
-- Use case UC-HRM-01..08 có kịch bản thành công/thất bại rõ ràng.
+- Use case UC-HRM-01..12 có kịch bản thành công/thất bại rõ ràng theo phạm vi đã triển khai.
 - Mã lỗi và HTTP status đúng bảng chuẩn tại mục 6.
-- Nội dung use case đồng nhất với BRD HRM 2.2 và thuật ngữ Việt hóa.
+- Nội dung use case đồng nhất với BRD HRM **2.3** và thuật ngữ Việt hóa.
+
+## 11. Tài Liệu Kèm Theo — Ứng Dụng Di Động HRM
+
+- BRD mobile: `docs/hrm/BRD_MOBILE.md`
+- SRS mobile: `docs/hrm/SRS_MOBILE.md` (use case `UC-HRM-MOB-*`, mã lỗi client bổ sung)
+- TechSpec mobile: `docs/hrm/TECHSPEC_MOBILE.md`

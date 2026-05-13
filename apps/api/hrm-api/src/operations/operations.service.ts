@@ -2,6 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
+import type { ServiceRequestRealtimePayload } from '../realtime/hrm-realtime.service';
+import { AttendanceEventFanoutService } from '../notifications/attendance-event-fanout.service';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { DecideServiceRequestDto } from './dto/decide-service-request.dto';
@@ -53,7 +55,29 @@ type ServiceRequestRow = {
 
 @Injectable()
 export class OperationsService {
-  constructor(private readonly db: HrmDbService) {}
+  constructor(
+    private readonly db: HrmDbService,
+    private readonly fanout: AttendanceEventFanoutService,
+  ) {}
+
+  private toServiceRequestRealtimePayload(row: ServiceRequestRow): ServiceRequestRealtimePayload {
+    return {
+      id: row.id,
+      company_id: row.company_id,
+      employee_id: row.employee_id,
+      employee_name: row.employee_name,
+      employee_code: row.employee_code,
+      service_type: row.service_type,
+      request_date: row.request_date,
+      status: row.status,
+      notes: row.notes,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      approved_by: row.approved_by,
+      approved_at: row.approved_at,
+      rejected_reason: row.rejected_reason,
+    };
+  }
 
   private async ensureSchema() {
     await this.db.query(`
@@ -194,7 +218,12 @@ export class OperationsService {
         payload.supply_urgency?.trim() ?? null,
       ],
     );
-    return res.rows[0];
+    const row = res.rows[0];
+    if (!row) {
+      throw new ApiException('HRM-OPS-500', 'Failed to create service request', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    await this.fanout.onServiceRequestCreated(this.toServiceRequestRealtimePayload(row));
+    return row;
   }
 
   async listServiceRequests(query: ListServiceRequestsQueryDto) {
@@ -292,7 +321,9 @@ export class OperationsService {
     if (!res.rows[0]) {
       throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
     }
-    return res.rows[0];
+    const row = res.rows[0];
+    await this.fanout.onServiceRequestDecided('approved', this.toServiceRequestRealtimePayload(row));
+    return row;
   }
 
   async rejectServiceRequest(requestId: string, payload: DecideServiceRequestDto) {
@@ -313,7 +344,9 @@ export class OperationsService {
     if (!res.rows[0]) {
       throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
     }
-    return res.rows[0];
+    const row = res.rows[0];
+    await this.fanout.onServiceRequestDecided('rejected', this.toServiceRequestRealtimePayload(row));
+    return row;
   }
 
   async getSummary(companyId: string) {

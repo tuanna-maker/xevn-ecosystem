@@ -11,6 +11,7 @@ import { PayrollController } from './payroll/payroll.controller';
 import { PayrollService } from './payroll/payroll.service';
 import { AttendanceController } from './attendance/attendance.controller';
 import { AttendanceService } from './attendance/attendance.service';
+import { LeaveRequestsService } from './attendance/leave-requests.service';
 import { RecruitmentController } from './recruitment/recruitment.controller';
 import { RecruitmentService } from './recruitment/recruitment.service';
 import { ContractsInsuranceController } from './contracts-insurance/contracts-insurance.controller';
@@ -24,6 +25,13 @@ import { SettingsCatalogsController } from './settings-catalogs/settings-catalog
 import { SettingsCatalogsService } from './settings-catalogs/settings-catalogs.service';
 import { PerformanceController } from './performance/performance.controller';
 import { PerformanceService } from './performance/performance.service';
+import { HrmRealtimeGateway } from './realtime/hrm-realtime.gateway';
+import { HrmRealtimeService } from './realtime/hrm-realtime.service';
+import { AttendanceEventFanoutService } from './notifications/attendance-event-fanout.service';
+import { HrmInboxService } from './notifications/hrm-inbox.service';
+import { NotificationsController } from './notifications/notifications.controller';
+import { PushOutboundService } from './notifications/push-outbound.service';
+import { WebhookOutboundService } from './notifications/webhook-outbound.service';
 
 @Module({
   imports: [CoreModule, EmployeesModule, SpreadsheetModule],
@@ -39,13 +47,21 @@ import { PerformanceService } from './performance/performance.service';
     OperationsController,
     EmployeeMetadataController,
     PerformanceController,
+    NotificationsController,
   ],
   providers: [
+    HrmRealtimeService,
+    HrmRealtimeGateway,
+    HrmInboxService,
+    WebhookOutboundService,
+    PushOutboundService,
+    AttendanceEventFanoutService,
     HrmAdminService,
     CatalogSyncService,
     SettingsCatalogsService,
     PayrollService,
     AttendanceService,
+    LeaveRequestsService,
     RecruitmentService,
     ContractsInsuranceService,
     OperationsService,

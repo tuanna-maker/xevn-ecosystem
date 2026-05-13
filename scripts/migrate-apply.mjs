@@ -1,33 +1,66 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
+import fsp from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import pg from 'pg';
+import { loadMigrateEnv, explainEnvFailure, effectiveDatabaseUrl } from './migrate-env-loader.mjs';
 
 const { Client } = pg;
-
-const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD'];
-for (const key of required) {
-  if (!process.env[key]) {
-    throw new Error(`Missing required env: ${key}`);
-  }
-}
 
 const target = process.argv[2];
 if (!target || (target !== 'hrm' && target !== 'xbos')) {
   throw new Error("Usage: node ./scripts/migrate-apply.mjs <hrm|xbos>");
 }
 
-const database = target === 'hrm' ? 'xevn_hrm' : 'xevn_xbos';
-const migrationsDir = path.resolve(process.cwd(), 'migrations', target);
+const { loaded: loadedEnvFiles, repoRoot } = loadMigrateEnv(target);
 
-const client = new Client({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database,
-  ssl: false,
-});
+const database = target === 'hrm' ? 'xevn_hrm' : 'xevn_xbos';
+const databaseUrl = effectiveDatabaseUrl(
+  target === 'hrm' ? process.env.DATABASE_URL_HRM : process.env.DATABASE_URL_XBOS,
+);
+
+const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD'];
+if (!databaseUrl) {
+  const missing = required.filter((k) => !process.env[k]);
+  if (missing.length > 0) {
+    const urlKey = target === 'hrm' ? 'DATABASE_URL_HRM' : 'DATABASE_URL_XBOS';
+    const example =
+      target === 'hrm' ? 'apps/api/hrm-api/.env.example' : 'apps/api/xbos-api/.env.example';
+    const detail = explainEnvFailure(target, { loaded: loadedEnvFiles });
+    throw new Error(
+      [
+        `Missing DB config: need ${urlKey} or all of ${required.join(', ')}. Thiếu: ${missing.join(', ')}.`,
+        detail.hint,
+        `Tham chiếu: ${example}`,
+        `Đã nạp .env: ${detail.loaded_env_files.length ? detail.loaded_env_files.join('; ') : '(không có file nào tồn tại)'}`,
+        `Đã kiểm tra: ${JSON.stringify(detail.checked_files)}`,
+        `cwd=${detail.cwd} repoRoot=${detail.repoRoot} ${detail.node_version}`,
+      ].join(' '),
+    );
+  }
+}
+
+if (
+  !databaseUrl &&
+  (!process.env.DB_PASSWORD?.trim() || process.env.DB_PASSWORD.trim() === 'replace_me')
+) {
+  throw new Error(
+    'DB_PASSWORD vẫn là replace_me hoặc trống. Thêm mật khẩu thật vào deploy/dev-server/.env.local (gitignore), hoặc biến môi trường XEVN_DB_PASSWORD, hoặc sửa deploy/dev-server/.env (file được tạo tự động từ .env.example).',
+  );
+}
+
+const migrationsDir = path.join(repoRoot, 'migrations', target);
+
+const client = databaseUrl
+  ? new Client({ connectionString: databaseUrl, ssl: false })
+  : new Client({
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database,
+      ssl: false,
+    });
 
 function checksum(content) {
   return crypto.createHash('sha256').update(content).digest('hex');
@@ -45,7 +78,7 @@ async function ensureMigrationsTable() {
 }
 
 async function listMigrationFiles() {
-  const entries = await fs.readdir(migrationsDir, { withFileTypes: true });
+  const entries = await fsp.readdir(migrationsDir, { withFileTypes: true });
   return entries
     .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.sql'))
     .map((e) => e.name)
@@ -64,7 +97,7 @@ async function wasApplied(fileName, sum) {
 
 async function applyMigration(fileName) {
   const fullPath = path.join(migrationsDir, fileName);
-  const content = await fs.readFile(fullPath, 'utf8');
+  const content = await fsp.readFile(fullPath, 'utf8');
   const sum = checksum(content);
   const state = await wasApplied(fileName, sum);
 
@@ -102,7 +135,7 @@ async function main() {
         {
           success: true,
           target,
-          database,
+          database: databaseUrl ? `(connection string → ${database})` : database,
           total_files: files.length,
           applied,
           skipped,

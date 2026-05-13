@@ -19,6 +19,10 @@ Hệ sinh thái XeVN vận hành theo mô hình **đa tenant** (phân vùng dữ
 
 Mọi BRD/SRS/TechSpec của từng phân hệ **phải** tham chiếu tài liệu này; khi bổ sung phân hệ mới **không** cần lặp lại toàn bộ quy tắc — chỉ cần tuân thủ và trích dẫn mã quy tắc tại đây.
 
+### 2.1 Chuẩn giao hàng phần mềm (bắt buộc)
+
+Với mọi thay đổi có ý nghĩa nghiệp vụ hoặc hợp đồng API: **cập nhật tài liệu (BRD → SRS → TechSpec phân hệ, và ecosystem nếu đụng phạm vi/tenant) trước hoặc đồng thời với code**; triển khai **bám đặc tả**. Không merge logic mới “nháp code rồi mới viết tài liệu” ngoại trừ hotfix (phải ghi rõ và hoàn tất tài liệu trong chu kỳ kế tiếp).
+
 ## 3. Phân hệ áp dụng
 
 Quy tắc này áp dụng đồng nhất cho: **Trung tâm**, **X-BOS**, **Nhân sự**, **Vận hành xe**, **Tài chính**, **Cài đặt**, và **mọi phân hệ bổ sung** sau này.

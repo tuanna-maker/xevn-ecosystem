@@ -3,6 +3,7 @@ import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
 import { fetchWithTimeoutAndRetry } from '../common/http-retry-fetch';
 import { HrmDbService } from '../db/hrm-db.service';
+import { defaultCompanyIdFromEnv, masterTenantIdFromEnv } from '../common/tenant-scope-env';
 
 export interface HrmSyncedCatalog {
   tenantId: string;
@@ -41,11 +42,24 @@ export class CatalogSyncService {
   }
 
   private async ensureSchema() {
+    const rawTenant = masterTenantIdFromEnv();
+    const rawCompany = defaultCompanyIdFromEnv();
+    if (!rawTenant || !rawCompany) {
+      throw new ApiException(
+        'HRM-SYNC-CONF',
+        'Set MASTER_TENANT_ID or DEFAULT_TENANT_ID and DEFAULT_COMPANY_ID (or DEFAULT_COMPANY_HEADER_ID) for catalog DDL bootstrap.',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    }
+    const tenantDdl = this.normalizeScopeId(rawTenant, 'tenantId');
+    const companyDdl = this.normalizeScopeId(rawCompany, 'companyId');
+    const tenantSql = tenantDdl.replace(/'/g, "''");
+    const companySql = companyDdl.replace(/'/g, "''");
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.synced_catalogs (
         id BIGSERIAL PRIMARY KEY,
-        tenant_id TEXT NOT NULL DEFAULT 'xevn',
-        company_id TEXT NOT NULL DEFAULT 'holding',
+        tenant_id TEXT NOT NULL DEFAULT '${tenantSql}',
+        company_id TEXT NOT NULL DEFAULT '${companySql}',
         catalog_key TEXT NOT NULL,
         source_system TEXT NOT NULL,
         payload JSONB NOT NULL,
@@ -54,8 +68,12 @@ export class CatalogSyncService {
         synced_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
-    await this.db.query(`ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS tenant_id TEXT NOT NULL DEFAULT 'xevn';`);
-    await this.db.query(`ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS company_id TEXT NOT NULL DEFAULT 'holding';`);
+    await this.db.query(
+      `ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS tenant_id TEXT NOT NULL DEFAULT '${tenantSql}';`,
+    );
+    await this.db.query(
+      `ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS company_id TEXT NOT NULL DEFAULT '${companySql}';`,
+    );
     await this.db.query(`ALTER TABLE public.synced_catalogs DROP CONSTRAINT IF EXISTS synced_catalogs_catalog_key_key;`);
     await this.db.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS uq_synced_catalogs_scope_key

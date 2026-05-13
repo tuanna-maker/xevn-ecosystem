@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
+import { AttendanceEventFanoutService } from '../notifications/attendance-event-fanout.service';
 import { CreateAttendanceUpdateRequestDto } from './dto/create-attendance-update-request.dto';
 import { DecideAttendanceUpdateRequestDto } from './dto/decide-attendance-update-request.dto';
 import { CreateAttendanceRecordDto } from './dto/create-attendance-record.dto';
@@ -51,7 +52,10 @@ type AttendanceUpdateRequestRow = {
 
 @Injectable()
 export class AttendanceService {
-  constructor(private readonly db: HrmDbService) {}
+  constructor(
+    private readonly db: HrmDbService,
+    private readonly attendanceFanout: AttendanceEventFanoutService,
+  ) {}
 
   private async ensureSchema() {
     await this.db.query(`
@@ -135,6 +139,22 @@ export class AttendanceService {
       created_by: row.created_by,
       created_at: row.created_at,
       updated_at: row.updated_at,
+    };
+  }
+
+  private toAttendanceUpdateRequestRealtimePayload(row: AttendanceUpdateRequestRow) {
+    const m = this.mapUpdateRequest(row);
+    return {
+      id: m.id,
+      company_id: m.company_id,
+      employee_id: m.employee_id,
+      employee_code: m.employee_code,
+      employee_name: m.employee_name,
+      status: m.status,
+      attendance_date: m.attendance_date,
+      update_type: m.update_type,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
     };
   }
 
@@ -328,7 +348,10 @@ export class AttendanceService {
         payload.approver_name?.trim() ?? null,
       ],
     );
-    return this.mapUpdateRequest(res.rows[0]);
+    const row = res.rows[0];
+    const mapped = this.mapUpdateRequest(row);
+    await this.attendanceFanout.onUpdateRequestCreated(this.toAttendanceUpdateRequestRealtimePayload(row));
+    return mapped;
   }
 
   async listUpdateRequests(query: ListAttendanceUpdateRequestsQueryDto) {
@@ -412,7 +435,9 @@ export class AttendanceService {
     if (!updated) {
       throw new ApiException('HRM-ATT-REQ-404', 'Attendance update request not found', HttpStatus.NOT_FOUND);
     }
-    return this.mapUpdateRequest(updated);
+    const mapped = this.mapUpdateRequest(updated);
+    await this.attendanceFanout.onUpdateRequestDecided('approved', this.toAttendanceUpdateRequestRealtimePayload(updated));
+    return mapped;
   }
 
   async rejectUpdateRequest(requestId: string, payload: DecideAttendanceUpdateRequestDto) {
@@ -434,7 +459,9 @@ export class AttendanceService {
     if (!updated) {
       throw new ApiException('HRM-ATT-REQ-404', 'Attendance update request not found', HttpStatus.NOT_FOUND);
     }
-    return this.mapUpdateRequest(updated);
+    const mapped = this.mapUpdateRequest(updated);
+    await this.attendanceFanout.onUpdateRequestDecided('rejected', this.toAttendanceUpdateRequestRealtimePayload(updated));
+    return mapped;
   }
 
   async deleteUpdateRequest(requestId: string) {

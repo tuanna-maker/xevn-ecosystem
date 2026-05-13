@@ -8,6 +8,10 @@
 - mọi API và giao diện có hành vi phân vùng **dự đoán được** ở hai chế độ: system admin (chưa đăng nhập / môi trường cho phép) và người dùng theo một tenant,
 - khi thêm phân hệ mới, chỉ cần tham chiếu tài liệu này thay vì sao chép toàn bộ.
 
+### 1.1 Quy tắc giao hàng (bắt buộc)
+
+Mọi use case phân hệ mở rộng hoặc thay đổi hành vi phạm vi: **cập nhật SRS phân hệ và BRD/TechSpec liên quan trước hoặc đồng thời** với code; kiểm thử bám theo mục đã ghi trong SRS.
+
 ## 2. Danh mục use case liên phân hệ
 
 | Mã | Tên | Áp dụng |

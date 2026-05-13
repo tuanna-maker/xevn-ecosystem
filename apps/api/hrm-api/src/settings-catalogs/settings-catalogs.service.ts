@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { CatalogSyncService } from '../catalog-sync/catalog-sync.service';
+import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService } from '../db/hrm-db.service';
 import type { CatalogExtensionItemDto } from './dto/append-extension-items.dto';
 import type { RequestCatalogFieldRemovalDto } from './dto/request-removal.dto';
 import { randomUUID } from 'node:crypto';
-
-const MASTER_TENANT_ID = process.env.MASTER_TENANT_ID?.trim().toLowerCase() || 'xevn';
 
 export type SettingsCatalogItem = {
   code: string;
@@ -317,7 +316,14 @@ export class SettingsCatalogsService {
     totalUpserted: number;
   }> {
     await this.ensureExtensionSchema();
-    const t = tenantId.trim().toLowerCase() || MASTER_TENANT_ID;
+    const t = tenantId.trim().toLowerCase() || masterTenantIdFromEnv();
+    if (!t) {
+      throw new ApiException(
+        'HRM-CAT-TENANT',
+        'tenantId is required (header or JWT), or set MASTER_TENANT_ID / DEFAULT_TENANT_ID for seed.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const c = companyId.trim().toLowerCase();
     const templates: Array<{ catalogKey: string; items: CatalogExtensionItemDto[] }> = [
       {
