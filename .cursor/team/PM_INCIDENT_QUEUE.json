@@ -1780,5 +1780,32 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1778660635585",
+    "detectedAt": "2026-05-13T08:23:55.582Z",
+    "source": "hook:afterShellExecution",
+    "command": "git add -A; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m \"feat: hrm-api notifications/realtime/leave-requests + mobile app + deploy workflow\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660648453",
+    "detectedAt": "2026-05-13T08:24:08.450Z",
+    "source": "hook:afterShellExecution",
+    "command": "git push origin main 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778660665317",
+    "detectedAt": "2026-05-13T08:24:25.313Z",
+    "source": "hook:afterShellExecution",
+    "command": "plink -ssh root@14.225.217.232 -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\" \"cd /opt/xevn-ecosystem && git stash -u && git pull origin main 2>&1 && echo PULL_OK\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]

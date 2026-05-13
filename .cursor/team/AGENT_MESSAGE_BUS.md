@@ -4164,3 +4164,27 @@ git push origin main 2>&1`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
+## 2026-05-13T08:23:55.582Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git add -A; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "feat: hrm-api notifications/realtime/leave-requests + mobile app + deploy workflow"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:24:08.450Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`git push origin main 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-13T08:24:25.313Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`plink -ssh root@14.225.217.232 -pw "1T4dTddMh0tbzFwBCIlu" -hostkey "SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo" "cd /opt/xevn-ecosystem && git stash -u && git pull origin main 2>&1 && echo PULL_OK"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO

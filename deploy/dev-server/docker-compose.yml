@@ -1,4 +1,4 @@
-services:
+﻿services:
   web-portal:
     image: node:22-alpine
     container_name: xevn-web-portal-dev
@@ -44,6 +44,6 @@ services:
       - ../../apps/api/hrm-api/.env
     ports:
       - "${HRM_API_PORT:-3001}:3001"
-    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm run dev:hrm-api"
+    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/api/hrm-api start:dev"
     restart: unless-stopped
 
