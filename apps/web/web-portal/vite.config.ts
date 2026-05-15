@@ -14,15 +14,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/recharts')) {
-            return 'charts-vendor'
-          }
-          if (id.includes('node_modules/dagre')) {
-            return 'workflow-vendor'
-          }
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
+          if (id.includes('node_modules/recharts')) return 'charts-vendor'
+          if (id.includes('node_modules/dagre')) return 'workflow-vendor'
+          if (id.includes('node_modules')) return 'vendor'
           return undefined
         },
       },

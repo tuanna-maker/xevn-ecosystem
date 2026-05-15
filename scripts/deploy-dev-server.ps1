@@ -1,4 +1,7 @@
 # deploy-dev-server.ps1 — push (if git) + SSH deploy on VPS
+# Usage: pnpm run deploy:dev-server
+# Or: pwsh -File ./scripts/deploy-dev-server.ps1
+
 param(
   [string]$Message = "",
   [switch]$SkipCommit,

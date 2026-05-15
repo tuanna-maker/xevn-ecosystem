@@ -70,7 +70,9 @@
     "build:hrm-mobile": "pnpm --filter hrm-mobile run build",
     "test:hrm-mobile": "pnpm --filter hrm-mobile run test",
     "lint": "turbo run lint",
-    "type-check": "pnpm -r --if-present run type-check"
+    "type-check": "pnpm -r --if-present run type-check",
+    "deploy:dev-server": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-dev-server.ps1",
+    "deploy:dev-server:logs": "pnpm run deploy:dev-server -- -SkipCommit -SkipPush"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
