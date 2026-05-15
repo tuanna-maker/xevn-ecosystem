@@ -4188,3 +4188,83 @@ git push origin main 2>&1`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
+## 2026-05-15T07:13:33.628Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git pull origin main 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:19:58.258Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "merge: integrate deploy refactor + SA coding fixes" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:20:16.674Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git push origin main 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:22:43.258Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git status --short 2>&1; git add scripts/deploy-dev-server.ps1; git diff --cached --name-only 2>&1; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "security: remove hardcoded VPS password from deploy script" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:22:56.013Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git push origin main 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:31:27.614Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git add apps/mobile/hrm-mobile/android/ apps/mobile/hrm-mobile/expo-env.d.ts .cursor/team/AGENT_MESSAGE_BUS.md .cursor/team/PM_INCIDENT_QUEUE.json .cursor/team/TEMPLATE_REMINDERS.md; git status --short apps/mobile/hrm-mobile 2>&1 | Select-Object -First 50`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:31:38.548Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git status --short 2>&1; Write-Output "---staged count---"; git diff --cached --name-only | Measure-Object -Line`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:31:48.545Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git check-ignore -v apps/mobile/hrm-mobile/android/app/build.gradle 2>&1; git add -f apps/mobile/hrm-mobile/android/app/build.gradle 2>&1; git check-ignore -v apps/mobile/hrm-mobile/android/gradlew 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:33:07.156Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\mobile\hrm-mobile"; node "..\..\..\node_modules\expo\bin\cli" prebuild --platform android --no-install 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T07:33:17.216Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Set-Location "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\mobile\hrm-mobile"; if (Test-Path node_modules\expo) { Get-ChildItem node_modules\expo\bin -Name } else { "no local expo" }; Get-ChildItem node_modules\.bin\expo* -ErrorAction SilentlyContinue | Select-Object Name`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO

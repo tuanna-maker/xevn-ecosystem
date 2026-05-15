@@ -1702,3 +1702,5 @@
 - 2026-05-13T08:23:56.010Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
 
 - 2026-05-13T08:24:25.778Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-05-15T07:15:29.484Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
