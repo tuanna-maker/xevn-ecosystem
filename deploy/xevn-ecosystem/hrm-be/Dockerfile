@@ -13,4 +13,3 @@ RUN pnpm --filter hrm-api build
 
 EXPOSE 3001
 CMD ["pnpm", "--filter", "hrm-api", "start:prod"]
-

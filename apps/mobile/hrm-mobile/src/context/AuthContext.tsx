@@ -116,14 +116,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await Promise.all([
       SecureStore.deleteItemAsync(STORAGE.ACCESS_TOKEN).catch(() => undefined),
       SecureStore.deleteItemAsync(STORAGE.INTERNAL_KEY).catch(() => undefined),
+      SecureStore.deleteItemAsync(STORAGE.TENANT_ID).catch(() => undefined),
+      SecureStore.deleteItemAsync(STORAGE.COMPANY_ID).catch(() => undefined),
+      SecureStore.deleteItemAsync(STORAGE.COMPANY_UUID).catch(() => undefined),
+      SecureStore.deleteItemAsync(STORAGE.EMPLOYEE_ID).catch(() => undefined),
     ]);
     setState((s) => ({
       ...defaultState,
       hydrated: true,
       signedIn: false,
       baseUrl: s.baseUrl || getDefaultBaseUrl(),
-      tenantId: s.tenantId,
-      companyId: s.companyId,
     }));
   }, []);
 

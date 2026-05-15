@@ -11,13 +11,19 @@ function stripTrailingSlash(url: string): string {
 }
 
 function randomRequestId(): string {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
   return `mob-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function getDefaultBaseUrl(): string {
   const fromEnv = process.env.EXPO_PUBLIC_HRM_API_BASE_URL;
   if (fromEnv && fromEnv.trim()) return stripTrailingSlash(fromEnv.trim());
-  return 'http://localhost:3001';
+  if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    return 'http://localhost:3001';
+  }
+  throw new Error('EXPO_PUBLIC_HRM_API_BASE_URL is required in production builds');
 }
 
 export async function hrmRequest<T>(
@@ -109,7 +115,7 @@ export async function hrmRequest<T>(
     const aborted = e instanceof Error && e.name === 'AbortError';
     return {
       ok: false,
-      code: aborted ? 'HRM-MOB-ERR-NETWORK' : 'HRM-MOB-ERR-NETWORK',
+      code: aborted ? 'HRM-MOB-ERR-TIMEOUT' : 'HRM-MOB-ERR-NETWORK',
       message: aborted ? 'Hết thời gian chờ máy chủ' : e instanceof Error ? e.message : 'Lỗi mạng',
       requestId,
     };

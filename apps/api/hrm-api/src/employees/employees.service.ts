@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
@@ -22,8 +22,12 @@ type EmployeeRow = {
 };
 
 @Injectable()
-export class EmployeesService {
+export class EmployeesService implements OnModuleInit {
   constructor(private readonly db: HrmDbService) {}
+
+  async onModuleInit() {
+    await this.ensureSchema();
+  }
 
   private async ensureSchema() {
     await this.db.query(`
@@ -48,6 +52,11 @@ export class EmployeesService {
       ON public.employees (company_id, employee_code);
     `);
     await this.db.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_employees_company_email_active
+      ON public.employees (company_id, lower(email))
+      WHERE archived_at IS NULL;
+    `);
+    await this.db.query(`
       CREATE INDEX IF NOT EXISTS idx_employees_company_archived
       ON public.employees (company_id, archived_at, created_at DESC);
     `);
@@ -63,6 +72,9 @@ export class EmployeesService {
   }
 
   private async ensureSeedData() {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
     const holdingExists = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total FROM public.employees WHERE company_id = 'holding';`,
     );
@@ -98,7 +110,6 @@ export class EmployeesService {
   }
 
   async createEmployee(payload: CreateEmployeeDto) {
-    await this.ensureSchema();
     const employeeId = randomUUID();
     try {
       const res = await this.db.query<EmployeeRow>(
@@ -123,13 +134,22 @@ export class EmployeesService {
       );
       return this.mapEmployee(res.rows[0]);
     } catch (error) {
+      const pg = error as { code?: string };
+      if (pg.code === '23505') {
+        throw new ApiException(
+          'HRM-EMP-DUPLICATE',
+          'Duplicate employee code or email for this company',
+          HttpStatus.CONFLICT,
+        );
+      }
       const message = error instanceof Error ? error.message : 'Cannot create employee';
-      throw new ApiException('HRM-EMP-001', message, HttpStatus.BAD_REQUEST);
+      throw new ApiException('HRM-EMP-001', message, HttpStatus.BAD_REQUEST, {
+        original: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
   async listEmployees(query: ListEmployeesQueryDto) {
-    await this.ensureSchema();
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
     const offset = (page - 1) * pageSize;
@@ -178,7 +198,6 @@ export class EmployeesService {
   }
 
   async updateEmployee(employeeId: string, payload: UpdateEmployeeDto) {
-    await this.ensureSchema();
     const updates: string[] = [];
     const values: unknown[] = [];
     if (payload.email !== undefined) {
@@ -225,7 +244,6 @@ export class EmployeesService {
   }
 
   async archiveEmployee(employeeId: string) {
-    await this.ensureSchema();
     const res = await this.db.query<EmployeeRow>(
       `
         UPDATE public.employees
@@ -245,7 +263,17 @@ export class EmployeesService {
   }
 
   async restoreEmployee(employeeId: string) {
-    await this.ensureSchema();
+    const existing = await this.db.query<{ archived_at: string | null }>(
+      `SELECT archived_at FROM public.employees WHERE id = $1::uuid`,
+      [employeeId],
+    );
+    const row = existing.rows[0];
+    if (!row) {
+      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+    }
+    if (row.archived_at === null) {
+      throw new ApiException('HRM-EMP-409', 'Employee is already active', HttpStatus.CONFLICT);
+    }
     const res = await this.db.query<EmployeeRow>(
       `
         UPDATE public.employees

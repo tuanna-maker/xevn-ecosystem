@@ -40,12 +40,18 @@ if (!databaseUrl) {
   }
 }
 
+function isPocDev() {
+  const v = String(process.env.XEVN_POC_DEV ?? '').trim().toLowerCase();
+  return v === '1' || v === 'true' || v === 'yes';
+}
+
 if (
   !databaseUrl &&
-  (!process.env.DB_PASSWORD?.trim() || process.env.DB_PASSWORD.trim() === 'replace_me')
+  (!process.env.DB_PASSWORD?.trim() ||
+    (!isPocDev() && process.env.DB_PASSWORD.trim() === 'replace_me'))
 ) {
   throw new Error(
-    'DB_PASSWORD vẫn là replace_me hoặc trống. Thêm mật khẩu thật vào deploy/dev-server/.env.local (gitignore), hoặc biến môi trường XEVN_DB_PASSWORD, hoặc sửa deploy/dev-server/.env (file được tạo tự động từ .env.example).',
+    'DB_PASSWORD trống hoặc vẫn là placeholder replace_me. Với server dev/POC: đặt mật khẩu Postgres vào DB_PASSWORD (một credential dev), hoặc bật XEVN_POC_DEV=1 trong deploy/xevn-ecosystem/.env nếu bạn cố ý dùng giá trị mẫu; hoặc XEVN_DB_PASSWORD trên máy.',
   );
 }
 

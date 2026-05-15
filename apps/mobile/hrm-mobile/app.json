@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0f172a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "vn.xevn.hrm.mobile"
@@ -32,6 +34,12 @@
           "color": "#0f172a"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "36a4e288-7b45-4019-abaa-d2460c21c5b7"
+      }
+    },
+    "owner": "tuanna-unicom"
   }
 }

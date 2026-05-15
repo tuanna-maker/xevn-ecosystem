@@ -59,6 +59,13 @@ export class LeaveRequestsService {
   }
 
   async createLeaveRequest(body: CreateLeaveRequestDto) {
+    if (body.start_date > body.end_date) {
+      throw new ApiException(
+        'HRM-LEAVE-VAL-DATES',
+        'start_date must be on or before end_date',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const id = randomUUID();
     const res = await this.db.query<LeaveRow>(
       `

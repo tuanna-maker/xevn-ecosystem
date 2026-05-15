@@ -13,7 +13,6 @@ COPY packages/ui packages/ui
 RUN pnpm --filter web-portal build
 
 FROM nginx:1.27-alpine
-COPY deploy/dev-server/nginx/web-portal.conf /etc/nginx/conf.d/default.conf
+COPY deploy/xevn-ecosystem/nginx/web-portal.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/web/web-portal/dist /usr/share/nginx/html
 EXPOSE 80
-

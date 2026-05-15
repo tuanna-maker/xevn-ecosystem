@@ -13,4 +13,3 @@ RUN pnpm --filter xbos-api build
 
 EXPOSE 3002
 CMD ["pnpm", "--filter", "xbos-api", "start:prod"]
-

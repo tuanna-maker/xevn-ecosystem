@@ -3,7 +3,7 @@ import { ApiClientError } from "@/lib/apiError";
 
 const HRM_API_ORIGIN = (import.meta.env.VITE_HRM_API_ORIGIN ?? "").replace(/\/$/, "");
 const SERVICE_JWT_TOKEN = import.meta.env.VITE_SERVICE_JWT_TOKEN;
-const INTERNAL_API_KEY = import.meta.env.DEV ? import.meta.env.VITE_INTERNAL_API_KEY ?? "xevn-dev-internal-key" : undefined;
+const INTERNAL_API_KEY = import.meta.env.DEV ? import.meta.env.VITE_INTERNAL_API_KEY : undefined;
 
 type HrmEnvelope<T> = {
   success: boolean;
@@ -27,9 +27,7 @@ type HrmHeaderOptions = {
 
 function inferRuntimeScope(): HrmSpreadsheetScope | undefined {
   if (typeof window === "undefined") return undefined;
-  const query = new URLSearchParams(window.location.search);
   const rawCompanyId =
-    query.get("companyId") ||
     localStorage.getItem("hrm_current_company_id") ||
     sessionStorage.getItem("hrm_current_company_id") ||
     undefined;
@@ -39,7 +37,6 @@ function inferRuntimeScope(): HrmSpreadsheetScope | undefined {
       : (import.meta.env.VITE_HRM_SCOPE_COMPANY_ID?.trim() || "holding");
   if (!companyId) return undefined;
   const tenantId =
-    query.get("tenantId") ||
     localStorage.getItem("hrm_current_tenant_id") ||
     sessionStorage.getItem("hrm_current_tenant_id") ||
     import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim() ||
@@ -91,16 +88,57 @@ async function parseHrmJson<T>(res: Response): Promise<{ data: T; envelope: HrmE
     });
   }
 
-  return { data: (body?.data ?? ({} as T)) as T, envelope: body as HrmEnvelope<T> };
+  if (!body) {
+    throw new ApiClientError({
+      status: res.status,
+      code: "HRM-EMPTY-BODY",
+      message: "Empty response body",
+    });
+  }
+  if (body.success === false) {
+    throw new ApiClientError({
+      status: res.status,
+      code: body.code,
+      message: body.message ?? "HRM API request failed",
+      details: body.details,
+    });
+  }
+  if (body.success === true && body.data === undefined) {
+    throw new ApiClientError({
+      status: res.status,
+      code: "HRM-NO-DATA",
+      message: body.message ?? "API returned success without data",
+      details: body.details,
+    });
+  }
+
+  return { data: (body.data ?? ({} as T)) as T, envelope: body as HrmEnvelope<T> };
 }
 
-async function requestHrm<T>(path: string, init: RequestInit): Promise<T> {
-  const res = await fetch(`${HRM_API_ORIGIN}${path}`, {
-    ...init,
-    headers: await headers(),
-  });
-  const { data } = await parseHrmJson<T>(res);
-  return data;
+const DEFAULT_HRM_FETCH_MS = 30_000;
+
+type RequestHrmOptions = HrmHeaderOptions & { timeoutMs?: number };
+
+async function requestHrm<T>(path: string, init: RequestInit, opts?: RequestHrmOptions): Promise<T> {
+  const timeoutMs = opts?.timeoutMs ?? DEFAULT_HRM_FETCH_MS;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const userSignal = init.signal;
+  if (userSignal) {
+    if (userSignal.aborted) controller.abort();
+    else userSignal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
+  try {
+    const res = await fetch(`${HRM_API_ORIGIN}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: await headers(opts),
+    });
+    const { data } = await parseHrmJson<T>(res);
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export type EmployeeSpreadsheetImportPreview = {

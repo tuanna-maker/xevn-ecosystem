@@ -2,6 +2,12 @@
 
 Ứng dụng di động **React Native + Expo** theo `docs/hrm/TECHSPEC_MOBILE.md` và `docs/hrm/SRS_MOBILE.md`.
 
+## Build APK (mặc định: local, Android Studio)
+
+Xem **`LOCAL_ANDROID_BUILD.md`**: `pnpm run android:link-plugin` rồi mở thư mục `android` trong Android Studio, hoặc `pnpm run android:apk`.
+
+Expo / EAS cloud chỉ là phương án tuỳ chọn — `EXPO_BUILD_CHECKLIST.md`.
+
 ## Biến môi trường
 
 | Biến | Mô tả |
@@ -29,7 +35,7 @@ Sau đăng nhập, mở **Thêm → Phạm vi công ty** (`ScopeScreen`) hoặc 
 ## Pilot XeVN & Docker API
 
 - Checklist pilot: `docs/hrm/PLAN_HRM_MOBILE_IMPLEMENTATION.md` mục **§8**.
-- Chạy `hrm-api` bằng Docker (dev): từ thư mục `deploy/dev-server`, tạo `apps/api/hrm-api/.env` rồi `docker compose up hrm-api` (service đã khai trong `docker-compose.yml`).
+- Chạy `hrm-be` bằng Docker (dev): từ `deploy/xevn-ecosystem`, tạo `apps/api/hrm-api/.env` rồi `docker compose up hrm-be` (xem `docker-compose.yml`).
 
 ## Đăng nhập dev
 

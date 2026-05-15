@@ -3,13 +3,13 @@ import { resolve } from 'node:path';
 import dotenv from 'dotenv';
 
 /**
- * Nạp deploy/dev-server/.env (chung DB + Supabase) trước, rồi .env của xbos-api (override).
+ * Nạp deploy/xevn-ecosystem/.env (chung DB + Supabase) trước, rồi .env của xbos-api (override).
  */
 function loadMonorepoEnv(): void {
   const here = __dirname;
   const apiRoot = resolve(here, '..');
   const repoRoot = resolve(apiRoot, '..', '..', '..');
-  const deployDir = resolve(repoRoot, 'deploy', 'dev-server');
+  const deployDir = resolve(repoRoot, 'deploy', 'xevn-ecosystem');
   const deployExample = resolve(deployDir, '.env.example');
   const deployEnv = resolve(deployDir, '.env');
   const deployLocal = resolve(deployDir, '.env.local');

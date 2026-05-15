@@ -37,6 +37,7 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, './src') },
   },
   server: {
+    host: true,
     // Cổng 5173 trùng thói quen mở `localhost:5173` — tránh xem nhầm bản build cũ trên port khác.
     port: 5173,
     strictPort: true,

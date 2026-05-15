@@ -29,8 +29,8 @@ function materializeFromExample(dest, example) {
  */
 export function materializeLocalEnvFiles(target) {
   const created = [];
-  const deployEnv = path.join(repoRoot, 'deploy', 'dev-server', '.env');
-  const deployEx = path.join(repoRoot, 'deploy', 'dev-server', '.env.example');
+  const deployEnv = path.join(repoRoot, 'deploy', 'xevn-ecosystem', '.env');
+  const deployEx = path.join(repoRoot, 'deploy', 'xevn-ecosystem', '.env.example');
   const apiRel = target === 'hrm' ? path.join('apps', 'api', 'hrm-api') : path.join('apps', 'api', 'xbos-api');
   const apiEnv = path.join(repoRoot, apiRel, '.env');
   const apiEx = path.join(repoRoot, apiRel, '.env.example');
@@ -54,7 +54,7 @@ export function loadMigrateEnv(target) {
 
   const candidates = [];
   for (const root of roots) {
-    const deployDir = path.join(root, 'deploy', 'dev-server');
+    const deployDir = path.join(root, 'deploy', 'xevn-ecosystem');
     const apiDir = path.join(root, apiRel);
     for (const dir of [deployDir, apiDir]) {
       candidates.push(path.join(dir, '.env.example'));
@@ -77,7 +77,7 @@ export function loadMigrateEnv(target) {
     first = false;
   }
 
-  const deployLocal = path.join(repoRoot, 'deploy', 'dev-server', '.env.local');
+  const deployLocal = path.join(repoRoot, 'deploy', 'xevn-ecosystem', '.env.local');
   if (fs.existsSync(deployLocal)) {
     dotenv.config({ path: deployLocal, override: true });
     loaded.push(deployLocal);
@@ -97,9 +97,9 @@ export function explainEnvFailure(target, { loaded = [] } = {}) {
   const roots = [...new Set([repoRoot, process.cwd()].map((r) => path.resolve(r)))];
   const checks = [];
   for (const root of roots) {
-    const deploy = path.join(root, 'deploy', 'dev-server', '.env');
-    const deployEx = path.join(root, 'deploy', 'dev-server', '.env.example');
-    const deployLocal = path.join(root, 'deploy', 'dev-server', '.env.local');
+    const deploy = path.join(root, 'deploy', 'xevn-ecosystem', '.env');
+    const deployEx = path.join(root, 'deploy', 'xevn-ecosystem', '.env.example');
+    const deployLocal = path.join(root, 'deploy', 'xevn-ecosystem', '.env.local');
     const api = path.join(root, apiRel, '.env');
     const apiEx = path.join(root, apiRel, '.env.example');
     checks.push({ path: deploy, exists: fs.existsSync(deploy) });

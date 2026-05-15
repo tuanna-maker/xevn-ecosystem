@@ -57,6 +57,20 @@ export class AttendanceService {
     private readonly attendanceFanout: AttendanceEventFanoutService,
   ) {}
 
+  private assertCheckInOutOrder(checkIn: string | null | undefined, checkOut: string | null | undefined) {
+    if (!checkIn?.trim() || !checkOut?.trim()) return;
+    const a = new Date(checkIn).getTime();
+    const b = new Date(checkOut).getTime();
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return;
+    if (b <= a) {
+      throw new ApiException(
+        'HRM-ATT-VAL-TIME',
+        'check_out_at must be after check_in_at',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   private async ensureSchema() {
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.attendance_records (
@@ -187,6 +201,7 @@ export class AttendanceService {
 
   async createRecord(payload: CreateAttendanceRecordDto) {
     await this.ensureSchema();
+    this.assertCheckInOutOrder(payload.check_in_at, payload.check_out_at);
     const status = payload.status ?? 'pending';
     try {
       const res = await this.db.query<AttendanceRecordRow>(
@@ -316,6 +331,8 @@ export class AttendanceService {
 
   async createUpdateRequest(payload: CreateAttendanceUpdateRequestDto) {
     await this.ensureSchema();
+    this.assertCheckInOutOrder(payload.current_check_in, payload.current_check_out);
+    this.assertCheckInOutOrder(payload.requested_check_in, payload.requested_check_out);
     const res = await this.db.query<AttendanceUpdateRequestRow>(
       `
         INSERT INTO public.attendance_update_requests (

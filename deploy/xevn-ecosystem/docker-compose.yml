@@ -1,0 +1,124 @@
+volumes:
+  # node_modules trên volume Linux — tránh pnpm/vite lỗi khi bind mount từ Windows + cài trùng nhiều service.
+  xevn_repo_node_modules:
+
+services:
+  pnpm-install:
+    image: node:22-alpine
+    container_name: xevn-pnpm-install
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    environment:
+      CI: "true"
+    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile"
+    restart: "no"
+
+  # --- FE: Command Center shell (apps/web/web-portal) ---
+  portal-fe:
+    image: node:22-alpine
+    container_name: xevn-portal-fe-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    environment:
+      CI: "true"
+      VITE_DEV_PROXY_HRM_WEB: http://hrm-fe:8080
+      VITE_DEV_PROXY_HRM_API: http://hrm-be:3001
+      VITE_DEV_PROXY_XBOS_API: http://xbos-be:3002
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/web-portal exec vite -- --host 0.0.0.0 --port 5175"
+    ports:
+      - "${PORTAL_FE_PORT:-28088}:5175"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      hrm-fe:
+        condition: service_started
+      hrm-be:
+        condition: service_started
+      xbos-be:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- FE: HRM web (apps/web/hrm, base /hr/) ---
+  hrm-fe:
+    image: node:22-alpine
+    container_name: xevn-hrm-fe-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    environment:
+      CI: "true"
+      VITE_DEV_PROXY_HRM_API: http://hrm-be:3001
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/hrm exec vite -- --host 0.0.0.0 --port 8080"
+    ports:
+      - "${HRM_FE_PORT:-28080}:8080"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      hrm-be:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- FE: XBOS core (apps/web/x-bos-core) ---
+  xbos-fe:
+    image: node:22-alpine
+    container_name: xevn-xbos-fe-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    environment:
+      CI: "true"
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/x-bos-core exec vite -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "${XBOS_FE_PORT:-28073}:5173"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # --- BE: HRM API ---
+  hrm-be:
+    image: node:22-alpine
+    container_name: xevn-hrm-be-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    env_file:
+      - ../../deploy/xevn-ecosystem/.env
+      - ../../apps/api/hrm-api/.env
+    environment:
+      CI: "true"
+    ports:
+      - "${HRM_BE_PORT:-28001}:3001"
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # --- BE: XBOS API ---
+  xbos-be:
+    image: node:22-alpine
+    container_name: xevn-xbos-be-dev
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    env_file:
+      - ../../deploy/xevn-ecosystem/.env
+      - ../../apps/api/xbos-api/.env
+    environment:
+      CI: "true"
+    ports:
+      - "${XBOS_BE_PORT:-28002}:3002"
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/xbos-api start:dev"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+    restart: unless-stopped
