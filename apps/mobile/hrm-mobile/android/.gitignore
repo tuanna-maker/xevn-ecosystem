@@ -1,3 +1,6 @@
+# Local junction to @react-native/gradle-plugin (pnpm run android:link-plugin)
+.rn-gradle-plugin/
+
 # OSX
 #
 .DS_Store
