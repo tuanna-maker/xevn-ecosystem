@@ -2,22 +2,19 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-// https://vitejs.dev/config/
+const proxyHrmWeb = process.env.VITE_DEV_PROXY_HRM_WEB || 'http://127.0.0.1:8080'
+const proxyHrmApi = process.env.VITE_DEV_PROXY_HRM_API || 'http://127.0.0.1:3001'
+const proxyXbosApi = process.env.VITE_DEV_PROXY_XBOS_API || 'http://127.0.0.1:3002'
+
 export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/recharts')) {
-            return 'charts-vendor'
-          }
-          if (id.includes('node_modules/dagre')) {
-            return 'workflow-vendor'
-          }
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
+          if (id.includes('node_modules/recharts')) return 'charts-vendor'
+          if (id.includes('node_modules/dagre')) return 'workflow-vendor'
+          if (id.includes('node_modules')) return 'vendor'
           return undefined
         },
       },
@@ -30,23 +27,14 @@ export default defineConfig({
     },
   },
   server: {
+    host: true,
+    allowedHosts: true,
     port: 5175,
     strictPort: true,
     proxy: {
-      // HRM (base `/hr/`): HTML + HMR + assets đều đi qua prefix này khi nhúng iframe từ portal.
-      '/hr': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-      // HRM API gọi cùng origin từ portal/iframe -> proxy sang NestJS.
-      '/api/hrm': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
-      '/api/xbos': {
-        target: 'http://localhost:3002',
-        changeOrigin: true,
-      },
+      '/hr': { target: proxyHrmWeb, changeOrigin: true },
+      '/api/hrm': { target: proxyHrmApi, changeOrigin: true },
+      '/api/xbos': { target: proxyXbosApi, changeOrigin: true },
     },
   },
 })

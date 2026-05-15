@@ -1,13 +1,37 @@
-﻿services:
+volumes:
+  xevn_node_modules:
+
+services:
+  pnpm-install:
+    image: node:22-alpine
+    container_name: xevn-pnpm-install
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_node_modules:/app/node_modules
+    environment:
+      CI: 'true'
+    command: sh -lc 'corepack enable && pnpm install --no-frozen-lockfile'
+    restart: 'no'
+
   web-portal:
     image: node:22-alpine
     container_name: xevn-web-portal-dev
     working_dir: /app
     volumes:
       - ../..:/app
-    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/web-portal dev --host 0.0.0.0 --port 5175"
+      - xevn_node_modules:/app/node_modules
+    environment:
+      CI: 'true'
+      VITE_DEV_PROXY_HRM_WEB: 'http://hrm-web:8080'
+      VITE_DEV_PROXY_HRM_API: 'http://hrm-api:3001'
+      VITE_DEV_PROXY_XBOS_API: 'http://hrm-api:3001'
+    command: sh -lc 'corepack enable && cd /app && pnpm --dir apps/web/web-portal exec vite -- --host 0.0.0.0 --port 5175'
     ports:
-      - "${WEB_PORTAL_PORT:-8088}:5175"
+      - '8088:5175'
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   hrm-web:
@@ -16,34 +40,33 @@
     working_dir: /app
     volumes:
       - ../..:/app
-    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/hrm dev --host 0.0.0.0 --port 8080"
+      - xevn_node_modules:/app/node_modules
+    environment:
+      CI: 'true'
+    command: sh -lc 'corepack enable && cd /app && pnpm --dir apps/web/hrm exec vite -- --host 0.0.0.0 --port 8080'
     ports:
-      - "${HRM_WEB_PORT:-8080}:8080"
+      - '8080:8080'
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
     restart: unless-stopped
 
-  xbos-core:
-    image: node:22-alpine
-    container_name: xevn-xbos-core-dev
-    working_dir: /app
-    volumes:
-      - ../..:/app
-    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/x-bos-core dev --host 0.0.0.0 --port 5173"
-    ports:
-      - "${XBOS_CORE_PORT:-5173}:5173"
-    restart: unless-stopped
-
-  # HRM API pilot — env chung deploy/dev-server/.env rồi override apps/api/hrm-api/.env
   hrm-api:
     image: node:22-alpine
     container_name: xevn-hrm-api-dev
     working_dir: /app
     volumes:
       - ../..:/app
+      - xevn_node_modules:/app/node_modules
     env_file:
       - ../../deploy/dev-server/.env
       - ../../apps/api/hrm-api/.env
+    environment:
+      CI: 'true'
     ports:
-      - "${HRM_API_PORT:-3001}:3001"
-    command: sh -lc "corepack enable && pnpm install --no-frozen-lockfile && pnpm --dir apps/api/hrm-api start:dev"
+      - '3001:3001'
+    command: sh -lc 'corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:dev'
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
     restart: unless-stopped
-
