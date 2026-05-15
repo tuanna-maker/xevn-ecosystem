@@ -10,13 +10,18 @@ param(
 
 $ErrorActionPreference = "Stop"
 $VPS_HOST = "root@14.225.217.232"
-$VPS_PW = "1T4dTddMh0tbzFwBCIlu"
+$VPS_PW = $env:VPS_SSH_PASSWORD
+$VPS_KEY_PATH = $env:VPS_SSH_KEY_PATH
 $HOSTKEY = "SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo"
 $DEPLOY_SCRIPT = "/opt/xevn-ecosystem/deploy/dev-server/deploy.sh"
 
 function Write-Step { param($msg) Write-Host "[deploy] $msg" -ForegroundColor Cyan }
 function Write-OK   { param($msg) Write-Host "[OK] $msg" -ForegroundColor Green }
 function Write-Fail { param($msg) Write-Host "[FAIL] $msg" -ForegroundColor Red }
+
+if (-not $VPS_PW -and -not $VPS_KEY_PATH) {
+  throw "Set env VPS_SSH_PASSWORD or VPS_SSH_KEY_PATH before running deploy."
+}
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $repoRoot
@@ -38,7 +43,11 @@ if (-not $SkipPush -and (Test-Path ".git")) {
 }
 
 Write-Step "Deploying on VPS..."
-$out = & plink -ssh $VPS_HOST -pw $VPS_PW -hostkey $HOSTKEY -batch "bash $DEPLOY_SCRIPT" 2>&1
+$out = if ($VPS_KEY_PATH) {
+  & plink -ssh $VPS_HOST -i $VPS_KEY_PATH -hostkey $HOSTKEY -batch "bash $DEPLOY_SCRIPT" 2>&1
+} else {
+  & plink -ssh $VPS_HOST -pw $VPS_PW -hostkey $HOSTKEY -batch "bash $DEPLOY_SCRIPT" 2>&1
+}
 $out | ForEach-Object { Write-Host $_ }
 if ($LASTEXITCODE -ne 0) {
   Write-Fail "Deploy failed (exit $LASTEXITCODE)"
