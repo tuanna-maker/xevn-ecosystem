@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Bell,
   ChevronDown,
@@ -10,216 +11,175 @@ import {
   LogOut,
 } from 'lucide-react';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const TopHeader: React.FC = () => {
-  const { selectedCompany, setSelectedCompany, companies } = useGlobalFilter();
-  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
+  const { selectedTenant, setSelectedTenant, tenants, tenantScopeError, tenantScopeStatus } =
+    useGlobalFilter();
+  const [isTenantDropdownOpen, setIsTenantDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const companyDropdownRef = useRef<HTMLDivElement>(null);
+  const tenantDropdownRef = useRef<HTMLDivElement>(null);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        companyDropdownRef.current &&
-        !companyDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsCompanyDropdownOpen(false);
+      if (tenantDropdownRef.current && !tenantDropdownRef.current.contains(event.target as Node)) {
+        setIsTenantDropdownOpen(false);
       }
-      if (
-        profileDropdownRef.current &&
-        !profileDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
         setIsProfileDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleCompanySelect = (company: typeof selectedCompany) => {
-    setSelectedCompany(company);
-    setIsCompanyDropdownOpen(false);
-  };
+  const memberTenants = tenants.filter((t) => !t.isMaster);
 
   return (
+    <>
+    {tenantScopeStatus === 'error' && tenantScopeError ? (
+      <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900 xevn-safe-inline">
+        {tenantScopeError}
+      </div>
+    ) : null}
     <header className="z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-slate-200 bg-white xevn-safe-inline shadow-soft backdrop-blur-md">
-      {/* Left Section - Global Company Filter */}
       <div className="flex items-center gap-4">
-        <div className="relative" ref={companyDropdownRef}>
+        <div className="relative" ref={tenantDropdownRef}>
           <button
-            onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-            className="flex items-center gap-3 px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all duration-200 min-w-[280px]"
+            type="button"
+            onClick={() => setIsTenantDropdownOpen(!isTenantDropdownOpen)}
+            className="flex min-w-[280px] items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 transition-all duration-200 hover:bg-slate-100"
           >
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-semibold text-sm"
-              style={{ backgroundColor: selectedCompany.color }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-semibold text-white"
+              style={{ backgroundColor: selectedTenant.color }}
             >
-              {selectedCompany.shortName.charAt(0)}
+              {selectedTenant.shortName.charAt(0)}
             </div>
             <div className="flex-1 text-left">
-              <p className="text-xs text-slate-500 font-medium">
-                Đang xem dữ liệu của
-              </p>
-              <p className="text-sm font-semibold text-slate-800 truncate">
-                {selectedCompany.shortName}
-              </p>
+              <p className="text-xs font-medium text-slate-500">Tenant đang làm việc</p>
+              <p className="truncate text-sm font-semibold text-slate-800">{selectedTenant.shortName}</p>
+              <p className="truncate text-[10px] text-slate-400">{selectedTenant.roleCode}</p>
             </div>
             <ChevronDown
               size={18}
-              className={`text-slate-400 transition-transform duration-200 ${
-                isCompanyDropdownOpen ? 'rotate-180' : ''
-              }`}
+              className={`text-slate-400 transition-transform duration-200 ${isTenantDropdownOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
-          {/* Company Dropdown */}
-          {isCompanyDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50">
-              <div className="p-3 border-b border-slate-100">
-                <div className="relative">
-                  <Search
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm công ty..."
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-xevn-accent/20 focus:border-xevn-accent"
-                  />
-                </div>
-              </div>
-
-              <div className="max-h-72 overflow-y-auto">
-                <div className="p-2">
-                  <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                    Chọn công ty thành viên
-                  </p>
-                  {companies.map((company) => (
-                    <button
-                      key={company.id}
-                      onClick={() => handleCompanySelect(company)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-150 ${
-                        selectedCompany.id === company.id
-                          ? 'bg-xevn-accent/10 border border-xevn-accent/20'
-                          : 'hover:bg-slate-50'
-                      }`}
+          {isTenantDropdownOpen && (
+            <div className="absolute left-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+              <div className="max-h-72 overflow-y-auto p-2">
+                <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                  Tenant được gán (membership)
+                </p>
+                {tenants.map((tenant) => (
+                  <button
+                    key={tenant.tenantId}
+                    type="button"
+                    onClick={() => {
+                      setSelectedTenant(tenant);
+                      setIsTenantDropdownOpen(false);
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-lg p-3 transition-all duration-150 ${
+                      selectedTenant.tenantId === tenant.tenantId
+                        ? 'border border-xevn-accent/20 bg-xevn-accent/10'
+                        : 'hover:bg-slate-50'
+                    }`}
+                  >
+                    <div
+                      className="flex h-10 w-10 items-center justify-center rounded-lg font-semibold text-white"
+                      style={{ backgroundColor: tenant.color }}
                     >
-                      <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-semibold"
-                        style={{ backgroundColor: company.color }}
-                      >
-                        <Building2 size={18} />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-sm font-semibold text-slate-800">
-                          {company.shortName}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          {company.industry} • {company.employeeCount} nhân sự
-                        </p>
-                      </div>
-                      {selectedCompany.id === company.id && (
-                        <Check size={18} className="text-xevn-accent" />
-                      )}
-                    </button>
-                  ))}
-                </div>
+                      <Building2 size={18} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-semibold text-slate-800">{tenant.shortName}</p>
+                      <p className="text-xs text-slate-500">
+                        {tenant.isMaster ? 'Master · X-BOS Group' : 'Thành viên'} · {tenant.roleCode}
+                      </p>
+                    </div>
+                    {selectedTenant.tenantId === tenant.tenantId && (
+                      <Check size={18} className="text-xevn-accent" />
+                    )}
+                  </button>
+                ))}
               </div>
-
-              <div className="p-3 bg-slate-50 border-t border-slate-100">
-                <p className="text-xs text-slate-500 text-center">
-                  <span className="font-semibold text-xevn-accent">
-                    {companies.length - 1}
-                  </span>{' '}
-                  công ty thành viên
+              <div className="border-t border-slate-100 bg-slate-50 p-3">
+                <p className="text-center text-xs text-slate-500">
+                  <span className="font-semibold text-xevn-accent">{memberTenants.length}</span> tenant thành
+                  viên · <span className="font-semibold">{tenants.length}</span> tổng membership
                 </p>
               </div>
             </div>
           )}
         </div>
-
-        {/* Current Filter Badge */}
-        {selectedCompany.id !== 'all' && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: selectedCompany.color }}
-            ></div>
-            <span className="text-xs font-medium text-amber-700">
-              Đang lọc theo: {selectedCompany.shortName}
-            </span>
-            <button
-              onClick={() => handleCompanySelect(companies[0])}
-              className="ml-1 text-amber-500 hover:text-amber-700"
-            >
-              ✕
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Right Section - Search, Notifications, Profile */}
       <div className="flex items-center gap-4">
-        {/* Global Search */}
-        <div className="relative">
-          <Search
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+        <div className="relative hidden md:block">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Tìm kiếm nhanh..."
-            className="w-64 pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-xevn-accent/20 focus:border-xevn-accent transition-all"
+            className="w-64 rounded-lg border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-sm transition-all focus:border-xevn-accent focus:outline-none focus:ring-2 focus:ring-xevn-accent/20"
           />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 bg-slate-200 rounded">
-            ⌘K
-          </kbd>
         </div>
-
-        {/* Notifications */}
-        <button className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+        <button type="button" className="relative rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700">
           <Bell size={20} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
         </button>
-
-        {/* User Profile */}
         <div className="relative" ref={profileDropdownRef}>
           <button
+            type="button"
             onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-            className="flex items-center gap-2 p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+            className="flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-slate-100"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-xevn-accent to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
-              AD
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-xevn-accent to-purple-500 text-sm font-semibold text-white">
+              {(user?.displayName?.[0] ?? 'A').toUpperCase()}
             </div>
-            <div className="text-left hidden md:block">
-              <p className="text-sm font-semibold text-slate-800">Admin</p>
-              <p className="text-xs text-slate-500">Super Admin</p>
+            <div className="hidden text-left md:block">
+              <p className="text-sm font-semibold text-slate-800">{user?.displayName ?? 'Admin'}</p>
+              <p className="text-xs text-slate-500">{selectedTenant.roleCode}</p>
             </div>
             <ChevronDown size={16} className="text-slate-400" />
           </button>
-
-          {/* Profile Dropdown */}
           {isProfileDropdownOpen && (
-            <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50">
-              <div className="p-4 border-b border-slate-100">
-                <p className="font-semibold text-slate-800">Admin User</p>
-                <p className="text-sm text-slate-500">admin@xevn.vn</p>
+            <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
+              <div className="border-b border-slate-100 p-4">
+                <p className="font-semibold text-slate-800">{user?.displayName ?? 'Admin User'}</p>
+                <p className="text-sm text-slate-500">{selectedTenant.roleCode}</p>
               </div>
               <div className="p-2">
-                <button className="w-full flex items-center gap-3 p-2.5 text-sm text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileDropdownOpen(false);
+                    navigate('/login');
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg p-2.5 text-sm text-slate-600 hover:bg-slate-50"
+                >
                   <User size={16} />
                   Hồ sơ cá nhân
                 </button>
-                <button className="w-full flex items-center gap-3 p-2.5 text-sm text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
+                <button type="button" className="flex w-full items-center gap-3 rounded-lg p-2.5 text-sm text-slate-600 hover:bg-slate-50">
                   <Settings size={16} />
                   Cài đặt tài khoản
                 </button>
               </div>
-              <div className="p-2 border-t border-slate-100">
-                <button className="w-full flex items-center gap-3 p-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+              <div className="border-t border-slate-100 p-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileDropdownOpen(false);
+                    logout();
+                    navigate('/login');
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg p-2.5 text-sm text-red-600 hover:bg-red-50"
+                >
                   <LogOut size={16} />
                   Đăng xuất
                 </button>
@@ -229,6 +189,7 @@ const TopHeader: React.FC = () => {
         </div>
       </div>
     </header>
+    </>
   );
 };
 

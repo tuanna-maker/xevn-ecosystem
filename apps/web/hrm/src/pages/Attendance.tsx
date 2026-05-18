@@ -90,6 +90,8 @@ import {
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { updateAttendanceStatus } from '@/integrations/hrmApi';
 import {
   LineChart,
   Line,
@@ -389,6 +391,7 @@ export default function Attendance() {
     status: string;
   } | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Transform DB data to display format
   const shiftsData = workShiftsDB.map(s => ({
@@ -441,22 +444,42 @@ export default function Attendance() {
     setAttendanceModalOpen(true);
   };
 
-  const handleSaveAttendance = () => {
+  const handleSaveAttendance = async () => {
     if (!editingAttendance?.date || !editingAttendance?.time) {
       toast({
         title: t('attendance.toast.error'),
         description: t('attendance.toast.fillTimeInfo'),
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
-    
-    toast({
-      title: t('attendance.toast.updateSuccess'),
-      description: t('attendance.toast.attendanceUpdated', { name: editingAttendance.name }),
-    });
-    setAttendanceModalOpen(false);
-    setEditingAttendance(null);
+    if (!editingAttendance.id) {
+      toast({
+        title: t('attendance.toast.error'),
+        description: 'Bản ghi chưa liên kết API — dùng tab Dữ liệu chấm công.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    try {
+      await updateAttendanceStatus(editingAttendance.id, {
+        status: 'present',
+        note: `Cập nhật giờ ${editingAttendance.time} ngày ${editingAttendance.date}`,
+        updated_by: user?.id ?? undefined,
+      });
+      toast({
+        title: t('attendance.toast.updateSuccess'),
+        description: t('attendance.toast.attendanceUpdated', { name: editingAttendance.name }),
+      });
+      setAttendanceModalOpen(false);
+      setEditingAttendance(null);
+    } catch (error: unknown) {
+      toast({
+        title: t('attendance.toast.error'),
+        description: error instanceof Error ? error.message : 'Không lưu được chấm công',
+        variant: 'destructive',
+      });
+    }
   };
 
   // Attendance view mode: 'list' (sheets list), 'data' (records), or 'weekly' (weekly summary)
@@ -656,8 +679,10 @@ export default function Attendance() {
 
   const handleSaveCellDetail = () => {
     toast({
-      title: t('attendance.toast.updateSuccess'),
-      description: t('attendance.toast.cellUpdated', { name: selectedCellData?.employeeName, date: `${selectedCellData?.date}/05/2021` }),
+      title: t('attendance.toast.error'),
+      description:
+        'Chỉnh sửa ô lưới tuần chưa có API — dùng tab Dữ liệu chấm công hoặc đề nghị cập nhật công.',
+      variant: 'destructive',
     });
     setCellDetailModalOpen(false);
     setSelectedCellData(null);

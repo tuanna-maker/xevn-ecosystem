@@ -1,4 +1,3 @@
-
 ## 2026-04-24T09:21:12.122Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -679,14 +678,6 @@
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
 
-## 2026-05-01T15:24:15.165Z | Hook afterShellExecution -> PM-Tech | MEDIUM
-- Topic: Auto incident intake from shell
-- Work Item: INCIDENT-AUTO-HOOK
-- Request / Handoff: Command failed and matched incident pattern. Command=`pnpm --filter hrm-api run test -- --runInBand src/attendance/attendance.controller.spec.ts src/employees/employees.controller.spec.ts src/operations/operations.controller.spec.ts src/catalog-sync/catalog-sync.controller.spec.ts`
-- Needed by: Next orchestration cycle
-- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
-- ACK: AUTO
-
 ## 2026-05-01T15:24:36.370Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion checkpoint
 - Work Item: HANDOFF-QUALITY-CHECK
@@ -1071,14 +1062,6 @@
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
 
-## 2026-05-01T18:41:03.877Z | Hook afterShellExecution -> PM-Tech | MEDIUM
-- Topic: Auto incident intake from shell
-- Work Item: INCIDENT-AUTO-HOOK
-- Request / Handoff: Command failed and matched incident pattern. Command=`pnpm run test -- --runInBand && pnpm run build`
-- Needed by: Next orchestration cycle
-- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
-- ACK: AUTO
-
 ## 2026-05-01T18:41:03.903Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1118,6 +1101,7 @@
 - Needed by: Immediate
 - Evidence: .cursor/team/AGENT_MESSAGE_BUS.md
 - ACK: AUTO
+
 ## 2026-05-02T00:27:29.948Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `subagent`
@@ -1135,6 +1119,7 @@
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-02T00:34:24.897Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1150,6 +1135,7 @@
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-02T00:36:15.834Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1160,6 +1146,7 @@
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-02T00:44:46.415Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1183,6 +1170,7 @@
 - Needed by: Immediate
 - Evidence: .cursor/team/AGENT_MESSAGE_BUS.md
 - ACK: AUTO
+
 ## 2026-05-02T02:47:33.700Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1211,18 +1199,11 @@
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
-## 2026-05-02T03:09:46.785Z | Hook afterShellExecution -> PM-Tech | MEDIUM
-- Topic: Auto incident intake from shell
-- Work Item: INCIDENT-AUTO-HOOK
-- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api" && pnpm run test -- --runInBand src/perf-budget/ci.perf-budget.spec.ts`
-- Needed by: Next orchestration cycle
-- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
-- ACK: AUTO
 
 ## 2026-05-02T03:09:46.785Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
-- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\xbos-api" && pnpm run test -- --runInBand src/perf-budget/ci.perf-budget.spec.ts`
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem\apps\api\hrm-api" && pnpm run test -- --runInBand src/perf-budget/ci.perf-budget.spec.ts`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
@@ -1300,6 +1281,7 @@
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-02T03:24:05.586Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1310,6 +1292,7 @@
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-02T03:24:33.483Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1333,6 +1316,7 @@
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-02T04:48:28.124Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1343,6 +1327,7 @@
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-02T04:50:54.541Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1358,6 +1343,7 @@
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-02T04:59:54.490Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1368,6 +1354,7 @@
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-02T08:21:07.301Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1383,6 +1370,7 @@
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-02T19:06:09.238Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1414,6 +1402,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-02T19:06:54.374Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1501,6 +1490,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-03T10:01:29.463Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1520,6 +1510,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-03T10:02:58.133Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1567,6 +1558,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-03T10:06:55.834Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1577,6 +1569,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-03T10:09:14.655Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1608,6 +1601,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-03T10:11:00.649Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1618,6 +1612,7 @@ fc_01147f23866dbb160169f64b1cebfc8197b81ef404641670e2`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-03T10:11:10.221Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1647,6 +1642,7 @@ Write-Host "lint_exit=$LASTEXITCODE (after build)"`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-03T10:13:13.579Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1666,6 +1662,7 @@ Write-Host "lint_exit=$LASTEXITCODE (after build)"`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-03T13:03:46.670Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1673,6 +1670,7 @@ Write-Host "lint_exit=$LASTEXITCODE (after build)"`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-03T13:47:23.304Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1684,6 +1682,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-03T13:47:49.375Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1707,6 +1706,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T02:00:30.912Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1735,6 +1735,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T02:02:40.178Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1782,6 +1783,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T02:32:53.226Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1792,6 +1794,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T02:33:12.877Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -1799,6 +1802,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T02:47:57.915Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -1809,6 +1813,7 @@ fc_01ecb396b90a2b470169f751e9175c819097cf2eaf901d7923`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T03:33:10.519Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2043,6 +2048,7 @@ Write-Output 'Seeded XBOS catalogs + synced HRM for tenants: acme/acme-hn, nova/
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T09:43:56.454Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -2054,6 +2060,7 @@ fc_01032480f96195f80169f868b6ffd88195bc898d7ae4145719`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T09:50:29.899Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2097,6 +2104,7 @@ ProbeCurl 'hrm settings-catalogs overview scoped' 'http://localhost:3001/api/hrm
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T09:51:52.150Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -2108,6 +2116,7 @@ fc_01032480f96195f80169f86a6598e08195adaad7192af40c57`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T09:56:44.640Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2150,6 +2159,7 @@ foreach ($t in $tests) {
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T10:01:31.302Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -2716,6 +2726,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T16:11:43.548Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2747,6 +2758,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T16:11:51.800Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `ba-process`
@@ -2758,6 +2770,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T16:11:54.444Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2789,6 +2802,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T16:12:13.723Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `qa`
@@ -2810,6 +2824,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T16:12:33.718Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2841,6 +2856,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T16:12:51.621Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `ba-process`
@@ -2852,6 +2868,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T16:12:59.491Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -2867,6 +2884,7 @@ fc_017854c87f5d7a7c0b6ea15265db3fc6a897aa5f155c10e05b3e403f36650`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T16:13:01.066Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `qa`
@@ -3161,6 +3179,7 @@ fc_01263f8d99377236fb21382eb48cc163eb648554de4a240b68f64612dc596`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T16:18:39.621Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -3312,6 +3331,7 @@ fc_01263f8d99377236fb21382eb48cc163eb648554de4a240b68f64612dc596`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-04T16:51:07.611Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `dev-fe`
@@ -3393,6 +3413,7 @@ fc_01263f8d99377236fb21382eb48cc163eb648554de4a240b68f64612dc596`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-04T17:04:46.991Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -3432,6 +3453,7 @@ fc_01263f8d99377236fb21382eb48cc163eb648554de4a240b68f64612dc596`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-05T07:34:54.580Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -3463,6 +3485,7 @@ fc_0eeb9503c8902b050169f99d3c820c8190bba73989cce4cb4c`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-05T07:49:06.550Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -3641,6 +3664,7 @@ const { Client } = require("pg");
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-05T15:30:06.735Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `general-purpose`
@@ -3662,6 +3686,7 @@ fc_04296ba1512119470169fa0cb9436c819b93669ad76750bd56`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-05T15:33:32.561Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -5082,6 +5107,7 @@ console.log("patched relative includeBuild");
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-15T08:52:29.719Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -5093,6 +5119,7 @@ console.log("patched relative includeBuild");
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-15T08:54:32.176Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -6206,6 +6233,7 @@ p.write_text(chr(10).join(lines)+chr(10),encoding='utf-8'); print(lines[i])"`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-15T10:22:30.787Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -6217,6 +6245,7 @@ p.write_text(chr(10).join(lines)+chr(10),encoding='utf-8'); print(lines[i])"`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-15T10:23:25.760Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -7675,6 +7704,7 @@ if ($LASTEXITCODE -eq 0) { Get-ChildItem android\app\build\outputs\apk\release\*
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-15T11:06:37.278Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -7686,6 +7716,7 @@ if ($LASTEXITCODE -eq 0) { Get-ChildItem android\app\build\outputs\apk\release\*
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-15T11:07:30.254Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -8043,6 +8074,656 @@ $o | Select-Object -Last 30`
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
 
+## 2026-05-15T15:32:05.710Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm run build 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T15:52:59.687Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm install -q 2>/dev/null; npx ts-node scripts/seed-org-foundation.ts 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T15:53:13.063Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npx ts-node scripts/seed-org-foundation.ts 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T15:56:35.273Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && \
+DB_HOST=113.20.107.184 DB_PORT=6432 DB_USER=app1 DB_PASSWORD=replace_me MASTER_TENANT_ID=xevn \
+npx ts-node scripts/seed-org-foundation.ts 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:00:57.912Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm run seed:org 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:01:08.221Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm run seed:org 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:08:00.772Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npm run build 2>&1 | tail -40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:09:42.662Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npm install --silent 2>&1 | tail -5 && npm run build 2>&1 | tail -25`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:09:57.429Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npm run build 2>&1 | tail -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:10:26.069Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npm run build 2>&1 | tail -8`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:16:18.955Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api" && npm run build 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:30:26.470Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api" && pnpm run build 2>&1 | tail -30`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:30:27.824Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm run build 2>&1 | tail -40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:36:12.089Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm run build 2>&1 | tail -35`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:46:00.960Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`node -e "
+const ExcelJS = require('exceljs');
+(async () => {
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.readFile('/Users/uranus/Downloads/TT phương tiện 1505.xlsx');
+  for (const s of wb.worksheets) {
+    console.log('SHEET:', s.name, 'rows', s.rowCount);
+    const r1 = s.getRow(1);
+    const headers = [];
+    r1.eachCell((c,i)=>headers.push(String(c.value||'')));
+    console.log('  H:', headers.slice(0,20).join(' | '));
+    if (s.rowCount>1) {
+      const r2 = s.getRow(2);
+      const v=[];
+      r2.eachCell((c,i)=>v.push(String(c.value||'').slice(0,30)));
+      console.log('  R2:', v.slice(0,12).join(' | '));
+    }
+  }
+})().catch(e=>console.error(e));
+"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:50:23.137Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm run build 2>&1 | tail -30`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:50:29.068Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && pnpm run seed:tourism:xe-du-lich 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:50:31.948Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm run build 2>&1 | tail -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-15T16:50:48.251Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm run build 2>&1 | tail -12 && cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && pnpm run seed:tourism:xe-du-lich 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T02:50:11.953Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && node scripts/bootstrap-xevn-xbos.mjs --no-health 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T02:54:02.306Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && node -e "
+require('./src/load-env.ts');
+" 2>&1 || node --loader ts-node/esm -e "
+import './src/load-env.ts';
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USER:', process.env.DB_USER);
+" 2>&1 | head -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T02:56:02.047Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cat /tmp/xbos-api-restart.log | tail -40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T02:58:54.478Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`grep -E "PORT|port|listen" "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api/src/main.ts" | head -10`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T03:00:39.746Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`curl -sv -H "Accept: application/json" \
+     -H "x-internal-api-key: xevn-dev-internal-key" \
+     "http://localhost:5175/api/xbos/tenant-scope/group-member-units" 2>&1 | grep -E "^< HTTP|^{|success|TENANT" | head -5`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T03:00:49.324Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`curl -s -H "Accept: application/json" "http://localhost:5175/api/xbos" 2>&1 | head -5
+curl -sv -H "Accept: application/json" "http://localhost:5175/api/xbos" 2>&1 | grep "^< HTTP" | head -3`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T03:00:56.569Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`# Check terminal output for web-portal dev server (it's in the turbo terminal)
+head -30 /Users/uranus/.cursor/projects/Users-uranus-Documents-vibe-coding-xevn-ecosystem/terminals/8.txt`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T03:01:08.042Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`tail -30 /Users/uranus/.cursor/projects/Users-uranus-Documents-vibe-coding-xevn-ecosystem/terminals/8.txt`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T03:04:12.077Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cat /Users/uranus/.cursor/projects/Users-uranus-Documents-vibe-coding-xevn-ecosystem/terminals/8.txt | head -10`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T10:34:36.830Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`grep -n "department\|position\|chức danh\|phòng ban" \
+  "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api/src/settings-catalogs/settings-catalogs.service.ts" \
+  2>&1 | head -20
+
+cat "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api/src/settings-catalogs/settings-catalogs.service.ts" 2>&1 | head -60`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T10:54:35.585Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cat "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal/src/integrations/orgFoundationApi.ts"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T12:08:53.316Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `general-purpose`
+- Task / id: `tool_31c922ba-6c11-455d-9f47-031ff98a594`
+- Status: `completed`
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO
+
+## 2026-05-16T15:02:35.121Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && node -e "
+import pg from 'pg';
+import { loadMigrateEnv, effectiveDatabaseUrl } from './scripts/migrate-env-loader.mjs';
+loadMigrateEnv('xbos');
+const db = process.env.DB_NAME_XBOS?.trim() || 'xevn_xbos';
+const url = effectiveDatabaseUrl(process.env.DATABASE_URL_XBOS);
+const client = url
+  ? new pg.Client({ connectionString: url, ssl: false })
+  : new pg.Client({
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD ?? '',
+      database: db,
+      ssl: false,
+    });
+await client.connect();
+const r = await client.query(\"SELECT to_regclass('public.raci_activity_catalog') AS t, (SELECT COUNT(*)::int FROM information_schema.tables WHERE table_name='raci_activity_catalog') AS c\");
+console.log('raci_activity_catalog:', r.rows[0]);
+const n = await client.query('SELECT COUNT(*)::int AS n FROM public.raci_activity_catalog').catch(e=>({rows:[{n:-1,err:e.message}]}));
+console.log('activity count:', n.rows[0]);
+await client.end();
+"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T15:24:52.279Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`grep -r 'setGlobalPrefix' /Users/uranus/Documents/vibe\ coding/xevn-ecosystem/apps/api/xbos-api/src/main.ts && echo "---" && cat /Users/uranus/Documents/vibe\ coding/xevn-ecosystem/apps/api/xbos-api/src/main.ts`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T15:25:24.103Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`head -40 /Users/uranus/Documents/vibe\ coding/xevn-ecosystem/apps/api/xbos-api/src/position-rbac/position-rbac.controller.ts`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T15:27:06.358Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`head -50 /Users/uranus/Documents/vibe\ coding/xevn-ecosystem/apps/web/web-portal/src/modules/hrm/hrmApiClient.ts`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T15:27:38.968Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`head -30 /Users/uranus/Documents/vibe\ coding/xevn-ecosystem/apps/api/hrm-api/src/settings-catalogs/settings-catalogs.controller.ts`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T15:28:43.182Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`head -15 /Users/uranus/Documents/vibe\ coding/xevn-ecosystem/apps/api/xbos-api/src/raci-governance/raci-governance.controller.ts`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:26:13.844Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`python3 << 'PY'
+from pathlib import Path
+p = Path("/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal/src/pages/command-center/CommandCenterPage.tsx")
+lines = p.read_text().splitlines(keepends=True)
+# remove legacy block 5136-5180 (1-based) -> 5135:5180
+start = None
+for i, line in enumerate(lines):
+    if ') : !groupHrDetailEntityId ? (' in line:
+        start = i
+        break
+end = None
+for i in range(start or 0, len(lines)):
+    if start and i > start and line.strip() == ') : (' and 'hidden' not in lines[i-3]:
+        # first ) : ( after legacy that leads to detail
+        if 'border border-xevn-border p-4 shadow-soft' in lines[i+1]:
+            end = i
+            break
+print(start+1, end+1)
+if start and end:
+    lines = lines[:start] + lines[end:]
+    p.write_text(''.join(lines))
+# fix motionless in file
+text = p.read_text()
+text = text.replace('motionless', 'motionless_TEMP')
+text = text.replace('motionless_TEMP', 'motionless')  # noop
+text = text.replace('<motionless', '<motionless')
+# actually replace motionless with div
+import re
+text = re.sub(r'</?motionless\b', lambda m: m.group(0).replace('motionless', 'div'), text)
+p.write_text(text)
+print('motionless count', text.count('motionless'))
+PY`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:26:38.773Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -25`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:27:00.100Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:27:41.323Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:28:18.843Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:38:08.550Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -25`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:38:55.323Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-16T16:39:06.094Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -10`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T02:09:29.084Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T02:09:51.782Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T02:28:28.057Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -50`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T02:30:11.228Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -30`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T02:30:34.298Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && pnpm qc:dev-stack 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T04:14:00.416Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T04:30:04.585Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T04:37:33.011Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:02:25.093Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:02:43.880Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:17:21.010Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -50`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:23:26.203Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:23:40.519Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:24:00.166Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | head -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:43:09.718Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T06:44:11.836Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && node scripts/qc-dev-stack.mjs 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T07:06:47.702Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `general-purpose`
+- Task / id: `tool_02a82a57-f365-4c2d-838b-f5af41f3267`
+- Status: `completed`
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO## 2026-05-17T07:06:57.397Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `general-purpose`
+- Task / id: `tool_0781381d-52ae-4ed9-94ea-9ffc95fcf98`
+- Status: `completed`
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO
+
+## 2026-05-17T07:20:20.530Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && pnpm exec tsc --noEmit 2>&1 | tail -30`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T07:27:33.002Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `general-purpose`
+- Task / id: `tool_0a02396a-50cc-4c8b-a94e-dc1ceb2510f`
+- Status: `completed`
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO
+
+## 2026-05-17T07:51:41.319Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm run build 2>&1 | tail -30`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T07:51:44.248Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npx tsc --noEmit 2>&1 | tail -40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T07:53:45.633Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm run build 2>&1 | tail -15 && cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npx tsc --noEmit 2>&1 | tail -15`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-17T07:53:57.433Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api" && npm run build 2>&1 | tail -5 && cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal" && npx tsc --noEmit 2>&1 | tail -10`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
 ## 2026-05-18T01:48:01.899Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -8191,6 +8872,7 @@ node scripts/gradle.cjs assembleRelease --no-daemon`
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T02:02:14.560Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -8202,6 +8884,7 @@ node scripts/gradle.cjs assembleRelease --no-daemon`
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T02:03:04.495Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9269,14 +9952,6 @@ cd C:\xevn-ecosystem\apps\mobile\hrm-mobile; $env:ANDROID_HOME="C:\Users\ADMIN\A
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
 
-## 2026-05-18T02:28:39.594Z | Hook afterShellExecution -> PM-Tech | MEDIUM
-- Topic: Auto incident intake from shell
-- Work Item: INCIDENT-AUTO-HOOK
-- Request / Handoff: Command failed and matched incident pattern. Command=`cmd /c "subst J: C:\xevn-ecosystem & dir J:\apps\mobile\hrm-mobile\node_modules\expo\package.json & cd /d J:\apps\mobile\hrm-mobile & node -e \"console.log(require.resolve('expo/package.json'))\" & subst J: /d"`
-- Needed by: Next orchestration cycle
-- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
-- ACK: AUTO
-
 ## 2026-05-18T02:29:05.521Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9547,6 +10222,7 @@ if ($LASTEXITCODE -eq 0) {
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T02:40:53.992Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9558,6 +10234,7 @@ if ($LASTEXITCODE -eq 0) {
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T02:47:02.021Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9790,6 +10467,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:07:30.633Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9801,6 +10479,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:12:34.183Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9808,6 +10487,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:13:05.567Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9819,6 +10499,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:13:47.760Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9834,6 +10515,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:14:48.537Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9845,6 +10527,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:15:44.967Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9852,6 +10535,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:16:12.547Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9863,6 +10547,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:17:41.734Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9878,6 +10563,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:18:27.717Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9889,6 +10575,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:18:56.322Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9896,6 +10583,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:19:28.928Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9907,6 +10595,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:19:55.332Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9930,6 +10619,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:21:14.980Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9941,6 +10631,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:21:43.775Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9956,6 +10647,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:30:36.582Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9967,6 +10659,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:32:11.700Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9974,6 +10667,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:32:40.769Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -9985,6 +10679,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:34:09.917Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -9992,6 +10687,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:34:26.489Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10003,6 +10699,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:35:44.092Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10010,6 +10707,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:36:06.132Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10021,6 +10719,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:37:18.955Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10028,6 +10727,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:37:36.410Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10039,6 +10739,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:38:21.013Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10054,6 +10755,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:39:34.151Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10065,6 +10767,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:43:45.682Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10112,6 +10815,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:45:46.337Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10123,6 +10827,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T03:46:25.305Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10138,6 +10843,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T03:54:47.422Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10149,6 +10855,7 @@ Set-Location "C:\xevn-ecosystem\apps\mobile\hrm-mobile"; $env:ANDROID_HOME="C:\U
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T04:00:44.128Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10285,6 +10992,7 @@ node -e "const fs=require('fs');const zlib=require('zlib');const https=require('
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T04:12:40.197Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10296,6 +11004,50 @@ node -e "const fs=require('fs');const zlib=require('zlib');const https=require('
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
+## 2026-05-18T04:13:18.432Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets" && node <<'NODE'
+const fs = require('fs');
+const { Resvg } = require('@resvg/resvg-js');
+for (const name of ['kien-truc-bon-tang-xevn', 'kien-truc-vai-tro-luong-xevn']) {
+  const svg = fs.readFileSync(`${name}.svg`, 'utf8');
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1920 } });
+  const png = resvg.render().asPng();
+  fs.writeFileSync(`${name}.png`, png);
+  console.log('wrote', name + '.png', png.length);
+}
+NODE`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:13:24.266Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets" && npx --yes -p @resvg/resvg-js node <<'NODE'
+const fs = require('fs');
+const { Resvg } = require('@resvg/resvg-js');
+for (const name of ['kien-truc-bon-tang-xevn', 'kien-truc-vai-tro-luong-xevn']) {
+  const svg = fs.readFileSync(`${name}.svg`, 'utf8');
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1920 } });
+  fs.writeFileSync(`${name}.png`, resvg.render().asPng());
+  console.log('ok', name);
+}
+NODE`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:14:33.700Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`python3 -c "import cairosvg; print('ok')" 2>&1; python3 -c "from PIL import Image; print('pil ok')" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
 ## 2026-05-18T04:24:08.330Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10335,6 +11087,7 @@ node -e "const fs=require('fs');const zlib=require('zlib');const https=require('
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T04:26:33.786Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10346,6 +11099,7 @@ node -e "const fs=require('fs');const zlib=require('zlib');const https=require('
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T04:27:02.218Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10542,6 +11296,7 @@ https.get(url, (res) => {
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T04:32:19.029Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10553,6 +11308,7 @@ https.get(url, (res) => {
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
 ## 2026-05-18T04:32:56.636Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10576,6 +11332,7 @@ https.get(url, (res) => {
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T04:43:51.854Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`
@@ -10587,6 +11344,31 @@ https.get(url, (res) => {
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
+## 2026-05-18T04:47:04.313Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem" && npx --yes -p marked -p puppeteer-core node scripts/export-brd-pdf.mjs 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:47:59.994Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "/Users/uranus/Documents/vibe coding/xevn-ecosystem/scripts/.pdf-deps" && npm install marked puppeteer-core 2>&1 | tail -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:48:08.604Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`python3 -c "import markdown; print(markdown.__version__)" 2>&1; ls "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
 ## 2026-05-18T04:48:22.675Z | Hook afterShellExecution -> PM-Tech | MEDIUM
 - Topic: Auto incident intake from shell
 - Work Item: INCIDENT-AUTO-HOOK
@@ -10630,6 +11412,7 @@ Sync hrm-mobile Android/EAS config, Metro, and Windows path junction Gradle tool
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
 ## 2026-05-18T04:50:12.333Z | Hook subagentStop -> PM | MEDIUM
 - Topic: Subagent completion (PM-first notify, audit trail last)
 - Subagent type: `shell`

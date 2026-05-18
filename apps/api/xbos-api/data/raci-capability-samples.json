@@ -1,0 +1,88 @@
+[
+  {
+    "activity_code": "HCNS-020",
+    "module_code": "hrm",
+    "feature_code": "payroll.run",
+    "permission_code": "hrm.payroll.run",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "HCNS-006",
+    "module_code": "hrm",
+    "feature_code": "recruitment.pipeline",
+    "permission_code": "hrm.recruitment.manage",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "HCNS-011",
+    "module_code": "hrm",
+    "feature_code": "contracts.manage",
+    "permission_code": "hrm.contracts.write",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "PKD-008",
+    "module_code": "crm",
+    "feature_code": "quote.negotiate",
+    "permission_code": "crm.quote.approve",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "PKD-010",
+    "module_code": "crm",
+    "feature_code": "contract.lifecycle",
+    "permission_code": "crm.contract.sign",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "PVT-004",
+    "module_code": "fleet",
+    "feature_code": "dispatch.trips",
+    "permission_code": "fleet.dispatch.write",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "PVT-020",
+    "module_code": "fleet",
+    "feature_code": "dispatch.orders",
+    "permission_code": "fleet.orders.manage",
+    "raci_letter_required": "R"
+  },
+  {
+    "activity_code": "TCKT-008",
+    "module_code": "finance",
+    "feature_code": "gl.close",
+    "permission_code": "finance.gl.close",
+    "raci_letter_required": "A",
+    "status": "planned"
+  },
+  {
+    "activity_code": "TCKT-010",
+    "module_code": "finance",
+    "feature_code": "ar.invoice",
+    "permission_code": "finance.ar.invoice",
+    "raci_letter_required": "R",
+    "status": "planned"
+  },
+  {
+    "activity_code": "BDH-001",
+    "module_code": "xbos",
+    "feature_code": "command_center.plan",
+    "permission_code": "xbos.command.plan",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "KSNB-004",
+    "module_code": "xbos",
+    "feature_code": "workflow.audit",
+    "permission_code": "xbos.audit.read",
+    "raci_letter_required": "A"
+  },
+  {
+    "activity_code": "BQT-010",
+    "module_code": "xbos",
+    "feature_code": "governance.budget",
+    "permission_code": "xbos.budget.approve",
+    "raci_letter_required": "A"
+  }
+]

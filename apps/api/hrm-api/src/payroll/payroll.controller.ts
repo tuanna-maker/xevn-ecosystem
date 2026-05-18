@@ -5,6 +5,7 @@ import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { CreatePayrollPeriodDto } from './dto/create-payroll-period.dto';
 import { ListPayrollPeriodsQueryDto } from './dto/list-payroll-periods.query.dto';
+import { ListPayrollPayslipsQueryDto } from './dto/list-payroll-payslips.query.dto';
 import { PayrollService } from './payroll.service';
 
 @Controller('payroll')
@@ -75,6 +76,21 @@ export class PayrollController {
     return this.payrollService
       .closePayrollPeriod(periodId)
       .then((data) => ok(data, 'HRM-PAY-203', 'Payroll period closed'));
+  }
+
+  @Get('payslips')
+  listPayslips(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListPayrollPayslipsQueryDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.payrollService
+      .listPayslips(query)
+      .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslips listed'));
   }
 
   @Get('reports/reconciliation')

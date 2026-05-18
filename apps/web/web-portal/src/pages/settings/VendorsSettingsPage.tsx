@@ -8,22 +8,25 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockVendors, mockCompanies, Vendor } from '../../data/mockData';
+import { mockVendors, Vendor } from '../../data/mockData';
+import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const VendorsSettingsPage: React.FC = () => {
-  const { selectedCompany, companies } = useGlobalFilter();
-  const [vendors, setVendors] = useState<Vendor[]>(mockVendors);
+  const { companies } = useCompanyFilterOptions();
+  const { tenantId, companyId } = useTenantScope();
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   useEffect(() => {
-    void listBusinessMasterItems<Vendor>('vendors', selectedCompany.id === 'all' ? null : selectedCompany.id)
+    void listBusinessMasterItems<Vendor>('vendors', tenantId, companyId)
       .then((rows) => {
-        if (rows.length) setVendors(rows);
+        setVendors(rows);
       })
       .catch(() => {
-        setVendors(mockVendors);
+        setVendors(allowMockFallback() ? mockVendors : []);
       });
-  }, [selectedCompany.id]);
+  }, [tenantId, companyId]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
@@ -123,7 +126,8 @@ const VendorsSettingsPage: React.FC = () => {
         'vendors',
         editingVendor.id,
         { ...editingVendor, ...formData, status: 'active' },
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       setVendors((prev) =>
         prev.map((v) =>
@@ -142,7 +146,8 @@ const VendorsSettingsPage: React.FC = () => {
         'vendors',
         newVendor.id,
         newVendor,
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       setVendors((prev) => [...prev, newVendor]);
     }
@@ -152,7 +157,7 @@ const VendorsSettingsPage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm('Bạn có chắc chắn muốn xóa đối tác này?')) {
-      await deleteBusinessMasterItem('vendors', id, selectedCompany.id === 'all' ? null : selectedCompany.id);
+      await deleteBusinessMasterItem('vendors', id, tenantId, companyId);
       setVendors((prev) => prev.filter((v) => v.id !== id));
     }
   };
@@ -607,7 +612,7 @@ const VendorsSettingsPage: React.FC = () => {
                   Áp dụng cho công ty <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {(companies.length ? companies : mockCompanies).map((company: { id: string; shortName: string }) => (
+                  {companies.map((company) => (
                     <label
                       key={company.id}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
@@ -640,7 +645,7 @@ const VendorsSettingsPage: React.FC = () => {
                         }}
                         className="sr-only"
                       />
-                      <span className="text-sm font-medium">{company.shortName}</span>
+                      <span className="text-sm font-medium">{company.shortName ?? company.name}</span>
                     </label>
                   ))}
                 </div>

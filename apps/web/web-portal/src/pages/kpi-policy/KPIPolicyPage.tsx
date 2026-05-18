@@ -6,83 +6,37 @@ import {
   InfoCard,
   Badge,
 } from '../../components/common';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
-import { mockKPIMetrics, mockCompanies } from '../../data/mockData';
-
-// Mock policy data
-const mockPolicies = [
-  {
-    id: 'policy-1',
-    code: 'CS-2024-001',
-    name: 'Chính sách KPI Doanh thu Q1/2024',
-    description: 'Quy định mục tiêu và cách tính KPI doanh thu cho toàn tập đoàn',
-    status: 'approved',
-    approvedDate: '2024-01-15',
-    effectiveDate: '2024-01-01',
-    applicableCompanies: ['all'],
-    relatedKPIs: ['REV001'],
-  },
-  {
-    id: 'policy-2',
-    code: 'CS-2024-002',
-    name: 'Chính sách quản lý Turnover Rate',
-    description: 'Quy định ngưỡng tỷ lệ nghỉ việc cho phép của từng công ty',
-    status: 'approved',
-    approvedDate: '2024-01-20',
-    effectiveDate: '2024-02-01',
-    applicableCompanies: ['all'],
-    relatedKPIs: ['HR001'],
-  },
-  {
-    id: 'policy-3',
-    code: 'CS-2024-003',
-    name: 'Chính sách SLA Vận hành Logistics',
-    description: 'Quy định các mức SLA cho hoạt động vận chuyển và giao nhận',
-    status: 'pending',
-    approvedDate: null,
-    effectiveDate: null,
-    applicableCompanies: ['trsport', 'lgts'],
-    relatedKPIs: ['OPS001'],
-  },
-  {
-    id: 'policy-4',
-    code: 'CS-2024-004',
-    name: 'Chính sách Uptime hệ thống công nghệ',
-    description: 'Yêu cầu độ ổn định của các hệ thống IT trong tập đoàn',
-    status: 'approved',
-    approvedDate: '2024-02-01',
-    effectiveDate: '2024-02-15',
-    applicableCompanies: ['xevn-tech'],
-    relatedKPIs: ['TECH001'],
-  },
-];
+import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
+import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
+import { useKpiPolicySnapshot } from '../../hooks/useKpiPolicySnapshot';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const KPIPolicyPage: React.FC = () => {
   const { selectedCompany } = useGlobalFilter();
+  const { tenantId, companyId } = useTenantScope();
+  const { companies } = useCompanyFilterOptions();
+  const { policies, metrics, loadFailed, usingMockFallback, isLoading } = useKpiPolicySnapshot(
+    tenantId,
+    companyId,
+  );
 
-  // Filter policies based on selected company
   const filteredPolicies = useMemo(() => {
-    if (selectedCompany.id === 'all') {
-      return mockPolicies;
-    }
-    return mockPolicies.filter(
+    if (selectedCompany.id === 'all') return policies;
+    return policies.filter(
       (policy) =>
         policy.applicableCompanies.includes(selectedCompany.id) ||
-        policy.applicableCompanies.includes('all')
+        policy.applicableCompanies.includes('all'),
     );
-  }, [selectedCompany.id]);
+  }, [policies, selectedCompany.id]);
 
-  // Filter KPI metrics based on selected company
   const filteredMetrics = useMemo(() => {
-    if (selectedCompany.id === 'all') {
-      return mockKPIMetrics;
-    }
-    return mockKPIMetrics.filter(
+    if (selectedCompany.id === 'all') return metrics;
+    return metrics.filter(
       (metric) =>
         metric.applicableCompanies.includes(selectedCompany.id) ||
-        metric.applicableCompanies.includes('all')
+        metric.applicableCompanies.includes('all'),
     );
-  }, [selectedCompany.id]);
+  }, [metrics, selectedCompany.id]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -95,7 +49,7 @@ const KPIPolicyPage: React.FC = () => {
 
   // Get company name by ID
   const getCompanyName = (companyId: string) => {
-    const company = mockCompanies.find((c) => c.id === companyId);
+    const company = companies.find((c) => c.id === companyId);
     return company?.shortName || companyId;
   };
 
@@ -106,6 +60,12 @@ const KPIPolicyPage: React.FC = () => {
         subtitle="Quản lý và phê duyệt các chính sách KPI của tập đoàn"
         icon={<Target size={24} />}
       />
+
+      <ApiLoadBanner loadFailed={loadFailed} usingMockFallback={usingMockFallback} />
+
+      {isLoading ? (
+        <p className="mb-4 text-sm text-slate-500">Đang tải chính sách KPI từ business-master…</p>
+      ) : null}
 
       {/* Info Banner */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-start gap-3">

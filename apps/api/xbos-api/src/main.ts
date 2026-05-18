@@ -73,6 +73,7 @@ async function bootstrap() {
     });
     next();
   });
-  await app.listen(process.env.PORT ?? 3002);
+  const port = Number(process.env.XBOS_BE_PORT ?? process.env.PORT ?? 3002);
+  await app.listen(port);
 }
 bootstrap();

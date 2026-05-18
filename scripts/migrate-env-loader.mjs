@@ -109,7 +109,7 @@ export function explainEnvFailure(target, { loaded = [] } = {}) {
     checks.push({ path: apiEx, exists: fs.existsSync(apiEx) });
   }
   return {
-    hint: `Cần ${urlKey} hoặc đủ DB_HOST, DB_PORT, DB_USER, DB_PASSWORD. Script tự tạo .env từ .env.example nếu thiếu; có thể đặt biến máy XEVN_DB_PASSWORD (không commit) thay vì sửa file.`,
+    hint: `Cần ${urlKey} hoặc đủ DB_HOST, DB_PORT, DB_USER (DB_PASSWORD tùy chọn). Script tự tạo .env từ .env.example nếu thiếu; có thể đặt biến máy XEVN_DB_PASSWORD (không commit) thay vì sửa file.`,
     cwd: process.cwd(),
     repoRoot,
     loaded_env_files: loaded,

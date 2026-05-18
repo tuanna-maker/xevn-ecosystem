@@ -160,6 +160,21 @@ function findCatalog(catalogs: HrmSettingsCatalogOverviewRow[], keys: string[]) 
   return catalogs.find((c) => keys.includes(c.catalogKey.toLowerCase()));
 }
 
+const CATALOG_CODE_ALIASES: Record<string, string> = {
+  national_id: 'id_number',
+  phone_number: 'phone',
+  birth_year: 'birth_date',
+  emergency_contact_name: 'emergency_contact',
+  emergency_contact_phone: 'emergency_phone',
+  social_insurance_code: 'social_insurance_number',
+  full_name: 'full_name',
+};
+
+function resolveCatalogFormFieldCode<T extends string>(code: string, defaults: readonly T[]): T | null {
+  const resolved = (CATALOG_CODE_ALIASES[code] ?? code) as T;
+  return defaults.includes(resolved) ? resolved : null;
+}
+
 function buildActiveFieldSet<T extends string>(
   catalog: HrmSettingsCatalogOverviewRow | undefined,
   defaults: readonly T[],
@@ -167,9 +182,9 @@ function buildActiveFieldSet<T extends string>(
 ) {
   const configured = new Set<T>();
   for (const item of catalog?.effectiveItems ?? []) {
-    if (item.status === 'active' && defaults.includes(item.code as T)) {
-      configured.add(item.code as T);
-    }
+    if (item.status !== 'active') continue;
+    const mapped = resolveCatalogFormFieldCode(item.code, defaults);
+    if (mapped) configured.add(mapped);
   }
   for (const req of required ?? []) configured.add(req);
   return configured.size > 0 ? configured : new Set(defaults);
@@ -178,9 +193,8 @@ function buildActiveFieldSet<T extends string>(
 function buildLabelMap<T extends string>(catalog: HrmSettingsCatalogOverviewRow | undefined, defaults: readonly T[]) {
   const map = new Map<T, string>();
   for (const item of catalog?.effectiveItems ?? []) {
-    if (defaults.includes(item.code as T)) {
-      map.set(item.code as T, item.label);
-    }
+    const mapped = resolveCatalogFormFieldCode(item.code, defaults);
+    if (mapped) map.set(mapped, item.label);
   }
   return map;
 }
@@ -209,7 +223,11 @@ function buildDynamicFields<T extends string>(
 ): DynamicCatalogField[] {
   const knownCodes = new Set(defaults as readonly string[]);
   return (catalog?.effectiveItems ?? [])
-    .filter((item) => item.status === 'active' && !knownCodes.has(item.code))
+    .filter((item) => {
+      if (item.status !== 'active') return false;
+      if (resolveCatalogFormFieldCode(item.code, defaults)) return false;
+      return !knownCodes.has(item.code);
+    })
     .map((item) => {
       const meta = parseDynamicFieldMeta(item.unit);
       return {

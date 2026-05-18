@@ -1,0 +1,3803 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<title>BRD Tổng hợp — Hệ sinh thái XeVN OS</title>
+<style>
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm 16mm;
+}
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: #1e293b;
+}
+h1 {
+  color: #1e40af;
+  font-size: 22pt;
+  page-break-before: always;
+  margin-top: 0;
+}
+h1:first-of-type {
+  page-break-before: avoid;
+}
+h2 {
+  color: #1e3a8a;
+  font-size: 14pt;
+  margin-top: 1.2em;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.2em;
+}
+h3 { font-size: 11.5pt; color: #334155; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  margin: 0.8em 0;
+}
+th {
+  background: #eff6ff;
+  color: #1e40af;
+  text-align: left;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e1;
+}
+td {
+  padding: 5px 8px;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8fafc; }
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px auto;
+  page-break-inside: avoid;
+}
+blockquote {
+  border-left: 4px solid #1e40af;
+  margin: 1em 0;
+  padding: 0.4em 1em;
+  background: #f8fafc;
+  color: #475569;
+}
+pre {
+  background: #f1f5f9;
+  padding: 10px;
+  font-size: 8pt;
+  overflow-x: auto;
+  page-break-inside: avoid;
+}
+code { font-size: 8.5pt; }
+
+table.uc-table { font-size: 8pt; }
+table.uc-table td, table.uc-table th { padding: 3px 5px; }
+table.uc-table tr { page-break-inside: auto; }
+.mermaid { margin: 1em 0; text-align: center; page-break-inside: avoid; }
+.mermaid svg { max-width: 100%; height: auto; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+<h1>BRD Tổng hợp — Hệ sinh thái XeVN OS</h1>
+<h2>Kiểm soát tài liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Mục</th>
+<th>Giá trị</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tên tài liệu</td>
+<td>BRD Tổng hợp — Hệ sinh thái XeVN OS</td>
+</tr>
+<tr>
+<td>Phiên bản</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Trạng thái</td>
+<td>Bản trình bày / làm việc</td>
+</tr>
+<tr>
+<td>Ngày hiệu lực</td>
+<td>Tháng 5/2026</td>
+</tr>
+<tr>
+<td>Phạm vi</td>
+<td>Toàn bộ phân hệ: Cổng Web, XBOS, Nhân sự (HRM), Logistic</td>
+</tr>
+<tr>
+<td>Đối tượng</td>
+<td>Ban điều hành, chủ đầu tư, phòng IT, nghiệp vụ</td>
+</tr>
+</tbody></table>
+<p><strong>Mục đích:</strong> Một tài liệu nghiệp vụ thống nhất mô tả kiến trúc, luồng vận hành, phạm vi theo giai đoạn và <strong>toàn bộ</strong> tình huống sử dụng (use case) của hệ sinh thái — làm căn cứ triển khai, nghiệm thu và trình bày điều hành.</p>
+<p><strong>Tài liệu liên quan (chi tiết từng phân hệ):</strong> BRD Phân hệ XBOS · BRD Phân hệ HRM · BRD quy tắc phạm vi dữ liệu toàn hệ · Lộ trình Phase 1 &amp; Phase 2 — XeVN OS · Bảng tổng hợp use case toàn hệ sinh thái XeVN.</p>
+<hr>
+<h2>1. Tóm tắt điều hành</h2>
+<p>XeVN OS là hệ sinh thái phần mềm <strong>đa công ty</strong> phục vụ tập đoàn vận tải — logistics, gồm:</p>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Vai trò</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Cổng Web (Portal)</strong></td>
+<td>Một điểm vào: bảng điều hành, trung tâm điều hành, cài đặt, nhúng nhân sự</td>
+</tr>
+<tr>
+<td><strong>XBOS</strong></td>
+<td>Lõi: tổ chức, danh mục chuẩn, quy trình phê duyệt, RACI, dữ liệu master</td>
+</tr>
+<tr>
+<td><strong>Nhân sự (HRM)</strong></td>
+<td>Hồ sơ nhân viên, chấm công, lương, tuyển dụng, ứng dụng nhân viên</td>
+</tr>
+<tr>
+<td><strong>Logistic</strong></td>
+<td>Kinh doanh → điều phối → vận đơn/chuyến → ứng dụng lái xe</td>
+</tr>
+</tbody></table>
+<p><strong>Quy mô đã chuẩn hóa:</strong> 373 tình huống sử dụng phần mềm · 183 mục danh mục cấu hình trên XBOS.</p>
+<p><strong>Lộ trình triển khai:</strong> Giai đoạn 1 — XBOS + Nhân sự + khai danh mục Logistic. Giai đoạn 2 — Logistic nghiệp vụ đầy đủ.</p>
+<hr>
+<h2>2. Kiến trúc tổng thể</h2>
+<h3>2.1 Bốn tầng kiến trúc</h3>
+<p><img src="file:///Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets/kien-truc-bon-tang-xevn.png" alt="Kiến trúc bốn tầng"></p>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Trình bày</td>
+<td>Cổng Web tập đoàn — giao diện điều hành thống nhất</td>
+</tr>
+<tr>
+<td>Nghiệp vụ</td>
+<td>HRM và Logistic — xử lý giao dịch hàng ngày</td>
+</tr>
+<tr>
+<td>Nền tảng</td>
+<td>XBOS — chuẩn hóa danh mục, quy trình, tổ chức</td>
+</tr>
+<tr>
+<td>Dữ liệu</td>
+<td>Cơ sở dữ liệu tập trung, phân tách theo công ty con</td>
+</tr>
+</tbody></table>
+<h3>2.2 Vai trò và luồng tích hợp</h3>
+<p><img src="file:///Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets/kien-truc-vai-tro-luong-xevn.png" alt="Kiến trúc vai trò và luồng"></p>
+<table>
+<thead>
+<tr>
+<th>Thành phần</th>
+<th>Trách nhiệm</th>
+<th>Không thay thế</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cổng Web</td>
+<td>Điều hành, lọc theo công ty, nhúng module</td>
+<td>Nghiệp vụ chuyên sâu từng phân hệ</td>
+</tr>
+<tr>
+<td>XBOS</td>
+<td>Danh mục chuẩn, quy trình, RACI, tổ chức</td>
+<td>Từng đơn vận chuyển / bảng lương chi tiết</td>
+</tr>
+<tr>
+<td>Nhân sự</td>
+<td>Vòng đời nhân viên</td>
+<td>Quản lý chuyến xe</td>
+</tr>
+<tr>
+<td>Logistic</td>
+<td>Chuỗi kinh doanh → vận hành</td>
+<td>Tự định nghĩa danh mục gốc</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>3. Quy tắc nghiệp vụ toàn hệ (tóm tắt)</h2>
+<p><em>Nguồn chi tiết: BRD — Quy tắc định danh và phạm vi dữ liệu toàn hệ sinh thái XeVN</em></p>
+<table>
+<thead>
+<tr>
+<th>Mã quy tắc</th>
+<th>Tóm tắt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Phạm vi chưa đăng nhập</td>
+<td>Trong môi trường cho phép: coi như quản trị hệ thống, thấy phạm vi rộng (phục vụ triển khai)</td>
+</tr>
+<tr>
+<td>Phạm vi đã đăng nhập</td>
+<td>Chỉ dữ liệu thuộc công ty / tenant được gán</td>
+</tr>
+<tr>
+<td>Giao diện nhúng</td>
+<td>Hộp thoại / menu phải phủ toàn màn hình cổng, không gói trong khung nhúng</td>
+</tr>
+<tr>
+<td>Mở rộng danh mục</td>
+<td>Công ty con thêm trường: có quy trình phê duyệt qua XBOS</td>
+</tr>
+<tr>
+<td>Xóa trường danh mục</td>
+<td>Không xóa trực tiếp — yêu cầu phê duyệt tập đoàn</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>4. Phân tầng dữ liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Tầng</th>
+<th>Quản lý tại</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Dùng chung tập đoàn</td>
+<td>XBOS</td>
+<td>Pháp nhân, cây tổ chức, RACI</td>
+</tr>
+<tr>
+<td>Danh mục nghiệp vụ</td>
+<td>XBOS (theo phân hệ)</td>
+<td>Loại xe, nhóm trường hồ sơ, mẫu tuyến</td>
+</tr>
+<tr>
+<td>Quy trình phê duyệt</td>
+<td>XBOS</td>
+<td>~20 quy trình Logistic; duyệt mở rộng danh mục Nhân sự</td>
+</tr>
+<tr>
+<td>Giao dịch vận hành</td>
+<td>HRM / Logistic</td>
+<td>Nhân viên, vận đơn, chuyến, phiếu lương</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>5. Lộ trình triển khai theo giai đoạn</h2>
+<p><img src="file:///Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets/lo-trinh-hai-giai-doan-xevn.png" alt="Lộ trình hai giai đoạn — Phạm vi"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Giai đoạn 1</th>
+<th>Giai đoạn 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Mục tiêu</strong></td>
+<td>XBOS + Nhân sự vận hành; khai đủ danh mục Logistic</td>
+<td>Logistic Web + ứng dụng lái xe</td>
+</tr>
+<tr>
+<td><strong>Trong phạm vi</strong></td>
+<td>245 chức năng · 183 danh mục</td>
+<td>128 chức năng nghiệp vụ Logistic</td>
+</tr>
+<tr>
+<td><strong>Ngoài phạm vi</strong></td>
+<td>Đơn, chuyến, app lái xe</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>6. Chuỗi giá trị Logistic</h2>
+<p><img src="file:///Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets/chuoi-gia-tri-logistic-xevn.png" alt="Chuỗi giá trị Logistic"></p>
+<p><em>Nguồn: Biên bản họp — Vận hành Logistics XEVN</em></p>
+<hr>
+<h2>7. Phân hệ XBOS</h2>
+<h3>7.1 Mục tiêu nghiệp vụ</h3>
+<p>XBOS là <strong>nguồn chuẩn</strong> cho dữ liệu dùng chung và điều phối cấu hình; không thay thế nghiệp vụ chuyên sâu của HRM hay Logistic.</p>
+<h3>7.2 Nhóm chức năng chính (104 chức năng nền tảng)</h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Số lượng</th>
+<th>Nội dung</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nền tảng và đồng bộ</td>
+<td>9</td>
+<td>Sức khỏe hệ thống, đồng bộ danh mục, kiểm toán</td>
+</tr>
+<tr>
+<td>Master và KPI</td>
+<td>12</td>
+<td>Dữ liệu master, tính KPI điều hành</td>
+</tr>
+<tr>
+<td>Tổ chức và phân quyền</td>
+<td>6</td>
+<td>Pháp nhân, phòng ban, ma trận quyền</td>
+</tr>
+<tr>
+<td>Quy trình phê duyệt</td>
+<td>9</td>
+<td>Định nghĩa và chạy quy trình</td>
+</tr>
+<tr>
+<td>Tài sản</td>
+<td>6</td>
+<td>Đăng ký tài sản, yêu cầu tài chính</td>
+</tr>
+<tr>
+<td>Xác thực / phạm vi</td>
+<td>7</td>
+<td>Đăng nhập, chọn công ty</td>
+</tr>
+<tr>
+<td>Trung tâm điều hành</td>
+<td>15</td>
+<td>Thiết lập công ty, RACI, hộp thư duyệt</td>
+</tr>
+<tr>
+<td>Quản trị danh mục chung</td>
+<td>18</td>
+<td>Mẫu quản trị danh mục đa phân hệ</td>
+</tr>
+<tr>
+<td>Governance danh mục HRM</td>
+<td>7</td>
+<td>Phê duyệt mở rộng danh mục nhân sự</td>
+</tr>
+<tr>
+<td>Khác</td>
+<td>15</td>
+<td>Master toàn hệ, tích hợp cổng</td>
+</tr>
+</tbody></table>
+<h3>7.3 Luồng nghiệp vụ — Thiết lập công ty trên Trung tâm điều hành</h3>
+<div class="mermaid">
+sequenceDiagram
+  participant LD as Lãnh đạo / Quản trị
+  participant Portal as Cổng Web
+  participant XBOS as Hệ thống XBOS
+  participant DB as Cơ sở dữ liệu
+
+<p>  LD-&gt;&gt;Portal: Mở Trung tâm điều hành · chọn công ty
+  Portal-&gt;&gt;XBOS: Lấy cây tổ chức · pháp nhân · RACI
+  XBOS-&gt;&gt;DB: Đọc theo phạm vi công ty
+  DB--&gt;&gt;XBOS: Dữ liệu
+  XBOS--&gt;&gt;Portal: Hiển thị
+  LD-&gt;&gt;Portal: Sửa phòng ban / cổ đông / tài liệu pháp lý
+  Portal-&gt;&gt;XBOS: Lưu thay đổi
+  XBOS-&gt;&gt;DB: Ghi có phiên bản
+  XBOS--&gt;&gt;Portal: Xác nhận thành công</p>
+</div>
+
+
+<h3>7.4 Luồng nghiệp vụ — Phê duyệt quy trình</h3>
+<div class="mermaid">
+flowchart LR
+  A[Định nghĩa quy trình trên XBOS] --> B[Khởi chạy phiên phê duyệt]
+  B --> C[Hộp thư người duyệt]
+  C --> D{Quyết định}
+  D -->|Đồng ý| E[Bước tiếp theo / Hoàn tất]
+  D -->|Từ chối| F[Kết thúc · Thông báo người gửi]
+</div>
+
+
+<hr>
+<h2>8. Phân hệ Nhân sự (HRM)</h2>
+<h3>8.1 Mục tiêu</h3>
+<p>Quản trị vòng đời nhân sự đa công ty; đồng bộ danh mục và tổ chức từ XBOS.</p>
+<h3>8.2 Nhóm chức năng (119 chức năng)</h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Số lượng</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Quản trị danh mục trên XBOS (Nhân sự)</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Nền tảng và đồng bộ</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Chấm công và đơn từ</td>
+<td>13</td>
+</tr>
+<tr>
+<td>Yêu cầu dịch vụ và thông báo</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Nhân sự, lương, tuyển dụng, hợp đồng</td>
+<td>24</td>
+</tr>
+<tr>
+<td>Metadata và danh mục HRM</td>
+<td>18</td>
+</tr>
+<tr>
+<td>Công việc, đánh giá, đội xe</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Nhúng Trung tâm điều hành</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Ứng dụng di động nhân viên</td>
+<td>15</td>
+</tr>
+</tbody></table>
+<h3>8.3 Luồng nghiệp vụ — Đơn nghỉ / phê duyệt</h3>
+<div class="mermaid">
+sequenceDiagram
+  participant NV as Nhân viên
+  participant HRM as Phân hệ Nhân sự
+  participant XBOS as XBOS (quy trình)
+  participant QL as Quản lý
+
+<p>  NV-&gt;&gt;HRM: Tạo đơn nghỉ / chỉnh sửa chấm công
+  HRM-&gt;&gt;XBOS: Khởi chạy quy trình (nếu cấu hình)
+  XBOS-&gt;&gt;QL: Thông báo hộp thư duyệt
+  QL-&gt;&gt;XBOS: Phê duyệt hoặc từ chối
+  XBOS-&gt;&gt;HRM: Cập nhật trạng thái
+  HRM-&gt;&gt;NV: Thông báo kết quả</p>
+</div>
+
+
+<h3>8.4 Luồng — Đồng bộ danh mục từ XBOS</h3>
+<div class="mermaid">
+flowchart LR
+  subgraph XBOS
+    DM[Danh mục chuẩn tập đoàn]
+  end
+  subgraph HRM
+    API[Hệ thống Nhân sự]
+    UI[Màn hình nhân sự]
+  end
+  DM -->|Phát hành phiên bản| API
+  API --> UI
+</div>
+
+
+<hr>
+<h2>9. Phân hệ Logistic</h2>
+<h3>9.1 Mục tiêu</h3>
+<p>Chuỗi <strong>kinh doanh → vận hành → hiện trường</strong>; app lái xe bắt buộc khi go-live.</p>
+<h3>9.2 Nhóm chức năng (150 chức năng, gồm quản trị danh mục)</h3>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Số lượng</th>
+<th>Giai đoạn</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Quản trị danh mục Logistic trên XBOS</td>
+<td>22</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Kinh doanh đầu chuỗi</td>
+<td>8</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Master tuyến và lộ trình</td>
+<td>8</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Điều phối</td>
+<td>16</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Vận đơn, đội xe, kho…</td>
+<td>70+</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Ứng dụng lái xe</td>
+<td>28</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<h3>9.3 Luồng nghiệp vụ — Từ báo giá đến chuyến</h3>
+<div class="mermaid">
+flowchart TD
+  KD[Kinh doanh: khách · báo giá · hợp đồng] --> DON[Tạo đơn / booking]
+  DON --> DP[Điều phối: gán xe · lái xe]
+  DP --> CH[Chuyến vận hành]
+  CH --> APP[App lái xe: 5 bước trả hàng]
+  APP --> DT[Doanh thu · lương %]
+</div>
+
+
+<h3>9.4 Danh mục cấu hình Logistic (111 mục)</h3>
+<p>Gồm 91 danh mục nghiệp vụ và 20 quy trình vận hành định nghĩa trên XBOS. <em>Chi tiết: Danh mục XBOS cho Logistic và use case phân hệ Logistic.</em></p>
+<hr>
+<h2>10. Danh mục cấu hình trên XBOS (tổng hợp)</h2>
+<table>
+<thead>
+<tr>
+<th>Phân hệ</th>
+<th>Số mục</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nhân sự</td>
+<td>72</td>
+</tr>
+<tr>
+<td>Logistic (danh mục + quy trình)</td>
+<td>111</td>
+</tr>
+<tr>
+<td><strong>Tổng</strong></td>
+<td><strong>183</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>11. Luồng tích hợp phần mềm tổng thể</h2>
+<p>Mô hình triển khai: <strong>Cổng Web</strong> gọi <strong>dịch vụ XBOS</strong> và <strong>dịch vụ Nhân sự</strong>; Logistic (giai đoạn 2) tương tự.</p>
+<div class="mermaid">
+flowchart TB
+  subgraph Client
+    WEB[Cổng Web · Ứng dụng di động]
+  end
+  subgraph Services
+    XAPI[Dịch vụ XBOS]
+    HAPI[Dịch vụ Nhân sự]
+    LAPI[Dịch vụ Logistic]
+  end
+  subgraph Data
+    PG[(Cơ sở dữ liệu PostgreSQL)]
+  end
+  WEB --> XAPI
+  WEB --> HAPI
+  WEB --> LAPI
+  XAPI --> PG
+  HAPI --> PG
+  LAPI --> PG
+  XAPI -.->|Danh mục chuẩn| HAPI
+  XAPI -.->|Danh mục chuẩn| LAPI
+</div>
+
+
+<table>
+<thead>
+<tr>
+<th>Luồng</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Đăng nhập</td>
+<td>Người dùng xác thực qua cổng → nhận phạm vi công ty được phép</td>
+</tr>
+<tr>
+<td>Đọc danh mục</td>
+<td>Phân hệ nghiệp vụ đọc danh mục đã phát hành từ XBOS</td>
+</tr>
+<tr>
+<td>Ghi nghiệp vụ</td>
+<td>Đơn, nhân viên, chuyến… lưu tại phân hệ tương ứng</td>
+</tr>
+<tr>
+<td>Phê duyệt</td>
+<td>Quy trình do XBOS điều phối, hộp thư trên cổng</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>12. Ma trận tham chiếu tài liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Loại</th>
+<th>Tên tài liệu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Toàn hệ</td>
+<td>BRD quy tắc phạm vi dữ liệu toàn hệ</td>
+</tr>
+<tr>
+<td></td>
+<td>SRS định danh và phạm vi toàn hệ</td>
+</tr>
+<tr>
+<td></td>
+<td>Kế hoạch dự án tổng thể hệ sinh thái XeVN</td>
+</tr>
+<tr>
+<td></td>
+<td>Bảng tổng hợp use case toàn hệ</td>
+</tr>
+<tr>
+<td></td>
+<td>Lộ trình Phase 1 &amp; Phase 2</td>
+</tr>
+<tr>
+<td>XBOS</td>
+<td>BRD / SRS / TechSpec Phân hệ XBOS</td>
+</tr>
+<tr>
+<td></td>
+<td>SRS Thiết lập công ty — Trung tâm điều hành</td>
+</tr>
+<tr>
+<td></td>
+<td>BRD / SRS Quản trị RACI</td>
+</tr>
+<tr>
+<td>HRM</td>
+<td>BRD / SRS / TechSpec Phân hệ HRM</td>
+</tr>
+<tr>
+<td></td>
+<td>Danh mục XBOS cho Nhân sự</td>
+</tr>
+<tr>
+<td>Logistic</td>
+<td>Biên bản họp Vận hành Logistics</td>
+</tr>
+<tr>
+<td></td>
+<td>Danh mục XBOS cho Logistic</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>13. Tiêu chí chấp nhận tổng thể</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Tiêu chí</th>
+<th>Bằng chứng</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Đủ 373 chức năng có mô tả và phân loại</td>
+<td>Phụ lục A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Đủ 183 danh mục khai trên XBOS (Giai đoạn 1)</td>
+<td>Biên bản phát hành danh mục</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Chuỗi Logistic chạy thật (Giai đoạn 2)</td>
+<td>UAT pilot một công ty</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Phân tách dữ liệu đúng công ty con</td>
+<td>Kiểm thử hai tài khoản khác công ty</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Phê duyệt tập trung qua XBOS</td>
+<td>Demo quy trình + hộp thư</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="phu-luc-a">Phụ lục A. Danh sách đầy đủ 373 tình huống sử dụng</h2>
+<table class="uc-table">
+<thead>
+<tr>
+<th>STT</th>
+<th>Mã</th>
+<th>Tên use case</th>
+<th>Lớp / phân hệ</th>
+<th>Nhóm nghiệp vụ</th>
+<th>Kênh</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>UC-XBOS-01</td>
+<td>Kiểm tra trạng thái dịch vụ</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>2</td>
+<td>UC-XBOS-02</td>
+<td>Khởi tạo hoặc cập nhật danh mục dùng chung</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>3</td>
+<td>UC-XBOS-03</td>
+<td>Lấy danh mục theo tên danh mục và phân hệ đích</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>4</td>
+<td>UC-XBOS-04</td>
+<td>Liệt kê danh mục theo phân hệ đích</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>5</td>
+<td>UC-XBOS-05</td>
+<td>Phát hành phiên bản hợp đồng dữ liệu</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>6</td>
+<td>UC-XBOS-06</td>
+<td>Truy vấn nhật ký kiểm toán</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>7</td>
+<td>UC-XBOS-07</td>
+<td>Tiếp nhận cảnh báo từ phân hệ vệ tinh</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>8</td>
+<td>UC-XBOS-SYNC-01</td>
+<td>Bootstrap hệ sinh thái XEVN (danh mục nền)</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>9</td>
+<td>UC-XBOS-MET-01</td>
+<td>Xem chỉ số vận hành dịch vụ API</td>
+<td>XBOS nền tảng</td>
+<td>Nền tảng và đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>10</td>
+<td>UC-XBOS-08</td>
+<td>Thêm / sửa / xóa dữ liệu master theo lĩnh vực</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>API</td>
+</tr>
+<tr>
+<td>11</td>
+<td>UC-XBOS-KPI-01</td>
+<td>Tính KPI đơn lẻ trên máy chủ</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>API</td>
+</tr>
+<tr>
+<td>12</td>
+<td>UC-XBOS-KPI-02</td>
+<td>Tính KPI theo lô trên máy chủ</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>API</td>
+</tr>
+<tr>
+<td>13</td>
+<td>UC-XBOS-KPI-03</td>
+<td>Tổng hợp KPI đa cấp (rollup)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>API</td>
+</tr>
+<tr>
+<td>14</td>
+<td>UC-XBOS-KPI-04</td>
+<td>Phát cảnh báo KPI lên cổng điều hành</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>API</td>
+</tr>
+<tr>
+<td>15</td>
+<td>UC-XBOS-MD-01</td>
+<td>Quản lý chức danh (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>16</td>
+<td>UC-XBOS-MD-02</td>
+<td>Quản lý nhà cung cấp (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>17</td>
+<td>UC-XBOS-MD-03</td>
+<td>Quản lý loại chi phí (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>18</td>
+<td>UC-XBOS-MD-04</td>
+<td>Quản lý chỉ số KPI (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>19</td>
+<td>UC-XBOS-MD-05</td>
+<td>Quản lý khách hàng (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>20</td>
+<td>UC-XBOS-MD-06</td>
+<td>Quản lý đối tác (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>21</td>
+<td>UC-XBOS-MD-07</td>
+<td>Quản lý loại xe / tài sản (master)</td>
+<td>XBOS nền tảng</td>
+<td>Master data và KPI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>22</td>
+<td>UC-XBOS-10</td>
+<td>Nâng mảng kinh doanh thành công ty con</td>
+<td>XBOS nền tảng</td>
+<td>Tổ chức, chức danh, phân quyền</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>23</td>
+<td>UC-XBOS-11</td>
+<td>Quản lý mẫu chức danh và gán vị trí (kiêm nhiệm)</td>
+<td>XBOS nền tảng</td>
+<td>Tổ chức, chức danh, phân quyền</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>24</td>
+<td>UC-XBOS-12</td>
+<td>Gán hoặc thu hồi quyền; kiểm tra xung đột quyền</td>
+<td>XBOS nền tảng</td>
+<td>Tổ chức, chức danh, phân quyền</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>25</td>
+<td>UC-XBOS-ORG-01</td>
+<td>Xem và sửa cây pháp nhân / đơn vị tổ chức</td>
+<td>XBOS nền tảng</td>
+<td>Tổ chức, chức danh, phân quyền</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>26</td>
+<td>UC-XBOS-ORG-02</td>
+<td>Thêm / sửa / xóa phòng ban (đơn vị tổ chức)</td>
+<td>XBOS nền tảng</td>
+<td>Tổ chức, chức danh, phân quyền</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>27</td>
+<td>UC-XBOS-ORG-03</td>
+<td>Lưu hồ sơ pháp nhân (mã số thuế, đại diện, vốn…)</td>
+<td>XBOS nền tảng</td>
+<td>Tổ chức, chức danh, phân quyền</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>28</td>
+<td>UC-XBOS-13</td>
+<td>Định nghĩa quy trình (workflow)</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>29</td>
+<td>UC-XBOS-14</td>
+<td>Chạy quy trình — phê duyệt từng vai (multi-hat)</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>30</td>
+<td>UC-XBOS-15</td>
+<td>Cấu hình tuyến báo cáo và tổng hợp kết quả quy trình</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>31</td>
+<td>UC-XBOS-WF-01</td>
+<td>Lưu sơ đồ quy trình trên canvas</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>32</td>
+<td>UC-XBOS-WF-02</td>
+<td>Xem danh sách phiên bản quy trình</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>33</td>
+<td>UC-XBOS-WF-03</td>
+<td>Khởi tạo phiên chạy quy trình</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>34</td>
+<td>UC-XBOS-WF-04</td>
+<td>Hoàn thành bước phê duyệt trong phiên</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>35</td>
+<td>UC-XBOS-WF-05</td>
+<td>Xem chi tiết phiên và các bước đang chờ</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>36</td>
+<td>UC-XBOS-WF-06</td>
+<td>Từ chối bước phê duyệt trong phiên</td>
+<td>XBOS nền tảng</td>
+<td>Quy trình và phê duyệt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>37</td>
+<td>UC-XBOS-16</td>
+<td>Yêu cầu tài sản — quy trình xác nhận kế toán (5 bước)</td>
+<td>XBOS nền tảng</td>
+<td>Tài sản và yêu cầu tài chính</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>38</td>
+<td>UC-XBOS-AR-01</td>
+<td>Danh sách yêu cầu tài sản</td>
+<td>XBOS nền tảng</td>
+<td>Tài sản và yêu cầu tài chính</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>39</td>
+<td>UC-XBOS-AR-02</td>
+<td>Tạo yêu cầu tài sản mới</td>
+<td>XBOS nền tảng</td>
+<td>Tài sản và yêu cầu tài chính</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>40</td>
+<td>UC-XBOS-AR-03</td>
+<td>Chuyển trạng thái yêu cầu tài sản</td>
+<td>XBOS nền tảng</td>
+<td>Tài sản và yêu cầu tài chính</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>41</td>
+<td>UC-XBOS-AST-01</td>
+<td>Đăng ký tài sản</td>
+<td>XBOS nền tảng</td>
+<td>Tài sản và yêu cầu tài chính</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>42</td>
+<td>UC-XBOS-AST-02</td>
+<td>Theo dõi vòng đời tài sản</td>
+<td>XBOS nền tảng</td>
+<td>Tài sản và yêu cầu tài chính</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>43</td>
+<td>UC-XBOS-AUTH-01</td>
+<td>Đăng nhập cổng Web Portal</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>44</td>
+<td>UC-XBOS-AUTH-02</td>
+<td>Xem thông tin phiên đăng nhập</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>45</td>
+<td>UC-XBOS-TENANT-01</td>
+<td>Liệt kê tenant / công ty người dùng được truy cập</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>46</td>
+<td>UC-XBOS-TENANT-02</td>
+<td>Xem tổng quan tổ chức tập đoàn theo quyền</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>47</td>
+<td>UC-XBOS-TENANT-03</td>
+<td>Liệt kê đơn vị thành viên trong tập đoàn</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>48</td>
+<td>UC-ECO-SCOPE-01</td>
+<td>Truy cập khi chưa đăng nhập (phạm vi quản trị hệ thống)</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>49</td>
+<td>UC-ECO-SCOPE-02</td>
+<td>Truy cập khi đã đăng nhập (một tenant)</td>
+<td>XBOS nền tảng</td>
+<td>Xác thực và phạm vi</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>50</td>
+<td>UC-CC-P0-01</td>
+<td>Quản lý cổ đông theo pháp nhân</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>51</td>
+<td>UC-CC-P0-02</td>
+<td>Quản lý tài liệu pháp lý và tải / xem file</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>52</td>
+<td>UC-CC-P0-03</td>
+<td>Lưu và xóa phòng ban</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>53</td>
+<td>UC-CC-P0-04</td>
+<td>Ma trận phân quyền theo vai trò</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>54</td>
+<td>UC-CC-P0-05</td>
+<td>Danh mục văn bản / đo lường / giá (Command Center)</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>55</td>
+<td>UC-CC-P0-06</td>
+<td>Hộp thư — mở chi tiết tác vụ quy trình</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>56</td>
+<td>UC-CC-P0-08</td>
+<td>Thông tin tổng quan không gian làm việc</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>57</td>
+<td>UC-CC-P0-09</td>
+<td>Chính sách hiển thị dữ liệu tạm khi API chưa sẵn sàng</td>
+<td>XBOS nền tảng</td>
+<td>Command Center P0</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>58</td>
+<td>UC-CC-01</td>
+<td>Cấu hình phòng ban theo từng pháp nhân</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>59</td>
+<td>UC-CC-03</td>
+<td>Chi tiết đơn vị thành viên — hồ sơ pháp nhân và RACI</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>60</td>
+<td>UC-CC-04</td>
+<td>Lưu thông tin pháp nhân</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>61</td>
+<td>UC-XBOS-CC-05</td>
+<td>Thanh điều hành — KPI / tác vụ / cảnh báo</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>62</td>
+<td>UC-XBOS-CC-06</td>
+<td>Canvas quy trình</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>63</td>
+<td>UC-XBOS-CC-07</td>
+<td>Hạ tầng — danh mục nền</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>64</td>
+<td>UC-XBOS-CC-08</td>
+<td>Hệ thống phòng ban mẫu</td>
+<td>XBOS nền tảng</td>
+<td>Command Center mở rộng</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>65</td>
+<td>UC-RACI-01</td>
+<td>Xem danh mục hoạt động RACI theo khối nghiệp vụ</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị RACI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>66</td>
+<td>UC-RACI-02</td>
+<td>Xem và chỉnh ma trận RACI tại chi tiết pháp nhân</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị RACI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>67</td>
+<td>UC-RACI-03</td>
+<td>Xem ánh xạ chức năng phân hệ cho hoạt động</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị RACI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>68</td>
+<td>UC-RACI-04</td>
+<td>Gán cột RACI với chức danh</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị RACI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>69</td>
+<td>UC-RACI-05</td>
+<td>Nhập hoặc nâng phiên bản catalog RACI</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị RACI</td>
+<td>API</td>
+</tr>
+<tr>
+<td>70</td>
+<td>UC-RACI-06</td>
+<td>Báo cáo độ phủ số hóa theo công ty</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị RACI</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>71</td>
+<td>UC-XBOS-DASH-01</td>
+<td>Cockpit tổng hợp KPI điều hành</td>
+<td>XBOS nền tảng</td>
+<td>Bảng điều hành</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>72</td>
+<td>UC-XBOS-DASH-02</td>
+<td>Bảng KPI theo công ty</td>
+<td>XBOS nền tảng</td>
+<td>Bảng điều hành</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>73</td>
+<td>UC-XBOS-DASH-03</td>
+<td>Chính sách KPI</td>
+<td>XBOS nền tảng</td>
+<td>Bảng điều hành</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>74</td>
+<td>UC-XBOS-INF-01</td>
+<td>Xem và sửa cấu hình hạ tầng danh mục nền</td>
+<td>XBOS nền tảng</td>
+<td>Hạ tầng và cài đặt</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>75</td>
+<td>UC-XBOS-INF-02</td>
+<td>Quản lý mẫu siêu dữ liệu theo pháp nhân</td>
+<td>XBOS nền tảng</td>
+<td>Hạ tầng và cài đặt</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>76</td>
+<td>UC-XBOS-INF-03</td>
+<td>Xem tóm tắt trạng thái hạ tầng danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Hạ tầng và cài đặt</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>77</td>
+<td>XBOS-DM-01</td>
+<td>Xem tổng quan danh mục theo phân hệ</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>78</td>
+<td>XBOS-DM-02</td>
+<td>Tạo nhóm danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>79</td>
+<td>XBOS-DM-03</td>
+<td>Thêm giá trị danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>80</td>
+<td>XBOS-DM-04</td>
+<td>Sửa giá trị danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>81</td>
+<td>XBOS-DM-05</td>
+<td>Ngừng hoặc kích hoạt giá trị</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>82</td>
+<td>XBOS-DM-06</td>
+<td>Sắp xếp phân cấp cha–con</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>83</td>
+<td>XBOS-DM-07</td>
+<td>Gán danh mục cho phân hệ đích</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>84</td>
+<td>XBOS-DM-08</td>
+<td>Gán danh mục theo công ty</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>85</td>
+<td>XBOS-DM-09</td>
+<td>Sao chép bộ danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>86</td>
+<td>XBOS-DM-10</td>
+<td>Xuất danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>87</td>
+<td>XBOS-DM-11</td>
+<td>Nhập danh mục từ file</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>88</td>
+<td>XBOS-DM-12</td>
+<td>Gửi phê duyệt thay đổi nhạy cảm</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>89</td>
+<td>XBOS-DM-13</td>
+<td>Phê duyệt hoặc từ chối</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>90</td>
+<td>XBOS-DM-14</td>
+<td>Xem lịch sử thay đổi</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>91</td>
+<td>XBOS-DM-15</td>
+<td>Yêu cầu bổ sung trường (công ty con)</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>92</td>
+<td>XBOS-DM-16</td>
+<td>Yêu cầu xóa trường — phê duyệt tập đoàn</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>93</td>
+<td>XBOS-DM-17</td>
+<td>Phát hành phiên bản danh mục</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>94</td>
+<td>XBOS-DM-18</td>
+<td>Thông báo phân hệ có danh mục mới</td>
+<td>XBOS nền tảng</td>
+<td>Quản trị danh mục chung</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>95</td>
+<td>UC-ECO-MASTER-01</td>
+<td>Quản lý master data theo tenant và công ty</td>
+<td>XBOS nền tảng</td>
+<td>Master toàn hệ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>96</td>
+<td>UC-ECO-MASTER-02</td>
+<td>Mở rộng tenant mới với tenant master</td>
+<td>XBOS nền tảng</td>
+<td>Master toàn hệ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>97</td>
+<td>UC-ECO-FE-01</td>
+<td>Thay thế dữ liệu giả lập trên Web Portal bằng API thật</td>
+<td>XBOS nền tảng</td>
+<td>Tích hợp FE</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>98</td>
+<td>XBOS-DM-LOG-01</td>
+<td>Xem tổng quan danh mục theo phân hệ Logistic</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>99</td>
+<td>XBOS-DM-LOG-02</td>
+<td>Tạo nhóm danh mục mới</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>100</td>
+<td>XBOS-DM-LOG-03</td>
+<td>Thêm giá trị vào danh mục</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>101</td>
+<td>XBOS-DM-LOG-04</td>
+<td>Sửa giá trị danh mục</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>102</td>
+<td>XBOS-DM-LOG-05</td>
+<td>Ngừng hoặc kích hoạt giá trị</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>103</td>
+<td>XBOS-DM-LOG-06</td>
+<td>Sắp xếp phân cấp cha–con</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>104</td>
+<td>XBOS-DM-LOG-07</td>
+<td>Gán danh mục cho phân hệ Logistic</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>105</td>
+<td>XBOS-DM-LOG-08</td>
+<td>Gán danh mục theo công ty thành viên</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>106</td>
+<td>XBOS-DM-LOG-09</td>
+<td>Sao chép bộ danh mục sang công ty mới</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>107</td>
+<td>XBOS-DM-LOG-10</td>
+<td>Xuất danh mục ra file</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>108</td>
+<td>XBOS-DM-LOG-11</td>
+<td>Nhập danh mục từ file mẫu</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>109</td>
+<td>XBOS-DM-LOG-12</td>
+<td>Gửi phê duyệt khi sửa danh mục nhạy cảm</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>110</td>
+<td>XBOS-DM-LOG-13</td>
+<td>Phê duyệt hoặc từ chối thay đổi danh mục</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>111</td>
+<td>XBOS-DM-LOG-14</td>
+<td>Xem lịch sử thay đổi danh mục</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>112</td>
+<td>XBOS-DM-LOG-15</td>
+<td>Công ty con yêu cầu bổ sung trường danh mục</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>113</td>
+<td>XBOS-DM-LOG-16</td>
+<td>Công ty con yêu cầu xóa trường — chuyển phê duyệt tập đoàn</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>114</td>
+<td>XBOS-DM-LOG-17</td>
+<td>Phát hành phiên bản danh mục mới</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>115</td>
+<td>XBOS-DM-LOG-18</td>
+<td>Thông báo phân hệ Logistic có danh mục mới</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>116</td>
+<td>XBOS-DM-LOG-19</td>
+<td>Kiểm tra danh mục thiếu trước vận hành</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>117</td>
+<td>XBOS-DM-LOG-20</td>
+<td>Khai báo đủ 3 tầng dịch vụ vận tải</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>118</td>
+<td>XBOS-DM-LOG-21</td>
+<td>Khai báo đủ 3 tầng loại phương tiện</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>119</td>
+<td>XBOS-DM-LOG-22</td>
+<td>Rà soát sản phẩm dịch vụ chưa gắn bảng giá</td>
+<td>Logistic</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>120</td>
+<td>LG-KD-01</td>
+<td>Quản lý khách hàng doanh nghiệp và liên hệ</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>121</td>
+<td>LG-KD-02</td>
+<td>Đăng ký khách lẻ / khách gửi một lần</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>122</td>
+<td>LG-KD-03</td>
+<td>Lập báo giá / chào giá</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>123</td>
+<td>LG-KD-04</td>
+<td>Phê duyệt báo giá (workflow XBOS)</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>124</td>
+<td>LG-KD-05</td>
+<td>Lập và quản lý hợp đồng vận tải</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>125</td>
+<td>LG-KD-06</td>
+<td>Tạo đơn từ hợp đồng (tuyến cố định, lặp theo kỳ)</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>126</td>
+<td>LG-KD-07</td>
+<td>Tạo đơn phát sinh / ghép hàng / nguyên chuyến</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>127</td>
+<td>LG-KD-08</td>
+<td>Chuyển đơn đã chốt sang vận hành</td>
+<td>Logistic</td>
+<td>Kinh doanh đầu chuỗi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>128</td>
+<td>LG-RT-01</td>
+<td>Thiết lập tuyến cố định (điểm đầu–cuối, mô tả, tổng km)</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>129</td>
+<td>LG-RT-02</td>
+<td>Khai báo lộ trình chi tiết (điểm dừng, thứ tự, km từng đoạn)</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>130</td>
+<td>LG-RT-03</td>
+<td>Gắn trạm thu phí và chi phí trên lộ trình</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>131</td>
+<td>LG-RT-04</td>
+<td>Cấu hình thời gian tối thiểu / tối đa và cách tính SLA chuyến</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>132</td>
+<td>LG-RT-05</td>
+<td>Cấu hình chi phí tuyến theo từng loại xe</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>133</td>
+<td>LG-RT-06</td>
+<td>Lưu lộ trình / điểm trả riêng theo khách hàng</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>134</td>
+<td>LG-RT-07</td>
+<td>Chọn tuyến hoặc lộ trình đã lưu khi tạo chuyến</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>135</td>
+<td>LG-RT-08</td>
+<td>Chỉnh sửa tuyến / lộ trình (phiên bản, lịch sử)</td>
+<td>Logistic</td>
+<td>Master tuyến và lộ trình</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>136</td>
+<td>LG-HS-01</td>
+<td>Nhập danh sách xe từ file</td>
+<td>Logistic</td>
+<td>Hạ tầng xe và liên thông nhân sự</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>137</td>
+<td>LG-HS-02</td>
+<td>Xuất danh sách xe</td>
+<td>Logistic</td>
+<td>Hạ tầng xe và liên thông nhân sự</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>138</td>
+<td>LG-HS-03</td>
+<td>Khai báo quy cách thùng và tải trọng từng xe</td>
+<td>Logistic</td>
+<td>Hạ tầng xe và liên thông nhân sự</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>139</td>
+<td>LG-HS-04</td>
+<td>Ghi nhận bán / chuyển giao xe</td>
+<td>Logistic</td>
+<td>Hạ tầng xe và liên thông nhân sự</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>140</td>
+<td>LG-HS-05</td>
+<td>Tự gỡ lái xe khi nhân sự nghỉ việc (từ HRM)</td>
+<td>Logistic</td>
+<td>Hạ tầng xe và liên thông nhân sự</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>141</td>
+<td>LG-HS-06</td>
+<td>Lập biên bản bàn giao xe / tài sản khi nghỉ việc</td>
+<td>Logistic</td>
+<td>Hạ tầng xe và liên thông nhân sự</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>142</td>
+<td>LG-OV-01</td>
+<td>Xem bảng điều hành tổng quan</td>
+<td>Logistic</td>
+<td>Tổng quan điều hành</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>143</td>
+<td>LG-OV-02</td>
+<td>Xem biểu đồ doanh thu – chi phí theo kỳ</td>
+<td>Logistic</td>
+<td>Tổng quan điều hành</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>144</td>
+<td>LG-OV-03</td>
+<td>Xem tổng quan đội xe</td>
+<td>Logistic</td>
+<td>Tổng quan điều hành</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>145</td>
+<td>LG-OV-04</td>
+<td>Lọc số liệu theo công ty / vùng / loại dịch vụ</td>
+<td>Logistic</td>
+<td>Tổng quan điều hành</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>146</td>
+<td>LG-DP-01</td>
+<td>Tạo yêu cầu vận chuyển mới</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>147</td>
+<td>LG-DP-02</td>
+<td>Sửa yêu cầu chưa chạy</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>148</td>
+<td>LG-DP-03</td>
+<td>Hủy yêu cầu</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>149</td>
+<td>LG-DP-04</td>
+<td>Xem danh sách yêu cầu theo trạng thái</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>150</td>
+<td>LG-DP-05</td>
+<td>Gán xe nội bộ cho yêu cầu</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>151</td>
+<td>LG-DP-06</td>
+<td>Gán xe đối tác cho yêu cầu</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>152</td>
+<td>LG-DP-07</td>
+<td>Xem trung tâm điều phối</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>153</td>
+<td>LG-DP-08</td>
+<td>Ưu tiên xử lý đơn sắp quá hạn</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>154</td>
+<td>LG-DP-09</td>
+<td>Gán xuất kho / nguồn hàng cho đơn</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>155</td>
+<td>LG-DP-10</td>
+<td>Xem lịch sử dùng xe</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>156</td>
+<td>LG-DP-11</td>
+<td>Sắp lịch xe theo ngày / ca</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>157</td>
+<td>LG-DP-12</td>
+<td>Đổi xe trên lịch</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>158</td>
+<td>LG-DP-13</td>
+<td>Lập lịch tuyến cố định</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>159</td>
+<td>LG-DP-14</td>
+<td>Gán chuyến vào tuyến</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>160</td>
+<td>LG-DP-15</td>
+<td>Kiểm tra giấy tờ trước khi xuất chuyến</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>161</td>
+<td>LG-DP-16</td>
+<td>Cho phép chạy chuyến dù chưa đủ giấy tờ</td>
+<td>Logistic</td>
+<td>Điều phối</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>162</td>
+<td>LG-AP-01</td>
+<td>Xem hàng đợi phê duyệt</td>
+<td>Logistic</td>
+<td>Phê duyệt</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>163</td>
+<td>LG-AP-02</td>
+<td>Phê duyệt yêu cầu điều phối / báo giá / ngoại lệ</td>
+<td>Logistic</td>
+<td>Phê duyệt</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>164</td>
+<td>LG-AP-03</td>
+<td>Từ chối phê duyệt</td>
+<td>Logistic</td>
+<td>Phê duyệt</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>165</td>
+<td>LG-AP-04</td>
+<td>Xem gợi ý rủi ro từ hệ thống hỗ trợ</td>
+<td>Logistic</td>
+<td>Phê duyệt</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>166</td>
+<td>LG-AP-05</td>
+<td>Xem lịch sử quyết định phê duyệt</td>
+<td>Logistic</td>
+<td>Phê duyệt</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>167</td>
+<td>LG-AP-06</td>
+<td>Cấu hình quy trình phê duyệt</td>
+<td>Logistic</td>
+<td>Phê duyệt</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>168</td>
+<td>LG-TR-01</td>
+<td>Xem danh sách vận đơn</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>169</td>
+<td>LG-TR-02</td>
+<td>Tạo vận đơn nhiều chặng</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>170</td>
+<td>LG-TR-03</td>
+<td>Cập nhật trạng thái từng chặng</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>171</td>
+<td>LG-TR-04</td>
+<td>Bàn giao hàng giữa các chặng</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>172</td>
+<td>LG-TR-05</td>
+<td>Theo dõi tiến độ trên bản đồ</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>173</td>
+<td>LG-TR-06</td>
+<td>Ghi nhận trễ / sự cố trên hành trình</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>174</td>
+<td>LG-TR-07</td>
+<td>Xem chi phí từng chặng</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>175</td>
+<td>LG-TR-08</td>
+<td>Mở hồ sơ ngoại lệ</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>176</td>
+<td>LG-TR-09</td>
+<td>Quản lý chuyến hành khách</td>
+<td>Logistic</td>
+<td>Vận đơn và theo dõi</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>177</td>
+<td>LG-FL-01</td>
+<td>Quản lý hồ sơ từng xe</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>178</td>
+<td>LG-FL-02</td>
+<td>Tạo lệnh bảo dưỡng</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>179</td>
+<td>LG-FL-03</td>
+<td>Ghi nhật ký đổ nhiên liệu</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>180</td>
+<td>LG-FL-04</td>
+<td>So sánh tiêu hao với định mức</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>181</td>
+<td>LG-FL-05</td>
+<td>Quản lý xuất – nhập phụ tùng</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>182</td>
+<td>LG-FL-06</td>
+<td>Ghi sự cố / tai nạn liên quan xe</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>183</td>
+<td>LG-FL-07</td>
+<td>Thiết lập và điều chỉnh định mức</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>184</td>
+<td>LG-FL-08</td>
+<td>Xem điểm sức khỏe xe và cảnh báo</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>185</td>
+<td>LG-FL-09</td>
+<td>Xem hành vi lái</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>186</td>
+<td>LG-FL-10</td>
+<td>Xem bảng điểm KPI tài xế</td>
+<td>Logistic</td>
+<td>Đội xe</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>187</td>
+<td>LG-PT-01</td>
+<td>Quản lý danh sách xe đối tác</td>
+<td>Logistic</td>
+<td>Đối tác</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>188</td>
+<td>LG-PT-02</td>
+<td>Quản lý tài xế đối tác</td>
+<td>Logistic</td>
+<td>Đối tác</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>189</td>
+<td>LG-PT-03</td>
+<td>Đối soát cước theo chuyến</td>
+<td>Logistic</td>
+<td>Đối tác</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>190</td>
+<td>LG-PT-04</td>
+<td>Ghi nhận phạt / thưởng đối tác</td>
+<td>Logistic</td>
+<td>Đối tác</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>191</td>
+<td>LG-CP-01</td>
+<td>Quản lý hồ sơ giấy tờ tài xế</td>
+<td>Logistic</td>
+<td>Tuân thủ</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>192</td>
+<td>LG-CP-02</td>
+<td>Cảnh báo giấy tờ sắp hết hạn</td>
+<td>Logistic</td>
+<td>Tuân thủ</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>193</td>
+<td>LG-CP-03</td>
+<td>Hồ sơ tài xế — thông tin và lịch sử sự cố</td>
+<td>Logistic</td>
+<td>Tuân thủ</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>194</td>
+<td>LG-CP-04</td>
+<td>Báo cáo tuân thủ tổng hợp</td>
+<td>Logistic</td>
+<td>Tuân thủ</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>195</td>
+<td>LG-CP-05</td>
+<td>Quản lý giấy tờ đội xe</td>
+<td>Logistic</td>
+<td>Tuân thủ</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>196</td>
+<td>LG-FN-01</td>
+<td>Quản lý khách hàng</td>
+<td>Logistic</td>
+<td>Khách hàng, giá, báo giá</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>197</td>
+<td>LG-FN-02</td>
+<td>Quản lý bảng giá và quy tắc tính cước</td>
+<td>Logistic</td>
+<td>Khách hàng, giá, báo giá</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>198</td>
+<td>LG-FN-03</td>
+<td>Mô phỏng tính giá</td>
+<td>Logistic</td>
+<td>Khách hàng, giá, báo giá</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>199</td>
+<td>LG-FN-04</td>
+<td>Lập báo giá</td>
+<td>Logistic</td>
+<td>Khách hàng, giá, báo giá</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>200</td>
+<td>LG-FN-05</td>
+<td>Theo dõi công nợ khách</td>
+<td>Logistic</td>
+<td>Khách hàng, giá, báo giá</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>201</td>
+<td>LG-FN-06</td>
+<td>Kế toán xác nhận đối soát</td>
+<td>Logistic</td>
+<td>Khách hàng, giá, báo giá</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>202</td>
+<td>LG-WH-01</td>
+<td>Thiết kế sơ đồ kho</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>203</td>
+<td>LG-WH-02</td>
+<td>Tạo phiếu nhập kho</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>204</td>
+<td>LG-WH-03</td>
+<td>Nhập hàng bằng file mẫu</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>205</td>
+<td>LG-WH-04</td>
+<td>Tạo lệnh xuất kho</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>206</td>
+<td>LG-WH-05</td>
+<td>Pick – pack – xuất giao</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>207</td>
+<td>LG-WH-06</td>
+<td>Kiểm kê và xử lý chênh lệch</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>208</td>
+<td>LG-WH-07</td>
+<td>Báo cáo tồn kho</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>209</td>
+<td>LG-WH-08</td>
+<td>Xem hàng đang chờ tại kho</td>
+<td>Logistic</td>
+<td>Kho</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>210</td>
+<td>LG-MA-01</td>
+<td>Danh mục vật tư</td>
+<td>Logistic</td>
+<td>Vật tư và tài sản</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>211</td>
+<td>LG-MA-02</td>
+<td>Phiếu xuất – nhập vật tư</td>
+<td>Logistic</td>
+<td>Vật tư và tài sản</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>212</td>
+<td>LG-MA-03</td>
+<td>Đăng ký tài sản</td>
+<td>Logistic</td>
+<td>Vật tư và tài sản</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>213</td>
+<td>LG-AI-01</td>
+<td>Gợi ý kế hoạch điều phối</td>
+<td>Logistic</td>
+<td>Hỗ trợ thông minh</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>214</td>
+<td>LG-AI-02</td>
+<td>Trung tâm cảnh báo</td>
+<td>Logistic</td>
+<td>Hỗ trợ thông minh</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>215</td>
+<td>LG-AI-03</td>
+<td>Báo cáo phân tích sâu</td>
+<td>Logistic</td>
+<td>Hỗ trợ thông minh</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>216</td>
+<td>LG-SY-01</td>
+<td>Xem sơ đồ module hệ thống</td>
+<td>Logistic</td>
+<td>Hệ thống</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>217</td>
+<td>LG-SY-02</td>
+<td>Cấu hình tham số vận hành</td>
+<td>Logistic</td>
+<td>Hệ thống</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>218</td>
+<td>LG-SY-03</td>
+<td>Báo cáo tổng hợp</td>
+<td>Logistic</td>
+<td>Hệ thống</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>219</td>
+<td>LG-SY-04</td>
+<td>Cài đặt người dùng</td>
+<td>Logistic</td>
+<td>Hệ thống</td>
+<td>Web</td>
+</tr>
+<tr>
+<td>220</td>
+<td>LG-MB-01</td>
+<td>Đăng nhập tài xế</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>221</td>
+<td>LG-MB-02</td>
+<td>Xem danh sách chuyến được giao</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>222</td>
+<td>LG-MB-03</td>
+<td>Xem chi tiết chuyến (lộ trình, điểm trả, SLA)</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>223</td>
+<td>LG-MB-04</td>
+<td>Nhận hoặc từ chối chuyến</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>224</td>
+<td>LG-MB-05</td>
+<td>Bắt đầu / kết thúc chuyến</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>225</td>
+<td>LG-MB-06</td>
+<td>Báo trạng thái trên hành trình</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>226</td>
+<td>LG-MB-07</td>
+<td>Gửi vị trí định kỳ</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>227</td>
+<td>LG-MB-08</td>
+<td>Mở chỉ đường theo lộ trình</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>228</td>
+<td>LG-MB-16</td>
+<td>Làm việc khi mất mạng, đồng bộ sau</td>
+<td>Logistic</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>229</td>
+<td>LG-MB-20</td>
+<td>Gọi khách hàng — xác nhận giờ đến, địa chỉ, thăm dò đường</td>
+<td>Logistic</td>
+<td>Mobile — trả hàng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>230</td>
+<td>LG-MB-21</td>
+<td>Ghi nhận vướng mắc — trả trực tiếp hoặc thuê xe trung chuyển</td>
+<td>Logistic</td>
+<td>Mobile — trả hàng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>231</td>
+<td>LG-MB-22</td>
+<td>Chụp ảnh tình trạng niêm phong trước khi cắt seal</td>
+<td>Logistic</td>
+<td>Mobile — trả hàng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>232</td>
+<td>LG-MB-23</td>
+<td>Cắt niêm phong, hạ hàng, kiểm đếm</td>
+<td>Logistic</td>
+<td>Mobile — trả hàng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>233</td>
+<td>LG-MB-24</td>
+<td>Ký xác nhận bàn giao và niêm phong lại</td>
+<td>Logistic</td>
+<td>Mobile — trả hàng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>234</td>
+<td>LG-MB-09</td>
+<td>Chụp ảnh biên nhận / chứng từ giao hàng</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>235</td>
+<td>LG-MB-10</td>
+<td>Ký nhận trên màn hình</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>236</td>
+<td>LG-MB-11</td>
+<td>Nhập mã xác nhận từ khách</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>237</td>
+<td>LG-MB-12</td>
+<td>Quét mã kiện hàng</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>238</td>
+<td>LG-MB-13</td>
+<td>Báo không giao được / khách từ chối</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>239</td>
+<td>LG-MB-14</td>
+<td>Báo tai nạn / hỏng xe</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>240</td>
+<td>LG-MB-15</td>
+<td>Gọi điều phối từ ứng dụng</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>241</td>
+<td>LG-MB-17</td>
+<td>Ghi phiếu đổ dầu kèm ảnh hóa đơn</td>
+<td>Logistic</td>
+<td>Mobile — chứng từ và sự cố</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>242</td>
+<td>LG-MB-30</td>
+<td>Xem doanh thu từng chuyến</td>
+<td>Logistic</td>
+<td>Mobile — doanh thu và lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>243</td>
+<td>LG-MB-31</td>
+<td>Xem các khoản khấu trừ (xăng, phí đường, bốc xếp, chiết khấu…)</td>
+<td>Logistic</td>
+<td>Mobile — doanh thu và lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>244</td>
+<td>LG-MB-32</td>
+<td>Xem doanh thu tính lương sau khấu trừ</td>
+<td>Logistic</td>
+<td>Mobile — doanh thu và lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>245</td>
+<td>LG-MB-33</td>
+<td>Xem tổng hợp tháng: số chuyến, doanh thu, lương %</td>
+<td>Logistic</td>
+<td>Mobile — doanh thu và lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>246</td>
+<td>LG-MB-34</td>
+<td>Xem quãng đường thực tế và so với lộ trình chuẩn</td>
+<td>Logistic</td>
+<td>Mobile — doanh thu và lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>247</td>
+<td>LG-MB-35</td>
+<td>Xem phụ cấp đi đường theo ngưỡng km và loại xe</td>
+<td>Logistic</td>
+<td>Mobile — doanh thu và lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>248</td>
+<td>XBOS-DM-HRM-01</td>
+<td>Xem tổng quan danh mục theo phân hệ Nhân sự</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>249</td>
+<td>XBOS-DM-HRM-02</td>
+<td>Cấu hình 6 nhóm trường hồ sơ nhân viên</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>250</td>
+<td>XBOS-DM-HRM-03</td>
+<td>Bổ sung trường mở rộng theo công ty</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>251</td>
+<td>XBOS-DM-HRM-04</td>
+<td>Gửi phê duyệt khi công ty con thêm hoặc xóa trường</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>252</td>
+<td>XBOS-DM-HRM-05</td>
+<td>Phê duyệt hoặc từ chối mở rộng danh mục</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>253</td>
+<td>XBOS-DM-HRM-06</td>
+<td>Khai bộ phòng ban và chức vụ theo từng công ty</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>254</td>
+<td>XBOS-DM-HRM-07</td>
+<td>Sao chép thư viện chức danh sang công ty con</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>255</td>
+<td>XBOS-DM-HRM-08</td>
+<td>Gán danh mục cho phân hệ Nhân sự</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>256</td>
+<td>XBOS-DM-HRM-09</td>
+<td>Phát hành phiên bản danh mục mới</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>257</td>
+<td>XBOS-DM-HRM-10</td>
+<td>Đồng bộ danh mục xuống HRM</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>258</td>
+<td>XBOS-DM-HRM-11</td>
+<td>Kiểm tra danh mục thiếu trước import nhân sự</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>259</td>
+<td>XBOS-DM-HRM-12</td>
+<td>Cấu hình preset biểu mẫu theo công ty (Command Center)</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>260</td>
+<td>XBOS-DM-HRM-13</td>
+<td>Khai danh mục hồ sơ xe (du lịch)</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>261</td>
+<td>XBOS-DM-HRM-14</td>
+<td>Gán mã quy trình cho loại đơn HRM</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>262</td>
+<td>XBOS-DM-HRM-15</td>
+<td>Xem lịch sử thay đổi danh mục</td>
+<td>HRM</td>
+<td>Quản trị danh mục XBOS</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>263</td>
+<td>UC-HRM-01</td>
+<td>Kiểm tra trạng thái dịch vụ</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>264</td>
+<td>UC-HRM-02</td>
+<td>Tạo quản trị nền tảng</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>265</td>
+<td>UC-HRM-03</td>
+<td>Tạo hoặc cập nhật quản trị doanh nghiệp</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>266</td>
+<td>UC-HRM-04</td>
+<td>Mời nhân viên hàng loạt</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>267</td>
+<td>UC-HRM-05</td>
+<td>Cập nhật thông tin nhạy cảm tài khoản</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>268</td>
+<td>UC-HRM-06</td>
+<td>Đồng bộ dữ liệu dùng chung từ XBOS</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>269</td>
+<td>UC-HRM-07</td>
+<td>Lấy dữ liệu dùng chung theo khóa danh mục</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>270</td>
+<td>UC-HRM-08</td>
+<td>Liệt kê dữ liệu dùng chung theo phân hệ</td>
+<td>HRM</td>
+<td>Nền tảng, quản trị, đồng bộ</td>
+<td>API</td>
+</tr>
+<tr>
+<td>271</td>
+<td>HRM-AT-01</td>
+<td>Ghi nhận bản ghi chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>272</td>
+<td>HRM-AT-02</td>
+<td>Xem danh sách bản ghi chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>273</td>
+<td>HRM-AT-03</td>
+<td>Cập nhật trạng thái bản ghi chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>274</td>
+<td>HRM-AT-04</td>
+<td>Tạo đơn chỉnh sửa chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>275</td>
+<td>HRM-AT-05</td>
+<td>Xem danh sách đơn chỉnh sửa chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>276</td>
+<td>HRM-AT-06</td>
+<td>Sửa đơn chỉnh sửa chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>277</td>
+<td>HRM-AT-07</td>
+<td>Phê duyệt đơn chỉnh sửa chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>278</td>
+<td>HRM-AT-08</td>
+<td>Từ chối đơn chỉnh sửa chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>279</td>
+<td>HRM-AT-09</td>
+<td>Xóa đơn chỉnh sửa chấm công</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>280</td>
+<td>HRM-AT-10</td>
+<td>Tạo đơn nghỉ phép</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>281</td>
+<td>HRM-AT-11</td>
+<td>Xem danh sách đơn nghỉ phép</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>282</td>
+<td>HRM-AT-12</td>
+<td>Phê duyệt đơn nghỉ phép</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>283</td>
+<td>HRM-AT-13</td>
+<td>Từ chối đơn nghỉ phép</td>
+<td>HRM</td>
+<td>Chấm công và đơn từ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>284</td>
+<td>HRM-SV-01</td>
+<td>Tạo yêu cầu dịch vụ nội bộ</td>
+<td>HRM</td>
+<td>Yêu cầu dịch vụ nội bộ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>285</td>
+<td>HRM-SV-02</td>
+<td>Xem danh sách yêu cầu dịch vụ</td>
+<td>HRM</td>
+<td>Yêu cầu dịch vụ nội bộ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>286</td>
+<td>HRM-SV-03</td>
+<td>Cập nhật yêu cầu dịch vụ</td>
+<td>HRM</td>
+<td>Yêu cầu dịch vụ nội bộ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>287</td>
+<td>HRM-SV-04</td>
+<td>Xóa yêu cầu dịch vụ</td>
+<td>HRM</td>
+<td>Yêu cầu dịch vụ nội bộ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>288</td>
+<td>HRM-SV-05</td>
+<td>Phê duyệt yêu cầu dịch vụ</td>
+<td>HRM</td>
+<td>Yêu cầu dịch vụ nội bộ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>289</td>
+<td>HRM-SV-06</td>
+<td>Từ chối yêu cầu dịch vụ</td>
+<td>HRM</td>
+<td>Yêu cầu dịch vụ nội bộ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>290</td>
+<td>UC-HRM-12</td>
+<td>Đọc hộp thư thông báo nghiệp vụ</td>
+<td>HRM</td>
+<td>Hộp thư thông báo</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>291</td>
+<td>HRM-NT-01</td>
+<td>Đánh dấu thông báo đã đọc</td>
+<td>HRM</td>
+<td>Hộp thư thông báo</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>292</td>
+<td>HRM-NT-02</td>
+<td>Đăng ký token thông báo đẩy (mobile)</td>
+<td>HRM</td>
+<td>Hộp thư thông báo</td>
+<td>API / Mobile</td>
+</tr>
+<tr>
+<td>293</td>
+<td>HRM-EM-01</td>
+<td>Tạo hồ sơ nhân viên</td>
+<td>HRM</td>
+<td>Quản lý nhân viên</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>294</td>
+<td>HRM-EM-02</td>
+<td>Xem danh sách nhân viên</td>
+<td>HRM</td>
+<td>Quản lý nhân viên</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>295</td>
+<td>HRM-EM-03</td>
+<td>Cập nhật hồ sơ nhân viên</td>
+<td>HRM</td>
+<td>Quản lý nhân viên</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>296</td>
+<td>HRM-EM-04</td>
+<td>Lưu trữ (xóa mềm) nhân viên</td>
+<td>HRM</td>
+<td>Quản lý nhân viên</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>297</td>
+<td>HRM-EM-05</td>
+<td>Khôi phục nhân viên đã lưu trữ</td>
+<td>HRM</td>
+<td>Quản lý nhân viên</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>298</td>
+<td>HRM-PR-01</td>
+<td>Tạo kỳ lương</td>
+<td>HRM</td>
+<td>Lương</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>299</td>
+<td>HRM-PR-02</td>
+<td>Xem danh sách kỳ lương</td>
+<td>HRM</td>
+<td>Lương</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>300</td>
+<td>HRM-PR-03</td>
+<td>Xử lý tính lương theo kỳ</td>
+<td>HRM</td>
+<td>Lương</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>301</td>
+<td>HRM-PR-04</td>
+<td>Chốt kỳ lương</td>
+<td>HRM</td>
+<td>Lương</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>302</td>
+<td>HRM-PR-05</td>
+<td>Xem phiếu lương</td>
+<td>HRM</td>
+<td>Lương</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>303</td>
+<td>HRM-PR-06</td>
+<td>Báo cáo đối soát lương</td>
+<td>HRM</td>
+<td>Lương</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>304</td>
+<td>HRM-RC-01</td>
+<td>Tạo yêu cầu tuyển dụng</td>
+<td>HRM</td>
+<td>Tuyển dụng</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>305</td>
+<td>HRM-RC-02</td>
+<td>Xem danh sách yêu cầu tuyển dụng</td>
+<td>HRM</td>
+<td>Tuyển dụng</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>306</td>
+<td>HRM-RC-03</td>
+<td>Tạo hồ sơ ứng viên</td>
+<td>HRM</td>
+<td>Tuyển dụng</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>307</td>
+<td>HRM-RC-04</td>
+<td>Xem danh sách ứng viên</td>
+<td>HRM</td>
+<td>Tuyển dụng</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>308</td>
+<td>HRM-RC-05</td>
+<td>Lên lịch phỏng vấn</td>
+<td>HRM</td>
+<td>Tuyển dụng</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>309</td>
+<td>HRM-RC-06</td>
+<td>Cập nhật kết quả phỏng vấn</td>
+<td>HRM</td>
+<td>Tuyển dụng</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>310</td>
+<td>HRM-CI-01</td>
+<td>Tạo hợp đồng lao động</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>311</td>
+<td>HRM-CI-02</td>
+<td>Ghi nhận bảo hiểm nhân viên</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>312</td>
+<td>HRM-CI-03</td>
+<td>Xem danh sách hợp đồng</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>313</td>
+<td>HRM-CI-04</td>
+<td>Cảnh báo hợp đồng sắp hết hạn</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>314</td>
+<td>HRM-CI-05</td>
+<td>Cập nhật hợp đồng</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>315</td>
+<td>HRM-CI-06</td>
+<td>Xóa hợp đồng</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>316</td>
+<td>HRM-CI-07</td>
+<td>Cảnh báo bảo hiểm sắp hết hạn</td>
+<td>HRM</td>
+<td>Hợp đồng và bảo hiểm</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>317</td>
+<td>HRM-MD-01</td>
+<td>Gửi yêu cầu thay đổi metadata hồ sơ</td>
+<td>HRM</td>
+<td>Thay đổi metadata hồ sơ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>318</td>
+<td>HRM-MD-02</td>
+<td>Xem hàng chờ thay đổi metadata</td>
+<td>HRM</td>
+<td>Thay đổi metadata hồ sơ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>319</td>
+<td>HRM-MD-03</td>
+<td>Phê duyệt thay đổi metadata</td>
+<td>HRM</td>
+<td>Thay đổi metadata hồ sơ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>320</td>
+<td>HRM-MD-04</td>
+<td>Từ chối thay đổi metadata</td>
+<td>HRM</td>
+<td>Thay đổi metadata hồ sơ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>321</td>
+<td>HRM-MD-05</td>
+<td>Xem nhật ký thay đổi metadata</td>
+<td>HRM</td>
+<td>Thay đổi metadata hồ sơ</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>322</td>
+<td>HRM-SC-01</td>
+<td>Xem tổng quan danh mục cấu hình HRM</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>323</td>
+<td>HRM-SC-02</td>
+<td>Đồng bộ toàn bộ danh mục từ XBOS</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>324</td>
+<td>HRM-SC-03</td>
+<td>Bổ sung giá trị danh mục mở rộng</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>325</td>
+<td>HRM-SC-04</td>
+<td>Yêu cầu xóa trường danh mục</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>326</td>
+<td>HRM-SC-05</td>
+<td>Phê duyệt lô mở rộng danh mục</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>327</td>
+<td>HRM-SC-06</td>
+<td>Từ chối lô mở rộng danh mục</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>328</td>
+<td>HRM-SC-07</td>
+<td>Khởi tạo mẫu import nhân sự tập đoàn</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>329</td>
+<td>HRM-SC-08</td>
+<td>Khởi tạo danh mục phòng ban – chức vụ theo công ty</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>330</td>
+<td>HRM-SC-09</td>
+<td>Khởi tạo danh mục hồ sơ xe du lịch</td>
+<td>HRM</td>
+<td>Cấu hình danh mục HRM</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>331</td>
+<td>HRM-IM-01</td>
+<td>Xem trước import nhân sự từ file</td>
+<td>HRM</td>
+<td>Import / export nhân sự</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>332</td>
+<td>HRM-IM-02</td>
+<td>Xác nhận import nhân sự</td>
+<td>HRM</td>
+<td>Import / export nhân sự</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>333</td>
+<td>HRM-IM-03</td>
+<td>Export danh sách nhân sự</td>
+<td>HRM</td>
+<td>Import / export nhân sự</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>334</td>
+<td>HRM-IM-04</td>
+<td>Tải file mẫu import</td>
+<td>HRM</td>
+<td>Import / export nhân sự</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>335</td>
+<td>HRM-OP-01</td>
+<td>Tạo công việc vận hành</td>
+<td>HRM</td>
+<td>Công việc vận hành (tasks)</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>336</td>
+<td>HRM-OP-02</td>
+<td>Xem danh sách công việc</td>
+<td>HRM</td>
+<td>Công việc vận hành (tasks)</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>337</td>
+<td>HRM-OP-03</td>
+<td>Cập nhật trạng thái công việc</td>
+<td>HRM</td>
+<td>Công việc vận hành (tasks)</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>338</td>
+<td>HRM-OP-04</td>
+<td>Báo cáo tổng hợp công việc</td>
+<td>HRM</td>
+<td>Công việc vận hành (tasks)</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>339</td>
+<td>HRM-PF-01</td>
+<td>Tạo chu kỳ đánh giá hiệu suất</td>
+<td>HRM</td>
+<td>Đánh giá hiệu suất</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>340</td>
+<td>HRM-PF-02</td>
+<td>Xem danh sách chu kỳ đánh giá</td>
+<td>HRM</td>
+<td>Đánh giá hiệu suất</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>341</td>
+<td>HRM-PF-03</td>
+<td>Tạo phiếu đánh giá</td>
+<td>HRM</td>
+<td>Đánh giá hiệu suất</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>342</td>
+<td>HRM-PF-04</td>
+<td>Xem danh sách phiếu đánh giá</td>
+<td>HRM</td>
+<td>Đánh giá hiệu suất</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>343</td>
+<td>HRM-FL-01</td>
+<td>Xem danh sách hồ sơ xe (fleet)</td>
+<td>HRM</td>
+<td>Hồ sơ xe (du lịch)</td>
+<td>API / Web</td>
+</tr>
+<tr>
+<td>344</td>
+<td>UC-HRM-20</td>
+<td>Embed — Tổng quan HRM</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>345</td>
+<td>UC-HRM-21</td>
+<td>Embed — Danh sách nhân sự</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>346</td>
+<td>UC-HRM-22</td>
+<td>Embed — Tuyển dụng</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>347</td>
+<td>UC-HRM-23</td>
+<td>Embed — Chấm công</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>348</td>
+<td>UC-HRM-24</td>
+<td>Embed — Lương</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>349</td>
+<td>UC-HRM-25</td>
+<td>Embed — Hợp đồng và bảo hiểm xã hội</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>350</td>
+<td>UC-HRM-26</td>
+<td>Embed — Hàng chờ duyệt metadata</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>351</td>
+<td>UC-HRM-27</td>
+<td>Embed — Quyết định và báo cáo (backlog)</td>
+<td>HRM</td>
+<td>Embed Command Center</td>
+<td>Web Portal</td>
+</tr>
+<tr>
+<td>352</td>
+<td>UC-HRM-MOB-01</td>
+<td>Đăng nhập và thiết lập phiên an toàn</td>
+<td>HRM</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>353</td>
+<td>UC-HRM-MOB-02</td>
+<td>Chọn và xác nhận phạm vi công ty</td>
+<td>HRM</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>354</td>
+<td>UC-HRM-MOB-03</td>
+<td>Xem bảng điều khiển cá nhân</td>
+<td>HRM</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>355</td>
+<td>UC-HRM-MOB-04</td>
+<td>Ghi nhận chấm công / điểm danh</td>
+<td>HRM</td>
+<td>Mobile — chấm công</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>356</td>
+<td>UC-HRM-MOB-05</td>
+<td>Xem lịch sử chấm công</td>
+<td>HRM</td>
+<td>Mobile — chấm công</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>357</td>
+<td>UC-HRM-MOB-06</td>
+<td>Tạo đơn chỉnh sửa chấm công hoặc đơn nghỉ phép</td>
+<td>HRM</td>
+<td>Mobile — đơn từ</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>358</td>
+<td>UC-HRM-MOB-07</td>
+<td>Xem danh sách đơn và trạng thái</td>
+<td>HRM</td>
+<td>Mobile — đơn từ</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>359</td>
+<td>UC-HRM-MOB-08</td>
+<td>Phê duyệt hoặc từ chối đơn chờ</td>
+<td>HRM</td>
+<td>Mobile — đơn từ</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>360</td>
+<td>UC-HRM-MOB-09</td>
+<td>Xem tóm tắt lương theo kỳ</td>
+<td>HRM</td>
+<td>Mobile — lương</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>361</td>
+<td>UC-HRM-MOB-10</td>
+<td>Xem hợp đồng và bảo hiểm</td>
+<td>HRM</td>
+<td>Mobile — hợp đồng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>362</td>
+<td>UC-HRM-MOB-11</td>
+<td>Quản lý công việc và yêu cầu dịch vụ</td>
+<td>HRM</td>
+<td>Mobile — dịch vụ</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>363</td>
+<td>UC-HRM-MOB-12</td>
+<td>Xem và cập nhật hồ sơ cá nhân</td>
+<td>HRM</td>
+<td>Mobile — hồ sơ</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>364</td>
+<td>UC-HRM-MOB-13</td>
+<td>Nhận thông báo (in-app / realtime / push)</td>
+<td>HRM</td>
+<td>Mobile — thông báo</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>365</td>
+<td>UC-HRM-MOB-14</td>
+<td>Làm việc ngoại tuyến có kiểm soát</td>
+<td>HRM</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>366</td>
+<td>UC-HRM-MOB-15</td>
+<td>Đăng xuất và thu hồi phiên</td>
+<td>HRM</td>
+<td>Mobile — nền tảng</td>
+<td>Mobile</td>
+</tr>
+<tr>
+<td>367</td>
+<td>UC-XBOS-CAT-01</td>
+<td>Xem yêu cầu mở rộng danh mục HRM đang chờ</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>368</td>
+<td>UC-XBOS-CAT-02</td>
+<td>Khởi chạy quy trình phê duyệt danh mục</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>369</td>
+<td>UC-XBOS-CAT-03</td>
+<td>Xem hộp thư duyệt danh mục</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>370</td>
+<td>UC-XBOS-CAT-04</td>
+<td>Xem chi tiết phiên duyệt danh mục</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>371</td>
+<td>UC-XBOS-CAT-05</td>
+<td>Phê duyệt bước duyệt danh mục</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>372</td>
+<td>UC-XBOS-CAT-06</td>
+<td>Từ chối bước duyệt danh mục</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+<tr>
+<td>373</td>
+<td>UC-XBOS-CAT-07</td>
+<td>Khởi tạo quy trình duyệt danh mục mẫu (theo công ty)</td>
+<td>XBOS governance</td>
+<td>Governance danh mục HRM</td>
+<td>XBOS</td>
+</tr>
+</tbody></table>
+<h2>Phụ lục B. Danh mục cấu hình Logistic (tóm tắt nhóm)</h2>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Số mục</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tổ chức và phạm vi</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Địa điểm và hạ tầng</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Dịch vụ vận tải (3 cấp)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Phương tiện (3 cấp)</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Thiết bị, công cụ, vật tư</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Khách hàng, đối tác</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Điều phối, vận đơn</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Tuân thủ, giá, kho</td>
+<td>22</td>
+</tr>
+<tr>
+<td>Tuyến, lộ trình, lái xe</td>
+<td>16</td>
+</tr>
+<tr>
+<td>Kinh doanh đầu chuỗi</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Quy trình vận hành</td>
+<td>20</td>
+</tr>
+</tbody></table>
+<h2>Phụ lục C. Danh mục cấu hình Nhân sự (tóm tắt nhóm)</h2>
+<table>
+<thead>
+<tr>
+<th>Nhóm</th>
+<th>Số mục</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tổ chức và pháp nhân</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Chức danh và phân quyền</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Biểu mẫu hồ sơ</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Hợp đồng, chấm công, lương</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Tuyển dụng</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Hồ sơ, hồ sơ xe</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Quy trình, RACI, Command Center</td>
+<td>14</td>
+</tr>
+</tbody></table>
+<hr>
+<p><em>Tài liệu nội bộ XEVN · XeVN OS · Tháng 5/2026</em></p>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'neutral',
+    securityLevel: 'loose',
+    flowchart: { useMaxWidth: true },
+    sequence: { useMaxWidth: true },
+  });
+</script>
+</body>
+</html>

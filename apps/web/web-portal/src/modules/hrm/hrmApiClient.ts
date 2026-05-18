@@ -1,4 +1,5 @@
 import { IdentityScopeContext } from '../../integrations/identityScope';
+import { buildApiAuthHeaders } from '../../integrations/authSession';
 import {
   mapCaughtFetchError,
   mapFailedHttpResponse,
@@ -17,12 +18,13 @@ const REQUEST_TIMEOUT_MS = 10_000;
 
 async function request<T>(path: string, init: RequestInit, scope?: IdentityScopeContext): Promise<T> {
   const headers: Record<string, string> = {
+    ...buildApiAuthHeaders(),
     'Content-Type': 'application/json',
     'x-request-id': crypto.randomUUID(),
   };
-  if (SERVICE_JWT_TOKEN) {
+  if (!headers.Authorization && SERVICE_JWT_TOKEN) {
     headers.Authorization = `Bearer ${SERVICE_JWT_TOKEN}`;
-  } else if (INTERNAL_API_KEY) {
+  } else if (!headers.Authorization && INTERNAL_API_KEY) {
     headers['x-internal-api-key'] = INTERNAL_API_KEY;
   }
   if (scope) {
@@ -104,6 +106,174 @@ export async function approveEmployeeMetadataRequest(changeRequestId: string, pa
       method: 'POST',
       body: JSON.stringify(payload ?? {}),
     },
+    scope,
+  );
+}
+
+export type HrmEmployeeApiRow = {
+  id: string;
+  employee_code: string;
+  full_name: string;
+  email: string;
+  job_title_key: string | null;
+  status: string;
+  hired_at: string | null;
+};
+
+export async function listHrmEmployees(scope: IdentityScopeContext) {
+  const q = new URLSearchParams({ company_id: scope.companyId });
+  return request<{ total: number; data: HrmEmployeeApiRow[] }>(
+    `/api/hrm/employees?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export type HrmPayslipApiRow = {
+  id: string;
+  employee_code: string;
+  employee_name: string;
+  period_label: string;
+  gross_amount: number;
+  deduction_amount: number;
+  net_amount: number;
+  status: string;
+};
+
+export async function listHrmPayslips(scope: IdentityScopeContext) {
+  const q = new URLSearchParams({ company_id: scope.companyId });
+  return request<{ total: number; data: HrmPayslipApiRow[] }>(
+    `/api/hrm/payroll/payslips?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export type HrmFleetVehicleRow = {
+  id: string;
+  license_plate: string;
+  fleet_fields: Record<string, unknown>;
+  status: string;
+};
+
+export async function listHrmFleetVehicles(scope: IdentityScopeContext, limit = 500) {
+  const q = new URLSearchParams({ limit: String(limit) });
+  return request<{ total: number; data: HrmFleetVehicleRow[] }>(
+    `/api/hrm/fleet/vehicles?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export type HrmJobRequisitionRow = {
+  id: string;
+  title: string;
+  department?: string | null;
+  status: string;
+  headcount?: number;
+};
+
+export type HrmAttendanceRecordRow = {
+  id: string;
+  employee_id: string;
+  attendance_date: string;
+  status: string;
+};
+
+export type HrmContractRow = {
+  id: string;
+  employee_id?: string;
+  contract_type?: string;
+  status: string;
+  end_date?: string | null;
+};
+
+export async function listHrmJobRequisitions(scope: IdentityScopeContext) {
+  const q = new URLSearchParams({ company_id: scope.companyId });
+  return request<{ total: number; data: HrmJobRequisitionRow[] }>(
+    `/api/hrm/recruitment/requisitions?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export async function listHrmAttendanceRecords(scope: IdentityScopeContext) {
+  const q = new URLSearchParams({ company_id: scope.companyId });
+  return request<{ total: number; data: HrmAttendanceRecordRow[] }>(
+    `/api/hrm/attendance/records?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export async function listHrmContracts(scope: IdentityScopeContext) {
+  const q = new URLSearchParams({ company_id: scope.companyId });
+  return request<{ total: number; data: HrmContractRow[] }>(
+    `/api/hrm/contracts-insurance/contracts?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const HRM_OPS_COMPANY_UUID =
+  import.meta.env.VITE_HRM_OPERATIONS_COMPANY_ID ?? '10000000-0000-4000-8000-000000000001';
+
+function resolveHrmCompanyId(scope: IdentityScopeContext): string {
+  return UUID_RE.test(scope.companyId) ? scope.companyId : HRM_OPS_COMPANY_UUID;
+}
+
+export type HrmOperationsTaskRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  priority: string;
+  status: string;
+  due_date: string | null;
+};
+
+export type HrmServiceRequestRow = {
+  id: string;
+  employee_name: string;
+  service_type: string;
+  department: string | null;
+  request_date: string;
+  status: string;
+};
+
+export type HrmOperationsSummary = {
+  attendance_records: number;
+  payroll_periods: number;
+  job_requisitions: number;
+  tasks: number;
+};
+
+export async function listHrmOperationsTasks(scope: IdentityScopeContext) {
+  const companyId = resolveHrmCompanyId(scope);
+  const q = new URLSearchParams({ company_id: companyId, page_size: '50' });
+  return request<{ total: number; data: HrmOperationsTaskRow[] }>(
+    `/api/hrm/operations/tasks?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export async function listHrmServiceRequests(scope: IdentityScopeContext) {
+  const companyId = resolveHrmCompanyId(scope);
+  const q = new URLSearchParams({ company_id: companyId, page_size: '50' });
+  return request<{ total: number; data: HrmServiceRequestRow[] }>(
+    `/api/hrm/operations/service-requests?${q.toString()}`,
+    { method: 'GET' },
+    scope,
+  );
+}
+
+export async function getHrmOperationsSummary(scope: IdentityScopeContext) {
+  const companyId = resolveHrmCompanyId(scope);
+  const q = new URLSearchParams({ company_id: companyId, tenant_id: scope.tenantId });
+  return request<HrmOperationsSummary>(
+    `/api/hrm/operations/reports/summary?${q.toString()}`,
+    { method: 'GET' },
     scope,
   );
 }

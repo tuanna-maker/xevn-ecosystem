@@ -37,6 +37,9 @@ function assertScopeId(value: string | undefined, field: 'tenantId' | 'companyId
   return value;
 }
 
+/**
+ * Resolve both tenantId AND companyId — dùng cho endpoints cần đầy đủ scope.
+ */
 export function resolveScopeContext(
   authorization: string | undefined,
   requested: { tenantId?: string; companyId?: string },
@@ -66,6 +69,29 @@ export function resolveScopeContext(
       request: requested.companyId,
     });
   }
+
+  return { tenantId, companyId };
+}
+
+/**
+ * Resolve chỉ tenantId — dùng cho catalog / tenant-level endpoints không cần companyId.
+ * companyId sẽ fallback về tenantId nếu không cung cấp (tương thích ngược với ScopeContext shape).
+ */
+export function resolveTenantOnlyContext(
+  authorization: string | undefined,
+  requested: { tenantId?: string; companyId?: string },
+): ScopeContext {
+  const jwtPayload = getVerifiedInternalJwtPayload(authorization);
+  const claimTenantId = jwtPayload
+    ? readClaim(jwtPayload, 'tenantId', 'tenant_id', 'tid')
+    : undefined;
+  const claimCompanyId = jwtPayload
+    ? readClaim(jwtPayload, 'companyId', 'company_id', 'cid')
+    : undefined;
+
+  const tenantId = assertScopeId(claimTenantId ?? requested.tenantId, 'tenantId');
+  // companyId optional: nếu không có, fallback về tenantId (group scope)
+  const companyId = (claimCompanyId ?? requested.companyId ?? tenantId).trim();
 
   return { tenantId, companyId };
 }

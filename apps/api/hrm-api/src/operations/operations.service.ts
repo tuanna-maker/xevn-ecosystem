@@ -353,7 +353,7 @@ export class OperationsService {
     await this.ensureSchema();
     const [attendance, payroll, recruitment, tasks, serviceRequests] = await Promise.all([
       this.db.query<{ total: string }>(`SELECT COUNT(*)::text AS total FROM public.attendance_records WHERE company_id = $1::uuid;`, [companyId]),
-      this.db.query<{ total: string }>(`SELECT COUNT(*)::text AS total FROM public.payroll_periods WHERE company_id = $1::uuid;`, [companyId]),
+      this.db.query<{ total: string }>(`SELECT COUNT(*)::text AS total FROM public.payroll_periods WHERE company_id = $1;`, [companyId]),
       this.db.query<{ total: string }>(`SELECT COUNT(*)::text AS total FROM public.job_requisitions WHERE company_id = $1::uuid;`, [companyId]),
       this.db.query<{ total: string }>(`SELECT COUNT(*)::text AS total FROM public.hrm_tasks WHERE company_id = $1::uuid;`, [companyId]),
       this.db.query<{ total: string }>(`SELECT COUNT(*)::text AS total FROM public.service_requests WHERE company_id = $1::uuid;`, [companyId]),

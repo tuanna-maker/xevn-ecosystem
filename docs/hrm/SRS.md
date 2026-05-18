@@ -197,8 +197,169 @@ sequenceDiagram
 - Mã lỗi và HTTP status đúng bảng chuẩn tại mục 6.
 - Nội dung use case đồng nhất với BRD HRM **2.3** và thuật ngữ Việt hóa.
 
-## 11. Tài Liệu Kèm Theo — Ứng Dụng Di Động HRM
+## 11. Import NS & Document Vault (họp 2026-05)
+
+| Nhóm cột (20–30) | Validation | Ghi chú |
+|---|---|---|
+| Mã NV, Họ tên, CCCD, ngày sinh | Bắt buộc | Map `employees` |
+| Công ty, phòng, chức danh | FK XBOS catalog | Không duplicate org tree HRM |
+| Ảnh hồ sơ | URL hợp lệ | Không upload binary trong Excel |
+| `workflow_code` | Optional | Metadata change → definition XBOS |
+
+**Bảng:** `employee_document_versions` (PostgreSQL / `hrm-api`): `employee_id`, `folder_path`, `file_url`, `version`, `uploaded_by`, `uploaded_at`.
+
+## 12. Tài Liệu Kèm Theo — Ứng Dụng Di Động HRM
 
 - BRD mobile: `docs/hrm/BRD_MOBILE.md`
 - SRS mobile: `docs/hrm/SRS_MOBILE.md` (use case `UC-HRM-MOB-*`, mã lỗi client bổ sung)
 - TechSpec mobile: `docs/hrm/TECHSPEC_MOBILE.md`
+
+## 13. Portal embed — Command Center (`HrmWorkspacePanel`)
+
+**Hai surface HRM:** (1) **Embed** — `apps/web/web-portal` route `/command-center/hrm/:view`; (2) **Vận hành** — `apps/web/hrm` app đầy đủ. Catalog `settings-catalogs` là nguồn sự thật chung; cấu hình tại Command Center menu `company_group_hr`.
+
+| Mã | Tên | API chính |
+|---|---|---|
+| UC-HRM-20 | Embed — Tổng quan HRM | `GET /api/hrm/employees`, `GET /api/hrm/payroll/payslips` |
+| UC-HRM-21 | Embed — Danh sách nhân sự | `GET /api/hrm/employees` |
+| UC-HRM-22 | Embed — Tuyển dụng | `GET /api/hrm/recruitment/requisitions` |
+| UC-HRM-23 | Embed — Chấm công | `GET /api/hrm/attendance/records` |
+| UC-HRM-24 | Embed — Lương | `GET /api/hrm/payroll/payslips` |
+| UC-HRM-25 | Embed — Hợp đồng / BHXH | `GET /api/hrm/contracts-insurance/contracts` |
+| UC-HRM-26 | Embed — Hàng chờ metadata | `GET /api/hrm/employee-metadata/change-requests` |
+| UC-HRM-27 | Embed — Quyết định / Báo cáo | Chưa có API (BRD backlog) |
+
+### UC-HRM-21 — Embed: danh sách nhân sự
+
+**Purpose:** HCNS/CEO xem danh sách NV theo phạm vi tenant từ Command Center.
+
+**Usecases:** Happy: API trả danh sách → bảng. Alternate: rỗng → empty state. Exception: 401 → đăng nhập; 5xx → banner (BR-MOCK-02).
+
+**Activity Diagram:**
+
+```mermaid
+sequenceDiagram
+  participant UI as HrmWorkspacePanel
+  participant API as hrm-api
+  participant DB as PostgreSQL
+  UI->>API: GET /employees company_id scope
+  API->>DB: SELECT employees
+  DB-->>API: rows
+  API-->>UI: envelope data[]
+```
+
+**Business Logic:** BR-SCOPE-01; không hiển thị mock khi BR-MOCK-01; map `employee_code`, `full_name`, `status`.
+
+**Data Interaction:**
+
+| Field | Nguồn | Validation |
+|-------|--------|------------|
+| `x-tenant-id` | GlobalFilter / member unit | Required |
+| `x-company-id` | `MEMBER_DEFAULT_COMPANY_ID` | Required |
+| `company_id` query | Scope resolver | UUID/slug |
+
+**Acceptance:** Không còn `mockEmployees` khi API 200; empty state có hướng dẫn.
+
+### UC-HRM-22 — Embed: tuyển dụng
+
+**Purpose:** Xem TT tuyển dụng (requisitions) theo công ty.
+
+**Usecases:** Happy: list requisitions. Alternate: empty. Exception: API fail → banner, không mock im lặng (BR-MOCK-02).
+
+**Activity Diagram:**
+
+```mermaid
+sequenceDiagram
+  participant UI as HrmWorkspacePanel
+  participant API as hrm-api
+  UI->>API: GET /recruitment/requisitions
+  API-->>UI: data[]
+```
+
+**Business Logic:** Map `title` → cột Chiến dịch; `status` hiển thị tiếng Việt.
+
+**Data Interaction:** `GET /api/hrm/recruitment/requisitions?company_id=`; headers `x-tenant-id`, `x-internal-api-key`.
+
+### UC-HRM-23 — Embed: chấm công
+
+**Purpose:** Xem bản ghi chấm công theo kỳ/tenant.
+
+**Usecases:** Happy / empty / error như UC-HRM-22.
+
+**Activity:** `GET /api/hrm/attendance/records?company_id=`.
+
+**Business Logic:** Hiển thị `attendance_date`, `employee_id`, `status`; không aggregate mock period.
+
+**Data Interaction:** Bảng `attendance_records` (BE).
+
+### UC-HRM-24 — Embed: lương
+
+**Purpose:** Xem payslip / kỳ lương tóm tắt trên cockpit.
+
+**Activity:** `GET /api/hrm/payroll/payslips?company_id=`.
+
+**Business Logic:** Fallback mock chỉ dev; production: empty hoặc API.
+
+### UC-HRM-25 — Embed: hợp đồng và BHXH
+
+**Purpose:** Danh sách HĐ lao động (tab contracts + insurance dùng chung nguồn).
+
+**Activity:** `GET /api/hrm/contracts-insurance/contracts?company_id=`.
+
+### UC-HRM-26 — Embed: duyệt metadata
+
+**Purpose:** Duyệt yêu cầu đổi field hồ sơ sau khi sync catalog từ Command Center.
+
+**Activity:** `GET .../change-requests`; `POST .../approve|reject`.
+
+**Phụ thuộc:** UC-CC-02 (catalog sync), `company_group_hr`.
+
+### UC-HRM-27 — Embed: quyết định / báo cáo (backlog)
+
+**Purpose:** QSĐ nhân sự, báo cáo tổng hợp.
+
+**Business Logic:** Hiện mock — chờ BRD module `decisions` / `reports`.
+
+**Acceptance:** Ghi backlog REQ; không claim DONE.
+
+## 14. Ứng dụng HRM native — bổ sung mock → API
+
+| Mã | Tên | API chính |
+|---|---|---|
+| UC-HRM-28 | App — Cơ cấu lương NV | `GET/POST payroll/*` (theo BE hiện có) |
+| UC-HRM-29 | App — Lịch sử công việc NV | `GET /employees/:id` + payload |
+| UC-HRM-30 | App — Tuyển dụng đầy đủ | `recruitment/requisitions`, `candidates`, `interviews` |
+| UC-HRM-31 | App — Kỳ lương | `payroll/periods`, `payslips` |
+| UC-HRM-32 | App — Chấm công đầy đủ | `attendance/records`, `leave-requests` |
+
+### UC-HRM-28 — App: cơ cấu lương (EmployeeSalary)
+
+**Purpose:** Xem/sửa lương cơ bản, phụ cấp, biểu đồ lương trên hồ sơ NV.
+
+**Usecases:** Happy: load từ payroll API. Alternate: NV chưa có kỳ lương. Exception: thay mock bằng empty (BR-MOCK-01).
+
+**Activity:**
+
+```mermaid
+sequenceDiagram
+  participant UI as EmployeeSalary
+  participant API as hrm-api
+  UI->>API: GET payroll context by employee
+  API-->>UI: salary components
+```
+
+**Business Logic:** Không dùng `mockSalaryData` production; chart từ payslip history API.
+
+**Data Interaction:** Liên kết `employee_id`, `company_id`; xem `payroll.controller.ts`.
+
+### UC-HRM-30 — App: tuyển dụng
+
+**Purpose:** Quản lý JD, ứng viên, lịch phỏng vấn.
+
+**Activity:** CRUD qua `recruitment/*` endpoints đã có trên `hrm-api`.
+
+**Phụ thuộc:** `business-master/positions`, org units (XBOS).
+
+### UC-HRM-31 / UC-HRM-32
+
+Tương tự UC-HRM-24/23 nhưng đủ CRUD trên app HRM; tham chiếu SRS UC-HRM-09..12 cho attendance notifications.

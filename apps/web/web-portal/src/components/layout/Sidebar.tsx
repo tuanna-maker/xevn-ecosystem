@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import {
   Building2,
   Settings,
@@ -46,10 +47,16 @@ const P = '/dashboard';
 
 const primaryMenus: MenuItem[] = [
   {
-    id: 'x-bos',
-    label: 'X-BOS',
+    id: 'x-bos-group',
+    label: 'X-BOS (Tập đoàn)',
     icon: <Building2 size={20} />,
     path: `${P}/organization`,
+  },
+  {
+    id: 'catalog-governance',
+    label: 'Duyệt danh mục HRM',
+    icon: <ClipboardList size={20} />,
+    path: '/command-center?settings=hrm_catalog_governance',
   },
   {
     id: 'trsport',
@@ -245,8 +252,16 @@ const settingsMenus: MenuItem[] = [
 ];
 
 const Sidebar: React.FC = () => {
+  const { isMasterContext } = useTenantScope();
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['settings']);
   const location = useLocation();
+
+  const visiblePrimaryMenus = primaryMenus.filter((item) => {
+    if (item.id === 'x-bos-group' || item.id === 'catalog-governance') return isMasterContext;
+    if (['trsport', 'lgts', 'x-maintenance', 'crm'].includes(item.id)) return !isMasterContext;
+    return true;
+  });
+  const visibleSettingsMenus = isMasterContext ? [] : settingsMenus;
 
   const hrmOrigin =
     import.meta.env.VITE_HRM_ORIGIN ?? (import.meta.env.DEV ? 'http://localhost:8080' : '');
@@ -405,7 +420,7 @@ const Sidebar: React.FC = () => {
             Phân hệ chính
           </p>
           <div className="space-y-1">
-            {primaryMenus.map((item) => renderMenuItem(item))}
+            {visiblePrimaryMenus.map((item) => renderMenuItem(item))}
           </div>
         </div>
 
@@ -418,7 +433,7 @@ const Sidebar: React.FC = () => {
             Danh mục gốc (MDM)
           </p>
           <div className="space-y-1">
-            {settingsMenus.map((item) => renderMenuItem(item))}
+            {visibleSettingsMenus.map((item) => renderMenuItem(item))}
           </div>
         </div>
       </nav>

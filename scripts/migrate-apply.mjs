@@ -7,21 +7,32 @@ import { loadMigrateEnv, explainEnvFailure, effectiveDatabaseUrl } from './migra
 
 const { Client } = pg;
 
-const target = process.argv[2];
+const argv = process.argv.slice(2);
+const repairChecksums = argv.includes('--repair-checksums');
+const positional = argv.filter((a) => !a.startsWith('-'));
+const target = positional[0];
+
 if (!target || (target !== 'hrm' && target !== 'xbos')) {
-  throw new Error("Usage: node ./scripts/migrate-apply.mjs <hrm|xbos>");
+  throw new Error(
+    "Usage: node ./scripts/migrate-apply.mjs <hrm|xbos> [--repair-checksums]\n" +
+      '  --repair-checksums  Cập nhật checksum trong schema_migrations khi file .sql đã sửa sau khi apply (chỉ dev/POC).',
+  );
 }
 
 const { loaded: loadedEnvFiles, repoRoot } = loadMigrateEnv(target);
 
-const database = target === 'hrm' ? 'xevn_hrm' : 'xevn_xbos';
+const database =
+  target === 'hrm'
+    ? (process.env.DB_NAME_HRM?.trim() || process.env.DB_NAME?.trim() || 'xevn_hrm')
+    : (process.env.DB_NAME_XBOS?.trim() || process.env.DB_NAME?.trim() || 'xevn_xbos');
 const databaseUrl = effectiveDatabaseUrl(
   target === 'hrm' ? process.env.DATABASE_URL_HRM : process.env.DATABASE_URL_XBOS,
 );
 
-const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD'];
+/** Không bắt buộc DB_PASSWORD (local trust / socket). Nhóm bắt buộc khi không dùng connection string. */
+const requiredCore = ['DB_HOST', 'DB_PORT', 'DB_USER'];
 if (!databaseUrl) {
-  const missing = required.filter((k) => !process.env[k]);
+  const missing = requiredCore.filter((k) => !String(process.env[k] ?? '').trim());
   if (missing.length > 0) {
     const urlKey = target === 'hrm' ? 'DATABASE_URL_HRM' : 'DATABASE_URL_XBOS';
     const example =
@@ -29,7 +40,7 @@ if (!databaseUrl) {
     const detail = explainEnvFailure(target, { loaded: loadedEnvFiles });
     throw new Error(
       [
-        `Missing DB config: need ${urlKey} or all of ${required.join(', ')}. Thiếu: ${missing.join(', ')}.`,
+        `Missing DB config: need ${urlKey} or all of ${requiredCore.join(', ')}. Thiếu: ${missing.join(', ')}.`,
         detail.hint,
         `Tham chiếu: ${example}`,
         `Đã nạp .env: ${detail.loaded_env_files.length ? detail.loaded_env_files.join('; ') : '(không có file nào tồn tại)'}`,
@@ -47,11 +58,11 @@ function isPocDev() {
 
 if (
   !databaseUrl &&
-  (!process.env.DB_PASSWORD?.trim() ||
-    (!isPocDev() && process.env.DB_PASSWORD.trim() === 'replace_me'))
+  !isPocDev() &&
+  String(process.env.DB_PASSWORD ?? '').trim() === 'replace_me'
 ) {
   throw new Error(
-    'DB_PASSWORD trống hoặc vẫn là placeholder replace_me. Với server dev/POC: đặt mật khẩu Postgres vào DB_PASSWORD (một credential dev), hoặc bật XEVN_POC_DEV=1 trong deploy/xevn-ecosystem/.env nếu bạn cố ý dùng giá trị mẫu; hoặc XEVN_DB_PASSWORD trên máy.',
+    'DB_PASSWORD vẫn là placeholder replace_me. Với server dev/POC: đặt mật khẩu Postgres vào DB_PASSWORD, hoặc bật XEVN_POC_DEV=1 trong deploy/xevn-ecosystem/.env; hoặc XEVN_DB_PASSWORD trên máy.',
   );
 }
 
@@ -63,7 +74,7 @@ const client = databaseUrl
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      password: process.env.DB_PASSWORD ?? '',
       database,
       ssl: false,
     });
@@ -111,8 +122,21 @@ async function applyMigration(fileName) {
     return { file: fileName, status: 'skipped' };
   }
   if (state.applied && state.changed) {
+    if (repairChecksums) {
+      if (process.env.NODE_ENV === 'production' && process.env.ALLOW_MIGRATE_REPAIR_CHECKSUM !== 'true') {
+        throw new Error(
+          `Checksum mismatch for ${fileName}: từ chối --repair-checksums khi NODE_ENV=production (đặt ALLOW_MIGRATE_REPAIR_CHECKSUM=true nếu cố ý).`,
+        );
+      }
+      console.warn(`[migrate] repair checksum only (không chạy lại SQL): ${fileName}`);
+      await client.query(
+        `UPDATE public.schema_migrations SET checksum = $2, applied_at = NOW() WHERE file_name = $1`,
+        [fileName, sum],
+      );
+      return { file: fileName, status: 'checksum_repaired' };
+    }
     throw new Error(
-      `Migration checksum mismatch for ${fileName}. File changed after applied; create a new migration file instead.`,
+      `Migration checksum mismatch for ${fileName}. File changed after applied; create a new migration file instead, or dev/PoC: node ./scripts/migrate-apply.mjs ${target} --repair-checksums`,
     );
   }
 
@@ -136,15 +160,18 @@ async function main() {
     }
     const applied = results.filter((r) => r.status === 'applied').length;
     const skipped = results.filter((r) => r.status === 'skipped').length;
+    const repaired = results.filter((r) => r.status === 'checksum_repaired').length;
     console.log(
       JSON.stringify(
         {
           success: true,
           target,
           database: databaseUrl ? `(connection string → ${database})` : database,
+          repair_checksums: repairChecksums,
           total_files: files.length,
           applied,
           skipped,
+          checksum_repaired: repaired,
           results,
         },
         null,

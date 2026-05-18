@@ -67,6 +67,12 @@ Mọi nghiệp vụ HRM phải tuân thủ bộ quy tắc **chung toàn hệ sin
 - Quản trị nguồn dữ liệu dùng chung cấp tập đoàn (thuộc XBOS).
 - Nghiệp vụ tài chính ngoài HRM.
 
+### 5.3 Ranh giới sau họp Chủ tịch (2026-05)
+
+- HRM **tiêu thụ** `position_template`, org/legal entity từ XBOS API; **không** sở hữu cây org master.
+- Import NS (Excel 20–30 cột, ảnh = URL) + **document vault** versioned thuộc HRM.
+- `workflow_code` trên metadata chỉ tham chiếu definition XBOS; engine runtime do XBOS.
+
 ## 6. Bên Liên Quan Và Vai Trò
 
 | Nhóm | Vai trò |

@@ -8,25 +8,25 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockExpenseCategories, mockCompanies, ExpenseCategory } from '../../data/mockData';
+import { mockExpenseCategories, ExpenseCategory } from '../../data/mockData';
+import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const ExpenseCategoriesSettingsPage: React.FC = () => {
-  const { selectedCompany, companies } = useGlobalFilter();
-  const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>(mockExpenseCategories);
+  const { companies } = useCompanyFilterOptions();
+  const { tenantId, companyId } = useTenantScope();
+  const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
   useEffect(() => {
-    void listBusinessMasterItems<ExpenseCategory>(
-      'expense_categories',
-      selectedCompany.id === 'all' ? null : selectedCompany.id,
-    )
+    void listBusinessMasterItems<ExpenseCategory>('expense_categories', tenantId, companyId)
       .then((rows) => {
-        if (rows.length) setExpenseCategories(rows);
+        setExpenseCategories(rows);
       })
       .catch(() => {
-        setExpenseCategories(mockExpenseCategories);
+        setExpenseCategories(allowMockFallback() ? mockExpenseCategories : []);
       });
-  }, [selectedCompany.id]);
+  }, [tenantId, companyId]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ExpenseCategory | null>(null);
@@ -120,7 +120,8 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
         'expense_categories',
         editingCategory.id,
         { ...editingCategory, ...formData, status: 'active' },
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       setExpenseCategories((prev) =>
         prev.map((c) =>
@@ -139,7 +140,8 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
         'expense_categories',
         newCategory.id,
         newCategory,
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       setExpenseCategories((prev) => [...prev, newCategory]);
     }
@@ -152,7 +154,8 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
       await deleteBusinessMasterItem(
         'expense_categories',
         id,
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       setExpenseCategories((prev) => prev.filter((c) => c.id !== id));
     }
@@ -574,7 +577,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
                   Áp dụng cho công ty <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {(companies.length ? companies : mockCompanies).map((company: { id: string; shortName: string }) => (
+                  {companies.map((company) => (
                     <label
                       key={company.id}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
@@ -607,7 +610,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
                         }}
                         className="sr-only"
                       />
-                      <span className="text-sm font-medium">{company.shortName}</span>
+                      <span className="text-sm font-medium">{company.shortName ?? company.name}</span>
                     </label>
                   ))}
                 </div>

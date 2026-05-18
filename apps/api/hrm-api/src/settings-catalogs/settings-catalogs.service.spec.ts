@@ -1,6 +1,7 @@
 import { SettingsCatalogsService } from './settings-catalogs.service';
 import { CatalogSyncService } from '../catalog-sync/catalog-sync.service';
 import { HrmDbService } from '../db/hrm-db.service';
+import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
 
 describe('SettingsCatalogsService', () => {
   const db = {
@@ -13,11 +14,15 @@ describe('SettingsCatalogsService', () => {
     pullCatalogFromXbos: jest.fn(),
   } as unknown as CatalogSyncService;
 
+  const xbosWorkflow = {
+    startCatalogExtensionWorkflow: jest.fn().mockResolvedValue(undefined),
+  } as unknown as XbosCatalogWorkflowBridge;
+
   let service: SettingsCatalogsService;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new SettingsCatalogsService(db, catalogSync);
+    service = new SettingsCatalogsService(db, catalogSync, xbosWorkflow);
     (db.query as jest.Mock).mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.hrm_catalog_extension_items')) {
         return {

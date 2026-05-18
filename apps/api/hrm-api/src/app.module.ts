@@ -7,6 +7,7 @@ import { HrmAdminService } from './hrm-admin/hrm-admin.service';
 import { CatalogSyncController } from './catalog-sync/catalog-sync.controller';
 import { CatalogSyncService } from './catalog-sync/catalog-sync.service';
 import { EmployeesModule } from './employees/employees.module';
+import { FleetModule } from './fleet/fleet.module';
 import { PayrollController } from './payroll/payroll.controller';
 import { PayrollService } from './payroll/payroll.service';
 import { AttendanceController } from './attendance/attendance.controller';
@@ -23,6 +24,7 @@ import { EmployeeMetadataService } from './employee-metadata/employee-metadata.s
 import { EmployeeMetadataRepository } from './employee-metadata/employee-metadata.repository';
 import { SettingsCatalogsController } from './settings-catalogs/settings-catalogs.controller';
 import { SettingsCatalogsService } from './settings-catalogs/settings-catalogs.service';
+import { XbosCatalogWorkflowBridge } from './settings-catalogs/xbos-catalog-workflow.bridge';
 import { PerformanceController } from './performance/performance.controller';
 import { PerformanceService } from './performance/performance.service';
 import { HrmRealtimeGateway } from './realtime/hrm-realtime.gateway';
@@ -34,7 +36,7 @@ import { PushOutboundService } from './notifications/push-outbound.service';
 import { WebhookOutboundService } from './notifications/webhook-outbound.service';
 
 @Module({
-  imports: [CoreModule, EmployeesModule, SpreadsheetModule],
+  imports: [CoreModule, EmployeesModule, FleetModule, SpreadsheetModule],
   controllers: [
     AppController,
     HrmAdminController,
@@ -59,6 +61,7 @@ import { WebhookOutboundService } from './notifications/webhook-outbound.service
     HrmAdminService,
     CatalogSyncService,
     SettingsCatalogsService,
+    XbosCatalogWorkflowBridge,
     PayrollService,
     AttendanceService,
     LeaveRequestsService,

@@ -172,3 +172,123 @@ sequenceDiagram
 - If payload thiếu `target` hoặc `actual` -> lỗi validation.
 - Else tính score/band/reward/penalty theo rule engine server-side, trả kết quả xác định.
 - Batch mode xử lý nhiều dòng theo cùng nguyên tắc, trả kết quả theo index đầu vào.
+
+## 11. Use case Wave họp Chủ tịch (v2.3)
+
+| Mã | Tên | API chính |
+|---|---|---|
+| UC-XBOS-10 | Promote mảng KD → công ty con | `POST /api/xbos/org-foundation/segments/:id/promote` |
+| UC-XBOS-11 | CRUD position template + assignment | `/api/xbos/position-rbac/templates`, `/assignments` |
+| UC-XBOS-12 | Gán/thu hồi permission + conflict check | `GET /grants/conflicts`, `POST /grants` |
+| UC-XBOS-13 | Định nghĩa workflow | `/api/xbos/workflow-engine/definitions` |
+| UC-XBOS-14 | Instance + multi-hat approval | `POST /instances`, `POST /tasks/:id/complete` |
+| UC-XBOS-15 | Reporting route + rollup | `/api/xbos/workflow-engine/reporting-routes` |
+| UC-XBOS-16 | Asset request → finance confirm | `/api/xbos/asset-requests` |
+
+### UC-XBOS-14 — Multi-hat (BR-XBOS-MULTI-HAT-01)
+
+- If cùng `userId` còn task `pending` khác `hat_key` → bắt buộc `hatKey` trong body complete.
+- Else complete task và trả `pendingHats` để UI hiển thị ký tiếp.
+
+---
+
+## 12. Phụ lục SRS-XBOS-PORTAL-MOCK — Web Portal còn mock / một phần API
+
+Tham chiếu inventory: `docs/ecosystem/FE_MOCK_TO_API_AUDIT.md` (§ Mock inventory).
+
+### 12.1 Dashboard điều hành (W1–W3)
+
+| Mã | Tên | API đích | Trạng thái FE |
+|---|---|---|---|
+| UC-XBOS-DASH-01 | Cockpit tổng hợp KPI | Aggregation API (mới) hoặc tạm `business-master` + client rollup | Mock (`ExecutiveDashboardPage`) |
+| UC-XBOS-DASH-02 | Bảng KPI theo công ty | `GET business-master/kpi_metrics` + `kpi-engine/evaluate-batch` | Mock (`KPIDashboardPage`) |
+| UC-XBOS-DASH-03 | Chính sách KPI | Policy entity (backlog) | Mock inline (`KPIPolicyPage`) |
+
+#### UC-XBOS-DASH-01 — Cockpit CEO
+
+**Purpose:** Hiển thị chỉ số tài chính/vận hành tập đoàn và deep-link module.
+
+**Usecases:** Happy: rollup API trả metrics. Alternate: chọn một tenant → filter. Exception: API fail → banner (BR-MOCK-02).
+
+**Activity:**
+
+```mermaid
+sequenceDiagram
+  participant UI as ExecutiveDashboard
+  participant XBOS as xbos-api
+  participant HRM as hrm-api
+  UI->>XBOS: GET rollup / workflow summary
+  opt KPI metrics
+    UI->>XBOS: POST kpi-engine/evaluate-batch
+  end
+  XBOS-->>UI: dashboard payload
+```
+
+**Business Logic:** `selectedTenant` từ GlobalFilter; không hiển thị mock revenue khi API 200 rỗng.
+
+**Data Interaction:** Tạm thời: `listWorkflowInstances` + `listReportingRoutes` (đã gọi); target: `GET /api/xbos/kpi-engine/dashboard` (BRD).
+
+### 12.2 Master data — Settings & danh mục (W5–W10)
+
+| Mã | Tên | API |
+|---|---|---|
+| UC-XBOS-MD-01 | CRUD chức danh | `business-master/positions` + `position-rbac/templates` |
+| UC-XBOS-MD-02 | CRUD nhà cung cấp | `business-master/vendors` |
+| UC-XBOS-MD-03 | CRUD loại chi phí | `business-master/expense_categories` |
+| UC-XBOS-MD-04 | CRUD KPI metric | `business-master/kpi_metrics` |
+| UC-XBOS-MD-05 | CRUD khách hàng | `business-master/customers` |
+| UC-XBOS-MD-06 | CRUD đối tác | `business-master/partners` |
+| UC-XBOS-MD-07 | Loại xe (asset) | `asset-registry` + domain fleet |
+
+#### UC-XBOS-MD-01 — Chức danh (mẫu)
+
+**Purpose:** Quản lý thư viện chức danh áp dụng theo công ty.
+
+**Usecases:** Happy: list/upsert qua API. Alternate: API lỗi → không fallback `mockPositions` production.
+
+**Activity:** `GET/PUT/DELETE /api/xbos/business-master/positions/items`.
+
+**Business Logic:** BR-SCOPE-02; checkbox `applicableCompanies` map `company_id` list.
+
+**Data Interaction:** Whitelist domain `positions`; envelope chuẩn XBOS.
+
+### 12.3 Command Center cấu hình (W11–W14)
+
+**Wave P0 (persist thật, không `publishVersionChange` giả):** [`COMMAND_CENTER_P0_SRS.md`](COMMAND_CENTER_P0_SRS.md) · [`COMMAND_CENTER_P0_TECHSPEC.md`](COMMAND_CENTER_P0_TECHSPEC.md) · [`../program/WBS_COMMAND_CENTER_P0.md`](../program/WBS_COMMAND_CENTER_P0.md)
+
+| Mã | Tên | API / ghi chú |
+|---|---|---|
+| UC-CC-P0-01 … UC-CC-P0-09 | Shareholder, legal doc upload, org-units, permission matrix, catalog, inbox detail, metadata preview, workspace-meta | Xem SRS P0 |
+| UC-XBOS-CC-05 | Rail inbox KPI/task/alert | Backlog — chưa có unified inbox API |
+| UC-XBOS-CC-06 | Workflow canvas | `workflow-engine/definitions` + persist `payload.graph` |
+| UC-XBOS-CC-07 | Hạ tầng — danh mục nền | `infrastructure/settings` + template API backlog |
+| UC-XBOS-CC-08 | Hệ thống PB mẫu | CRUD template backlog (`catalog-governance` hoặc metadata) |
+
+#### UC-XBOS-CC-06 — Workflow definition + graph
+
+**Purpose:** Lưu định nghĩa quy trình và layout canvas.
+
+**Usecases:** Happy: save definition kèm graph JSON. Alternate: load seed từ file chỉ dev.
+
+**Activity:**
+
+```mermaid
+sequenceDiagram
+  participant UI as CommandCenter_Workflow
+  participant API as workflow-engine
+  UI->>API: GET definitions
+  UI->>API: PUT definition payload.graph
+  API-->>UI: saved definition
+```
+
+**Business Logic:** Graph prototype `workflow-graph.ts` chỉ bootstrap; runtime đọc từ DB.
+
+**Data Interaction:** Field `payload` JSON: `steps[]`, `transitions[]`, `positions`.
+
+#### UC-XBOS-CC-07 — Hạ tầng danh mục nền
+
+**Purpose:** Cấu hình danh mục hạ tầng và field theo pháp nhân.
+
+**Phụ thuộc:** `tenant-scope`, legal entities, `infrastructure/settings` runtime API.
+
+**Business Logic:** `INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES` → migrate sang DB/catalog-governance.

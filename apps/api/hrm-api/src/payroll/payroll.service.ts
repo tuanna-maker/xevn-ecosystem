@@ -5,6 +5,22 @@ import { HrmDbService } from '../db/hrm-db.service';
 import { CreatePayrollPeriodDto } from './dto/create-payroll-period.dto';
 import { ListPayrollPeriodsQueryDto } from './dto/list-payroll-periods.query.dto';
 
+type PayrollPayslipRow = {
+  id: string;
+  company_id: string;
+  period_id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  gross_amount: string;
+  deduction_amount: string;
+  net_amount: string;
+  currency: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
 type PayrollPeriodRow = {
   id: string;
   company_id: string;
@@ -27,7 +43,7 @@ export class PayrollService {
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.payroll_periods (
         id UUID PRIMARY KEY,
-        company_id UUID NOT NULL,
+        company_id TEXT NOT NULL,
         period_label TEXT NOT NULL,
         start_date DATE NOT NULL,
         end_date DATE NOT NULL,
@@ -41,9 +57,39 @@ export class PayrollService {
         CONSTRAINT chk_payroll_date_range CHECK (start_date <= end_date)
       );
     `);
+    try {
+      await this.db.query(`
+        ALTER TABLE public.payroll_periods
+        ALTER COLUMN company_id TYPE TEXT USING company_id::text;
+      `);
+    } catch {
+      /* already text */
+    }
     await this.db.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS uq_payroll_period_company_date_range
       ON public.payroll_periods (company_id, start_date, end_date);
+    `);
+    await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.payroll_payslips (
+        id UUID PRIMARY KEY,
+        company_id TEXT NOT NULL,
+        period_id UUID NOT NULL REFERENCES public.payroll_periods(id) ON DELETE CASCADE,
+        employee_id UUID NOT NULL,
+        employee_code TEXT NOT NULL,
+        employee_name TEXT NOT NULL,
+        gross_amount NUMERIC(15,2) NOT NULL DEFAULT 0,
+        deduction_amount NUMERIC(15,2) NOT NULL DEFAULT 0,
+        net_amount NUMERIC(15,2) NOT NULL DEFAULT 0,
+        currency TEXT NOT NULL DEFAULT 'VND',
+        status TEXT NOT NULL DEFAULT 'processed',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        CONSTRAINT chk_payslip_status CHECK (status IN ('draft', 'processed', 'paid'))
+      );
+    `);
+    await this.db.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_payroll_payslip_period_employee
+      ON public.payroll_payslips (period_id, employee_id);
     `);
   }
 
@@ -88,7 +134,7 @@ export class PayrollService {
       `
         SELECT id
         FROM public.payroll_periods
-        WHERE company_id = $1::uuid
+        WHERE company_id = $1
           AND daterange(start_date, end_date, '[]') && daterange($2::date, $3::date, '[]')
         LIMIT 1;
       `,
@@ -102,7 +148,7 @@ export class PayrollService {
       `
         INSERT INTO public.payroll_periods (
           id, company_id, period_label, start_date, end_date, status, created_by
-        ) VALUES ($1, $2::uuid, $3, $4::date, $5::date, 'draft', $6)
+        ) VALUES ($1, $2, $3, $4::date, $5::date, 'draft', $6)
         RETURNING
           id, company_id, period_label, start_date, end_date, status, created_by,
           processed_at, closed_at, created_at, updated_at;
@@ -121,7 +167,7 @@ export class PayrollService {
 
   async listPayrollPeriods(query: ListPayrollPeriodsQueryDto) {
     await this.ensureSchema();
-    const filters = ['company_id = $1::uuid'];
+    const filters = ['company_id = $1'];
     const values: unknown[] = [query.company_id];
     if (query.status) {
       filters.push('status = $2');
@@ -199,7 +245,7 @@ export class PayrollService {
       `
         SELECT status, COUNT(*)::text AS total
         FROM public.payroll_periods
-        WHERE company_id = $1::uuid
+        WHERE company_id = $1
         GROUP BY status;
       `,
       [companyId],
@@ -209,5 +255,101 @@ export class PayrollService {
       summary[row.status] = Number(row.total ?? 0);
     }
     return summary;
+  }
+
+  private mapPayslip(row: PayrollPayslipRow) {
+    return {
+      id: row.id,
+      company_id: row.company_id,
+      period_id: row.period_id,
+      employee_id: row.employee_id,
+      employee_code: row.employee_code,
+      employee_name: row.employee_name,
+      gross_amount: Number(row.gross_amount),
+      deduction_amount: Number(row.deduction_amount),
+      net_amount: Number(row.net_amount),
+      currency: row.currency,
+      status: row.status,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    };
+  }
+
+  async listPayslips(query: { company_id: string; period_id?: string }) {
+    await this.ensureSchema();
+    const filters = ['p.company_id = $1'];
+    const values: unknown[] = [query.company_id];
+    if (query.period_id) {
+      filters.push(`p.period_id = $2::uuid`);
+      values.push(query.period_id);
+    }
+    const res = await this.db.query<PayrollPayslipRow & { period_label: string }>(
+      `
+        SELECT
+          p.id, p.company_id, p.period_id, p.employee_id, p.employee_code, p.employee_name,
+          p.gross_amount::text, p.deduction_amount::text, p.net_amount::text,
+          p.currency, p.status, p.created_at, p.updated_at,
+          pp.period_label
+        FROM public.payroll_payslips p
+        JOIN public.payroll_periods pp ON pp.id = p.period_id
+        WHERE ${filters.join(' AND ')}
+        ORDER BY pp.start_date DESC, p.employee_code ASC;
+      `,
+      values,
+    );
+    return {
+      total: res.rows.length,
+      data: res.rows.map((row) => ({
+        ...this.mapPayslip(row),
+        period_label: row.period_label,
+      })),
+    };
+  }
+
+  async upsertPayslip(input: {
+    company_id: string;
+    period_id: string;
+    employee_id: string;
+    employee_code: string;
+    employee_name: string;
+    gross_amount: number;
+    deduction_amount: number;
+    net_amount: number;
+    status?: string;
+  }) {
+    await this.ensureSchema();
+    const res = await this.db.query<PayrollPayslipRow>(
+      `
+        INSERT INTO public.payroll_payslips (
+          id, company_id, period_id, employee_id, employee_code, employee_name,
+          gross_amount, deduction_amount, net_amount, status
+        ) VALUES ($1, $2, $3::uuid, $4::uuid, $5, $6, $7, $8, $9, $10)
+        ON CONFLICT (period_id, employee_id) DO UPDATE SET
+          employee_code = EXCLUDED.employee_code,
+          employee_name = EXCLUDED.employee_name,
+          gross_amount = EXCLUDED.gross_amount,
+          deduction_amount = EXCLUDED.deduction_amount,
+          net_amount = EXCLUDED.net_amount,
+          status = EXCLUDED.status,
+          updated_at = NOW()
+        RETURNING
+          id, company_id, period_id, employee_id, employee_code, employee_name,
+          gross_amount::text, deduction_amount::text, net_amount::text,
+          currency, status, created_at, updated_at;
+      `,
+      [
+        randomUUID(),
+        input.company_id,
+        input.period_id,
+        input.employee_id,
+        input.employee_code,
+        input.employee_name,
+        input.gross_amount,
+        input.deduction_amount,
+        input.net_amount,
+        input.status ?? 'processed',
+      ],
+    );
+    return this.mapPayslip(res.rows[0]);
   }
 }

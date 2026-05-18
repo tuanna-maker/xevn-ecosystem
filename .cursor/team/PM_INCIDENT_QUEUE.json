@@ -6568,5 +6568,653 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1778859125711",
+    "detectedAt": "2026-05-15T15:32:05.710Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm run build 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778860379689",
+    "detectedAt": "2026-05-15T15:52:59.687Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm install -q 2>/dev/null; npx ts-node scripts/seed-org-foundation.ts 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778860393064",
+    "detectedAt": "2026-05-15T15:53:13.063Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npx ts-node scripts/seed-org-foundation.ts 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778860595274",
+    "detectedAt": "2026-05-15T15:56:35.273Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && \\\nDB_HOST=113.20.107.184 DB_PORT=6432 DB_USER=app1 DB_PASSWORD=replace_me MASTER_TENANT_ID=xevn \\\nnpx ts-node scripts/seed-org-foundation.ts 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778860857913",
+    "detectedAt": "2026-05-15T16:00:57.912Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm run seed:org 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778860868223",
+    "detectedAt": "2026-05-15T16:01:08.221Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm run seed:org 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778861280773",
+    "detectedAt": "2026-05-15T16:08:00.772Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npm run build 2>&1 | tail -40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778861382663",
+    "detectedAt": "2026-05-15T16:09:42.662Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npm install --silent 2>&1 | tail -5 && npm run build 2>&1 | tail -25",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778861397430",
+    "detectedAt": "2026-05-15T16:09:57.429Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npm run build 2>&1 | tail -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778861426070",
+    "detectedAt": "2026-05-15T16:10:26.069Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npm run build 2>&1 | tail -8",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778861778956",
+    "detectedAt": "2026-05-15T16:16:18.955Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api\" && npm run build 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778862626473",
+    "detectedAt": "2026-05-15T16:30:26.470Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api\" && pnpm run build 2>&1 | tail -30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778862627825",
+    "detectedAt": "2026-05-15T16:30:27.824Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm run build 2>&1 | tail -40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778862972090",
+    "detectedAt": "2026-05-15T16:36:12.089Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm run build 2>&1 | tail -35",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778863560962",
+    "detectedAt": "2026-05-15T16:46:00.960Z",
+    "source": "hook:afterShellExecution",
+    "command": "node -e \"\nconst ExcelJS = require('exceljs');\n(async () => {\n  const wb = new ExcelJS.Workbook();\n  await wb.xlsx.readFile('/Users/uranus/Downloads/TT phương tiện 1505.xlsx');\n  for (const s of wb.worksheets) {\n    console.log('SHEET:', s.name, 'rows', s.rowCount);\n    const r1 = s.getRow(1);\n    const headers = [];\n    r1.eachCell((c,i)=>headers.push(String(c.value||'')));\n    console.log('  H:', headers.slice(0,20).join(' | '));\n    if (s.rowCount>1) {\n      const r2 = s.getRow(2);\n      const v=[];\n      r2.eachCell((c,i)=>v.push(String(c.value||'').slice(0,30)));\n      console.log('  R2:', v.slice(0,12).join(' | '));\n    }\n  }\n})().catch(e=>console.error(e));\n\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778863823140",
+    "detectedAt": "2026-05-15T16:50:23.137Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm run build 2>&1 | tail -30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778863829070",
+    "detectedAt": "2026-05-15T16:50:29.068Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && pnpm run seed:tourism:xe-du-lich 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778863831949",
+    "detectedAt": "2026-05-15T16:50:31.948Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm run build 2>&1 | tail -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778863848253",
+    "detectedAt": "2026-05-15T16:50:48.251Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm run build 2>&1 | tail -12 && cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && pnpm run seed:tourism:xe-du-lich 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778899811955",
+    "detectedAt": "2026-05-16T02:50:11.953Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && node scripts/bootstrap-xevn-xbos.mjs --no-health 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900042308",
+    "detectedAt": "2026-05-16T02:54:02.306Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && node -e \"\nrequire('./src/load-env.ts');\n\" 2>&1 || node --loader ts-node/esm -e \"\nimport './src/load-env.ts';\nconsole.log('DB_HOST:', process.env.DB_HOST);\nconsole.log('DB_USER:', process.env.DB_USER);\n\" 2>&1 | head -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900162048",
+    "detectedAt": "2026-05-16T02:56:02.047Z",
+    "source": "hook:afterShellExecution",
+    "command": "cat /tmp/xbos-api-restart.log | tail -40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900334479",
+    "detectedAt": "2026-05-16T02:58:54.478Z",
+    "source": "hook:afterShellExecution",
+    "command": "grep -E \"PORT|port|listen\" \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api/src/main.ts\" | head -10",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900439747",
+    "detectedAt": "2026-05-16T03:00:39.746Z",
+    "source": "hook:afterShellExecution",
+    "command": "curl -sv -H \"Accept: application/json\" \\\n     -H \"x-internal-api-key: xevn-dev-internal-key\" \\\n     \"http://localhost:5175/api/xbos/tenant-scope/group-member-units\" 2>&1 | grep -E \"^< HTTP|^{|success|TENANT\" | head -5",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900449325",
+    "detectedAt": "2026-05-16T03:00:49.324Z",
+    "source": "hook:afterShellExecution",
+    "command": "curl -s -H \"Accept: application/json\" \"http://localhost:5175/api/xbos\" 2>&1 | head -5\ncurl -sv -H \"Accept: application/json\" \"http://localhost:5175/api/xbos\" 2>&1 | grep \"^< HTTP\" | head -3",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900456570",
+    "detectedAt": "2026-05-16T03:00:56.569Z",
+    "source": "hook:afterShellExecution",
+    "command": "# Check terminal output for web-portal dev server (it's in the turbo terminal)\nhead -30 /Users/uranus/.cursor/projects/Users-uranus-Documents-vibe-coding-xevn-ecosystem/terminals/8.txt",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900468044",
+    "detectedAt": "2026-05-16T03:01:08.042Z",
+    "source": "hook:afterShellExecution",
+    "command": "tail -30 /Users/uranus/.cursor/projects/Users-uranus-Documents-vibe-coding-xevn-ecosystem/terminals/8.txt",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778900652079",
+    "detectedAt": "2026-05-16T03:04:12.077Z",
+    "source": "hook:afterShellExecution",
+    "command": "cat /Users/uranus/.cursor/projects/Users-uranus-Documents-vibe-coding-xevn-ecosystem/terminals/8.txt | head -10",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778927676832",
+    "detectedAt": "2026-05-16T10:34:36.830Z",
+    "source": "hook:afterShellExecution",
+    "command": "grep -n \"department\\|position\\|chức danh\\|phòng ban\" \\\n  \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api/src/settings-catalogs/settings-catalogs.service.ts\" \\\n  2>&1 | head -20\n\ncat \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/hrm-api/src/settings-catalogs/settings-catalogs.service.ts\" 2>&1 | head -60",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778928875589",
+    "detectedAt": "2026-05-16T10:54:35.585Z",
+    "source": "hook:afterShellExecution",
+    "command": "cat \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal/src/integrations/orgFoundationApi.ts\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778943755122",
+    "detectedAt": "2026-05-16T15:02:35.121Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && node -e \"\nimport pg from 'pg';\nimport { loadMigrateEnv, effectiveDatabaseUrl } from './scripts/migrate-env-loader.mjs';\nloadMigrateEnv('xbos');\nconst db = process.env.DB_NAME_XBOS?.trim() || 'xevn_xbos';\nconst url = effectiveDatabaseUrl(process.env.DATABASE_URL_XBOS);\nconst client = url\n  ? new pg.Client({ connectionString: url, ssl: false })\n  : new pg.Client({\n      host: process.env.DB_HOST,\n      port: Number(process.env.DB_PORT),\n      user: process.env.DB_USER,\n      password: process.env.DB_PASSWORD ?? '',\n      database: db,\n      ssl: false,\n    });\nawait client.connect();\nconst r = await client.query(\\\"SELECT to_regclass('public.raci_activity_catalog') AS t, (SELECT COUNT(*)::int FROM information_schema.tables WHERE table_name='raci_activity_catalog') AS c\\\");\nconsole.log('raci_activity_catalog:', r.rows[0]);\nconst n = await client.query('SELECT COUNT(*)::int AS n FROM public.raci_activity_catalog').catch(e=>({rows:[{n:-1,err:e.message}]}));\nconsole.log('activity count:', n.rows[0]);\nawait client.end();\n\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778945092281",
+    "detectedAt": "2026-05-16T15:24:52.279Z",
+    "source": "hook:afterShellExecution",
+    "command": "grep -r 'setGlobalPrefix' /Users/uranus/Documents/vibe\\ coding/xevn-ecosystem/apps/api/xbos-api/src/main.ts && echo \"---\" && cat /Users/uranus/Documents/vibe\\ coding/xevn-ecosystem/apps/api/xbos-api/src/main.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778945124107",
+    "detectedAt": "2026-05-16T15:25:24.103Z",
+    "source": "hook:afterShellExecution",
+    "command": "head -40 /Users/uranus/Documents/vibe\\ coding/xevn-ecosystem/apps/api/xbos-api/src/position-rbac/position-rbac.controller.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778945226360",
+    "detectedAt": "2026-05-16T15:27:06.358Z",
+    "source": "hook:afterShellExecution",
+    "command": "head -50 /Users/uranus/Documents/vibe\\ coding/xevn-ecosystem/apps/web/web-portal/src/modules/hrm/hrmApiClient.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778945258969",
+    "detectedAt": "2026-05-16T15:27:38.968Z",
+    "source": "hook:afterShellExecution",
+    "command": "head -30 /Users/uranus/Documents/vibe\\ coding/xevn-ecosystem/apps/api/hrm-api/src/settings-catalogs/settings-catalogs.controller.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778945323183",
+    "detectedAt": "2026-05-16T15:28:43.182Z",
+    "source": "hook:afterShellExecution",
+    "command": "head -15 /Users/uranus/Documents/vibe\\ coding/xevn-ecosystem/apps/api/xbos-api/src/raci-governance/raci-governance.controller.ts",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778948773846",
+    "detectedAt": "2026-05-16T16:26:13.844Z",
+    "source": "hook:afterShellExecution",
+    "command": "python3 << 'PY'\nfrom pathlib import Path\np = Path(\"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal/src/pages/command-center/CommandCenterPage.tsx\")\nlines = p.read_text().splitlines(keepends=True)\n# remove legacy block 5136-5180 (1-based) -> 5135:5180\nstart = None\nfor i, line in enumerate(lines):\n    if ') : !groupHrDetailEntityId ? (' in line:\n        start = i\n        break\nend = None\nfor i in range(start or 0, len(lines)):\n    if start and i > start and line.strip() == ') : (' and 'hidden' not in lines[i-3]:\n        # first ) : ( after legacy that leads to detail\n        if 'border border-xevn-border p-4 shadow-soft' in lines[i+1]:\n            end = i\n            break\nprint(start+1, end+1)\nif start and end:\n    lines = lines[:start] + lines[end:]\n    p.write_text(''.join(lines))\n# fix motionless in file\ntext = p.read_text()\ntext = text.replace('motionless', 'motionless_TEMP')\ntext = text.replace('motionless_TEMP', 'motionless')  # noop\ntext = text.replace('<motionless', '<motionless')\n# actually replace motionless with div\nimport re\ntext = re.sub(r'</?motionless\\b', lambda m: m.group(0).replace('motionless', 'div'), text)\np.write_text(text)\nprint('motionless count', text.count('motionless'))\nPY",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778948798774",
+    "detectedAt": "2026-05-16T16:26:38.773Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -25",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778948820102",
+    "detectedAt": "2026-05-16T16:27:00.100Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778948861325",
+    "detectedAt": "2026-05-16T16:27:41.323Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778948898844",
+    "detectedAt": "2026-05-16T16:28:18.843Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778949488552",
+    "detectedAt": "2026-05-16T16:38:08.550Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -25",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778949535324",
+    "detectedAt": "2026-05-16T16:38:55.323Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778949546095",
+    "detectedAt": "2026-05-16T16:39:06.094Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -10",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778983769087",
+    "detectedAt": "2026-05-17T02:09:29.084Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778983791783",
+    "detectedAt": "2026-05-17T02:09:51.782Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778984908058",
+    "detectedAt": "2026-05-17T02:28:28.057Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -50",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778985011230",
+    "detectedAt": "2026-05-17T02:30:11.228Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778985034300",
+    "detectedAt": "2026-05-17T02:30:34.298Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && pnpm qc:dev-stack 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778991240420",
+    "detectedAt": "2026-05-17T04:14:00.416Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778992204586",
+    "detectedAt": "2026-05-17T04:30:04.585Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778992653012",
+    "detectedAt": "2026-05-17T04:37:33.011Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778997745094",
+    "detectedAt": "2026-05-17T06:02:25.093Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778997763881",
+    "detectedAt": "2026-05-17T06:02:43.880Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778998641011",
+    "detectedAt": "2026-05-17T06:17:21.010Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -50",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778999006204",
+    "detectedAt": "2026-05-17T06:23:26.203Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778999020520",
+    "detectedAt": "2026-05-17T06:23:40.519Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1778999040167",
+    "detectedAt": "2026-05-17T06:24:00.166Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | head -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779000189720",
+    "detectedAt": "2026-05-17T06:43:09.718Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779000251838",
+    "detectedAt": "2026-05-17T06:44:11.836Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && node scripts/qc-dev-stack.mjs 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779002420531",
+    "detectedAt": "2026-05-17T07:20:20.530Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && pnpm exec tsc --noEmit 2>&1 | tail -30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779004301331",
+    "detectedAt": "2026-05-17T07:51:41.319Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm run build 2>&1 | tail -30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779004304249",
+    "detectedAt": "2026-05-17T07:51:44.248Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npx tsc --noEmit 2>&1 | tail -40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779004425635",
+    "detectedAt": "2026-05-17T07:53:45.633Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm run build 2>&1 | tail -15 && cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npx tsc --noEmit 2>&1 | tail -15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779004437440",
+    "detectedAt": "2026-05-17T07:53:57.433Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/api/xbos-api\" && npm run build 2>&1 | tail -5 && cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/apps/web/web-portal\" && npx tsc --noEmit 2>&1 | tail -10",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779077598435",
+    "detectedAt": "2026-05-18T04:13:18.432Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets\" && node <<'NODE'\nconst fs = require('fs');\nconst { Resvg } = require('@resvg/resvg-js');\nfor (const name of ['kien-truc-bon-tang-xevn', 'kien-truc-vai-tro-luong-xevn']) {\n  const svg = fs.readFileSync(`${name}.svg`, 'utf8');\n  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1920 } });\n  const png = resvg.render().asPng();\n  fs.writeFileSync(`${name}.png`, png);\n  console.log('wrote', name + '.png', png.length);\n}\nNODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779077604268",
+    "detectedAt": "2026-05-18T04:13:24.266Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/docs/ecosystem/assets\" && npx --yes -p @resvg/resvg-js node <<'NODE'\nconst fs = require('fs');\nconst { Resvg } = require('@resvg/resvg-js');\nfor (const name of ['kien-truc-bon-tang-xevn', 'kien-truc-vai-tro-luong-xevn']) {\n  const svg = fs.readFileSync(`${name}.svg`, 'utf8');\n  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1920 } });\n  fs.writeFileSync(`${name}.png`, resvg.render().asPng());\n  console.log('ok', name);\n}\nNODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779077673701",
+    "detectedAt": "2026-05-18T04:14:33.700Z",
+    "source": "hook:afterShellExecution",
+    "command": "python3 -c \"import cairosvg; print('ok')\" 2>&1; python3 -c \"from PIL import Image; print('pil ok')\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779079624315",
+    "detectedAt": "2026-05-18T04:47:04.313Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && npx --yes -p marked -p puppeteer-core node scripts/export-brd-pdf.mjs 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779079679996",
+    "detectedAt": "2026-05-18T04:47:59.994Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem/scripts/.pdf-deps\" && npm install marked puppeteer-core 2>&1 | tail -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779079688606",
+    "detectedAt": "2026-05-18T04:48:08.604Z",
+    "source": "hook:afterShellExecution",
+    "command": "python3 -c \"import markdown; print(markdown.__version__)\" 2>&1; ls \"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779080263428",
+    "detectedAt": "2026-05-18T04:57:43.425Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"/Users/uranus/Documents/vibe coding/xevn-ecosystem\" && git restore .cursor/team/AGENT_MESSAGE_BUS.md .cursor/team/PM_INCIDENT_QUEUE.json .cursor/team/TEMPLATE_REMINDERS.md .cursor/team/inbox/subagent-stop.jsonl 2>/dev/null; git stash pop 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]

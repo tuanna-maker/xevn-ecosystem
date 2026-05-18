@@ -377,6 +377,7 @@ export default function Recruitment() {
     loading: plansLoading,
     stats: planStats,
     createPlan,
+    updatePlanStatus,
   } = useRecruitmentPlans();
 
   // Fetch candidate evaluations from Supabase
@@ -1689,10 +1690,17 @@ export default function Recruitment() {
                       </Button>
                       {selectedPlan.status === 'pending' && (
                         <>
-                          <Button variant="outline" className="text-destructive border-destructive hover:bg-destructive/10">
+                          <Button
+                            variant="outline"
+                            className="text-destructive border-destructive hover:bg-destructive/10"
+                            onClick={() => void updatePlanStatus(selectedPlan.id, 'rejected')}
+                          >
                             {t('recruitment.reject')}
                           </Button>
-                          <Button className="bg-green-600 hover:bg-green-700">
+                          <Button
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => void updatePlanStatus(selectedPlan.id, 'approved')}
+                          >
                             {t('recruitment.approvePlan')}
                           </Button>
                         </>

@@ -22,6 +22,15 @@ const allowedDomains = new Set([
   'organizations',
   'customers',
   'partners',
+  /** Command Center — khung PB mẫu (chưa có module riêng). */
+  'dept_system_templates',
+  /** Command Center — danh mục văn bản / đo lường / giá (singleton rows per kind). */
+  'command_center_catalogs',
+  'kpi_policies',
+  'kpi_sparkline_snapshots',
+  'department_catalog',
+  'geographic_regions',
+  'kpi_formulas',
 ]);
 
 @Injectable()

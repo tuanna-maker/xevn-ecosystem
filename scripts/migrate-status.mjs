@@ -10,14 +10,17 @@ if (!target || (target !== 'hrm' && target !== 'xbos')) {
 
 const { loaded: loadedEnvFiles } = loadMigrateEnv(target);
 
-const database = target === 'hrm' ? 'xevn_hrm' : 'xevn_xbos';
+const database =
+  target === 'hrm'
+    ? (process.env.DB_NAME_HRM?.trim() || process.env.DB_NAME?.trim() || 'xevn_hrm')
+    : (process.env.DB_NAME_XBOS?.trim() || process.env.DB_NAME?.trim() || 'xevn_xbos');
 const databaseUrl = effectiveDatabaseUrl(
   target === 'hrm' ? process.env.DATABASE_URL_HRM : process.env.DATABASE_URL_XBOS,
 );
 
-const required = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD'];
+const requiredCore = ['DB_HOST', 'DB_PORT', 'DB_USER'];
 if (!databaseUrl) {
-  const missing = required.filter((k) => !process.env[k]);
+  const missing = requiredCore.filter((k) => !String(process.env[k] ?? '').trim());
   if (missing.length > 0) {
     const urlKey = target === 'hrm' ? 'DATABASE_URL_HRM' : 'DATABASE_URL_XBOS';
     const example =
@@ -25,7 +28,7 @@ if (!databaseUrl) {
     const detail = explainEnvFailure(target, { loaded: loadedEnvFiles });
     throw new Error(
       [
-        `Missing DB config: need ${urlKey} or all of ${required.join(', ')}. Thiếu: ${missing.join(', ')}.`,
+        `Missing DB config: need ${urlKey} or all of ${requiredCore.join(', ')}. Thiếu: ${missing.join(', ')}.`,
         detail.hint,
         `Tham chiếu: ${example}`,
         `Đã nạp .env: ${detail.loaded_env_files.length ? detail.loaded_env_files.join('; ') : '(không có file nào tồn tại)'}`,
@@ -43,11 +46,11 @@ function isPocDev() {
 
 if (
   !databaseUrl &&
-  (!process.env.DB_PASSWORD?.trim() ||
-    (!isPocDev() && process.env.DB_PASSWORD.trim() === 'replace_me'))
+  !isPocDev() &&
+  String(process.env.DB_PASSWORD ?? '').trim() === 'replace_me'
 ) {
   throw new Error(
-    'DB_PASSWORD trống hoặc vẫn là placeholder replace_me. Với server dev/POC: đặt mật khẩu Postgres vào DB_PASSWORD, hoặc bật XEVN_POC_DEV=1 trong deploy/xevn-ecosystem/.env; hoặc XEVN_DB_PASSWORD trên máy.',
+    'DB_PASSWORD vẫn là placeholder replace_me. Với server dev/POC: đặt mật khẩu Postgres vào DB_PASSWORD, hoặc bật XEVN_POC_DEV=1 trong deploy/xevn-ecosystem/.env; hoặc XEVN_DB_PASSWORD trên máy.',
   );
 }
 
@@ -57,7 +60,7 @@ const client = databaseUrl
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      password: process.env.DB_PASSWORD ?? '',
       database,
       ssl: false,
     });

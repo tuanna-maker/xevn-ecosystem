@@ -428,23 +428,25 @@ export default function Contracts() {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: FormData }) => {
-      const { error } = await supabase
-        .from('contracts')
-        .update({
-          contract_code: data.contract_code,
-          employee_name: data.employee_name,
-          employee_avatar: data.employee_avatar || null,
-          department: data.department || null,
-          contract_type: data.contract_type,
-          effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-          expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-          status: data.status,
-          notes: data.notes || null,
-          file_url: data.file_url || null,
-        })
-        .eq('id', id);
-      
+    mutationFn: async ({ contract, data }: { contract: Contract; data: FormData }) => {
+      const table = contract.source === 'employee_contracts' ? 'employee_contracts' : 'contracts';
+      const payload = {
+        contract_code: data.contract_code,
+        contract_type: data.contract_type,
+        effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
+        expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
+        status: data.status,
+        notes: data.notes || null,
+        file_url: data.file_url || null,
+        ...(contract.source === 'employee_contracts'
+          ? { department: data.department || null }
+          : {
+              employee_name: data.employee_name,
+              employee_avatar: data.employee_avatar || null,
+              department: data.department || null,
+            }),
+      };
+      const { error } = await supabase.from(table).update(payload).eq('id', contract.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -628,7 +630,7 @@ export default function Contracts() {
       const dataWithFile = { ...formData, file_url: fileUrl };
 
       if (editingContract) {
-        await updateMutation.mutateAsync({ id: editingContract.id, data: dataWithFile });
+        await updateMutation.mutateAsync({ contract: editingContract, data: dataWithFile });
       } else {
         await createMutation.mutateAsync(dataWithFile);
       }

@@ -8,7 +8,8 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockVehicleTypes, mockCompanies, VehicleType } from '../../data/mockData';
+import { mockVehicleTypes, VehicleType } from '../../data/mockData';
+import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import {
   AssetRegistryApiError,
   AssetRegistryAsset,
@@ -21,11 +22,13 @@ import {
 } from '../../integrations/assetRegistryApi';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { resolveIdentityScope, ScopeContextError } from '../../integrations/identityScope';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const VEHICLE_REGISTRY_MODULE = 'fleet';
 
 const VehicleTypesSettingsPage: React.FC = () => {
   const { selectedCompany } = useGlobalFilter();
+  const { companies } = useCompanyFilterOptions();
   const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVehicleType, setEditingVehicleType] = useState<VehicleType | null>(null);
@@ -210,7 +213,8 @@ const VehicleTypesSettingsPage: React.FC = () => {
 
   const loadVehicleTypes = async () => {
     if (!registryContext) {
-      setVehicleTypes(mockVehicleTypes);
+      setVehicleTypes(allowMockFallback() ? mockVehicleTypes : []);
+      setErrorMessage('Thiếu scope identity (tenant/company) khi tải Asset Registry.');
       return;
     }
     setIsLoading(true);
@@ -220,9 +224,11 @@ const VehicleTypesSettingsPage: React.FC = () => {
       const vehicleAssets = assets.filter((asset) => asset.assetType === 'vehicle_type');
       setVehicleTypes(vehicleAssets.map(mapRegistryAssetToVehicleType));
     } catch (error) {
-      setVehicleTypes(mockVehicleTypes);
+      setVehicleTypes(allowMockFallback() ? mockVehicleTypes : []);
       setErrorMessage(
-        `${toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry')}. Hiển thị tạm dữ liệu nội bộ.`
+        allowMockFallback()
+          ? `${toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry')}. Hiển thị tạm dữ liệu mẫu (VITE_ALLOW_MOCK_FALLBACK).`
+          : toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry'),
       );
     } finally {
       setIsLoading(false);
@@ -363,7 +369,7 @@ const VehicleTypesSettingsPage: React.FC = () => {
   };
 
   const getCompanyName = (companyId: string) => {
-    const company = mockCompanies.find((c: { id: string }) => c.id === companyId);
+    const company = companies.find((c: { id: string }) => c.id === companyId);
     return company?.shortName || companyId;
   };
 
@@ -746,7 +752,7 @@ const VehicleTypesSettingsPage: React.FC = () => {
                   Áp dụng cho công ty <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {mockCompanies.map((company: { id: string; shortName: string }) => (
+                  {companies.map((company) => (
                     <label
                       key={company.id}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
@@ -779,7 +785,7 @@ const VehicleTypesSettingsPage: React.FC = () => {
                         }}
                         className="sr-only"
                       />
-                      <span className="text-sm font-medium">{company.shortName}</span>
+                      <span className="text-sm font-medium">{company.shortName ?? company.name}</span>
                     </label>
                   ))}
                 </div>

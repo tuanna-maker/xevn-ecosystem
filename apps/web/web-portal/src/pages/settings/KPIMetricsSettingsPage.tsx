@@ -8,13 +8,17 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockKPIMetrics, mockCompanies, KPIMetric } from '../../data/mockData';
+import { mockKPIMetrics, KPIMetric } from '../../data/mockData';
+import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const KPIMetricsSettingsPage: React.FC = () => {
-  const { selectedCompany, companies } = useGlobalFilter();
-  const [metrics, setMetrics] = useState<KPIMetric[]>(mockKPIMetrics);
+  const { companies: globalCompanies } = useGlobalFilter();
+  const { companies } = useCompanyFilterOptions();
+  const { tenantId, companyId } = useTenantScope();
+  const [metrics, setMetrics] = useState<KPIMetric[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMetric, setEditingMetric] = useState<KPIMetric | null>(null);
   const [formData, setFormData] = useState({
@@ -33,14 +37,14 @@ const KPIMetricsSettingsPage: React.FC = () => {
   const categories = ['Tài chính', 'Vận hành', 'Nhân sự', 'Y tế', 'Khách hàng', 'Công nghệ'];
 
   useEffect(() => {
-    void listBusinessMasterItems<KPIMetric>('kpi_metrics', selectedCompany.id === 'all' ? null : selectedCompany.id)
+    void listBusinessMasterItems<KPIMetric>('kpi_metrics', tenantId, companyId)
       .then((rows) => {
-        if (rows.length) setMetrics(rows);
+        setMetrics(rows);
       })
       .catch(() => {
-        setMetrics(mockKPIMetrics);
+        setMetrics(allowMockFallback() ? mockKPIMetrics : []);
       });
-  }, [selectedCompany.id]);
+  }, [tenantId, companyId]);
 
   const resetForm = () => {
     setFormData({
@@ -87,7 +91,8 @@ const KPIMetricsSettingsPage: React.FC = () => {
         'kpi_metrics',
         editingMetric.id,
         { ...editingMetric, ...payload },
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       // Update existing
       setMetrics((prev) =>
@@ -107,7 +112,8 @@ const KPIMetricsSettingsPage: React.FC = () => {
         'kpi_metrics',
         newMetric.id,
         newMetric,
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       setMetrics((prev) => [...prev, newMetric]);
     }
@@ -117,13 +123,13 @@ const KPIMetricsSettingsPage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm('Bạn có chắc chắn muốn xóa metric KPI này? Điều này có thể ảnh hưởng đến các báo cáo đang sử dụng.')) {
-      await deleteBusinessMasterItem('kpi_metrics', id, selectedCompany.id === 'all' ? null : selectedCompany.id);
+      await deleteBusinessMasterItem('kpi_metrics', id, tenantId, companyId);
       setMetrics((prev) => prev.filter((m) => m.id !== id));
     }
   };
 
   const getCompanyName = (companyId: string) => {
-    const company = companies.find((c) => c.id === companyId) ?? mockCompanies.find((c) => c.id === companyId);
+    const company = companies.find((c) => c.id === companyId) ?? globalCompanies.find((c) => c.id === companyId);
     return company?.shortName || companyId;
   };
 
@@ -463,7 +469,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
                   Áp dụng cho công ty <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {mockCompanies.map((company) => (
+                  {companies.map((company) => (
                     <label
                       key={company.id}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${

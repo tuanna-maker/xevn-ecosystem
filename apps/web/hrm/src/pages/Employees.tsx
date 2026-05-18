@@ -160,28 +160,7 @@ export default function Employees() {
 
   const handleAddEmployee = async (data: EmployeeFormData & { company_id?: string }) => {
     setIsSubmitting(true);
-    // Override company_id if provided from form
-    const originalCreateEmployee = createEmployee;
-    let result;
-    if (data.company_id) {
-      // Insert directly with specified company_id
-      const { company_id: selectedCompanyId, ...empData } = data;
-      const { data: newEmp, error } = await supabase
-        .from('employees')
-        .insert([{ ...empData, company_id: selectedCompanyId, status: empData.status || 'active' }])
-        .select()
-        .single();
-      if (error) {
-        toast.error(t('employeesPage.addError'));
-        result = null;
-      } else {
-        toast.success(t('employeesPage.addSuccess'));
-        refetch();
-        result = newEmp;
-      }
-    } else {
-      result = await createEmployee(data);
-    }
+    const result = await createEmployee(data);
     setIsSubmitting(false);
     return !!result;
   };

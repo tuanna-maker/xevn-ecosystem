@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   DollarSign, 
@@ -71,6 +71,8 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { useAuth } from '@/contexts/AuthContext';
+import { listPayrollPayslips, type HrmPayslipRow } from '@/integrations/hrmApi';
 
 interface EmployeeSalaryProps {
   employeeId: string;
@@ -117,15 +119,6 @@ const mockMonthlyPayroll = [
   { id: '12', month: '02/2024', baseSalary: 13500000, allowances: 7500000, bonus: 8000000, deductions: 2000000, netSalary: 27000000, status: 'paid', payDate: '2024-02-05' },
 ];
 
-const chartData = mockMonthlyPayroll.slice(0, 12).reverse().map(item => ({
-  month: item.month,
-  totalIncome: item.baseSalary + item.allowances + item.bonus,
-  netSalary: item.netSalary,
-  baseSalary: item.baseSalary,
-  allowances: item.allowances,
-  bonus: item.bonus,
-}));
-
 const ALLOWANCE_TYPE_ICONS: Record<string, any> = {
   position: Briefcase,
   transport: Car,
@@ -145,8 +138,56 @@ const formatCurrency = (value: number) =>
 
 export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps) {
   const { t } = useTranslation();
+  const { currentCompanyId } = useAuth();
+  const [apiPayslips, setApiPayslips] = useState<HrmPayslipRow[] | null>(null);
   const [allowances, setAllowances] = useState(mockAllowances);
   const [salaryHistory] = useState(mockSalaryHistory);
+
+  useEffect(() => {
+    const companyId = currentCompanyId;
+    if (!companyId) return;
+    let cancelled = false;
+    void listPayrollPayslips({ company_id: companyId })
+      .then((res) => {
+        if (!cancelled) setApiPayslips(res.data.filter((p) => p.employee_id === employeeId));
+      })
+      .catch(() => {
+        if (!cancelled) setApiPayslips([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [employeeId, currentCompanyId]);
+
+  const salaryData = useMemo(() => {
+    const latest = apiPayslips?.[0];
+    if (!latest) return mockSalaryData;
+    const gross = Number(latest.gross_amount);
+    const net = Number(latest.net_amount);
+    return {
+      baseSalary: gross,
+      grossSalary: gross,
+      netSalary: net,
+      effectiveDate: latest.period_label,
+      salaryGrade: 'API',
+      salaryCoefficient: 1,
+    };
+  }, [apiPayslips]);
+
+  const monthlyPayroll = useMemo(() => {
+    if (!apiPayslips?.length) return mockMonthlyPayroll;
+    return apiPayslips.map((p) => ({
+      id: p.id,
+      month: p.period_label,
+      baseSalary: Number(p.gross_amount),
+      allowances: 0,
+      bonus: 0,
+      deductions: Number(p.deduction_amount),
+      netSalary: Number(p.net_amount),
+      status: p.status,
+      payDate: p.period_label,
+    }));
+  }, [apiPayslips]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingAllowance, setEditingAllowance] = useState<typeof mockAllowances[0] | null>(null);
@@ -160,7 +201,15 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
   });
 
   const totalAllowances = allowances.reduce((sum, a) => sum + a.amount, 0);
-  const totalIncome = mockSalaryData.baseSalary + totalAllowances;
+  const totalIncome = salaryData.baseSalary + totalAllowances;
+  const chartData = monthlyPayroll.slice(0, 12).reverse().map((item) => ({
+    month: item.month,
+    totalIncome: item.baseSalary + item.allowances + item.bonus,
+    netSalary: item.netSalary,
+    baseSalary: item.baseSalary,
+    allowances: item.allowances,
+    bonus: item.bonus,
+  }));
 
   const allowanceTypeKeys = ['position', 'transport', 'housing', 'phone', 'meal', 'education', 'health', 'childcare', 'performance', 'target', 'other'];
 
@@ -264,10 +313,10 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-muted-foreground font-medium">{t('salary.baseSalary')}</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{formatCurrency(mockSalaryData.baseSalary)}</p>
+                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{formatCurrency(salaryData.baseSalary)}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="outline" className="text-xs">{mockSalaryData.salaryGrade}</Badge>
-                  <Badge variant="outline" className="text-xs">{t('salary.coefficient')}: {mockSalaryData.salaryCoefficient}</Badge>
+                  <Badge variant="outline" className="text-xs">{salaryData.salaryGrade}</Badge>
+                  <Badge variant="outline" className="text-xs">{t('salary.coefficient')}: {salaryData.salaryCoefficient}</Badge>
                 </div>
               </div>
               <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900 flex items-center justify-center">
@@ -312,7 +361,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-muted-foreground font-medium">{t('salary.netSalary')}</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{formatCurrency(mockSalaryData.netSalary)}</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{formatCurrency(salaryData.netSalary)}</p>
                 <p className="text-xs text-muted-foreground mt-2">{t('salary.afterTax')}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
@@ -534,7 +583,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockMonthlyPayroll.map((payroll) => (
+                {monthlyPayroll.map((payroll) => (
                   <TableRow key={payroll.id} className="hover:bg-muted/30">
                     <TableCell className="font-medium">{payroll.month}</TableCell>
                     <TableCell className="text-right">{formatCurrency(payroll.baseSalary)}</TableCell>

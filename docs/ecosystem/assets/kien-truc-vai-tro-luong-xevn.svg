@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Ki¿n trúc tÕng thÃ XeVN OS  Vai trò và luÓng">
+  <defs>
+    <style>
+      .title { font: 700 28px 'Segoe UI', system-ui, sans-serif; fill: #1E40AF; }
+      .box-title { font: 700 18px 'Segoe UI', system-ui, sans-serif; fill: #1E3A8A; }
+      .box-body { font: 400 15px 'Segoe UI', system-ui, sans-serif; fill: #475569; }
+      .box-note { font: 600 14px 'Segoe UI', system-ui, sans-serif; fill: #1E40AF; }
+      .user { font: 600 17px 'Segoe UI', system-ui, sans-serif; fill: #334155; }
+      .footer { font: 400 14px 'Segoe UI', system-ui, sans-serif; fill: #64748B; }
+      .line { stroke: #94A3B8; stroke-width: 2.5; fill: none; }
+      .line-strong { stroke: #1E40AF; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .line-bi { stroke: #64748B; stroke-width: 2; fill: none; stroke-dasharray: 6 4; marker-end: url(#arrow-gray); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#1E40AF"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#64748B"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <text x="640" y="48" text-anchor="middle" class="title">Ki¿n trúc tÕng thÃ  Vai trò &amp; luÓng</text>
+
+  <!-- User -->
+  <ellipse cx="640" cy="100" rx="140" ry="34" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="640" y="106" text-anchor="middle" class="user">Ng°Ýi dùng t­p oàn</text>
+
+  <line x1="640" y1="134" x2="640" y2="168" class="line"/>
+
+  <!-- Portal -->
+  <rect x="440" y="170" width="400" height="72" rx="12" fill="#EFF6FF" stroke="#1E40AF" stroke-width="2"/>
+  <text x="640" y="202" text-anchor="middle" class="box-title">CÕng Web (Portal)</text>
+  <text x="640" y="226" text-anchor="middle" class="box-note">MÙt iÃm ng nh­p</text>
+
+  <line x1="640" y1="242" x2="640" y2="278" class="line"/>
+  <line x1="640" y1="278" x2="220" y2="318" class="line"/>
+  <line x1="640" y1="278" x2="640" y2="318" class="line"/>
+  <line x1="640" y1="278" x2="1060" y2="318" class="line"/>
+
+  <!-- XBOS -->
+  <rect x="80" y="320" width="280" height="110" rx="12" fill="#EFF6FF" stroke="#1E40AF" stroke-width="2"/>
+  <text x="220" y="358" text-anchor="middle" class="box-title">XBOS</text>
+  <text x="220" y="382" text-anchor="middle" class="box-body">Chu©n hóa t­p oàn</text>
+  <text x="220" y="404" text-anchor="middle" class="box-body">Danh måc · Quy trình · RACI</text>
+
+  <!-- HRM -->
+  <rect x="500" y="320" width="280" height="110" rx="12" fill="#F8FAFC" stroke="#3B82F6" stroke-width="2"/>
+  <text x="640" y="358" text-anchor="middle" class="box-title">HRM  Nhân sñ</text>
+  <text x="640" y="382" text-anchor="middle" class="box-body">HÓ s¡ · Ch¥m công</text>
+  <text x="640" y="404" text-anchor="middle" class="box-body">L°¡ng · TuyÃn dång</text>
+
+  <!-- Logistic -->
+  <rect x="920" y="320" width="280" height="110" rx="12" fill="#F8FAFC" stroke="#3B82F6" stroke-width="2"/>
+  <text x="1060" y="358" text-anchor="middle" class="box-title">Logistic</text>
+  <text x="1060" y="382" text-anchor="middle" class="box-body">¡n · Chuy¿n</text>
+  <text x="1060" y="404" text-anchor="middle" class="box-body">èng dång lái xe</text>
+
+  <!-- XBOS <-> HRM -->
+  <path d="M 360 375 L 500 375" class="line-bi"/>
+  <path d="M 500 395 L 360 395" class="line-bi"/>
+  <text x="430" y="368" text-anchor="middle" class="box-body">Óng bÙ</text>
+
+  <!-- XBOS -> Logistic (light) -->
+  <path d="M 360 410 L 920 410" class="line-bi"/>
+
+  <!-- Down to data -->
+  <line x1="220" y1="430" x2="220" y2="500" class="line"/>
+  <line x1="640" y1="430" x2="640" y2="500" class="line"/>
+  <line x1="1060" y1="430" x2="1060" y2="500" class="line"/>
+  <line x1="220" y1="500" x2="1060" y2="500" class="line"/>
+  <line x1="640" y1="500" x2="640" y2="530" class="line-strong"/>
+
+  <!-- Data layer -->
+  <rect x="320" y="532" width="640" height="72" rx="12" fill="#F1F5F9" stroke="#64748B" stroke-width="2"/>
+  <text x="640" y="564" text-anchor="middle" class="box-title">Dï liÇu theo tëng công ty con</text>
+  <text x="640" y="588" text-anchor="middle" class="box-body">M×i ¡n vË chÉ truy c­p ph¡m vi °ãc phân quyÁn</text>
+
+  <!-- Legend -->
+  <rect x="80" y="640" width="24" height="3" fill="#64748B"/>
+  <text x="112" y="646" class="box-body">Liên k¿t Óng bÙ / phå thuÙc dï liÇu chu©n</text>
+
+  <text x="640" y="700" text-anchor="middle" class="footer">XeVN OS · 2026</text>
+</svg>

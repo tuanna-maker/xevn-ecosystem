@@ -8,6 +8,16 @@ function resolveDatabaseUrl(): string | undefined {
   return undefined;
 }
 
+/** Tên DB logic XBOS — tránh để pg mặc định DB = tên user OS (gây lỗi 3D000). */
+function resolveDbName(): string {
+  const raw =
+    process.env.DB_NAME_XBOS?.trim() ||
+    process.env.DB_NAME?.trim() ||
+    process.env.PGDATABASE?.trim() ||
+    'xevn_xbos';
+  return raw || 'xevn_xbos';
+}
+
 @Injectable()
 export class XbosDbService implements OnModuleDestroy {
   private readonly pool: Pool;
@@ -18,18 +28,41 @@ export class XbosDbService implements OnModuleDestroy {
       this.pool = new Pool({ connectionString, ssl: false });
       return;
     }
-    if (process.env.DB_HOST && process.env.DB_PORT && process.env.DB_USER && process.env.DB_PASSWORD) {
+
+    const host = process.env.DB_HOST?.trim();
+    const portRaw = process.env.DB_PORT?.trim();
+    const user = process.env.DB_USER?.trim();
+    const dbName = resolveDbName();
+
+    if (host && portRaw && user) {
       this.pool = new Pool({
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT),
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: 'xevn_xbos',
-        ssl: false,
+        host,
+        port: Number(portRaw),
+        user,
+        password: process.env.DB_PASSWORD ?? '',
+        database: dbName,
+        ssl: process.env.DB_SSL === 'true',
+        max: 10,
       });
       return;
     }
-    this.pool = new Pool({ max: 1 });
+
+    // Local dev: không bao giờ dùng `new Pool({ max: 1 })` — mặc định pg sẽ chọn database = user OS.
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `[xbos-db] Using local dev defaults: ${process.env.DB_USER ?? 'postgres'}@${process.env.DB_HOST ?? '127.0.0.1'}:${process.env.DB_PORT ?? '5432'}/${dbName} ` +
+          `(set DATABASE_URL_XBOS or DB_HOST/DB_PORT/DB_USER/DB_PASSWORD in deploy or apps/api/xbos-api/.env)`,
+      );
+    }
+    this.pool = new Pool({
+      host: process.env.DB_HOST?.trim() || '127.0.0.1',
+      port: Number(process.env.DB_PORT ?? 5432),
+      user: process.env.DB_USER?.trim() || 'postgres',
+      password: process.env.DB_PASSWORD ?? '',
+      database: dbName,
+      ssl: process.env.DB_SSL === 'true',
+      max: 10,
+    });
   }
 
   query<T extends QueryResultRow = QueryResultRow>(text: string, values: unknown[] = []) {

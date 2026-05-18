@@ -1,0 +1,28 @@
+---
+description: Agent must run all terminal commands; never delegate execution to the user
+alwaysApply: true
+---
+
+# Agent Terminal Execution Rule
+
+## Default behavior
+- **Luôn tự chạy** mọi lệnh terminal cần thiết để hoàn thành task: migrate, seed, build, test, curl smoke, restart service, v.v.
+- **Không** hướng dẫn user “bạn chạy lệnh X” trừ khi đã thử chạy và bị chặn.
+
+## Khi lệnh không chạy được
+1. Thử cách khác (đường dẫn tuyệt đối, `cd` đúng package, biến môi trường từ `deploy/xevn-ecosystem/.env`).
+2. Chỉ nhờ user khi cần **quyền / cấu hình cụ thể**, nói rõ:
+   - lệnh nào đã thử,
+   - lỗi gì,
+   - user cần bật gì (network, DB credential, port, quyền sandbox).
+3. Không kết luận DONE nếu chưa có bằng chứng lệnh chạy thành công (output log / HTTP smoke).
+
+## Dev stack monorepo (tham chiếu nhanh)
+- HRM API: `HRM_BE_PORT` (mặc định deploy `28001`) — `apps/api/hrm-api`
+- XBOS API: `XBOS_BE_PORT` (mặc định `28002`) — `apps/api/xbos-api`
+- Web portal: port `5175` — proxy đọc `VITE_DEV_PROXY_*` từ `.env.local` qua `loadEnv` trong `vite.config.ts`
+- Seed chức danh tenant: `pnpm seed:hrm:tenant-position-catalog`
+
+## Phạm vi
+- Áp dụng cho mọi agent trong repo `xevn-ecosystem`.
+- Bổ sung, không thay thế, rule git (không commit trừ khi user yêu cầu).

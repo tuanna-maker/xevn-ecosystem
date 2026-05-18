@@ -69,8 +69,13 @@ export function SettingsCatalogsTab() {
         [{ code: newCode.trim(), label: newLabel.trim(), status: "active" }],
         scope!,
       ),
-    onSuccess: () => {
-      toast.success(t("settings.catalogs.savedExtensions"));
+    onSuccess: (data) => {
+      const msg =
+        data?.message ??
+        (data?.status === "pending"
+          ? "Đã gửi duyệt XBOS — trường sẽ hiển thị sau khi tập đoàn phê duyệt."
+          : t("settings.catalogs.savedExtensions"));
+      toast.success(msg);
       setNewCode("");
       setNewLabel("");
       void queryClient.invalidateQueries({ queryKey: ["hrm-settings-catalogs"] });

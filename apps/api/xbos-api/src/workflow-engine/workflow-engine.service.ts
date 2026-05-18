@@ -1,0 +1,245 @@
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { ApiException } from '../common/api.exception';
+import { XbosDbService } from '../db/xbos-db.service';
+
+@Injectable()
+export class WorkflowEngineService {
+  constructor(private readonly db: XbosDbService) {}
+
+  async listDefinitions(tenantId: string, companyId?: string) {
+    const { rows } = await this.db.query(
+      `SELECT * FROM public.xbos_workflow_definition
+       WHERE tenant_id = $1 AND status <> 'deleted'
+         AND ($2::text IS NULL OR company_id IS NULL OR company_id = $2)
+       ORDER BY workflow_code, version DESC`,
+      [tenantId, companyId ?? null],
+    );
+    return rows;
+  }
+
+  async upsertDefinition(tenantId: string, companyId: string | null, definitionId: string | null, body: Record<string, unknown>) {
+    const code = String(body.workflowCode ?? body.code ?? '').trim();
+    const name = String(body.name ?? '').trim();
+    if (!code || !name) {
+      throw new ApiException('XBOS-WF-400', 'workflowCode and name required', HttpStatus.BAD_REQUEST);
+    }
+    const graph = body.graph ?? body.steps ?? {};
+    const conditions = body.conditions ?? {};
+    if (definitionId) {
+      const { rows } = await this.db.query(
+        `UPDATE public.xbos_workflow_definition SET
+          name = $4, category = $5, scope_level = $6, graph = $7::jsonb, conditions = $8::jsonb,
+          status = COALESCE($9, status), updated_at = NOW()
+         WHERE id = $1::uuid AND tenant_id = $2 RETURNING *`,
+        [definitionId, tenantId, companyId, name, body.category ?? 'general', body.scopeLevel ?? 'group', JSON.stringify(graph), JSON.stringify(conditions), body.status ?? null],
+      );
+      if (!rows[0]) throw new ApiException('XBOS-WF-404', 'Definition not found', HttpStatus.NOT_FOUND);
+      return rows[0];
+    }
+    const { rows } = await this.db.query(
+      `INSERT INTO public.xbos_workflow_definition (
+        tenant_id, workflow_code, name, category, scope_level, company_id, graph, conditions, status
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9) RETURNING *`,
+      [tenantId, code, name, body.category ?? 'general', body.scopeLevel ?? 'group', companyId, JSON.stringify(graph), JSON.stringify(conditions), body.status ?? 'draft'],
+    );
+    return rows[0];
+  }
+
+  async startInstance(tenantId: string, companyId: string, body: Record<string, unknown>) {
+    const definitionId = String(body.definitionId ?? '');
+    const businessType = String(body.businessType ?? '');
+    const businessId = String(body.businessId ?? '');
+    if (!definitionId || !businessType || !businessId) {
+      throw new ApiException('XBOS-WF-400', 'definitionId, businessType, businessId required', HttpStatus.BAD_REQUEST);
+    }
+    const { rows: instRows } = await this.db.query(
+      `INSERT INTO public.xbos_workflow_instance (tenant_id, company_id, definition_id, business_type, business_id, context)
+       VALUES ($1,$2,$3::uuid,$4,$5,$6::jsonb) RETURNING *`,
+      [tenantId, companyId, definitionId, businessType, businessId, JSON.stringify(body.context ?? {})],
+    );
+    const instance = instRows[0] as { id: string };
+    const steps = (body.steps as Array<Record<string, unknown>>) ?? [];
+    for (const step of steps) {
+      await this.db.query(
+        `INSERT INTO public.xbos_workflow_step_task (instance_id, step_key, hat_key, assignee_user_id, assignment_id, due_at, payload)
+         VALUES ($1::uuid,$2,$3,$4,$5::uuid,$6::timestamptz,$7::jsonb)`,
+        [instance.id, step.stepKey ?? step.id, step.hatKey ?? step.handlerRoleId ?? 'default', step.assigneeUserId ?? null, step.assignmentId ?? null, step.dueAt ?? null, JSON.stringify(step)],
+      );
+    }
+    return instRows[0];
+  }
+
+  async listStepTasks(filters: {
+    assigneeUserId?: string;
+    tenantId?: string;
+    status?: string;
+    businessType?: string;
+  }) {
+    const clauses = ['1=1'];
+    const params: unknown[] = [];
+    let idx = 1;
+    if (filters.status) {
+      clauses.push(`t.status = $${idx++}`);
+      params.push(filters.status);
+    } else {
+      clauses.push(`t.status = 'pending'`);
+    }
+    if (filters.assigneeUserId) {
+      clauses.push(`t.assignee_user_id = $${idx++}`);
+      params.push(filters.assigneeUserId);
+    }
+    if (filters.tenantId) {
+      clauses.push(`i.tenant_id = $${idx++}`);
+      params.push(filters.tenantId);
+    }
+    if (filters.businessType) {
+      clauses.push(`i.business_type = $${idx++}`);
+      params.push(filters.businessType);
+    }
+    const { rows } = await this.db.query(
+      `
+      SELECT t.*, i.tenant_id, i.company_id, i.business_type, i.business_id, i.status AS instance_status,
+             i.context, i.definition_id, d.workflow_code, d.name AS workflow_name
+      FROM public.xbos_workflow_step_task t
+      JOIN public.xbos_workflow_instance i ON i.id = t.instance_id
+      JOIN public.xbos_workflow_definition d ON d.id = i.definition_id
+      WHERE ${clauses.join(' AND ')}
+      ORDER BY t.created_at DESC
+      LIMIT 200
+    `,
+      params,
+    );
+    return rows;
+  }
+
+  async getTaskById(taskId: string) {
+    const { rows } = await this.db.query(
+      `SELECT t.*, i.tenant_id, i.company_id, i.business_type, i.business_id, i.status AS instance_status, i.context
+       FROM public.xbos_workflow_step_task t
+       JOIN public.xbos_workflow_instance i ON i.id = t.instance_id
+       WHERE t.id = $1::uuid`,
+      [taskId],
+    );
+    if (!rows[0]) throw new ApiException('XBOS-WF-404', 'Task not found', HttpStatus.NOT_FOUND);
+    return rows[0];
+  }
+
+  async getInstanceWithTasks(instanceId: string) {
+    const { rows: inst } = await this.db.query(
+      `SELECT i.*, d.workflow_code, d.name AS workflow_name
+       FROM public.xbos_workflow_instance i
+       JOIN public.xbos_workflow_definition d ON d.id = i.definition_id
+       WHERE i.id = $1::uuid`,
+      [instanceId],
+    );
+    if (!inst[0]) throw new ApiException('XBOS-WF-404', 'Instance not found', HttpStatus.NOT_FOUND);
+    const { rows: tasks } = await this.db.query(
+      `SELECT * FROM public.xbos_workflow_step_task WHERE instance_id = $1::uuid ORDER BY created_at`,
+      [instanceId],
+    );
+    return { instance: inst[0], tasks };
+  }
+
+  async rejectStepTask(taskId: string, body: Record<string, unknown>) {
+    const userId = String(body.userId ?? '');
+    const reason = String(body.reason ?? body.reviewNote ?? '');
+    const { rows } = await this.db.query(
+      `UPDATE public.xbos_workflow_step_task
+       SET status = 'rejected', completed_at = NOW(), payload = payload || $2::jsonb, updated_at = NOW()
+       WHERE id = $1::uuid AND status = 'pending'
+       RETURNING *`,
+      [taskId, JSON.stringify({ rejectedBy: userId, reason })],
+    );
+    if (!rows[0]) throw new ApiException('XBOS-WF-404', 'Task not found or not pending', HttpStatus.NOT_FOUND);
+    const task = rows[0] as { instance_id: string };
+    await this.db.query(
+      `UPDATE public.xbos_workflow_instance SET status = 'rejected', updated_at = NOW() WHERE id = $1::uuid`,
+      [task.instance_id],
+    );
+    await this.db.query(
+      `UPDATE public.xbos_workflow_step_task SET status = 'skipped', updated_at = NOW()
+       WHERE instance_id = $1::uuid AND status = 'pending' AND id <> $2::uuid`,
+      [task.instance_id, taskId],
+    );
+    return rows[0];
+  }
+
+  async completeStepTask(taskId: string, body: Record<string, unknown>) {
+    const userId = String(body.userId ?? '');
+    const hatKey = String(body.hatKey ?? '');
+    const { rows: taskRows } = await this.db.query(
+      `SELECT t.*, i.tenant_id, i.company_id FROM public.xbos_workflow_step_task t
+       JOIN public.xbos_workflow_instance i ON i.id = t.instance_id
+       WHERE t.id = $1::uuid`,
+      [taskId],
+    );
+    const task = taskRows[0] as Record<string, unknown> | undefined;
+    if (!task) throw new ApiException('XBOS-WF-404', 'Task not found', HttpStatus.NOT_FOUND);
+
+    const instanceId = String(task.instance_id ?? '');
+    const sameUserOtherHats = await this.db.query(
+      `SELECT id, hat_key, status FROM public.xbos_workflow_step_task
+       WHERE instance_id = $1::uuid AND assignee_user_id = $2 AND status = 'pending' AND id <> $3::uuid`,
+      [instanceId, userId, taskId],
+    );
+    if (sameUserOtherHats.rows.length > 0 && !hatKey) {
+      throw new ApiException('XBOS-WF-422', 'Multi-hat approval: hatKey required (BR-XBOS-MULTI-HAT-01)', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    const { rows } = await this.db.query(
+      `UPDATE public.xbos_workflow_step_task SET status = 'completed', completed_at = NOW(), payload = payload || $2::jsonb, updated_at = NOW()
+       WHERE id = $1::uuid AND ($3::text = '' OR hat_key = $3) RETURNING *`,
+      [taskId, JSON.stringify({ approvedBy: userId, hatKey }), hatKey],
+    );
+    const pendingOnInstance = await this.db.query(
+      `SELECT id FROM public.xbos_workflow_step_task WHERE instance_id = $1::uuid AND status = 'pending'`,
+      [instanceId],
+    );
+    if (pendingOnInstance.rows.length === 0) {
+      await this.db.query(
+        `UPDATE public.xbos_workflow_instance SET status = 'completed', updated_at = NOW() WHERE id = $1::uuid`,
+        [instanceId],
+      );
+    }
+    return { task: rows[0], pendingHats: sameUserOtherHats.rows, instanceCompleted: pendingOnInstance.rows.length === 0 };
+  }
+
+  async findActiveDefinitionByCode(tenantId: string, workflowCode: string) {
+    const { rows } = await this.db.query(
+      `SELECT * FROM public.xbos_workflow_definition
+       WHERE tenant_id = $1 AND workflow_code = $2 AND status = 'active'
+       ORDER BY version DESC LIMIT 1`,
+      [tenantId, workflowCode],
+    );
+    return rows[0] ?? null;
+  }
+
+  async listInstances(tenantId: string, companyId: string, status?: string) {
+    const { rows } = await this.db.query(
+      `SELECT i.*, d.workflow_code, d.name AS workflow_name
+       FROM public.xbos_workflow_instance i
+       JOIN public.xbos_workflow_definition d ON d.id = i.definition_id
+       WHERE i.tenant_id = $1 AND i.company_id = $2 AND ($3::text IS NULL OR i.status = $3)
+       ORDER BY i.created_at DESC`,
+      [tenantId, companyId, status ?? null],
+    );
+    return rows;
+  }
+
+  async upsertReportingRoute(tenantId: string, companyId: string, body: Record<string, unknown>) {
+    const { rows } = await this.db.query(
+      `INSERT INTO public.xbos_reporting_route (tenant_id, company_id, report_level, recipient_user_id, recipient_assignment_id, workflow_category)
+       VALUES ($1,$2,$3,$4,$5::uuid,$6) RETURNING *`,
+      [tenantId, companyId, body.reportLevel, body.recipientUserId ?? null, body.recipientAssignmentId ?? null, body.workflowCategory ?? null],
+    );
+    return rows[0];
+  }
+
+  async listReportingRoutes(tenantId: string, companyId: string) {
+    const { rows } = await this.db.query(
+      `SELECT * FROM public.xbos_reporting_route WHERE tenant_id = $1 AND company_id = $2 AND status = 'active'`,
+      [tenantId, companyId],
+    );
+    return rows;
+  }
+}

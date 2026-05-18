@@ -259,16 +259,23 @@ export async function appendSettingsCatalogExtensionItems(
   items: Array<{ code: string; label: string; unit?: string; status?: "active" | "draft" }>,
   scope: HrmSpreadsheetScope,
 ) {
+  const h = await headers({ scope });
   const res = await fetch(
     `${HRM_API_ORIGIN}/api/hrm/settings-catalogs/${encodeURIComponent(catalogKey)}/extension-items`,
     {
       method: "POST",
-      headers: await headers({ scope }),
+      headers: h,
       body: JSON.stringify({ items }),
     },
   );
-  const { data } = await parseHrmJson<{ upserted: number }>(res);
-  return data;
+  const { data, envelope } = await parseHrmJson<{
+    upserted?: number;
+    submitted?: number;
+    batchId?: string;
+    status?: string;
+    message?: string;
+  }>(res);
+  return { ...data, message: envelope.message ?? data?.message };
 }
 
 export async function requestSettingsCatalogFieldRemoval(
@@ -430,6 +437,28 @@ export async function closePayrollPeriod(periodId: string) {
   return requestHrm<HrmPayrollPeriod>(`/api/hrm/payroll/periods/${periodId}/close`, {
     method: "POST",
   });
+}
+
+export type HrmPayslipRow = {
+  id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  gross_amount: string;
+  deduction_amount: string;
+  net_amount: string;
+  status: string;
+  period_label: string;
+};
+
+export async function listPayrollPayslips(params: { company_id: string; period_id?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", params.company_id);
+  if (params.period_id) search.set("period_id", params.period_id);
+  return requestHrm<{ total: number; data: HrmPayslipRow[] }>(
+    `/api/hrm/payroll/payslips?${search.toString()}`,
+    { method: "GET" },
+  );
 }
 
 export async function getPayrollReconciliationSummary(companyId: string) {

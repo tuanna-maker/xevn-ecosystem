@@ -152,3 +152,7 @@
 {"hook":"subagentStop","at":"2026-05-18T04:32:19.030Z","subagent_type":"shell","task_id":"tool_8d0b3af7-2fdf-42f5-8bc9-5e6ed857e4c","status":"completed","title":"Fetch EAS Gradle error logs","model":"default","webhook":"skipped"}
 {"hook":"subagentStop","at":"2026-05-18T04:43:51.854Z","subagent_type":"shell","task_id":"tool_a887de3d-aada-4228-8b78-6968cc3e923","status":"completed","title":"EAS rebuild after notifications fix","model":"default","webhook":"skipped"}
 {"hook":"subagentStop","at":"2026-05-18T04:50:12.334Z","subagent_type":"shell","task_id":"tool_aa8a8c5d-eb7b-44cc-b302-3b1313d5dd8","status":"completed","title":"Git status commit push all","model":"default","webhook":"skipped"}
+{"hook":"subagentStop","at":"2026-05-16T12:08:53.316Z","subagent_type":"general-purpose","task_id":"tool_31c922ba-6c11-455d-9f47-031ff98a594","status":"completed","title":"","model":"default","webhook":"skipped"}
+{"hook":"subagentStop","at":"2026-05-17T07:06:47.702Z","subagent_type":"general-purpose","task_id":"tool_02a82a57-f365-4c2d-838b-f5af41f3267","status":"completed","title":"","model":"default","webhook":"skipped"}
+{"hook":"subagentStop","at":"2026-05-17T07:06:57.397Z","subagent_type":"general-purpose","task_id":"tool_0781381d-52ae-4ed9-94ea-9ffc95fcf98","status":"completed","title":"","model":"default","webhook":"skipped"}
+{"hook":"subagentStop","at":"2026-05-17T07:27:33.002Z","subagent_type":"general-purpose","task_id":"tool_0a02396a-50cc-4c8b-a94e-dc1ceb2510f","status":"completed","title":"","model":"default","webhook":"skipped"}

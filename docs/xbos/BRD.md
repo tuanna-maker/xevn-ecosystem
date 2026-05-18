@@ -5,9 +5,9 @@
 | Mục | Giá trị |
 |---|---|
 | Tên tài liệu | BRD Phân hệ XBOS |
-| Phiên bản | 2.2 |
+| Phiên bản | 2.3 |
 | Trạng thái | Chính thức |
-| Ngày hiệu lực | 2026-05-04 |
+| Ngày hiệu lực | 2026-05-15 |
 | Phạm vi | Phân hệ XBOS trong hệ sinh thái XeVN |
 
 ## 2. Tóm Tắt Điều Hành
@@ -148,6 +148,29 @@ XBOS là trung tâm cấu hình nhưng **không** miễn áp dụng quy tắc ph
 
 ## 13. Tiêu Chí Chấp Nhận
 
-- Tất cả use case UC-XBOS-01..07 có thể kiểm thử đầy đủ nhánh thành công/lỗi.
+- Tất cả use case UC-XBOS-01..16 có thể kiểm thử đầy đủ nhánh thành công/lỗi.
 - Dữ liệu dùng chung cấp phát đúng phân hệ đích và đúng phạm vi.
 - Cơ chế phát hành phiên bản và nhật ký kiểm toán hoạt động nhất quán.
+
+## 14. Bổ sung sau họp Chủ tịch Nam (2026-05)
+
+### 14.1 Mảng kinh doanh & pháp nhân
+
+- **Mảng kinh doanh (`business_segment`):** Công ty con ảo; `promote_to_subsidiary` gán pháp nhân, giữ ID/lịch sử (UC-XBOS-10).
+- **Hồ sơ pháp nhân:** MST, ngày TL, địa chỉ, ngành nghề, vốn ĐL, ĐDPL; tab tổng quan group (mẹ + con + liên kết).
+
+### 14.2 Chức danh, JD, phân quyền
+
+- **Thư viện chức danh:** `position_template` — khai chức danh trước người; copy sang công ty con (UC-XBOS-11).
+- **Gán vị trí:** `position_assignment` — kiêm nhiệm đa công ty (UC-XBOS-11).
+- **Mã quyền:** Tự sinh; check trùng khi gán; phạm vi group/subsidiary; `valid_from`/`valid_to` (UC-XBOS-12).
+- **BR-XBOS-MULTI-HAT-01:** Cùng user, nhiều vai trong một instance → phê duyệt từng vai, không gộp bước (UC-XBOS-14).
+
+### 14.3 Workflow & báo cáo
+
+- Nhóm QT (NS/VH/KT); QT tập đoàn bắt buộc vs con tự xây; điều kiện số tiền/phòng/nhóm chi phí; **không import** definition từ Excel (UC-XBOS-13).
+- **`reporting_route`:** Rollup kết quả QT tách khỏi bước workflow (UC-XBOS-15).
+
+### 14.4 Tài sản ↔ Kế toán
+
+- Orchestration 5 bước: khai báo → KT xác nhận → ghi nhận → gán NV/phòng (UC-XBOS-16).

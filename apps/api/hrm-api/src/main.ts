@@ -62,6 +62,7 @@ async function bootstrap() {
     }
     next();
   });
-  await app.listen(process.env.PORT ?? 3001);
+  const port = Number(process.env.HRM_BE_PORT ?? process.env.PORT ?? 3001);
+  await app.listen(port);
 }
 bootstrap();

@@ -8,22 +8,43 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockPositions, mockCompanies, Position } from '../../data/mockData';
+import { mockPositions, Position } from '../../data/mockData';
+import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import { listPositionTemplates, savePositionTemplate } from '../../integrations/positionRbacApi';
+import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const PositionsSettingsPage: React.FC = () => {
-  const { selectedCompany, companies } = useGlobalFilter();
-  const [positions, setPositions] = useState<Position[]>(mockPositions);
+  const { selectedCompany, companies: globalCompanies } = useGlobalFilter();
+  const { companies } = useCompanyFilterOptions();
+  const { tenantId, companyId } = useTenantScope();
+  const [positions, setPositions] = useState<Position[]>([]);
   useEffect(() => {
-    void listBusinessMasterItems<Position>('positions', selectedCompany.id === 'all' ? null : selectedCompany.id)
-      .then((rows) => {
-        if (rows.length) setPositions(rows);
+    void listPositionTemplates(tenantId, companyId)
+      .then((templates) => {
+        if (templates.length) {
+          setPositions(
+            templates.map((t: { id: string; code: string; name: string; payload?: { level?: number; category?: Position['category']; description?: string } }) => ({
+              id: t.id,
+              code: t.code,
+              name: t.name,
+              level: t.payload?.level ?? 1,
+              category: t.payload?.category ?? 'management',
+              description: t.payload?.description ?? '',
+              applicableCompanies: ['all'],
+            })),
+          );
+          return;
+        }
+        return listBusinessMasterItems<Position>('positions', tenantId, companyId).then((rows) => {
+          setPositions(rows);
+        });
       })
       .catch(() => {
-        setPositions(mockPositions);
+        setPositions(allowMockFallback() ? mockPositions : []);
       });
-  }, [selectedCompany.id]);
+  }, [tenantId, companyId]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPosition, setEditingPosition] = useState<Position | null>(null);
@@ -67,12 +88,29 @@ const PositionsSettingsPage: React.FC = () => {
   };
 
   const handleSave = async () => {
+    const templatePayload = {
+      code: formData.code,
+      name: formData.name,
+      levelScope: selectedCompany.id === 'all' ? 'group' : 'subsidiary',
+      payload: {
+        level: formData.level,
+        category: formData.category,
+        description: formData.description,
+        applicableCompanies: formData.applicableCompanies,
+      },
+    };
+    try {
+      await savePositionTemplate(templatePayload, editingPosition?.id, tenantId, companyId);
+    } catch {
+      /* fallback legacy master */
+    }
     if (editingPosition) {
       await upsertBusinessMasterItem(
         'positions',
         editingPosition.id,
         { ...editingPosition, ...formData },
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
+        tenantId,
+        companyId,
       );
       // Update existing
       setPositions((prev) =>
@@ -88,12 +126,7 @@ const PositionsSettingsPage: React.FC = () => {
         id: `pos-${Date.now()}`,
         ...formData,
       };
-      await upsertBusinessMasterItem(
-        'positions',
-        newPosition.id,
-        newPosition,
-        selectedCompany.id === 'all' ? null : selectedCompany.id,
-      );
+      await upsertBusinessMasterItem('positions', newPosition.id, newPosition, tenantId, companyId);
       setPositions((prev) => [...prev, newPosition]);
     }
     setIsModalOpen(false);
@@ -102,13 +135,13 @@ const PositionsSettingsPage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm('Bạn có chắc chắn muốn xóa chức vụ này?')) {
-      await deleteBusinessMasterItem('positions', id, selectedCompany.id === 'all' ? null : selectedCompany.id);
+      await deleteBusinessMasterItem('positions', id, tenantId, companyId);
       setPositions((prev) => prev.filter((pos) => pos.id !== id));
     }
   };
 
   const getCompanyName = (companyId: string) => {
-    const company = companies.find((c) => c.id === companyId) ?? mockCompanies.find((c) => c.id === companyId);
+    const company = companies.find((c) => c.id === companyId) ?? globalCompanies.find((c) => c.id === companyId);
     return company?.shortName || companyId;
   };
 
@@ -329,7 +362,7 @@ const PositionsSettingsPage: React.FC = () => {
                   Áp dụng cho công ty <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {mockCompanies.map((company) => (
+                  {companies.map((company) => (
                     <label
                       key={company.id}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${

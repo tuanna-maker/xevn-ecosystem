@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Building2,
@@ -22,8 +22,15 @@ import {
   mockExecutiveDashboardStats,
   mockModuleCards,
   mockAlerts,
+  type AlertItem,
 } from '../../data/mockExecutiveDashboardData';
 import { PORTAL_UNLOCK_STORAGE_KEY } from '../../constants/portal-flow';
+import { listWorkflowInstances, listReportingRoutes, listWorkflowTasks } from '../../integrations/workflowEngineApi';
+import { fetchPortalAlerts } from '../../integrations/portalAlertsApi';
+import { allowMockFallback } from '../../utils/mockPolicy';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
+import { useKpiDashboardSnapshot } from '../../hooks/useKpiDashboardSnapshot';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 // Sparkline component
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -50,9 +57,56 @@ const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color })
 };
 
 const ExecutiveDashboardPage: React.FC = () => {
+  const { tenantId, companyId } = useTenantScope();
+  const [rollupCount, setRollupCount] = useState<number | null>(null);
+  const [pendingTasks, setPendingTasks] = useState<number | null>(null);
+  const [cockpitAlerts, setCockpitAlerts] = useState<AlertItem[]>(mockAlerts);
+  const [alertsFromApi, setAlertsFromApi] = useState(false);
+  const {
+    rows: kpiRows,
+    loadFailed: kpiLoadFailed,
+    usingMockFallback: kpiMockFallback,
+    isLoading: kpiLoading,
+  } = useKpiDashboardSnapshot(tenantId, companyId, 'all');
+
+  const kpiCompliancePercent = useMemo(() => {
+    if (!kpiRows.length) return null;
+    const avg =
+      kpiRows.reduce((acc, k) => acc + (k.currentValue / (k.targetValue || 1)) * 100, 0) / kpiRows.length;
+    return Math.round(Math.min(avg, 100));
+  }, [kpiRows]);
+
   useEffect(() => {
     sessionStorage.setItem(PORTAL_UNLOCK_STORAGE_KEY, '1');
-  }, []);
+    void Promise.all([
+      listWorkflowInstances(tenantId, companyId, 'completed'),
+      listReportingRoutes(tenantId, companyId),
+      listWorkflowTasks(tenantId, 'pending'),
+      fetchPortalAlerts(tenantId, undefined, companyId),
+    ])
+      .then(([instances, routes, tasks, alerts]) => {
+        setRollupCount(instances.length + routes.length);
+        setPendingTasks(tasks.length);
+        if (alerts.length) {
+          setCockpitAlerts(
+            alerts.map((a) => ({
+              id: a.id,
+              message: a.detail ? `${a.title} — ${a.detail}` : a.title,
+              priority: a.level === 'critical' ? 'high' : a.level === 'warn' ? 'medium' : 'low',
+              time: a.sourceSystem ?? 'API',
+            })),
+          );
+          setAlertsFromApi(true);
+        } else if (!allowMockFallback()) {
+          setCockpitAlerts([]);
+          setAlertsFromApi(true);
+        }
+      })
+      .catch(() => {
+        setRollupCount(null);
+        setPendingTasks(null);
+      });
+  }, [tenantId, companyId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -70,6 +124,9 @@ const ExecutiveDashboardPage: React.FC = () => {
                   <h1 className="text-2xl font-black text-slate-900">BẢNG ĐIỀU HÀNH TẬP ĐOÀN XeVN</h1>
                   <p className="text-sm font-medium text-blue-600 bg-blue-100/50 px-2 py-1 rounded-md inline-block mt-1">
                     XeVN OS - Executive Cockpit
+                    {rollupCount !== null ? ` · Rollup QT: ${rollupCount}` : ''}
+                    {kpiLoading ? '' : ` · KPI: ${kpiRows.length}`}
+                    {pendingTasks !== null ? ` · WF pending: ${pendingTasks}` : ''}
                   </p>
                 </div>
               </div>
@@ -128,6 +185,18 @@ const ExecutiveDashboardPage: React.FC = () => {
       </header>
 
       <main className="xevn-safe-inline py-6">
+        <div className="mb-6">
+          <ApiLoadBanner
+            loadFailed={kpiLoadFailed}
+            usingMockFallback={kpiMockFallback}
+            title="KPI Cockpit"
+            message={
+              kpiLoadFailed && !kpiMockFallback
+                ? 'Chưa tải được KPI từ business-master. Các thẻ tài chính vận hành vẫn dùng dữ liệu cockpit tĩnh.'
+                : undefined
+            }
+          />
+        </div>
         {/* ROW 2: Top Metrics */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           {/* Tổng doanh thu */}
@@ -143,6 +212,7 @@ const ExecutiveDashboardPage: React.FC = () => {
                   <span>{mockExecutiveDashboardStats.revenueTrend}%</span>
                 </div>
               </div>
+              <p className="text-[10px] uppercase tracking-wide text-white/60 mb-1">Demo layout</p>
               <h3 className="text-sm font-semibold text-white/80 mb-2">Tổng doanh thu</h3>
               <p className="text-3xl font-black text-white mb-2">
                 {(mockExecutiveDashboardStats.totalRevenue / 1e12).toFixed(1)} <span className="text-lg">Tỷ VND</span>
@@ -206,15 +276,23 @@ const ExecutiveDashboardPage: React.FC = () => {
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
-                  <span>{mockExecutiveDashboardStats.policyCompliance}%</span>
+                  <span>{kpiCompliancePercent ?? mockExecutiveDashboardStats.policyCompliance}%</span>
                 </div>
               </div>
-              <h3 className="text-sm font-semibold text-white/80 mb-2">Tuân thủ quy trình</h3>
+              <h3 className="text-sm font-semibold text-white/80 mb-2">
+                {kpiCompliancePercent != null ? 'Đạt KPI trung bình' : 'Tuân thủ quy trình'}
+              </h3>
               <p className="text-3xl font-black text-white mb-2">
-                {mockExecutiveDashboardStats.policyCompliance} <span className="text-lg">%</span>
+                {kpiCompliancePercent ?? mockExecutiveDashboardStats.policyCompliance}{' '}
+                <span className="text-lg">%</span>
               </p>
               <div className="w-full bg-white/20 rounded-full h-2 mt-4">
-                <div className="bg-white h-2 rounded-full" style={{ width: `${mockExecutiveDashboardStats.policyCompliance}%` }}></div>
+                <div
+                  className="bg-white h-2 rounded-full"
+                  style={{
+                    width: `${kpiCompliancePercent ?? mockExecutiveDashboardStats.policyCompliance}%`,
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -260,7 +338,12 @@ const ExecutiveDashboardPage: React.FC = () => {
 
         {/* ROW 4: Hot Alerts */}
         <section className="mb-8">
-          <AlertTicker alerts={mockAlerts} />
+          <AlertTicker alerts={cockpitAlerts} />
+          {alertsFromApi && cockpitAlerts.length === 0 ? (
+            <p className="mt-2 text-center text-sm text-slate-500">
+              Không có cảnh báo từ workflow/catalog — chạy seed inbox nếu cần dữ liệu mẫu.
+            </p>
+          ) : null}
         </section>
       </main>
     </div>
@@ -272,9 +355,24 @@ const ModuleCard: React.FC<{ card: typeof mockModuleCards[0] }> = ({ card }) => 
   const navigate = useNavigate();
 
   const handleAccessClick = () => {
-    if (card.id === 'x-bos') {
-      navigate('/dashboard/organization');
+    const routes: Record<string, string> = {
+      'x-bos': '/command-center',
+      hrm: '/command-center/hrm/dashboard',
+      trsport: '/command-center',
+      lgs: '/command-center',
+      express: '/command-center',
+      'x-scm': '/command-center',
+      'x-office': '/command-center',
+      'x-finance': '/command-center',
+      crm: '/customers',
+      'x-maintenance': '/command-center',
+    };
+    const target = routes[card.id];
+    if (target) {
+      navigate(target);
+      return;
     }
+    navigate('/command-center');
   };
 
   const getIconComponent = (iconName: string) => {

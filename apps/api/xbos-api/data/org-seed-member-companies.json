@@ -1,0 +1,580 @@
+{
+  "tenantId": "xevn",
+  "holding": {
+    "companyId": "holding",
+    "code": "XEVN-HOLDING",
+    "name": "Tập đoàn XeVN",
+    "entityType": "holding"
+  },
+  "subsidiaries": [
+    {
+      "companyId": "xe-tmdv",
+      "code": "XE_TMDV",
+      "name": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+      "shortName": "X.E TM-DV",
+      "entityType": "subsidiary",
+      "departments": [
+        {
+          "code": "BAN-GIAM-OC",
+          "name": "Ban Giám đốc",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "BAN-GIAM-OC-PHO-GIAM-OC",
+              "name": "Phó giám đốc"
+            }
+          ]
+        },
+        {
+          "code": "XUONG-DICH-VU",
+          "name": "Xưởng dịch vụ",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "XUONG-DICH-VU-BAO-VE-RUA-XE",
+              "name": "Bảo vệ - Rửa xe"
+            },
+            {
+              "code": "XUONG-DICH-VU-CO-VAN-DICH-VU",
+              "name": "Cố vấn dịch vụ"
+            },
+            {
+              "code": "XUONG-DICH-VU-HOC-VIEC",
+              "name": "Học việc"
+            },
+            {
+              "code": "XUONG-DICH-VU-KE-TOAN-TONG-HOP",
+              "name": "Kế toán tổng hợp"
+            },
+            {
+              "code": "XUONG-DICH-VU-NHAN-VIEN-TAP-VU",
+              "name": "Nhân viên tạp vụ"
+            },
+            {
+              "code": "XUONG-DICH-VU-QUAN-OC-XUONG",
+              "name": "Quản đốc Xưởng"
+            },
+            {
+              "code": "XUONG-DICH-VU-THO-HOC-VIEC",
+              "name": "Thợ học việc"
+            },
+            {
+              "code": "XUONG-DICH-VU-THO-KY-THUAT",
+              "name": "Thợ kỹ thuật"
+            },
+            {
+              "code": "XUONG-DICH-VU-THU-KHO",
+              "name": "Thủ kho"
+            },
+            {
+              "code": "XUONG-DICH-VU-TO-PHO",
+              "name": "Tổ phó"
+            },
+            {
+              "code": "XUONG-DICH-VU-TO-TRUONG",
+              "name": "Tổ trưởng"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "companyId": "visun",
+      "code": "VISUN",
+      "name": "Công ty TNHH Du lịch Visun",
+      "shortName": "Visun",
+      "entityType": "subsidiary",
+      "departments": [
+        {
+          "code": "BAN-GIAM-OC",
+          "name": "Ban Giám đốc",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "BAN-GIAM-OC-GIAM-OC-VISUN-TRO-LY-G-X-E",
+              "name": "Giám đốc Visun + Trợ lý GĐ X.E"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-TCKT",
+          "name": "Phòng TCKT",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-TCKT-PHO-PHONG-TCKT",
+              "name": "Phó phòng TCKT"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-VTHK",
+          "name": "Phòng VTHK",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-VTHK-TRUONG-NHOM-DIEU-HANH",
+              "name": "Trưởng nhóm điều hành"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "companyId": "xe-du-lich",
+      "code": "XE_DU_LICH",
+      "name": "Công ty TNHH Du lịch X.E Việt Nam",
+      "shortName": "X.E Du lịch VN",
+      "entityType": "subsidiary",
+      "departments": [
+        {
+          "code": "BAN-GIAM-SAT",
+          "name": "Ban Giám sát",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "BAN-GIAM-SAT-GIAM-SAT-DICH-VU",
+              "name": "Giám sát dịch vụ"
+            }
+          ]
+        },
+        {
+          "code": "BAN-GIAM-OC",
+          "name": "Ban Giám đốc",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "BAN-GIAM-OC-G-DU-LICH-THU-KY-CHU-TICH",
+              "name": "GĐ Du lịch + Thư ký Chủ tịch"
+            },
+            {
+              "code": "BAN-GIAM-OC-TRO-LY-CHU-TICH",
+              "name": "Trợ lý Chủ tịch"
+            },
+            {
+              "code": "BAN-GIAM-OC-TRO-LY-GIAM-OC-X-E",
+              "name": "Trợ lý Giám đốc X.E"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-HCNS",
+          "name": "Phòng HCNS",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-HCNS-HANH-CHINH",
+              "name": "Hành chính"
+            },
+            {
+              "code": "PHONG-HCNS-TRUONG-NHOM-TUYEN-DUNG",
+              "name": "Trưởng nhóm tuyển dụng"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-MARKETING",
+          "name": "Phòng Marketing",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-MARKETING-CHUYEN-VIEN-QUAY-DUNG",
+              "name": "Chuyên viên quay dựng"
+            },
+            {
+              "code": "PHONG-MARKETING-CHUYEN-VIEN-SANG-TAO-NOI-DUNG",
+              "name": "Chuyên viên sáng tạo nội dung"
+            },
+            {
+              "code": "PHONG-MARKETING-CHUYEN-VIEN-THIET-KE",
+              "name": "Chuyên viên thiết kế"
+            },
+            {
+              "code": "PHONG-MARKETING-TRUONG-PHONG-MKT",
+              "name": "Trưởng phòng MKT"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-TCKT",
+          "name": "Phòng TCKT",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-TCKT-KE-TOAN-CONG-NO",
+              "name": "Kế toán công nợ"
+            },
+            {
+              "code": "PHONG-TCKT-KE-TOAN-TINH",
+              "name": "Kế toán tỉnh"
+            },
+            {
+              "code": "PHONG-TCKT-KE-TOAN-TONG-HOP",
+              "name": "Kế toán tổng hợp"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-VTHK",
+          "name": "Phòng VTHK",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-VTHK-CHAM-SOC-KHACH-HANG",
+              "name": "Chăm sóc khách hàng"
+            },
+            {
+              "code": "PHONG-VTHK-KINH-DOANH",
+              "name": "Kinh doanh"
+            },
+            {
+              "code": "PHONG-VTHK-LAI-XE-TUYEN",
+              "name": "Lái xe tuyến"
+            },
+            {
+              "code": "PHONG-VTHK-LE-TAN",
+              "name": "Lễ tân"
+            },
+            {
+              "code": "PHONG-VTHK-NHAN-VIEN-TONG-AI",
+              "name": "Nhân viên tổng đài"
+            },
+            {
+              "code": "PHONG-VTHK-TRUONG-BO-PHAN-TONG-AI",
+              "name": "Trưởng bộ phận tổng đài"
+            },
+            {
+              "code": "PHONG-VTHK-TRUONG-CA-TONG-AI",
+              "name": "Trưởng ca tổng đài"
+            },
+            {
+              "code": "PHONG-VTHK-IEU-PHOI",
+              "name": "Điều phối"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "companyId": "xe-vietnam",
+      "code": "XE_VIETNAM",
+      "name": "Công ty TNHH X.E Việt Nam",
+      "shortName": "X.E Việt Nam",
+      "entityType": "subsidiary",
+      "departments": [
+        {
+          "code": "BAN-GIAM-SAT",
+          "name": "Ban Giám sát",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "BAN-GIAM-SAT-GIAM-SAT-DICH-VU",
+              "name": "Giám sát dịch vụ"
+            },
+            {
+              "code": "BAN-GIAM-SAT-GIAM-SAT-TUAN-THU",
+              "name": "Giám sát tuân thủ"
+            },
+            {
+              "code": "BAN-GIAM-SAT-TRUONG-NHOM-GIAM-SAT",
+              "name": "Trưởng nhóm giám sát"
+            }
+          ]
+        },
+        {
+          "code": "BAN-GIAM-OC",
+          "name": "Ban Giám đốc",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "BAN-GIAM-OC-CHU-TICH-HTV",
+              "name": "Chủ tịch HĐTV"
+            },
+            {
+              "code": "BAN-GIAM-OC-GIAM-OC",
+              "name": "Giám đốc"
+            },
+            {
+              "code": "BAN-GIAM-OC-THU-KY-CHU-TICH",
+              "name": "Thư ký Chủ tịch"
+            },
+            {
+              "code": "BAN-GIAM-OC-TRO-LY-CHU-TICH-HTV",
+              "name": "Trợ lý chủ tịch HĐTV"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-DU-AN",
+          "name": "Phòng Dự Án",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-DU-AN-LAP-TRINH-VIEN",
+              "name": "Lập trình viên"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-HCNS",
+          "name": "Phòng HCNS",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-HCNS-BAO-VE",
+              "name": "Bảo vệ"
+            },
+            {
+              "code": "PHONG-HCNS-CHUYEN-VIEN-CNTT",
+              "name": "Chuyên viên CNTT"
+            },
+            {
+              "code": "PHONG-HCNS-CHUYEN-VIEN-PHAP-CHE",
+              "name": "Chuyên viên pháp chế"
+            },
+            {
+              "code": "PHONG-HCNS-NHAN-VIEN-TIEN-LUONG-VA-PHUC-LOI",
+              "name": "Nhân viên Tiền lương và Phúc lợi"
+            },
+            {
+              "code": "PHONG-HCNS-NHAN-VIEN-CAN-VE-CHU-TICH-HOI-ON",
+              "name": "Nhân viên cận vệ Chủ tịch Hội đồng thành viên"
+            },
+            {
+              "code": "PHONG-HCNS-NHAN-VIEN-TAP-VU",
+              "name": "Nhân viên tạp vụ"
+            },
+            {
+              "code": "PHONG-HCNS-TRUONG-NHOM-TUYEN-DUNG",
+              "name": "Trưởng nhóm tuyển dụng"
+            },
+            {
+              "code": "PHONG-HCNS-TRUONG-PHONG-HCNS",
+              "name": "Trưởng phòng HCNS"
+            },
+            {
+              "code": "PHONG-HCNS-TUYEN-DUNG",
+              "name": "Tuyển dụng"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-QLPT",
+          "name": "Phòng QLPT",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-QLPT-CHUYEN-VIEN-QUAN-LY-PHUONG-TIEN",
+              "name": "Chuyên viên quản lý phương tiện"
+            },
+            {
+              "code": "PHONG-QLPT-TRUONG-PHONG-QLPT",
+              "name": "Trưởng phòng QLPT"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-TCKT",
+          "name": "Phòng TCKT",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-TCKT-KE-TOAN-CHUYEN-QUAN",
+              "name": "Kế toán chuyên quản"
+            },
+            {
+              "code": "PHONG-TCKT-KE-TOAN-CONG-NO",
+              "name": "Kế toán công nợ"
+            },
+            {
+              "code": "PHONG-TCKT-KE-TOAN-HANG-HOA",
+              "name": "Kế toán hàng hoá"
+            },
+            {
+              "code": "PHONG-TCKT-KE-TOAN-THANH-TOAN",
+              "name": "Kế toán thanh toán"
+            },
+            {
+              "code": "PHONG-TCKT-KE-TOAN-THUE",
+              "name": "Kế toán thuế"
+            },
+            {
+              "code": "PHONG-TCKT-THU-QUY",
+              "name": "Thủ quỹ"
+            },
+            {
+              "code": "PHONG-TCKT-TRUONG-NHOM-THANH-TOAN",
+              "name": "Trưởng nhóm thanh toán"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-VTHH",
+          "name": "Phòng VTHH",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-VTHH-ADMIN",
+              "name": "Admin"
+            },
+            {
+              "code": "PHONG-VTHH-BAO-VE-RUA-XE",
+              "name": "Bảo vệ - Rửa xe"
+            },
+            {
+              "code": "PHONG-VTHH-BOC-XEP",
+              "name": "Bốc xếp"
+            },
+            {
+              "code": "PHONG-VTHH-KINH-DOANH",
+              "name": "Kinh doanh"
+            },
+            {
+              "code": "PHONG-VTHH-LAI-XE-TAI-TUYEN-NHANH",
+              "name": "Lái xe tải tuyến nhánh"
+            },
+            {
+              "code": "PHONG-VTHH-LAI-TAI-DU-PHONG",
+              "name": "Lái tải dự phòng"
+            },
+            {
+              "code": "PHONG-VTHH-LAI-TAI-TUYEN-CHINH",
+              "name": "Lái tải tuyến chính"
+            },
+            {
+              "code": "PHONG-VTHH-LAI-TAI-TUYEN-NHANH",
+              "name": "Lái tải tuyến nhánh"
+            },
+            {
+              "code": "PHONG-VTHH-LAI-XE-CONTAINER",
+              "name": "Lái xe Container"
+            },
+            {
+              "code": "PHONG-VTHH-LAI-XE-TRUNG-CHUYEN",
+              "name": "Lái xe trung chuyển"
+            },
+            {
+              "code": "PHONG-VTHH-NHAN-VIEN-GIAM-SAT-DU-AN",
+              "name": "Nhân viên Giám Sát dự án"
+            },
+            {
+              "code": "PHONG-VTHH-NHAN-VIEN-KINH-DOANH",
+              "name": "Nhân viên Kinh doanh"
+            },
+            {
+              "code": "PHONG-VTHH-NHAN-VIEN-LAI-XE-TRUNG-CHUYEN-HA",
+              "name": "Nhân viên lái xe trung chuyển hàng hoá"
+            },
+            {
+              "code": "PHONG-VTHH-NHAN-VIEN-TONG-AI",
+              "name": "Nhân viên tổng đài"
+            },
+            {
+              "code": "PHONG-VTHH-TBP-KINH-DOANH",
+              "name": "TBP Kinh doanh"
+            },
+            {
+              "code": "PHONG-VTHH-TRUONG-BUU-CUC",
+              "name": "Trưởng bưu cục"
+            },
+            {
+              "code": "PHONG-VTHH-TRUONG-NHOM-TONG-AI",
+              "name": "Trưởng nhóm tổng đài"
+            },
+            {
+              "code": "PHONG-VTHH-TRUONG-NHOM-IEU-HANH",
+              "name": "Trưởng nhóm điều hành"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-HANH-TRUNG-TAM",
+              "name": "Điều hành trung tâm"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-HANH-LAI-CONT",
+              "name": "Điều hành Lái Cont"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-HANH-TUYEN-CHINH",
+              "name": "Điều hành tuyến chính"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-HANH-TUYEN-NHANH",
+              "name": "Điều hành tuyến nhánh"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-HANH-IEU-PHOI-HANG-HOA",
+              "name": "Điều hành điều phối hàng hoá"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-PHOI",
+              "name": "Điều phối"
+            },
+            {
+              "code": "PHONG-VTHH-IEU-PHOI-HANG-HOA",
+              "name": "Điều phối hàng hoá"
+            }
+          ]
+        },
+        {
+          "code": "PHONG-VTHK",
+          "name": "Phòng VTHK",
+          "orgType": "department",
+          "positions": [
+            {
+              "code": "PHONG-VTHK-ADMIN",
+              "name": "Admin"
+            },
+            {
+              "code": "PHONG-VTHK-BAO-VE",
+              "name": "Bảo vệ"
+            },
+            {
+              "code": "PHONG-VTHK-LAI-XE-TRUNG-CHUYEN",
+              "name": "Lái xe trung chuyển"
+            },
+            {
+              "code": "PHONG-VTHK-LAI-XE-TUYEN",
+              "name": "Lái xe tuyến"
+            },
+            {
+              "code": "PHONG-VTHK-NHAN-VIEN-RUA-XE",
+              "name": "Nhân viên rửa xe"
+            },
+            {
+              "code": "PHONG-VTHK-NHAN-VIEN-TAP-VU",
+              "name": "Nhân viên tạp vụ"
+            },
+            {
+              "code": "PHONG-VTHK-NHAN-VIEN-TONG-AI",
+              "name": "Nhân viên tổng đài"
+            },
+            {
+              "code": "PHONG-VTHK-PHO-PHONG-VTHK",
+              "name": "Phó phòng VTHK"
+            },
+            {
+              "code": "PHONG-VTHK-THUC-TAP-SINH-IEU-HANH-TRUNG-TAM",
+              "name": "Thực tập sinh Điều hành trung tâm"
+            },
+            {
+              "code": "PHONG-VTHK-TRUONG-CHI-NHANH",
+              "name": "Trưởng chi nhánh"
+            },
+            {
+              "code": "PHONG-VTHK-IEU-HANH-TRUNG-TAM",
+              "name": "Điều hành Trung tâm"
+            },
+            {
+              "code": "PHONG-VTHK-IEU-HANH-TINH",
+              "name": "Điều hành tỉnh"
+            },
+            {
+              "code": "PHONG-VTHK-IEU-PHOI",
+              "name": "Điều phối"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

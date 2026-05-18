@@ -10,36 +10,45 @@ import {
   Section,
   type Column,
 } from '@xevn/ui';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
-import { mockPartners, mockCompanies, type Partner } from '../../data/mock-data';
+import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
+import { mockPartners, type Partner } from '../../data/mock-data';
 import { listBusinessMasterItems } from '../../integrations/businessMasterApi';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const PartnersPage: React.FC = () => {
-  const { selectedCompany, companies } = useGlobalFilter();
-  const [partners, setPartners] = useState<Partner[]>(mockPartners);
+  const { companies } = useGlobalFilter();
+  const { tenantId, companyId, isMasterContext } = useTenantScope();
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [usingMockFallback, setUsingMockFallback] = useState(false);
 
   useEffect(() => {
-    const scopeHint = selectedCompany.id === 'all' ? null : selectedCompany.id;
-    void listBusinessMasterItems<Partner>('partners', scopeHint)
+    setLoadFailed(false);
+    setUsingMockFallback(false);
+    void listBusinessMasterItems<Partner>('partners', tenantId, companyId)
       .then((rows) => {
-        if (rows.length) setPartners(rows);
+        setPartners(rows);
       })
       .catch(() => {
-        setPartners(mockPartners);
+        setLoadFailed(true);
+        if (allowMockFallback()) {
+          setPartners(mockPartners);
+          setUsingMockFallback(true);
+        } else {
+          setPartners([]);
+        }
       });
-  }, [selectedCompany.id]);
+  }, [tenantId, companyId]);
 
-  // Filter partners based on selected company
   const filteredPartners = useMemo(() => {
-    if (selectedCompany.id === 'all') {
-      return partners;
-    }
+    if (isMasterContext) return partners;
     return partners.filter(
       (partner) =>
-        partner.relatedCompanies.includes(selectedCompany.id) ||
-        partner.relatedCompanies.includes('all')
+        partner.relatedCompanies.includes(tenantId) ||
+        partner.relatedCompanies.includes('all'),
     );
-  }, [selectedCompany.id, partners]);
+  }, [partners, tenantId, isMasterContext]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -54,7 +63,7 @@ const PartnersPage: React.FC = () => {
 
   // Get company name by ID
   const getCompanyName = (companyId: string) => {
-    const company = companies.find((c) => c.id === companyId) ?? mockCompanies.find((c) => c.id === companyId);
+    const company = companies.find((c) => c.id === companyId);
     return company?.shortName || companyId;
   };
 
@@ -143,6 +152,8 @@ const PartnersPage: React.FC = () => {
         message="Quản lý thông tin đối tác được thực hiện tại các phân hệ nghiệp vụ tương ứng của từng công ty thành viên."
         icon={<Info size={20} />}
       />
+
+      <ApiLoadBanner loadFailed={loadFailed} usingMockFallback={usingMockFallback} />
 
       <Section gap="lg">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

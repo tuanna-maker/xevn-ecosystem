@@ -174,7 +174,8 @@ export function useEmployees(includeDeleted: boolean = false, companyIdFilter?: 
 
     try {
       const payload = {
-        company_id: currentCompanyId,
+        company_id:
+          (data as EmployeeFormData & { company_id?: string }).company_id?.trim() || currentCompanyId,
         employee_code: data.employee_code,
         full_name: data.full_name,
         email: data.email?.trim() || `${data.employee_code.toLowerCase()}@xevn.local`,

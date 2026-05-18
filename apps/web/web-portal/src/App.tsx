@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GlobalFilterProvider } from './contexts/GlobalFilterContext';
+import { AuthProvider } from './contexts/AuthContext';
+import RequireAuth from './components/auth/RequireAuth';
 
 const MainLayout = lazy(() => import('./components/layout/MainLayout'));
 const ExecutiveDashboardLayout = lazy(() => import('./components/layout/ExecutiveDashboardLayout'));
@@ -10,6 +12,8 @@ const HrmWorkspaceRoute = lazy(() =>
 const OrganizationPage = lazy(() => import('./pages/organization/OrganizationPage'));
 const HRPage = lazy(() => import('./pages/hr/HRPage'));
 const ExecutiveDashboardPage = lazy(() => import('./pages/dashboard/ExecutiveDashboardPage'));
+const CatalogGovernancePage = lazy(() => import('./pages/governance/CatalogGovernancePage'));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const CommandCenterPage = lazy(() => import('./pages/command-center/CommandCenterPage'));
 const UnifiedShellPage = lazy(() => import('./pages/unified/UnifiedShellPage'));
 const CustomersPage = lazy(() => import('./pages/customers/CustomersPage'));
@@ -21,17 +25,9 @@ const KPIMetricsSettingsPage = lazy(() => import('./pages/settings/KPIMetricsSet
 const VehicleTypesSettingsPage = lazy(() => import('./pages/settings/VehicleTypesSettingsPage'));
 const VendorsSettingsPage = lazy(() => import('./pages/settings/VendorsSettingsPage'));
 const ExpenseCategoriesSettingsPage = lazy(() => import('./pages/settings/ExpenseCategoriesSettingsPage'));
-
-// Placeholder page component
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
-  <div className="flex flex-col items-center justify-center h-96">
-    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-      <span className="text-2xl">🚧</span>
-    </div>
-    <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
-    <p className="text-slate-500 mt-2">Trang này đang được phát triển</p>
-  </div>
-);
+const DepartmentsSettingsPage = lazy(() => import('./pages/settings/DepartmentsSettingsPage'));
+const RegionsSettingsPage = lazy(() => import('./pages/settings/RegionsSettingsPage'));
+const KpiFormulasSettingsPage = lazy(() => import('./pages/settings/KpiFormulasSettingsPage'));
 
 const RouteLoadingFallback: React.FC = () => (
   <div className="flex h-96 items-center justify-center text-slate-500">Đang tải...</div>
@@ -39,14 +35,24 @@ const RouteLoadingFallback: React.FC = () => (
 
 const App: React.FC = () => {
   return (
-    <GlobalFilterProvider>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Suspense fallback={<RouteLoadingFallback />}>
-          <Routes>
-            {/* Unified Shell → Cockpit (dashboard) → sau đó mới mở /dashboard/* (MainLayout) */}
-            <Route path="/" element={<ExecutiveDashboardLayout />}>
+    <AuthProvider>
+      <GlobalFilterProvider>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              {/* Unified Shell → Cockpit (dashboard) → sau đó mới mở /dashboard/* (MainLayout) */}
+              <Route
+                path="/"
+                element={
+                  <RequireAuth>
+                    <ExecutiveDashboardLayout />
+                  </RequireAuth>
+                }
+              >
               <Route index element={<UnifiedShellPage />} />
               <Route path="cockpit" element={<ExecutiveDashboardPage />} />
+              <Route path="catalog-governance" element={<CatalogGovernancePage />} />
               <Route path="command-center" element={<CommandCenterPage />}>
                 <Route path="hrm">
                   <Route index element={<Navigate to="dashboard" replace />} />
@@ -56,7 +62,14 @@ const App: React.FC = () => {
             </Route>
 
             {/* Main Layout with Sidebar - All Other Pages */}
-            <Route path="/dashboard/*" element={<MainLayout />}>
+            <Route
+              path="/dashboard/*"
+              element={
+                <RequireAuth>
+                  <MainLayout />
+                </RequireAuth>
+              }
+            >
               <Route path="organization" element={<OrganizationPage />} />
               <Route path="hr" element={<HRPage />} />
               <Route path="customers" element={<CustomersPage />} />
@@ -67,13 +80,13 @@ const App: React.FC = () => {
               {/* Settings Pages */}
               <Route path="settings">
                 <Route path="positions" element={<PositionsSettingsPage />} />
-                <Route path="departments" element={<PlaceholderPage title="Danh mục Phòng ban" />} />
-                <Route path="regions" element={<PlaceholderPage title="Vùng địa lý" />} />
+                <Route path="departments" element={<DepartmentsSettingsPage />} />
+                <Route path="regions" element={<RegionsSettingsPage />} />
                 <Route path="vehicles" element={<VehicleTypesSettingsPage />} />
                 <Route path="vendors" element={<VendorsSettingsPage />} />
                 <Route path="expense-categories" element={<ExpenseCategoriesSettingsPage />} />
                 <Route path="kpi-metrics" element={<KPIMetricsSettingsPage />} />
-                <Route path="kpi-formulas" element={<PlaceholderPage title="Công thức KPI" />} />
+                <Route path="kpi-formulas" element={<KpiFormulasSettingsPage />} />
               </Route>
 
               {/* Redirect dashboard root to organization */}
@@ -91,9 +104,10 @@ const App: React.FC = () => {
               />
             </Route>
           </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </GlobalFilterProvider>
+          </Suspense>
+        </BrowserRouter>
+      </GlobalFilterProvider>
+    </AuthProvider>
   );
 };
 

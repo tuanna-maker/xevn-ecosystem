@@ -94,3 +94,52 @@ Các phân hệ có thể dùng mã riêng (ví dụ `HRM-*`, `XBOS-*`) nhưng *
 - **If** tạo tenant mới **then** hệ thống khởi tạo dữ liệu mặc định theo tenant mới, không tác động tenant hiện hữu.
 - **Else if** thao tác cleanup tenant chéo **then** chỉ cho phép qua luồng admin tường minh có cờ bảo vệ vận hành.
 - **Else** giữ nguyên hành vi phân vùng dữ liệu `(tenant_id, company_id)` cho mọi nghiệp vụ.
+
+## 9. Ba chế độ UI Portal (họp 2026-05)
+
+| Chế độ | Actor | Hành vi filter |
+|---|---|---|
+| NV công ty con | Nhân viên đơn vị | Chỉ dữ liệu `company_id` được gán |
+| Quản lý công ty con | GĐ/Phó GĐ con | Org + QT scope `subsidiary`; drill-down nội bộ |
+| Group / tập đoàn | Ban điều hành | `group-overview`, registry toàn tập đoàn, QT `scope_level=group` |
+
+Workflow definition/instance và reporting route phải lọc theo chế độ đăng nhập (header `x-company-id`, scope token).
+
+## 10. Mô hình tenant — mỗi công ty = một tenant (2026-05)
+
+| Khái niệm | Quy tắc |
+|---|---|
+| Tenant master (`xevn`) | Chỉ X-BOS Group + cockpit tổng hợp; **không** có HRM/Cài đặt/Vận hành như tenant con |
+| Tenant thành viên | Mỗi CT con = `tenant_id` riêng (`xe-vietnam`, `visun`…); `company_id` = `main` |
+| Membership | Bảng `xbos_user_tenant_membership`: một user nhiều tenant, **mỗi tenant một `role_code`** |
+| UI | Header chọn tenant; menu X-BOS Group ẩn nếu không có membership master |
+| API | `GET /api/xbos/tenant-scope/accessible`, `GET /api/xbos/tenant-scope/group-org-overview` |
+| HRM | Cùng mô hình tenant: `hrm-api` + DB `xevn_hrm` (Postgres), header `x-tenant-id` / JWT — **không** Supabase |
+
+## 11. UC-ECO-FE-01 — Chuẩn thay mock trên Web Portal
+
+**Purpose:** Đảm bảo người dùng nghiệp vụ không thấy dữ liệu giả (HN/DN/CT mock) khi hệ thống đã seed tenant thật.
+
+**Usecases:**
+
+- Happy: API tenant/master trả dữ liệu → UI chỉ hiển thị API.
+- Alternate: API 200 rỗng → empty state có hướng dẫn (seed/migrate).
+- Exception: API lỗi → banner; mock chỉ môi trường dev có cờ.
+
+**Business rules (bắt buộc mọi phân hệ FE):**
+
+| Mã | Điều kiện | Hành động |
+|----|-----------|-----------|
+| BR-MOCK-01 | `success && data` rỗng | Empty state; không gán mock array |
+| BR-MOCK-02 | HTTP 4xx/5xx / network | Banner + retry; không silent mock |
+| BR-MOCK-03 | Dev-only fallback | Chỉ khi `import.meta.env.DEV && VITE_ALLOW_MOCK_FALLBACK=true` |
+| BR-SCOPE-01 | Gọi HRM/XBOS | `x-tenant-id` từ membership hoặc `group-member-units` |
+
+**Phạm vi áp dụng:** Inventory W1–W20, H1–H5 — xem `docs/ecosystem/FE_MOCK_TO_API_AUDIT.md`.
+
+**Acceptance:**
+
+- QA-GLOBAL-01: Settings filter không còn XEVN-HN/DN/CT khi DB đã seed `org-seed-member-companies.json`.
+- Mọi PR thay mock phải cập nhật SRS phân hệ tương ứng (§13 `hrm/SRS`, §12 `xbos/SRS`).
+
+**Traceability:** REQ-ECO-FE-01 → `FE_MOCK_TO_API_AUDIT.md` → implementation PR per màn.

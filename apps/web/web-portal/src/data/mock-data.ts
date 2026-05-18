@@ -104,6 +104,8 @@ export interface Company {
   entityLevel?: EntityLevelCode;
   /** id pháp nhân cha trong danh sách (null/undefined nếu gốc) */
   parentEntityId?: string | null;
+  /** tenant_id từ XBOS — dùng để gọi org-units/tree và các API tenant-scoped */
+  tenantId?: string;
 }
 
 export const mockCompanies: Company[] = [

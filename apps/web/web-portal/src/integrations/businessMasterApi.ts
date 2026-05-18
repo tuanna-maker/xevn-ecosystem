@@ -1,52 +1,71 @@
 import { resolveIdentityScope } from './identityScope';
+import { xbosFetch, xbosGetData } from './xbosHttp';
 
-async function getHeaders(companyHint?: string | null, withBody = false) {
-  const scope = resolveIdentityScope(companyHint ?? null);
-  const headers: Record<string, string> = {
-    'x-tenant-id': scope.tenantId,
-    'x-company-id': scope.companyId,
-  };
-  const internalApiKey = import.meta.env.VITE_INTERNAL_API_KEY?.trim();
-  if (internalApiKey) headers['x-internal-api-key'] = internalApiKey;
-  if (withBody) headers['Content-Type'] = 'application/json';
-  return { headers, scope };
+function scopeHeaders(tenantIdHint?: string | null, companyHint?: string | null) {
+  const scope = resolveIdentityScope(tenantIdHint ?? null, companyHint ?? null);
+  return { tenantId: scope.tenantId, companyId: scope.companyId };
 }
 
-export async function listBusinessMasterItems<T>(domain: string, companyHint?: string | null): Promise<T[]> {
-  const { headers, scope } = await getHeaders(companyHint, false);
-  const search = new URLSearchParams({ tenantId: scope.tenantId, companyId: scope.companyId });
-  const res = await fetch(`/api/xbos/business-master/${encodeURIComponent(domain)}/items?${search.toString()}`, {
-    method: 'GET',
-    headers,
-  });
-  if (!res.ok) throw new Error(`load ${domain} failed`);
-  const json = await res.json();
-  return (json?.data?.items ?? []) as T[];
+export async function listBusinessMasterItems<T>(
+  domain: string,
+  tenantIdHint?: string | null,
+  companyHint?: string | null,
+): Promise<T[]> {
+  const { tenantId, companyId } = scopeHeaders(tenantIdHint, companyHint);
+  const search = new URLSearchParams({ tenantId, companyId });
+  try {
+    const data = await xbosGetData<{ items?: T[] } | T[]>(
+      `/business-master/${encodeURIComponent(domain)}/items?${search.toString()}`,
+      {
+        scope: `business-master.${domain}.list`,
+        tenantId,
+        companyId,
+      },
+    );
+    if (Array.isArray(data)) return data;
+    return data?.items ?? [];
+  } catch (error) {
+    throw error instanceof Error ? error : new Error(`load ${domain} failed`);
+  }
 }
 
 export async function upsertBusinessMasterItem(
   domain: string,
   itemId: string,
   payload: unknown,
+  tenantIdHint?: string | null,
   companyHint?: string | null,
 ) {
-  const { headers } = await getHeaders(companyHint, true);
-  const res = await fetch(`/api/xbos/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(payload ?? {}),
-  });
-  if (!res.ok) throw new Error(`save ${domain} failed`);
-  return res.json();
+  const { tenantId, companyId } = scopeHeaders(tenantIdHint, companyHint);
+  try {
+    return await xbosFetch(`/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`, {
+      method: 'PUT',
+      scope: `business-master.${domain}.upsert`,
+      tenantId,
+      companyId,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload ?? {}),
+    });
+  } catch (error) {
+    throw error instanceof Error ? error : new Error(`save ${domain} failed`);
+  }
 }
 
-export async function deleteBusinessMasterItem(domain: string, itemId: string, companyHint?: string | null) {
-  const { headers } = await getHeaders(companyHint, false);
-  const res = await fetch(`/api/xbos/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`, {
-    method: 'DELETE',
-    headers,
-  });
-  if (!res.ok) throw new Error(`delete ${domain} failed`);
-  return res.json();
+export async function deleteBusinessMasterItem(
+  domain: string,
+  itemId: string,
+  tenantIdHint?: string | null,
+  companyHint?: string | null,
+) {
+  const { tenantId, companyId } = scopeHeaders(tenantIdHint, companyHint);
+  try {
+    return await xbosFetch(`/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`, {
+      method: 'DELETE',
+      scope: `business-master.${domain}.delete`,
+      tenantId,
+      companyId,
+    });
+  } catch (error) {
+    throw error instanceof Error ? error : new Error(`delete ${domain} failed`);
+  }
 }
-

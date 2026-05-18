@@ -1,0 +1,2 @@
+-- Wave B–E foundation schema (idempotent when run via FoundationSchemaService)
+-- Reference only; runtime bootstrap uses foundation-schema.service.ts

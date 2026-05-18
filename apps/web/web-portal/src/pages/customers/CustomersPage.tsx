@@ -10,34 +10,40 @@ import {
   Section,
   type Column,
 } from '@xevn/ui';
-import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import { mockCustomers, type Customer } from '../../data/mock-data';
 import { listBusinessMasterItems } from '../../integrations/businessMasterApi';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { allowMockFallback } from '../../utils/mockPolicy';
 
 const CustomersPage: React.FC = () => {
-  const { selectedCompany } = useGlobalFilter();
-  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
+  const { tenantId, companyId, isMasterContext } = useTenantScope();
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [usingMockFallback, setUsingMockFallback] = useState(false);
 
   useEffect(() => {
-    const scopeHint = selectedCompany.id === 'all' ? null : selectedCompany.id;
-    void listBusinessMasterItems<Customer>('customers', scopeHint)
+    setLoadFailed(false);
+    setUsingMockFallback(false);
+    void listBusinessMasterItems<Customer>('customers', tenantId, companyId)
       .then((rows) => {
-        if (rows.length) setCustomers(rows);
+        setCustomers(rows);
       })
       .catch(() => {
-        setCustomers(mockCustomers);
+        setLoadFailed(true);
+        if (allowMockFallback()) {
+          setCustomers(mockCustomers);
+          setUsingMockFallback(true);
+        } else {
+          setCustomers([]);
+        }
       });
-  }, [selectedCompany.id]);
+  }, [tenantId, companyId]);
 
-  // Filter customers based on selected company
   const filteredCustomers = useMemo(() => {
-    if (selectedCompany.id === 'all') {
-      return customers;
-    }
-    return customers.filter(
-      (cust) => cust.fromCompanyId === selectedCompany.id
-    );
-  }, [selectedCompany.id, customers]);
+    if (isMasterContext) return customers;
+    return customers.filter((cust) => cust.fromCompanyId === tenantId || !cust.fromCompanyId);
+  }, [customers, tenantId, isMasterContext]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -157,6 +163,8 @@ const CustomersPage: React.FC = () => {
         message="Dữ liệu khách hàng được tổng hợp từ CRM của từng công ty thành viên. Để cập nhật thông tin khách hàng, vui lòng sử dụng hệ thống CRM tương ứng."
         icon={<Info size={20} />}
       />
+
+      <ApiLoadBanner loadFailed={loadFailed} usingMockFallback={usingMockFallback} />
 
       <Section gap="lg">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
