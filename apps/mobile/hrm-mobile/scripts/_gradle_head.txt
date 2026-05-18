@@ -1,0 +1,35 @@
+1|/**
+2| * Ch\u1ea1y gradlew t\u1eeb apps/mobile/hrm-mobile/android (\u0111a n\u1ec1n t\u1ea3ng).
+3| * D\xf9ng: node scripts/gradle.cjs assembleRelease --no-daemon
+4| *
+5| * Windows + \u0111\u01b0\u1eddng d\u1eabn Unicode:
+6| * - JVM kh\xf4ng load \u0111\u01b0\u1ee3c gradle-wrapper.jar t\u1eeb classpath (GradleWrapperMain).
+7| * - Sau \u0111\xf3 Node `require.resolve` tr\u1ea3 path Unicode \u2192 Groovy kh\xf4ng \u0111\u1ecdc \u0111\u01b0\u1ee3c `expo/.../autolinking.gradle`.
+8| * Gi\u1ea3i ph\xe1p: `subst <\u1ed5>: <g\u1ed1c monorepo>` r\u1ed3i ch\u1ea1y gradlew t\u1eeb `\u1ed5:\apps\mobile\hrm-mobile\android` (to\xe0n ASCII).
+9| */
+10|const { spawnSync, execSync } = require('child_process');
+11|const fs = require('fs');
+12|const path = require('path');
+13|
+14|const mobileRoot = path.resolve(path.join(__dirname, '..'));
+15|const androidDir = path.join(mobileRoot, 'android');
+16|/** G\u1ed1c repo xevn-ecosystem (\u2026/apps/mobile/hrm-mobile \u2192 l\xean 3 c\u1ea5p). */
+17|const repoRoot = path.resolve(path.join(mobileRoot, '..', '..', '..'));
+18|}
+19|const isWin = process.platform === 'win32';
+20|let repoRootResolved = repoRoot;
+21|let mobileRootResolved = mobileRoot;
+22|if (isWin) {
+23|  try {
+24|    repoRootResolved = fs.realpathSync.native(repoRoot);
+25|    mobileRootResolved = fs.realpathSync.native(mobileRoot);
+26|  } catch (_) {
+27|    repoRootResolved = repoRoot;
+28|    mobileRootResolved = mobileRoot;
+29|  }
+30|}
+31|const args = process.argv.slice(2);
+32|
+33|function pathHasNonAscii(p) {
+34|  return /[^\u0000-\u007f]/.test(p);
+35|}

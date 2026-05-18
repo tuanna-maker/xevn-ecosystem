@@ -1,0 +1,8 @@
+# EAS upload — bỏ artifact local / junction Windows
+android/.gradle/
+android/app/build/
+android/build/
+android/.rn-gradle-plugin/
+dist/
+.expo/
+node_modules/.cache/

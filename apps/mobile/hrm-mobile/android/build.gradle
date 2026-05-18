@@ -27,15 +27,26 @@ allprojects {
     repositories {
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
+            url(new File((System.getenv("GRADLE_PATH_RN_DIR") ? System.getenv("GRADLE_PATH_RN_DIR") + "/android" : ['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim() + "/../android")))
         }
         maven {
             // Android JSC is installed from npm
-            url(new File(['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), '../dist'))
+            url(new File(System.getenv("GRADLE_PATH_JSC_DIST") ?: ['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim() + "/../dist"))
         }
 
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
     }
+}
+
+subprojects { subproject ->
+  def substRoot = System.getenv("GRADLE_SUBST_REPO_ROOT")
+  def realRoot = System.getenv("GRADLE_REAL_REPO_ROOT")
+  if (substRoot != null && realRoot != null) {
+    def ap = subproject.projectDir.absolutePath
+    if (ap.startsWith(realRoot)) {
+      subproject.projectDir = new File(substRoot + ap.substring(realRoot.length()))
+    }
+  }
 }

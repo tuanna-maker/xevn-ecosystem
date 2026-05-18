@@ -9,7 +9,10 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const mobileRoot = path.resolve(__dirname, '..');
+const JUNCTION_MOBILE_ROOT = path.join('C:\\xevn-ecosystem', 'apps', 'mobile', 'hrm-mobile');
+const mobileRoot = fs.existsSync(path.join(JUNCTION_MOBILE_ROOT, 'package.json'))
+  ? path.resolve(JUNCTION_MOBILE_ROOT)
+  : path.resolve(__dirname, '..');
 const monoRoot = path.resolve(mobileRoot, '..', '..', '..');
 
 let pluginRoot;
@@ -47,6 +50,11 @@ function removeOldLink() {
   }
 }
 
+if (fs.existsSync(linkPath)) {
+  console.log("[link-rn-gradle-plugin] skip (already exists):", linkPath);
+  process.exit(0);
+}
+// SKIP_IF_LINK_EXISTS
 removeOldLink();
 
 if (process.platform === 'win32') {
