@@ -10594,3 +10594,50 @@ https.get(url, (res) => {
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
+## 2026-05-18T04:48:37.418Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git -c core.longpaths=true add -A 2>&1; git diff --cached --name-only | Select-String "\.env$"; git diff --cached --name-only | Select-String "node_modules|\.gradle/"; Write-Host "Staged:" (git diff --cached --name-only | Measure-Object).Count`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:49:10.368Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; $msg = @'
+chore(mobile): EAS build, Windows Gradle scripts, monorepo sync
+
+Sync hrm-mobile Android/EAS config, Metro, and Windows path junction Gradle tooling for reproducible builds across two machines. Include team bus updates, lockfile, and vendored RN Gradle plugin bits; exclude secrets and gitignored caches.
+'@; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m $msg 2>&1; git rev-parse HEAD; git status -sb`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:49:27.895Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git push origin HEAD 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:49:58.431Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git diff-tree --no-commit-id --name-only -r 27c1f93 | Select-String "hrm-mobile/vendor"; git log origin/main..27c1f93 --oneline`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+## 2026-05-18T04:50:12.333Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `shell`
+- Task / id: `tool_aa8a8c5d-eb7b-44cc-b302-3b1313d5dd8`
+- Status: `completed`
+- Title/summary: Git status commit push all
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO

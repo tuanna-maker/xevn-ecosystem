@@ -6532,5 +6532,41 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1779079717423",
+    "detectedAt": "2026-05-18T04:48:37.418Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; git -c core.longpaths=true add -A 2>&1; git diff --cached --name-only | Select-String \"\\.env$\"; git diff --cached --name-only | Select-String \"node_modules|\\.gradle/\"; Write-Host \"Staged:\" (git diff --cached --name-only | Measure-Object).Count",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779079750375",
+    "detectedAt": "2026-05-18T04:49:10.368Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; $msg = @'\nchore(mobile): EAS build, Windows Gradle scripts, monorepo sync\n\nSync hrm-mobile Android/EAS config, Metro, and Windows path junction Gradle tooling for reproducible builds across two machines. Include team bus updates, lockfile, and vendored RN Gradle plugin bits; exclude secrets and gitignored caches.\n'@; git commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg 2>&1; git rev-parse HEAD; git status -sb",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779079767900",
+    "detectedAt": "2026-05-18T04:49:27.895Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; git push origin HEAD 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779079798436",
+    "detectedAt": "2026-05-18T04:49:58.431Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; git diff-tree --no-commit-id --name-only -r 27c1f93 | Select-String \"hrm-mobile/vendor\"; git log origin/main..27c1f93 --oneline",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]
