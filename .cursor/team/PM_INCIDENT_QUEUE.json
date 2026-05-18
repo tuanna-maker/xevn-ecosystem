@@ -7216,5 +7216,23 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1779079854551",
+    "detectedAt": "2026-05-18T04:50:54.545Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"; git push origin main 2>&1; Write-Host \"---\"; git status -sb; git status --porcelain",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779080652447",
+    "detectedAt": "2026-05-18T05:04:12.442Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\" && git fetch origin && git status -sb && echo \"--- main ---\" && git log --oneline -5 main && echo \"--- origin/main ---\" && git log --oneline -5 origin/main && echo \"--- incoming main..origin/main ---\" && git log --oneline main..origin/main && echo \"--- local only origin/main..main ---\" && git log --oneline origin/main..main",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]

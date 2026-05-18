@@ -11424,3 +11424,31 @@ Sync hrm-mobile Android/EAS config, Metro, and Windows path junction Gradle tool
 - Needed by: Immediate
 - Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
 - ACK: AUTO
+
+## 2026-05-18T04:50:54.545Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; git push origin main 2>&1; Write-Host "---"; git status -sb; git status --porcelain`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-18T04:51:03.358Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `shell`
+- Task / id: `tool_fd089a74-6f0e-4a40-86a7-f8ac64fcc04`
+- Status: `completed`
+- Title/summary: Commit remaining bus files push
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO
+
+## 2026-05-18T05:04:12.442Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`cd "c:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem" && git fetch origin && git status -sb && echo "--- main ---" && git log --oneline -5 main && echo "--- origin/main ---" && git log --oneline -5 origin/main && echo "--- incoming main..origin/main ---" && git log --oneline main..origin/main && echo "--- local only origin/main..main ---" && git log --oneline origin/main..main`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
