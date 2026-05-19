@@ -64,12 +64,19 @@ docker compose --env-file .env up -d --build --remove-orphans
 ### Bước 3 — Smoke bắt buộc
 
 ```bash
-sleep 30  # chờ NestJS boot
-for ep in "8088/" "8088/command-center" "8080/" "3001/api/hrm/metrics" "28002/api/xbos/metrics"; do
+sleep 30  # chờ NestJS boot (~30s)
+# 1) API trực tiếp
+for ep in "3001/api/hrm/metrics" "28002/api/xbos/metrics"; do
   CODE=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:${ep}" 2>/dev/null || echo 000)
-  echo "[smoke] :${ep} -> $CODE"
+  echo "[api-direct] :${ep} -> $CODE"
 done
-# Target: 200 cho tất cả (8080 trả 302 là OK — redirect SPA)
+# 2) Portal + proxy check
+for ep in "8088/" "8088/command-center" "8080/"; do
+  CODE=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:${ep}" 2>/dev/null || echo 000)
+  echo "[portal] :${ep} -> $CODE"
+done
+# Target: api-direct 200; portal 8088 200; hrm-fe 8080 302 (SPA redirect — OK)
+# Nếu api-direct OK nhưng portal trả 500 → kiểm tra VITE_DEV_PROXY_XBOS_API trong compose (phải là xbos-be:28002)
 ```
 
 ### Bước 4 — Verify non-xevn vẫn Up
@@ -151,6 +158,13 @@ Tham chiếu: deploy/.vps-ssh.env.example
 ---
 
 ## Kiến thức tích lũy từ thực tế
+
+### Portal proxy XBOS_API phải trỏ đúng port container-side (2026-05-19)
+- **Context:** Portal trả HTTP 500 cho mọi call XBOS; `/api/xbos/metrics` trực tiếp trả 200.
+- **Root cause:** `VITE_DEV_PROXY_XBOS_API: http://xbos-be:3002` trong compose — nhưng xbos-be bind `28002`, không phải `3002`. Vite proxy kết nối tới `xbos-be:3002` → connection refused → 500 cho FE.
+- **Fix:** Đổi proxy sang `http://xbos-be:28002` trong `docker-compose.yml` environment portal-fe. Recreate chỉ portal-fe, không đụng các container khác.
+- **Lesson:** Sau mỗi thay đổi port BE, phải kiểm tra cả `VITE_DEV_PROXY_*` trong portal-fe environment của compose.
+- **Smoke bổ sung sau deploy:** Không chỉ kiểm tra metrics (`/api/xbos/metrics`), mà phải test qua portal proxy: mở portal và xem có banner lỗi 500 không.
 
 ### XBOS API đọc `XBOS_BE_PORT` làm port bind (2026-05-19)
 - **Context:** Deploy lần đầu dùng compose map `28002:3002`; curl 28002 trả 000 dù Nest started.

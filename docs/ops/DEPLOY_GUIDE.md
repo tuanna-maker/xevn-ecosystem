@@ -109,7 +109,22 @@ ss -tlnp | grep :3002
 # Nếu là container xevn cũ còn treo → docker rm -f <container>
 ```
 
-### 4.3 XBOS API không phản hồi dù container Up và Nest started
+### 4.3 Portal báo HTTP 500 dù API metrics trả 200
+
+**Nguyên nhân:** `VITE_DEV_PROXY_XBOS_API` trong compose portal-fe trỏ `xbos-be:3002` nhưng app bind `28002`. Vite proxy không kết nối được → 500 cho mọi call business.
+
+**Khắc phục:** Sửa trong `docker-compose.yml`:
+```yaml
+VITE_DEV_PROXY_XBOS_API: http://xbos-be:28002
+```
+Sau đó chỉ recreate portal-fe:
+```bash
+docker compose --env-file .env up -d portal-fe
+```
+
+**Bài học:** Khi port BE thay đổi, kiểm tra cả `VITE_DEV_PROXY_*` trong environment portal-fe của compose.
+
+### 4.4 XBOS API không phản hồi dù container Up và Nest started
 
 **Nguyên nhân:** `xbos-api/src/main.ts` đọc `XBOS_BE_PORT` (không đọc biến `PORT` generic). Compose map `28002:3002` nhưng app bind `28002` → docker-proxy forward nhầm port.
 
