@@ -94,6 +94,8 @@ services:
       - ../../apps/api/hrm-api/.env
     environment:
       CI: "true"
+      # Force container-side port — HRM_BE_PORT in .env is the HOST port, not app port
+      PORT: "3001"
     ports:
       - "${HRM_BE_PORT:-3001}:3001"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:dev"
@@ -115,8 +117,10 @@ services:
       - ../../apps/api/xbos-api/.env
     environment:
       CI: "true"
+      # Force container-side port — XBOS_BE_PORT in .env is the HOST port, not app port
+      PORT: "3002"
     ports:
-      - "${XBOS_BE_PORT:-3002}:3002"
+      - "${XBOS_BE_PORT:-28002}:3002"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/xbos-api start:dev"
     depends_on:
       pnpm-install:

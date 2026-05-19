@@ -1,7 +1,9 @@
 # Cổng host cố định trên VPS dev (14.225.217.232) — merge script áp vào .env (--apply-canonical).
 # DB_PASSWORD và secret: giữ trong deploy/xevn-ecosystem/.env trên server (không commit).
+# AUDIT 2026-05-19: port 3002 occupied by external node /var/www/k process (non-xevn)
+# XBOS_BE stays on 28002 to avoid conflict
 PORTAL_FE_PORT=8088
 HRM_FE_PORT=8080
 XBOS_FE_PORT=5173
 HRM_BE_PORT=3001
-XBOS_BE_PORT=3002
+XBOS_BE_PORT=28002
