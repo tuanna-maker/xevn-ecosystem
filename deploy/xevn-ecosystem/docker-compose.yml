@@ -117,10 +117,10 @@ services:
       - ../../apps/api/xbos-api/.env
     environment:
       CI: "true"
-      # Force container-side port — XBOS_BE_PORT in .env is the HOST port, not app port
-      PORT: "3002"
+      # xbos-api reads XBOS_BE_PORT as its listen port (not generic PORT).
+      # Port mapping host:container must match — both sides use XBOS_BE_PORT value.
     ports:
-      - "${XBOS_BE_PORT:-28002}:3002"
+      - "${XBOS_BE_PORT:-28002}:${XBOS_BE_PORT:-28002}"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/xbos-api start:dev"
     depends_on:
       pnpm-install:
