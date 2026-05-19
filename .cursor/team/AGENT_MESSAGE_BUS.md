@@ -12412,3 +12412,111 @@ $b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($fix3))
 - Needed by: Next orchestration cycle
 - Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
 - ACK: AUTO
+
+## 2026-05-19T02:58:33.781Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$plink = "C:\Program Files\PuTTY\plink.exe"
+$hk = "SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo"
+$check = @'
+echo "=== XBOS health ping ==="
+curl -si http://127.0.0.1:28002/api/xbos/health-ping 2>/dev/null | head -20
+echo "=== XBOS tenant member units ==="
+curl -si "http://127.0.0.1:28002/api/xbos/tenant-scope/group-member-units?tenantId=xevn&companyId=holding" 2>/dev/null | head -20
+echo "=== HRM health ping ==="
+curl -si http://127.0.0.1:3001/api/hrm/health-ping 2>/dev/null | head -10
+echo "=== XBOS logs since start (errors only) ==="
+docker logs xevn-xbos-be-dev 2>&1 | grep -iE 'error|Error|ECONNREFUSED|ETIMEDOUT|connection|postgres|pg|database' | tail -20
+echo "=== HRM logs errors ==="
+docker logs xevn-hrm-be-dev 2>&1 | grep -iE 'error|Error|ECONNREFUSED|postgres|database' | tail -10
+'@
+$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($check))
+& $plink -ssh "root@14.225.217.232" -pw "1T4dTddMh0tbzFwBCIlu" -hostkey $hk -batch "echo $b64 | base64 -d | bash" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-19T02:59:54.332Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$plink = "C:\Program Files\PuTTY\plink.exe"
+$hk = "SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo"
+$redeploy = @'
+set -euo pipefail
+cd /opt/xevn-ecosystem
+git pull origin main
+
+cd deploy/xevn-ecosystem
+# Only portal-fe needs restart (env changed); other services untouched
+docker compose --env-file .env up -d --build portal-fe
+
+echo "=== Waiting for portal to start ==="
+sleep 10
+docker compose ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+echo "=== SMOKE ALL APIs via portal proxy (internal) ==="
+# Direct API smoke
+for ep in "3001/api/hrm/metrics" "28002/api/xbos/metrics"; do
+  CODE=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:${ep}" 2>/dev/null || echo 000)
+  echo "[api-direct] :${ep} -> $CODE"
+done
+
+# Portal smoke
+for ep in "8088/" "8088/command-center"; do
+  CODE=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:${ep}" 2>/dev/null || echo 000)
+  echo "[portal] :${ep} -> $CODE"
+done
+
+echo "=== HEAD ===" && git rev-parse --short HEAD
+'@
+$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($redeploy))
+& $plink -ssh "root@14.225.217.232" -pw "1T4dTddMh0tbzFwBCIlu" -hostkey $hk -batch "echo $b64 | base64 -d | bash" 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+## 2026-05-19T03:01:25.504Z | Hook subagentStop -> PM | MEDIUM
+- Topic: Subagent completion (PM-first notify, audit trail last)
+- Subagent type: `qa`
+- Task / id: `toolu_bdrk_012unN5LBCAVdsWS43g6VPKF`
+- Status: `completed`
+- Title/summary: QA smoke check dev stack
+- Webhook: skipped (set AGENT_WEBHOOK_URL to enable)
+- Inbox: `.cursor/team/inbox/subagent-stop.jsonl` (append-only)
+- Needed by: Immediate
+- Next: PM reads Task result in chat, dispatches next role; update formal bus when closing the loop.
+- ACK: AUTO
+## 2026-05-19T03:01:45.079Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`curl -s -o /dev/null -w "Portal root -> HTTP %{http_code} | time %{time_total}s\n" --max-time 15 "http://14.225.217.232:8088/" ; curl -s -o /dev/null -w "Command Center -> HTTP %{http_code} | time %{time_total}s\n" --max-time 15 "http://14.225.217.232:8088/command-center"`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-19T03:01:46.737Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`curl -s -w "\nHTTP %{http_code} | time %{time_total}s\n" --max-time 15 "http://14.225.217.232:28002/api/xbos/metrics" | tail -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-19T03:01:46.790Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`curl -s -w "\nHTTP %{http_code} | time %{time_total}s\n" --max-time 15 "http://14.225.217.232:3001/api/hrm/metrics" | tail -20`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-05-19T06:47:22.260Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$dirs = [System.IO.Directory]::GetDirectories("C:\Users\ADMIN\OneDrive")
+$tl = $dirs | Where-Object { Test-Path (Join-Path $_ "Vibe Coding\projects\xevn-ecosystem\.git") } | Select-Object -First 1
+$repo = Join-Path $tl "Vibe Coding\projects\xevn-ecosystem"
+git -C $repo status --short 2>&1
+git -C $repo diff --stat 2>&1`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO

@@ -7747,5 +7747,59 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1779159513788",
+    "detectedAt": "2026-05-19T02:58:33.781Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$check = @'\necho \"=== XBOS health ping ===\"\ncurl -si http://127.0.0.1:28002/api/xbos/health-ping 2>/dev/null | head -20\necho \"=== XBOS tenant member units ===\"\ncurl -si \"http://127.0.0.1:28002/api/xbos/tenant-scope/group-member-units?tenantId=xevn&companyId=holding\" 2>/dev/null | head -20\necho \"=== HRM health ping ===\"\ncurl -si http://127.0.0.1:3001/api/hrm/health-ping 2>/dev/null | head -10\necho \"=== XBOS logs since start (errors only) ===\"\ndocker logs xevn-xbos-be-dev 2>&1 | grep -iE 'error|Error|ECONNREFUSED|ETIMEDOUT|connection|postgres|pg|database' | tail -20\necho \"=== HRM logs errors ===\"\ndocker logs xevn-hrm-be-dev 2>&1 | grep -iE 'error|Error|ECONNREFUSED|postgres|database' | tail -10\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($check))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779159594339",
+    "detectedAt": "2026-05-19T02:59:54.332Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$redeploy = @'\nset -euo pipefail\ncd /opt/xevn-ecosystem\ngit pull origin main\n\ncd deploy/xevn-ecosystem\n# Only portal-fe needs restart (env changed); other services untouched\ndocker compose --env-file .env up -d --build portal-fe\n\necho \"=== Waiting for portal to start ===\"\nsleep 10\ndocker compose ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"\n\necho \"=== SMOKE ALL APIs via portal proxy (internal) ===\"\n# Direct API smoke\nfor ep in \"3001/api/hrm/metrics\" \"28002/api/xbos/metrics\"; do\n  CODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:${ep}\" 2>/dev/null || echo 000)\n  echo \"[api-direct] :${ep} -> $CODE\"\ndone\n\n# Portal smoke\nfor ep in \"8088/\" \"8088/command-center\"; do\n  CODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:${ep}\" 2>/dev/null || echo 000)\n  echo \"[portal] :${ep} -> $CODE\"\ndone\n\necho \"=== HEAD ===\" && git rev-parse --short HEAD\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($redeploy))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779159705087",
+    "detectedAt": "2026-05-19T03:01:45.079Z",
+    "source": "hook:afterShellExecution",
+    "command": "curl -s -o /dev/null -w \"Portal root -> HTTP %{http_code} | time %{time_total}s\\n\" --max-time 15 \"http://14.225.217.232:8088/\" ; curl -s -o /dev/null -w \"Command Center -> HTTP %{http_code} | time %{time_total}s\\n\" --max-time 15 \"http://14.225.217.232:8088/command-center\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779159706745",
+    "detectedAt": "2026-05-19T03:01:46.737Z",
+    "source": "hook:afterShellExecution",
+    "command": "curl -s -w \"\\nHTTP %{http_code} | time %{time_total}s\\n\" --max-time 15 \"http://14.225.217.232:28002/api/xbos/metrics\" | tail -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779159706799",
+    "detectedAt": "2026-05-19T03:01:46.790Z",
+    "source": "hook:afterShellExecution",
+    "command": "curl -s -w \"\\nHTTP %{http_code} | time %{time_total}s\\n\" --max-time 15 \"http://14.225.217.232:3001/api/hrm/metrics\" | tail -20",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779173242267",
+    "detectedAt": "2026-05-19T06:47:22.260Z",
+    "source": "hook:afterShellExecution",
+    "command": "$dirs = [System.IO.Directory]::GetDirectories(\"C:\\Users\\ADMIN\\OneDrive\")\n$tl = $dirs | Where-Object { Test-Path (Join-Path $_ \"Vibe Coding\\projects\\xevn-ecosystem\\.git\") } | Select-Object -First 1\n$repo = Join-Path $tl \"Vibe Coding\\projects\\xevn-ecosystem\"\ngit -C $repo status --short 2>&1\ngit -C $repo diff --stat 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]

@@ -162,3 +162,4 @@
 {"hook":"subagentStop","at":"2026-05-19T01:58:49.630Z","subagent_type":"shell","task_id":"tool_5fa0ff1b-3e83-4e3c-b109-0d5cb0ed32f","status":"completed","title":"Deploy VPS with plink password","model":"default","webhook":"skipped"}
 {"hook":"subagentStop","at":"2026-05-19T02:07:56.005Z","subagent_type":"shell","task_id":"tool_85963ee8-4c63-4588-8cf5-5fad255bd5a","status":"completed","title":"VPS deploy fixed ports 8088","model":"default","webhook":"skipped"}
 {"hook":"subagentStop","at":"2026-05-19T02:23:15.910Z","subagent_type":"shell","task_id":"toolu_bdrk_01MCzdX9btmeDGuKsbBEZc2S","status":"completed","title":"VPS safe deploy + port audit","model":"claude-4.6-sonnet-medium-thinking","webhook":"skipped"}
+{"hook":"subagentStop","at":"2026-05-19T03:01:25.505Z","subagent_type":"qa","task_id":"toolu_bdrk_012unN5LBCAVdsWS43g6VPKF","status":"completed","title":"QA smoke check dev stack","model":"claude-4.6-sonnet-medium-thinking","webhook":"skipped"}
