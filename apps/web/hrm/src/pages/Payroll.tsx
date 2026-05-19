@@ -5322,7 +5322,7 @@ export default function Payroll() {
             <div className="mx-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               Thành phần lương đang dùng dữ liệu mẫu. Kỳ lương thật qua hrm-api: tab{' '}
               <strong>Tính lương → Danh sách đợt</strong>.
-            </motion.div>
+            </div>
             {renderSalaryComponents()}
           </div>
         );
