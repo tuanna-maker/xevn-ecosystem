@@ -7234,5 +7234,518 @@
     "exitCode": null,
     "severity": "MEDIUM",
     "status": "NEW"
+  },
+  {
+    "id": "INC-1779087739666",
+    "detectedAt": "2026-05-18T07:02:19.661Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"c:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\" && git fetch origin && git checkout main 2>nul || git checkout master 2>nul; git branch --show-current && git status -sb && git pull origin main 2>nul || git pull origin master 2>nul; git rev-parse HEAD",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779087743743",
+    "detectedAt": "2026-05-18T07:02:23.738Z",
+    "source": "hook:afterShellExecution",
+    "command": "gh auth status 2>&1; gh workflow list --limit 20 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779087844915",
+    "detectedAt": "2026-05-18T07:04:04.909Z",
+    "source": "hook:afterShellExecution",
+    "command": "gh run view 26018638969 --log-failed 2>&1 | Select-Object -Last 40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779087853856",
+    "detectedAt": "2026-05-18T07:04:13.849Z",
+    "source": "hook:afterShellExecution",
+    "command": "ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o \"UserKnownHostsFile=$env:TEMP\\xevn_vps_known_hosts\" -o HostKeyAlgorithms=ssh-ed25519,rsa-sha2-512,rsa-sha2-256 -o ConnectTimeout=15 root@14.225.217.232 \"echo OK\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779087916513",
+    "detectedAt": "2026-05-18T07:05:16.507Z",
+    "source": "hook:afterShellExecution",
+    "command": "$kh = Join-Path $env:TEMP 'xevn_vps_known_hosts'; ssh-keyscan -T 30 -t ed25519,rsa 14.225.217.232 2>&1 | Out-File -FilePath $kh -Encoding ascii; Get-Content $kh; if (Test-Path $kh) { ssh-keygen -lf $kh 2>&1 }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779087928777",
+    "detectedAt": "2026-05-18T07:05:28.771Z",
+    "source": "hook:afterShellExecution",
+    "command": "rg -l \"VPS_SSH|14.225.217\" \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\" 2>$null | Select-Object -First 15",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779087963402",
+    "detectedAt": "2026-05-18T07:06:03.396Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:SSH_KEYSCAN_KEX = 'curve25519-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512'; ssh-keyscan -T 20 14.225.217.232 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779088054470",
+    "detectedAt": "2026-05-18T07:07:34.463Z",
+    "source": "hook:afterShellExecution",
+    "command": "Select-String -Path \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\.github\\workflows\\deploy-xevn-ecosystem.yml\" -Pattern \"secrets|DEV_\" | ForEach-Object { $_.Line }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779088066397",
+    "detectedAt": "2026-05-18T07:07:46.391Z",
+    "source": "hook:afterShellExecution",
+    "command": "wsl -e bash -lc \"test -f ~/.ssh/id_rsa && echo HAS_KEY || echo NO_KEY; ssh -o BatchMode=yes -o ConnectTimeout=10 root@14.225.217.232 'git -C /opt/xevn-ecosystem rev-parse HEAD' 2>&1\"",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779088079014",
+    "detectedAt": "2026-05-18T07:07:59.007Z",
+    "source": "hook:afterShellExecution",
+    "command": "ssh -o BatchMode=yes -o ConnectTimeout=12 root@14.225.217.232 \"cd /opt/xevn-ecosystem && git rev-parse HEAD && docker compose -f deploy/xevn-ecosystem/docker-compose.yml ps --format json 2>/dev/null | head -c 2000\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779089939451",
+    "detectedAt": "2026-05-18T07:38:59.445Z",
+    "source": "hook:afterShellExecution",
+    "command": "Start-Sleep -Seconds 30; Get-Content \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\terminals\\169488.txt\" -Tail 50",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090007473",
+    "detectedAt": "2026-05-18T07:40:07.467Z",
+    "source": "hook:afterShellExecution",
+    "command": "Start-Sleep -Seconds 60; Get-Content \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\terminals\\169488.txt\" -Tail 80",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090136277",
+    "detectedAt": "2026-05-18T07:42:16.271Z",
+    "source": "hook:afterShellExecution",
+    "command": "Start-Sleep -Seconds 120; Get-Content \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\terminals\\169488.txt\" -Tail 100",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090158920",
+    "detectedAt": "2026-05-18T07:42:38.913Z",
+    "source": "hook:afterShellExecution",
+    "command": "Import-Module Posh-SSH\n$pwPlain = (gh api repos/tuanna-maker/xevn-ecosystem/actions/variables/DEV_SSH_PASSWORD --jq .value)\n$sec = ConvertTo-SecureString $pwPlain -AsPlainText -Force\n$cred = New-Object System.Management.Automation.PSCredential ('root', $sec)\n$s = New-SSHSession -ComputerName 14.225.217.232 -Credential $cred -AcceptKey -ConnectionTimeout 20\nif (-not $s) { 'NO_SESSION'; exit 1 }\n$r = Invoke-SSHCommand -SessionId $s.SessionId -Command 'whoami; cd /opt/xevn-ecosystem && git rev-parse HEAD 2>&1; cd deploy/xevn-ecosystem && docker compose ps 2>&1' -TimeOut 120\n\"Exit=$($r.ExitStatus)\"\n$r.Output -join \"`n\"\nif ($r.Error) { 'ERR:'; $r.Error -join \"`n\" }\nRemove-SSHSession -SessionId $s.SessionId | Out-Null",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090168382",
+    "detectedAt": "2026-05-18T07:42:48.375Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\terminals\\169488.txt\" -Tail 120",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090295979",
+    "detectedAt": "2026-05-18T07:44:55.974Z",
+    "source": "hook:afterShellExecution",
+    "command": "python --version 2>&1; pip show paramiko 2>&1 | Select-Object -First 2",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090304869",
+    "detectedAt": "2026-05-18T07:45:04.863Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\terminals\\169488.txt\" | Select-Object -Last 30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090329219",
+    "detectedAt": "2026-05-18T07:45:29.214Z",
+    "source": "hook:afterShellExecution",
+    "command": "python -c @\"\nimport json, subprocess, sys, socket\nimport paramiko\n\ndef gh_var(name):\n    out = subprocess.check_output(\n        ['gh', 'api', f'repos/tuanna-maker/xevn-ecosystem/actions/variables/{name}', '--jq', '.value'],\n        text=True,\n    )\n    return out.strip()\n\npassword = gh_var('DEV_SSH_PASSWORD')\nhost = '14.225.217.232'\nexpected_fp = 'WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n\nclient = paramiko.SSHClient()\nclient.set_missing_host_key_policy(paramiko.RejectPolicy())\n# load known host from user profile\nimport os\nkh = os.path.expanduser('~/.ssh/known_hosts')\nif os.path.isfile(kh):\n    client.load_system_host_keys()\n    client.load_host_keys(kh)\n\nremote = r'''set -e\ncd /opt/xevn-ecosystem\ngit fetch origin main && git checkout main && git pull origin main\necho ===GIT_HEAD===\ngit rev-parse HEAD\nnode ./scripts/xevn-ecosystem-bootstrap.mjs || true\ncd deploy/xevn-ecosystem\ndocker compose --env-file .env up -d --build --remove-orphans\necho ===DOCKER_PS===\ndocker compose ps\nC1=$(curl -fsS -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8088/command-center || echo fail)\nC2=$(curl -fsS -o /dev/null -w \"%{http_code}\" http://127.0.0.1:28088/command-center || echo fail)\necho ===SMOKE_LOCAL===8088:$C1 28088:$C2\n'''\n\nclient.connect(host, username='root', password=password, timeout=30, look_for_keys=False, allow_agent=False)\nstdin, stdout, stderr = client.exec_command(remote, timeout=3600)\nout = stdout.read().decode('utf-8', errors='replace')\nerr = stderr.read().decode('utf-8', errors='replace')\ncode = stdout.channel.recv_exit_status()\nclient.close()\nsys.stdout.write(out)\nif err.strip():\n    sys.stdout.write('---STDERR---\\n')\n    sys.stdout.write(err)\nsys.stdout.write(f'---EXIT---{code}\\n')\n\"@\n",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090351219",
+    "detectedAt": "2026-05-18T07:45:51.213Z",
+    "source": "hook:afterShellExecution",
+    "command": "$py = Join-Path $env:TEMP 'xevn_ssh_deploy.py'\n@'\nimport subprocess, sys, os\nimport paramiko\n\ndef gh_var(name):\n    return subprocess.check_output(\n        [\"gh\", \"api\", f\"repos/tuanna-maker/xevn-ecosystem/actions/variables/{name}\", \"--jq\", \".value\"],\n        text=True,\n    ).strip()\n\npassword = gh_var(\"DEV_SSH_PASSWORD\")\nhost = \"14.225.217.232\"\nremote = \"\"\"set -e\ncd /opt/xevn-ecosystem\ngit fetch origin main && git checkout main && git pull origin main\necho ===GIT_HEAD===\ngit rev-parse HEAD\nnode ./scripts/xevn-ecosystem-bootstrap.mjs || true\ncd deploy/xevn-ecosystem\ndocker compose --env-file .env up -d --build --remove-orphans\necho ===DOCKER_PS===\ndocker compose ps\nC1=$(curl -fsS -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8088/command-center || echo fail)\nC2=$(curl -fsS -o /dev/null -w \"%{http_code}\" http://127.0.0.1:28088/command-center || echo fail)\necho ===SMOKE_LOCAL===8088:$C1 28088:$C2\n\"\"\"\n\nclient = paramiko.SSHClient()\nkh = os.path.expanduser(\"~/.ssh/known_hosts\")\nif os.path.isfile(kh):\n    client.load_host_keys(kh)\nclient.set_missing_host_key_policy(paramiko.RejectPolicy())\nclient.connect(host, username=\"root\", password=password, timeout=30, look_for_keys=False, allow_agent=False)\nstdin, stdout, stderr = client.exec_command(remote, timeout=3600)\nout = stdout.read().decode(\"utf-8\", errors=\"replace\")\nerr = stderr.read().decode(\"utf-8\", errors=\"replace\")\ncode = stdout.channel.recv_exit_status()\nclient.close()\nsys.stdout.write(out)\nif err.strip():\n    sys.stdout.write(\"---STDERR---\\n\" + err)\nsys.stdout.write(f\"---EXIT---{code}\\n\")\n'@ | Set-Content -Path $py -Encoding UTF8\npython $py",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090384355",
+    "detectedAt": "2026-05-18T07:46:24.349Z",
+    "source": "hook:afterShellExecution",
+    "command": "$py = Join-Path $env:TEMP 'xevn_ssh_deploy2.py'\n@'\nimport json, subprocess, sys, os\nimport paramiko\n\nraw = subprocess.check_output(\n    [\"gh\", \"api\", \"repos/tuanna-maker/xevn-ecosystem/actions/variables/DEV_SSH_PASSWORD\"],\n    text=True,\n)\npassword = json.loads(raw)[\"value\"]\nhost = \"14.225.217.232\"\n\nclient = paramiko.SSHClient()\nkh = os.path.expanduser(\"~/.ssh/known_hosts\")\nif os.path.isfile(kh):\n    client.load_host_keys(kh)\nclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())\ntry:\n    client.connect(host, username=\"root\", password=password, timeout=30, look_for_keys=True, allow_agent=True)\n    stdin, stdout, stderr = client.exec_command(\"git -C /opt/xevn-ecosystem rev-parse HEAD; docker compose -f /opt/xevn-ecosystem/deploy/xevn-ecosystem/docker-compose.yml ps\", timeout=120)\n    sys.stdout.write(stdout.read().decode())\n    err = stderr.read().decode()\n    if err:\n        sys.stdout.write(\"ERR:\"+err)\n    sys.stdout.write(\"exit=\"+str(stdout.channel.recv_exit_status()))\nfinally:\n    client.close()\n'@ | Set-Content -Path $py -Encoding UTF8\npython $py",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779090452360",
+    "detectedAt": "2026-05-18T07:47:32.354Z",
+    "source": "hook:afterShellExecution",
+    "command": "gh run view 26020422643 --log-failed 2>&1 | Select-Object -Last 25",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155532950",
+    "detectedAt": "2026-05-19T01:52:12.943Z",
+    "source": "hook:afterShellExecution",
+    "command": "$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n# Test without password - expect auth fail message not connection fail\n& \"C:\\Program Files\\PuTTY\\plink.exe\" -ssh root@14.225.217.232 -hostkey $hk -batch \"echo CONNECTED\" 2>&1 | Select-Object -First 5",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155610163",
+    "detectedAt": "2026-05-19T01:53:30.154Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\" && git log -5 --oneline -- scripts/deploy-dev-server.ps1 && git show HEAD:scripts/deploy-dev-server.ps1 2>$null | Select-String -Pattern \"password|VPS|plink\" -CaseSensitive:$false",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155618072",
+    "detectedAt": "2026-05-19T01:53:38.046Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\scripts\\deploy-dev-server.ps1\" | Select-Object -First 50",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155657142",
+    "detectedAt": "2026-05-19T01:54:17.136Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$plink = 'C:\\Program Files\\PuTTY\\plink.exe'\n$hostkey = 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n$bash = @'\nset -e\ncd /opt/xevn-ecosystem\ngit pull origin main\nif [ -d deploy/xevn-ecosystem ] && [ -f deploy/xevn-ecosystem/docker-compose.yml ]; then D=deploy/xevn-ecosystem; else D=deploy/dev-server; fi\ncd $D\ndocker compose --env-file .env up -d --build --remove-orphans\ncurl -sS -o /dev/null -w \"8088=%{http_code}\\n\" http://127.0.0.1:8088/command-center\ncurl -sS -o /dev/null -w \"28088=%{http_code}\\n\" http://127.0.0.1:28088/command-center\ngit -C /opt/xevn-ecosystem rev-parse --short HEAD\ndocker compose ps\n'@\n$out = $bash | & $plink -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey $hostkey -batch 'bash -s' 2>&1\n$exit = $LASTEXITCODE\n$out | ForEach-Object { $_ }\nif ($exit -ne 0) { exit $exit }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155671203",
+    "detectedAt": "2026-05-19T01:54:31.197Z",
+    "source": "hook:afterShellExecution",
+    "command": "$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$plink = 'C:\\Program Files\\PuTTY\\plink.exe'\n$hostkey = 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n$bash = @'\nset -e\ncd /opt/xevn-ecosystem\ngit stash push -u -m \"deploy-auto-$(date +%Y%m%d%H%M%S)\" || true\ngit pull origin main\nif [ -d deploy/xevn-ecosystem ] && [ -f deploy/xevn-ecosystem/docker-compose.yml ]; then D=deploy/xevn-ecosystem; else D=deploy/dev-server; fi\ncd $D\ndocker compose --env-file .env up -d --build --remove-orphans\ncurl -sS -o /dev/null -w \"8088=%{http_code}\\n\" http://127.0.0.1:8088/command-center\ncurl -sS -o /dev/null -w \"28088=%{http_code}\\n\" http://127.0.0.1:28088/command-center\ngit -C /opt/xevn-ecosystem rev-parse --short HEAD\ndocker compose ps\n'@\n$bash | & $plink -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey $hostkey -batch 'bash -s' 2>&1 | ForEach-Object { $_ }\nexit $LASTEXITCODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155684858",
+    "detectedAt": "2026-05-19T01:54:44.853Z",
+    "source": "hook:afterShellExecution",
+    "command": "Select-String -Path \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\agent-tools\\90038d34-0e45-431e-9b9c-3614724e9150.txt\" -Pattern \"error|Error|8088=|28088=|HEAD|docker compose|stash|fatal\" | Select-Object -Last 40",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155692345",
+    "detectedAt": "2026-05-19T01:54:52.338Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"C:\\Users\\ADMIN\\.cursor\\projects\\c-Users-ADMIN-OneDrive-Ta-i-li-u-Vibe-Coding-projects-xevn-ecosystem\\agent-tools\\90038d34-0e45-431e-9b9c-3614724e9150.txt\" -Head 30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155739728",
+    "detectedAt": "2026-05-19T01:55:39.722Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference = 'Continue'\n$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$plink = 'C:\\Program Files\\PuTTY\\plink.exe'\n$hostkey = 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n$bash = @'\nset -e\ncd /opt/xevn-ecosystem\nif [ -d deploy/xevn-ecosystem ] && [ -f deploy/xevn-ecosystem/docker-compose.yml ]; then D=deploy/xevn-ecosystem; else D=deploy/dev-server; fi\ncd $D\ndocker compose --env-file .env up -d --build --remove-orphans\ncurl -sS -o /dev/null -w \"8088=%{http_code}\\n\" http://127.0.0.1:8088/command-center\ncurl -sS -o /dev/null -w \"28088=%{http_code}\\n\" http://127.0.0.1:28088/command-center\ngit -C /opt/xevn-ecosystem rev-parse --short HEAD\ndocker compose ps\n'@\n$bash | & $plink -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey $hostkey -batch 'bash -s' 2>&1 | ForEach-Object { Write-Host $_ }\nexit $LASTEXITCODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155782212",
+    "detectedAt": "2026-05-19T01:56:22.206Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference = 'Continue'\n$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$plink = 'C:\\Program Files\\PuTTY\\plink.exe'\n$hostkey = 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n$bash = @'\nset -e\ndocker ps -a --format '{{.Names}}' | grep -E '^xevn-' | xargs -r docker rm -f\ncd /opt/xevn-ecosystem/deploy/xevn-ecosystem\ndocker compose --env-file .env up -d --build --remove-orphans\ncurl -sS -o /dev/null -w \"8088=%{http_code}\\n\" http://127.0.0.1:8088/command-center || echo \"8088=000\"\ncurl -sS -o /dev/null -w \"28088=%{http_code}\\n\" http://127.0.0.1:28088/command-center || echo \"28088=000\"\ngit -C /opt/xevn-ecosystem rev-parse --short HEAD\ndocker compose ps\n'@\n$bash | & $plink -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey $hostkey -batch 'bash -s' 2>&1 | ForEach-Object { Write-Host $_ }\nexit $LASTEXITCODE",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155792688",
+    "detectedAt": "2026-05-19T01:56:32.682Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference = 'Continue'\n$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$plink = 'C:\\Program Files\\PuTTY\\plink.exe'\n$hostkey = 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n$bash = \"set -e`ncd /opt/xevn-ecosystem/deploy/xevn-ecosystem`nsleep 45`ndocker compose ps`necho '--- ports ---'`ngrep -E 'PORTAL|8088|28088' .env || true`nss -tlnp | grep -E '8088|28088|5175' || true`nfor i in 1 2 3 4 5; do`n  c8088=`$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:8088/command-center 2>/dev/null || echo 000)`n  c28088=`$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:28088/command-center 2>/dev/null || echo 000)`n  echo \\\"try $i: 8088=$c8088 28088=$c28088\\\"`n  [ \\\"$c8088\\\" = '200' ] || [ \\\"$c28088\\\" = '200' ] && break`n  sleep 15`ndone`necho \\\"8088=$c8088\\\"`necho \\\"28088=$c28088\\\"`ngit -C /opt/xevn-ecosystem rev-parse --short HEAD\"\n$bash | & $plink -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey $hostkey -batch 'bash -s' 2>&1 | ForEach-Object { Write-Host $_ }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155865586",
+    "detectedAt": "2026-05-19T01:57:45.580Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference = 'Continue'\n$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$plink = 'C:\\Program Files\\PuTTY\\plink.exe'\n$hostkey = 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo'\n$bash = @'\ncd /opt/xevn-ecosystem/deploy/xevn-ecosystem\nsleep 60\ndocker compose ps\necho \"--- env ports ---\"\ngrep -E 'PORTAL_FE_PORT|8088|28088' .env || true\necho \"--- listen ---\"\nss -tlnp 2>/dev/null | grep -E ':8088|:28088|:5175' || netstat -tlnp 2>/dev/null | grep -E '8088|28088' || true\ncurl -sS -o /dev/null -w \"8088=%{http_code}\\n\" http://127.0.0.1:8088/command-center || echo \"8088=000\"\ncurl -sS -o /dev/null -w \"28088=%{http_code}\\n\" http://127.0.0.1:28088/command-center || echo \"28088=000\"\ngit -C /opt/xevn-ecosystem rev-parse --short HEAD\n'@\n$bash | & $plink -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey $hostkey -batch 'bash -s' 2>&1 | ForEach-Object { Write-Host $_ }",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779155909013",
+    "detectedAt": "2026-05-19T01:58:29.007Z",
+    "source": "hook:afterShellExecution",
+    "command": "$ErrorActionPreference = 'Continue'\n$env:VPS_SSH_PASSWORD = '1T4dTddMh0tbzFwBCIlu'\n$bash = @'\ncd /opt/xevn-ecosystem\ngit rev-parse --short HEAD\ncd deploy/xevn-ecosystem\ndocker compose ps --format 'table {{.Name}}\\t{{.Status}}\\t{{.Ports}}'\ncurl -sS -o /dev/null -w \"8088=%{http_code}\\n\" http://127.0.0.1:8088/command-center || echo \"8088=000\"\ncurl -sS -o /dev/null -w \"28088=%{http_code}\\n\" http://127.0.0.1:28088/command-center || echo \"28088=000\"\n'@\n$bash | & 'C:\\Program Files\\PuTTY\\plink.exe' -ssh 'root@14.225.217.232' -pw $env:VPS_SSH_PASSWORD -hostkey 'SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo' -batch 'bash -s' 2>&1 | ForEach-Object { Write-Host $_ }\ncurl.exe -sS -o NUL -w \"public-8088=%{http_code}`n\" --connect-timeout 10 http://14.225.217.232:8088/command-center\ncurl.exe -sS -o NUL -w \"public-28088=%{http_code}`n\" --connect-timeout 10 http://14.225.217.232:28088/command-center",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156382642",
+    "detectedAt": "2026-05-19T02:06:22.635Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"scripts\\deploy-dev-server.ps1\" -TotalCount 120",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156394209",
+    "detectedAt": "2026-05-19T02:06:34.203Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"scripts\\deploy-dev-server.ps1\" -Skip 120",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156402382",
+    "detectedAt": "2026-05-19T02:06:42.376Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Content \"scripts\\deploy-dev-server.ps1\" | Select-Object -Skip 119",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156420174",
+    "detectedAt": "2026-05-19T02:07:00.165Z",
+    "source": "hook:afterShellExecution",
+    "command": "ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 root@14.225.217.232 \"echo ok\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156632420",
+    "detectedAt": "2026-05-19T02:10:32.414Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"\ngit add .github/workflows/deploy-xevn-ecosystem.yml .gitignore deploy/.vps-ssh.env.example deploy/xevn-ecosystem/.env.vps-ports deploy/xevn-ecosystem/.env.example deploy/xevn-ecosystem/PORTS.md deploy/xevn-ecosystem/deploy.sh deploy/xevn-ecosystem/docker-compose.yml scripts/deploy-dev-server.ps1 scripts/xevn-ecosystem-bootstrap.mjs scripts/merge-vps-port-env.mjs\ngit diff --cached --stat\ngit commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m \"$(cat <<'EOF'\nchore(deploy): cá»‘ Ä‘á»‹nh cá»•ng VPS dev 8088 vĂ  giá»¯ .env trĂªn server\n\n- ThĂªm .env.vps-ports vĂ  merge-vps-port-env.mjs (--apply-canonical trĂªn VPS)\n- docker-compose / .env.example máº·c Ä‘á»‹nh 8088, 8080, 5173, 3001, 3002\n- Bootstrap khĂ´ng tá»± Ä‘á»•i cá»•ng má»—i láº§n; deploy script Ä‘á»c deploy/.vps-ssh.env\n- Workflow smoke vĂ  deploy.sh gá»i merge cá»•ng trÆ°á»›c compose up\nEOF\n)\"\ngit push origin main\ngit status -sb",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156647913",
+    "detectedAt": "2026-05-19T02:10:47.907Z",
+    "source": "hook:afterShellExecution",
+    "command": "cd \"C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\"\ngit add .github/workflows/deploy-xevn-ecosystem.yml .gitignore deploy/.vps-ssh.env.example deploy/xevn-ecosystem/.env.vps-ports deploy/xevn-ecosystem/.env.example deploy/xevn-ecosystem/PORTS.md deploy/xevn-ecosystem/deploy.sh deploy/xevn-ecosystem/docker-compose.yml scripts/deploy-dev-server.ps1 scripts/xevn-ecosystem-bootstrap.mjs scripts/merge-vps-port-env.mjs\n$msg = @\"\nchore(deploy): co dinh cong VPS dev 8088 va giu .env tren server\n\n- Them .env.vps-ports va merge-vps-port-env.mjs (--apply-canonical tren VPS)\n- docker-compose / .env.example mac dinh 8088, 8080, 5173, 3001, 3002\n- Bootstrap khong tu doi cong moi lan; deploy script doc deploy/.vps-ssh.env\n- Workflow smoke va deploy.sh goi merge cong truoc compose up\n\"@\ngit commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg\ngit push origin main\ngit log -1 --oneline\ngit status -sb",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156948911",
+    "detectedAt": "2026-05-19T02:15:48.905Z",
+    "source": "hook:afterShellExecution",
+    "command": "head -n 30 \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\\deploy\\.vps-ssh.env.example\" 2>/dev/null; echo \"---\"; cat \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\\deploy\\xevn-ecosystem\\.env.example\" 2>/dev/null | head -30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779156983355",
+    "detectedAt": "2026-05-19T02:16:23.348Z",
+    "source": "hook:afterShellExecution",
+    "command": "dir \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\\deploy\" /s /b 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157030063",
+    "detectedAt": "2026-05-19T02:17:10.056Z",
+    "source": "hook:afterShellExecution",
+    "command": "cmd /c \"dir /s /b \"\"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\\deploy\"\"\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157056891",
+    "detectedAt": "2026-05-19T02:17:36.885Z",
+    "source": "hook:afterShellExecution",
+    "command": "git -C \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\" status --short 2>&1 | Select-Object -First 30",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157066730",
+    "detectedAt": "2026-05-19T02:17:46.721Z",
+    "source": "hook:afterShellExecution",
+    "command": "Push-Location \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\"; git log -1 --oneline 2>&1; Pop-Location",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157099982",
+    "detectedAt": "2026-05-19T02:18:19.974Z",
+    "source": "hook:afterShellExecution",
+    "command": "git status --short 2>&1; echo \"---\"; git log -1 --oneline 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157206180",
+    "detectedAt": "2026-05-19T02:20:06.174Z",
+    "source": "hook:afterShellExecution",
+    "command": "Get-Item \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\\scripts\\deploy-dev-server.ps1\" -Force 2>&1 | Select-Object -First 5; $env:VPS_SSH_PASSWORD; $env:VPS_PASSWORD; $env:SSH_PASSWORD",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157366529",
+    "detectedAt": "2026-05-19T02:22:46.523Z",
+    "source": "hook:afterShellExecution",
+    "command": "echo \"y\" | \"C:\\Program Files\\PuTTY\\plink.exe\" -batch -hostkey \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\" root@14.225.217.232 \"echo connected\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157373939",
+    "detectedAt": "2026-05-19T02:22:53.934Z",
+    "source": "hook:afterShellExecution",
+    "command": "& \"C:\\Program Files\\PuTTY\\plink.exe\" -batch -hostkey \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\" root@14.225.217.232 \"echo connected\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157494688",
+    "detectedAt": "2026-05-19T02:24:54.682Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n\n$deploy = @'\nset -euo pipefail\nREPO=/opt/xevn-ecosystem\ncd \"$REPO\"\n\necho \"=== PHASE 1: GIT PULL ===\"\ngit fetch origin main\nLOCAL=$(git rev-parse HEAD)\nREMOTE=$(git rev-parse origin/main)\nif [ \"$LOCAL\" = \"$REMOTE\" ]; then\n  echo \"[git] already at $LOCAL\"\nelse\n  git stash -u 2>/dev/null || true\n  git pull origin main\n  git stash pop 2>/dev/null || true\n  echo \"[git] pulled to $(git rev-parse --short HEAD)\"\nfi\n\necho \"=== PHASE 2: MERGE CANONICAL PORTS ===\"\nif command -v node >/dev/null 2>&1 && [ -f scripts/merge-vps-port-env.mjs ]; then\n  node scripts/merge-vps-port-env.mjs --apply-canonical\nelse\n  echo \"[ports] fallback: sed apply\"\n  sed -i 's/^PORTAL_FE_PORT=.*/PORTAL_FE_PORT=8088/' deploy/xevn-ecosystem/.env\n  sed -i 's/^HRM_FE_PORT=.*/HRM_FE_PORT=8080/' deploy/xevn-ecosystem/.env\n  sed -i 's/^XBOS_FE_PORT=.*/XBOS_FE_PORT=5173/' deploy/xevn-ecosystem/.env\n  sed -i 's/^HRM_BE_PORT=.*/HRM_BE_PORT=3001/' deploy/xevn-ecosystem/.env\n  # XBOS_BE stays 28002 (port 3002 taken by external process)\nfi\n\necho \"=== .env PORTS AFTER MERGE ===\"\ngrep -E '_PORT=' \"$REPO/deploy/xevn-ecosystem/.env\"\n\necho \"=== PHASE 3: NON-XEVN CONTAINERS (must not be touched) ===\"\ndocker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\" | grep -v 'xevn' | grep -v NAMES\n\necho \"=== PHASE 4: COMPOSE UP (safe â€” only recreates changed containers) ===\"\ncd \"$REPO/deploy/xevn-ecosystem\"\ndocker compose --env-file .env up -d --build --remove-orphans\n\necho \"=== PHASE 5: VERIFY XEVN CONTAINERS ===\"\ndocker compose ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"\n\necho \"=== PHASE 6: SMOKE TESTS ===\"\nsleep 5\nfor p in 8088 8080 3001 28002; do\n  CODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:${p}/\" 2>/dev/null || echo 000)\n  echo \"[smoke] :${p}/ -> HTTP $CODE\"\ndone\nCODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:8088/command-center\" 2>/dev/null || echo 000)\necho \"[smoke] :8088/command-center -> HTTP $CODE\"\n\necho \"=== PHASE 7: VERIFY NON-XEVN STILL UP ===\"\ndocker ps --format \"table {{.Names}}\\t{{.Status}}\" | grep -v 'xevn' | grep -v NAMES\n\necho \"=== HEAD ===\" && git -C \"$REPO\" rev-parse --short HEAD\necho \"=== DONE ===\"\n'@\n\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($deploy))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157590483",
+    "detectedAt": "2026-05-19T02:26:30.476Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$cmd = \"sleep 25 && for ep in '3001/api/hrm/metrics' '28002/api/xbos/metrics' '3001/health'; do CODE=\\$(curl -so /dev/null -w '%{http_code}' \\\"http://127.0.0.1/\\${ep}\\\" 2>/dev/null || echo 000); echo \\\"[be-smoke] :\\${ep} -> \\$CODE\\\"; done && docker ps --format 'table {{.Names}}\\t{{.Status}}' | grep xevn\"\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch $cmd 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157775966",
+    "detectedAt": "2026-05-19T02:29:35.959Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$diag = @'\necho \"=== container network inside ===\"\ndocker exec xevn-xbos-be-dev sh -c \"ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null\" 2>&1 | head -10\necho \"=== container IP ===\"\ndocker inspect xevn-xbos-be-dev --format \"{{.NetworkSettings.Networks}}\" 2>/dev/null | tr ',' '\\n' | grep -i ipaddr | head -3\nCONTAINER_IP=$(docker inspect xevn-xbos-be-dev --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')\necho \"container IP: $CONTAINER_IP\"\necho \"=== direct curl to container ===\"\ncurl -so /dev/null -w \"direct:3002/api/xbos/metrics -> %{http_code}\\n\" \"http://${CONTAINER_IP}:3002/api/xbos/metrics\" 2>/dev/null || echo \"direct curl failed\"\necho \"=== iptables check 28002 ===\"\niptables -t nat -L DOCKER 2>/dev/null | grep 28002 | head -5 || echo \"no iptables rule for 28002\"\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($diag))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157817279",
+    "detectedAt": "2026-05-19T02:30:17.271Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$fix2 = @'\necho \"=== env vars passed to xbos-be ===\"\ndocker exec xevn-xbos-be-dev env | grep -iE '^PORT|XBOS_BE|XBOS_API'\necho \"=== fix: add PORT=3002 to compose environment ===\"\ncd /opt/xevn-ecosystem/deploy/xevn-ecosystem\n# Remove conflicting PORT variables from .env (keep only XBOS_BE_PORT for host mapping)\n# Add explicit PORT=3002 env override via docker run\ndocker compose --env-file .env rm -sf xbos-be\ndocker run -d \\\n  --name xevn-xbos-be-dev \\\n  --network xevn-ecosystem_default \\\n  -e PORT=3002 \\\n  -e XBOS_BE_PORT=28002 \\\n  -p 28002:3002 \\\n  --restart unless-stopped \\\n  $(docker compose config --format json | python3 -c \"import sys,json; svc=json.load(sys.stdin)['services']['xbos-be']; print(svc.get('image','node:22-alpine'))\") \\\n  sh -lc \"corepack enable && cd /app && pnpm --dir apps/api/xbos-api start:dev\" 2>&1 || true\n# Simpler approach: just set PORT explicitly in docker compose up\n# The real fix is to add environment: PORT: 3002 in compose\n# For now: sed the .env to ensure PORT=3002 for xbos\ngrep -n \"XBOS_BE_PORT\\|^PORT=\" /opt/xevn-ecosystem/deploy/xevn-ecosystem/.env | head -5\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($fix2))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779157877455",
+    "detectedAt": "2026-05-19T02:31:17.448Z",
+    "source": "hook:afterShellExecution",
+    "command": "Set-Location \"C:\\Users\\ADMIN\\OneDrive\\TĂ i liá»‡u\\Vibe Coding\\projects\\xevn-ecosystem\"\ngit add deploy/xevn-ecosystem/docker-compose.yml deploy/xevn-ecosystem/vps-host-ports.defaults\n$msg = \"fix(compose): force PORT in BE containers; XBOS_BE_PORT=28002 (port 3002 occupied externally)\"\ngit commit --trailer \"Co-authored-by: Cursor <cursoragent@cursor.com>\" -m $msg 2>&1\ngit push origin main 2>&1\ngit log -1 --oneline",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779158022256",
+    "detectedAt": "2026-05-19T02:33:42.250Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$final = @'\nset -euo pipefail\nREPO=/opt/xevn-ecosystem\ncd \"$REPO\"\ngit pull origin main\necho \"=== HEAD ===\" && git rev-parse --short HEAD\ncd deploy/xevn-ecosystem\ndocker compose --env-file .env up -d --build xbos-be\nsleep 30\necho \"=== xbos-be port inside container ===\"\ndocker exec xevn-xbos-be-dev ss -tlnp 2>/dev/null | grep LISTEN\necho \"=== ALL XEVN CONTAINERS ===\"\ndocker compose ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"\necho \"=== FINAL SMOKE ===\"\nfor ep in \"8088/\" \"8088/command-center\" \"8080/\" \"3001/api/hrm/metrics\" \"28002/api/xbos/metrics\"; do\n  CODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:${ep}\" 2>/dev/null || echo 000)\n  echo \"[smoke] :${ep} -> $CODE\"\ndone\necho \"=== NON-XEVN STILL UP ===\"\ndocker ps --format \"table {{.Names}}\\t{{.Status}}\" | grep -v xevn | grep -v NAMES | grep Up\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($final))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779158058216",
+    "detectedAt": "2026-05-19T02:34:18.211Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$check = @'\nsleep 20\necho \"=== xbos-be status ===\"\ndocker inspect xevn-xbos-be-dev --format \"{{.State.Status}} {{.State.ExitCode}}\" 2>/dev/null\ndocker logs xevn-xbos-be-dev --tail 5 2>&1\necho \"=== xbos port inside ===\"\ndocker exec xevn-xbos-be-dev ss -tlnp 2>/dev/null || echo \"exec failed\"\necho \"=== ALL XEVN ===\"\ncd /opt/xevn-ecosystem/deploy/xevn-ecosystem\ndocker compose ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"\necho \"=== SMOKE ===\"\nfor ep in \"8088/\" \"8088/command-center\" \"8080/\" \"3001/api/hrm/metrics\" \"28002/api/xbos/metrics\"; do\n  CODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:${ep}\" 2>/dev/null || echo 000)\n  echo \"[smoke] :${ep} -> $CODE\"\ndone\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($check))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779158083761",
+    "detectedAt": "2026-05-19T02:34:43.754Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$check2 = @'\necho \"=== curl from inside xbos-be container ===\"\ndocker exec xevn-xbos-be-dev sh -c \"wget -qO- http://127.0.0.1:3002/api/xbos/metrics 2>&1 | head -3 || echo FAIL\"\ndocker exec xevn-xbos-be-dev sh -c \"wget -qO- http://127.0.0.1:28002/api/xbos/metrics 2>&1 | head -3 || echo FAIL\"\necho \"=== container env PORT ===\"\ndocker exec xevn-xbos-be-dev sh -c \"echo PORT=\\$PORT XBOS_BE_PORT=\\$XBOS_BE_PORT\"\necho \"=== /proc/net/tcp6 ports ===\"\ndocker exec xevn-xbos-be-dev sh -c \"cat /proc/net/tcp6 | awk '{print \\$2}' | grep -v local\" | head -10\necho \"=== docker-proxy 28002 ===\"\nss -tlnp | grep 28002\necho \"=== iptables nat for 28002 ===\"\niptables -t nat -L DOCKER -n 2>/dev/null | grep 28002\nCNTIP=$(docker inspect xevn-xbos-be-dev --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')\necho \"container IP: $CNTIP\"\ncurl -v --connect-timeout 5 \"http://$CNTIP:3002/api/xbos/metrics\" 2>&1 | head -15\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($check2))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
+  },
+  {
+    "id": "INC-1779158195221",
+    "detectedAt": "2026-05-19T02:36:35.216Z",
+    "source": "hook:afterShellExecution",
+    "command": "$plink = \"C:\\Program Files\\PuTTY\\plink.exe\"\n$hk = \"SHA256:WT2TUkDiv8fHzO2KyIyTlbRkQ3/0wlceizrudjT9Clo\"\n$fix3 = @'\nset -euo pipefail\ncd /opt/xevn-ecosystem\ngit pull origin main\ncd deploy/xevn-ecosystem\ndocker compose --env-file .env up -d --build xbos-be\nsleep 32\necho \"=== FINAL ALL CONTAINERS ===\"\ndocker compose ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"\necho \"=== SMOKE ALL ===\"\nfor ep in \"8088/\" \"8088/command-center\" \"8080/\" \"3001/api/hrm/metrics\" \"28002/api/xbos/metrics\"; do\n  CODE=$(curl -so /dev/null -w \"%{http_code}\" \"http://127.0.0.1:${ep}\" 2>/dev/null || echo 000)\n  echo \"[smoke] :${ep} -> $CODE\"\ndone\necho \"=== NON-XEVN ALL UP ===\"\ndocker ps --format \"table {{.Names}}\\t{{.Status}}\" | grep -v xevn | grep -v NAMES | grep -v Exited\necho \"=== HEAD ===\" && git rev-parse --short HEAD\n'@\n$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($fix3))\n& $plink -ssh \"root@14.225.217.232\" -pw \"1T4dTddMh0tbzFwBCIlu\" -hostkey $hk -batch \"echo $b64 | base64 -d | bash\" 2>&1",
+    "exitCode": null,
+    "severity": "MEDIUM",
+    "status": "NEW"
   }
 ]
