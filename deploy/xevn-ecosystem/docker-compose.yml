@@ -30,7 +30,7 @@ services:
       VITE_DEV_PROXY_XBOS_API: http://xbos-be:3002
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/web-portal exec vite -- --host 0.0.0.0 --port 5175"
     ports:
-      - "${PORTAL_FE_PORT:-28088}:5175"
+      - "${PORTAL_FE_PORT:-8088}:5175"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
@@ -55,7 +55,7 @@ services:
       VITE_DEV_PROXY_HRM_API: http://hrm-be:3001
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/hrm exec vite -- --host 0.0.0.0 --port 8080"
     ports:
-      - "${HRM_FE_PORT:-28080}:8080"
+      - "${HRM_FE_PORT:-8080}:8080"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
@@ -75,7 +75,7 @@ services:
       CI: "true"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/x-bos-core exec vite -- --host 0.0.0.0 --port 5173"
     ports:
-      - "${XBOS_FE_PORT:-28073}:5173"
+      - "${XBOS_FE_PORT:-5173}:5173"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
@@ -95,7 +95,7 @@ services:
     environment:
       CI: "true"
     ports:
-      - "${HRM_BE_PORT:-28001}:3001"
+      - "${HRM_BE_PORT:-3001}:3001"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:dev"
     depends_on:
       pnpm-install:
@@ -116,7 +116,7 @@ services:
     environment:
       CI: "true"
     ports:
-      - "${XBOS_BE_PORT:-28002}:3002"
+      - "${XBOS_BE_PORT:-3002}:3002"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/xbos-api start:dev"
     depends_on:
       pnpm-install:

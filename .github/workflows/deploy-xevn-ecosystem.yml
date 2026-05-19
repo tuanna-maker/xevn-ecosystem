@@ -51,6 +51,7 @@ jobs:
             git fetch origin "${{ github.sha }}"
             git checkout -f "${{ github.sha }}"
             if command -v node >/dev/null 2>&1; then
+              node ./scripts/merge-vps-port-env.mjs --apply-canonical || true
               node ./scripts/xevn-ecosystem-bootstrap.mjs || true
             fi
             if [ ! -f deploy/xevn-ecosystem/.env ]; then
@@ -67,7 +68,7 @@ jobs:
           if [ -z "${H}" ]; then echo "SKIP: DEV_SSH_HOST trống"; exit 0; fi
           P="${{ vars.DEV_PORTAL_FE_PORT }}"
           if [ -z "${P}" ]; then P="${{ vars.DEV_WEB_PORTAL_PORT }}"; fi
-          P="${P:-28088}"
+          P="${P:-8088}"
           echo "Smoke http://${H}:${P}/command-center"
           curl -fsS -o /dev/null --connect-timeout 20 --max-time 30 \
             "http://${H}:${P}/command-center"

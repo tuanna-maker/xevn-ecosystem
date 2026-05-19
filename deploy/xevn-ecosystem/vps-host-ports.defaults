@@ -1,0 +1,7 @@
+# Cổng host cố định trên VPS dev (14.225.217.232) — merge script áp vào .env (--apply-canonical).
+# DB_PASSWORD và secret: giữ trong deploy/xevn-ecosystem/.env trên server (không commit).
+PORTAL_FE_PORT=8088
+HRM_FE_PORT=8080
+XBOS_FE_PORT=5173
+HRM_BE_PORT=3001
+XBOS_BE_PORT=3002

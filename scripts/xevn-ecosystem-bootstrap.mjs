@@ -6,6 +6,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildPortAssignmentBlock, writePortBlockToEnvFile, PORT_ROLES } from './xevn-host-ports-lib.mjs';
 
@@ -126,18 +127,25 @@ export async function ensureXevnDeployEnv(opts) {
   }
 
   raw = fs.readFileSync(envPath, 'utf8');
-  const wantPorts =
-    autoPorts ||
-    process.env.XEVN_AUTO_PORTS === '1' ||
-    created ||
-    !envHasAnyNewPortKey(raw);
+  // Chỉ tự quét cổng trống khi bật tay — tránh đổi cổng VPS mỗi lần deploy.
+  const wantPorts = autoPorts || process.env.XEVN_AUTO_PORTS === '1';
 
   let portsWritten = false;
   if (wantPorts) {
     const block = await buildPortAssignmentBlock();
     writePortBlockToEnvFile(envPath, block);
     portsWritten = true;
-    console.log('[bootstrap] Đã ghi bộ cổng host trống vào .env');
+    console.log('[bootstrap] Đã ghi bộ cổng host trống vào .env (XEVN_AUTO_PORTS)');
+  } else if (created && !envHasAnyNewPortKey(raw)) {
+    const vpsPorts = path.join(deployDir, 'vps-host-ports.defaults');
+    if (fs.existsSync(vpsPorts)) {
+      spawnSync(process.execPath, [path.join(repoRoot, 'scripts', 'merge-vps-port-env.mjs')], {
+        stdio: 'inherit',
+        cwd: repoRoot,
+      });
+      portsWritten = true;
+      console.log('[bootstrap] Đã bổ sung cổng từ vps-host-ports.defaults (lần tạo .env mới)');
+    }
   }
 
   if (created) {
