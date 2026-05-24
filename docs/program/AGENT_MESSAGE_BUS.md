@@ -8791,3 +8791,23 @@ System.String[]
   - `evidence_path`: Dev-BE review response in chat; `.cursor/team/inbox/subagent-stop.jsonl` lines for 2026-05-24 scan; files listed in findings above.
   - `needed_by`: `Immediate`
   - `ack_status`: `PASS_TO_PM`
+
+## 2026-05-24T11:10:25Z | PM -> Dev-FE + Dev-BE + DevOps + TM | P0
+- Topic: **RECONCILED DISPATCH — combine FE/BE/TM critical scan remediation lanes**
+- Request / Handoff:
+  - Reconciles latest scan packets after `subagentStop` for `dev-fe`, `dev-be`, and `technical-manager`.
+  - Covers both active remediation work items:
+    - `CRITICAL-FE-BE-SECURITY-SCOPE-20260524`
+    - `DEPLOY-CONFIG-CRITICAL-REMEDIATION-20260524`
+  - QA/QC must wait for remediation evidence; no `GO` allowed while secret exposure, public dev auth fallback, tenant/session scope, route bypass, legal document authz, workflow approval guard, or port-contract defects remain unresolved.
+- Response:
+  - `DISPATCHED_RECONCILED`
+- Handoff Packet:
+  - `work_item_id`: `CRITICAL-SECURITY-DEPLOY-REMEDIATION-20260524`
+  - `from_role`: `PM`
+  - `to_role`: `Dev-FE` / `Dev-BE` / `DevOps` / `TM`
+  - `entry_criteria`: completed FE/BE/TM critical scans and `PASS_TO_PM` backend packet are present on bus.
+  - `exit_criteria`: remediation patches and evidence returned as `READY_FOR_QA`; QA then records `PASS_TO_QC` or defects; QC records `GO/NO-GO` with residual risk.
+  - `evidence_path`: `docs/program/AGENT_MESSAGE_BUS.md`; `docs/program/TEAM_LIVE_STATUS.md`; `.cursor/team/inbox/subagent-stop.jsonl`; source paths listed in the two remediation packets above.
+  - `needed_by`: `Immediate P0 remediation`
+  - `ack_status`: `DISPATCHED_RECONCILED`
