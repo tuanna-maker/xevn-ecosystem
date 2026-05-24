@@ -270,11 +270,11 @@ export class LegalEntityProfileService {
     return rows[0];
   }
 
-  async streamDocumentFile(documentId: string) {
+  async streamDocumentFile(tenantId: string, companyId: string, documentId: string) {
     const { rows } = await this.db.query(
       `SELECT storage_path, mime_type, document_name, file_url FROM public.xbos_legal_entity_document
-       WHERE id = $1::uuid AND status = 'active'`,
-      [documentId],
+       WHERE id = $1::uuid AND tenant_id = $2 AND company_id = $3 AND status = 'active'`,
+      [documentId, tenantId, companyId],
     );
     const row = rows[0] as { storage_path?: string; mime_type?: string; document_name?: string } | undefined;
     if (!row?.storage_path || !existsSync(row.storage_path)) {

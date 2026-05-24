@@ -1,4 +1,5 @@
 import { MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
+import { buildApiAuthHeaders } from './authSession';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 
 function scopeInit(tenantId: string, companyId = MEMBER_DEFAULT_COMPANY_ID, withBody = false) {
@@ -136,4 +137,21 @@ export async function deleteLegalDocumentApi(
 
 export function legalDocumentViewUrl(documentId: string): string {
   return `/api/xbos/org-foundation/legal-documents/${encodeURIComponent(documentId)}/file`;
+}
+
+export async function fetchLegalDocumentFile(
+  documentId: string,
+  tenantId: string,
+  companyId = MEMBER_DEFAULT_COMPANY_ID,
+): Promise<Blob> {
+  const headers = buildApiAuthHeaders();
+  headers['x-tenant-id'] = tenantId;
+  headers['x-company-id'] = companyId;
+
+  const res = await fetch(legalDocumentViewUrl(documentId), { headers });
+  if (!res.ok) {
+    const json = await res.json().catch(() => null);
+    throw new Error(json?.message ?? `Không tải được tài liệu pháp lý (${res.status})`);
+  }
+  return res.blob();
 }

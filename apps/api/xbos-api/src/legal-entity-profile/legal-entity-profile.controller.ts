@@ -202,8 +202,21 @@ export class LegalEntityProfileController {
   }
 
   @Get('legal-documents/:documentId/file')
-  async streamFile(@Param('documentId') documentId: string, @Res() res: Response) {
-    const { stream, mimeType, fileName } = await this.service.streamDocumentFile(documentId);
+  async streamFile(
+    @Param('documentId') documentId: string,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') companyId: string | undefined,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Res() res: Response,
+  ) {
+    this.assertInternal(authorization, internalApiKey);
+    const scope = this.scope({ tenantId, companyId, authorization });
+    const { stream, mimeType, fileName } = await this.service.streamDocumentFile(
+      scope.tenantId,
+      scope.companyId,
+      documentId,
+    );
     res.setHeader('Content-Type', mimeType);
     res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(fileName)}"`);
     stream.pipe(res);
