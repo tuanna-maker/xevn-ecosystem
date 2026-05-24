@@ -144,6 +144,7 @@ import {
 import {
   deleteLegalDocumentApi,
   deleteShareholderApi,
+  fetchLegalDocumentFile,
   legalDocumentViewUrl,
   listLegalDocuments,
   listShareholders,
@@ -3205,13 +3206,19 @@ const CommandCenterPage: React.FC = () => {
     }
   }
 
-  function viewLegalDocument(row: LegalDocRow) {
-    const url = row.fileUrl ?? (isPersistedApiId(row.id) ? legalDocumentViewUrl(row.id) : null);
-    if (!url) {
+  async function viewLegalDocument(row: LegalDocRow) {
+    if (!isPersistedApiId(row.id)) {
       setPublishMessage('Chưa có file — hãy upload trước.');
       return;
     }
-    window.open(url, '_blank', 'noopener,noreferrer');
+    try {
+      const blob = await fetchLegalDocumentFile(row.id, tenantId);
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank', 'noopener,noreferrer');
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (error) {
+      setPublishMessage(error instanceof Error ? error.message : 'Không mở được tài liệu pháp lý.');
+    }
   }
 
   const railItems = useMemo(() => filterRailByRole(mockRailModules, persona), [persona]);
