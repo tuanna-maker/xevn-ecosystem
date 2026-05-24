@@ -3211,6 +3211,7 @@ const CommandCenterPage: React.FC = () => {
       setPublishMessage('Chưa có file — hãy upload trước.');
       return;
     }
+    const { tenantId } = resolveLegalProfileScope();
     try {
       const blob = await fetchLegalDocumentFile(row.id, tenantId);
       const url = URL.createObjectURL(blob);
