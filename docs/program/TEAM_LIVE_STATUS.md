@@ -1,8 +1,10 @@
 # TEAM LIVE STATUS
 
-Last updated: 2026-05-04 (M2 idle chốt; **`PM_ORCHESTRATION_MODE` = `STOP`** — tắt hook inject; backlog dept/insurance + xlsx — bus; BA prompt asset pack `PASS_TO_PM`; XBOS->HRM sync coverage gap remediation **`PM -> Dev-BE DISPATCHED`**; **HRM Command Center modal full-viewport** `2e8bea66-623c-4b75-88d8-f8821805b087` → **`PM -> QA DISPATCHED`** sau `Dev-FE READY_FOR_QA`)
+Last updated: 2026-05-24 (PM Auto subagentStop follow-up: FE/BE/TM critical scans completed; **`DEPLOY-CONFIG-CRITICAL-REMEDIATION-20260524` → `PM -> DevOps + Dev-BE DISPATCHED`**; QA/QC queued after remediation evidence. Prior 2026-05-04 lanes remain as recorded below until PM re-baselines.)
 
 ## Where to track team work
+
+PM Auto latest checkpoint (2026-05-24): P0 `CRITICAL-FE-BE-SECURITY-SCOPE-20260524` is recorded in `docs/program/AGENT_MESSAGE_BUS.md` as `PM -> Dev-FE + Dev-BE + TM DISPATCHED_VIA_BUS` because hook mode is `STOP` and this subagent session has no Task tool. Scope: protected-route bypass, tenant-scope/JWT mismatch, browser internal-key dependency, and public dev seeded login remediation.
 
 - Command stream and handoffs: `docs/program/AGENT_MESSAGE_BUS.md`
 - Current PM dispatch and deadlines: `docs/PM_EXECUTION_DISPATCH_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_CYCLE_P0_CLOSURE_V1.md`
@@ -38,6 +40,9 @@ Last updated: 2026-05-04 (M2 idle chốt; **`PM_ORCHESTRATION_MODE` = `STOP`** �
   - `BA reusable BRD/SRS prompt asset pack` -> completed (`PASS_TO_PM` for `BA-PROMPT-ASSET-PACK-20260504`; ready for PM save-path standardization + optional QA checklist review)
   - `XBOS -> HRM catalog sync coverage hardening` -> active (`8557b6f1-4e18-4aff-b066-5e51b72f621d`; QA verdict `PARTIAL`; PM dispatched Dev-BE to add service/controller/seed smoke coverage before next QA retest)
   - `HRM portal embedded modal viewport (Command Center)` -> **active** (`2e8bea66-623c-4b75-88d8-f8821805b087`; Dev-FE `READY_FOR_QA`; **PM dispatched QA** — smoke: `/command-center/hrm/employees` Add Employee backdrop full window; **chờ QA verdict**; hook dedupe: **state gitignored + fallback quét đuôi `subagent-stop.jsonl`** (bus `HOOK_HARDENED_V2` 2026-05-04) để tránh bắn PM khi thiếu file state)
+  - `Critical frontend/backend/deploy security-scope remediation` -> **active P0** (`CRITICAL-FE-BE-SECURITY-SCOPE-20260524`; inbox scans completed for Dev-FE/Dev-BE/TM; formal bus dispatch recorded via bus; next exit: Dev-FE + Dev-BE + TM patches with build/test/smoke evidence, then QA/QC gate)
+  - `Backend critical correctness/security scan` -> **PASS_TO_PM** (`SECURITY-CORRECTNESS-BACKEND-SCAN-20260524`; evidence recorded on bus 2026-05-24)
+  - `Deploy/config critical remediation` -> **active P0** (`DEPLOY-CONFIG-CRITICAL-REMEDIATION-20260524`; PM dispatched DevOps + Dev-BE after critical FE/BE/TM scans; QA/QC queued after fixes). Gate blockers: committed/runtime-active secrets, public dev API ports with static internal key fallback, HRM host/app port coupling, XBOS `3002`/`28002` drift.
 
 ## What means "team is working"
 
