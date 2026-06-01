@@ -2,7 +2,7 @@ import { Controller, Get, Headers, HttpStatus, Query } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
-import { resolveScopeContext } from '../common/scope-context';
+import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
 import { CommandCenterService } from './command-center.service';
 
 @Controller('command-center')
@@ -25,7 +25,7 @@ export class CommandCenterController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, {
+    const scope = resolveXbosGroupLegalReadScopeContext(authorization, {
       tenantId: tenantIdQuery ?? tenantId,
       companyId: companyIdQuery ?? companyId,
     });
