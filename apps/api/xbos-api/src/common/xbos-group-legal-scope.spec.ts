@@ -5,6 +5,7 @@ import {
   assertJwtMayReadLegalEntityPartition,
   isLegalEntityUuid,
   resolveRaciMatrixJwtScope,
+  resolveXbosGroupLegalMutationScopeContext,
   resolveXbosGroupLegalReadScopeContext,
   XBOS_GROUP_LEGAL_HOLDING,
   XBOS_GROUP_OPERATING_MAIN,
@@ -119,6 +120,101 @@ describe('resolveXbosGroupLegalReadScopeContext (ADR C2)', () => {
       expect(error).toBeInstanceOf(ApiException);
       expect((error as ApiException).code).toBe('SCOPE_CONTEXT_MISMATCH');
       expect((error as ApiException).getStatus()).toBe(HttpStatus.CONFLICT);
+    }
+  });
+});
+
+describe('resolveXbosGroupLegalMutationScopeContext (P1-CC-BE-MEMBER-LEGAL-SAVE-01)', () => {
+  it('maps group CEO holding write to xevn/holding partition', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveXbosGroupLegalMutationScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_LEGAL_HOLDING,
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: XBOS_GROUP_LEGAL_HOLDING });
+  });
+
+  it('allows group CEO JWT main to mutate member registry tenant xe-tmdv', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveXbosGroupLegalMutationScopeContext(`Bearer ${token}`, {
+      tenantId: 'xe-tmdv',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+    });
+    expect(scope).toEqual({ tenantId: 'xe-tmdv', companyId: XBOS_GROUP_OPERATING_MAIN });
+  });
+
+  it('allows member company slug as companyId for member tenant mutation', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveXbosGroupLegalMutationScopeContext(`Bearer ${token}`, {
+      tenantId: 'xe-tmdv',
+      companyId: 'xe-tmdv',
+    });
+    expect(scope).toEqual({ tenantId: 'xe-tmdv', companyId: 'xe-tmdv' });
+  });
+
+  it('does not bypass strict scope for member CEO', () => {
+    const token = signServiceJwt({
+      sub: 'tmdv.ceo@xe.vn',
+      tenantId: 'xe-tmdv',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'company_ceo',
+    });
+    const scope = resolveXbosGroupLegalMutationScopeContext(`Bearer ${token}`, {
+      tenantId: 'xe-tmdv',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+    });
+    expect(scope).toEqual({ tenantId: 'xe-tmdv', companyId: XBOS_GROUP_OPERATING_MAIN });
+  });
+
+  it('rejects member CEO mutating another tenant partition', () => {
+    const token = signServiceJwt({
+      sub: 'tmdv.ceo@xe.vn',
+      tenantId: 'xe-tmdv',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'company_ceo',
+    });
+    try {
+      resolveXbosGroupLegalMutationScopeContext(`Bearer ${token}`, {
+        tenantId: 'xe-du-lich',
+        companyId: XBOS_GROUP_OPERATING_MAIN,
+      });
+      fail('expected mismatch');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiException);
+      expect((error as ApiException).code).toBe('SCOPE_CONTEXT_MISMATCH');
+    }
+  });
+
+  it('still rejects JWT holding vs request main on mutation', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_LEGAL_HOLDING,
+    });
+    try {
+      resolveXbosGroupLegalMutationScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: XBOS_GROUP_OPERATING_MAIN,
+      });
+      fail('expected mismatch');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiException);
+      expect((error as ApiException).code).toBe('SCOPE_CONTEXT_MISMATCH');
     }
   });
 });

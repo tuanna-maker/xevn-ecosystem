@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
 import { normalizePortalScopeRequest, resolveScopeContext } from './scope-context';
+import { MEMBER_DEFAULT_COMPANY_ID } from './tenant.constants';
 
 export const XBOS_MASTER_TENANT_ID = 'xevn';
 export const XBOS_GROUP_OPERATING_MAIN = 'main';
@@ -56,6 +57,78 @@ export function resolveXbosGroupLegalReadScopeContext(
       companyId: XBOS_GROUP_OPERATING_MAIN,
     });
     return { tenantId: scope.tenantId, companyId: XBOS_GROUP_LEGAL_HOLDING };
+  }
+
+  return resolveScopeContext(authorization, normalized);
+}
+
+function assertScopeSlug(value: string | undefined, field: 'tenantId' | 'companyId'): string {
+  if (!value?.trim()) {
+    throw new ApiException(
+      field === 'tenantId' ? 'SCOPE_TENANT_REQUIRED' : 'SCOPE_COMPANY_REQUIRED',
+      `${field} is required`,
+      HttpStatus.BAD_REQUEST,
+      { field },
+    );
+  }
+  const trimmed = value.trim();
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{1,62}$/.test(trimmed)) {
+    throw new ApiException(
+      field === 'tenantId' ? 'SCOPE_TENANT_INVALID' : 'SCOPE_COMPANY_INVALID',
+      `${field} format is invalid`,
+      HttpStatus.BAD_REQUEST,
+      { field, value: trimmed },
+    );
+  }
+  return trimmed;
+}
+
+/**
+ * Group CEO mutates member legal-entity rows under registry tenant slug + default company
+ * (Command Center company_member_units — ADR-GROUP-CEO-MAIN-HOLDING-SCOPE).
+ * Validates bearer via JWT claims only; does not 409 when claim xevn/main and request xe-tmdv/main.
+ */
+export function resolveXbosGroupLegalMutationScopeContext(
+  authorization: string | undefined,
+  requested: { tenantId?: string; companyId?: string },
+): { tenantId: string; companyId: string } {
+  const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+  const claimTenantId = jwtPayload ? readClaim(jwtPayload, 'tenantId', 'tenant_id', 'tid') : undefined;
+  const claimCompanyId = jwtPayload ? readClaim(jwtPayload, 'companyId', 'company_id', 'cid') : undefined;
+  const roleCode = (jwtPayload ? readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '' : '').toLowerCase();
+
+  resolveScopeContext(authorization, {
+    tenantId: claimTenantId,
+    companyId: claimCompanyId,
+  });
+
+  const normalized = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
+  const requestedTenant = normalized.tenantId?.trim().toLowerCase();
+  const requestedCompany = normalized.companyId?.trim().toLowerCase();
+  const claimCompany = claimCompanyId?.trim().toLowerCase();
+
+  if (
+    isGroupCeoOnMasterTenant(claimTenantId, roleCode) &&
+    claimCompany === XBOS_GROUP_OPERATING_MAIN &&
+    (!requestedCompany ||
+      requestedCompany === XBOS_GROUP_OPERATING_MAIN ||
+      requestedCompany === XBOS_GROUP_LEGAL_HOLDING) &&
+    (!requestedTenant || requestedTenant === XBOS_MASTER_TENANT_ID)
+  ) {
+    return { tenantId: XBOS_MASTER_TENANT_ID, companyId: XBOS_GROUP_LEGAL_HOLDING };
+  }
+
+  if (
+    isGroupCeoOnMasterTenant(claimTenantId, roleCode) &&
+    claimCompany === XBOS_GROUP_OPERATING_MAIN &&
+    requestedTenant &&
+    requestedTenant !== XBOS_MASTER_TENANT_ID &&
+    requestedTenant !== XBOS_GROUP_OPERATING_MAIN
+  ) {
+    return {
+      tenantId: assertScopeSlug(requestedTenant, 'tenantId'),
+      companyId: assertScopeSlug(requestedCompany ?? MEMBER_DEFAULT_COMPANY_ID, 'companyId'),
+    };
   }
 
   return resolveScopeContext(authorization, normalized);

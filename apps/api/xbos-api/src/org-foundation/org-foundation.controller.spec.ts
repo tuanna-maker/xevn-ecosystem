@@ -122,6 +122,32 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     );
   });
 
+  it('P1-CC-BE-MEMBER-LEGAL-SAVE-01: group CEO PUT member legal entity with xe-tmdv scope', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const result = await controller.upsertLegalEntity(
+      'le-member-tmdv',
+      { code: 'XE_TMDV', name: 'X.E TM-DV Updated', taxCode: '0123456789' },
+      'xe-tmdv',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.code).toBe('XBOS-ORG-201');
+    expect(serviceMock.upsertLegalEntity).toHaveBeenCalledWith(
+      'xe-tmdv',
+      'main',
+      'le-member-tmdv',
+      expect.objectContaining({ code: 'XE_TMDV' }),
+    );
+  });
+
   it('UC-XBOS-ORG-03: upserts legal entity profile fields', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',

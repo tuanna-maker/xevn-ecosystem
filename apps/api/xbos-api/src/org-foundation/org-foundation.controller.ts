@@ -2,7 +2,10 @@ import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Post, Put } 
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../common/internal-auth';
-import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
+import {
+  resolveXbosGroupLegalMutationScopeContext,
+  resolveXbosGroupLegalReadScopeContext,
+} from '../common/xbos-group-legal-scope';
 import { OrgFoundationService } from './org-foundation.service';
 import type { LegalEntityInput, OrgUnitInput } from './org-foundation.service';
 
@@ -16,8 +19,15 @@ export class OrgFoundationController {
     }
   }
 
-  private scope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
+  private readScope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
     return resolveXbosGroupLegalReadScopeContext(headers.authorization, {
+      tenantId: headers.tenantId,
+      companyId: headers.companyId,
+    });
+  }
+
+  private mutationScope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
+    return resolveXbosGroupLegalMutationScopeContext(headers.authorization, {
       tenantId: headers.tenantId,
       companyId: headers.companyId,
     });
@@ -41,7 +51,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    this.scope({ tenantId, companyId, authorization });
+    this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.getLegalEntityById(entityId);
     return ok(data, 'XBOS-ORG-200', 'Legal entity loaded');
   }
@@ -54,7 +64,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.listLegalEntities(scope.tenantId, scope.companyId);
     return ok({ items: data }, 'XBOS-ORG-200', 'Legal entities loaded');
   }
@@ -68,7 +78,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     const data = await this.service.upsertLegalEntity(scope.tenantId, scope.companyId, null, body);
     return ok(data, 'XBOS-ORG-201', 'Legal entity saved');
   }
@@ -83,7 +93,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     const data = await this.service.upsertLegalEntity(scope.tenantId, scope.companyId, entityId, body);
     return ok(data, 'XBOS-ORG-201', 'Legal entity saved');
   }
@@ -96,7 +106,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.listOrgTree(scope.tenantId, scope.companyId, this.resolveUserId(authorization));
     const isGroup = Array.isArray(data) && data.length > 0 && 'tenantId' in (data[0] as object);
     return ok(
@@ -115,7 +125,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.upsertOrgUnit(scope.tenantId, scope.companyId, null, body);
     return ok(data, 'XBOS-ORG-201', 'Org unit saved');
   }
@@ -130,7 +140,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.upsertOrgUnit(scope.tenantId, scope.companyId, unitId, body);
     return ok(data, 'XBOS-ORG-201', 'Org unit saved');
   }
@@ -144,7 +154,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.deleteOrgUnit(scope.tenantId, scope.companyId, unitId);
     return ok(data, 'XBOS-ORG-204', 'Org unit deleted');
   }
@@ -176,7 +186,7 @@ export class OrgFoundationController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const data = await this.service.promoteSegment(scope.tenantId, scope.companyId, segmentId, body);
     return ok(data, 'XBOS-ORG-202', 'Segment promoted to subsidiary');
   }
