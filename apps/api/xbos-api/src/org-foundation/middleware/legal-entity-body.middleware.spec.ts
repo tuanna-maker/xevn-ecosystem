@@ -16,4 +16,16 @@ describe('legalEntityBodyMiddleware', () => {
     expect(nextCalled).toBe(true);
     expect(req.body).toMatchObject({ code: 'XE_DU_LICH', name: 'saveave11111222' });
   });
+
+  it('parses string JSON body before enrich', () => {
+    const req = {
+      method: 'PUT',
+      originalUrl: '/api/xbos/org-foundation/legal-entities/uuid',
+      body: JSON.stringify({
+        payload: { companyForm: { shortName: 'XE_DU_LICH', nameVi: 'from-string' } },
+      }),
+    };
+    legalEntityBodyMiddleware(req as never, {} as never, () => undefined);
+    expect(req.body).toMatchObject({ code: 'XE_DU_LICH', name: 'from-string' });
+  });
 });

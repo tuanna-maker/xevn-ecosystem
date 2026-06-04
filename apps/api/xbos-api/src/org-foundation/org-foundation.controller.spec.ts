@@ -258,6 +258,47 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     expect(serviceMock.getLegalEntityById).toHaveBeenCalledWith(memberId);
   });
 
+  it('P1-CC-BE-MEMBER-LEGAL-BROWSER-PUT-01: browser-shaped PUT with root code/name returns 201 envelope', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const browserBody = {
+      code: 'XE_DU_LICH',
+      name: 'QA L25 browser save retest 20260604',
+      entityType: 'subsidiary',
+      taxCode: '0123456789',
+      charterCapital: 1_000_000_000,
+      payload: {
+        companyForm: {
+          nameVi: 'QA L25 browser save retest 20260604',
+          shortName: 'XE_DU_LICH',
+          enterpriseCode: '0123456789',
+          entityLevel: 'subsidiary',
+        },
+      },
+    };
+    const result = await controller.upsertLegalEntity(
+      '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      browserBody,
+      'xe-du-lich',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.code).toBe('XBOS-ORG-201');
+    expect(serviceMock.upsertLegalEntity).toHaveBeenCalledWith(
+      'xe-du-lich',
+      'main',
+      '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      expect.objectContaining({ code: 'XE_DU_LICH', name: browserBody.name }),
+    );
+  });
+
   it('P1-CC-BE-FE-MEMBER-LEGAL-BROWSER-SAVE-01: browser-shaped PUT with root code/name returns 201 envelope', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
