@@ -61,6 +61,38 @@ describe('legalEntityFormMapper', () => {
     expect(isLegalEntityValidationHttpError('failed (HTTP 400)')).toBe(true);
   });
 
+  it('maps code/name validation to shortName and nameVi fields (UC-CC member save)', () => {
+    const codeOnly = parseLegalEntitySaveFieldErrors('code must be a non-empty string (HTTP 400)');
+    expect(codeOnly.shortName).toContain('code');
+    expect(codeOnly.nameVi).toBeUndefined();
+
+    const nameOnly = parseLegalEntitySaveFieldErrors('name is required (HTTP 400)');
+    expect(nameOnly.nameVi).toContain('name');
+    expect(nameOnly.shortName).toBeUndefined();
+
+    const both = parseLegalEntitySaveFieldErrors('code and name validation failed (HTTP 400)');
+    expect(both.shortName).toBeTruthy();
+    expect(both.nameVi).toBeTruthy();
+  });
+
+  it('keeps row.code as shortName when nested shortName equals display name', () => {
+    const row: LegalEntityApiRow = {
+      id: '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      tenant_id: 'xevn',
+      company_id: 'main',
+      code: 'XE_DU_LICH',
+      name: 'QA L25 browser save 20260604',
+      entity_type: 'subsidiary',
+      payload: {
+        companyForm: {
+          shortName: 'QA L25 browser save 20260604',
+          nameVi: 'QA L25 browser save 20260604',
+        },
+      },
+    };
+    expect(mapLegalEntityRowToCompanyForm(row).shortName).toBe('XE_DU_LICH');
+  });
+
   it('maps charter capital and generic validation messages (UC-CC-04)', () => {
     const charter = parseLegalEntitySaveFieldErrors('charter_capital must be positive (HTTP 400)');
     expect(charter.charterCapital).toBe('Vốn điều lệ không hợp lệ.');

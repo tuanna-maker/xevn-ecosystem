@@ -9,6 +9,7 @@ import {
   resolveLegalEntityApiIdFromList,
   type LegalEntityIdHints,
 } from './legalEntityIdResolver';
+import { normalizeLegalEntityPutBody } from './legalEntityPutBody';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 import { fetchGroupOrgOverview } from './tenantScopeApi';
 
@@ -121,7 +122,7 @@ export async function createLegalEntity(
     tenantId: tid,
     companyId: cid,
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(normalizeLegalEntityPutBody(body)),
   });
   if (!envelope?.data) throw new Error('legal entity create returned empty payload');
   return envelope.data;
@@ -169,7 +170,7 @@ export async function updateLegalEntity(
       tenantId: tid,
       companyId: cid,
       headers,
-      body: JSON.stringify(body),
+      body: JSON.stringify(normalizeLegalEntityPutBody(body)),
     },
   );
   if (!envelope?.data) throw new Error('legal entity update returned empty payload');

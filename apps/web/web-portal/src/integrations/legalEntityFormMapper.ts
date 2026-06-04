@@ -47,10 +47,16 @@ export function mapLegalEntityRowToCompanyForm(row: LegalEntityApiRow): LegalEnt
   const entityLevel =
     row.entity_type === 'holding' ? 'parent' : row.entity_type === 'subsidiary' ? 'subsidiary' : 'subsidiary';
 
+  const rowCode = String(row.code ?? '').trim();
+  const nestedShort = String(nested.shortName ?? '').trim();
+  const displayName = String(nested.nameVi ?? row.name ?? '').trim();
+  const shortName =
+    nestedShort && nestedShort !== displayName ? nestedShort : rowCode || nestedShort;
+
   return {
-    nameVi: String(nested.nameVi ?? row.name ?? ''),
+    nameVi: displayName,
     nameEn: String(nested.nameEn ?? ''),
-    shortName: String(nested.shortName ?? row.code ?? ''),
+    shortName,
     enterpriseCode: String(nested.enterpriseCode ?? row.tax_code ?? ''),
     enterpriseType: String(nested.enterpriseType ?? 'joint-stock'),
     taxCode: String(nested.taxCode ?? row.tax_code ?? ''),
@@ -77,6 +83,7 @@ export type LegalEntityFieldErrors = {
   charterCapital?: string;
   taxCode?: string;
   nameVi?: string;
+  shortName?: string;
 };
 
 /** Parse XBOS validation message into inline field errors (UC-CC-04). */
@@ -96,9 +103,14 @@ export function parseLegalEntitySaveFieldErrors(message: string): LegalEntityFie
   if (/vốn điều lệ|charter.?capital|charter_capital|\bvốn\b/.test(lower)) {
     errors.charterCapital = 'Vốn điều lệ không hợp lệ.';
   }
-  // Avoid matching "name" inside "legal entity" — require word boundary or Vietnamese "tên".
-  if (/\b(tên|name)\b/.test(lower) && !errors.enterpriseCode && !errors.taxCode) {
-    errors.nameVi = 'Tên pháp nhân không hợp lệ.';
+  if (/\bcode\b/.test(lower)) {
+    errors.shortName = 'Mã viết tắt (code) không hợp lệ hoặc chưa gửi lên API.';
+  }
+  if (/\bname\b/.test(lower) && !/\bcode\b/.test(lower)) {
+    errors.nameVi = 'Tên pháp nhân (name) không hợp lệ hoặc chưa gửi lên API.';
+  } else if (/\bname\b/.test(lower) && /\bcode\b/.test(lower)) {
+    errors.nameVi = 'Tên pháp nhân (name) không hợp lệ hoặc chưa gửi lên API.';
+    errors.shortName = 'Mã viết tắt (code) không hợp lệ hoặc chưa gửi lên API.';
   }
   if (Object.keys(errors).length === 0 && /400|validation|hợp lệ/.test(lower)) {
     errors.enterpriseCode = 'Dữ liệu pháp nhân chưa hợp lệ — kiểm tra MST và vốn điều lệ.';

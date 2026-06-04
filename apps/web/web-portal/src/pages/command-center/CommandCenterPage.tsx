@@ -230,6 +230,7 @@ import {
   mapLegalEntityRowToCompanyForm,
   parseLegalEntitySaveFieldErrors,
 } from '../../integrations/legalEntityFormMapper';
+import { normalizeLegalEntityPutBody } from '../../integrations/legalEntityPutBody';
 
 const RAIL_STROKE = 1.5;
 const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
@@ -1378,6 +1379,7 @@ const CommandCenterPage: React.FC = () => {
     charterCapital?: string;
     taxCode?: string;
     nameVi?: string;
+    shortName?: string;
   }>({});
   const [shareholderRows, setShareholderRows] = useState<ShareholderRow[]>([
     {
@@ -2639,17 +2641,28 @@ const CommandCenterPage: React.FC = () => {
       isHoldingRoot || companyForm.entityLevel === 'parent'
         ? GROUP_HOLDING_COMPANY_ID
         : MEMBER_DEFAULT_COMPANY_ID;
-    const legalPayload = {
-      code: (companyForm.shortName || companyForm.enterpriseCode || 'LE').trim(),
-      name: (companyForm.nameVi || 'Pháp nhân mới').trim(),
+    const stableMemberCode = (
+      scopeRow?.code ??
+      existing?.code ??
+      companyForm.shortName ??
+      ''
+    ).trim();
+    const companyFormForPayload = {
+      ...companyForm,
+      shortName: stableMemberCode || companyForm.shortName,
+      nameVi: (companyForm.nameVi || 'Pháp nhân mới').trim(),
+    };
+    const legalPayload = normalizeLegalEntityPutBody({
+      code: stableMemberCode || companyForm.enterpriseCode || 'LE',
+      name: companyFormForPayload.nameVi,
       entityType: isHoldingRoot || companyForm.entityLevel === 'parent' ? 'holding' : 'subsidiary',
       taxCode: companyForm.taxCode || undefined,
       establishedAt: companyForm.firstIssueDate || undefined,
       address: companyForm.headOfficeAddress || undefined,
       charterCapital: Number(companyForm.charterCapital) || undefined,
       legalRepresentative: companyForm.legalRepName || undefined,
-      payload: { companyForm },
-    };
+      payload: { companyForm: companyFormForPayload },
+    });
 
     const uiEntityId =
       companyEntityId && companyEntityId !== 'new' ? companyEntityId : null;
@@ -2711,7 +2724,7 @@ const CommandCenterPage: React.FC = () => {
 
       const nextRow: Company = {
       id: persistedId ?? `comp-${Date.now()}`,
-      code: companyForm.shortName || 'NEW',
+      code: stableMemberCode || companyForm.shortName || 'NEW',
       name: companyForm.nameVi || 'Pháp nhân mới',
       employeeCount: companyEntityId === 'new' ? 0 : existing?.employeeCount ?? 0,
       revenue: companyEntityId === 'new' ? 0 : existing?.revenue ?? 0,
@@ -4225,8 +4238,17 @@ const CommandCenterPage: React.FC = () => {
                       aria-label="Tên viết tắt"
                       placeholder="VD: XEVN"
                       value={companyForm.shortName}
-                      onChange={(v) => setCompanyForm((s) => ({ ...s, shortName: v }))}
+                      onChange={(v) => {
+                        setCompanyForm((s) => ({ ...s, shortName: v }));
+                        if (companyErrors.shortName) {
+                          setCompanyErrors((e) => ({ ...e, shortName: undefined }));
+                        }
+                      }}
+                      className={companyErrors.shortName ? 'border-rose-400' : undefined}
                     />
+                    {companyErrors.shortName ? (
+                      <span className="text-xs text-rose-600">{companyErrors.shortName}</span>
+                    ) : null}
                   </label>
                   {/* Hàng 2: 4 + 4 + 4 */}
                   <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
