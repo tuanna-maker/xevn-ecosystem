@@ -1,4 +1,4 @@
-import { IsDateString, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateContractDto {
   @IsOptional()
@@ -17,4 +17,13 @@ export class UpdateContractDto {
   @IsOptional()
   @IsString()
   status?: 'active' | 'expired' | 'terminated';
+
+  @IsOptional()
+  @IsNumber()
+  salary?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  notes?: string;
 }

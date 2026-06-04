@@ -34,8 +34,8 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { createCandidatePool, updateCandidatePool } from '@/integrations/hrmApi';
 
 type CandidateFormValues = z.infer<ReturnType<typeof createCandidateSchema>>;
 
@@ -185,7 +185,7 @@ export function CandidateFormDialog({
   const onSubmit = async (data: CandidateFormValues) => {
     setIsSubmitting(true);
     try {
-      const candidateData = {
+      const candidatePayload = {
         company_id: companyId,
         full_name: data.full_name,
         email: data.email,
@@ -203,24 +203,13 @@ export function CandidateFormDialog({
       };
 
       if (candidate) {
-        const { error } = await supabase
-          .from('candidates')
-          .update(candidateData)
-          .eq('id', candidate.id);
-
-        if (error) throw error;
-
+        await updateCandidatePool(candidate.id, companyId, candidatePayload);
         toast({
           title: t('common.success'),
           description: r('formUpdateSuccess'),
         });
       } else {
-        const { error } = await supabase
-          .from('candidates')
-          .insert(candidateData);
-
-        if (error) throw error;
-
+        await createCandidatePool(candidatePayload);
         toast({
           title: t('common.success'),
           description: r('formCreateSuccess'),

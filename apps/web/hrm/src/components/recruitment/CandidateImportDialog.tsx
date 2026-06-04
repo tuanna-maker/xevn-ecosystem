@@ -32,7 +32,6 @@ import {
 } from '@/components/ui/table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface CandidateImportDialogProps {
@@ -319,10 +318,6 @@ export function CandidateImportDialog({
         notes: row.notes,
       }));
 
-      const { data, error } = await supabase
-        .from('candidates')
-        .insert(insertData)
-        .select();
 
       if (error) {
         result.failed += batch.length;

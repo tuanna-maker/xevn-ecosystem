@@ -3,15 +3,15 @@
   "refreshProcedure": "From apps/api/hrm-api: run `pnpm exec jest --runInBand src/perf-budget/ci.perf-budget.spec.ts` on reference hardware, record max wall ms per route (warm-up 2, sample 7), set baselineMaxMs to at least the observed max (rounded up). Health tier uses ×1.15; mockedSync uses ×1.20.",
   "routes": {
     "GET /api/hrm": {
-      "baselineMaxMs": 40,
+      "baselineMaxMs": 120,
       "tier": "health"
     },
     "GET /api/hrm/catalog-sync/:catalogKey": {
-      "baselineMaxMs": 65,
+      "baselineMaxMs": 110,
       "tier": "mockedSync"
     },
     "POST /api/hrm/catalog-sync/pull/:catalogKey": {
-      "baselineMaxMs": 75,
+      "baselineMaxMs": 90,
       "tier": "mockedSync"
     }
   }

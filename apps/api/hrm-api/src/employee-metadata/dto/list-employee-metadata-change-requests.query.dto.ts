@@ -1,9 +1,16 @@
-import { IsIn, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
+import { IsIn, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ListEmployeeMetadataChangeRequestsQueryDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
+
+  /** Portal embed may send tenant_id; scope is resolved from JWT + headers. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  tenant_id?: string;
 
   @IsOptional()
   @IsUUID()

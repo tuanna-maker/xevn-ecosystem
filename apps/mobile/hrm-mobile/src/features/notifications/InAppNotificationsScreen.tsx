@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useHrmRealtimeSummary, useRealtime } from '../../context/RealtimeContext';
 import { readListRows } from '../../integrations/envelope';
@@ -30,6 +30,7 @@ export function InAppNotificationsScreen() {
   const rt = useRealtime();
   const rtSummary = useHrmRealtimeSummary();
   const [lines, setLines] = useState<Line[]>([]);
+  const [inboxRows, setInboxRows] = useState<InboxRow[]>([]);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -68,9 +69,10 @@ export function InAppNotificationsScreen() {
         out.push({ id: 'svc', text: `Yêu cầu dịch vụ chờ: ${pend}` });
       } else out.push({ id: 'svc', text: `Dịch vụ: ${formatHrmError(sr)}` });
 
+      const payrollCid = auth.getPayrollQueryCompanyId();
       const pr = await hrmRequest<unknown>(
         cfg,
-        `/payroll/periods?${new URLSearchParams({ company_id: cid }).toString()}`,
+        `/payroll/periods?${new URLSearchParams({ company_id: payrollCid || cid }).toString()}`,
         { method: 'GET' },
       );
       if (pr.ok) {
@@ -86,14 +88,15 @@ export function InAppNotificationsScreen() {
           { method: 'GET' },
         );
         if (inbox.ok) {
-          out.push({ id: 'inbox-h', text: `Hộp thư (server): ${inbox.data.data.length} dòng (limit 12)` });
-          for (const it of inbox.data.data.slice(0, 8)) {
-            out.push({ id: `inbox-${it.id}`, text: formatInboxLine(it) });
-          }
+          setInboxRows(inbox.data.data);
+          const unread = inbox.data.data.filter((x) => !x.read_at).length;
+          out.push({ id: 'inbox-h', text: `Hộp thư: ${inbox.data.data.length} tin · ${unread} chưa đọc` });
         } else {
+          setInboxRows([]);
           out.push({ id: 'inbox', text: `Hộp thư: ${formatHrmError(inbox)}` });
         }
       } else {
+        setInboxRows([]);
         out.push({ id: 'inbox-skip', text: 'Hộp thư: cần employee UUID trong phiên để lọc tin.' });
       }
     } else {
@@ -111,6 +114,19 @@ export function InAppNotificationsScreen() {
       void load();
     }, [load]),
   );
+
+  const markRead = async (row: InboxRow) => {
+    const cid = auth.getAttendanceCompanyId();
+    const eid = auth.employeeId.trim();
+    if (!cid || !eid || row.read_at) return;
+    const res = await hrmRequest<unknown>(
+      auth.getHrmAuth(),
+      `/notifications/inbox/${row.id}/read?${new URLSearchParams({ company_id: cid }).toString()}`,
+      { method: 'PATCH', body: JSON.stringify({ viewer_employee_id: eid }) },
+    );
+    if (res.ok) void load();
+    else Alert.alert(vi.error, formatHrmError(res));
+  };
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
@@ -136,6 +152,16 @@ export function InAppNotificationsScreen() {
         <View key={l.id} style={styles.card}>
           <Text style={styles.cardText}>{l.text}</Text>
         </View>
+      ))}
+      {inboxRows.length > 0 ? <Text style={styles.section}>Hộp thư — chạm để đánh dấu đã đọc</Text> : null}
+      {inboxRows.map((row) => (
+        <Pressable
+          key={row.id}
+          style={[styles.card, !row.read_at && styles.cardUnread]}
+          onPress={() => void markRead(row)}
+        >
+          <Text style={styles.cardText}>{formatInboxLine(row)}</Text>
+        </Pressable>
       ))}
       <Text style={styles.footer}>
         Biến server: HRM_EVENT_WEBHOOK_URLS, HRM_EVENT_WEBHOOK_SECRET, FIREBASE_SERVICE_ACCOUNT_JSON, EXPO_ACCESS_TOKEN
@@ -178,5 +204,7 @@ const styles = StyleSheet.create({
     borderColor: '#334155',
   },
   cardText: { color: '#e2e8f0', fontSize: 14 },
+  cardUnread: { borderColor: '#38bdf8' },
+  section: { color: '#94a3b8', fontSize: 13, marginTop: 8 },
   footer: { color: '#64748b', fontSize: 12, marginTop: 16 },
 });

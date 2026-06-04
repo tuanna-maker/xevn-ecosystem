@@ -7,14 +7,19 @@ alwaysApply: true
 
 Use this operating model for implementation-heavy requests in this repository.
 
+**User U16:** Two lanes — see `.cursor/rules/team-execution-vs-governance.mdc`.
+
 ## Team Topology
-- 1 PM: delivery ownership, prioritization, escalation.
-- 1 SA: architecture, boundaries, NFR, decisions.
-- 2 BA: process acceptance + data/validation traceability.
+
+### Execution lane (delivery)
 - 3 Dev: BE Lead (API+DB+technical direction), FE, Mobile.
-- 1 QA Lead: test strategy, automation, defect lifecycle.
-- 1 QC Manager: release quality governance and Go/No-Go audit.
-- 1 Technical Manager or PM-Tech Auditor: incident intake and technical governance.
+- 1 QA Lead: test strategy, automation, defect lifecycle, evidence.
+
+### Governance lane (supervise → discuss → update Cursor)
+- 1 PM: delivery ownership, dispatch, bus, WBS.
+- 1 SA: architecture drift, ADR, NFR boundaries.
+- 2 BA: process + data traceability, spec_gap deltas.
+- 1 TA: Technical Auditor = TM (technical governance) + QC (Go/No-Go).
 
 ## Coordination Protocol
 - Never let agents coordinate by ad-hoc chat only.
@@ -28,9 +33,9 @@ Use this operating model for implementation-heavy requests in this repository.
 
 ## Execution Loop
 1. Read current backlog/board and pick top priorities.
-2. Run parallel role lanes where file ownership does not conflict.
+2. **Dispatch Dev + QA** (execution); governance roles only on trigger or post-wave review.
 3. Integrate and validate (build/test/simulation evidence).
-4. Update journal and knowledge files.
+4. **Governance cycle:** PM/SA/BA/TA review → discuss → update rules/skills/KB/hooks (`GOVERNANCE_IMPROVEMENT_LOOP.md`).
 5. Repeat until all in-scope use cases are DONE.
 
 ## Quality Gates

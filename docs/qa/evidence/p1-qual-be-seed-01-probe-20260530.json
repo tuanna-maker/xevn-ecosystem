@@ -1,0 +1,33 @@
+{
+  "work_item_id": "P1-QUAL-BE-SEED-01",
+  "date": "2026-05-30",
+  "account": "ceo@xe.vn",
+  "company_id": "main",
+  "pass": true,
+  "probes": [
+    {
+      "name": "sales-data-list",
+      "path": "/sales-data?company_id=main",
+      "status": 200,
+      "code": "HRM-SALES-200",
+      "total": 2,
+      "ok": true
+    },
+    {
+      "name": "bonus-policies-list",
+      "path": "/bonus-policies?company_id=main",
+      "status": 200,
+      "code": "HRM-BONUS-200",
+      "total": 1,
+      "ok": true
+    },
+    {
+      "name": "bonus-participants-list",
+      "path": "/bonus-policies/6bd14c1f-71eb-4699-a760-3cb710dd6d00/participants?company_id=main",
+      "status": 200,
+      "code": "HRM-BONUS-200",
+      "total": 1,
+      "ok": true
+    }
+  ]
+}

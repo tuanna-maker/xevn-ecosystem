@@ -343,8 +343,12 @@ const lateEarlyList = [
 
 export default function Attendance() {
   const { t } = useTranslation();
-  const { employees, isLoading: isLoadingEmployees } = useEmployees();
-  const { departments } = useDepartments();
+  const [activeTab, setActiveTab] = useState('overview');
+  const needsEmployeeList = activeTab !== 'overview';
+  const { employees, isLoading: isLoadingEmployees } = useEmployees(false, undefined, {
+    enabled: needsEmployeeList,
+  });
+  const { departments } = useDepartments({ enabled: activeTab === 'settings' });
   // Initialize translation-based menu items
   const sidebarMenuItems = getSidebarMenuItems(t);
   const attendanceRulesTabs = getAttendanceRulesTabs(t);
@@ -355,8 +359,10 @@ export default function Attendance() {
   const requestMenuItems = getRequestMenuItems(t);
   
   // Load data from database hooks
-  const { sheets: attendanceSheetsDB, isLoading: isLoadingSheets, createSheet, deleteSheet: deleteSheetDB } = useAttendanceSheets();
-  const { shifts: workShiftsDB, isLoading: isLoadingShifts, createShift, updateShift, deleteShift: deleteShiftDB } = useWorkShifts();
+  const { sheets: attendanceSheetsDB, isLoading: isLoadingSheets, createSheet, deleteSheet: deleteSheetDB } =
+    useAttendanceSheets({ enabled: activeTab === 'attendance' });
+  const { shifts: workShiftsDB, isLoading: isLoadingShifts, createShift, updateShift, deleteShift: deleteShiftDB } =
+    useWorkShifts({ enabled: activeTab === 'shifts' || activeTab === 'settings' });
   const { rules: attendanceRulesDB, isLoading: isLoadingRules, saveRules } = useAttendanceRules();
   const { 
     stats: overviewStats, 
@@ -365,9 +371,8 @@ export default function Attendance() {
     leaveTypeData: leaveTypeDataDB,
     lateEarlyList: lateEarlyListDB,
     isLoading: isLoadingOverview 
-  } = useAttendanceOverview();
+  } = useAttendanceOverview(undefined, { enabled: activeTab === 'overview' });
 
-  const [activeTab, setActiveTab] = useState('overview');
   const [activeAttendanceType, setActiveAttendanceType] = useState('sheets');
   const [activeShiftType, setActiveShiftType] = useState('list');
   const [activeSidebarItem, setActiveSidebarItem] = useState('employees');

@@ -1,7 +1,20 @@
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest } from '../common/internal-auth';
+import { isAuthorizedInternalRequest, resolveAuthorizationHeader } from '../common/internal-auth';
+import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
 import { ContractsInsuranceService } from './contracts-insurance.service';
 import { CreateContractDto } from './dto/create-contract.dto';
@@ -30,7 +43,9 @@ export class ContractsInsuranceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.createContract(body).then((data) => ok(data, 'HRM-CON-201', 'Contract created'));
+    return this.service
+      .createContract(body, authorization)
+      .then((data) => ok(data, 'HRM-CON-201', 'Contract created'));
   }
 
   @Post('insurance')
@@ -43,7 +58,9 @@ export class ContractsInsuranceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.createInsuranceRecord(body).then((data) => ok(data, 'HRM-CON-202', 'Insurance record created'));
+    return this.service
+      .createInsuranceRecord(body, authorization)
+      .then((data) => ok(data, 'HRM-CON-202', 'Insurance record created'));
   }
 
   @Get('contracts/expiring')
@@ -56,7 +73,58 @@ export class ContractsInsuranceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listExpiringContracts(query).then((data) => ok(data, 'HRM-CON-200', 'Expiring contracts listed'));
+    return this.service
+      .listExpiringContracts(query, authorization)
+      .then((data) => ok(data, 'HRM-CON-200', 'Expiring contracts listed'));
+  }
+
+  @Get('insurance')
+  listInsurance(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListContractsQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.service
+      .listInsurance(query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-CON-200', 'Insurance listed'));
+  }
+
+  @Get('insurance-policy-participants')
+  listInsurancePolicyParticipants(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListContractsQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.service
+      .listInsurance(query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-INS-200', 'Insurance policy participants listed'));
+  }
+
+  @Get('insurance/expiring')
+  listExpiringInsurance(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListExpiringQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.service
+      .listExpiringInsurance(query, authorization)
+      .then((data) => ok(data, 'HRM-CON-200', 'Expiring insurance listed'));
   }
 
   @Get('contracts')
@@ -66,10 +134,35 @@ export class ContractsInsuranceController {
     @Headers('x-tenant-id') tenantId: string | undefined,
     @Headers('x-company-id') headerCompanyId: string | undefined,
     @Query() query: ListContractsQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.service
+      .listContracts(query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-CON-200', 'Contracts listed'));
+  }
+
+  @Get('contracts/:contractId')
+  getContractById(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Param('contractId', new ParseUUIDPipe()) contractId: string,
+    @Query() query: ListContractsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listContracts(query).then((data) => ok(data, 'HRM-CON-200', 'Contracts listed'));
+    return this.service
+      .getContractById(
+        contractId,
+        query.company_id ?? headerCompanyId ?? 'main',
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, 'HRM-CON-200', 'Contract detail'));
   }
 
   @Patch('contracts/:contractId')
@@ -83,7 +176,9 @@ export class ContractsInsuranceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
-    return this.service.updateContract(contractId, body).then((data) => ok(data, 'HRM-CON-200', 'Contract updated'));
+    return this.service
+      .updateContract(contractId, body, headerCompanyId ?? 'main', authorization)
+      .then((data) => ok(data, 'HRM-CON-200', 'Contract updated'));
   }
 
   @Delete('contracts/:contractId')
@@ -96,19 +191,9 @@ export class ContractsInsuranceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
-    return this.service.deleteContract(contractId).then((data) => ok(data, 'HRM-CON-200', 'Contract deleted'));
+    return this.service
+      .deleteContract(contractId, headerCompanyId ?? 'main', authorization)
+      .then((data) => ok(data, 'HRM-CON-200', 'Contract deleted'));
   }
 
-  @Get('insurance/expiring')
-  listExpiringInsurance(
-    @Headers('authorization') authorization: string | undefined,
-    @Headers('x-internal-api-key') internalApiKey: string | undefined,
-    @Headers('x-tenant-id') tenantId: string | undefined,
-    @Headers('x-company-id') headerCompanyId: string | undefined,
-    @Query() query: ListExpiringQueryDto,
-  ) {
-    this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listExpiringInsurance(query).then((data) => ok(data, 'HRM-CON-200', 'Expiring insurance listed'));
-  }
 }

@@ -184,6 +184,43 @@ Tham chiếu: deploy/.vps-ssh.env.example
 
 ---
 
+## Production enable (NFR — tự chạy, không hỏi user)
+
+**Source of truth:** `docs/ops/PRODUCTION_ENABLE_RUNBOOK.md`
+
+Sub-agent `devops` (`.cursor/agents/devops.md`) thực hiện phases A→H:
+
+1. `pnpm build:platform-core` + API build
+2. Migrate hrm/xbos + `audit:company-id`
+3. SSH: backup `.env` → set `NODE_ENV=production`, `SERVICE_JWT_SECRET`, `CORS_ALLOWED_ORIGINS`, `INTERNAL_API_KEY`
+4. `docker compose up -d --build` (chỉ xevn services)
+5. Smoke health + `metrics?format=prometheus`
+6. Optional: `docker compose -f deploy/docker-compose.observability.yml --profile obs up -d`
+7. `node scripts/verify-production-env.mjs` (exit 0)
+8. `pnpm verify:tenant-isolation`, `pnpm ops:synthetic-checks`, `pnpm test:e2e:security`
+
+**Repo scripts (copy-paste block):**
+
+```powershell
+pnpm build:platform-core
+pnpm migrate:hrm:apply:with-deploy-env
+pnpm migrate:xbos:apply:with-deploy-env
+pnpm verify:production-env
+pnpm verify:openapi-contract
+pnpm verify:tenant-isolation
+pnpm ops:synthetic-checks
+pnpm test:e2e:security
+```
+
+**Sau mỗi cycle:** append lesson vào `C:\Users\ADMIN\.cursor\knowledge-base\devops.md` + `.cursor/knowledge-base/platform-nfr-bootstrap.md`.
+
+---
+
 ## Tham chiếu đầy đủ
 
-Xem: `docs/ops/DEPLOY_GUIDE.md` — hướng dẫn chi tiết từng bước, bảng cổng, tất cả sự cố đã gặp.
+| Doc | Mục đích |
+|-----|----------|
+| `docs/ops/DEPLOY_GUIDE.md` | Deploy VPS, cổng, sự cố |
+| `docs/ops/PRODUCTION_ENABLE_RUNBOOK.md` | Bật production + gates |
+| `docs/ops/OBSERVABILITY_RUNBOOK.md` | Loki/Grafana/Prometheus |
+| `docs/ecosystem/NFR_OBSERVABILITY_SECURITY_BASELINE.md` | Log schema, metrics |

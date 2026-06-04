@@ -1,7 +1,27 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { User, Session, Provider } from '@supabase/supabase-js';
-import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
+import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import {
+  clearPortalSession,
+  getPortalAccessToken,
+  getPortalSessionUser,
+  hasPortalSession,
+  PORTAL_SESSION_READY_EVENT,
+} from '@/lib/portalAuthBridge';
+import { mobileLogin, persistMobileSession } from '@/integrations/hrmMobileAuth';
+import { ApiClientError } from '@/lib/apiError';
+
+export type AuthUser = {
+  id: string;
+  email?: string | null;
+};
+
+export type AuthSession = {
+  access_token: string;
+};
+
+export type OAuthProvider = 'google';
 
 interface Profile {
   id: string;
@@ -29,15 +49,15 @@ interface CompanyMembership {
 }
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser | null;
+  session: AuthSession | null;
   profile: Profile | null;
   memberships: CompanyMembership[];
   currentCompanyId: string | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signInWithOAuth: (provider: Provider) => Promise<{ error: Error | null }>;
+  signInWithOAuth: (provider: OAuthProvider) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   refreshMemberships: () => Promise<void>;
@@ -46,6 +66,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function portalMembership(companyId: string): CompanyMembership {
+  return {
+    id: 'portal-membership',
+    company_id: companyId,
+    role: 'portal',
+    is_primary: true,
+    employee_id: null,
+    company: { id: companyId, name: companyId, code: null, logo_url: null },
+  };
+}
+
+function profileFromPortal(email: string, displayName: string): Profile {
+  return {
+    id: email,
+    user_id: email,
+    email,
+    full_name: displayName,
+    avatar_url: null,
+    phone: null,
+    job_title: null,
+    onboarding_completed: true,
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -53,39 +97,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const tenantIdFromQuery = searchParams.get('tenantId');
   const isPortalMode =
     portalParam != null && (portalParam === '1' || portalParam.toLowerCase() === 'true');
-  const portalCompanyId = isPortalMode ? searchParams.get('companyId') : null;
+  const embedActive = getHrmPortalMode(location.search);
+  const storedPortalCompanyId =
+    typeof localStorage !== 'undefined'
+      ? localStorage.getItem('hrm_current_company_id') ||
+        sessionStorage.getItem('hrm_current_company_id')
+      : null;
+  const portalCompanyIdRaw =
+    isPortalMode || embedActive
+      ? searchParams.get('companyId') || storedPortalCompanyId
+      : null;
+  const portalCompanyId = portalCompanyIdRaw ? coerceHrmListCompanyId(portalCompanyIdRaw) : null;
 
-  // Integration hint: keep portal-mode sticky inside HRM origin.
-  // This prevents late redirects if `portal` query gets dropped during internal navigation.
   if (isPortalMode) {
     if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('hrm_portal_mode', '1');
     if (typeof localStorage !== 'undefined') localStorage.setItem('hrm_portal_mode', '1');
   }
 
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [memberships, setMemberships] = useState<CompanyMembership[]>(
-    portalCompanyId
-      ? [
-          {
-            id: 'portal-membership',
-            company_id: portalCompanyId,
-            role: 'portal',
-            is_primary: true,
-            employee_id: null,
-            company: {
-              id: portalCompanyId,
-              name: portalCompanyId,
-              code: null,
-              logo_url: null,
-            },
-          },
-        ]
-      : []
+    portalCompanyId ? [portalMembership(portalCompanyId)] : [],
   );
   const [currentCompanyId, setCurrentCompanyId] = useState<string | null>(portalCompanyId ?? null);
   const [loading, setLoading] = useState(true);
+
+  const hydrateFromPortalToken = () => {
+    const token = getPortalAccessToken();
+    const portalUser = getPortalSessionUser();
+    if (!token) return false;
+    setSession({ access_token: token });
+    const email = portalUser?.userId ?? 'portal-user';
+    setUser({ id: email, email });
+    setProfile(profileFromPortal(email, portalUser?.displayName ?? email));
+    const companyId =
+      portalCompanyId ??
+      (storedPortalCompanyId ? coerceHrmListCompanyId(storedPortalCompanyId) : null) ??
+      coerceHrmListCompanyId('main');
+    if (companyId) {
+      setMemberships([portalMembership(companyId)]);
+      setCurrentCompanyId(companyId);
+    }
+    return true;
+  };
 
   useEffect(() => {
     if (typeof localStorage === 'undefined' || typeof sessionStorage === 'undefined') return;
@@ -100,179 +155,82 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [currentCompanyId, tenantIdFromQuery]);
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (error) throw error;
-      setProfile(data as Profile);
-      return data as Profile;
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      return null;
-    }
-  };
-
-  const fetchMemberships = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_company_memberships')
-        .select(`
-          id,
-          company_id,
-          role,
-          is_primary,
-          employee_id,
-          companies:company_id (
-            id,
-            name,
-            code,
-            logo_url
-          )
-        `)
-        .eq('user_id', userId);
-
-      if (error) throw error;
-      
-      const formattedMemberships = (data || []).map((m: any) => ({
-        id: m.id,
-        company_id: m.company_id,
-        role: m.role,
-        is_primary: m.is_primary,
-        employee_id: m.employee_id || null,
-        company: m.companies,
-      }));
-      
-      setMemberships(formattedMemberships);
-      
-      // Portal-mode: ưu tiên dùng `companyId` nếu thuộc quyền của user.
-      // Nếu không thuộc quyền hoặc không có portalCompanyId -> lấy primary/first.
-      if (formattedMemberships.length > 0) {
-        const portalTarget =
-          portalCompanyId && formattedMemberships.some((m) => m.company_id === portalCompanyId)
-            ? portalCompanyId
-            : null;
-
-        const primary = formattedMemberships.find((m) => m.is_primary);
-        const fallback = primary?.company_id || formattedMemberships[0].company_id;
-
-        setCurrentCompanyId(portalTarget ?? (!currentCompanyId ? fallback : currentCompanyId ?? fallback));
-      }
-      
-      return formattedMemberships;
-    } catch (error) {
-      console.error('Error fetching memberships:', error);
-      return [];
-    }
-  };
-
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    const portalEmbed = getHrmPortalMode(location.search);
+    if (portalEmbed && (portalCompanyId || embedActive)) {
+      const effectiveCompanyId = portalCompanyId ?? coerceHrmListCompanyId('main');
+      setMemberships([portalMembership(effectiveCompanyId)]);
+      setCurrentCompanyId(effectiveCompanyId);
+    }
+
+    if (hydrateFromPortalToken()) {
       setLoading(false);
       return;
     }
 
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Use setTimeout to avoid potential deadlocks
-          setTimeout(async () => {
-            await fetchProfile(session.user.id);
-            await fetchMemberships(session.user.id);
-            setLoading(false);
-          }, 0);
-        } else {
-          setProfile(null);
-          if (portalCompanyId && isPortalMode) {
-            setMemberships([
-              {
-                id: 'portal-membership',
-                company_id: portalCompanyId,
-                role: 'portal',
-                is_primary: true,
-                employee_id: null,
-                company: {
-                  id: portalCompanyId,
-                  name: portalCompanyId,
-                  code: null,
-                  logo_url: null,
-                },
-              },
-            ]);
-            setCurrentCompanyId(portalCompanyId);
-          } else {
-            setMemberships([]);
-            setCurrentCompanyId(null);
-          }
-          setLoading(false);
-        }
-      }
-    );
+    setLoading(false);
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        setLoading(false);
-      }
-    });
+    const onReady = () => {
+      if (hydrateFromPortalToken()) setLoading(false);
+    };
+    window.addEventListener(PORTAL_SESSION_READY_EVENT, onReady);
+    return () => window.removeEventListener(PORTAL_SESSION_READY_EVENT, onReady);
+  }, [location.search, portalCompanyId, isPortalMode, embedActive]);
 
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signUp = async (email: string, password: string, fullName: string) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
-      return { error: error as Error | null };
-    } catch (error) {
-      return { error: error as Error };
-    }
+  const signUp = async (_email: string, _password: string, _fullName: string) => {
+    return {
+      error: new ApiClientError({
+        status: 501,
+        code: 'HRM-AUTH-SIGNUP',
+        message: 'Đăng ký chỉ khả dụng trên Portal X-BOS.',
+      }),
+    };
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      return { error: error as Error | null };
+      const result = await mobileLogin(email, password);
+      persistMobileSession(result, email);
+      hydrateFromPortalToken();
+      if (result.memberships?.length) {
+        const primary =
+          result.memberships.find((m) => m.company_id)?.company_id ??
+          coerceHrmListCompanyId('main');
+        setCurrentCompanyId(coerceHrmListCompanyId(primary));
+        setMemberships(
+          result.memberships.map((m, i) => ({
+            id: `mobile-${i}`,
+            company_id: coerceHrmListCompanyId(m.company_id),
+            role: m.role ?? 'employee',
+            is_primary: i === 0,
+            employee_id: m.employee_id ?? null,
+            company: {
+              id: coerceHrmListCompanyId(m.company_id),
+              name: m.company_id,
+              code: null,
+              logo_url: null,
+            },
+          })),
+        );
+      }
+      return { error: null };
     } catch (error) {
       return { error: error as Error };
     }
   };
 
-  const signInWithOAuth = async (provider: Provider) => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/onboarding`,
-        },
-      });
-      return { error: error as Error | null };
-    } catch (error) {
-      return { error: error as Error };
-    }
+  const signInWithOAuth = async (_provider: OAuthProvider) => {
+    return {
+      error: new ApiClientError({
+        status: 501,
+        code: 'HRM-AUTH-OAUTH',
+        message: 'Đăng nhập Google chỉ khả dụng trên Portal X-BOS.',
+      }),
+    };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    clearPortalSession();
     setUser(null);
     setSession(null);
     setProfile(null);
@@ -281,14 +239,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user.id);
-    }
+    hydrateFromPortalToken();
   };
 
   const refreshMemberships = async () => {
-    if (user) {
-      await fetchMemberships(user.id);
+    if (hasPortalSession() && currentCompanyId) {
+      setMemberships([portalMembership(currentCompanyId)]);
     }
   };
 

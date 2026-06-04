@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -62,14 +61,7 @@ export function CandidateSourceStats({ selectedSource, onSourceFilter }: Candida
     queryKey: ['candidates_source_stats', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      
-      const { data, error } = await supabase
-        .from('candidates')
-        .select('id, source, stage, rating, applied_date')
-        .eq('company_id', currentCompanyId);
-      
-      if (error) throw error;
-      return data || [];
+      return null || [];
     },
     enabled: !!currentCompanyId,
   });

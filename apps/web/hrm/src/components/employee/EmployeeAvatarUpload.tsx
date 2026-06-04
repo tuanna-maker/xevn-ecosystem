@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, Loader2, X, User } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { hrmStorageRemoveStub, hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 
 interface EmployeeAvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -43,38 +43,19 @@ export function EmployeeAvatarUpload({
     setIsUploading(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${employeeCode}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-
       if (currentAvatarUrl) {
-        const oldPath = currentAvatarUrl.split('/').pop();
-        if (oldPath) {
-          await supabase.storage
-            .from('employee-avatars')
-            .remove([`avatars/${oldPath}`]);
-        }
+        hrmStorageRemoveStub('employee-avatar-remove');
       }
 
-      const { error: uploadError } = await supabase.storage
-        .from('employee-avatars')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('employee-avatars')
-        .getPublicUrl(filePath);
+      const publicUrl = await hrmStorageUploadStub(file, 'employee-avatar-upload');
+      if (!publicUrl) throw new Error('Upload failed');
 
       setPreviewUrl(publicUrl);
       onAvatarChange(publicUrl);
       toast.success(t('avatar.uploadSuccess'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error uploading avatar:', error);
-      toast.error(t('avatar.uploadError') + ': ' + error.message);
+      toast.error(t('avatar.uploadError'));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -83,111 +64,55 @@ export function EmployeeAvatarUpload({
     }
   };
 
-  const handleRemoveAvatar = async () => {
-    if (!currentAvatarUrl) {
-      setPreviewUrl(null);
-      onAvatarChange(null);
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      const urlParts = currentAvatarUrl.split('/');
-      const fileName = urlParts[urlParts.length - 1];
-      const filePath = `avatars/${fileName}`;
-
-      const { error } = await supabase.storage
-        .from('employee-avatars')
-        .remove([filePath]);
-
-      if (error) throw error;
-
-      setPreviewUrl(null);
-      onAvatarChange(null);
-      toast.success(t('avatar.removeSuccess'));
-    } catch (error: any) {
-      console.error('Error removing avatar:', error);
-      toast.error(t('avatar.removeError') + ': ' + error.message);
-    } finally {
-      setIsUploading(false);
-    }
+  const handleRemove = () => {
+    hrmStorageRemoveStub('employee-avatar-remove');
+    setPreviewUrl(null);
+    onAvatarChange(null);
+    toast.success(t('avatar.removeSuccess'));
   };
 
-  const getInitials = () => {
-    return fullName.split(' ').pop()?.charAt(0).toUpperCase() || 'N';
-  };
+  const initials = fullName
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative group">
-        <Avatar className="w-24 h-24 border-2 border-border">
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative">
+        <Avatar className="h-24 w-24">
           <AvatarImage src={previewUrl || undefined} alt={fullName} />
-          <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-            {getInitials()}
-          </AvatarFallback>
+          <AvatarFallback className="text-lg">{initials || <User className="h-8 w-8" />}</AvatarFallback>
         </Avatar>
-
-        {isUploading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-full">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          </div>
-        )}
-
-        {!disabled && !isUploading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Camera className="w-4 h-4" />
-            </Button>
-          </div>
+        {!disabled && (
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            className="absolute bottom-0 right-0 h-8 w-8 rounded-full shadow"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+          >
+            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+          </Button>
         )}
       </div>
-
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        onChange={handleFileSelect}
         className="hidden"
+        onChange={handleFileSelect}
         disabled={disabled || isUploading}
       />
-
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={disabled || isUploading}
-        >
-          <Camera className="w-4 h-4 mr-2" />
-          {previewUrl ? t('avatar.change') : t('avatar.upload')}
+      {previewUrl && !disabled && (
+        <Button type="button" variant="ghost" size="sm" onClick={handleRemove}>
+          <X className="h-4 w-4 mr-1" />
+          {t('avatar.remove')}
         </Button>
-
-        {previewUrl && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleRemoveAvatar}
-            disabled={disabled || isUploading}
-            className="text-destructive hover:text-destructive"
-          >
-            <X className="w-4 h-4 mr-2" />
-            {t('common.delete')}
-          </Button>
-        )}
-      </div>
-
-      <p className="text-xs text-muted-foreground text-center">
-        {t('avatar.formatHint')}
-      </p>
+      )}
+      <p className="text-xs text-muted-foreground text-center">{employeeCode}</p>
     </div>
   );
 }

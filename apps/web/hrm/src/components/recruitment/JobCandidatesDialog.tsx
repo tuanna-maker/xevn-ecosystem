@@ -1,8 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,6 +57,14 @@ import {
   XCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  createCandidateApplication,
+  deleteCandidateApplication,
+  listCandidateApplications,
+  listCandidatesPool,
+  updateCandidateApplicationStage,
+  type HrmCandidateApplicationEnriched,
+} from '@/integrations/hrmApi';
 
 interface Candidate {
   id: string;
@@ -123,55 +130,41 @@ export function JobCandidatesDialog({
 
   // Fetch applications for this job posting
   const { data: applications = [], isLoading } = useQuery({
-    queryKey: ['candidate_applications', jobPostingId],
+    queryKey: ['candidate_applications', jobPostingId, currentCompanyId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('candidate_applications')
-        .select(`
-          *,
-          candidates (
-            id,
-            full_name,
-            email,
-            phone,
-            position,
-            stage,
-            rating,
-            avatar_url,
-            applied_date,
-            source
-          )
-        `)
-        .eq('job_posting_id', jobPostingId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as CandidateApplication[];
+      if (!currentCompanyId) return [] as CandidateApplication[];
+      const result = await listCandidateApplications({
+        company_id: currentCompanyId,
+        job_posting_id: jobPostingId,
+      });
+      return (result.data ?? []) as unknown as HrmCandidateApplicationEnriched[] as CandidateApplication[];
     },
-    enabled: open && !!jobPostingId,
+    enabled: open && !!jobPostingId && !!currentCompanyId,
   });
 
   // Fetch all candidates not yet linked to this job
   const { data: availableCandidates = [] } = useQuery({
-    queryKey: ['available_candidates', jobPostingId, currentCompanyId],
+    queryKey: ['available_candidates', jobPostingId, currentCompanyId, applications.length],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      
-      // Get IDs of candidates already linked
-      const linkedIds = applications.map(a => a.candidate_id);
-      
-      let query = supabase
-        .from('candidates')
-        .select('*')
-        .eq('company_id', currentCompanyId);
-      
-      if (linkedIds.length > 0) {
-        query = query.not('id', 'in', `(${linkedIds.join(',')})`);
-      }
-      
-      const { data, error } = await query.order('full_name');
-      if (error) throw error;
-      return data as Candidate[];
+      const pool = await listCandidatesPool({ company_id: currentCompanyId });
+      const linked = new Set(
+        applications.map((a) => a.candidate_id),
+      );
+      return (pool.data ?? [])
+        .filter((c) => !linked.has(c.id))
+        .map((c) => ({
+          id: c.id,
+          full_name: String(c.full_name ?? ''),
+          email: String(c.email ?? ''),
+          phone: c.phone ? String(c.phone) : null,
+          position: c.position ? String(c.position) : null,
+          stage: c.stage ? String(c.stage) : null,
+          rating: null,
+          avatar_url: null,
+          applied_date: c.applied_date ? String(c.applied_date) : null,
+          source: c.source ? String(c.source) : null,
+        })) as Candidate[];
     },
     enabled: isAddDialogOpen && !!currentCompanyId,
   });
@@ -179,13 +172,13 @@ export function JobCandidatesDialog({
   // Add candidate to job
   const addCandidateMutation = useMutation({
     mutationFn: async (candidateId: string) => {
-      const { error } = await supabase.from('candidate_applications').insert({
+      if (!currentCompanyId) throw new Error('Missing company');
+      await createCandidateApplication({
+        company_id: currentCompanyId,
         candidate_id: candidateId,
         job_posting_id: jobPostingId,
-        company_id: currentCompanyId!,
         stage: 'applied',
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
@@ -202,11 +195,8 @@ export function JobCandidatesDialog({
   // Update application stage
   const updateStageMutation = useMutation({
     mutationFn: async ({ id, stage }: { id: string; stage: string }) => {
-      const { error } = await supabase
-        .from('candidate_applications')
-        .update({ stage })
-        .eq('id', id);
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('Missing company');
+      await updateCandidateApplicationStage(id, currentCompanyId, stage);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
@@ -220,11 +210,8 @@ export function JobCandidatesDialog({
   // Remove candidate from job
   const removeCandidateMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('candidate_applications')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('Missing company');
+      await deleteCandidateApplication(id, currentCompanyId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });

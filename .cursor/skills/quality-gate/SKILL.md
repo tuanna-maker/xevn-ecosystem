@@ -14,6 +14,8 @@ description: Applies QA and QC release governance with defect closure checks, tr
 - Blocker/critical defects are resolved or explicitly waived by authority.
 - Automation and UAT evidence are attached with reproducible steps.
 - Build, migration, and runtime checks are logged.
+- **Evidence pack verify PASS** before QC dispatch: `pnpm run verify:qc:evidence-pack -- --evidence <qa-md>`
+- Reform plan: `docs/program/QC_ZERO_DEFECT_REFORM_PLAN.md`
 - Pre-merge checklist is completed:
   - `.cursor/templates/PRE_MERGE_CHECKLIST_TEMPLATE.md`
 

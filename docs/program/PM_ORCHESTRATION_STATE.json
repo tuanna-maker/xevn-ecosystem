@@ -1,0 +1,28 @@
+{
+  "updated": "2026-05-31T12:00:00+07:00",
+  "north_star": "PROD_LIVE_FOR_PARTNER",
+  "policy": "pm-autonomous-orchestration — W10→W14 mandatory",
+  "pm_charter": "docs/program/PM_AUTONOMOUS_CHARTER.md",
+  "estimate_doc": "docs/program/PHASE1_100_PERCENT_ESTIMATE.md",
+  "active_program": "PHASE1-100-PERCENT-CLOSE",
+  "active_wave": 11,
+  "active_bounded_wave": "PHASE1-W11-W13-PARALLEL",
+  "waves_remaining": ["W10-tail", "W11", "W12", "W13", "W14"],
+  "program_percent_estimate": 78,
+  "prod_percent_estimate": 15,
+  "active_work_items": [
+    "P1-P100-W10-MOB-FIX-01",
+    "P1-P100-W11-BA-01",
+    "P1-P100-W11-QA-02",
+    "P1-P100-W11-QC-01",
+    "P1-P100-W13-PREP"
+  ],
+  "pending_queue": [
+    "P1-P100-W10-DEVICE-03",
+    "P1-P100-W12-QC-FINAL",
+    "P1-P100-W12-PM-CLOSE",
+    "P1-P100-W13-DO-PROD",
+    "P1-P100-W14-QC-PROD"
+  ],
+  "note": "Sponsor target PROD LIVE — W13 prep runs parallel W11; not stopping at UAT."
+}

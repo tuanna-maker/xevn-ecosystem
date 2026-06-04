@@ -1122,8 +1122,8 @@ export interface Employee {
 
 export const mockEmployees: Employee[] = [
   // ===== HOLDING =====
-  { id: '1', employeeCode: 'XEVN001', fullName: 'Nguyễn Văn Hùng', positionCode: 'CEO', position: 'Tổng Giám đốc', departmentCode: 'BDH', department: 'Ban Điều hành', companyId: 'all', companyName: 'Tập đoàn XeVN', email: 'hung.nv@xevn.vn', phone: '0901234567', hireDate: '2015-01-15', status: 'active', level: 'C-Level' },
-  { id: '2', employeeCode: 'XEVN002', fullName: 'Lê Thị Kim Ngân', positionCode: 'CFO', position: 'Giám đốc Tài chính', departmentCode: 'PTC', department: 'Phòng Tài chính Tập đoàn', companyId: 'all', companyName: 'Tập đoàn XeVN', email: 'ngan.ltk@xevn.vn', phone: '0902345678', hireDate: '2016-03-20', status: 'active', level: 'C-Level' },
+  { id: '1', employeeCode: 'XEVN001', fullName: 'Nguyễn Văn Hùng', positionCode: 'CEO', position: 'Tổng Giám đốc', departmentCode: 'BDH', department: 'Ban Điều hành', companyId: 'all', companyName: 'Tập đoàn XeVN', email: 'hung.nv@xe.vn', phone: '0901234567', hireDate: '2015-01-15', status: 'active', level: 'C-Level' },
+  { id: '2', employeeCode: 'XEVN002', fullName: 'Lê Thị Kim Ngân', positionCode: 'CFO', position: 'Giám đốc Tài chính', departmentCode: 'PTC', department: 'Phòng Tài chính Tập đoàn', companyId: 'all', companyName: 'Tập đoàn XeVN', email: 'ngan.ltk@xe.vn', phone: '0902345678', hireDate: '2016-03-20', status: 'active', level: 'C-Level' },
   
   // ===== TRSPORT =====
   { id: '3', employeeCode: 'TRS001', fullName: 'Trần Minh Đức', positionCode: 'COO', position: 'Giám đốc Vận hành', departmentCode: 'DHVT', department: 'Ban Điều hành Vận tải', companyId: 'trsport', companyName: 'TRSPORT', email: 'duc.tm@trsport.vn', phone: '0912345678', hireDate: '2016-05-10', status: 'active', level: 'C-Level' },

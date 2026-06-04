@@ -5,10 +5,18 @@
  *
  * Usage (repo root):
  *   node scripts/qc-dev-stack.mjs
- *   XBOS_HEALTH_URL=http://127.0.0.1:28002/api/xbos node scripts/qc-dev-stack.mjs
+ *   node scripts/qc-dev-stack.mjs --hrm-density-hint
+ *   node scripts/qc-dev-stack.mjs --verify-density
+ *   HRM_DENSITY_HINT=1 node scripts/qc-dev-stack.mjs
  */
+import { spawnSync } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const XBOS = process.env.XBOS_HEALTH_URL || 'http://127.0.0.1:28002/api/xbos';
-const PORTAL = process.env.PORTAL_DEV_URL || 'http://127.0.0.1:5175';
+const HRM = process.env.HRM_HEALTH_URL || 'http://127.0.0.1:28001/api/hrm';
+const PORTAL = process.env.PORTAL_DEV_URL || 'http://127.0.0.1:5173';
 
 async function check(name, url) {
   try {
@@ -31,20 +39,41 @@ async function check(name, url) {
 }
 
 async function main() {
-  console.log('qc:dev-stack — xevn-ecosystem (XBOS + optional portal)\n');
+  console.log('qc:dev-stack — xevn-ecosystem (HRM + XBOS + portal)\n');
+  const hrmOk = await check('hrm-api', HRM);
   const xbosOk = await check('xbos-api', XBOS);
   await check('web-portal (optional)', PORTAL);
 
-  if (!xbosOk) {
+  if (!hrmOk || !xbosOk) {
     console.log('\n--- Gợi ý xử lý ---');
-    console.log('• ECONNREFUSED / fetch failed: API chưa chạy → `pnpm dev` hoặc `pnpm dev:xbos-api`');
+    if (!hrmOk) {
+      console.log('• hrm-api :28001 down → portal `/api/hrm/*` trả 500 — chạy `pnpm run dev:hrm-api`');
+    }
+    console.log('• ECONNREFUSED / fetch failed: API chưa chạy → `pnpm dev` hoặc `pnpm dev:xbos-api` / `pnpm dev:hrm-api`');
     console.log('• database "…" does not exist (3D000): tạo DB `xevn_xbos` hoặc đặt DATABASE_URL_XBOS / DB_HOST+DB_PORT+DB_USER+DB_NAME_XBOS');
     console.log('• Trước đó từng lỗi database = tên user OS: đã sửa pool mặc định trong xbos-db.service.ts — pull và restart xbos-api');
     console.log('• Proxy portal: web-portal/.env có VITE_DEV_PROXY_XBOS_API trỏ đúng host:port xbos-api');
     process.exit(1);
   }
 
-  console.log('\nXBOS healthy — có thể chấp nhận bước QC dev cho API.');
+  console.log('\nHRM + XBOS healthy — có thể chấp nhận bước QC dev (chạy thêm `pnpm run qc:fe-be-health` trước UAT).');
+
+  const densityHint = process.env.HRM_DENSITY_HINT === '1' || process.argv.includes('--hrm-density-hint');
+  if (densityHint) {
+    console.log('\n--- HRM fidelity (G-FID-07) ---');
+    console.log('• Shell PASS ≠ menu data full — run: pnpm run verify:hrm:menu-density');
+    console.log('• Seed order: docs/ops/HRM_FIDELITY_SEED_RUNBOOK.md');
+  }
+
+  if (process.argv.includes('--verify-density')) {
+    console.log('\n▶ verify:hrm:menu-density (post qc:dev-stack)');
+    const r = spawnSync('node', [resolve(repoRoot, 'scripts/verify-hrm-menu-data-density.mjs')], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+    });
+    process.exit(r.status ?? 0);
+  }
+
   process.exit(0);
 }
 

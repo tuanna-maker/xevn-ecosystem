@@ -1,6 +1,18 @@
 import { resolveIdentityScope } from './identityScope';
-import { isMasterTenant, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
+import {
+  GROUP_HOLDING_COMPANY_ID,
+  isMasterTenant,
+  MASTER_TENANT_ID,
+  MEMBER_DEFAULT_COMPANY_ID,
+} from '../constants/tenant';
+import {
+  resolveLegalEntityApiIdFromList,
+  type LegalEntityIdHints,
+} from './legalEntityIdResolver';
 import { xbosFetch, xbosGetData } from './xbosHttp';
+import { fetchGroupOrgOverview } from './tenantScopeApi';
+
+export { resolveLegalEntityApiIdFromList, type LegalEntityIdHints };
 
 function scopeHeaders(tenantId?: string, companyId?: string, withBody = false) {
   const scope = resolveIdentityScope(tenantId ?? null, companyId ?? null);
@@ -60,6 +72,30 @@ export async function fetchOrgTree(tenantId: string): Promise<OrgTreeNode[]> {
   return data?.tree ?? [];
 }
 
+/** UC-CC-01 — load department rows for a legal entity (group overview when master tenant). */
+export async function loadLegalEntityDepartmentTree(
+  tenantId: string,
+  legalEntityId?: string | null,
+): Promise<OrgTreeNode[]> {
+  if (isMasterTenant(tenantId)) {
+    const overview = await fetchGroupOrgOverview();
+    const trees = overview?.trees ?? [];
+    if (legalEntityId) {
+      const match = trees.find((t) => t.tenantId === legalEntityId);
+      if (match?.tree?.length) return match.tree;
+    }
+    return trees.flatMap((t) => t.tree ?? []);
+  }
+  return fetchOrgTree(tenantId);
+}
+
+/** UC-CC-03 — pháp nhân holding (tenant master, company holding). */
+export async function fetchHoldingLegalEntities(
+  tenantId: string = MASTER_TENANT_ID,
+): Promise<LegalEntityApiRow[]> {
+  return fetchLegalEntities(tenantId, GROUP_HOLDING_COMPANY_ID);
+}
+
 export async function fetchLegalEntities(
   tenantId: string,
   companyId = MEMBER_DEFAULT_COMPANY_ID,
@@ -89,6 +125,33 @@ export async function createLegalEntity(
   });
   if (!envelope?.data) throw new Error('legal entity create returned empty payload');
   return envelope.data;
+}
+
+/** UC-CC-03 — resolve + load legal entity row (member unit id may differ from DB uuid). */
+export async function resolveLegalEntityApiIdForCompany(
+  tenantId: string,
+  company: LegalEntityIdHints,
+  companyId = MEMBER_DEFAULT_COMPANY_ID,
+): Promise<string | null> {
+  const items = await fetchLegalEntities(tenantId, companyId);
+  return resolveLegalEntityApiIdFromList(company, items);
+}
+
+export async function fetchLegalEntityForEdit(
+  tenantId: string,
+  entityId: string,
+  companyId = MEMBER_DEFAULT_COMPANY_ID,
+  hints?: { code?: string },
+): Promise<LegalEntityApiRow | null> {
+  const items = await fetchLegalEntities(tenantId, companyId);
+  const resolvedId = resolveLegalEntityApiIdFromList(
+    { id: entityId, tenantId, code: hints?.code },
+    items,
+  );
+  if (!resolvedId) {
+    return null;
+  }
+  return items.find((row) => String(row.id) === resolvedId) ?? null;
 }
 
 export async function updateLegalEntity(

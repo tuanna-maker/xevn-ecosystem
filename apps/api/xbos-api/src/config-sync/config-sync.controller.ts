@@ -5,6 +5,7 @@ import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
+import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
 import { PublishCatalogDto } from './dto/publish-catalog.dto';
 
 @Controller('config-sync')
@@ -42,10 +43,15 @@ export class ConfigSyncController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    const data = await this.configSyncService.publishCatalog(
-      catalogKey,
-      payload as PublishCatalogPayload,
-    );
+    const scope = resolveScopeContext(authorization, {
+      tenantId: payload.tenantId,
+      companyId: payload.companyId,
+    });
+    const data = await this.configSyncService.publishCatalog(catalogKey, {
+      ...(payload as PublishCatalogPayload),
+      tenantId: scope.tenantId,
+      companyId: scope.companyId,
+    });
     return ok(data, 'XBOS-CFG-203', 'Catalog published');
   }
 
@@ -66,7 +72,7 @@ export class ConfigSyncController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveXbosGroupLegalReadScopeContext(authorization, { tenantId, companyId });
     const data = await this.configSyncService.getCatalogForTarget(catalogKey, target, scope.tenantId, scope.companyId);
     return ok(data, 'XBOS-CFG-201', 'Catalog fetched');
   }
@@ -87,7 +93,7 @@ export class ConfigSyncController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveXbosGroupLegalReadScopeContext(authorization, { tenantId, companyId });
     const data = await this.configSyncService.listCatalogsForTarget(target, scope.tenantId, scope.companyId);
     return ok(data, 'XBOS-CFG-202', 'Catalogs listed');
   }

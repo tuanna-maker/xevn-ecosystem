@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { vi, enUS, zhCN } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { toErrorMessage } from '@/lib/apiError';
+import { listEmployees } from '@/integrations/hrmApi';
+import {
+  createInsurancePolicyParticipant,
+  updateInsurancePolicyParticipant,
+} from '@/integrations/hrmApi';
 import {
   Dialog,
   DialogContent,
@@ -108,14 +113,8 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     queryKey: ['employees-list', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('employees')
-        .select('id, full_name, employee_code, department, avatar_url')
-        .eq('company_id', currentCompanyId)
-        .is('deleted_at', null)
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
+      const res = await listEmployees({ company_id: currentCompanyId, page_size: 200 });
+      return res.data ?? [];
     },
     enabled: !!currentCompanyId && open,
   });
@@ -179,24 +178,23 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   const createMutation = useMutation({
     mutationFn: async (data: FormData) => {
       if (!currentCompanyId) throw new Error('No company selected');
-      const { error } = await supabase.from('insurance').insert({
+      return createInsurancePolicyParticipant({
+        company_id: currentCompanyId,
         employee_code: data.employee_code,
         employee_name: data.employee_name,
-        department: data.department || null,
-        social_insurance_number: data.social_insurance_number || null,
-        health_insurance_number: data.health_insurance_number || null,
-        unemployment_insurance_number: data.unemployment_insurance_number || null,
-        social_insurance_rate: data.social_insurance_rate || null,
-        health_insurance_rate: data.health_insurance_rate || null,
-        unemployment_insurance_rate: data.unemployment_insurance_rate || null,
-        base_salary: data.base_salary || null,
-        effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-        expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-        status: data.status,
-        notes: data.notes || null,
-        company_id: currentCompanyId,
+        department: data.department,
+        social_insurance_number: data.social_insurance_number,
+        health_insurance_number: data.health_insurance_number,
+        unemployment_insurance_number: data.unemployment_insurance_number,
+        social_insurance_rate: data.social_insurance_rate,
+        health_insurance_rate: data.health_insurance_rate,
+        unemployment_insurance_rate: data.unemployment_insurance_rate,
+        base_salary: data.base_salary ?? 0,
+        effective_date: data.effective_date?.toISOString().slice(0, 10),
+        expiry_date: data.expiry_date?.toISOString().slice(0, 10),
+        status: data.status as 'active' | 'inactive' | 'expired',
+        notes: data.notes,
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['insurance'] });
@@ -204,34 +202,30 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
       form.reset();
       onOpenChange(false);
     },
-    onError: (error) => {
-      toast.error(d('addError') + ': ' + error.message);
+    onError: (error: unknown) => {
+      toast.error(`${d('addError')}: ${toErrorMessage(error)}`);
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      if (!editingInsurance) throw new Error('No insurance to update');
-      const { error } = await supabase
-        .from('insurance')
-        .update({
-          employee_code: data.employee_code,
-          employee_name: data.employee_name,
-          department: data.department || null,
-          social_insurance_number: data.social_insurance_number || null,
-          health_insurance_number: data.health_insurance_number || null,
-          unemployment_insurance_number: data.unemployment_insurance_number || null,
-          social_insurance_rate: data.social_insurance_rate || null,
-          health_insurance_rate: data.health_insurance_rate || null,
-          unemployment_insurance_rate: data.unemployment_insurance_rate || null,
-          base_salary: data.base_salary || null,
-          effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-          expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-          status: data.status,
-          notes: data.notes || null,
-        })
-        .eq('id', editingInsurance.id);
-      if (error) throw error;
+      if (!editingInsurance || !currentCompanyId) throw new Error('No insurance to update');
+      return updateInsurancePolicyParticipant(editingInsurance.id, currentCompanyId, {
+        employee_code: data.employee_code,
+        employee_name: data.employee_name,
+        department: data.department,
+        social_insurance_number: data.social_insurance_number,
+        health_insurance_number: data.health_insurance_number,
+        unemployment_insurance_number: data.unemployment_insurance_number,
+        social_insurance_rate: data.social_insurance_rate,
+        health_insurance_rate: data.health_insurance_rate,
+        unemployment_insurance_rate: data.unemployment_insurance_rate,
+        base_salary: data.base_salary ?? 0,
+        effective_date: data.effective_date?.toISOString().slice(0, 10),
+        expiry_date: data.expiry_date?.toISOString().slice(0, 10),
+        status: data.status as 'active' | 'inactive' | 'expired',
+        notes: data.notes,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['insurance'] });
@@ -239,8 +233,8 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
       form.reset();
       onOpenChange(false);
     },
-    onError: (error) => {
-      toast.error(d('updateError') + ': ' + error.message);
+    onError: (error: unknown) => {
+      toast.error(`${d('updateError')}: ${toErrorMessage(error)}`);
     },
   });
 
@@ -253,11 +247,11 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   };
 
   const handleEmployeeSelect = (employeeId: string) => {
-    const employee = employees.find(e => e.id === employeeId);
+    const employee = employees.find((e) => e.id === employeeId);
     if (employee) {
       form.setValue('employee_code', employee.employee_code);
       form.setValue('employee_name', employee.full_name);
-      form.setValue('department', employee.department || '');
+      form.setValue('department', String(employee.custom_fields?.department ?? employee.job_title_key ?? ''));
     }
   };
 
@@ -457,7 +451,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
                   <FormItem>
                     <FormLabel>{d('baseSalary')}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="VNĐ" {...field} />
+                      <Input type="number" placeholder="VNÄ" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

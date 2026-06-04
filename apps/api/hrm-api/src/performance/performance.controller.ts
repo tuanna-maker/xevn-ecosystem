@@ -28,7 +28,9 @@ export class PerformanceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.createCycle(body).then((data) => ok(data, 'HRM-PERF-201', 'Performance cycle created'));
+    return this.service
+      .createCycle(body, authorization)
+      .then((data) => ok(data, 'HRM-PERF-201', 'Performance cycle created'));
   }
 
   @Get('cycles')
@@ -41,7 +43,7 @@ export class PerformanceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listCycles(query).then((data) => ok(data, 'HRM-PERF-200', 'Performance cycles listed'));
+    return this.service.listCycles(query, authorization).then((data) => ok(data, 'HRM-PERF-200', 'Performance cycles listed'));
   }
 
   @Post('evaluations')
@@ -54,7 +56,7 @@ export class PerformanceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.createEvaluation(body).then((data) => ok(data, 'HRM-PERF-202', 'Performance evaluation created'));
+    return this.service.createEvaluation(body, authorization).then((data) => ok(data, 'HRM-PERF-202', 'Performance evaluation created'));
   }
 
   @Get('evaluations')
@@ -67,6 +69,6 @@ export class PerformanceController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listEvaluations(query).then((data) => ok(data, 'HRM-PERF-200', 'Performance evaluations listed'));
+    return this.service.listEvaluations(query, authorization).then((data) => ok(data, 'HRM-PERF-200', 'Performance evaluations listed'));
   }
 }

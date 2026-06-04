@@ -2,7 +2,9 @@ import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ApiException } from '../common/api.exception';
+import { MASTER_TENANT_ID } from '../common/tenant.constants';
 import { XbosDbService } from '../db/xbos-db.service';
+import { PlatformAuditService } from '../platform/platform-audit.service';
 
 type SeedActivity = {
   activity_code: string;
@@ -19,7 +21,10 @@ type CatalogRow = SeedActivity & { id: string };
 export class RaciGovernanceService implements OnModuleInit {
   private seedCache: { version_label: string; activities: SeedActivity[] } | null = null;
 
-  constructor(private readonly db: XbosDbService) {}
+  constructor(
+    private readonly db: XbosDbService,
+    private readonly platformAudit: PlatformAuditService,
+  ) {}
 
   async onModuleInit() {
     try {
@@ -52,7 +57,10 @@ export class RaciGovernanceService implements OnModuleInit {
     );
     if (Number(count.rows[0]?.n ?? 0) > 0) return;
 
-    const tenantId = process.env.SEED_TENANT_ID?.trim() || 'xe-vietnam';
+    const tenantId =
+      process.env.SEED_TENANT_ID?.trim() ||
+      process.env.MASTER_TENANT_ID?.trim() ||
+      MASTER_TENANT_ID;
     const ver = await this.db.query<{ id: string }>(
       `INSERT INTO public.raci_catalog_version (tenant_id, version_label, source_ref, status)
        VALUES ($1, $2, 'raci-catalog.seed.json', 'active')
@@ -82,7 +90,16 @@ export class RaciGovernanceService implements OnModuleInit {
     }
   }
 
-  private async listCatalogRows(tenantId: string, domainCode?: string): Promise<CatalogRow[]> {
+  /** Group RACI catalog SoT lives under master tenant; member partitions reuse it. */
+  private catalogTenantForLookup(tenantId: string): string {
+    const normalized = tenantId.trim().toLowerCase();
+    return normalized === MASTER_TENANT_ID ? normalized : MASTER_TENANT_ID;
+  }
+
+  private async queryCatalogRowsFromDb(
+    tenantId: string,
+    domainCode?: string,
+  ): Promise<CatalogRow[]> {
     const params: string[] = [tenantId];
     let domainFilter = '';
     if (domainCode) {
@@ -97,17 +114,40 @@ export class RaciGovernanceService implements OnModuleInit {
        ORDER BY a.domain_code, a.seq_no`,
       params,
     );
-    if (res.rows.length) return res.rows;
+    return res.rows;
+  }
 
+  private catalogRowsFromSeedFile(domainCode?: string): CatalogRow[] {
     const seed = this.loadSeedFile();
     if (!seed) return [];
     return seed.activities
       .filter((a) => !domainCode || a.domain_code === domainCode)
-      .map((a, i) => ({
+      .map((a) => ({
         ...a,
         id: `seed-${a.activity_code}`,
         default_matrix: a.default_matrix ?? {},
       }));
+  }
+
+  private resolveCatalogActivityId(catalog: CatalogRow[], rawActivityId: string): string {
+    const id = rawActivityId.trim();
+    if (!id.startsWith('seed-')) return id;
+    const activityCode = id.slice('seed-'.length);
+    const row = catalog.find((c) => c.activity_code === activityCode);
+    return row?.id ?? id;
+  }
+
+  private async listCatalogRows(tenantId: string, domainCode?: string): Promise<CatalogRow[]> {
+    const catalogTenant = this.catalogTenantForLookup(tenantId);
+    const dbRows = await this.queryCatalogRowsFromDb(catalogTenant, domainCode);
+    if (dbRows.length) return dbRows;
+
+    if (catalogTenant !== tenantId.trim().toLowerCase()) {
+      const tenantRows = await this.queryCatalogRowsFromDb(tenantId.trim().toLowerCase(), domainCode);
+      if (tenantRows.length) return tenantRows;
+    }
+
+    return this.catalogRowsFromSeedFile(domainCode);
   }
 
   async listCatalog(tenantId: string, domainCode?: string) {
@@ -134,7 +174,8 @@ export class RaciGovernanceService implements OnModuleInit {
     );
     const overrideMap = new Map<string, string>();
     for (const o of overrides.rows) {
-      overrideMap.set(`${o.activity_id}:${o.org_column_id}`, o.raci_letters);
+      const actId = this.resolveCatalogActivityId(catalog, o.activity_id);
+      overrideMap.set(`${actId}:${o.org_column_id}`, o.raci_letters);
     }
 
     const rows = catalog.map((a) => {
@@ -263,6 +304,16 @@ export class RaciGovernanceService implements OnModuleInit {
         body.actor_id ?? null,
       ],
     );
+
+    await this.platformAudit.emit({
+      actor: body.actor_id ?? undefined,
+      tenantId,
+      companyId,
+      action: 'raci.cell.update',
+      entityType: 'company_raci_matrix_cell',
+      entityId: `${body.activity_id}:${body.org_column_id}`,
+      payload: { oldLetters, newLetters: letters },
+    });
 
     return res.rows[0];
   }

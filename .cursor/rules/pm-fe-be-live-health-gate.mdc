@@ -1,0 +1,50 @@
+---
+description: PM/Dev — bắt buộc kiểm tra FE↔BE sống trước khi báo UAT; HRM down = portal 500; fix + regression, không sửa một chỗ hỏng chỗ khác.
+alwaysApply: true
+---
+
+# FE↔BE live health gate (xevn-ecosystem)
+
+## Triệu chứng user (class lỗi)
+
+- UI: `HRM API request failed (500)`, `HRM API Sync ERROR`, danh sách **0** NV.
+- Console: `Failed to load resource` `/api/hrm/employees`, `/api/hrm/catalog-sync` **500**.
+- **Nguyên nhân thường gặp:** `hrm-api` **không chạy** trên `:28001` → Vite proxy trả **500** (không phải bug FE logic).
+
+## Bắt buộc trước khi báo UAT-ready / sau báo cáo PM
+
+1. Chạy (agent, không user):
+
+```bash
+pnpm run qc:dev-stack
+pnpm run qc:fe-be-health
+# hoặc: pnpm run qc:fe-be-health:pilot
+```
+
+2. **Exit 0** mới được cập nhật `USER_SERVICE_STATUS` / PASS QA L2.
+3. Nếu FAIL:
+   - `ECONNREFUSED :28001` → `pnpm run dev:hrm-api` (hoặc `apps/api/hrm-api` `start:dev`).
+   - 500 khi HRM up → đọc terminal Nest stack trace, sửa BE, chạy `pnpm --filter hrm-api test`.
+   - Re-run `qc:fe-be-health` + `test:pilot:flows` + `test:hrm-embed:audit`.
+
+## Quy tắc sửa lỗi (không làm hỏng chỗ khác)
+
+1. **Root cause trước** — phân biệt down vs SQL vs scope 409.
+2. **Regression bắt buộc:** cùng PR/wave chạy jest package đụng + `qc:fe-be-health:pilot`.
+3. **Không** đổi scope/SQL list API mà không chạy `hrm-list-scope.spec.ts` + persona probes.
+4. Ghi evidence: `docs/qa/evidence/fe-be-health-YYYYMMDD.md` + bus.
+5. **Không** claim DONE nếu chỉ refresh browser khi API vẫn down.
+
+## Dev stack tối thiểu (local UAT)
+
+| Process | Port | Lệnh |
+|---------|------|------|
+| hrm-api | 28001 | `pnpm run dev:hrm-api` |
+| xbos-api | 28002 | `pnpm run dev:xbos-api` |
+| web-portal | 5175 | `pnpm run dev:web` hoặc `dev:web-only` + APIs |
+
+`pnpm dev` mặc định **không** gồm hrm-api — phải bật riêng.
+
+## PM
+
+Sau mỗi wave subagent: nếu task đụng HRM/portal → chạy `qc:fe-be-health` trước khi `PASS_TO_PM`.

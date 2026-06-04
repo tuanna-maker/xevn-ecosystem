@@ -79,6 +79,7 @@ export function AdvanceRequestsTab() {
     updateRequest,
     deleteRequest,
     updateApproval,
+    markPaid,
     addEmployee,
     removeEmployee,
     isCreating,
@@ -204,7 +205,7 @@ export function AdvanceRequestsTab() {
   const handleApproval = async () => {
     if (!selectedRequest) return;
     try {
-      await updateApproval({
+      const updated = await updateApproval({
         id: selectedRequest.id,
         level: approvalLevel,
         action: approvalAction,
@@ -213,8 +214,20 @@ export function AdvanceRequestsTab() {
       });
       setShowApprovalDialog(false);
       setApprovalNote('');
-      const updated = requests.find(r => r.id === selectedRequest.id);
-      if (updated) setSelectedRequest(updated);
+      setSelectedRequest(updated);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleMarkPaid = async () => {
+    if (!selectedRequest) return;
+    try {
+      const updated = await markPaid({
+        id: selectedRequest.id,
+        approverName: a('currentUser'),
+      });
+      setSelectedRequest(updated);
     } catch (error) {
       console.error(error);
     }
@@ -292,6 +305,12 @@ export function AdvanceRequestsTab() {
           </div>
           <div className="flex items-center gap-2">
             {getStatusBadge(selectedRequest.status)}
+            {selectedRequest.status === 'approved' && (
+              <Button onClick={handleMarkPaid}>
+                <DollarSign className="w-4 h-4 mr-2" />
+                {a('statusPaid')}
+              </Button>
+            )}
             {selectedRequest.status === 'pending' && currentStep && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

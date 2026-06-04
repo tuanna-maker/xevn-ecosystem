@@ -34,7 +34,20 @@ export const WorkspaceLayout: React.FC<{
   children: React.ReactNode;
   mainClassName?: string;
   className?: string;
-}> = ({ rail, secondarySidebar, children, mainClassName, className }) => {
+  /** HRM iframe: ưu tiên vùng nội dung, sidebar hẹp, xếp dọc trên màn nhỏ */
+  layoutMode?: 'default' | 'hrm-embed';
+  /** Khi HRM: rail phân hệ mặc định thu icon (đọc từ storage). */
+  hrmModuleRailCollapsed?: boolean;
+}> = ({
+  rail,
+  secondarySidebar,
+  children,
+  mainClassName,
+  className,
+  layoutMode = 'default',
+  hrmModuleRailCollapsed = true,
+}) => {
+  const hrmEmbed = layoutMode === 'hrm-embed';
   const isWideLayout = useMediaQuery(WORKSPACE_RAIL_WIDE_MEDIA);
   const isMdUp = useMediaQuery(WORKSPACE_RAIL_MD_MEDIA);
   const [pinned, setPinnedState] = useState(false);
@@ -42,11 +55,16 @@ export const WorkspaceLayout: React.FC<{
 
   useEffect(() => {
     try {
+      if (hrmEmbed) {
+        setPinnedState(false);
+        setHoverOpen(false);
+        return;
+      }
       setPinnedState(localStorage.getItem(WORKSPACE_RAIL_PINNED_STORAGE_KEY) === '1');
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [hrmEmbed]);
 
   const setPinned = useCallback((next: boolean) => {
     setPinnedState(next);
@@ -71,8 +89,11 @@ export const WorkspaceLayout: React.FC<{
     });
   }, []);
 
-  const collapseEnabled = isMdUp && !isWideLayout;
-  const contentExpanded = !collapseEnabled || pinned || hoverOpen;
+  /** HRM: luôn cho phép thu rail (kể cả màn ≥2xl) để iframe chiếm phần lớn chiều ngang. */
+  const collapseEnabled = isMdUp && (!isWideLayout || hrmEmbed);
+  const contentExpanded = hrmEmbed
+    ? pinned || hoverOpen || !hrmModuleRailCollapsed
+    : !collapseEnabled || pinned || hoverOpen;
 
   const railContext = useMemo(
     () => ({
@@ -96,12 +117,14 @@ export const WorkspaceLayout: React.FC<{
 
   return (
     <div
-      className={`flex min-h-0 flex-1 flex-col w-full ${XEVN_VIEWPORT_PADDING} py-8 ${className ?? ''}`}
+      className={`flex min-h-0 flex-1 flex-col w-full ${XEVN_VIEWPORT_PADDING} ${hrmEmbed ? 'py-3 md:py-4' : 'py-8'} ${className ?? ''}`}
     >
       <div className={`${XEVN_FLUID_SHELL} flex min-h-0 min-w-0 flex-1 flex-col`}>
         <WorkspaceRailContext.Provider value={railContext}>
           <div
-            className={`flex min-h-0 min-w-0 flex-1 flex-col ${WORKSPACE_COLUMN_GAP} md:flex-row md:items-stretch`}
+            className={`flex min-h-0 min-w-0 flex-1 flex-col md:flex-row md:items-stretch ${
+              hrmEmbed ? 'gap-2' : WORKSPACE_COLUMN_GAP
+            }`}
           >
             <div
               className={railColumnClass}
@@ -116,10 +139,23 @@ export const WorkspaceLayout: React.FC<{
             >
               {rail}
             </div>
-            {secondarySidebar ?? null}
+            {secondarySidebar ? (
+              <div
+                className={
+                  hrmEmbed ? 'hidden min-h-0 min-w-0 shrink-0 md:flex' : 'min-h-0 min-w-0 shrink-0'
+                }
+              >
+                {secondarySidebar}
+              </div>
+            ) : null}
             <main
-              className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden min-h-[min(22rem,50svh)] md:min-h-0 ${mainClassName ?? ''}`}
+              className={`flex min-h-0 min-w-0 flex-[1_1_0%] flex-col overflow-y-auto overflow-x-hidden min-h-[min(22rem,50svh)] md:min-h-0 ${
+                hrmEmbed ? 'min-h-[min(32rem,72dvh)] !overflow-hidden' : ''
+              } ${mainClassName ?? ''}`}
             >
+              {hrmEmbed && secondarySidebar ? (
+                <div className="shrink-0 md:hidden">{secondarySidebar}</div>
+              ) : null}
               {children}
             </main>
           </div>

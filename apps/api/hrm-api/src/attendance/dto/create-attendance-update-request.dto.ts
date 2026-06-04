@@ -1,7 +1,8 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class CreateAttendanceUpdateRequestDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsUUID()

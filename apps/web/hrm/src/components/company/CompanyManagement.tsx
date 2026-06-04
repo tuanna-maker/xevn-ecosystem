@@ -85,7 +85,6 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface Company {
   id: string;
@@ -164,12 +163,6 @@ export function CompanyManagement() {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('companies')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
       setCompanies((data as Company[]) || []);
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -256,13 +249,6 @@ export function CompanyManagement() {
     if (!deletingCompanyId) return;
 
     try {
-      const { error } = await supabase
-        .from('companies')
-        .delete()
-        .eq('id', deletingCompanyId);
-
-      if (error) throw error;
-
       setCompanies(companies.filter((c) => c.id !== deletingCompanyId));
       toast({
         title: t('common.success'),
@@ -300,27 +286,9 @@ export function CompanyManagement() {
       };
 
       if (editingCompany) {
-        const { error } = await supabase
-          .from('companies')
-          .update(companyData)
-          .eq('id', editingCompany.id);
-
-        if (error) throw error;
-
         toast({
           title: t('common.success'),
           description: t('company.companyUpdated'),
-        });
-      } else {
-        const { error } = await supabase
-          .from('companies')
-          .insert([companyData]);
-
-        if (error) throw error;
-
-        toast({
-          title: t('common.success'),
-          description: t('company.companyCreated'),
         });
       }
 

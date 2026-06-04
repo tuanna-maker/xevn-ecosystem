@@ -33,7 +33,11 @@ export function ProfileScreen() {
     setEmail(row.email);
     setFullName(row.full_name);
     setJobTitle(row.job_title_key ?? '');
-    setMeta(`id: ${row.id} · mã ${row.employee_code} · ${row.status}`);
+    const cf = (row as { custom_fields?: Record<string, string> }).custom_fields ?? {};
+    const dept = cf.department ?? cf.phong_ban ?? '';
+    setMeta(
+      `id: ${row.id} · mã ${row.employee_code} · ${row.status}${dept ? ` · ${dept}` : ''}`,
+    );
   }, [auth]);
 
   useFocusEffect(

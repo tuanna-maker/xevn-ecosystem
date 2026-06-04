@@ -1,0 +1,29 @@
+---
+description: Members must report completion and propose next prompt
+alwaysApply: true
+---
+
+# Member 2-task handoff discipline
+
+Applies to all roles in this repo: `dev-be`, `dev-fe`, `dev-mobile`, `devops`, `qa`, `qc`, `ba-process`, `ba-data`, `sa`, `technical-manager`, `pm`.
+
+## Mandatory handoff payload (every completed task)
+
+Do not end with a short confirmation only. Every completion must include:
+
+- `completion_report`: what was closed, what is still open.
+- `next_owner`: who should act next.
+- `next_dispatch_prompt`: concrete prompt PM can send immediately.
+- `ack_status`: `READY_FOR_QA` or `PASS_TO_PM` (or explicit FAIL/BLOCKED status).
+- `evidence_path`: reproducible file path.
+
+## 2-task rule (session/day)
+
+When a member completes 2 tasks in the same session/day:
+
+- The second completion **must** include an actionable `next_dispatch_prompt`.
+- PM must dispatch next owner in the same session (no defer-only wording).
+
+## PM enforcement
+
+PM treats missing `next_dispatch_prompt` as invalid handoff and re-requests completion payload before closing the wave.

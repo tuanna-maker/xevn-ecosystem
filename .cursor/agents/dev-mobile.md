@@ -29,3 +29,18 @@ Quality rules:
 - No mobile flow is DONE without state/error/retry path validation.
 - No integration is DONE without contract alignment evidence.
 - No release candidate is DONE without smoke/regression evidence.
+
+## Journey smoke (U19)
+
+Before `READY_FOR_QA`: execute J-MOB-* rows in `docs/program/PROGRAM_JOURNEY_MAP.md` for touched flows (list → detail, approvals action, offline queue replay).
+Mobile JWT `company_id` must use UUID from token — align with BE scope rules.
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

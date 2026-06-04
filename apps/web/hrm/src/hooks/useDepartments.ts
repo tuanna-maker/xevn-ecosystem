@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
 
 export interface Department {
   id: string;
@@ -19,13 +19,14 @@ export interface Department {
   updated_at: string;
 }
 
-export function useDepartments() {
+export function useDepartments(opts?: { enabled?: boolean }) {
+  const enabled = opts?.enabled !== false;
   const { currentCompanyId } = useAuth();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!currentCompanyId) {
+    if (!enabled || !currentCompanyId) {
       setDepartments([]);
       setIsLoading(false);
       return;
@@ -34,15 +35,8 @@ export function useDepartments() {
     const fetchDepartments = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('departments')
-          .select('*')
-          .eq('company_id', currentCompanyId)
-          .eq('status', 'active')
-          .order('sort_order', { ascending: true });
-
-        if (error) throw error;
-        setDepartments(data || []);
+        const rows = await listDepartmentsFromSettingsCatalog(currentCompanyId);
+        setDepartments(rows);
       } catch (error) {
         console.error('Error fetching departments:', error);
       } finally {
@@ -50,8 +44,8 @@ export function useDepartments() {
       }
     };
 
-    fetchDepartments();
-  }, [currentCompanyId]);
+    void fetchDepartments();
+  }, [currentCompanyId, enabled]);
 
   return { departments, isLoading };
 }

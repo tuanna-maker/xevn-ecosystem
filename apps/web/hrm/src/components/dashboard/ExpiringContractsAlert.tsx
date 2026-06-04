@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { AlertTriangle, FileText, Calendar, ExternalLink, Bell, User } from 'lucide-react';
+import { listExpiringContracts } from '@/integrations/hrmApi';
+import { AlertTriangle, FileText, Calendar, ExternalLink, Bell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,101 +32,22 @@ export function ExpiringContractsAlert() {
     queryKey: ['expiring-contracts-dashboard', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-
-      // Auto-update expired contracts first
-      await supabase.rpc('update_expired_contracts_all', { p_company_id: currentCompanyId });
-
-      const today = new Date();
-      const thirtyDaysLater = new Date();
-      thirtyDaysLater.setDate(today.getDate() + 30);
-      
-      const todayStr = today.toISOString().split('T')[0];
-      const thirtyDaysLaterStr = thirtyDaysLater.toISOString().split('T')[0];
-
-      // Fetch from employee_contracts table with employee info
-      const { data: employeeContracts, error: ecError } = await supabase
-        .from('employee_contracts')
-        .select(`
-          id,
-          contract_code,
-          employee_id,
-          department,
-          contract_type,
-          expiry_date,
-          status
-        `)
-        .eq('status', 'active')
-        .gte('expiry_date', todayStr)
-        .lte('expiry_date', thirtyDaysLaterStr)
-        .order('expiry_date', { ascending: true });
-
-      if (ecError) {
-        console.error('Error fetching employee_contracts:', ecError);
-      }
-
-      // Get employee details for employee_contracts
-      const employeeIds = employeeContracts?.map(c => c.employee_id).filter(Boolean) || [];
-      let employeesMap = new Map<string, { full_name: string; avatar_url: string | null }>();
-      
-      if (employeeIds.length > 0) {
-        const { data: employees } = await supabase
-          .from('employees')
-          .select('id, full_name, avatar_url')
-          .in('id', employeeIds);
-        
-        employees?.forEach(emp => {
-          employeesMap.set(emp.id, { full_name: emp.full_name, avatar_url: emp.avatar_url });
-        });
-      }
-
-      // Transform employee_contracts
-      const transformedEmployeeContracts: ExpiringContract[] = (employeeContracts || []).map(c => {
-        const employee = employeesMap.get(c.employee_id);
-        return {
-          id: c.id,
-          contract_code: c.contract_code,
-          employee_id: c.employee_id,
-          employee_name: employee?.full_name || t('expiringContracts.unknown'),
-          employee_avatar: employee?.avatar_url || null,
-          department: c.department,
-          contract_type: c.contract_type,
-          expiry_date: c.expiry_date!,
-          status: c.status,
-          source: 'employee_contracts' as const,
-        };
-      });
-
-      // Also fetch from old contracts table for compatibility
-      const { data: oldContracts, error: ocError } = await supabase
-        .from('contracts')
-        .select('*')
-        .eq('status', 'active')
-        .gte('expiry_date', todayStr)
-        .lte('expiry_date', thirtyDaysLaterStr)
-        .order('expiry_date', { ascending: true });
-
-      if (ocError) {
-        console.error('Error fetching contracts:', ocError);
-      }
-
-      // Transform old contracts
-      const transformedOldContracts: ExpiringContract[] = (oldContracts || []).map(c => ({
-        id: c.id,
-        contract_code: c.contract_code,
-        employee_name: c.employee_name,
-        employee_avatar: c.employee_avatar,
-        department: c.department,
-        contract_type: c.contract_type,
-        expiry_date: c.expiry_date!,
-        status: c.status,
-        source: 'contracts' as const,
-      }));
-
-      // Combine and sort by expiry date
-      const allContracts = [...transformedEmployeeContracts, ...transformedOldContracts]
+      const res = await listExpiringContracts({ company_id: currentCompanyId, days: 30 });
+      return (res.data ?? [])
+        .filter((row) => row.end_date)
+        .map((row): ExpiringContract => ({
+          id: row.id,
+          contract_code: row.employee_code ? `${row.employee_code}-HD` : `HD-${row.id.slice(0, 8)}`,
+          employee_id: row.employee_id,
+          employee_name: row.employee_name?.trim() || t('expiringContracts.unknown'),
+          employee_avatar: null,
+          department: row.department ?? null,
+          contract_type: row.contract_type,
+          expiry_date: row.end_date!,
+          status: row.status,
+          source: 'employee_contracts',
+        }))
         .sort((a, b) => new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime());
-
-      return allContracts;
     },
     enabled: !!currentCompanyId,
   });
@@ -210,12 +131,10 @@ export function ExpiringContractsAlert() {
                       {contract.employee_name.split(' ').pop()?.charAt(0) || 'N'}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm truncate">
-                        {contract.employee_name}
-                      </span>
+                      <span className="font-medium text-sm truncate">{contract.employee_name}</span>
                       <Badge variant="outline" className="text-xs shrink-0">
                         {contract.contract_code}
                       </Badge>
@@ -250,7 +169,11 @@ export function ExpiringContractsAlert() {
         {expiringContracts.length > 5 && (
           <div className="mt-3 text-center">
             <Link to="/contracts">
-              <Button variant="ghost" size="sm" className="text-xs text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+              >
                 {t('expiringContracts.viewMore', { count: expiringContracts.length - 5 })}
               </Button>
             </Link>

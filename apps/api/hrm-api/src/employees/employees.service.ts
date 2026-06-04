@@ -1,8 +1,16 @@
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import {
+  assertResourceInHrmScope,
+  HrmListScope,
+  HrmListScopeContext,
+  pushEmployeeListScopeFilters,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { GetEmployeeQueryDto } from './dto/get-employee.query.dto';
 import { ListEmployeesQueryDto } from './dto/list-employees.query.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
@@ -13,6 +21,7 @@ type EmployeeRow = {
   email: string;
   full_name: string;
   job_title_key: string | null;
+  manager_id: string | null;
   status: string;
   hired_at: string | null;
   archived_at: string | null;
@@ -68,6 +77,14 @@ export class EmployeesService implements OnModuleInit {
       ALTER TABLE public.employees
       ALTER COLUMN company_id TYPE TEXT USING company_id::text;
     `);
+    await this.db.query(`
+      ALTER TABLE public.employees
+      ADD COLUMN IF NOT EXISTS manager_id UUID NULL;
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_employees_manager
+      ON public.employees (manager_id) WHERE manager_id IS NOT NULL;
+    `);
     await this.ensureSeedData();
   }
 
@@ -85,11 +102,16 @@ export class EmployeesService implements OnModuleInit {
       `
       INSERT INTO public.employees (id, company_id, employee_code, email, full_name, job_title_key, status, hired_at)
       VALUES
-        ('11111111-1111-4111-8111-111111111111', 'holding', 'NV001', 'ceo@xevn.vn', 'Nguyen Van A', 'CEO', 'active', CURRENT_DATE - INTERVAL '400 days'),
-        ('22222222-2222-4222-8222-222222222222', 'holding', 'NV002', 'hr.manager@xevn.vn', 'Tran Thi B', 'CHRO', 'active', CURRENT_DATE - INTERVAL '280 days'),
-        ('33333333-3333-4333-8333-333333333333', 'trsport', 'NV101', 'ops.manager@xevn.vn', 'Le Van C', 'OPS_MANAGER', 'active', CURRENT_DATE - INTERVAL '180 days');
+        ('11111111-1111-4111-8111-111111111111', 'holding', 'NV001', 'ceo@xe.vn', 'Nguyen Van A', 'CEO', 'active', CURRENT_DATE - INTERVAL '400 days'),
+        ('22222222-2222-4222-8222-222222222222', 'holding', 'NV002', 'hr.manager@xe.vn', 'Tran Thi B', 'CHRO', 'active', CURRENT_DATE - INTERVAL '280 days'),
+        ('33333333-3333-4333-8333-333333333333', 'trsport', 'NV101', 'ops.manager@xe.vn', 'Le Van C', 'OPS_MANAGER', 'active', CURRENT_DATE - INTERVAL '180 days');
       `,
     );
+    await this.db.query(`
+      UPDATE public.employees
+      SET manager_id = '22222222-2222-4222-8222-222222222222'::uuid
+      WHERE id = '11111111-1111-4111-8111-111111111111'::uuid AND manager_id IS NULL;
+    `);
   }
 
   private mapEmployee(row: EmployeeRow) {
@@ -100,6 +122,7 @@ export class EmployeesService implements OnModuleInit {
       email: row.email,
       full_name: row.full_name,
       job_title_key: row.job_title_key,
+      manager_id: row.manager_id,
       status: row.status,
       hired_at: row.hired_at,
       archived_at: row.archived_at,
@@ -149,13 +172,19 @@ export class EmployeesService implements OnModuleInit {
     }
   }
 
-  async listEmployees(query: ListEmployeesQueryDto) {
+  async listEmployees(
+    query: ListEmployeesQueryDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
     const offset = (page - 1) * pageSize;
-    const filters: string[] = ['company_id = $1'];
-    const values: unknown[] = [query.company_id];
-    let idx = 2;
+    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushEmployeeListScopeFilters(filters, values, scope);
+    let idx = values.length + 1;
 
     if (!query.include_archived) {
       filters.push('archived_at IS NULL');
@@ -197,7 +226,62 @@ export class EmployeesService implements OnModuleInit {
     };
   }
 
-  async updateEmployee(employeeId: string, payload: UpdateEmployeeDto) {
+  private async queryEmployeeById(
+    employeeId: string,
+    scope: HrmListScope,
+    includeArchived: boolean | undefined,
+    options?: { skipTenantPartition?: boolean },
+  ): Promise<EmployeeRow | undefined> {
+    const filters: string[] = ['id = $1::uuid'];
+    const values: unknown[] = [employeeId];
+    pushEmployeeListScopeFilters(filters, values, scope, options);
+    if (!includeArchived) {
+      filters.push('archived_at IS NULL');
+    }
+    const res = await this.db.query<EmployeeRow>(
+      `
+        SELECT
+          id, company_id, employee_code, email, full_name, job_title_key,
+          manager_id, status, hired_at, archived_at, custom_fields, created_at, updated_at
+        FROM public.employees
+        WHERE ${filters.join(' AND ')};
+      `,
+      values,
+    );
+    return res.rows[0];
+  }
+
+  async getEmployeeById(
+    employeeId: string,
+    query: GetEmployeeQueryDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    let row = await this.queryEmployeeById(employeeId, scope, query.include_archived);
+    if (!row && scope.masterTenantPartition) {
+      row = await this.queryEmployeeById(employeeId, scope, query.include_archived, {
+        skipTenantPartition: true,
+      });
+    }
+    if (!row) {
+      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+    }
+    return this.mapEmployee(row);
+  }
+
+  async updateEmployee(
+    employeeId: string,
+    payload: UpdateEmployeeDto,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const existing = await this.getEmployeeById(employeeId, { company_id: requestedCompanyId }, authorization);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-EMP-404',
+      mismatchCode: 'HRM-EMP-409',
+    });
     const updates: string[] = [];
     const values: unknown[] = [];
     if (payload.email !== undefined) {
@@ -243,7 +327,13 @@ export class EmployeesService implements OnModuleInit {
     return this.mapEmployee(updated);
   }
 
-  async archiveEmployee(employeeId: string) {
+  async archiveEmployee(employeeId: string, requestedCompanyId: string, authorization?: string) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const existing = await this.getEmployeeById(employeeId, { company_id: requestedCompanyId }, authorization);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-EMP-404',
+      mismatchCode: 'HRM-EMP-409',
+    });
     const res = await this.db.query<EmployeeRow>(
       `
         UPDATE public.employees

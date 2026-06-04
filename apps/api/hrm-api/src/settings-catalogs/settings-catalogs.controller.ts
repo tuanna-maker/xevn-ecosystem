@@ -1,11 +1,13 @@
-import { Body, Controller, Get, Headers, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ok } from '../common/api-response';
 import { ApiException } from '../common/api.exception';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
+import { resolveHrmSettingsCatalogCompanyId } from '../common/hrm-list-scope';
 import { resolveScopeContext } from '../common/scope-context';
 import { AppendExtensionItemsDto } from './dto/append-extension-items.dto';
 import { RequestCatalogFieldRemovalDto } from './dto/request-removal.dto';
 import { SettingsCatalogsService } from './settings-catalogs.service';
+import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
 
 @Controller('settings-catalogs')
 export class SettingsCatalogsController {
@@ -23,12 +25,63 @@ export class SettingsCatalogsController {
     @Headers('x-internal-api-key') internalApiKey?: string,
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
+    @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
     return this.settingsCatalogs
-      .getOverview(scope.tenantId, scope.companyId)
+      .getOverview(scope.tenantId, catalogCompanyId)
       .then((data) => ok(data, 'HRM-SET-200', 'Settings catalogs overview'));
+  }
+
+  @Post('items')
+  createCatalogItem(
+    @Body() body: SettingsCatalogItemMutationDto,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? companyId });
+    return this.settingsCatalogs
+      .upsertCatalogItem(scope.tenantId, body)
+      .then((data) => ok(data, 'HRM-SET-201', 'Settings catalog item created'));
+  }
+
+  @Patch('items')
+  updateCatalogItem(
+    @Body() body: SettingsCatalogItemMutationDto,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? companyId });
+    return this.settingsCatalogs
+      .upsertCatalogItem(scope.tenantId, body)
+      .then((data) => ok(data, 'HRM-SET-202', 'Settings catalog item updated'));
+  }
+
+  @Delete('items')
+  deleteCatalogItem(
+    @Body() body: Pick<SettingsCatalogItemMutationDto, 'company_id' | 'category_key' | 'item_key'>,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? companyId });
+    return this.settingsCatalogs
+      .deleteCatalogItem(scope.tenantId, body)
+      .then((data) => ok(data, 'HRM-SET-200', 'Settings catalog item deleted'));
   }
 
   @Post('sync-from-xbos')
@@ -40,8 +93,13 @@ export class SettingsCatalogsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
     return this.settingsCatalogs
-      .syncAllFromXbos(scope.tenantId, scope.companyId)
+      .syncAllFromXbos(scope.tenantId, catalogCompanyId)
       .then((data) => ok(data, 'HRM-SET-201', 'XBOS catalogs pulled into HRM'));
   }
 

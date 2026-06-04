@@ -1,0 +1,157 @@
+{
+  "work_item_id": "P1-QUAL-QA-W3",
+  "date": "2026-05-30",
+  "steps": [
+    {
+      "name": "P-CC-03-load",
+      "url": "http://127.0.0.1:5175/api/hrm/employees?page_size=100&company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-200",
+      "total": 1100,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "P-CC-04-load",
+      "url": "http://127.0.0.1:5175/api/hrm/contracts-insurance/contracts?company_id=main",
+      "status": 200,
+      "code": "HRM-CON-200",
+      "total": 171,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "P-CC-05-load",
+      "url": "http://127.0.0.1:5175/api/hrm/contracts-insurance/insurance?company_id=main",
+      "status": 200,
+      "code": "HRM-CON-200",
+      "total": 171,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "P-CC-06-load",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/requisitions?page_size=100&company_id=main",
+      "status": 200,
+      "code": "HRM-REC-200",
+      "total": 24,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "P-CC-07-load",
+      "url": "http://127.0.0.1:5175/api/hrm/attendance/records?page_size=100&company_id=main",
+      "status": 200,
+      "code": "HRM-ATT-200",
+      "total": 301,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "P-CC-08-load",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/payslips?page_size=100&company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "total": 78,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "employees-pick",
+      "url": "http://127.0.0.1:5175/api/hrm/employees?page_size=5&company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-200",
+      "total": 1100,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "payroll-sales-data",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/sales-data?company_id=main",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          404
+        ]
+      }
+    },
+    {
+      "name": "payroll-bonus-policies",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/bonus-policies?company_id=main",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          404
+        ]
+      }
+    },
+    {
+      "name": "insurance-policy-participants",
+      "url": "http://127.0.0.1:5175/api/hrm/contracts-insurance/insurance-policy-participants?company_id=main",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          404
+        ]
+      }
+    },
+    {
+      "name": "employee-assets-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/assets?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          404
+        ]
+      }
+    },
+    {
+      "name": "departments-import-probe",
+      "url": "http://127.0.0.1:5175/api/hrm/departments?company_id=main",
+      "status": 400,
+      "code": "HRM-VAL-001",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201,
+          400,
+          409
+        ]
+      }
+    }
+  ],
+  "pass": true,
+  "supabase_hits": []
+}

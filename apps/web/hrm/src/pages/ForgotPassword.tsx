@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { redirectToPortalLogin } from '@/lib/portalLogin';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
@@ -30,37 +30,24 @@ export default function ForgotPassword() {
 
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: '',
-    },
+    defaultValues: { email: '' },
   });
 
   const onSubmit = async (values: ForgotPasswordFormValues) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        toast({
-          title: 'Lỗi',
-          description: error.message,
-          variant: 'destructive',
-        });
-        return;
-      }
-
+      void values;
       setIsEmailSent(true);
       toast({
-        title: 'Email đã được gửi',
-        description: 'Vui lòng kiểm tra hộp thư của bạn để đặt lại mật khẩu.',
+        title: 'Đặt lại mật khẩu qua Portal',
+        description: 'Chuyển sang Portal X-BOS để đặt lại mật khẩu.',
       });
+      redirectToPortalLogin('/hr');
     } catch (error) {
       console.error('Forgot password error:', error);
       toast({
         title: 'Lỗi',
-        description: 'Đã xảy ra lỗi khi gửi email',
+        description: 'Đã xảy ra lỗi',
         variant: 'destructive',
       });
     } finally {
@@ -75,7 +62,7 @@ export default function ForgotPassword() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Quên mật khẩu</CardTitle>
             <CardDescription>
-              Nhập email của bạn để nhận link đặt lại mật khẩu
+              Nhập email của bạn — hệ thống chuyển sang Portal X-BOS để đặt lại mật khẩu
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -85,18 +72,14 @@ export default function ForgotPassword() {
                   <CheckCircle className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-lg">Kiểm tra email của bạn</h3>
+                  <h3 className="font-medium text-lg">Kiểm tra Portal</h3>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Chúng tôi đã gửi link đặt lại mật khẩu đến email{' '}
+                    Đã gửi yêu cầu cho email{' '}
                     <span className="font-medium">{form.getValues('email')}</span>
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setIsEmailSent(false)}
-                >
-                  Gửi lại email
+                <Button variant="outline" className="w-full" onClick={() => setIsEmailSent(false)}>
+                  Thử lại
                 </Button>
               </div>
             ) : (
@@ -120,14 +103,13 @@ export default function ForgotPassword() {
                       </FormItem>
                     )}
                   />
-
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     ) : (
                       <Mail className="w-4 h-4 mr-2" />
                     )}
-                    Gửi link đặt lại mật khẩu
+                    Tiếp tục trên Portal
                   </Button>
                 </form>
               </Form>

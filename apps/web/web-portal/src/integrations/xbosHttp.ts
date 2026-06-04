@@ -1,4 +1,5 @@
-import { buildApiAuthHeaders } from './authSession';
+import { buildApiAuthHeaders, handleUnauthorizedResponse } from './authSession';
+import { resolveXbosApiCompanyIdForPath } from './commandCenterScope';
 import { formatHttpError, logApiFailure, logApiStart, logApiSuccess } from '../utils/apiLogger';
 
 export type XbosRequestInit = Omit<RequestInit, 'headers'> & {
@@ -6,12 +7,18 @@ export type XbosRequestInit = Omit<RequestInit, 'headers'> & {
   tenantId?: string | null;
   companyId?: string | null;
   scope?: string;
+  /** HTTP statuses that skip console.error (optional KPI/widgets). */
+  suppressLogStatuses?: number[];
 };
 
-async function buildHeaders(init?: XbosRequestInit): Promise<Record<string, string>> {
+async function buildHeaders(path: string, init?: XbosRequestInit): Promise<Record<string, string>> {
   const base = buildApiAuthHeaders();
   if (init?.tenantId) base['x-tenant-id'] = init.tenantId;
-  if (init?.companyId) base['x-company-id'] = init.companyId;
+  const companyId =
+    init?.companyId != null && String(init.companyId).trim()
+      ? resolveXbosApiCompanyIdForPath(path, init.tenantId, init.companyId)
+      : undefined;
+  if (companyId) base['x-company-id'] = companyId;
   return { ...base, ...(init?.headers ?? {}) };
 }
 
@@ -28,12 +35,18 @@ export async function xbosFetch<T>(
     const res = await fetch(url, {
       ...init,
       method,
-      headers: await buildHeaders(init),
+      headers: await buildHeaders(url, init),
     });
     const json = await res.json().catch(() => null);
     if (!res.ok) {
+      handleUnauthorizedResponse(res.status);
       const err = new Error(formatHttpError(res, json, `${scope} failed`));
-      logApiFailure(scope, method, url, startedAt, err, res.status);
+      const suppress = init.suppressLogStatuses?.includes(res.status);
+      if (!suppress) {
+        logApiFailure(scope, method, url, startedAt, err, res.status);
+      } else if (import.meta.env.DEV) {
+        console.debug(`[${scope}] optional ${method} ${url} (HTTP ${res.status})`);
+      }
       throw err;
     }
     logApiSuccess(scope, method, url, startedAt, res.status);

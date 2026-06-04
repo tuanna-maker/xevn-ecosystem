@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
+
+/** P1-SUPA-FE-02 / P1-INC-P0-HRM-DASH-01 — plans are platform-admin only; no Supabase in portal embed. */
+const supabaseEnabled = false;
 
 export interface SubscriptionPlan {
   id: string;
@@ -24,14 +26,9 @@ export interface SubscriptionPlan {
 export function useSubscriptionPlans() {
   return useQuery({
     queryKey: ['subscription-plans'],
-    enabled: isSupabaseConfigured,
+    enabled: supabaseEnabled,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('subscription_plans' as any)
-        .select('*')
-        .order('sort_order', { ascending: true });
-      if (error) throw error;
-      return data as unknown as SubscriptionPlan[];
+      return [] as SubscriptionPlan[];
     },
   });
 }
@@ -39,15 +36,9 @@ export function useSubscriptionPlans() {
 export function useActiveSubscriptionPlans() {
   return useQuery({
     queryKey: ['subscription-plans-active'],
-    enabled: isSupabaseConfigured,
+    enabled: supabaseEnabled,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('subscription_plans' as any)
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-      if (error) throw error;
-      return data as unknown as SubscriptionPlan[];
+      return [] as SubscriptionPlan[];
     },
   });
 }
@@ -56,8 +47,6 @@ export function useCreatePlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (plan: Partial<SubscriptionPlan>) => {
-      const { error } = await supabase.from('subscription_plans' as any).insert(plan as any);
-      if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['subscription-plans'] });
@@ -70,11 +59,6 @@ export function useUpdatePlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<SubscriptionPlan> & { id: string }) => {
-      const { error } = await supabase
-        .from('subscription_plans' as any)
-        .update({ ...updates, updated_at: new Date().toISOString() } as any)
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['subscription-plans'] });
@@ -87,8 +71,6 @@ export function useDeletePlan() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('subscription_plans' as any).delete().eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['subscription-plans'] });

@@ -13,7 +13,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return health envelope', () => {
+    it('UC-HRM-01: should return health envelope', () => {
       const result = appController.getHello();
       expect(result.success).toBe(true);
       expect(result.code).toBe('HRM-HEALTH-200');

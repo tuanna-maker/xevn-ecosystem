@@ -119,6 +119,8 @@ Envelope lỗi:
 
 ## 11. Portal embed — Web Portal (`apps/web/web-portal`)
 
+**Data-mode ADR (Supabase vs Nest trong iframe):** [`docs/decisions/ADR-HRM-EMBED-DATA-MODE.md`](../decisions/ADR-HRM-EMBED-DATA-MODE.md) — `shouldSkipSupabaseDataFetches`, `portalAuthBridge`, identity scope, backlog Supabase theo view, contract `GET /employees/:id`.
+
 ### 11.1 Kiến trúc
 
 - Module: `apps/web/web-portal/src/modules/hrm/HrmWorkspacePanel.tsx`

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, parseISO } from 'date-fns';
 
@@ -89,33 +88,14 @@ export function useAttendanceReports(year: number, month: number) {
       const endDate = format(endOfMonth(new Date(year, month - 1)), 'yyyy-MM-dd');
 
       // Fetch attendance records for the month
-      const { data: attendanceData, error: attendanceError } = await supabase
-        .from('attendance_records')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .gte('attendance_date', startDate)
-        .lte('attendance_date', endDate);
 
       if (attendanceError) throw attendanceError;
 
       // Fetch employees count
-      const { data: employeesData, error: employeesError } = await supabase
-        .from('employees')
-        .select('id, employee_code, full_name, department')
-        .eq('company_id', currentCompanyId)
-        .eq('status', 'active')
-        .is('deleted_at', null);
 
       if (employeesError) throw employeesError;
 
       // Fetch leave requests for the month
-      const { data: leaveData, error: leaveError } = await supabase
-        .from('leave_requests')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .eq('status', 'approved')
-        .gte('start_date', startDate)
-        .lte('end_date', endDate);
 
       if (leaveError) throw leaveError;
 
@@ -324,12 +304,6 @@ export function useAttendanceReports(year: number, month: number) {
         const trendStart = format(startOfMonth(trendDate), 'yyyy-MM-dd');
         const trendEnd = format(endOfMonth(trendDate), 'yyyy-MM-dd');
 
-        const { data: trendRecords } = await supabase
-          .from('attendance_records')
-          .select('status, late_minutes')
-          .eq('company_id', currentCompanyId)
-          .gte('attendance_date', trendStart)
-          .lte('attendance_date', trendEnd);
 
         const trendData = trendRecords || [];
         const trendTotal = trendData.length;

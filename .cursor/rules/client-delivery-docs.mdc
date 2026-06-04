@@ -1,0 +1,43 @@
+---
+description: Chuẩn BRD/SRS HTML gửi khách — mẫu Bateco (SRS 6 chương, 373 FR × 7 mục đồng nhất). Bắt buộc khi soạn/build docs/client-delivery hoặc SRS catalog.
+globs: docs/client-delivery/**,docs/standards/BRD_SRS*.md,docs/srs-overrides/**,docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md,scripts/build-*-html.mjs,scripts/lib/doc-*.mjs,scripts/lib/srs-*.mjs,scripts/audit-srs-uc-quality.mjs,scripts/extract-api-hints.mjs
+alwaysApply: false
+---
+
+# Client delivery documents (BRD / SRS HTML)
+
+**Global (mọi dự án):** `~/.cursor/skills/client-delivery-brd-srs/SKILL.md` + subagent **`@ba-docs`**  
+**XeVN profile:** `.cursor/skills/client-delivery-docs/PROJECT_PROFILE.md` + `docs/standards/BRD_SRS_WRITING_STANDARDS.md`
+
+## SRS XeVN — mô hình cố định (không thương lượng lại)
+
+| | Quy ước |
+|---|--------|
+| Cấu trúc | **6 chương** Bateco — không 8 chương + Phụ lục trace |
+| UC | **373 FR** trong **§3 Yêu cầu chức năng** (`FR-{Mã UC}`) |
+| Đồng nhất | **7 mục/FR** — audit `pnpm docs:srs:audit` → 373/373 |
+| Build | `pnpm docs:srs:html` — `scripts/lib/srs-bateco-body.mjs` + `srs-fr-spec.mjs` |
+| ❌ | Ch.5 12 mục UC, `REQ-SRS`, `Kiểm chứng`, tier FR ngắn, sửa HTML tay |
+
+## BRD / HTML shell
+
+| Loại | Nguồn MD | HTML | Build |
+|------|----------|------|-------|
+| BRD | `docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md` | `01_BRD_XeVN_OS.html` | `pnpm docs:brd:html` |
+| SRS | Catalog + overrides | `02_SRS_XeVN_OS.html` | `pnpm docs:srs:audit` → `pnpm docs:srs:html` |
+
+- Shell TSCAir/Unicom: `doc-tscair-shell.mjs`, logo `docs/client-delivery/assets/logo-unicom.png`
+- SRS CSS bổ sung: `srs-delivery-styles.mjs`
+- Meta lọc: `stripClientDeliveryMeta()` — vẫn không ghi meta từ đầu
+
+## Cấm trong nội dung gửi khách
+
+`docs/...`, pipeline, audit pass, override backlog, ISO 29148, Chuẩn 8 chương, REQ-SRS, Phụ lục trace trong SRS HTML.
+
+Subtitle SRS: `Yêu cầu phần mềm — Hệ sinh thái đa phân hệ`.
+
+## DONE
+
+- `fr_blocks=373`, audit 373/373, build `ok=true`
+- HTML có §1–§6 Bateco; không `CHI TIẾT USE CASE`
+- Spot-check: 2 FR bất kỳ cùng đủ 7 tiêu đề mục

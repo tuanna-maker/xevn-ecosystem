@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mô tả hệ sinh thái XeVN OS | UNICOM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#d0d0d0;font-family:'Be Vietnam Pro','Segoe UI',sans-serif;font-size:13px;}
+.doc-page{width:210mm;min-height:297mm;margin:10mm auto;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+@media print{body{background:#fff;}.doc-page{margin:0;box-shadow:none;page-break-after:always;}}
+.doc-page[data-pg="0"] .page{width:210mm;min-height:297mm;background:#fff;display:flex;flex-direction:column;margin:0 auto;}
+.doc-page[data-pg="0"] .accent-bar{height:5px;background:linear-gradient(90deg,#3d7de8,#0ab4d8);}
+.doc-page[data-pg="0"] .header{padding:22px 52px;display:flex;justify-content:space-between;align-items:center;}
+.doc-page[data-pg="0"] .header-code{font-size:9.5px;font-weight:600;color:#0d1e34;}
+.doc-page[data-pg="0"] .main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 52px 80px;text-align:center;}
+.doc-page[data-pg="0"] .logo-wrap{margin-bottom:32px;}
+.doc-page[data-pg="0"] .logo-wrap img{width:260px;max-width:85vw;height:auto;display:block;margin:0 auto;}
+.doc-page[data-pg="0"] .sep{width:52px;height:3px;background:linear-gradient(90deg,#3d7de8,#0ab4d8);border-radius:2px;margin:0 auto 24px;}
+.doc-page[data-pg="0"] .doc-label{font-size:10px;font-weight:700;letter-spacing:3px;color:#0d1e34;margin-bottom:12px;}
+.doc-page[data-pg="0"] .project-title{font-size:28px;font-weight:800;color:#0d1e34;line-height:1.2;}
+.doc-page[data-pg="0"] .project-title .grad{background:linear-gradient(135deg,#3d7de8,#0ab4d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.doc-page[data-pg="0"] .subtitle{margin-top:14px;font-size:12px;color:#4a6080;max-width:460px;line-height:1.55;}
+.doc-page[data-pg="0"] .metrics{margin-top:20px;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+.doc-page[data-pg="0"] .metric-box{min-width:100px;padding:10px 14px;border:1px solid #cbd5e0;border-radius:6px;background:#f8fafc;}
+.doc-page[data-pg="0"] .metric-box .num{font-size:22px;font-weight:800;color:#1e40af;line-height:1;}
+.doc-page[data-pg="0"] .metric-box .lbl{font-size:9px;color:#64748b;margin-top:4px;}
+.doc-page[data-pg="0"] .footer{padding:18px 52px;border-top:1px solid #eaeff8;display:flex;justify-content:space-between;font-size:9.5px;color:#0d1e34;}
+.inner-h{padding:18px 48px 12px 68px;border-bottom:1px solid #eaeff8;display:flex;justify-content:space-between;align-items:center;}
+.inner-h .code{font-size:9.5px;font-weight:600;color:#0d1e34;}
+.content-area{padding:14px 48px 28px 68px;flex:1;}
+.md-render{font-size:13px;line-height:1.45;color:#333;}
+.md-render h1{font-size:18px;font-weight:800;margin:18px 0 10px;color:#000;}
+.md-render h2{font-size:15px;font-weight:700;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #000;color:#000;}
+.md-render h3{font-size:14px;font-weight:700;margin:12px 0 6px;color:#000;}
+.md-render h4{font-size:13px;font-weight:700;margin:10px 0 4px;color:#1e3a5f;}
+.md-render p{margin:6px 0;}
+.md-render table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11.5px;}
+.md-render th,.md-render td{border:1px solid #cbd5e0;padding:4px 5px;vertical-align:top;text-align:left;}
+.md-render th{background:#edf2f7;color:#1e3a5f;font-weight:700;}
+.md-render ul,.md-render ol{margin:8px 0;padding-left:22px;}
+.md-render li{margin:3px 0;}
+.md-render .mermaid{text-align:center;margin:14px 0;}
+.md-render code{background:#f0f4f8;padding:1px 5px;border-radius:3px;font-size:11px;}
+.md-render .fig{margin:12px 0;text-align:center;}
+.md-render .fig img{max-width:100%;height:auto;border:1px solid #e2e8f0;border-radius:4px;}
+.md-render .fig .cap{font-size:11px;color:#64748b;margin-top:6px;}
+.md-render .highlight-box{margin:12px 0;padding:12px 14px;background:#eff6ff;border-left:4px solid #3d7de8;border-radius:0 6px 6px 0;font-size:12px;}
+.md-render .stat-row td:last-child,.md-render .stat-row th:last-child{text-align:center;font-weight:700;}
+.inner-ft{padding:14px 48px 18px 68px;border-top:1px solid #eaeff8;font-size:9.5px;color:#4a6080;display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+
+<!-- Bìa -->
+<div class="doc-page" data-pg="0">
+  <div class="page">
+    <div class="accent-bar"></div>
+    <div class="header">
+      <div class="header-code">UNICOM <span>|</span> AI SOFTWARE FACTORY</div>
+      <div class="header-code" style="text-align:right">Phiên bản 1.1</div>
+    </div>
+    <div class="main">
+      <div class="logo-wrap">
+        <img src="assets/logo-unicom.png" alt="UNICOM" width="280">
+      </div>
+      <div class="sep"></div>
+      <div class="doc-label">TÀI LIỆU MÔ TẢ HỆ SINH THÁI (BRD — TỔNG QUAN)</div>
+      <h1 class="project-title"><span class="grad">XeVN OS</span></h1>
+      <p class="subtitle">Hệ sinh thái quản trị &amp; vận hành tập đoàn vận tải — Portal · XBOS · HRM · Logistic · Đa tenant</p>
+      <div class="metrics">
+        <div class="metric-box"><div class="num">373</div><div class="lbl">Use case</div></div>
+        <div class="metric-box"><div class="num">183</div><div class="lbl">Danh mục XBOS</div></div>
+        <div class="metric-box"><div class="num">245</div><div class="lbl">UC Phase 1</div></div>
+        <div class="metric-box"><div class="num">128</div><div class="lbl">UC Phase 2</div></div>
+      </div>
+    </div>
+    <div class="footer">
+      <span>20/05/2026</span>
+      <span>Bản trình bày / gửi khách hàng</span>
+    </div>
+  </div>
+</div>
+
+<!-- Trang 1: Tóm tắt + quy mô tổng -->
+<div class="doc-page" data-pg="1">
+  <div class="inner-h"><span class="code">Chương 1 · Tổng quan &amp; quy mô</span><span class="code">UNICOM</span></div>
+  <div class="content-area"><div class="md-render">
+
+    <h2>1. Tóm tắt điều hành</h2>
+    <p><strong>XeVN OS</strong> vận hành mô hình <strong>quản trị tập trung — vận hành phân tán</strong>: một lõi XBOS giữ dữ liệu chuẩn; các phân hệ HRM, Logistic tiêu thụ catalog và phản hồi sự kiện về Portal điều hành.</p>
+
+    <table class="stat-row">
+      <thead><tr><th>Thành phần</th><th>Vai trò</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Portal / Command Center</strong></td><td>Điểm vào: KPI, inbox duyệt, thiết lập công ty, nhúng module</td></tr>
+        <tr><td><strong>XBOS</strong></td><td>Lõi: org, catalog, workflow, RACI, master, tenant scope</td></tr>
+        <tr><td><strong>HRM (Web + Mobile)</strong></td><td>119 UC — vòng đời nhân sự, chấm công, lương, app nhân viên</td></tr>
+        <tr><td><strong>Logistic</strong></td><td>150 UC — KD → điều phối → chuyến → app lái xe (Phase 2)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>1.1 Chỉ số quy mô đã chuẩn hóa</h3>
+    <table class="stat-row">
+      <thead><tr><th>Chỉ tiêu</th><th>Số lượng</th><th>Ý nghĩa</th></tr></thead>
+      <tbody>
+        <tr><td>Use case (mã duy nhất)</td><td><strong>373</strong></td><td>Mọi việc người dùng làm được — có nhóm, kênh Web/API/Mobile</td></tr>
+        <tr><td>Danh mục cấu hình XBOS</td><td><strong>183</strong></td><td>72 HRM + 111 Logistic (91 DM + 20 quy trình)</td></tr>
+        <tr><td>Use case Phase 1 (go-live)</td><td><strong>245</strong></td><td>104 XBOS + 119 HRM + 22 quản trị DM Logistic</td></tr>
+        <tr><td>Use case Phase 2</td><td><strong>128</strong></td><td>~100 Web Logistic + 28 app lái xe</td></tr>
+      </tbody>
+    </table>
+
+    <h3>1.2 Phân bổ use case theo phân hệ</h3>
+    <table class="stat-row">
+      <thead><tr><th>Phân hệ</th><th>Tổng UC</th><th>Chi tiết</th></tr></thead>
+      <tbody>
+        <tr><td>XBOS nền tảng thuần</td><td>97</td><td>CC, org, RACI, workflow, master, auth</td></tr>
+        <tr><td>XBOS — DM Logistic</td><td>22</td><td><code>XBOS-DM-LOG-*</code> — Phase 1</td></tr>
+        <tr><td>XBOS — DM HRM</td><td>15</td><td><code>XBOS-DM-HRM-*</code> (trong khối 119 HRM)</td></tr>
+        <tr><td>XBOS — governance CAT</td><td>7</td><td><code>UC-XBOS-CAT-*</code></td></tr>
+        <tr><td><strong>Tổng trách nhiệm XBOS</strong></td><td><strong>141</strong></td><td></td></tr>
+        <tr><td>HRM nghiệp vụ</td><td>104</td><td>API / Web / Mobile (trừ 15 UC DM trên XBOS)</td></tr>
+        <tr><td><strong>HRM tổng</strong></td><td><strong>119</strong></td><td>Gồm 15 UC mobile nhân viên</td></tr>
+        <tr><td>Logistic Web</td><td>~100</td><td><code>LG-*</code> — Phase 2</td></tr>
+        <tr><td>App lái xe</td><td>28</td><td><code>LG-MB-*</code> — bắt buộc go-live</td></tr>
+        <tr><td><strong>Logistic tổng</strong></td><td><strong>150</strong></td><td></td></tr>
+      </tbody>
+    </table>
+
+    <h3>1.3 Stakeholder</h3>
+    <table>
+      <thead><tr><th>Đối tượng</th><th>Nhu cầu</th></tr></thead>
+      <tbody>
+        <tr><td>Ban điều hành</td><td>KPI đa công ty, cảnh báo, RACI</td></tr>
+        <tr><td>Quản trị / XBOS</td><td>Master data, phân quyền, catalog, workflow</td></tr>
+        <tr><td>HR</td><td>Vòng đời NV, chấm công, lương — Web + Mobile</td></tr>
+        <tr><td>KD / Điều phối / Lái xe</td><td>Chuỗi KD → chuyến → doanh thu/lương %</td></tr>
+      </tbody>
+    </table>
+
+  </div></div>
+  <div class="inner-ft"><span>UNICOM</span><span>Trang 1</span></div>
+</div>
+
+<!-- Trang 2: Phase 1/2 + XBOS -->
+<div class="doc-page" data-pg="2">
+  <div class="inner-h"><span class="code">Chương 1–2 · Lộ trình &amp; XBOS</span><span class="code">UNICOM</span></div>
+  <div class="content-area"><div class="md-render">
+
+    <h2>2. Lộ trình hai giai đoạn</h2>
+    <div class="fig">
+      <img src="../ecosystem/assets/lo-trinh-hai-giai-doan-xevn.png" alt="Lộ trình Phase 1 và 2">
+      <p class="cap">Hình 1 — Phase 1: XBOS + HRM + khai 183 DM · Phase 2: Logistic nghiệp vụ</p>
+    </div>
+    <table class="stat-row">
+      <thead><tr><th></th><th>Phase 1</th><th>Phase 2</th></tr></thead>
+      <tbody>
+        <tr><td>Mục tiêu</td><td>XBOS + HRM 100%; khai 183/183 DM</td><td>Logistic Web + app lái xe</td></tr>
+        <tr><td>Use case</td><td><strong>245</strong></td><td><strong>128</strong></td></tr>
+        <tr><td>Danh mục</td><td><strong>183</strong> phát hành</td><td>Dùng DM đã khai P1</td></tr>
+        <tr><td>Ngoài phạm vi</td><td>Đơn/chuyến thật, app lái</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Nội dung giao Phase 1</h4>
+    <table class="stat-row">
+      <thead><tr><th>Khối</th><th>UC</th><th>DM</th></tr></thead>
+      <tbody>
+        <tr><td>XBOS hoàn chỉnh</td><td>104</td><td>18 mẫu DM chung</td></tr>
+        <tr><td>Danh mục Nhân sự</td><td>15 + 7 governance</td><td>72</td></tr>
+        <tr><td>Danh mục Logistic (chưa vận hành đơn)</td><td>22</td><td>111</td></tr>
+        <tr><td>Nhân sự 100% (Web + Mobile)</td><td>119</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h2>3. XBOS — Nhóm chức năng (104 UC Phase 1)</h2>
+    <table class="stat-row">
+      <thead><tr><th>Nhóm</th><th>Số UC</th><th>Nội dung</th></tr></thead>
+      <tbody>
+        <tr><td>Nền tảng &amp; đồng bộ</td><td>9</td><td>Health, catalog sync, audit</td></tr>
+        <tr><td>Master &amp; KPI</td><td>12</td><td>Chức danh, NCC, KH, loại xe, rollup</td></tr>
+        <tr><td>Tổ chức &amp; phân quyền</td><td>6</td><td>Pháp nhân, phòng ban, RBAC</td></tr>
+        <tr><td>Quy trình phê duyệt</td><td>9</td><td>Canvas, phiên chạy, inbox</td></tr>
+        <tr><td>Tài sản</td><td>6</td><td>Yêu cầu tài sản 5 bước kế toán</td></tr>
+        <tr><td>Xác thực / phạm vi</td><td>7</td><td>Login, tenant, membership</td></tr>
+        <tr><td>Command Center</td><td>15</td><td>Thiết lập công ty, RACI, hộp thư</td></tr>
+        <tr><td>Quản trị DM chung</td><td>18</td><td><code>XBOS-DM-01</code>…<code>18</code></td></tr>
+        <tr><td>Governance DM HRM</td><td>7</td><td><code>UC-XBOS-CAT-*</code></td></tr>
+        <tr><td>Khác (RACI, dashboard…)</td><td>15</td><td></td></tr>
+      </tbody>
+    </table>
+
+  </div></div>
+  <div class="inner-ft"><span>UNICOM</span><span>Trang 2</span></div>
+</div>
+
+<!-- Trang 3: HRM + Logistic UC -->
+<div class="doc-page" data-pg="3">
+  <div class="inner-h"><span class="code">Chương 2 · HRM &amp; Logistic</span><span class="code">UNICOM</span></div>
+  <div class="content-area"><div class="md-render">
+
+    <h2>4. Nhân sự — 119 use case</h2>
+    <table class="stat-row">
+      <thead><tr><th>Nhóm</th><th>Số UC</th><th>Kênh</th></tr></thead>
+      <tbody>
+        <tr><td>Quản trị DM trên XBOS</td><td>15</td><td>XBOS</td></tr>
+        <tr><td>Nền tảng &amp; đồng bộ</td><td>8</td><td>API</td></tr>
+        <tr><td>Chấm công &amp; đơn từ</td><td>13</td><td>API / Web / Mobile</td></tr>
+        <tr><td>Yêu cầu dịch vụ &amp; thông báo</td><td>8</td><td>API / Web / Mobile</td></tr>
+        <tr><td>Nhân sự, lương, tuyển dụng, HĐ</td><td>24</td><td>API / Web</td></tr>
+        <tr><td>Metadata &amp; import/export</td><td>18</td><td>API / Web</td></tr>
+        <tr><td>Công việc, đánh giá, hồ sơ xe</td><td>9</td><td>API / Web</td></tr>
+        <tr><td>Nhúng Command Center</td><td>8</td><td>Web Portal</td></tr>
+        <tr><td><strong>Ứng dụng Mobile nhân viên</strong></td><td><strong>15</strong></td><td><strong>Expo iOS/Android</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box">
+      <strong>HRM Mobile (pilot):</strong> đăng nhập <code>@xe.vn</code>; server trả <code>memberships[]</code>; JWT (<code>tenant_id</code>, <code>company_id</code>, <code>employee_id</code>); không hardcode tenant trên app. 7 nhóm UC: auth (3), chấm công (3), đơn (5), duyệt (2), lương (3), thông báo (3), cài đặt (3).
+    </div>
+
+    <h2>5. Logistic — 150 use case</h2>
+    <div class="fig">
+      <img src="../ecosystem/assets/chuoi-gia-tri-logistic-xevn.png" alt="Chuỗi giá trị Logistic">
+      <p class="cap">Hình 2 — Kinh doanh → Điều phối → Chuyến → App lái → Doanh thu/Lương</p>
+    </div>
+    <table class="stat-row">
+      <thead><tr><th>Nhóm</th><th>Số UC</th><th>Phase</th></tr></thead>
+      <tbody>
+        <tr><td>Quản trị DM trên XBOS</td><td>22</td><td>1</td></tr>
+        <tr><td>Kinh doanh đầu chuỗi</td><td>8</td><td>2</td></tr>
+        <tr><td>Master tuyến &amp; lộ trình</td><td>8</td><td>2</td></tr>
+        <tr><td>Điều phối</td><td>16</td><td>2</td></tr>
+        <tr><td>Vận đơn, đội xe, kho, giá…</td><td>~70</td><td>2</td></tr>
+        <tr><td>App lái xe (5 bước trả hàng + lương %)</td><td>28</td><td>2</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Phase 2 — 128 UC theo ưu tiên</h4>
+    <table class="stat-row">
+      <thead><tr><th>Thứ tự</th><th>Nhóm</th><th>UC</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Master tuyến / lộ trình / trạm phí</td><td>8</td></tr>
+        <tr><td>2</td><td>KD → báo giá → HĐ → đơn</td><td>14</td></tr>
+        <tr><td>3</td><td>Điều phối + vận đơn + chuyến</td><td>25</td></tr>
+        <tr><td>4</td><td>Đội xe + tuân thủ + đối tác</td><td>19</td></tr>
+        <tr><td>5</td><td>Kho + giá + đối soát</td><td>17</td></tr>
+        <tr><td>6</td><td>Mobile lái xe</td><td>28</td></tr>
+      </tbody>
+    </table>
+
+  </div></div>
+  <div class="inner-ft"><span>UNICOM</span><span>Trang 3</span></div>
+</div>
+
+<!-- Trang 4: 183 DM + kiến trúc -->
+<div class="doc-page" data-pg="4">
+  <div class="inner-h"><span class="code">Chương 2–3 · 183 danh mục &amp; kiến trúc</span><span class="code">UNICOM</span></div>
+  <div class="content-area"><div class="md-render">
+
+    <h2>6. Danh mục cấu hình XBOS — 183 mục</h2>
+    <table class="stat-row">
+      <thead><tr><th>Phân hệ</th><th>DM nghiệp vụ</th><th>Quy trình</th><th>Tổng</th></tr></thead>
+      <tbody>
+        <tr><td>HRM</td><td>72</td><td>—</td><td><strong>72</strong></td></tr>
+        <tr><td>Logistic</td><td>91</td><td>20</td><td><strong>111</strong></td></tr>
+        <tr><td><strong>Cộng</strong></td><td><strong>163</strong></td><td><strong>20</strong></td><td><strong>183</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h4>HRM — 72 mục (12 nhóm)</h4>
+    <table>
+      <thead><tr><th>Nhóm</th><th>Mục</th><th>Nhóm</th><th>Mục</th></tr></thead>
+      <tbody>
+        <tr><td>Tổ chức &amp; pháp nhân</td><td>6</td><td>Tuyển dụng</td><td>6</td></tr>
+        <tr><td>Chức danh &amp; phân quyền</td><td>8</td><td>Hồ sơ &amp; tài liệu NV</td><td>3</td></tr>
+        <tr><td>Biểu mẫu hồ sơ NV</td><td>12</td><td>Hồ sơ xe (du lịch)</td><td>9</td></tr>
+        <tr><td>HĐ, chấm công, lương</td><td>10</td><td>Quy trình &amp; phê duyệt</td><td>5</td></tr>
+        <tr><td>Master dùng chung</td><td>4</td><td>RACI &amp; CC HRM</td><td>9</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Logistic — 111 mục (22 nhóm, trích yếu)</h4>
+    <p>91 danh mục nghiệp vụ (tổ chức, địa điểm, dịch vụ 3 cấp, phương tiện, khách hàng, điều phối, kho, KPI…) + <strong>20 quy trình vận hành</strong> định nghĩa trên XBOS (chạy thật khi Phase 2 có đơn/chuyến).</p>
+
+    <h2>7. Kiến trúc bốn tầng &amp; Hub-and-Spoke</h2>
+    <div class="fig">
+      <img src="../ecosystem/assets/kien-truc-bon-tang-xevn.png" alt="Kiến trúc bốn tầng">
+      <p class="cap">Hình 3 — Trình bày · Nghiệp vụ · Nền tảng · Dữ liệu</p>
+    </div>
+    <div class="fig">
+      <img src="../ecosystem/assets/kien-truc-vai-tro-luong-xevn.png" alt="Vai trò phân hệ">
+      <p class="cap">Hình 4 — Portal / XBOS / HRM / Logistic — ranh giới trách nhiệm</p>
+    </div>
+
+  </div></div>
+  <div class="inner-ft"><span>UNICOM</span><span>Trang 4</span></div>
+</div>
+
+<!-- Trang 5: Gate + tiến độ -->
+<div class="doc-page" data-pg="5">
+  <div class="inner-h"><span class="code">Chương 4 · Gate &amp; tiến độ</span><span class="code">UNICOM</span></div>
+  <div class="content-area"><div class="md-render">
+
+    <h2>8. Mô hình đa tenant (pilot)</h2>
+    <table>
+      <thead><tr><th>Khái niệm</th><th>Mô tả</th></tr></thead>
+      <tbody>
+        <tr><td>Master <code>xevn</code></td><td>Holding — nhiều company</td></tr>
+        <tr><td>Member <code>xe-du-lich</code></td><td>Công ty thành viên — map qua HRM employees</td></tr>
+        <tr><td>Email</td><td><code>@xe.vn</code> — vd. <code>du-lich.ceo@xe.vn</code></td></tr>
+        <tr><td>Portal auth</td><td>XBOS membership</td></tr>
+        <tr><td>Mobile auth</td><td>HRM API — memberships từ hồ sơ NV</td></tr>
+      </tbody>
+    </table>
+
+    <h2>9. Tiêu chí đóng gate</h2>
+    <h4>Gate Phase 1 → mở Phase 2</h4>
+    <ul>
+      <li><strong>104/104</strong> UC khối XBOS</li>
+      <li><strong>119/119</strong> UC HRM (gồm Mobile)</li>
+      <li><strong>183/183</strong> mục danh mục phát hành</li>
+      <li><strong>22/22</strong> <code>XBOS-DM-LOG-*</code> — checklist đủ DM</li>
+    </ul>
+    <h4>Gate Phase 2 → production Logistic</h4>
+    <ul>
+      <li><strong>128/128</strong> UC Logistic + mobile</li>
+      <li>Pilot ≥ 1 công ty: KD → đơn → chuyến → app lái → chốt lương %</li>
+      <li>QC Go/No-Go</li>
+    </ul>
+
+    <h2>10. Giá trị cốt lõi &amp; tiến độ</h2>
+    <table class="stat-row">
+      <thead><tr><th>#</th><th>Giá trị</th><th>Chỉ số</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Một chuẩn — nhiều công ty</td><td>183 DM + tenant scope</td></tr>
+        <tr><td>2</td><td>Truy vết &amp; kiểm soát</td><td>Audit, phiên bản catalog</td></tr>
+        <tr><td>3</td><td>Chuỗi KD → vận hành</td><td>Logistic P2 trên nền P1</td></tr>
+        <tr><td>4</td><td>Minh bạch lái xe</td><td>App: doanh thu, lương/chuyến</td></tr>
+        <tr><td>5</td><td>Mở rộng theo khung</td><td>373 UC đã định nghĩa</td></tr>
+      </tbody>
+    </table>
+    <table>
+      <thead><tr><th>Hạng mục</th><th>Trạng thái (05/2026)</th></tr></thead>
+      <tbody>
+        <tr><td>373 UC + 183 DM — phân tích</td><td>✅ Hoàn thành</td></tr>
+        <tr><td>XBOS + Portal Command Center</td><td>🔄 Đang hoàn thiện</td></tr>
+        <tr><td>HRM Web + Mobile pilot</td><td>🔄 ~50%</td></tr>
+        <tr><td>Logistic nghiệp vụ</td><td>📋 Phase 2</td></tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>Tóm tắt:</strong> XeVN OS = <strong>373 UC</strong> · <strong>183 DM XBOS</strong> · <strong>245 UC P1</strong> · <strong>128 UC P2</strong> — Portal + XBOS Hub + HRM (Web/Mobile) + Logistic trên PostgreSQL đa tenant.
+    </div>
+    <p style="font-size:11px;color:#64748b;margin-top:10px;">Chi tiết đầy đủ: <code>docs/ecosystem/MO_TA_HE_SINH_THAI_XEVN.md</code> · Pilot: <code>docs/hrm/HUONG_DAN_DANG_NHAP_PILOT.md</code></p>
+
+  </div></div>
+  <div class="inner-ft"><span>UNICOM · AI Software Factory</span><span>v1.1 · Trang 5</span></div>
+</div>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+</script>
+</body>
+</html>

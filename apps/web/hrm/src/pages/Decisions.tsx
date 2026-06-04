@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDecisions, type DecisionRecord } from '@/hooks/useDecisions';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -194,157 +195,71 @@ export default function Decisions() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Fetch employees for dropdown
-  const { data: employees = [] } = useQuery({
-    queryKey: ['employees-list', currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('employees')
-        .select('id, full_name, employee_code, department, position, avatar_url')
-        .eq('company_id', currentCompanyId)
-        .is('deleted_at', null)
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!currentCompanyId,
+  const {
+    decisions: decisionsFromApi,
+    employees,
+    isLoading,
+    createDecision,
+    updateDecision,
+    removeDecision,
+    removeDecisions: removeDecisionsBulk,
+  } = useDecisions(selectedType);
+
+  const decisions = decisionsFromApi as Decision[];
+
+  const toDecisionPayload = (data: FormData) => ({
+    decision_code: data.decision_code,
+    decision_type: data.decision_type,
+    title: data.title,
+    content: data.content,
+    employee_id: data.employee_id,
+    employee_name: data.employee_name,
+    employee_code: data.employee_code,
+    department: data.department,
+    position: data.position,
+    effective_date: data.effective_date,
+    expiry_date: data.expiry_date,
+    signer_name: data.signer_name,
+    signer_position: data.signer_position,
+    signing_date: data.signing_date,
+    file_url: data.file_url,
+    status: data.status,
+    notes: data.notes,
   });
 
-  const { data: decisions = [], isLoading } = useQuery({
-    queryKey: ['hr-decisions', selectedType, currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      
-      let query = supabase
-        .from('hr_decisions')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
+  const createMutation = {
+    mutateAsync: async (data: FormData) => {
+      const ok = await createDecision(toDecisionPayload(data));
+      if (!ok) throw new Error('create failed');
+    },
+  };
 
-      if (selectedType !== 'all') {
-        query = query.eq('decision_type', selectedType);
+  const updateMutation = {
+    mutateAsync: async ({ id, data }: { id: string; data: FormData }) => {
+      const ok = await updateDecision(id, toDecisionPayload(data));
+      if (!ok) throw new Error('update failed');
+    },
+  };
+
+  const deleteMutation = {
+    mutate: async (id: string) => {
+      const ok = await removeDecision(id);
+      if (ok) {
+        setDeleteDialogOpen(false);
+        setDeletingDecision(null);
       }
+    },
+  };
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as Decision[];
+  const bulkDeleteMutation = {
+    mutate: async (ids: string[]) => {
+      const ok = await removeDecisionsBulk(ids);
+      if (ok) {
+        setBulkDeleteDialogOpen(false);
+        setSelectedDecisions([]);
+      }
     },
-    enabled: !!currentCompanyId,
-  });
-
-  const createMutation = useMutation({
-    mutationFn: async (data: FormData) => {
-      if (!currentCompanyId) throw new Error('No company selected');
-      
-      const { error } = await supabase.from('hr_decisions').insert({
-        decision_code: data.decision_code,
-        decision_type: data.decision_type,
-        title: data.title,
-        content: data.content || null,
-        employee_id: data.employee_id || null,
-        employee_name: data.employee_name,
-        employee_code: data.employee_code || null,
-        department: data.department || null,
-        position: data.position || null,
-        effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-        expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-        signer_name: data.signer_name || null,
-        signer_position: data.signer_position || null,
-        signing_date: data.signing_date ? format(data.signing_date, 'yyyy-MM-dd') : null,
-        file_url: data.file_url || null,
-        status: data.status,
-        notes: data.notes || null,
-        company_id: currentCompanyId,
-        created_by: user?.id || null,
-      });
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hr-decisions'] });
-      toast.success(t('decisions.createSuccess'));
-      handleCloseDialog();
-    },
-    onError: (error) => {
-      toast.error(t('decisions.createError') + ': ' + error.message);
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: FormData }) => {
-      const { error } = await supabase
-        .from('hr_decisions')
-        .update({
-          decision_code: data.decision_code,
-          decision_type: data.decision_type,
-          title: data.title,
-          content: data.content || null,
-          employee_id: data.employee_id || null,
-          employee_name: data.employee_name,
-          employee_code: data.employee_code || null,
-          department: data.department || null,
-          position: data.position || null,
-          effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-          expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-          signer_name: data.signer_name || null,
-          signer_position: data.signer_position || null,
-          signing_date: data.signing_date ? format(data.signing_date, 'yyyy-MM-dd') : null,
-          file_url: data.file_url || null,
-          status: data.status,
-          notes: data.notes || null,
-        })
-        .eq('id', id);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hr-decisions'] });
-      toast.success(t('decisions.updateSuccess'));
-      handleCloseDialog();
-    },
-    onError: (error) => {
-      toast.error(t('decisions.updateError') + ': ' + error.message);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('hr_decisions')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hr-decisions'] });
-      toast.success(t('decisions.deleteSuccess'));
-      setDeleteDialogOpen(false);
-      setDeletingDecision(null);
-    },
-    onError: (error) => {
-      toast.error(t('decisions.deleteError') + ': ' + error.message);
-    },
-  });
-
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => {
-      const { error } = await supabase
-        .from('hr_decisions')
-        .delete()
-        .in('id', ids);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hr-decisions'] });
-      toast.success(t('decisions.bulkDeleteSuccess', { count: selectedDecisions.length }));
-      setBulkDeleteDialogOpen(false);
-      setSelectedDecisions([]);
-    },
-    onError: (error) => {
-      toast.error(t('decisions.deleteError') + ': ' + error.message);
-    },
-  });
+  };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
@@ -379,20 +294,9 @@ export default function Decisions() {
 
     setIsUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${currentCompanyId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('decision-files')
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = supabase.storage
-        .from('decision-files')
-        .getPublicUrl(fileName);
-
-      setFormData({ ...formData, file_url: publicUrlData.publicUrl });
+      const url = await hrmStorageUploadStub(file, 'decision-file-upload');
+      if (!url) throw new Error('upload failed');
+      setFormData({ ...formData, file_url: url });
       setUploadedFileName(file.name);
       toast.success(t('decisions.uploadSuccess'));
     } catch (error: any) {
@@ -410,7 +314,6 @@ export default function Decisions() {
       const urlParts = formData.file_url.split('/decision-files/');
       if (urlParts.length > 1) {
         const filePath = decodeURIComponent(urlParts[1]);
-        await supabase.storage.from('decision-files').remove([filePath]);
       }
       
       setFormData({ ...formData, file_url: '' });
@@ -479,9 +382,16 @@ export default function Decisions() {
     try {
       if (editingDecision) {
         await updateMutation.mutateAsync({ id: editingDecision.id, data: formData });
+        toast.success(t('decisions.updateSuccess'));
       } else {
         await createMutation.mutateAsync(formData);
+        toast.success(t('decisions.createSuccess'));
       }
+      handleCloseDialog();
+    } catch (error: unknown) {
+      toast.error(
+        editingDecision ? t('decisions.updateError') : t('decisions.createError'),
+      );
     } finally {
       setIsSubmitting(false);
     }

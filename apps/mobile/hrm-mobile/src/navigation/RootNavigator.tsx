@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { OfflineBanner } from '../components/OfflineBanner';
+import { OfflineSync } from '../components/OfflineSync';
 import { useAuth } from '../context/AuthContext';
 import { readListRows } from '../integrations/envelope';
 import { hrmRequest } from '../integrations/hrmApiClient';
@@ -14,10 +15,15 @@ import { DashboardScreen } from '../features/dashboard/DashboardScreen';
 import { CheckInScreen } from '../features/attendance/CheckInScreen';
 import { AttendanceHistoryScreen } from '../features/attendance/AttendanceHistoryScreen';
 import { UpdateRequestsScreen } from '../features/attendance/UpdateRequestsScreen';
+import { LeaveRequestsListScreen } from '../features/attendance/LeaveRequestsListScreen';
 import { CreateUpdateRequestScreen } from '../features/attendance/CreateUpdateRequestScreen';
 import { CreateLeaveRequestScreen } from '../features/attendance/CreateLeaveRequestScreen';
+import { UpdateRequestDetailScreen } from '../features/attendance/UpdateRequestDetailScreen';
+import { LeaveRequestDetailScreen } from '../features/attendance/LeaveRequestDetailScreen';
 import { ManagerApprovalsScreen } from '../features/attendance/ManagerApprovalsScreen';
 import { PayrollSummaryScreen } from '../features/payroll/PayrollSummaryScreen';
+import { PayslipListScreen } from '../features/payroll/PayslipListScreen';
+import { PayslipDetailScreen } from '../features/payroll/PayslipDetailScreen';
 import { ContractsScreen } from '../features/contracts/ContractsScreen';
 import { OperationsScreen } from '../features/operations/OperationsScreen';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
@@ -50,21 +56,31 @@ function RequestsStack() {
   return (
     <ReqStack.Navigator>
       <ReqStack.Screen name="UpdateRequests" component={UpdateRequestsScreen} options={{ title: vi.requests }} />
+      <ReqStack.Screen name="LeaveRequestsList" component={LeaveRequestsListScreen} options={{ title: vi.leaveList }} />
       <ReqStack.Screen name="CreateUpdateRequest" component={CreateUpdateRequestScreen} options={{ title: vi.createRequest }} />
       <ReqStack.Screen name="CreateLeaveRequest" component={CreateLeaveRequestScreen} options={{ title: vi.createLeave }} />
+      <ReqStack.Screen name="UpdateRequestDetail" component={UpdateRequestDetailScreen} options={{ title: vi.requestDetail }} />
+      <ReqStack.Screen name="LeaveRequestDetail" component={LeaveRequestDetailScreen} options={{ title: vi.leaveDetail }} />
     </ReqStack.Navigator>
   );
 }
 
 function MoreStackNavigator() {
+  const auth = useAuth();
   return (
     <MoreStack.Navigator>
       <MoreStack.Screen name="Settings" component={SettingsScreen} options={{ title: vi.settings }} />
       <MoreStack.Screen name="Scope" component={ScopeScreen} options={{ title: vi.scope }} />
-      <MoreStack.Screen name="ManagerApprovals" component={ManagerApprovalsScreen} options={{ title: vi.approvals }} />
+      {auth.isManager ? (
+        <MoreStack.Screen name="ManagerApprovals" component={ManagerApprovalsScreen} options={{ title: vi.approvals }} />
+      ) : null}
       <MoreStack.Screen name="PayrollSummary" component={PayrollSummaryScreen} options={{ title: vi.payroll }} />
+      <MoreStack.Screen name="PayslipList" component={PayslipListScreen} options={{ title: vi.payslips }} />
+      <MoreStack.Screen name="PayslipDetail" component={PayslipDetailScreen} options={{ title: vi.payslipDetail }} />
       <MoreStack.Screen name="Contracts" component={ContractsScreen} options={{ title: vi.contracts }} />
-      <MoreStack.Screen name="Operations" component={OperationsScreen} options={{ title: vi.operations }} />
+      {auth.isManager ? (
+        <MoreStack.Screen name="Operations" component={OperationsScreen} options={{ title: vi.operations }} />
+      ) : null}
       <MoreStack.Screen name="Profile" component={ProfileScreen} options={{ title: vi.profile }} />
       <MoreStack.Screen name="Notifications" component={InAppNotificationsScreen} options={{ title: vi.notifications }} />
     </MoreStack.Navigator>
@@ -76,18 +92,19 @@ function MainTabs() {
   const [moreBadge, setMoreBadge] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    if (!auth.signedIn) {
+    if (!auth.signedIn || !auth.isManager) {
       setMoreBadge(undefined);
       return;
     }
     let cancelled = false;
     const refreshBadge = async () => {
       const cid = auth.getAttendanceCompanyId();
-      if (!cid) {
+      const mid = auth.employeeId.trim();
+      if (!cid || !mid) {
         if (!cancelled) setMoreBadge(undefined);
         return;
       }
-      const q = new URLSearchParams({ company_id: cid, status: 'pending' });
+      const q = new URLSearchParams({ company_id: cid, status: 'pending', manager_employee_id: mid });
       const [attRes, leaveRes] = await Promise.all([
         hrmRequest<unknown>(auth.getHrmAuth(), `/attendance/update-requests?${q.toString()}`, { method: 'GET' }),
         hrmRequest<unknown>(auth.getHrmAuth(), `/attendance/leave-requests?${q.toString()}`, { method: 'GET' }),
@@ -106,11 +123,12 @@ function MainTabs() {
       cancelled = true;
       clearInterval(id);
     };
-  }, [auth.signedIn, auth.companyUuid, auth.companyId, auth.tenantId, auth.accessToken, auth.internalApiKey]);
+  }, [auth.signedIn, auth.isManager, auth.companyUuid, auth.companyId, auth.employeeId, auth.accessToken]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
       <OfflineBanner />
+      <OfflineSync />
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
@@ -125,7 +143,10 @@ function MainTabs() {
         <Tab.Screen
           name="TabMore"
           component={MoreStackNavigator}
-          options={{ title: vi.more, tabBarBadge: moreBadge }}
+          options={{
+            title: vi.more,
+            tabBarBadge: auth.isManager ? moreBadge : undefined,
+          }}
         />
       </Tab.Navigator>
     </View>

@@ -1,8 +1,14 @@
-import { IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
 
 export class ListCandidatesQueryDto {
-  @IsUUID()
+  @Transform(({ value, obj }) => {
+    const raw = value ?? obj?.companyId;
+    if (Array.isArray(raw)) return String(raw[0] ?? '').trim();
+    return raw == null ? raw : String(raw).trim();
+  })
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsOptional()
@@ -10,15 +16,20 @@ export class ListCandidatesQueryDto {
   requisition_id?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
+  @Transform(({ value, obj }) => {
+    const raw = value ?? obj?.page;
+    if (Array.isArray(raw)) return String(raw[0] ?? '').trim();
+    return raw == null ? raw : String(raw).trim();
+  })
+  @Matches(/^\d+$/)
+  page?: number | string = '1';
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  page_size?: number = 20;
+  @Transform(({ value, obj }) => {
+    const raw = value ?? obj?.pageSize;
+    if (Array.isArray(raw)) return String(raw[0] ?? '').trim();
+    return raw == null ? raw : String(raw).trim();
+  })
+  @Matches(/^\d+$/)
+  page_size?: number | string = '20';
 }

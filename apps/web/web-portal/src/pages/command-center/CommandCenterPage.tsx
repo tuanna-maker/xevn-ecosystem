@@ -3,7 +3,6 @@ import { Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ChevronRight,
-  Clock,
   AlertTriangle,
   Info,
   RefreshCw,
@@ -30,6 +29,7 @@ import {
   Network,
   Warehouse,
   LayoutGrid,
+  Package,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -38,7 +38,6 @@ import {
   mockRailModules,
   mockUnifiedTasks,
   mockPortalAlerts,
-  mockCommandCenterMeta,
   type PortalAlert,
   filterTasksByPersona,
   filterAlertsByPersona,
@@ -63,7 +62,6 @@ import {
 import { ORG_GRADE_LEVELS, type OrgGradeBand } from '../../data/org-grade-reference';
 import {
   type DeptSystemFoundationTemplate,
-  INITIAL_DEPT_SYSTEM_TEMPLATES,
 } from '../../data/dept-system-foundation-catalog';
 import {
   WF_NODE_BOD,
@@ -114,33 +112,52 @@ import {
 import { WorkspaceLayout } from './WorkspaceLayout';
 import { CommandCenterModuleRail } from './CommandCenterModuleRail';
 import { WorkflowCanvas, formatWorkflowDrawerDetails } from './WorkflowCanvas';
-import { HrmSidebar } from '../../modules/hrm/HrmSidebar';
+import { HrmCollapsibleSidebar } from '../../modules/hrm/HrmCollapsibleSidebar';
+import {
+  readHrmModuleRailCollapsed,
+  writeHrmModuleRailCollapsed,
+} from '../../modules/hrm/hrmEmbedNavStorage';
+import { HrmApiHealthBanner } from '../../components/common/HrmApiHealthBanner';
 import { hrmPortalPath } from '../../modules/hrm/paths';
-import { resolveIdentityScope } from '../../integrations/identityScope';
+import { parseCommandCenterSettingsDeepLink } from '../../modules/hrm/commandCenterUrl';
 import { TenantConfigScopeBar } from './TenantConfigScopeBar';
 import { CompanyRaciPanel } from './CompanyRaciPanel';
-import { MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../../constants/tenant';
+import {
+  GROUP_HOLDING_COMPANY_ID,
+  MASTER_TENANT_ID,
+  MEMBER_DEFAULT_COMPANY_ID,
+} from '../../constants/tenant';
 import { ApiHealthBanner } from '../../components/common/ApiHealthBanner';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 import {
   fetchInfrastructureSettings,
+  fetchInfrastructureSummary,
+  resolveInfrastructureFoundationLoad,
   saveInfrastructureSettings,
   type InfrastructureSettingsPayload,
+  INFRASTRUCTURE_MOCK_SEED,
 } from '../../integrations/infrastructureApi';
 import {
-  listDeptSystemTemplates,
+  deptTemplatesLoadErrorMessage,
   upsertDeptSystemTemplate,
 } from '../../integrations/deptSystemTemplatesApi';
 import { loadCcCatalogRows, saveCcCatalogRows } from '../../integrations/commandCenterCatalogApi';
 import { fetchCommandCenterInboxTasks } from '../../integrations/commandCenterInboxApi';
 import { fetchPortalAlerts } from '../../integrations/portalAlertsApi';
-import { useCommandCenterSparkline } from '../../hooks/useCommandCenterSparkline';
+import { useCommandCenterKpiRail } from '../../hooks/useCommandCenterKpiRail';
+import { useDeptSystemTemplates } from '../../hooks/useDeptSystemTemplates';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
+import { describeScopePlaneForUi } from '../../integrations/commandCenterScope';
 import {
   completeWorkflowTask,
   fetchWorkflowInstanceDetail,
   listWorkflowDefinitions,
   saveWorkflowDefinition,
 } from '../../integrations/workflowEngineApi';
+import {
+  normalizeWorkflowInstanceDetail,
+  type WorkflowInstanceDetailPayload,
+} from '../../integrations/workflowInstanceMapper';
 import {
   deleteLegalDocumentApi,
   deleteShareholderApi,
@@ -162,11 +179,23 @@ import {
 } from '../../integrations/orgFoundationApi';
 import { WorkflowTaskDetailDrawer } from './WorkflowTaskDetailDrawer';
 import { CatalogGovernancePanel } from './CatalogGovernancePanel';
+import { AssetRequestPanel } from './AssetRequestPanel';
 import {
   apiRowToWorkflowDefinition,
   workflowDefinitionToApiPayload,
 } from '../../integrations/workflowMapper';
 import { allowMockFallback } from '../../utils/mockPolicy';
+import {
+  ALERTS_STRICT_EMPTY_HINT,
+  INBOX_STRICT_EMPTY_HINT,
+  INBOX_STRICT_LOAD_FAILED,
+  resolveAlertsStrictBanner,
+  resolveCommandCenterInboxTasks,
+  resolveInboxStrictBanner,
+  resolveWorkflowDefinitionsStrictBanner,
+  WORKFLOW_DEFINITIONS_STRICT_EMPTY_HINT,
+  WORKFLOW_DEFINITIONS_STRICT_LOAD_FAILED,
+} from '../../utils/commandCenterStrictMode';
 import {
   buildGroupHrCatalogLayout,
   getGroupHrCatalogFields,
@@ -179,15 +208,28 @@ import {
   syncGroupHrFieldDefsToHrm,
   type GroupHrCatalogFieldDto,
 } from '../../integrations/groupHrCatalogApi';
-import { fetchGroupMemberUnitsForCommandCenter } from '../../integrations/tenantScopeApi';
+import {
+  fetchGroupMemberUnitsForCommandCenter,
+  GROUP_HOLDING_ROOT_ID,
+} from '../../integrations/tenantScopeApi';
 import {
   createLegalEntity,
+  fetchHoldingLegalEntities,
+  fetchLegalEntityForEdit,
   fetchLegalEntities,
-  fetchOrgTree,
+  loadLegalEntityDepartmentTree,
+  resolveLegalEntityApiIdForCompany,
+  resolveLegalEntityApiIdFromList,
   updateLegalEntity,
+  type LegalEntityApiRow,
   type OrgTreeNode,
 } from '../../integrations/orgFoundationApi';
 import { mapLegalEntityRowToCompany } from '../../integrations/legalEntityMapper';
+import {
+  isLegalEntityValidationHttpError,
+  mapLegalEntityRowToCompanyForm,
+  parseLegalEntitySaveFieldErrors,
+} from '../../integrations/legalEntityFormMapper';
 
 const RAIL_STROKE = 1.5;
 const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
@@ -207,7 +249,8 @@ type SettingsMenuKey =
   | 'document'
   | 'measurement'
   | 'pricing'
-  | 'hrm_catalog_governance';
+  | 'hrm_catalog_governance'
+  | 'asset_requests';
 
 const COMPANY_SETUP_MENU_KEYS: CompanySetupMenuKey[] = [
   'company_member_units',
@@ -1016,6 +1059,7 @@ const settingsMenusAfterCompany: Array<{ key: SettingsMenuKey; label: string; Ic
   { key: 'hrm_catalog_governance', label: 'Duyệt danh mục HRM', Icon: FileArchive },
   { key: 'permission', label: 'Hệ thống phân quyền', Icon: ShieldCheck },
   { key: 'workflow', label: 'Hệ thống quy trình', Icon: GitBranch },
+  { key: 'asset_requests', label: 'Yêu cầu tài sản', Icon: Package },
   { key: 'document', label: 'Hệ thống văn bản/Quy định', Icon: FileText },
   { key: 'measurement', label: 'Hệ thống đo lường/Tiền tệ', Icon: Coins },
   { key: 'pricing', label: 'Thiết lập hệ thống giá', Icon: Tag },
@@ -1042,6 +1086,7 @@ function settingsWorkspaceTitle(
     hrm_catalog_governance: 'Duyệt danh mục HRM',
     permission: 'Hệ thống phân quyền',
     workflow: 'Hệ thống quy trình',
+    asset_requests: 'Yêu cầu tài sản',
     document: 'Hệ thống văn bản/Quy định',
     measurement: 'Hệ thống đo lường/Tiền tệ',
     pricing: 'Thiết lập hệ thống giá',
@@ -1151,8 +1196,10 @@ const SettingSectionHeader: React.FC<{ title: string; subtitle?: React.ReactNode
 
 
 const CommandCenterPage: React.FC = () => {
+  const { tenantId, companyId } = useTenantScope();
   const [persona, setPersona] = useState<PersonaRole>('bod');
   const [selectedModule, setSelectedModule] = useState<string | 'all' | typeof SYSTEM_SETTINGS>('all');
+  const [hrmModuleRailCollapsed, setHrmModuleRailCollapsed] = useState(readHrmModuleRailCollapsed);
   const [loading, setLoading] = useState(true);
   const [activeSettingsMenu, setActiveSettingsMenu] =
     useState<SettingsMenuKey>('company_member_units');
@@ -1167,15 +1214,34 @@ const CommandCenterPage: React.FC = () => {
     }
   }, [location.pathname]);
 
+  const ccDeepLinkKeyRef = useRef('');
+  const ccWorkflowDefinitionDeepLinkRef = useRef<string | null>(null);
+  const ccWorkflowInstanceDeepLinkRef = useRef<string | null>(null);
+
   useEffect(() => {
-    const settingsKey = new URLSearchParams(location.search).get('settings');
-    if (settingsKey === 'hrm_catalog_governance') {
-      setSelectedModule(SYSTEM_SETTINGS);
-      setActiveSettingsMenu('hrm_catalog_governance');
+    const parsed = parseCommandCenterSettingsDeepLink(location.search);
+    if (!parsed.settingsMenu) return;
+
+    const linkKey = `${parsed.settingsMenu}|${parsed.workflowDefinitionId ?? ''}|${parsed.workflowInstanceId ?? ''}`;
+    if (ccDeepLinkKeyRef.current === linkKey) return;
+    ccDeepLinkKeyRef.current = linkKey;
+
+    setSelectedModule(SYSTEM_SETTINGS);
+    setActiveSettingsMenu(parsed.settingsMenu as SettingsMenuKey);
+    if (parsed.workflowDefinitionId) {
+      ccWorkflowDefinitionDeepLinkRef.current = parsed.workflowDefinitionId;
+    }
+    if (parsed.workflowInstanceId) {
+      ccWorkflowInstanceDeepLinkRef.current = parsed.workflowInstanceId;
     }
   }, [location.search]);
 
   const [publishMessage, setPublishMessage] = useState('');
+  const [companySaving, setCompanySaving] = useState(false);
+  const [companySaveFeedback, setCompanySaveFeedback] = useState<{
+    kind: 'error' | 'success';
+    text: string;
+  } | null>(null);
   const [menuNotice, setMenuNotice] = useState<string | null>(null);
   const docCatalogHydratedRef = useRef(false);
   const measureCatalogHydratedRef = useRef(false);
@@ -1203,9 +1269,7 @@ const CommandCenterPage: React.FC = () => {
       if (rows.length > 0) {
         setLegalEntityList(rows);
       } else {
-        const tenantId =
-          import.meta.env.VITE_DEFAULT_TENANT_ID?.trim() ?? 'xe-du-lich';
-        const legalRows = await fetchLegalEntities(tenantId, MEMBER_DEFAULT_COMPANY_ID);
+        const legalRows = await fetchLegalEntities(MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID);
         const mapped = legalRows.map((row) => mapLegalEntityRowToCompany(row));
         if (mapped.length) setLegalEntityList(mapped);
         setGroupMemberUnitsNotice(
@@ -1255,7 +1319,7 @@ const CommandCenterPage: React.FC = () => {
     let cancelled = false;
     void (async () => {
       try {
-        const tree = await fetchOrgTree(tenantId);
+        const tree = await loadLegalEntityDepartmentTree(tenantId, entityId);
         if (cancelled) return;
         const flat = flattenOrgTreeToDeptRows(tree);
         setDepartmentRowsByEntity((prev) => {
@@ -1282,6 +1346,8 @@ const CommandCenterPage: React.FC = () => {
   const [companySettingsView, setCompanySettingsView] = useState<'list' | 'form'>('list');
   const [companyDetailTab, setCompanyDetailTab] = useState<CompanyDetailTab>('legal');
   const [companyEntityId, setCompanyEntityId] = useState<string | null>(null);
+  const [legalEntityApiCache, setLegalEntityApiCache] = useState<LegalEntityApiRow[]>([]);
+  const [resolvedLegalEntityApiId, setResolvedLegalEntityApiId] = useState<string | null>(null);
   const [parentUnitQuery, setParentUnitQuery] = useState('');
   const [parentUnitMenuOpen, setParentUnitMenuOpen] = useState(false);
   const [companyForm, setCompanyForm] = useState<CompanyFormState>({
@@ -1310,6 +1376,8 @@ const CommandCenterPage: React.FC = () => {
   const [companyErrors, setCompanyErrors] = useState<{
     enterpriseCode?: string;
     charterCapital?: string;
+    taxCode?: string;
+    nameVi?: string;
   }>({});
   const [shareholderRows, setShareholderRows] = useState<ShareholderRow[]>([
     {
@@ -1342,14 +1410,15 @@ const CommandCenterPage: React.FC = () => {
   const [employeeMetadataPreviewValues, setEmployeeMetadataPreviewValues] = useState<
     Record<string, string>
   >({});
-  const [workspaceMeta, setWorkspaceMeta] = useState<{ asOf: string; dataSyncNote?: string | null } | null>(
-    null,
-  );
+  const [, setWorkspaceMeta] = useState<{ asOf: string; dataSyncNote?: string | null } | null>(null);
   const [workspaceMetaFailed, setWorkspaceMetaFailed] = useState(false);
   const [inboxDetailOpen, setInboxDetailOpen] = useState(false);
   const [inboxDetailTask, setInboxDetailTask] = useState<UnifiedTask | null>(null);
-  const [inboxDetailPayload, setInboxDetailPayload] = useState<Record<string, unknown> | null>(null);
+  const [inboxDetailPayload, setInboxDetailPayload] = useState<WorkflowInstanceDetailPayload | null>(
+    null,
+  );
   const [inboxDetailLoading, setInboxDetailLoading] = useState(false);
+  const [inboxDetailLoadFailed, setInboxDetailLoadFailed] = useState(false);
   const [inboxDrawerBusy, setInboxDrawerBusy] = useState(false);
   const [legalDocUploadTargetId, setLegalDocUploadTargetId] = useState<string | null>(null);
   const legalDocFileInputRef = useRef<HTMLInputElement>(null);
@@ -1412,14 +1481,11 @@ const CommandCenterPage: React.FC = () => {
     'foundation',
   );
   const [foundationCategories, setFoundationCategories] = useState<InfrastructureFoundationCategory[]>(
-    () => [...INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES],
+    () => (allowMockFallback() ? [...INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES] : []),
   );
   const [foundationCategoryDetailId, setFoundationCategoryDetailId] = useState<string | null>(null);
   const [foundationForm, setFoundationForm] = useState<InfrastructureFoundationCategory | null>(null);
   const [deptSystemTab, setDeptSystemTab] = useState<'reference' | 'templates'>('reference');
-  const [deptSystemTemplates, setDeptSystemTemplates] = useState<DeptSystemFoundationTemplate[]>(
-    () => [...INITIAL_DEPT_SYSTEM_TEMPLATES],
-  );
   const [deptSystemDetailId, setDeptSystemDetailId] = useState<string | null>(null);
   const [deptSystemForm, setDeptSystemForm] = useState<DeptSystemFoundationTemplate | null>(null);
   const [infrastructureEditId, setInfrastructureEditId] = useState<string | null>(null);
@@ -1508,14 +1574,55 @@ const CommandCenterPage: React.FC = () => {
     order: number;
   }>({ blockCode: '', labelVi: '', visible: true, order: 10 });
   const [infrastructureDbHydrated, setInfrastructureDbHydrated] = useState(false);
+  const [infrastructureCatalogSource, setInfrastructureCatalogSource] = useState<
+    'idle' | 'loading' | 'api' | 'mock' | 'empty'
+  >('idle');
+  const [infrastructureCatalogFailed, setInfrastructureCatalogFailed] = useState(false);
   const [workflows, setWorkflows] = useState<WorkflowDefinition[]>([]);
+  const [workflowDefinitionsSource, setWorkflowDefinitionsSource] = useState<
+    'idle' | 'loading' | 'api' | 'mock' | 'empty'
+  >('idle');
+  const [workflowDefinitionsLoadFailed, setWorkflowDefinitionsLoadFailed] = useState(false);
   const workflowCatalogHydratedRef = useRef(false);
   const [inboxTasks, setInboxTasks] = useState<UnifiedTask[]>([]);
   const [inboxTasksSource, setInboxTasksSource] = useState<'loading' | 'api' | 'mock'>('loading');
+  const [inboxTasksLoadFailed, setInboxTasksLoadFailed] = useState(false);
   const [inboxActionBusyId, setInboxActionBusyId] = useState<string | null>(null);
   const [portalAlerts, setPortalAlerts] = useState<PortalAlert[]>([]);
   const [portalAlertsSource, setPortalAlertsSource] = useState<'loading' | 'api' | 'mock'>('loading');
-  const kpiSparkline = useCommandCenterSparkline(MASTER_TENANT_ID, MASTER_TENANT_ID);
+  const [portalAlertsLoadFailed, setPortalAlertsLoadFailed] = useState(false);
+  const kpiRail = useCommandCenterKpiRail(persona, tenantId, companyId);
+  const deptTemplatesHook = useDeptSystemTemplates(
+    activeSettingsMenu === 'company_dept_system',
+    tenantId,
+    companyId,
+  );
+  const deptSystemTemplates = deptTemplatesHook.templates;
+  const setDeptSystemTemplates = deptTemplatesHook.setTemplates;
+
+  const workflowDefinitionsStrict = useMemo(
+    () =>
+      resolveWorkflowDefinitionsStrictBanner(
+        workflowDefinitionsSource === 'loading'
+          ? 'loading'
+          : workflowDefinitionsSource === 'mock'
+            ? 'mock'
+            : 'api',
+        workflowDefinitionsLoadFailed,
+        workflows.length,
+      ),
+    [workflowDefinitionsSource, workflowDefinitionsLoadFailed, workflows.length],
+  );
+
+  const portalAlertsStrict = useMemo(
+    () =>
+      resolveAlertsStrictBanner(
+        portalAlertsSource === 'loading' ? 'loading' : portalAlertsSource === 'mock' ? 'mock' : 'api',
+        portalAlertsLoadFailed,
+        portalAlerts.length,
+      ),
+    [portalAlertsSource, portalAlertsLoadFailed, portalAlerts.length],
+  );
   const [workflowView, setWorkflowView] = useState<'list' | 'detail'>('list');
   const [workflowEditId, setWorkflowEditId] = useState<string | null>(null);
   const [workflowForm, setWorkflowForm] = useState<WorkflowDefinition | null>(null);
@@ -1601,26 +1708,13 @@ const CommandCenterPage: React.FC = () => {
 
   useEffect(() => {
     if (activeSettingsMenu !== 'company_dept_system') return;
-    let cancelled = false;
-    void (async () => {
-      try {
-        const rows = await listDeptSystemTemplates();
-        if (cancelled) return;
-        if (rows.length) {
-          setDeptSystemTemplates(rows);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setMenuNotice(
-            `Không tải khung phòng/ban từ DB (${error instanceof Error ? error.message : 'lỗi'}). Dùng mẫu cục bộ.`,
-          );
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [activeSettingsMenu]);
+    const msg = deptTemplatesLoadErrorMessage(deptTemplatesHook.loadNotFound, deptTemplatesHook.loadFailed);
+    if (msg) setMenuNotice(msg);
+  }, [
+    activeSettingsMenu,
+    deptTemplatesHook.loadFailed,
+    deptTemplatesHook.loadNotFound,
+  ]);
 
   useEffect(() => {
     if (activeSettingsMenu !== 'document') {
@@ -1765,14 +1859,38 @@ const CommandCenterPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const { entityId, tenantId } = resolveLegalProfileScope();
-    if (!entityId) return;
+    if (!companyEntityId || companyEntityId === 'new') {
+      setResolvedLegalEntityApiId(null);
+      return;
+    }
+    const scopeRow =
+      settingsLegalEntities.find((e) => e.id === companyEntityId) ??
+      legalEntityList.find((e) => e.id === companyEntityId);
+    const tenantId = scopeRow?.tenantId ?? MASTER_TENANT_ID;
+    const hints = { id: companyEntityId, tenantId, code: scopeRow?.code };
+    const fromCache = resolveLegalEntityApiIdFromList(hints, legalEntityApiCache);
+    if (fromCache) {
+      setResolvedLegalEntityApiId(fromCache);
+      return;
+    }
+    let cancelled = false;
+    void resolveLegalEntityApiIdForCompany(tenantId, hints).then((resolved) => {
+      if (!cancelled) setResolvedLegalEntityApiId(resolved);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [companyEntityId, settingsLegalEntities, legalEntityList, legalEntityApiCache]);
+
+  useEffect(() => {
+    const { entityId, tenantId: profileTenantId } = resolveLegalProfileScope();
+    if (!entityId || !isPersistedApiId(entityId)) return;
     let cancelled = false;
     void (async () => {
       try {
         const [shareholders, documents] = await Promise.all([
-          listShareholders(entityId, tenantId),
-          listLegalDocuments(entityId, tenantId),
+          listShareholders(entityId, profileTenantId),
+          listLegalDocuments(entityId, profileTenantId),
         ]);
         if (cancelled) return;
         if (shareholders.length) {
@@ -1808,7 +1926,7 @@ const CommandCenterPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [companyEntityId, settingsLegalEntities]);
+  }, [companyEntityId, settingsLegalEntities, resolvedLegalEntityApiId, legalEntityApiCache]);
 
   useEffect(() => {
     if (!activePermissionRoleId) return;
@@ -1841,9 +1959,11 @@ const CommandCenterPage: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
+    setInboxTasksLoadFailed(false);
     void fetchCommandCenterInboxTasks(MASTER_TENANT_ID)
       .then((tasks) => {
         if (cancelled) return;
+        setInboxTasksLoadFailed(false);
         if (tasks.length) {
           setInboxTasks(tasks);
           setInboxTasksSource('api');
@@ -1855,6 +1975,7 @@ const CommandCenterPage: React.FC = () => {
       .catch(() => {
         if (!cancelled) {
           setInboxTasks([]);
+          setInboxTasksLoadFailed(!allowMockFallback());
           setInboxTasksSource(allowMockFallback() ? 'mock' : 'api');
         }
       });
@@ -1865,9 +1986,11 @@ const CommandCenterPage: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
+    setPortalAlertsLoadFailed(false);
     void fetchPortalAlerts(MASTER_TENANT_ID)
       .then((rows) => {
         if (cancelled) return;
+        setPortalAlertsLoadFailed(false);
         if (rows.length) {
           setPortalAlerts(rows);
           setPortalAlertsSource('api');
@@ -1879,6 +2002,7 @@ const CommandCenterPage: React.FC = () => {
       .catch(() => {
         if (!cancelled) {
           setPortalAlerts([]);
+          setPortalAlertsLoadFailed(!allowMockFallback());
           setPortalAlertsSource(allowMockFallback() ? 'mock' : 'api');
         }
       });
@@ -1895,29 +2019,45 @@ const CommandCenterPage: React.FC = () => {
     if (workflowCatalogHydratedRef.current) return;
     let cancelled = false;
     const seedLocal = () => {
+      if (!allowMockFallback()) {
+        setWorkflows([]);
+        setWorkflowDefinitionsSource('empty');
+        setWorkflowDefinitionsLoadFailed(false);
+        return;
+      }
       setWorkflows([
         ...getInitialWorkflowGraphDefinitions(),
         ...getRaciWorkflowPrototypeDefinitions(),
       ]);
+      setWorkflowDefinitionsSource('mock');
+      setWorkflowDefinitionsLoadFailed(false);
     };
+    setWorkflowDefinitionsSource('loading');
     void (async () => {
       try {
-        const rows = await listWorkflowDefinitions(MASTER_TENANT_ID, MASTER_TENANT_ID);
+        const rows = await listWorkflowDefinitions(tenantId, companyId);
         if (cancelled) return;
         const mapped = rows.map(apiRowToWorkflowDefinition).filter((w) => w.steps.length > 0);
         if (mapped.length) {
           setWorkflows(mapped);
+          setWorkflowDefinitionsSource('api');
+          setWorkflowDefinitionsLoadFailed(false);
         } else {
           seedLocal();
-          setMenuNotice('Chưa có quy trình trên DB — hiển thị mẫu graph/RACI cục bộ.');
+          if (allowMockFallback()) {
+            setMenuNotice('Chưa có quy trình trên DB — hiển thị mẫu graph/RACI cục bộ.');
+          }
         }
         workflowCatalogHydratedRef.current = true;
       } catch (error) {
         if (!cancelled) {
           seedLocal();
-          setMenuNotice(
-            `Không tải workflow-engine (${error instanceof Error ? error.message : 'lỗi'}). Dùng mẫu cục bộ.`,
-          );
+          setWorkflowDefinitionsLoadFailed(!allowMockFallback());
+          if (allowMockFallback()) {
+            setMenuNotice(
+              `Không tải workflow-engine (${error instanceof Error ? error.message : 'lỗi'}). Dùng mẫu cục bộ.`,
+            );
+          }
           workflowCatalogHydratedRef.current = true;
         }
       }
@@ -1925,6 +2065,35 @@ const CommandCenterPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
+  }, [activeSettingsMenu, tenantId, companyId]);
+
+  useEffect(() => {
+    const wfId = ccWorkflowDefinitionDeepLinkRef.current;
+    if (!wfId || activeSettingsMenu !== 'workflow' || workflowDefinitionsSource === 'loading') return;
+    const found = workflows.find((w) => w.id === wfId);
+    if (found) {
+      openEditWorkflow(wfId);
+      ccWorkflowDefinitionDeepLinkRef.current = null;
+    }
+  }, [workflows, activeSettingsMenu, workflowDefinitionsSource]);
+
+  useEffect(() => {
+    const instanceId = ccWorkflowInstanceDeepLinkRef.current;
+    if (!instanceId || activeSettingsMenu !== 'workflow') return;
+    ccWorkflowInstanceDeepLinkRef.current = null;
+    openInboxTaskDetail({
+      cardId: instanceId,
+      sourceId: instanceId,
+      sourceSystem: 'xbos-workflow',
+      dedupeKey: `wf-inst-${instanceId}`,
+      statusNormalized: 'PENDING_APPROVAL',
+      orgUnitId: MASTER_TENANT_ID,
+      moduleCode: 'business',
+      title: 'Chi tiết quy trình',
+      assigneeUserId: '',
+      assigneeName: '',
+      priority: 'medium',
+    });
   }, [activeSettingsMenu]);
 
   useEffect(() => {
@@ -1939,12 +2108,14 @@ const CommandCenterPage: React.FC = () => {
 
   const parentUnitCandidates = useMemo(() => {
     const q = parentUnitQuery.trim().toLowerCase();
-    return legalEntityList.filter((c) => {
+    const source = settingsLegalEntities.length ? settingsLegalEntities : legalEntityList;
+    return source.filter((c) => {
       if (companyEntityId && c.id === companyEntityId) return false;
+      if (c.id === GROUP_HOLDING_ROOT_ID && companyForm.entityLevel !== 'parent') return true;
       if (!q) return true;
       return c.name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q);
     });
-  }, [legalEntityList, parentUnitQuery, companyEntityId]);
+  }, [settingsLegalEntities, legalEntityList, parentUnitQuery, companyEntityId, companyForm.entityLevel]);
 
   const infraEffectiveOptions = useMemo(
     () => ({
@@ -2076,35 +2247,90 @@ const CommandCenterPage: React.FC = () => {
   }
 
   function openEditCompanyEntity(id: string) {
-    const row = legalEntityList.find((c) => c.id === id);
+    const row =
+      settingsLegalEntities.find((c) => c.id === id) ?? legalEntityList.find((c) => c.id === id);
     if (!row) return;
     setCompanyEntityId(id);
     setCompanySettingsView('form');
     setCompanyDetailTab('legal');
+    setCompanyErrors({});
+    setCompanySaveFeedback(null);
     setCompanyForm(buildFormFromCompany(row));
-    setParentUnitQuery(getParentEntityLabel(row.parentEntityId, legalEntityList));
+    setParentUnitQuery(
+      getParentEntityLabel(row.parentEntityId, settingsLegalEntities.length ? settingsLegalEntities : legalEntityList),
+    );
     setParentUnitMenuOpen(false);
-    setShareholderRows([
-      {
-        id: 'sh-1',
-        holderName: 'Nguyễn Văn A',
-        identityCode: '079188001235',
-        ratioPercent: 40,
-        contributedValue: Math.round((500000000000 * 40) / 100),
-        submitted: true,
-      },
-    ]);
-    setLegalDocRows([
-      {
-        id: 'doc-1',
-        documentName: 'Giấy chứng nhận Đăng ký doanh nghiệp',
-        documentCode: 'GPKD-2026-001',
-        issuedDate: '2026-01-01',
-        expiredDate: '2030-12-31',
-        fileName: 'gpkd-2026-001.pdf',
-        submitted: true,
-      },
-    ]);
+    if (id === GROUP_HOLDING_ROOT_ID) {
+      setShareholderRows([]);
+      setLegalDocRows([]);
+      const tenantId = row.tenantId ?? MASTER_TENANT_ID;
+      void fetchHoldingLegalEntities(tenantId)
+        .then((items) => {
+          setLegalEntityApiCache((prev) => {
+            const byId = new Map(prev.map((r) => [String(r.id), r]));
+            for (const r of items) byId.set(String(r.id), r);
+            return [...byId.values()];
+          });
+          const apiRow = items[0];
+          if (!apiRow) return;
+          setResolvedLegalEntityApiId(String(apiRow.id));
+          setCompanyForm(mapLegalEntityRowToCompanyForm(apiRow) as CompanyFormState);
+        })
+        .catch(() => {
+          setPublishMessage('Không tải được hồ sơ tập đoàn từ API — có thể lưu để tạo mới trên org-foundation.');
+        });
+      return;
+    }
+    if (isPersistedApiId(id)) {
+      setShareholderRows([]);
+      setLegalDocRows([]);
+      const tenantId = row.tenantId ?? MASTER_TENANT_ID;
+      void fetchLegalEntities(tenantId, MEMBER_DEFAULT_COMPANY_ID)
+        .then((items) => {
+          setLegalEntityApiCache((prev) => {
+            const byId = new Map(prev.map((r) => [String(r.id), r]));
+            for (const r of items) byId.set(String(r.id), r);
+            return [...byId.values()];
+          });
+          return fetchLegalEntityForEdit(tenantId, id, MEMBER_DEFAULT_COMPANY_ID, { code: row.code });
+        })
+        .then((apiRow) => {
+          if (!apiRow) return;
+          setResolvedLegalEntityApiId(String(apiRow.id));
+          setCompanyForm(mapLegalEntityRowToCompanyForm(apiRow) as CompanyFormState);
+          setParentUnitQuery(
+            getParentEntityLabel(
+              (mapLegalEntityRowToCompanyForm(apiRow).parentEntityId || row.parentEntityId) as string,
+              settingsLegalEntities.length ? settingsLegalEntities : legalEntityList,
+            ),
+          );
+        })
+        .catch(() => {
+          setPublishMessage('Không tải được hồ sơ pháp nhân từ API — hiển thị dữ liệu danh sách.');
+        });
+    } else {
+      setShareholderRows([
+        {
+          id: 'sh-1',
+          holderName: 'Nguyễn Văn A',
+          identityCode: '079188001235',
+          ratioPercent: 40,
+          contributedValue: Math.round((500000000000 * 40) / 100),
+          submitted: true,
+        },
+      ]);
+      setLegalDocRows([
+        {
+          id: 'doc-1',
+          documentName: 'Giấy chứng nhận Đăng ký doanh nghiệp',
+          documentCode: 'GPKD-2026-001',
+          issuedDate: '2026-01-01',
+          expiredDate: '2030-12-31',
+          fileName: 'gpkd-2026-001.pdf',
+          submitted: true,
+        },
+      ]);
+    }
     setDepartmentRowsByEntity((prev) => {
       if (prev[id]?.length) return prev;
       const seed = seedDepartmentsForCompany(id);
@@ -2262,7 +2488,7 @@ const CommandCenterPage: React.FC = () => {
   }
 
   function getCommandCenterStorageScope() {
-    return resolveIdentityScope(MASTER_TENANT_ID, MASTER_TENANT_ID);
+    return { tenantId, companyId };
   }
 
   async function saveInfrastructureSettingsToDb(next?: {
@@ -2290,30 +2516,56 @@ const CommandCenterPage: React.FC = () => {
 
   async function loadInfrastructureSettingsFromDb() {
     const scope = getCommandCenterStorageScope();
-    const data = await fetchInfrastructureSettings(scope.tenantId, scope.companyId);
-    if (Array.isArray(data.foundationCategories) && data.foundationCategories.length) {
-      setFoundationCategories(data.foundationCategories as InfrastructureFoundationCategory[]);
-    }
-    if (Array.isArray(data.sites)) {
-      setInfrastructureSites(data.sites as typeof infrastructureSites);
-    }
-    if (data.blockTitleOverridesByEntity) {
-      setInfrastructureBlockTitleOverridesByEntity(
-        data.blockTitleOverridesByEntity as typeof infrastructureBlockTitleOverridesByEntity,
+    setInfrastructureCatalogSource('loading');
+    setInfrastructureCatalogFailed(false);
+    try {
+      const data = await fetchInfrastructureSettings(scope.tenantId, scope.companyId);
+      await fetchInfrastructureSummary(scope.tenantId, scope.companyId);
+      const apiCategories = Array.isArray(data.foundationCategories)
+        ? (data.foundationCategories as InfrastructureFoundationCategory[])
+        : [];
+      const resolved = resolveInfrastructureFoundationLoad(
+        apiCategories,
+        allowMockFallback(),
+        INFRASTRUCTURE_MOCK_SEED,
+        false,
       );
-    }
-    if (data.customBlocksByEntity) {
-      setInfrastructureCustomBlocksByEntity(
-        data.customBlocksByEntity as typeof infrastructureCustomBlocksByEntity,
+      setFoundationCategories(resolved.categories);
+      setInfrastructureCatalogSource(resolved.source);
+      setInfrastructureCatalogFailed(resolved.loadFailed);
+      if (Array.isArray(data.sites)) {
+        setInfrastructureSites(data.sites as typeof infrastructureSites);
+      }
+      if (data.blockTitleOverridesByEntity) {
+        setInfrastructureBlockTitleOverridesByEntity(
+          data.blockTitleOverridesByEntity as typeof infrastructureBlockTitleOverridesByEntity,
+        );
+      }
+      if (data.customBlocksByEntity) {
+        setInfrastructureCustomBlocksByEntity(
+          data.customBlocksByEntity as typeof infrastructureCustomBlocksByEntity,
+        );
+      }
+      if (data.customFieldDefsByEntity) {
+        setInfrastructureCustomFieldDefsByEntity(
+          data.customFieldDefsByEntity as typeof infrastructureCustomFieldDefsByEntity,
+        );
+      }
+      setInfrastructureDbHydrated(true);
+      setMenuNotice(null);
+    } catch {
+      const resolved = resolveInfrastructureFoundationLoad(
+        [],
+        allowMockFallback(),
+        INFRASTRUCTURE_MOCK_SEED,
+        true,
       );
+      setFoundationCategories(resolved.categories);
+      setInfrastructureCatalogSource(resolved.source);
+      setInfrastructureCatalogFailed(true);
+      setInfrastructureDbHydrated(true);
+      throw new Error('infrastructure settings load failed');
     }
-    if (data.customFieldDefsByEntity) {
-      setInfrastructureCustomFieldDefsByEntity(
-        data.customFieldDefsByEntity as typeof infrastructureCustomFieldDefsByEntity,
-      );
-    }
-    setInfrastructureDbHydrated(true);
-    setMenuNotice(null);
   }
 
   async function syncGroupHrFieldsToHrmCatalogs(
@@ -2339,18 +2591,38 @@ const CommandCenterPage: React.FC = () => {
   }
 
   async function saveCompanySettings() {
-    const nextErrors: { enterpriseCode?: string; charterCapital?: string } = {};
+    const isHoldingRoot = companyEntityId === GROUP_HOLDING_ROOT_ID;
+    const nextErrors: {
+      enterpriseCode?: string;
+      charterCapital?: string;
+      taxCode?: string;
+      nameVi?: string;
+    } = {};
     if (!/^\d+$/.test(String(companyForm.enterpriseCode || ''))) {
       nextErrors.enterpriseCode = 'Mã số doanh nghiệp phải là số.';
     }
     if (Number(companyForm.charterCapital) <= 0) {
       nextErrors.charterCapital = 'Vốn điều lệ phải lớn hơn 0.';
     }
+    if (!String(companyForm.nameVi || '').trim()) {
+      nextErrors.nameVi = 'Tên pháp nhân (tiếng Việt) là bắt buộc.';
+    }
+    const taxDigits = String(companyForm.taxCode || '').trim();
+    if (taxDigits && !/^\d{10,13}$/.test(taxDigits)) {
+      nextErrors.taxCode = 'Mã số thuế phải có 10–13 chữ số.';
+    }
     setCompanyErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
-      setPublishMessage('Chưa thể lưu. Vui lòng kiểm tra lại các trường đang báo lỗi.');
+      const msg = 'Chưa thể lưu. Vui lòng kiểm tra lại các trường đang báo lỗi.';
+      setPublishMessage(msg);
+      setCompanySaveFeedback({ kind: 'error', text: msg });
       return;
     }
+
+    setCompanySaving(true);
+    setCompanySaveFeedback(null);
+
+    try {
     const parentId =
       companyForm.entityLevel === 'parent' ? null : companyForm.parentEntityId || null;
     const existing = companyEntityId ? legalEntityList.find((e) => e.id === companyEntityId) : undefined;
@@ -2363,11 +2635,14 @@ const CommandCenterPage: React.FC = () => {
       scopeRow?.tenantId ??
       import.meta.env.VITE_DEFAULT_TENANT_ID ??
       'xevn';
-    const xbosCompanyId = MEMBER_DEFAULT_COMPANY_ID;
+    const xbosCompanyId =
+      isHoldingRoot || companyForm.entityLevel === 'parent'
+        ? GROUP_HOLDING_COMPANY_ID
+        : MEMBER_DEFAULT_COMPANY_ID;
     const legalPayload = {
       code: (companyForm.shortName || companyForm.enterpriseCode || 'LE').trim(),
       name: (companyForm.nameVi || 'Pháp nhân mới').trim(),
-      entityType: companyForm.entityLevel === 'parent' ? 'holding' : 'subsidiary',
+      entityType: isHoldingRoot || companyForm.entityLevel === 'parent' ? 'holding' : 'subsidiary',
       taxCode: companyForm.taxCode || undefined,
       establishedAt: companyForm.firstIssueDate || undefined,
       address: companyForm.headOfficeAddress || undefined,
@@ -2376,23 +2651,65 @@ const CommandCenterPage: React.FC = () => {
       payload: { companyForm },
     };
 
-    let persistedId = companyEntityId === 'new' ? null : companyEntityId;
-    try {
+    const uiEntityId =
+      companyEntityId && companyEntityId !== 'new' ? companyEntityId : null;
+    let saveEntityId: string | null = null;
+    if (uiEntityId) {
+      saveEntityId =
+        resolvedLegalEntityApiId ??
+        resolveLegalEntityApiIdFromList(
+          {
+            id: uiEntityId,
+            tenantId,
+            code: scopeRow?.code ?? companyForm.shortName,
+          },
+          legalEntityApiCache,
+        );
+      if (isHoldingRoot && !saveEntityId) {
+        try {
+          const holdingRows = await fetchHoldingLegalEntities(tenantId);
+          setLegalEntityApiCache((prev) => {
+            const byId = new Map(prev.map((r) => [String(r.id), r]));
+            for (const r of holdingRows) byId.set(String(r.id), r);
+            return [...byId.values()];
+          });
+          saveEntityId = resolveLegalEntityApiIdFromList(
+            { id: uiEntityId, tenantId, code: scopeRow?.code ?? companyForm.shortName },
+            holdingRows,
+          );
+        } catch {
+          /* create path below */
+        }
+      }
+      if (!saveEntityId && !isHoldingRoot && isPersistedApiId(uiEntityId)) {
+        saveEntityId = uiEntityId;
+      }
+    }
+
+      let persistedId = companyEntityId === 'new' ? null : saveEntityId;
       if (companyEntityId === 'new') {
         const saved = await createLegalEntity(tenantId, xbosCompanyId, legalPayload);
         persistedId = String(saved.id);
       } else if (companyEntityId) {
-        await updateLegalEntity(tenantId, xbosCompanyId, companyEntityId, legalPayload);
-        persistedId = companyEntityId;
+        if (!saveEntityId || !isPersistedApiId(saveEntityId)) {
+          if (isHoldingRoot) {
+            const saved = await createLegalEntity(tenantId, GROUP_HOLDING_COMPANY_ID, legalPayload);
+            persistedId = String(saved.id);
+            setResolvedLegalEntityApiId(persistedId);
+          } else {
+            const msg =
+              'Chưa có hồ sơ pháp nhân trên XBOS cho đơn vị này — chạy seed org-foundation hoặc chọn đơn vị có UUID.';
+            setPublishMessage(msg);
+            setCompanySaveFeedback({ kind: 'error', text: msg });
+            return;
+          }
+        } else {
+          await updateLegalEntity(tenantId, xbosCompanyId, saveEntityId, legalPayload);
+          persistedId = saveEntityId;
+        }
       }
-    } catch (e) {
-      setPublishMessage(
-        e instanceof Error ? e.message : 'Không lưu được pháp nhân lên XBOS org-foundation.',
-      );
-      return;
-    }
 
-    const nextRow: Company = {
+      const nextRow: Company = {
       id: persistedId ?? `comp-${Date.now()}`,
       code: companyForm.shortName || 'NEW',
       name: companyForm.nameVi || 'Pháp nhân mới',
@@ -2430,12 +2747,25 @@ const CommandCenterPage: React.FC = () => {
       );
     }
 
+    const successMsg = isHoldingRoot
+      ? 'Đã lưu hồ sơ tập đoàn (holding) lên org-foundation.'
+      : 'Đã lưu và làm mới danh sách pháp nhân.';
+    setCompanySaveFeedback({ kind: 'success', text: successMsg });
+    setPublishMessage(successMsg);
     setCompanySettingsView('list');
     setCompanyEntityId(null);
     await reloadMemberAndLegalEntities();
-    setPublishMessage((prev) =>
-      prev ? `${prev} · Đã làm mới danh sách pháp nhân.` : 'Đã lưu và làm mới danh sách pháp nhân.',
-    );
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Không lưu được pháp nhân lên XBOS org-foundation.';
+      if (isLegalEntityValidationHttpError(msg)) {
+        const fieldErrors = parseLegalEntitySaveFieldErrors(msg);
+        setCompanyErrors((prev) => ({ ...prev, ...fieldErrors }));
+      }
+      setPublishMessage(msg);
+      setCompanySaveFeedback({ kind: 'error', text: msg });
+    } finally {
+      setCompanySaving(false);
+    }
   }
 
   function resolveDeptConfigEntityKey(): string | null {
@@ -2444,14 +2774,24 @@ const CommandCenterPage: React.FC = () => {
   }
 
   function resolveLegalProfileScope(): { entityId: string | null; tenantId: string } {
-    const entityId = companyEntityId && companyEntityId !== 'new' ? companyEntityId : null;
+    const uiId = companyEntityId && companyEntityId !== 'new' ? companyEntityId : null;
     const scopeRow =
-      (entityId ? settingsLegalEntities.find((e) => e.id === entityId) : undefined) ??
+      (uiId ? settingsLegalEntities.find((e) => e.id === uiId) : undefined) ??
+      (uiId ? legalEntityList.find((e) => e.id === uiId) : undefined) ??
       settingsLegalEntities[0];
     const tenantId =
       (scopeRow && 'tenantId' in scopeRow ? scopeRow.tenantId : undefined) ??
-      import.meta.env.VITE_DEFAULT_TENANT_ID ??
-      'xevn';
+      MASTER_TENANT_ID;
+    if (!uiId || uiId === GROUP_HOLDING_ROOT_ID) {
+      return { entityId: null, tenantId };
+    }
+    const entityId =
+      resolvedLegalEntityApiId ??
+      resolveLegalEntityApiIdFromList(
+        { id: uiId, tenantId, code: scopeRow?.code },
+        legalEntityApiCache,
+      ) ??
+      (isPersistedApiId(uiId) ? uiId : null);
     return { entityId, tenantId };
   }
 
@@ -2706,7 +3046,8 @@ const CommandCenterPage: React.FC = () => {
       return next;
     });
     try {
-      await upsertDeptSystemTemplate(deptSystemForm);
+      await upsertDeptSystemTemplate(deptSystemForm, tenantId, companyId);
+      void deptTemplatesHook.reload();
       void publishVersionChange('dept-system-foundation-template', deptSystemForm);
       setPublishMessage('Đã lưu khung phòng ban và phạm vi ORG GRADE (DB).');
     } catch (error) {
@@ -2884,14 +3225,16 @@ const CommandCenterPage: React.FC = () => {
         ),
       }));
     let next: WorkflowDefinition = { ...workflowForm, steps: sortedSteps };
-    const isNew = workflowEditId === 'new';
+    const isNew =
+      workflowEditId === 'new' || !workflowEditId || !isPersistedApiId(workflowEditId);
+    const apiDefinitionId = isNew ? undefined : workflowEditId ?? undefined;
     try {
       const payload = workflowDefinitionToApiPayload(next);
       const saved = await saveWorkflowDefinition(
         payload,
-        isNew ? undefined : workflowEditId ?? undefined,
-        MASTER_TENANT_ID,
-        MASTER_TENANT_ID,
+        apiDefinitionId,
+        tenantId,
+        companyId,
       );
       next = apiRowToWorkflowDefinition(saved);
     } catch (error) {
@@ -3217,14 +3560,25 @@ const CommandCenterPage: React.FC = () => {
   const railItems = useMemo(() => filterRailByRole(mockRailModules, persona), [persona]);
 
   const scopedTasks = useMemo(() => {
+    const sourceKind =
+      inboxTasksSource === 'loading' ? 'loading' : inboxTasksSource === 'mock' ? 'mock' : 'api';
     const base =
-      inboxTasksSource === 'api' && inboxTasks.length
+      sourceKind === 'loading'
         ? inboxTasks
-        : allowMockFallback()
-          ? mockUnifiedTasks
-          : inboxTasks;
+        : resolveCommandCenterInboxTasks(sourceKind, inboxTasks, mockUnifiedTasks);
     return filterTasksByPersona(base, persona);
   }, [inboxTasks, inboxTasksSource, persona]);
+
+  const inboxTasksStrict = useMemo(
+    () =>
+      resolveInboxStrictBanner(
+        inboxTasksSource === 'loading' ? 'loading' : inboxTasksSource === 'mock' ? 'mock' : 'api',
+        inboxTasksLoadFailed,
+        scopedTasks.length,
+      ),
+    [inboxTasksSource, inboxTasksLoadFailed, scopedTasks.length],
+  );
+
   const scopedAlerts = useMemo(() => {
     const base =
       portalAlertsSource === 'api' && portalAlerts.length
@@ -3238,6 +3592,7 @@ const CommandCenterPage: React.FC = () => {
   const reloadInboxTasks = async () => {
     try {
       const tasks = await fetchCommandCenterInboxTasks(MASTER_TENANT_ID);
+      setInboxTasksLoadFailed(false);
       if (tasks.length) {
         setInboxTasks(tasks);
         setInboxTasksSource('api');
@@ -3247,6 +3602,7 @@ const CommandCenterPage: React.FC = () => {
       }
     } catch {
       setInboxTasks([]);
+      setInboxTasksLoadFailed(!allowMockFallback());
       setInboxTasksSource(allowMockFallback() ? 'mock' : 'api');
     }
   };
@@ -3255,10 +3611,18 @@ const CommandCenterPage: React.FC = () => {
     setInboxDetailTask(task);
     setInboxDetailOpen(true);
     setInboxDetailPayload(null);
+    setInboxDetailLoadFailed(false);
     setInboxDetailLoading(true);
     void fetchWorkflowInstanceDetail(task.sourceId, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID)
-      .then((detail) => setInboxDetailPayload(detail))
-      .catch(() => setMenuNotice('Không tải được chi tiết workflow.'))
+      .then((detail) => {
+        const normalized = normalizeWorkflowInstanceDetail(detail);
+        setInboxDetailPayload(normalized);
+        setInboxDetailLoadFailed(!normalized);
+      })
+      .catch(() => {
+        setInboxDetailLoadFailed(true);
+        setMenuNotice('Không tải được chi tiết workflow.');
+      })
       .finally(() => setInboxDetailLoading(false));
   };
 
@@ -3266,6 +3630,7 @@ const CommandCenterPage: React.FC = () => {
     setInboxDetailOpen(false);
     setInboxDetailTask(null);
     setInboxDetailPayload(null);
+    setInboxDetailLoadFailed(false);
   };
 
   const completeInboxFromDrawer = async (outcome: 'approved' | 'rejected') => {
@@ -3321,9 +3686,9 @@ const CommandCenterPage: React.FC = () => {
   );
 
   const kpiSeries = useMemo(() => {
-    if (kpiSparkline.length) return kpiSparkline;
+    if (kpiRail.series.length) return kpiRail.series;
     return allowMockFallback() ? getKpiSeriesForPersona(persona) : [];
-  }, [kpiSparkline, persona]);
+  }, [kpiRail.series, persona]);
 
   function renderSettingsSidebar() {
     const companyGroupActive = isCompanySetupMenuKey(activeSettingsMenu);
@@ -3833,8 +4198,17 @@ const CommandCenterPage: React.FC = () => {
                       aria-label="Tên tiếng Việt"
                       placeholder="CÔNG TY CỔ PHẦN..."
                       value={companyForm.nameVi}
-                      onChange={(v) => setCompanyForm((s) => ({ ...s, nameVi: v }))}
+                      onChange={(v) => {
+                        setCompanyForm((s) => ({ ...s, nameVi: v }));
+                        if (companyErrors.nameVi) {
+                          setCompanyErrors((e) => ({ ...e, nameVi: undefined }));
+                        }
+                      }}
+                      className={companyErrors.nameVi ? 'border-rose-400' : undefined}
                     />
+                    {companyErrors.nameVi ? (
+                      <span className="text-xs text-rose-600">{companyErrors.nameVi}</span>
+                    ) : null}
                   </label>
                   <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
                     <span className={SETTINGS_LABEL_CLASS}>Tên tiếng nước ngoài</span>
@@ -3940,10 +4314,18 @@ const CommandCenterPage: React.FC = () => {
                     <AutoResizeTextarea
                       aria-label="Mã số thuế"
                       placeholder="0312345678"
-                      className="tabular-nums"
+                      className={`tabular-nums ${companyErrors.taxCode ? 'border-rose-400' : ''}`}
                       value={companyForm.taxCode}
-                      onChange={(v) => setCompanyForm((s) => ({ ...s, taxCode: v.replace(/\D/g, '') }))}
+                      onChange={(v) => {
+                        setCompanyForm((s) => ({ ...s, taxCode: v.replace(/\D/g, '') }));
+                        if (companyErrors.taxCode) {
+                          setCompanyErrors((e) => ({ ...e, taxCode: undefined }));
+                        }
+                      }}
                     />
+                    {companyErrors.taxCode ? (
+                      <span className="text-xs text-rose-600">{companyErrors.taxCode}</span>
+                    ) : null}
                   </label>
                   {/* Hàng 4: 8 + 4 — địa chỉ dài + quốc gia */}
                   <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span8}`}>
@@ -4278,7 +4660,7 @@ const CommandCenterPage: React.FC = () => {
               </>
               ) : companyEntityId && companyEntityId !== 'new' ? (
                 <CompanyRaciPanel
-                  companyId={companyEntityId}
+                  companyId={resolvedLegalEntityApiId ?? companyEntityId}
                   companyLabel={companyFullName(
                     settingsLegalEntities.find((e) => e.id === companyEntityId) ??
                       legalEntityList.find((e) => e.id === companyEntityId) ?? {
@@ -4416,6 +4798,16 @@ const CommandCenterPage: React.FC = () => {
                     <SettingSectionHeader
                       title="Hạ tầng cơ sở"
                       subtitle="Hai lớp: (1) danh mục nền có mã + phạm vi pháp nhân + cấu hình khối; (2) điểm hạ tầng — nhập giá trị theo pháp nhân đã được gán."
+                    />
+                    <ApiLoadBanner
+                      loadFailed={infrastructureCatalogFailed && !allowMockFallback()}
+                      usingMockFallback={infrastructureCatalogSource === 'mock'}
+                      title="Danh mục hạ tầng (UC-XBOS-CC-07)"
+                      message={
+                        infrastructureCatalogFailed
+                          ? 'Không tải danh mục nền từ /api/xbos/infrastructure/settings — kiểm tra xbos-api và JWT scope main.'
+                          : undefined
+                      }
                     />
                   </div>
                 </div>
@@ -5338,6 +5730,11 @@ const CommandCenterPage: React.FC = () => {
                       title="Hệ thống Phòng/Ban"
                       subtitle="Khung phòng/ban & chức danh chuẩn hóa — tham chiếu ORG GRADE tập đoàn; gán pháp nhân và cấp bậc trước khi khai báo cây PB tại đơn vị."
                     />
+                    <ApiLoadBanner
+                      loadFailed={deptTemplatesHook.loadFailed && !allowMockFallback()}
+                      usingMockFallback={deptTemplatesHook.usingMockFallback}
+                      title="Khung phòng/ban mẫu (UC-XBOS-CC-08)"
+                    />
                   </div>
                   {deptSystemTab === 'templates' ? (
                     <button
@@ -5435,6 +5832,10 @@ const CommandCenterPage: React.FC = () => {
 
           {activeSettingsMenu === 'hrm_catalog_governance' ? (
             <CatalogGovernancePanel onStatusMessage={setMenuNotice} />
+          ) : null}
+
+          {activeSettingsMenu === 'asset_requests' ? (
+            <AssetRequestPanel onStatusMessage={setMenuNotice} />
           ) : null}
 
           {activeSettingsMenu === 'tenant_departments' ? (
@@ -5885,6 +6286,18 @@ const CommandCenterPage: React.FC = () => {
                   <SettingSectionHeader
                     title="Hệ thống quy trình"
                     subtitle="Định nghĩa quy trình đa pháp nhân — kích hoạt, SLA và từng bước xử lý"
+                  />
+                  <ApiLoadBanner
+                    loadFailed={workflowDefinitionsStrict.loadFailed}
+                    usingMockFallback={workflowDefinitionsStrict.usingMockFallback}
+                    title="Canvas quy trình (UC-XBOS-CC-06)"
+                    message={
+                      workflowDefinitionsStrict.emptyStrictHint
+                        ? WORKFLOW_DEFINITIONS_STRICT_EMPTY_HINT
+                        : workflowDefinitionsStrict.loadFailed
+                          ? WORKFLOW_DEFINITIONS_STRICT_LOAD_FAILED
+                          : undefined
+                    }
                   />
                   <button
                     type="button"
@@ -6533,16 +6946,31 @@ const CommandCenterPage: React.FC = () => {
         </div>
 
         {activeSettingsMenu === 'company_member_units' && companySettingsView === 'form' ? (
-          <div className="sticky bottom-0 z-20 flex shrink-0 justify-end border-t border-xevn-border bg-white/80 xevn-safe-inline py-3 shadow-soft backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => {
-                void saveCompanySettings();
-              }}
-              className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
-            >
-              Lưu thay đổi
-            </button>
+          <div className="sticky bottom-0 z-20 flex shrink-0 flex-col gap-2 border-t border-xevn-border bg-white/95 xevn-safe-inline py-3 shadow-soft backdrop-blur-md">
+            {companySaveFeedback ? (
+              <p
+                className={`rounded-lg px-3 py-2 text-sm ${
+                  companySaveFeedback.kind === 'error'
+                    ? 'border border-red-200 bg-red-50 text-red-900'
+                    : 'border border-emerald-200 bg-emerald-50 text-emerald-900'
+                }`}
+                role="alert"
+              >
+                {companySaveFeedback.text}
+              </p>
+            ) : null}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                disabled={companySaving}
+                onClick={() => {
+                  void saveCompanySettings();
+                }}
+                className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${SETTINGS_CONTROL_TEXT}`}
+              >
+                {companySaving ? 'Đang lưu…' : 'Lưu thay đổi'}
+              </button>
+            </div>
           </div>
         ) : null}
         {activeSettingsMenu === 'company_infrastructure' &&
@@ -8384,7 +8812,9 @@ const CommandCenterPage: React.FC = () => {
         task={inboxDetailTask}
         detail={inboxDetailPayload}
         loading={inboxDetailLoading}
+        detailLoadFailed={inboxDetailLoadFailed}
         busy={inboxDrawerBusy}
+        inboxFromApi={inboxTasksSource === 'api'}
         onClose={closeInboxTaskDetail}
         onComplete={(outcome) => void completeInboxFromDrawer(outcome)}
       />
@@ -8562,36 +8992,24 @@ const CommandCenterPage: React.FC = () => {
             </div>
           </div>
         </div>
-        <ApiLoadBanner
-          loadFailed={workspaceMetaFailed && !allowMockFallback()}
-          message="Không tải workspace-meta — dashboard không dùng mock khi VITE_ALLOW_MOCK_FALLBACK=false."
-        />
-        <div className={`flex w-full items-center gap-2 border-t border-xevn-border/80 bg-amber-50/90 ${XEVN_VIEWPORT_PADDING} py-2 text-sm text-amber-900`}>
-          <Clock className="h-4 w-4 shrink-0" strokeWidth={RAIL_STROKE} />
-          <span>
-            Dữ liệu đến{' '}
-            <strong>
-              {formatAsOf(
-                workspaceMeta?.asOf ??
-                  (allowMockFallback() ? mockCommandCenterMeta.asOf : new Date().toISOString()),
-              )}
-            </strong>
-            {(workspaceMeta?.dataSyncNote ??
-              (allowMockFallback() ? mockCommandCenterMeta.dataSyncNote : null))
-              ? ` — ${workspaceMeta?.dataSyncNote ?? mockCommandCenterMeta.dataSyncNote}`
-              : ''}
-          </span>
-        </div>
+        {workspaceMetaFailed && !allowMockFallback() ? (
+          <ApiLoadBanner
+            loadFailed
+            message="Không tải được dữ liệu tổng quan. Vui lòng thử tải lại trang."
+          />
+        ) : null}
       </header>
 
       <WorkspaceLayout
         className="min-h-0 flex-1"
+        layoutMode={selectedModule === 'hrm' ? 'hrm-embed' : 'default'}
+        hrmModuleRailCollapsed={hrmModuleRailCollapsed}
         mainClassName={selectedModule === 'hrm' ? '!overflow-hidden' : undefined}
         secondarySidebar={
           selectedModule === SYSTEM_SETTINGS
             ? renderSettingsSidebar()
             : selectedModule === 'hrm'
-              ? <HrmSidebar />
+              ? <HrmCollapsibleSidebar />
               : undefined
         }
         rail={
@@ -8599,6 +9017,14 @@ const CommandCenterPage: React.FC = () => {
             railItems={railItems}
             selectedModule={selectedModule}
             setSelectedModule={setSelectedModule}
+            hrmModuleRailExpanded={!hrmModuleRailCollapsed}
+            onHrmModuleRailToggle={() => {
+              setHrmModuleRailCollapsed((prev) => {
+                const next = !prev;
+                writeHrmModuleRailCollapsed(next);
+                return next;
+              });
+            }}
           />
         }
       >
@@ -8618,7 +9044,10 @@ const CommandCenterPage: React.FC = () => {
               <SkeletonBlock className={`min-h-0 flex-1 ${SETTINGS_RADIUS_CARD}`} />
             </div>
           ) : (
-            <Outlet />
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <HrmApiHealthBanner />
+              <Outlet />
+            </div>
           )
         ) : (
         <div className={`min-w-0 flex-1 ${SETTINGS_SECTION_STACK}`}>
@@ -8663,6 +9092,11 @@ const CommandCenterPage: React.FC = () => {
                 </div>
 
                 <div className={`border border-xevn-border bg-xevn-surface p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
+                  <ApiLoadBanner
+                    loadFailed={kpiRail.loadFailed && !allowMockFallback()}
+                    usingMockFallback={kpiRail.usingMockFallback}
+                    message={`Không tải KPI rollup (${describeScopePlaneForUi()}).`}
+                  />
                   <p className="text-base font-medium text-xevn-textSecondary">KPI_Sparkline</p>
                   <div className="mt-2 flex items-end justify-between gap-2">
                     <div>
@@ -8678,6 +9112,16 @@ const CommandCenterPage: React.FC = () => {
                 </div>
 
                 <div className={`border border-xevn-border bg-xevn-surface p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
+                  <ApiLoadBanner
+                    loadFailed={portalAlertsStrict.loadFailed}
+                    usingMockFallback={portalAlertsStrict.usingMockFallback}
+                    title="Cảnh báo (UC-CC-P0-09)"
+                    message={
+                      portalAlertsStrict.loadFailed
+                        ? ALERTS_STRICT_EMPTY_HINT
+                        : undefined
+                    }
+                  />
                   <p className="text-base font-medium text-xevn-textSecondary">Alert_List</p>
                   <ul className="mt-3 max-h-28 space-y-2 overflow-auto text-base leading-snug">
                     {scopedAlerts.length === 0 ? (
@@ -8713,6 +9157,18 @@ const CommandCenterPage: React.FC = () => {
 
               {/* Action Cards */}
               <section className={`border border-xevn-border bg-xevn-surface/90 p-6 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}>
+                <ApiLoadBanner
+                  loadFailed={inboxTasksStrict.loadFailed}
+                  usingMockFallback={inboxTasksStrict.usingMockFallback}
+                  title="Hộp thư (UC-CC-P0-09)"
+                  message={
+                    inboxTasksStrict.emptyStrictHint
+                      ? INBOX_STRICT_EMPTY_HINT
+                      : inboxTasksStrict.loadFailed
+                        ? INBOX_STRICT_LOAD_FAILED
+                        : undefined
+                  }
+                />
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h2 className={SETTINGS_SECTION_TITLE_CLASS}>Action Cards</h2>
@@ -8758,12 +9214,10 @@ const CommandCenterPage: React.FC = () => {
                 <ul className="space-y-3">
                   {filteredCards.length === 0 ? (
                     <li className="rounded-xl border border-dashed border-xevn-border py-12 text-center text-xevn-textSecondary">
-                      {inboxTasksSource === 'api' && !allowMockFallback() ? (
-                        <span>
-                          Inbox trống — chạy{' '}
-                          <code className="rounded bg-slate-100 px-1 text-sm">pnpm seed:workflow:inbox</code>{' '}
-                          (cần xbos-api @ 28002).
-                        </span>
+                      {inboxTasksStrict.emptyStrictHint ? (
+                        <span>{INBOX_STRICT_EMPTY_HINT}</span>
+                      ) : inboxTasksStrict.loadFailed ? (
+                        <span>{INBOX_STRICT_LOAD_FAILED}</span>
                       ) : (
                         'Không có việc cần xử lý trong phạm vi hiện tại.'
                       )}

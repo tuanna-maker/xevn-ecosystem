@@ -90,7 +90,7 @@ export class CatalogGovernanceService {
             {
               stepKey: approvalStep.stepKey,
               hatKey: approvalStep.hatKey ?? 'group_ceo',
-              assigneeUserId: approvalStep.assigneeUserId ?? 'ceo@xevn.vn',
+              assigneeUserId: approvalStep.assigneeUserId ?? 'ceo@xe.vn',
             },
           ]
         : [],

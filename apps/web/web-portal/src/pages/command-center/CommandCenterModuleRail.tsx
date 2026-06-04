@@ -23,6 +23,7 @@ import {
 } from './settings-form-pattern';
 import { useWorkspaceRail } from './workspace-rail-context';
 import { hrmPortalPath } from '../../modules/hrm/paths';
+import { commandCenterModuleUrl } from '../../modules/hrm/commandCenterUrl';
 
 const RAIL_STROKE = 1.5;
 const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
@@ -41,16 +42,23 @@ export type CommandCenterModuleRailProps = {
   railItems: RailModuleItem[];
   selectedModule: string;
   setSelectedModule: Dispatch<SetStateAction<string | 'all' | typeof SYSTEM_SETTINGS>>;
+  /** HRM embed: bật/tắt mở rộng rail phân hệ (mặc định thu icon). */
+  hrmModuleRailExpanded?: boolean;
+  onHrmModuleRailToggle?: () => void;
 };
 
 export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = ({
   railItems,
   selectedModule,
   setSelectedModule,
+  hrmModuleRailExpanded,
+  onHrmModuleRailToggle,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { contentExpanded, collapseEnabled, pinned, togglePinned } = useWorkspaceRail();
+  const onHrmRoute =
+    matchPath({ path: '/command-center/hrm/*', end: false }, location.pathname) != null;
 
   return (
     <aside className="flex h-full min-h-0 w-full shrink-0 flex-col items-stretch">
@@ -110,12 +118,12 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
                 onClick={() => {
                   if (m.moduleCode === 'system') {
                     setSelectedModule(SYSTEM_SETTINGS);
-                    navigate('/command-center');
+                    navigate(commandCenterModuleUrl(SYSTEM_SETTINGS));
                     return;
                   }
                   if (m.moduleCode === 'group') {
                     setSelectedModule('all');
-                    navigate('/command-center');
+                    navigate(commandCenterModuleUrl('all'));
                     return;
                   }
                   if (m.moduleCode === 'hrm') {
@@ -124,7 +132,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
                     return;
                   }
                   setSelectedModule(m.moduleCode);
-                  navigate('/command-center');
+                  navigate(commandCenterModuleUrl(m.moduleCode));
                 }}
                 className="flex flex-col items-center gap-1 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-xevn-accent"
               >
@@ -142,15 +150,36 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
         </div>
 
         {collapseEnabled ? (
-          <div className="mt-auto w-full shrink-0 border-t border-xevn-border/80 pt-2">
-            {contentExpanded ? (
+          <div className="mt-auto w-full shrink-0 space-y-1 border-t border-xevn-border/80 pt-2">
+            {onHrmRoute && onHrmModuleRailToggle ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onHrmModuleRailToggle();
+                }}
+                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                title={hrmModuleRailExpanded ? 'Thu gọn thanh phân hệ' : 'Mở thanh phân hệ'}
+                aria-pressed={hrmModuleRailExpanded}
+              >
+                <ChevronRight
+                  className={`h-3.5 w-3.5 shrink-0 transition ${hrmModuleRailExpanded ? 'rotate-180' : ''}`}
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <span className={contentExpanded ? '' : 'sr-only'}>
+                  {hrmModuleRailExpanded ? 'Thu' : 'Mở'}
+                </span>
+              </button>
+            ) : null}
+            {contentExpanded && !onHrmRoute ? (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePinned();
                 }}
-                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[12px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                 title={pinned ? 'Bỏ ghim thanh phân hệ (chỉ mở khi di chuột)' : 'Ghim mở thanh phân hệ'}
                 aria-pressed={pinned}
               >
@@ -161,7 +190,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
                 )}
                 <span className="hidden md:inline">{pinned ? 'Bỏ ghim' : 'Ghim'}</span>
               </button>
-            ) : (
+            ) : !onHrmRoute ? (
               <div
                 className="flex justify-center py-1 text-slate-400"
                 aria-hidden
@@ -169,7 +198,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
               >
                 <ChevronRight className="h-4 w-4 -rotate-90 opacity-70" strokeWidth={2} />
               </div>
-            )}
+            ) : null}
           </div>
         ) : null}
       </div>

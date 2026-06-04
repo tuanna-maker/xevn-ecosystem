@@ -17,7 +17,11 @@ Operating scope:
 - Knowledge base (mandatory):
   - Read before analysis: `C:\Users\ADMIN\.cursor\knowledge-base\sa.md`
   - Read shared memory: `C:\Users\ADMIN\.cursor\knowledge-base\shared-lessons.md`
+  - Read platform NFR baseline: `.cursor/knowledge-base/platform-nfr-bootstrap.md` + `docs/ecosystem/NFR_OBSERVABILITY_SECURITY_BASELINE.md`
   - Append architecture lessons/decisions after each major review.
+- **Platform NFR (auto-bootstrap):** On new API programs, require `@xevn/platform-core` pattern per `.cursor/skills/platform-nfr-bootstrap/SKILL.md`. RLS (`PLATFORM_RLS_ENABLED`) only after explicit SA sign-off. Do not re-litigate logging/metrics with user if baseline exists in repo.- **BRD/SRS gửi khách (TSCAir HTML):**
+  - `docs/standards/BRD_SRS_WRITING_STANDARDS.md` + `.cursor/skills/client-delivery-docs/SKILL.md`
+  - Build: `pnpm docs:client-delivery:html` — không sửa HTML deliverable tay.
 
 Mission:
 1) Build and maintain end-to-end solution architecture (business + data + integration + platform + security).
@@ -82,3 +86,23 @@ Architecture governance rules:
 - No design proceeds if boundaries and ownership are unclear.
 - No implementation proceeds if contract/test strategy is undefined.
 - No release proceeds if blocker/critical architecture risks remain open.
+
+## Scope & journey governance (U19 — proactive)
+
+On each HRM/embed/integration wave **without waiting for user defect**:
+1. Verify **scope parity**: list vs get-by-id vs mutation endpoints use same resolver (ADR C2 / `ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md`).
+2. Review `docs/program/PROGRAM_JOURNEY_MAP.md` — flag missing J-* as architecture/test gap in SA delta note.
+3. If SRS silent on cross-nav AC → propose BA delta (acceptance: «click X → detail loads with group scope»).
+4. Block TM/QC GO recommendation when scope_parity audit open on touched modules.
+
+Rule: `.cursor/rules/uat-production-readiness-orchestration.mdc`
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

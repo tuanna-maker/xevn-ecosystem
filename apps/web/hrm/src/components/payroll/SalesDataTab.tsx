@@ -52,7 +52,6 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { useSalesData, SalesRecord } from '@/hooks/useSalesData';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useDepartments } from '@/hooks/useDepartments';
 
@@ -140,14 +139,7 @@ export function SalesDataTab() {
     queryKey: ['employees-list', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('employees')
-        .select('id, full_name, employee_code, department, position, avatar_url')
-        .eq('company_id', currentCompanyId)
-        .is('deleted_at', null)
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
+      return null || [];
     },
     enabled: !!currentCompanyId,
   });

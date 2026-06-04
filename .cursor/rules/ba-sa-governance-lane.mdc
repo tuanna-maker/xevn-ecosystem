@@ -1,0 +1,35 @@
+---
+description: BA/SA sau khi SRS+TechSpec đã có — governance & delta only, không full-pack mỗi sprint.
+alwaysApply: true
+---
+
+# BA / SA — Governance lane (U16 — không execution)
+
+**U16:** BA/SA thuộc **governance** với PM/TA; **không** thay Dev/QA làm delivery. Vòng cải tiến: `docs/program/GOVERNANCE_IMPROVEMENT_LOOP.md`.
+
+## SoT đã có
+
+- UC/SRS/TechSpec matrix: `docs/ecosystem/PHASE1_UC_SRS_TECHSPEC_MATRIX.md` và tài liệu `docs/` liên quan.
+- OpenAPI / ADR đã baseline ở S0–S1.
+
+## BA / SA làm gì trong execution (S2–S5)
+
+| Làm | Không làm (trừ CR có PM) |
+|-----|---------------------------|
+| Review AC khi QA mở defect `spec_gap` | Viết lại full SRS sprint |
+| Cập nhật **delta** matrix / BR row | Pack 20 trang mỗi sprint |
+| ADR khi kiến trúc lệch impl | Thiết kế lại toàn module |
+| Sign-off gate TM/QC condition | Song song full-time với Dev |
+
+## PM dispatch
+
+- **Mặc định sprint:** **Execution** = Dev + QA (+ DevOps). **Không** gán BA-P + BA-D + SA cùng lúc “cho đủ role”.
+- **Sau wave QA PASS:** PM dispatch **TA** (TM/QC) trước wave Dev kế; BA/SA chỉ khi trigger.
+- **Dispatch BA/SA** chỉ khi trigger trong `docs/program/TEAM_OPERATING_MODEL.md` § “Khi nào PM mới dispatch”.
+- Bus entry: `lane: governance` + `estimated_effort: 0.5d` (not full sprint).
+
+## Dev/QA
+
+- Tham chiếu matrix trước khi hỏi BA; defect phải ghi `spec_ref` hoặc `spec_gap` để BA vào.
+
+Model: `docs/program/TEAM_OPERATING_MODEL.md`

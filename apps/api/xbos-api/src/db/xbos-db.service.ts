@@ -1,5 +1,7 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { recordDbQueryMetrics, readPgPoolEnv, setPgPoolWaiting } from '@xevn/platform-core';
 import { Pool, QueryResultRow } from 'pg';
+import { XBOS_SERVICE_NAME } from '../platform/platform-runtime';
 
 function resolveDatabaseUrl(): string | undefined {
   if (process.env.DATABASE_URL_XBOS) {
@@ -23,9 +25,10 @@ export class XbosDbService implements OnModuleDestroy {
   private readonly pool: Pool;
 
   constructor() {
+    const poolEnv = readPgPoolEnv();
     const connectionString = resolveDatabaseUrl();
     if (connectionString) {
-      this.pool = new Pool({ connectionString, ssl: false });
+      this.pool = new Pool({ connectionString, ssl: false, ...poolEnv });
       return;
     }
 
@@ -42,7 +45,7 @@ export class XbosDbService implements OnModuleDestroy {
         password: process.env.DB_PASSWORD ?? '',
         database: dbName,
         ssl: process.env.DB_SSL === 'true',
-        max: 10,
+        ...poolEnv,
       });
       return;
     }
@@ -61,12 +64,22 @@ export class XbosDbService implements OnModuleDestroy {
       password: process.env.DB_PASSWORD ?? '',
       database: dbName,
       ssl: process.env.DB_SSL === 'true',
-      max: 10,
+      ...poolEnv,
     });
   }
 
-  query<T extends QueryResultRow = QueryResultRow>(text: string, values: unknown[] = []) {
-    return this.pool.query<T>(text, values);
+  async query<T extends QueryResultRow = QueryResultRow>(text: string, values: unknown[] = []) {
+    const startedAt = Date.now();
+    const operation = text.trim().split(/\s+/)[0]?.toLowerCase() || 'query';
+    try {
+      setPgPoolWaiting(XBOS_SERVICE_NAME, this.pool.waitingCount);
+      const result = await this.pool.query<T>(text, values);
+      recordDbQueryMetrics(XBOS_SERVICE_NAME, operation, Date.now() - startedAt);
+      return result;
+    } catch (error) {
+      recordDbQueryMetrics(XBOS_SERVICE_NAME, `${operation}_error`, Date.now() - startedAt);
+      throw error;
+    }
   }
 
   async onModuleDestroy() {

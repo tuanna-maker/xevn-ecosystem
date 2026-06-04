@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export interface LeaveRequestData {
@@ -29,19 +28,13 @@ export function useLeaveRequestsData(statusFilter?: string) {
     const fetchLeaveRequests = async () => {
       setIsLoading(true);
       try {
-        let query = supabase
-          .from('leave_requests')
-          .select('*')
-          .eq('company_id', currentCompanyId)
-          .order('created_at', { ascending: false });
 
         if (statusFilter) {
           query = query.eq('status', statusFilter);
         }
 
         const { data, error } = await query;
-        if (error) throw error;
-        setLeaveRequests(data || []);
+      setLeaveRequests(data || []);
       } catch (error) {
         console.error('Error fetching leave requests:', error);
       } finally {

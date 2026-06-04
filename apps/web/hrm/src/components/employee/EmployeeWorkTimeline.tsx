@@ -11,10 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Plus, Edit, Trash2, Loader2, Briefcase, FileSignature, ArrowUpRight, ArrowLeftRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import {
+  createEmployeeWorkTimelineItem,
+  deleteEmployeeWorkTimelineItem,
+  listEmployeeWorkTimeline,
+  updateEmployeeWorkTimelineItem,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 
 interface EmployeeWorkTimelineProps {
   employeeId: string;
@@ -76,19 +82,13 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
   }, [employeeId, currentCompanyId]);
 
   const fetchWorkHistory = async () => {
+    if (!currentCompanyId) return;
     try {
-      const { data, error } = await supabase
-        .from('employee_work_history')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .eq('company_id', currentCompanyId)
-        .order('event_date', { ascending: false });
-
-      if (error) throw error;
-      setItems(data || []);
+      const result = await listEmployeeWorkTimeline(employeeId, currentCompanyId);
+      setItems((result.data ?? []) as unknown as WorkHistoryItem[]);
     } catch (error) {
       console.error('Error fetching work history:', error);
-      toast.error(t('workTimeline.loadError'));
+      toast.error(toErrorMessage(error, t('workTimeline.loadError')));
     } finally {
       setLoading(false);
     }
@@ -139,46 +139,17 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
     setSaving(true);
     try {
       if (editingItem) {
-        const { error } = await supabase
-          .from('employee_work_history')
-          .update({
-            event_date: formData.event_date,
-            title: formData.title,
-            description: formData.description || null,
-            event_type: formData.event_type,
-            status: formData.status,
-            contract_code: formData.contract_code || null,
-            department: formData.department || null,
-            position: formData.position || null,
-            notes: formData.notes || null,
-          })
-          .eq('id', editingItem.id);
-
-        if (error) throw error;
+        await updateEmployeeWorkTimelineItem(employeeId, editingItem.id, currentCompanyId, formData);
+      } else {
+        await createEmployeeWorkTimelineItem(employeeId, currentCompanyId, formData);
+      }
+      if (editingItem) {
         toast.success(t('workTimeline.updateSuccess'));
       } else {
-        const { error } = await supabase
-          .from('employee_work_history')
-          .insert({
-            employee_id: employeeId,
-            company_id: currentCompanyId,
-            event_date: formData.event_date,
-            title: formData.title,
-            description: formData.description || null,
-            event_type: formData.event_type,
-            status: formData.status,
-            contract_code: formData.contract_code || null,
-            department: formData.department || null,
-            position: formData.position || null,
-            notes: formData.notes || null,
-          });
-
-        if (error) throw error;
-        toast.success(t('workTimeline.addSuccess'));
+        toast.success(t('workTimeline.addSuccess', 'Đã lưu'));
       }
-
       setDialogOpen(false);
-      fetchWorkHistory();
+      void fetchWorkHistory();
     } catch (error) {
       console.error('Error saving work history:', error);
       toast.error(t('workTimeline.saveError'));
@@ -191,12 +162,7 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
     if (!confirm(t('workTimeline.deleteConfirm'))) return;
 
     try {
-      const { error } = await supabase
-        .from('employee_work_history')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await deleteEmployeeWorkTimelineItem(employeeId, id, currentCompanyId);
       toast.success(t('workTimeline.deleteSuccess'));
       fetchWorkHistory();
     } catch (error) {

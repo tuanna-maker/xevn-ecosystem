@@ -1,6 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import {
+  pushCompanyIdFilter,
+  resolveHrmListScope,
+  resolveHrmPersistCompanyIdText,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { CreatePerformanceCycleDto } from './dto/create-performance-cycle.dto';
 import { CreatePerformanceEvaluationDto } from './dto/create-performance-evaluation.dto';
@@ -74,11 +79,12 @@ export class PerformanceService {
     `);
   }
 
-  async createCycle(payload: CreatePerformanceCycleDto) {
+  async createCycle(payload: CreatePerformanceCycleDto, authorization?: string) {
     await this.ensureSchema();
     if (new Date(payload.start_date).getTime() > new Date(payload.end_date).getTime()) {
       throw new ApiException('HRM-PERF-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
     }
+    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
     const res = await this.db.query<PerformanceCycleRow>(
       `
         INSERT INTO public.performance_cycles
@@ -86,15 +92,24 @@ export class PerformanceService {
         VALUES ($1, $2, $3, $4::date, $5::date, $6, 'draft')
         RETURNING id, company_id, cycle_name, start_date, end_date, status, created_by, created_at, updated_at;
       `,
-      [randomUUID(), payload.company_id, payload.cycle_name.trim(), payload.start_date, payload.end_date, payload.created_by],
+      [
+        randomUUID(),
+        companyId,
+        payload.cycle_name.trim(),
+        payload.start_date,
+        payload.end_date,
+        payload.created_by,
+      ],
     );
     return res.rows[0];
   }
 
-  async listCycles(query: ListPerformanceCyclesQueryDto) {
+  async listCycles(query: ListPerformanceCyclesQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const filters: string[] = ['company_id = $1'];
-    const values: unknown[] = [query.company_id];
+    const scope = resolveHrmListScope(authorization, query.company_id);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushCompanyIdFilter(filters, values, scope.companyIds);
     if (query.status) {
       filters.push(`status = $${values.length + 1}`);
       values.push(query.status);
@@ -111,11 +126,15 @@ export class PerformanceService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createEvaluation(payload: CreatePerformanceEvaluationDto) {
+  async createEvaluation(payload: CreatePerformanceEvaluationDto, authorization?: string) {
     await this.ensureSchema();
-    const cycleRes = await this.db.query<{ id: string }>(
-      `SELECT id FROM public.performance_cycles WHERE id = $1::uuid AND company_id = $2 LIMIT 1;`,
-      [payload.cycle_id, payload.company_id],
+    const scope = resolveHrmListScope(authorization, payload.company_id);
+    const cycleFilters: string[] = ['id = $1::uuid'];
+    const cycleValues: unknown[] = [payload.cycle_id];
+    pushCompanyIdFilter(cycleFilters, cycleValues, scope.companyIds);
+    const cycleRes = await this.db.query<{ id: string; company_id: string }>(
+      `SELECT id, company_id FROM public.performance_cycles WHERE ${cycleFilters.join(' AND ')} LIMIT 1;`,
+      cycleValues,
     );
     if (!cycleRes.rows[0]) {
       throw new ApiException('HRM-PERF-404', 'Performance cycle not found', HttpStatus.NOT_FOUND);
@@ -127,15 +146,25 @@ export class PerformanceService {
         VALUES ($1, $2, $3::uuid, $4::uuid, $5, $6, $7)
         RETURNING id, company_id, employee_id, cycle_id, score, summary, reviewer, created_at, updated_at;
       `,
-      [randomUUID(), payload.company_id, payload.employee_id, payload.cycle_id, payload.score, payload.summary.trim(), payload.reviewer.trim()],
+      [
+        randomUUID(),
+        cycleRes.rows[0].company_id,
+        payload.employee_id,
+        payload.cycle_id,
+        payload.score,
+        payload.summary.trim(),
+        payload.reviewer.trim(),
+      ],
     );
     return res.rows[0];
   }
 
-  async listEvaluations(query: ListPerformanceEvaluationsQueryDto) {
+  async listEvaluations(query: ListPerformanceEvaluationsQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const filters: string[] = ['company_id = $1'];
-    const values: unknown[] = [query.company_id];
+    const scope = resolveHrmListScope(authorization, query.company_id);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushCompanyIdFilter(filters, values, scope.companyIds);
     if (query.employee_id) {
       filters.push(`employee_id = $${values.length + 1}::uuid`);
       values.push(query.employee_id);

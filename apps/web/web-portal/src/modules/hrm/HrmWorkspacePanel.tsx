@@ -38,7 +38,6 @@ import {
   HRM_MOCK_PAYROLL,
   HRM_MOCK_CONTRACTS,
   HRM_MOCK_INSURANCE,
-  HRM_MOCK_DECISIONS,
   HRM_MOCK_REPORTS,
   HRM_MOCK_PENDING_PAYROLL,
   HRM_MOCK_AI_SESSIONS,
@@ -53,6 +52,7 @@ import {
   listEmployeeMetadataQueue,
   listHrmAttendanceRecords,
   listHrmContracts,
+  listHrmInsurance,
   listHrmEmployees,
   listHrmJobRequisitions,
   listHrmPayslips,
@@ -65,14 +65,24 @@ import {
   type EmployeeMetadataQueueItem,
   type HrmAttendanceRecordRow,
   type HrmContractRow,
+  type HrmInsuranceApiRow,
   type HrmEmployeeApiRow,
   type HrmJobRequisitionRow,
   type HrmPayslipApiRow,
+  type HrmOperationsSummary,
 } from './hrmApiClient';
 import { resolveIdentityScope } from '../../integrations/identityScope';
 import { formatHrmMetadataQueueError } from './hrmWorkspaceErrorText';
+import { formatJoinDateVi } from './formatJoinDate';
+import {
+  mapHrmDashboardStats,
+  mapHrmInsuranceEmbedRows,
+  shouldLoadMetadataQueue,
+} from './hrmWorkspaceEmbedApi';
+import { HrmMetadataQueueSection } from './HrmMetadataQueueSection';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { allowMockFallback, API_LOAD_FAILED_MESSAGE, API_NOT_AVAILABLE_MESSAGE } from '../../utils/mockPolicy';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const RAIL_STROKE = 1.5;
 
@@ -110,10 +120,13 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   const [apiRecruitment, setApiRecruitment] = useState<HrmJobRequisitionRow[] | null>(null);
   const [apiAttendance, setApiAttendance] = useState<HrmAttendanceRecordRow[] | null>(null);
   const [apiContracts, setApiContracts] = useState<HrmContractRow[] | null>(null);
+  const [apiInsurance, setApiInsurance] = useState<HrmInsuranceApiRow[] | null>(null);
   const [apiTasks, setApiTasks] = useState<HrmOperationsTaskRow[] | null>(null);
   const [apiServiceRequests, setApiServiceRequests] = useState<HrmServiceRequestRow[] | null>(null);
+  const [apiOperationsSummary, setApiOperationsSummary] = useState<HrmOperationsSummary | null>(null);
   const [hrmDataSource, setHrmDataSource] = useState<'api' | 'error'>('api');
   const [hrmLoadError, setHrmLoadError] = useState<string | null>(null);
+  const [hrmApiLoading, setHrmApiLoading] = useState(false);
 
   const previewMockRows = <T,>(rows: T[]): T[] => (allowMockFallback() ? rows : []);
 
@@ -162,8 +175,11 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       attendance: { title: 'Chấm công', subtitle: 'Ca làm, bảng công và đơn nghỉ.' },
       payroll: { title: 'Tiền lương', subtitle: 'Bảng lương, mẫu tính, phụ cấp và khấu trừ.' },
       contracts: { title: 'Hợp đồng', subtitle: 'Hợp đồng lao động và phụ lục.' },
-      insurance: { title: 'Bảo hiểm', subtitle: 'BHXH, BHYT, BHTN và hồ sơ tham gia.' },
-      decisions: { title: 'Quyết định', subtitle: 'Quyết định nhân sự.' },
+      insurance: {
+        title: 'Bảo hiểm',
+        subtitle: 'Danh sách BHXH/BHYT từ HRM API (contracts-insurance/insurance).',
+      },
+      decisions: { title: 'Hàng chờ metadata', subtitle: 'Duyệt thay đổi field hồ sơ sau sync catalog (UC-HRM-26).' },
       hrm_ai: {
         title: 'UniAI',
         subtitle: 'Trợ lý cho HCNS: soạn văn bản, checklist và giải thích chính sách.',
@@ -204,10 +220,17 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       phone: '—',
       employmentType: 'full-time' as const,
       status: row.status === 'active' ? ('active' as const) : ('inactive' as const),
-      joinDate: row.hired_at ?? new Date().toISOString().slice(0, 10),
+      joinDate: row.hired_at && row.hired_at !== '0' ? row.hired_at : '',
       salary: 0,
     })) ?? [];
   const metadataQueueRows = metadataQueue;
+  const activeEmployeeCount =
+    apiEmployees?.filter((row) => row.status === 'active').length ?? null;
+  const dashboardStats = mapHrmDashboardStats(
+    apiEmployees?.length ?? null,
+    activeEmployeeCount,
+    apiOperationsSummary,
+  );
   const recruitmentRows = useMemo(() => {
     if (apiRecruitment?.length) {
       return apiRecruitment.map((r) => ({
@@ -250,18 +273,11 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
     return hrmDataSource === 'error' ? previewMockRows(HRM_MOCK_CONTRACTS) : [];
   }, [apiContracts, hrmDataSource]);
   const insuranceRows = useMemo(() => {
-    if (apiContracts?.length) {
-      return apiContracts.map((r) => ({
-        id: r.id,
-        ref: r.id.slice(0, 8),
-        employee: r.employee_id ?? '—',
-        regime: r.contract_type ?? 'BHXH',
-        period: r.end_date ?? '—',
-        sync: r.status,
-      }));
+    if (apiInsurance?.length) {
+      return mapHrmInsuranceEmbedRows(apiInsurance);
     }
     return hrmDataSource === 'error' ? previewMockRows(HRM_MOCK_INSURANCE) : [];
-  }, [apiContracts, hrmDataSource]);
+  }, [apiInsurance, hrmDataSource]);
   const scopeHint =
     (selectedCompany as { tenantId?: string }).tenantId ?? selectedCompany?.id ?? null;
 
@@ -296,7 +312,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         }
       }
     };
-    if (view === 'dashboard' || view === 'employees') {
+    if (shouldLoadMetadataQueue(view)) {
       void loadMetadataQueue();
     }
     return () => {
@@ -321,11 +337,16 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
     ]);
     if (!apiViews.has(view)) return;
     const load = async () => {
+      setHrmApiLoading(true);
       try {
         const scope = resolveIdentityScope(scopeHint);
         if (view === 'employees' || view === 'dashboard') {
           const emp = await listHrmEmployees(scope);
           if (!cancelled) setApiEmployees(emp.data);
+        }
+        if (view === 'dashboard') {
+          const summary = await getHrmOperationsSummary(scope);
+          if (!cancelled) setApiOperationsSummary(summary);
         }
         if (view === 'payroll' || view === 'dashboard') {
           const pay = await listHrmPayslips(scope);
@@ -339,9 +360,13 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           const att = await listHrmAttendanceRecords(scope);
           if (!cancelled) setApiAttendance(att.data);
         }
-        if (view === 'contracts' || view === 'insurance') {
+        if (view === 'contracts') {
           const con = await listHrmContracts(scope);
           if (!cancelled) setApiContracts(con.data);
+        }
+        if (view === 'insurance') {
+          const ins = await listHrmInsurance(scope);
+          if (!cancelled) setApiInsurance(ins.data);
         }
         if (view === 'tasks') {
           const tasks = await listHrmOperationsTasks(scope);
@@ -365,10 +390,16 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           setApiRecruitment(null);
           setApiAttendance(null);
           setApiContracts(null);
+          setApiInsurance(null);
           setApiTasks(null);
           setApiServiceRequests(null);
+          setApiOperationsSummary(null);
           setHrmDataSource('error');
           setHrmLoadError(API_LOAD_FAILED_MESSAGE);
+        }
+      } finally {
+        if (!cancelled) {
+          setHrmApiLoading(false);
         }
       }
     };
@@ -463,7 +494,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         return (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-slate-600">
-              Đang xem danh sách nhân sự mẫu trong portal. Để thao tác đầy đủ, mở ứng dụng HRM.
+              Danh sách nhân sự từ HRM API theo scope JWT. Để thao tác đầy đủ, mở ứng dụng HRM.
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -540,14 +571,16 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       case 'decisions':
         return (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">Quyết định nhân sự và trạng thái ban hành / chờ ký số trong HRM.</p>
+            <p className="text-sm text-slate-600">
+              Hàng chờ duyệt metadata nhân sự — GET /api/hrm/employee-metadata/change-requests.
+            </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => openHrmApp('/hr/decisions')}
+                onClick={() => openHrmApp('/hr/settings')}
                 className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
               >
-                Mở HRM / Quyết định
+                Mở tab Metadata (HRM)
               </button>
             </div>
           </div>
@@ -765,11 +798,19 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         <div className="xevn-safe-inline w-full min-w-0 flex-1 min-h-[min(520px,72vh)] overflow-y-auto overflow-x-hidden pb-6 pt-6">
           <SettingSectionHeader title={meta.title} subtitle={meta.subtitle} />
 
-          {hrmLoadError ? (
-            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
-              {hrmLoadError}
-            </div>
+          {hrmApiLoading && !hrmLoadError ? (
+            <p className="mt-3 text-sm text-slate-600" role="status">
+              Đang tải dữ liệu HRM API…
+            </p>
           ) : null}
+          <div className="mt-3">
+            <ApiLoadBanner
+              loadFailed={Boolean(hrmLoadError)}
+              usingMockFallback={hrmDataSource === 'error' && allowMockFallback()}
+              title="Trạng thái dữ liệu HRM"
+              message={hrmLoadError ?? undefined}
+            />
+          </div>
           {!hrmLoadError &&
           ['decisions', 'reports', 'hrm_ai', 'tasks', 'processes', 'internal_services', 'tools_equipment', 'guide'].includes(
             view,
@@ -902,18 +943,13 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                 >
                   <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>Thống kê nhân sự</p>
                   <ul className="mt-4 space-y-3">
-                    {[
-                      { k: 'Tổng nhân sự', v: '312' },
-                      { k: 'Đang làm việc', v: '298' },
-                      { k: 'Mới trong kỳ', v: '6' },
-                      { k: 'Phòng/Ban hoạt động', v: '24' },
-                    ].map((row) => (
+                    {dashboardStats.map((row) => (
                       <li
-                        key={row.k}
+                        key={row.label}
                         className="flex items-center justify-between gap-4 border-b border-xevn-border/80 pb-3 last:border-0 last:pb-0"
                       >
-                        <span className="text-sm text-slate-600">{row.k}</span>
-                        <span className="text-lg font-semibold tabular-nums text-xevn-primary">{row.v}</span>
+                        <span className="text-sm text-slate-600">{row.label}</span>
+                        <span className="text-lg font-semibold tabular-nums text-xevn-primary">{row.value}</span>
                       </li>
                     ))}
                   </ul>
@@ -1413,9 +1449,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                           {row.status === 'active' ? 'Đang làm' : row.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-slate-600">
-                        {new Date(row.joinDate).toLocaleDateString('vi-VN')}
-                      </td>
+                      <td className="px-3 py-2 text-slate-600">{formatJoinDateVi(row.joinDate)}</td>
                       <td className="px-3 py-2 text-right">
                         <button
                           type="button"
@@ -1665,14 +1699,19 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
 
           {view === 'insurance' ? (
             <div className={HRM_TABLE_SHELL}>
+              {!hrmLoadError && insuranceRows.length === 0 && !hrmApiLoading ? (
+                <p className="mb-3 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                  Chưa có hồ sơ BHXH trên API — kiểm tra seed fidelity (AC-FID-04) hoặc mở HRM đầy đủ.
+                </p>
+              ) : null}
               <table className={HRM_TABLE_CLASS}>
                 <thead className="bg-white/70 backdrop-blur-md">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Mã tham chiếu</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đối tượng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chế độ đóng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Kỳ áp dụng</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đồng bộ</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Số BHXH</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Nhân viên</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Đơn vị BH</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Hiệu lực</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
                     <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
                   </tr>
                 </thead>
@@ -1713,56 +1752,29 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           ) : null}
 
           {view === 'decisions' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Số quyết định</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Ngày ban hành</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Loại</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phạm vi</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Tóm tắt</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {previewMockRows(HRM_MOCK_DECISIONS).map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.number}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.date}</td>
-                      <td className="px-3 py-2 text-slate-700">{row.kind}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.subject}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.summary}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Đã ban hành'
-                              ? 'font-medium text-emerald-700'
-                              : 'text-amber-700'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/decisions')}
-                        >
-                          Xem quyết định
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <HrmMetadataQueueSection
+              rows={metadataQueueRows}
+              loading={metadataQueueLoading}
+              error={metadataQueueError}
+              fallback={metadataQueueFallback}
+              onDecide={handleMetadataDecision}
+            />
           ) : null}
 
           {view === 'reports' ? (
             <div className={HRM_TABLE_SHELL}>
+              {!allowMockFallback() && previewMockRows(HRM_MOCK_REPORTS).length === 0 ? (
+                <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                  {API_NOT_AVAILABLE_MESSAGE}{' '}
+                  <button
+                    type="button"
+                    className="ml-1 font-semibold text-xevn-primary hover:underline"
+                    onClick={() => openHrmApp('/hr/reports')}
+                  >
+                    Mở HRM đầy đủ
+                  </button>
+                </div>
+              ) : null}
               <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
                 <thead className="bg-white/70 backdrop-blur-md">
                   <tr>

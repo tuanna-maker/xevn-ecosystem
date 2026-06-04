@@ -8,6 +8,7 @@ description: Produces implementation-ready BA package with use cases, business r
 ## Use when
 - Turning business intent into executable delivery artifacts.
 - Preparing handoff from BA to SA/Dev/QA.
+- **Tài liệu gửi khách (BRD/SRS HTML):** đọc thêm `.cursor/skills/client-delivery-docs/SKILL.md` — không ghi meta prompt vào deliverable.
 
 ## Workflow
 1. Capture actors and use-case catalog.

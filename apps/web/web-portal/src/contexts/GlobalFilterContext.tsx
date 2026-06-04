@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState, ReactNo
 import { Company } from '../data/mockData';
 import { isMasterTenant, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import { setActiveTenantScope } from '../integrations/activeTenantScope';
+import { getJwtCompanyId, isGroupCompanyId } from '../integrations/identityScope';
 import { AccessibleTenant, fetchAccessibleTenants } from '../integrations/tenantScopeApi';
 import { useAuth } from './AuthContext';
 import {
@@ -166,9 +167,12 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   useEffect(() => {
     if (tenantScopeStatus !== 'ready' || safeSelected.id === '__loading__') return;
+    const jwtCompany = getJwtCompanyId();
+    const masterCompanyId =
+      jwtCompany && !isGroupCompanyId(jwtCompany) ? jwtCompany : MEMBER_DEFAULT_COMPANY_ID;
     setActiveTenantScope({
       tenantId: safeSelected.tenantId,
-      companyId: safeSelected.isMaster ? MASTER_TENANT_ID : MEMBER_DEFAULT_COMPANY_ID,
+      companyId: safeSelected.isMaster ? masterCompanyId : MEMBER_DEFAULT_COMPANY_ID,
     });
   }, [safeSelected.tenantId, safeSelected.isMaster, safeSelected.id, tenantScopeStatus]);
 
@@ -210,13 +214,16 @@ export const useGlobalFilter = (): GlobalFilterContextType => {
 export const useTenantScope = () => {
   const { selectedTenant, tenants, canAccessMaster, isMasterContext, tenantScopeStatus, tenantScopeError } =
     useGlobalFilter();
+  const jwtCompany = getJwtCompanyId();
+  const masterCompanyId =
+    jwtCompany && !isGroupCompanyId(jwtCompany) ? jwtCompany : MEMBER_DEFAULT_COMPANY_ID;
   return {
     selectedTenant,
     tenants,
     canAccessMaster,
     isMasterContext,
     tenantId: selectedTenant.tenantId,
-    companyId: selectedTenant.isMaster ? MASTER_TENANT_ID : MEMBER_DEFAULT_COMPANY_ID,
+    companyId: selectedTenant.isMaster ? masterCompanyId : MEMBER_DEFAULT_COMPANY_ID,
     tenantScopeStatus,
     tenantScopeError,
   };

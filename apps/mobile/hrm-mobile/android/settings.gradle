@@ -4,11 +4,38 @@ pluginManagement {
   }.standardOutput.asText.get().trim()
   def (_, reactNativeMinor, reactNativePatch) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
 
-  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, settingsDir).text.trim()).getParentFile().toString())
-  includeBuild(new File(settingsDir, "react-settings-plugin"))
+  def rnRel = System.getenv("GRADLE_RN_PLUGIN_REL")
+  if (rnRel != null) {
+    includeBuild(rnRel)
+  } else {
+  def rnGradleLink = new File(settingsDir, ".rn-gradle-plugin")
+  if (rnGradleLink.exists()) {
+    includeBuild(rnGradleLink)
+  } else {
+    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, settingsDir).text.trim()).getParentFile().toString())
+  }
+  }
+  if (reactNativeMinor == 74 && reactNativePatch <= 3) {
+    includeBuild(new File(settingsDir, "react-settings-plugin"))
+  }
 }
 
 plugins { id("com.facebook.react.settings") }
+
+def nodePrint(String expr) {
+  def out = ["node", "--print", expr].execute(null, settingsDir).text.trim()
+  def realRoot = System.getenv("GRADLE_REAL_REPO_ROOT")
+  def substRoot = System.getenv("GRADLE_SUBST_REPO_ROOT")
+  if (realRoot != null && substRoot != null && out.contains(realRoot)) {
+    return out.replace(realRoot, substRoot)
+  }
+  return out
+}
+
+def pathFromEnv(String key, String nodeExpr) {
+  def fromEnv = System.getenv(key)
+  return fromEnv != null ? fromEnv : nodePrint(nodeExpr)
+}
 
 def getRNMinorVersion() {
   def version = providers.exec {
@@ -47,18 +74,56 @@ rootProject.name = 'XeVN HRM'
 dependencyResolutionManagement {
   versionCatalogs {
     reactAndroidLibs {
-      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, settingsDir).text.trim(), "../gradle/libs.versions.toml")))
+      from(files(new File(pathFromEnv("GRADLE_PATH_RN_PKG", "require.resolve('react-native/package.json')"), "../gradle/libs.versions.toml")))
     }
   }
 }
 
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, settingsDir).text.trim(), "../scripts/autolinking.gradle");
+def expoAutolinking = System.getenv("GRADLE_PATH_EXPO_AUTOLINKING_IMPL")
+if (expoAutolinking != null) {
+  apply from: expoAutolinking
+} else {
+  apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, settingsDir).text.trim(), "../scripts/autolinking.gradle");
+}
 useExpoModules()
 
+// Remap autolinked module dirs from OneDrive Unicode realpath → C:\xevn-ecosystem junction (Gradle 8 variant API).
+def mapProjectDirToJunction(File dir) {
+  if (dir == null) return dir
+  def abs = dir.absolutePath.replace('/', '\\')
+  def marker = 'xevn-ecosystem'
+  def idx = abs.toLowerCase().indexOf(marker)
+  if (idx < 0) return dir
+  def rel = abs.substring(idx + marker.length())
+  if (rel.startsWith('\\')) rel = rel.substring(1)
+  def mapped = new File('C:\\xevn-ecosystem', rel)
+  return mapped.exists() ? mapped : dir
+}
+
+gradle.settingsEvaluated { settings ->
+  settings.rootProject.children.each { descriptor ->
+    def mapped = mapProjectDirToJunction(descriptor.projectDir)
+    if (mapped.exists()) {
+      descriptor.projectDir = mapped
+    }
+  }
+}
+
 if (getRNMinorVersion() < 75) {
-  apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, settingsDir).text.trim(), "../native_modules.gradle");
+  apply from: new File(settingsDir, "custom_native_modules.gradle")
   applyNativeModulesSettingsGradle(settings)
 }
 
 include ':app'
-includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, settingsDir).text.trim()).getParentFile())
+
+def rnIncRel = System.getenv("GRADLE_RN_PLUGIN_REL")
+if (rnIncRel != null) {
+  includeBuild(rnIncRel)
+} else {
+  def rnGradleLink = new File(settingsDir, ".rn-gradle-plugin")
+  if (rnGradleLink.exists()) {
+    includeBuild(rnGradleLink)
+  } else {
+    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, settingsDir).text.trim()).getParentFile())
+  }
+}

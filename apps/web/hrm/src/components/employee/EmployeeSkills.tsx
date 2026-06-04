@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,9 +11,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Zap, Code, Languages, Wrench, Plus, Edit, Trash2, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import {
+  createEmployeeSkill,
+  deleteEmployeeSkill,
+  listEmployeeSkills,
+  updateEmployeeSkill,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 
 interface EmployeeSkillsProps {
   employeeId: string;
@@ -77,20 +83,13 @@ export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
   }, [employeeId, currentCompanyId]);
 
   const fetchSkills = async () => {
+    if (!currentCompanyId) return;
     try {
-      const { data, error } = await supabase
-        .from('employee_skills')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .eq('company_id', currentCompanyId)
-        .order('category', { ascending: true })
-        .order('name', { ascending: true });
-
-      if (error) throw error;
-      setSkills(data || []);
+      const result = await listEmployeeSkills(employeeId, currentCompanyId);
+      setSkills((result.data ?? []) as unknown as Skill[]);
     } catch (error) {
       console.error('Error fetching skills:', error);
-      toast.error(t('skills.loadError'));
+      toast.error(toErrorMessage(error, t('skills.loadError')));
     } finally {
       setLoading(false);
     }
@@ -122,36 +121,17 @@ export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
     setSaving(true);
     try {
       if (editingSkill) {
-        const { error } = await supabase
-          .from('employee_skills')
-          .update({
-            category: formData.category,
-            name: formData.name,
-            level: formData.level,
-            notes: formData.notes || null,
-          })
-          .eq('id', editingSkill.id);
-
-        if (error) throw error;
+        await updateEmployeeSkill(employeeId, editingSkill.id, currentCompanyId, formData);
+      } else {
+        await createEmployeeSkill(employeeId, currentCompanyId, formData);
+      }
+      if (editingSkill) {
         toast.success(t('skills.updateSuccess'));
       } else {
-        const { error } = await supabase
-          .from('employee_skills')
-          .insert({
-            employee_id: employeeId,
-            company_id: currentCompanyId,
-            category: formData.category,
-            name: formData.name,
-            level: formData.level,
-            notes: formData.notes || null,
-          });
-
-        if (error) throw error;
-        toast.success(t('skills.createSuccess'));
+        toast.success(t('skills.addSuccess', 'Đã lưu'));
       }
-
       setDialogOpen(false);
-      fetchSkills();
+      void fetchSkills();
     } catch (error) {
       console.error('Error saving skill:', error);
       toast.error(t('skills.saveError'));
@@ -164,12 +144,7 @@ export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
     if (!confirm(t('skills.deleteConfirm'))) return;
 
     try {
-      const { error } = await supabase
-        .from('employee_skills')
-        .delete()
-        .eq('id', skillId);
-
-      if (error) throw error;
+      await deleteEmployeeSkill(employeeId, skillId, currentCompanyId);
       toast.success(t('skills.deleteSuccess'));
       fetchSkills();
     } catch (error) {

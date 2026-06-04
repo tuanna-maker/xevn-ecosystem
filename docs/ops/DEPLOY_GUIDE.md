@@ -84,6 +84,8 @@ curl http://14.225.217.232:3001/api/hrm/metrics  # → 200
 curl http://14.225.217.232:28002/api/xbos/metrics # → 200
 ```
 
+**HRM fidelity data (pilot):** sau deploy DB, chạy chuỗi seed theo `docs/ops/HRM_FIDELITY_SEED_RUNBOOK.md` (`1000-uat` → `seed:hrm:fidelity` → `verify:hrm:menu-density`).
+
 ---
 
 ## 4. Các vấn đề đã gặp và cách xử lý
@@ -172,6 +174,26 @@ copy deploy\.vps-ssh.env.example deploy\.vps-ssh.env
 
 **Khắc phục:** GitHub → repo → Settings → Secrets and variables → Actions → tạo/cập nhật `DEV_SSH_HOST`, `DEV_SSH_USER`, `DEV_SSH_PASSWORD`, variable `DEV_DEPLOY_PATH=/opt/xevn-ecosystem`.
 
+### 4.8 Lỗi `$'\r': command not found` khi chạy remote payload
+
+**Nguyên nhân:** Payload bash được tạo từ môi trường Windows có CRLF, khi decode/execute trực tiếp trên VPS sẽ phát sinh token `\r`.
+
+**Khắc phục (đã áp dụng trong `scripts/deploy-dev-server.ps1`):**
+- Chuẩn hóa payload về LF trước khi base64.
+- Decode vào file tạm trên VPS, chạy `tr -d '\r'`.
+- Chạy `bash -n` trước khi execute thật.
+
+**Chuỗi lệnh reproducible (để verify nhanh cơ chế chống CRLF):**
+```powershell
+$payload = "set -e`r`necho ok`r`n"
+$normalized = ($payload -replace "`r`n","`n" -replace "`r","`n")
+$b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($normalized))
+$decoded = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
+if ($decoded.Contains("`r")) { throw "CR byte still present" } else { "payload-lf-only: PASS" }
+```
+
+> Trong deploy thực tế, script đã thay việc `echo ... | base64 -d | bash` bằng luồng temp-file + `bash -n`, nên không cần workaround thủ công trên VPS.
+
 ---
 
 ## 5. Kiểm tra trạng thái server nhanh (audit)
@@ -206,7 +228,28 @@ done
 
 ---
 
-## 7. Files liên quan
+## 7. TLS & production guard (NFR P0.2)
+
+> **DevOps sub-agent:** thực hiện đầy đủ tại [`PRODUCTION_ENABLE_RUNBOOK.md`](PRODUCTION_ENABLE_RUNBOOK.md) (phases A→H, tự chạy lệnh).
+
+Production VPS phải terminate TLS tại nginx/reverse proxy:
+
+- Certificate Let's Encrypt hoặc corporate CA.
+- Redirect HTTP → HTTPS.
+- Header `Strict-Transport-Security: max-age=31536000; includeSubDomains` (mẫu: `deploy/nginx/upstream-replicas.conf`).
+- API `NODE_ENV=production` + `SERVICE_JWT_SECRET` mạnh + `CORS_ALLOWED_ORIGINS` whitelist (không `origin: true`).
+
+Kiểm tra trước release:
+
+```bash
+node scripts/verify-production-env.mjs --dry-run
+```
+
+Observability stack (tùy chọn): `docs/ops/OBSERVABILITY_RUNBOOK.md`.
+
+---
+
+## 8. Files liên quan
 
 | File | Mục đích |
 |------|----------|

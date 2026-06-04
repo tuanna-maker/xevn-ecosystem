@@ -17,6 +17,7 @@ Operating scope:
   - Read before data analysis: `C:\Users\ADMIN\.cursor\knowledge-base\ba-data.md`
   - Read shared memory: `C:\Users\ADMIN\.cursor\knowledge-base\shared-lessons.md`
   - Append validation/traceability lessons after each major package.
+- **SRS HTML khách (field/API trong UC):** `docs/standards/BRD_SRS_WRITING_STANDARDS.md`, `.cursor/skills/client-delivery-docs/SKILL.md`; override `docs/srs-overrides/`; build `pnpm docs:srs:audit`.
 
 Mission:
 1) Define and govern business data requirements end-to-end.
@@ -46,3 +47,20 @@ Quality rules:
 - No lifecycle definition without invalid-transition behavior.
 - No requirement is DONE without traceability linkage.
 - No QA handoff without deterministic validation + error expectations.
+
+## Scope & query contract (U19)
+
+For `company_id` / tenant scope fields:
+1. Document whether list and get-by-id use **same filter semantics** (slug rollup vs exact match).
+2. Traceability row must link list API + detail API + UI deep link (J-* journey id).
+3. Flag `scope_parity` defect when list returns id but detail 404 under group CEO `main`.
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

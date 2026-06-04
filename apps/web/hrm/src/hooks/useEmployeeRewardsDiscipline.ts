@@ -1,6 +1,16 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  createEmployeeDiscipline,
+  createEmployeeReward,
+  deleteEmployeeDiscipline,
+  deleteEmployeeReward,
+  listEmployeeDiscipline,
+  listEmployeeRewards,
+  updateEmployeeDiscipline,
+  updateEmployeeReward,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { toast } from 'sonner';
 
 export interface EmployeeReward {
@@ -71,166 +81,108 @@ export function useEmployeeRewardsDiscipline(employeeId: string) {
   const [disciplines, setDisciplines] = useState<EmployeeDiscipline[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    if (!employeeId || !currentCompanyId) return;
-
+  const fetchData = useCallback(async () => {
+    if (!employeeId || !currentCompanyId) {
+      setRewards([]);
+      setDisciplines([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     try {
-      const [rewardsRes, disciplinesRes] = await Promise.all([
-        supabase
-          .from('employee_rewards' as any)
-          .select('*')
-          .eq('employee_id', employeeId)
-          .eq('company_id', currentCompanyId)
-          .order('reward_date', { ascending: false }),
-        supabase
-          .from('employee_disciplines' as any)
-          .select('*')
-          .eq('employee_id', employeeId)
-          .eq('company_id', currentCompanyId)
-          .order('discipline_date', { ascending: false }),
+      const [rewardRes, disciplineRes] = await Promise.all([
+        listEmployeeRewards(employeeId, currentCompanyId),
+        listEmployeeDiscipline(employeeId, currentCompanyId),
       ]);
-
-      if (rewardsRes.error) throw rewardsRes.error;
-      if (disciplinesRes.error) throw disciplinesRes.error;
-
-      setRewards((rewardsRes.data || []) as unknown as EmployeeReward[]);
-      setDisciplines((disciplinesRes.data || []) as unknown as EmployeeDiscipline[]);
-    } catch (error) {
-      console.error('Error fetching rewards/disciplines:', error);
-      toast.error('Không thể tải dữ liệu khen thưởng/kỷ luật');
+      setRewards((rewardRes.data ?? []) as unknown as EmployeeReward[]);
+      setDisciplines((disciplineRes.data ?? []) as unknown as EmployeeDiscipline[]);
+    } catch (error: unknown) {
+      console.error('Error fetching rewards/discipline:', error);
+      toast.error(toErrorMessage(error, 'Không thể tải khen thưởng / kỷ luật'));
+      setRewards([]);
+      setDisciplines([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchData();
   }, [employeeId, currentCompanyId]);
 
-  // Reward operations
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
+
   const addReward = async (formData: RewardFormData) => {
-    if (!currentCompanyId) return;
-
+    if (!employeeId || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('employee_rewards' as any)
-        .insert({
-          employee_id: employeeId,
-          company_id: currentCompanyId,
-          ...formData,
-        });
-
-      if (error) throw error;
-      toast.success('Đã thêm khen thưởng thành công');
-      fetchData();
-    } catch (error) {
-      console.error('Error adding reward:', error);
-      toast.error('Không thể thêm khen thưởng');
+      await createEmployeeReward(employeeId, currentCompanyId, formData);
+      toast.success('Đã thêm khen thưởng');
+      await fetchData();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, 'Không thể lưu khen thưởng'));
     }
   };
 
   const updateReward = async (id: string, formData: Partial<RewardFormData>) => {
+    if (!employeeId || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('employee_rewards' as any)
-        .update(formData)
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Đã cập nhật khen thưởng thành công');
-      fetchData();
-    } catch (error) {
-      console.error('Error updating reward:', error);
-      toast.error('Không thể cập nhật khen thưởng');
+      await updateEmployeeReward(employeeId, id, currentCompanyId, formData);
+      toast.success('Đã cập nhật khen thưởng');
+      await fetchData();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, 'Không thể cập nhật khen thưởng'));
     }
   };
 
   const deleteReward = async (id: string) => {
+    if (!employeeId || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('employee_rewards' as any)
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await deleteEmployeeReward(employeeId, id, currentCompanyId);
       toast.success('Đã xóa khen thưởng');
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting reward:', error);
-      toast.error('Không thể xóa khen thưởng');
+      await fetchData();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, 'Không thể xóa khen thưởng'));
     }
   };
 
-  // Discipline operations
   const addDiscipline = async (formData: DisciplineFormData) => {
-    if (!currentCompanyId) return;
-
+    if (!employeeId || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('employee_disciplines' as any)
-        .insert({
-          employee_id: employeeId,
-          company_id: currentCompanyId,
-          ...formData,
-          effective_from: formData.effective_from || null,
-          effective_to: formData.effective_to || null,
-        });
-
-      if (error) throw error;
-      toast.success('Đã thêm kỷ luật thành công');
-      fetchData();
-    } catch (error) {
-      console.error('Error adding discipline:', error);
-      toast.error('Không thể thêm kỷ luật');
+      await createEmployeeDiscipline(employeeId, currentCompanyId, formData);
+      toast.success('Đã thêm kỷ luật');
+      await fetchData();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, 'Không thể lưu kỷ luật'));
     }
   };
 
   const updateDiscipline = async (id: string, formData: Partial<DisciplineFormData>) => {
+    if (!employeeId || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('employee_disciplines' as any)
-        .update({
-          ...formData,
-          effective_from: formData.effective_from || null,
-          effective_to: formData.effective_to || null,
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Đã cập nhật kỷ luật thành công');
-      fetchData();
-    } catch (error) {
-      console.error('Error updating discipline:', error);
-      toast.error('Không thể cập nhật kỷ luật');
+      await updateEmployeeDiscipline(employeeId, id, currentCompanyId, formData);
+      toast.success('Đã cập nhật kỷ luật');
+      await fetchData();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, 'Không thể cập nhật kỷ luật'));
     }
   };
 
   const deleteDiscipline = async (id: string) => {
+    if (!employeeId || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('employee_disciplines' as any)
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await deleteEmployeeDiscipline(employeeId, id, currentCompanyId);
       toast.success('Đã xóa kỷ luật');
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting discipline:', error);
-      toast.error('Không thể xóa kỷ luật');
+      await fetchData();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, 'Không thể xóa kỷ luật'));
     }
   };
 
-  // Calculate stats
-  const getStats = () => {
-    return {
-      totalRewards: rewards.length,
-      totalRewardAmount: rewards.reduce((sum, r) => sum + (r.amount || 0), 0),
-      totalDisciplines: disciplines.length,
-      totalPenalty: disciplines.reduce((sum, d) => sum + (d.penalty_amount || 0), 0),
-      activeDisciplines: disciplines.filter(d => d.status === 'active').length,
-    };
-  };
+  const getStats = () => ({
+    totalRewards: rewards.length,
+    totalRewardAmount: rewards.reduce((sum, r) => sum + (Number(r.amount) || 0), 0),
+    totalDisciplines: disciplines.length,
+    totalPenalty: disciplines.reduce((sum, d) => sum + (Number(d.penalty_amount) || 0), 0),
+    activeDisciplines: disciplines.filter((d) => d.status === 'active').length,
+  });
 
   return {
     rewards,

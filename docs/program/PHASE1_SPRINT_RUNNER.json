@@ -1,0 +1,63 @@
+{
+  "$schema": "phase1-sprint-runner-v1",
+  "program": "PHASE1_AGILE_SCRUM",
+  "execution_mode": "deadline_today_ict",
+  "orchestration": "STOP",
+  "wbs_source": "docs/program/PHASE1_PMP_PROJECT_PLAN.md",
+  "playbook": "docs/program/PM_ORCHESTRATION_PLAYBOOK.md",
+  "plan_doc": "docs/program/PHASE1_TODAY_EXECUTION_PLAN.md",
+  "status_glance": "docs/program/SPRINT_STATUS_AT_A_GLANCE.md",
+  "updated": "2026-05-24T02:10:00Z",
+  "program_status": "U18_EOD_NO_GO_PHASE1_OPEN",
+  "deadline_phase1_today": {
+    "user_requirement": "U18",
+    "started_at_ict": "2026-05-24T09:06:00+07:00",
+    "deadline_at_ict": "2026-05-24T23:59:59+07:00",
+    "goal": "PHASE1_COMPLETION_PLAN.md G1-G9 DONE",
+    "baseline": { "e2e_pass": 30, "planned": 63, "closed": "31/245" }
+  },
+  "active_sprint": "S5",
+  "active_overlay": "PHASE1-TODAY-U18",
+  "operating_model": "docs/program/TEAM_OPERATING_MODEL.md",
+  "governance_wave": {
+    "status": "partial_done",
+    "roles": ["sa", "ba-process", "ba-data", "technical-manager", "dev-be"],
+    "output": "SRS/TechSpec delta + work split on bus"
+  },
+  "next_dispatch": [
+    { "work_item_id": "P1-TODAY-GOV-SA", "role": "sa", "priority": "P0", "status": "done", "lane": "governance", "evidence": "docs/program/governance/p1-today-sa-delta-20260524.md" },
+    { "work_item_id": "P1-U18-BE-A1", "role": "dev-be", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-be-a1-20260524.md" },
+    { "work_item_id": "P1-TODAY-GOV-BA-P", "role": "ba-process", "priority": "P0", "status": "done", "lane": "governance", "evidence": "docs/program/governance/p1-today-ba-p-delta-20260524.md" },
+    { "work_item_id": "P1-TODAY-GOV-BA-D", "role": "ba-data", "priority": "P0", "status": "done", "lane": "governance", "evidence": "docs/program/governance/p1-today-ba-d-delta-20260524.md" },
+    { "work_item_id": "P1-TODAY-GOV-TA", "role": "technical-manager", "priority": "P0", "status": "done", "lane": "governance", "evidence": "docs/qa/evidence/p1-today-ta-gap-plan-20260524.md" },
+    { "work_item_id": "P1-TODAY-GOV-BE-LEAD", "role": "dev-be", "priority": "P0", "status": "done", "lane": "governance", "evidence": "docs/qa/evidence/p1-today-be-lead-backlog-20260524.md" },
+    { "work_item_id": "P1-S5-BE-AR-INF-MAP", "role": "dev-be", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-s5-be-ar-inf-map-20260524.md" },
+    { "work_item_id": "P1-S5-QA-02", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-s5-qa-02-20260524.md" },
+    { "work_item_id": "P1-S5-BE-WAVE-FINAL", "role": "dev-be", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md" },
+    { "work_item_id": "P1-TODAY-FE-A", "role": "dev-fe", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-today-fe-a-20260524.md" },
+    { "work_item_id": "P1-U18-QA-1", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-1-20260524.md" },
+    { "work_item_id": "P1-U18-BE-C1", "role": "dev-be", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-be-c1-20260524.md" },
+    { "work_item_id": "P1-U18-FE-C2", "role": "dev-fe", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-fe-c2-20260524.md" },
+    { "work_item_id": "P1-U18-QA-C1", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-c1-20260524.md" },
+    { "work_item_id": "P1-U18-QA-C1-RETEST", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-c1-retest-20260524.md" },
+    { "work_item_id": "P1-U18-DO-B1", "role": "devops", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-do-b1-20260524.md" },
+    { "work_item_id": "P1-U18-QA-G4", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-g4-20260524.md" },
+    { "work_item_id": "P1-U18-QA-EOD", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-eod-20260524.md" },
+    { "work_item_id": "P1-U18-QC-EOD", "role": "qc", "priority": "P0", "status": "done", "lane": "governance", "verdict": "no_go_program_gwc_uat", "evidence": "docs/qa/evidence/p1-u18-qc-eod-20260524.md" },
+  ],
+  "sprints": {
+    "S0": { "status": "done" },
+    "S1": { "status": "done" },
+    "S2": { "status": "done" },
+    "S3": { "status": "done" },
+    "S4": { "status": "done" },
+    "S5": { "status": "active", "target": "G1-G9 by EOD" }
+  },
+  "overlays": {
+    "PHASE1-TODAY-U18": {
+      "status": "active",
+      "deadline_at_ict": "2026-05-24T23:59:59+07:00",
+      "plan": "docs/program/PHASE1_TODAY_EXECUTION_PLAN.md"
+    }
+  }
+}

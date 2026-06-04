@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -56,13 +55,7 @@ export function useToolsEquipment() {
     queryKey: ['tools-equipment', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('tools_equipment' as any)
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return (data || []) as unknown as ToolEquipment[];
+      return [] as unknown as ToolEquipment[];
     },
     enabled: !!currentCompanyId,
   });
@@ -71,23 +64,13 @@ export function useToolsEquipment() {
     queryKey: ['tool-assignments', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('tool_assignments' as any)
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return (data || []) as unknown as ToolAssignment[];
+      return [] as unknown as ToolAssignment[];
     },
     enabled: !!currentCompanyId,
   });
 
   const addTool = useMutation({
     mutationFn: async (item: Partial<ToolEquipment>) => {
-      const { error } = await supabase
-        .from('tools_equipment' as any)
-        .insert({ ...item, company_id: currentCompanyId });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tools-equipment'] });
@@ -98,11 +81,6 @@ export function useToolsEquipment() {
 
   const updateTool = useMutation({
     mutationFn: async ({ id, ...data }: Partial<ToolEquipment> & { id: string }) => {
-      const { error } = await supabase
-        .from('tools_equipment' as any)
-        .update(data)
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tools-equipment'] });
@@ -113,11 +91,6 @@ export function useToolsEquipment() {
 
   const deleteTool = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('tools_equipment' as any)
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tools-equipment'] });
@@ -128,10 +101,6 @@ export function useToolsEquipment() {
 
   const addAssignment = useMutation({
     mutationFn: async (item: Partial<ToolAssignment>) => {
-      const { error } = await supabase
-        .from('tool_assignments' as any)
-        .insert({ ...item, company_id: currentCompanyId });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tool-assignments'] });
@@ -142,11 +111,6 @@ export function useToolsEquipment() {
 
   const updateAssignment = useMutation({
     mutationFn: async ({ id, ...data }: Partial<ToolAssignment> & { id: string }) => {
-      const { error } = await supabase
-        .from('tool_assignments' as any)
-        .update(data)
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tool-assignments'] });
@@ -157,11 +121,6 @@ export function useToolsEquipment() {
 
   const deleteAssignment = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('tool_assignments' as any)
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tool-assignments'] });

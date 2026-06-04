@@ -1,36 +1,61 @@
 import { X } from 'lucide-react';
-import type { UnifiedTask } from '../../data/mock-data';
+import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
+import type { UnifiedTask } from '../../data/command-center-mock';
+import type { WorkflowInstanceDetailPayload } from '../../integrations/workflowInstanceMapper';
+import { workflowInstanceStatusLabelVi } from '../../integrations/workflowInstanceMapper';
 
 type WorkflowTaskDetailDrawerProps = {
   open: boolean;
   task: UnifiedTask | null;
-  detail: Record<string, unknown> | null;
+  detail: WorkflowInstanceDetailPayload | null;
   loading: boolean;
+  detailLoadFailed: boolean;
   busy: boolean;
+  inboxFromApi: boolean;
   onClose: () => void;
   onComplete: (outcome: 'approved' | 'rejected') => void;
 };
+
+function stepLabel(row: Record<string, unknown>, index: number): string {
+  const key = row.step_key ?? row.stepKey ?? row.hat_key;
+  if (key) return String(key);
+  return `Bước ${index + 1}`;
+}
 
 export function WorkflowTaskDetailDrawer({
   open,
   task,
   detail,
   loading,
+  detailLoadFailed,
   busy,
+  inboxFromApi,
   onClose,
   onComplete,
 }: WorkflowTaskDetailDrawerProps) {
   if (!open || !task) return null;
 
-  const instance = (detail?.instance as Record<string, unknown> | undefined) ?? detail;
-  const steps = (detail?.steps as unknown[] | undefined) ?? (detail?.tasks as unknown[]) ?? [];
+  const instance = detail?.instance;
+  const steps = detail?.tasks ?? [];
+  const completeRuntime = {
+    busy,
+    blocked: loading || !inboxFromApi,
+    blockedReasonVi: !inboxFromApi
+      ? 'Hộp thư chưa tải từ workflow-engine — kiểm tra XBOS API (28002) hoặc bật mock dev.'
+      : undefined,
+  };
 
   return (
-    <div className="fixed inset-0 z-[80] flex justify-end bg-black/30" role="dialog" aria-modal>
+    <div
+      className="fixed inset-0 z-[80] flex justify-end bg-black/30"
+      role="dialog"
+      aria-modal
+      aria-labelledby="inbox-task-detail-title"
+    >
       <button type="button" className="flex-1 cursor-default" aria-label="Đóng" onClick={onClose} />
       <aside className="flex h-full w-full max-w-md flex-col border-l border-slate-200 bg-white shadow-xl">
         <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          <div>
+          <div id="inbox-task-detail-title">
             <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Chi tiết nhiệm vụ</p>
             <h2 className="text-lg font-semibold text-slate-900">{task.title}</h2>
           </div>
@@ -46,6 +71,12 @@ export function WorkflowTaskDetailDrawer({
         <div className="flex-1 overflow-y-auto px-5 py-4 text-sm text-slate-700">
           {loading ? (
             <p className="text-slate-500">Đang tải chi tiết workflow…</p>
+          ) : detailLoadFailed ? (
+            <p className="text-rose-700" role="alert">
+              Không tải được chi tiết từ{' '}
+              <code className="rounded bg-slate-100 px-1 text-xs">GET …/instances/:id/detail</code>. Kiểm tra
+              xbos-api và instance id.
+            </p>
           ) : (
             <>
               <p>
@@ -53,17 +84,28 @@ export function WorkflowTaskDetailDrawer({
               </p>
               {instance?.status ? (
                 <p className="mt-2">
-                  <span className="font-medium">Trạng thái:</span> {String(instance.status)}
+                  <span className="font-medium">Trạng thái:</span>{' '}
+                  {workflowInstanceStatusLabelVi(String(instance.status))}
                 </p>
               ) : null}
-              {Array.isArray(steps) && steps.length > 0 ? (
-                <ul className="mt-4 space-y-2">
+              <p className="mt-2">
+                <span className="font-medium">Người nhận:</span> {task.assigneeName || 'Chưa gán'}
+              </p>
+              {task.subtitle ? <p className="mt-1 text-slate-500">{task.subtitle}</p> : null}
+              {steps.length > 0 ? (
+                <ul className="mt-4 space-y-2" aria-label="Các bước workflow">
                   {steps.map((s, i) => {
                     const row = s as Record<string, unknown>;
+                    const status = String(row.status ?? 'pending');
                     return (
                       <li key={String(row.id ?? i)} className="rounded-lg border border-slate-100 px-3 py-2">
-                        <span className="font-medium">{String(row.step_key ?? row.hat_key ?? `Bước ${i + 1}`)}</span>
-                        <span className="ml-2 text-slate-500">{String(row.status ?? '')}</span>
+                        <span className="font-medium">{stepLabel(row, i)}</span>
+                        <span className="ml-2 text-slate-500">{workflowInstanceStatusLabelVi(status)}</span>
+                        {row.assignee_user_id ? (
+                          <span className="mt-1 block text-xs text-slate-400">
+                            Gán: {String(row.assignee_user_id)}
+                          </span>
+                        ) : null}
                       </li>
                     );
                   })}
@@ -75,22 +117,23 @@ export function WorkflowTaskDetailDrawer({
           )}
         </div>
         <footer className="flex gap-2 border-t border-slate-100 px-5 py-4">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => onComplete('rejected')}
+          <CapabilityActionButton
+            capabilityCode="BTN-A1-INBOX-QUICK"
+            variant="secondary"
+            runtime={completeRuntime}
             className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            onClick={() => onComplete('rejected')}
           >
             Từ chối
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => onComplete('approved')}
+          </CapabilityActionButton>
+          <CapabilityActionButton
+            capabilityCode="BTN-A1-INBOX-QUICK"
+            runtime={completeRuntime}
             className="flex-1 rounded-lg bg-[#1E40AF] px-3 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:opacity-50"
+            onClick={() => onComplete('approved')}
           >
             Hoàn thành
-          </button>
+          </CapabilityActionButton>
         </footer>
       </aside>
     </div>

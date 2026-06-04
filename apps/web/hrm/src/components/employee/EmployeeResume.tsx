@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
@@ -53,8 +53,15 @@ import {
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  createEmployeeResumeFile,
+  deleteEmployeeResumeFile,
+  getEmployeeById,
+  listEmployeeResumeFiles,
+} from '@/integrations/hrmApi';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
+import { toErrorMessage } from '@/lib/apiError';
 
 interface EmployeeResumeProps {
   employeeId: string;
@@ -100,7 +107,7 @@ const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-sm font-medium truncate">{value || '—'}</p>
+      <p className="text-sm font-medium truncate">{value || 'â€”'}</p>
     </div>
   </div>
 );
@@ -120,14 +127,30 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
   const { data: employee, isLoading: isLoadingEmployee } = useQuery({
     queryKey: ['employee', employeeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employees')
-        .select('*')
-        .eq('id', employeeId)
-        .single();
-      
-      if (error) throw error;
-      return data as Employee;
+      if (!currentCompanyId) return null;
+      try {
+        const row = await getEmployeeById(employeeId, [currentCompanyId]);
+        return {
+          id: row.id,
+          full_name: row.full_name,
+          employee_code: row.employee_code ?? '',
+          email: row.email,
+          phone: row.phone,
+          birth_date: row.birth_date,
+          gender: row.gender,
+          id_number: row.id_number,
+          id_issue_date: row.id_issue_date,
+          id_issue_place: row.id_issue_place,
+          permanent_address: row.permanent_address,
+          temporary_address: row.temporary_address,
+          department: row.department,
+          position: row.job_title_key,
+          start_date: row.start_date,
+          status: row.status,
+        } satisfies Employee;
+      } catch {
+        return null;
+      }
     },
     enabled: !!employeeId,
   });
@@ -136,14 +159,9 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
   const { data: resumeFiles, isLoading: isLoadingFiles } = useQuery({
     queryKey: ['employee-resume-files', employeeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employee_resume_files')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as ResumeFile[];
+      if (!currentCompanyId) return [] as ResumeFile[];
+      const result = await listEmployeeResumeFiles(employeeId, currentCompanyId);
+      return (result.data ?? []) as unknown as ResumeFile[];
     },
     enabled: !!employeeId && !!currentCompanyId,
   });
@@ -161,27 +179,13 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
   };
 
   const uploadFile = async (file: File): Promise<{ url: string; size: string }> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `resume/${employeeId}/${Date.now()}.${fileExt}`;
-    
-    const { data, error } = await supabase.storage
-      .from('employee-documents')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) throw error;
-
-    const { data: urlData } = supabase.storage
-      .from('employee-documents')
-      .getPublicUrl(data.path);
-
-    const size = file.size < 1024 * 1024 
-      ? `${(file.size / 1024).toFixed(1)} KB`
-      : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
-
-    return { url: urlData.publicUrl, size };
+    const url = await hrmStorageUploadStub(file, 'employee-resume');
+    if (!url) throw new Error('Upload failed');
+    const size =
+      file.size < 1024 * 1024
+        ? `${(file.size / 1024).toFixed(1)} KB`
+        : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+    return { url, size };
   };
 
   const handleUploadFile = async () => {
@@ -199,21 +203,12 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
 
     try {
       const { url, size } = await uploadFile(selectedFile);
-      const fileType = selectedFile.name.split('.').pop() || 'file';
-
-      const { error } = await supabase
-        .from('employee_resume_files')
-        .insert({
-          employee_id: employeeId,
-          company_id: currentCompanyId,
-          name: newFileName || selectedFile.name,
-          file_type: fileType,
-          file_url: url,
-          file_size: size,
-        });
-
-      if (error) throw error;
-
+      await createEmployeeResumeFile(employeeId, currentCompanyId, {
+        name: newFileName || selectedFile.name,
+        file_type: selectedFile.type || null,
+        file_url: url,
+        file_size: size,
+      });
       toast.success(t('resume.uploadSuccess'));
       queryClient.invalidateQueries({ queryKey: ['employee-resume-files', employeeId] });
       setIsFileDialogOpen(false);
@@ -232,19 +227,9 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
     if (!confirm(t('resume.confirmDelete'))) return;
 
     try {
-      // Delete from storage
-      const filePath = file.file_url.split('/employee-documents/')[1];
-      if (filePath) {
-        await supabase.storage.from('employee-documents').remove([filePath]);
+      if (currentCompanyId) {
+        await deleteEmployeeResumeFile(employeeId, file.id, currentCompanyId);
       }
-
-      // Delete from database
-      const { error } = await supabase
-        .from('employee_resume_files')
-        .delete()
-        .eq('id', file.id);
-
-      if (error) throw error;
       toast.success(t('resume.deleteSuccess'));
       queryClient.invalidateQueries({ queryKey: ['employee-resume-files', employeeId] });
     } catch (error: any) {
@@ -351,7 +336,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {file.file_size} • {format(new Date(file.created_at), 'dd/MM/yyyy', { locale: vi })}
+                        {file.file_size} â€¢ {format(new Date(file.created_at), 'dd/MM/yyyy', { locale: vi })}
                       </p>
                     </div>
                     <DropdownMenu>

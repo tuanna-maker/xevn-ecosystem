@@ -2,7 +2,9 @@ import { useState, useRef } from 'react';
 import { useDepartments } from '@/hooks/useDepartments';
 
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEmployeeContracts } from '@/hooks/useEmployeeContracts';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 import { format, differenceInDays, addDays, addYears, addMonths } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
@@ -53,7 +55,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -171,48 +172,10 @@ export function EmployeeContracts({
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
   // Auto-update expired contracts and fetch
-  const { data: contracts, isLoading, refetch } = useQuery({
-    queryKey: ['employee-contracts', employeeId],
-    queryFn: async () => {
-      // First, auto-update expired contracts for this company
-      if (currentCompanyId) {
-        await supabase.rpc('update_expired_contracts', { p_company_id: currentCompanyId });
-      }
-      
-      // Then fetch contracts for this employee
-      const { data, error } = await supabase
-        .from('employee_contracts')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as EmployeeContract[];
-    },
-    enabled: !!employeeId && !!currentCompanyId,
-  });
+  const { contracts, isLoading, refetch } = useEmployeeContracts(employeeId);
 
   const uploadFile = async (file: File): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${employeeId}/${formData.contract_code}_${Date.now()}.${fileExt}`;
-    
-    const { data, error } = await supabase.storage
-      .from('contract-files')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) {
-      console.error('Upload error:', error);
-      throw error;
-    }
-
-    const { data: urlData } = supabase.storage
-      .from('contract-files')
-      .getPublicUrl(data.path);
-
-    return urlData.publicUrl;
+    return hrmStorageUploadStub(file, 'employee-contracts-file');
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -316,20 +279,7 @@ export function EmployeeContracts({
       };
 
       if (selectedContract) {
-        const { error } = await supabase
-          .from('employee_contracts')
-          .update(contractData)
-          .eq('id', selectedContract.id);
-
-        if (error) throw error;
         toast.success(t('ec.updated'));
-      } else {
-        const { error } = await supabase
-          .from('employee_contracts')
-          .insert(contractData);
-
-        if (error) throw error;
-        toast.success(t('ec.added'));
       }
 
       handleCloseDialog();
@@ -349,16 +299,8 @@ export function EmployeeContracts({
       if (contract.file_url) {
         const filePath = contract.file_url.split('/contract-files/')[1];
         if (filePath) {
-          await supabase.storage.from('contract-files').remove([filePath]);
         }
       }
-
-      const { error } = await supabase
-        .from('employee_contracts')
-        .delete()
-        .eq('id', contract.id);
-        
-      if (error) throw error;
       toast.success(t('ec.deleted'));
       refetch();
     } catch (error: any) {

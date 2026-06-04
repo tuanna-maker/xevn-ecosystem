@@ -1,7 +1,8 @@
-import { IsString, IsUUID, MaxLength } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
 
 export class CreateJobRequisitionDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsString()

@@ -1,6 +1,8 @@
 import { MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 
+/** `entityId` must be `xbos_legal_entity.id` — use `resolveLegalEntityApiIdForCompany` when UI row id may be tenant_id. */
+
 function scopeInit(tenantId: string, companyId = MEMBER_DEFAULT_COMPANY_ID, withBody = false) {
   return {
     tenantId,

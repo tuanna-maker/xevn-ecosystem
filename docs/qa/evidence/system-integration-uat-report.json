@@ -1,0 +1,397 @@
+{
+  "started_at": "2026-06-02T14:42:03.732Z",
+  "env": {
+    "hrm_port": "28001",
+    "xbos_port": "28002",
+    "db_host": "113.20.107.184",
+    "hrm_db": "xevn_hrm",
+    "master_tenant": "xevn"
+  },
+  "summary": {
+    "pass": 37,
+    "fail": 0,
+    "skip": 0
+  },
+  "phases": [
+    {
+      "phase": "P0",
+      "name": "hrm-api-health",
+      "status": "PASS",
+      "code": "HRM-HEALTH-200",
+      "at": "2026-06-02T14:42:03.771Z"
+    },
+    {
+      "phase": "P0",
+      "name": "xbos-api-health",
+      "status": "PASS",
+      "at": "2026-06-02T14:42:03.776Z"
+    },
+    {
+      "phase": "P1",
+      "name": "db-workforce-count-roles-tenant",
+      "status": "PASS",
+      "total": 1000,
+      "active": 943,
+      "distinct_roles": 25,
+      "with_tenant_and_password": 1000,
+      "by_company": [
+        {
+          "company_id": "finance",
+          "total": 200
+        },
+        {
+          "company_id": "holding",
+          "total": 200
+        },
+        {
+          "company_id": "logistics",
+          "total": 200
+        },
+        {
+          "company_id": "services",
+          "total": 200
+        },
+        {
+          "company_id": "trsport",
+          "total": 200
+        }
+      ],
+      "expected_total": 1000,
+      "expected_roles": 25,
+      "expected_companies": 5,
+      "at": "2026-06-02T14:42:04.945Z"
+    },
+    {
+      "phase": "P2",
+      "name": "xbos-portal-login-rbac",
+      "status": "PASS",
+      "email": "ceo@xe.vn",
+      "membership_count": 1,
+      "at": "2026-06-02T14:42:05.159Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-CEO",
+      "status": "PASS",
+      "employee_code": "HLD-0001",
+      "roles": [
+        "employee",
+        "manager",
+        "hr_manager"
+      ],
+      "at": "2026-06-02T14:42:05.276Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-COO",
+      "status": "PASS",
+      "employee_code": "VTH-0002",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:05.367Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-CFO",
+      "status": "PASS",
+      "employee_code": "LOG-0003",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:05.446Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-CHRO",
+      "status": "PASS",
+      "employee_code": "TCN-0004",
+      "roles": [
+        "employee",
+        "manager",
+        "hr_manager"
+      ],
+      "at": "2026-06-02T14:42:05.598Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-CTO",
+      "status": "PASS",
+      "employee_code": "DVU-0005",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:05.747Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-HRBP_MANAGER",
+      "status": "PASS",
+      "employee_code": "HLD-0006",
+      "roles": [
+        "employee",
+        "manager"
+      ],
+      "at": "2026-06-02T14:42:05.908Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-HR_SPECIALIST",
+      "status": "PASS",
+      "employee_code": "VTH-0007",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:05.987Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-PAYROLL_SPECIALIST",
+      "status": "PASS",
+      "employee_code": "LOG-0008",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.146Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-RECRUITER",
+      "status": "PASS",
+      "employee_code": "TCN-0009",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.219Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-OPS_MANAGER",
+      "status": "PASS",
+      "employee_code": "DVU-0010",
+      "roles": [
+        "employee",
+        "manager"
+      ],
+      "at": "2026-06-02T14:42:06.295Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-DISPATCH_SUPERVISOR",
+      "status": "PASS",
+      "employee_code": "HLD-0011",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.415Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-FLEET_SUPERVISOR",
+      "status": "PASS",
+      "employee_code": "VTH-0012",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.492Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-WAREHOUSE_SUP",
+      "status": "PASS",
+      "employee_code": "LOG-0013",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.578Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-WAREHOUSE_STAFF",
+      "status": "PASS",
+      "employee_code": "TCN-0014",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.656Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-DRIVER_LEAD",
+      "status": "PASS",
+      "employee_code": "DVU-0015",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.788Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-DRIVER",
+      "status": "PASS",
+      "employee_code": "HLD-0016",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:06.875Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-ACCOUNTANT",
+      "status": "PASS",
+      "employee_code": "VTH-0017",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.012Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-FINANCE_ANALYST",
+      "status": "PASS",
+      "employee_code": "LOG-0018",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.098Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-SALES_MANAGER",
+      "status": "PASS",
+      "employee_code": "TCN-0019",
+      "roles": [
+        "employee",
+        "manager"
+      ],
+      "at": "2026-06-02T14:42:07.185Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-SALES_EXECUTIVE",
+      "status": "PASS",
+      "employee_code": "DVU-0020",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.305Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-LEGAL_SPECIALIST",
+      "status": "PASS",
+      "employee_code": "HLD-0021",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.456Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-SAFETY_OFFICER",
+      "status": "PASS",
+      "employee_code": "VTH-0022",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.542Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-IT_ADMIN",
+      "status": "PASS",
+      "employee_code": "LOG-0023",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.620Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-DATA_ANALYST",
+      "status": "PASS",
+      "employee_code": "TCN-0024",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.745Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-role-CUSTOMER_SUCCESS",
+      "status": "PASS",
+      "employee_code": "DVU-0025",
+      "roles": [
+        "employee"
+      ],
+      "at": "2026-06-02T14:42:07.876Z"
+    },
+    {
+      "phase": "P3",
+      "name": "mobile-login-batch-sample",
+      "status": "PASS",
+      "sampled": 50,
+      "pass": 50,
+      "at": "2026-06-02T14:42:14.084Z"
+    },
+    {
+      "phase": "P4",
+      "name": "tenant-scope-header-mismatch",
+      "status": "PASS",
+      "tenant_mismatch": 400,
+      "company_mismatch": 400,
+      "at": "2026-06-02T14:42:14.167Z"
+    },
+    {
+      "phase": "P5",
+      "name": "attendance-record-create-list-db",
+      "status": "PASS",
+      "db_rows": true,
+      "write_path": "internal-key+scope",
+      "at": "2026-06-02T14:42:18.002Z"
+    },
+    {
+      "phase": "P5",
+      "name": "mobile-jwt-attendance-record-uuid-scope",
+      "status": "PASS",
+      "role": "DRIVER",
+      "employee_code": "HLD-0016",
+      "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+      "write_path": "mobile-jwt-only",
+      "attendance_date": "2026-06-03",
+      "at": "2026-06-02T14:42:24.101Z"
+    },
+    {
+      "phase": "P5",
+      "name": "leave-request-create-list-db",
+      "status": "PASS",
+      "leave_id": "25782f4e-6ccf-4157-bb17-856d8ae9fbec",
+      "at": "2026-06-02T14:42:28.181Z"
+    },
+    {
+      "phase": "P5",
+      "name": "payroll-payslips-list",
+      "status": "PASS",
+      "count": 0,
+      "at": "2026-06-02T14:42:28.903Z"
+    },
+    {
+      "phase": "P6",
+      "name": "manager-approve-leave-sample",
+      "status": "PASS",
+      "leave_id": "25782f4e-6ccf-4157-bb17-856d8ae9fbec",
+      "approved": true,
+      "at": "2026-06-02T14:42:29.476Z"
+    },
+    {
+      "phase": "P6",
+      "name": "db-spot-check-ceo-record",
+      "status": "PASS",
+      "employee_code": "HLD-0001",
+      "company_id": "holding",
+      "at": "2026-06-02T14:42:29.888Z"
+    }
+  ],
+  "finished_at": "2026-06-02T14:42:29.888Z",
+  "verdict": "PASS"
+}

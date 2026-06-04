@@ -1,9 +1,10 @@
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { isBiometricEnabled, promptBiometricIfEnabled, setBiometricEnabled } from '../../integrations/biometricUnlock';
 import { vi } from '../../i18n/vi';
 import { STORAGE } from '../../storage/keys';
 
@@ -12,11 +13,25 @@ export function SettingsScreen() {
   const nav = useNavigation<NavigationProp<ParamListBase>>();
   const [companyUuid, setCompanyUuid] = useState(auth.companyUuid);
   const [employeeId, setEmployeeId] = useState(auth.employeeId);
+  const [biometric, setBiometric] = useState(false);
+
+  useEffect(() => {
+    void isBiometricEnabled().then(setBiometric);
+  }, []);
 
   const persist = async () => {
+    const ok = await promptBiometricIfEnabled();
+    if (!ok) return;
     await SecureStore.setItemAsync(STORAGE.COMPANY_UUID, companyUuid.trim());
     await SecureStore.setItemAsync(STORAGE.EMPLOYEE_ID, employeeId.trim());
     auth.updateLocal({ companyUuid: companyUuid.trim(), employeeId: employeeId.trim() });
+    Alert.alert('Đã lưu', 'Phạm vi local đã cập nhật.');
+  };
+
+  const toggleBiometric = async () => {
+    const next = !biometric;
+    await setBiometricEnabled(next);
+    setBiometric(next);
   };
 
   return (
@@ -27,7 +42,9 @@ export function SettingsScreen() {
         {'\n'}
         company (header): {auth.companyId}
         {'\n'}
-        UUID chấm công/lương: {auth.companyUuid || '(trống — dùng UUID từ companyId nếu hợp lệ)'}
+        roles: {auth.roles.join(', ') || '(chưa có)'}
+        {'\n'}
+        manager UI: {auth.isManager ? 'bật' : 'ẩn'}
       </Text>
       <Text style={styles.title}>{vi.settings}</Text>
       <Text style={styles.label}>UUID công ty (attendance / payroll)</Text>
@@ -37,15 +54,20 @@ export function SettingsScreen() {
       <Pressable style={styles.btn} onPress={() => void persist()}>
         <Text style={styles.btnText}>Lưu vào SecureStore</Text>
       </Pressable>
+      <Pressable style={[styles.btn, styles.btnSecondary]} onPress={() => void toggleBiometric()}>
+        <Text style={styles.btnTextSecondary}>
+          {biometric ? 'Tắt' : 'Bật'} mở khóa sinh trắc học (MOB-403)
+        </Text>
+      </Pressable>
       <Pressable style={[styles.btn, styles.logout]} onPress={() => void auth.signOut()}>
         <Text style={styles.logoutText}>{vi.logout} (UC-HRM-MOB-15)</Text>
       </Pressable>
       <Text style={styles.section}>Điều hướng nhanh</Text>
       <NavLink nav={nav} title={vi.scope} screen="Scope" />
-      <NavLink nav={nav} title={vi.approvals} screen="ManagerApprovals" />
+      {auth.isManager ? <NavLink nav={nav} title={vi.approvals} screen="ManagerApprovals" /> : null}
       <NavLink nav={nav} title={vi.payroll} screen="PayrollSummary" />
       <NavLink nav={nav} title={vi.contracts} screen="Contracts" />
-      <NavLink nav={nav} title={vi.operations} screen="Operations" />
+      {auth.isManager ? <NavLink nav={nav} title={vi.operations} screen="Operations" /> : null}
       <NavLink nav={nav} title={vi.profile} screen="Profile" />
       <NavLink nav={nav} title={vi.notifications} screen="Notifications" />
     </ScrollView>
@@ -99,7 +121,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+  btnSecondary: { backgroundColor: '#334155' },
   btnText: { color: '#0f172a', fontWeight: '700' },
+  btnTextSecondary: { color: '#e2e8f0', fontWeight: '600' },
   logout: { backgroundColor: '#334155', marginTop: 24 },
   logoutText: { color: '#fecaca', fontWeight: '700' },
   section: { color: '#94a3b8', marginTop: 20, marginBottom: 6, fontSize: 13 },

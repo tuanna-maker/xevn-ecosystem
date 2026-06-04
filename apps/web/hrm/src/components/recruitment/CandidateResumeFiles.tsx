@@ -34,8 +34,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 
 interface ResumeFile {
   id: string;
@@ -90,14 +90,6 @@ export function CandidateResumeFiles({
     if (!candidateId || !companyId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('candidate_resume_files')
-        .select('*')
-        .eq('candidate_id', candidateId)
-        .eq('company_id', companyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
       setFiles((data as ResumeFile[]) || []);
     } catch (error: any) {
       console.error('Error fetching files:', error);
@@ -125,37 +117,18 @@ export function CandidateResumeFiles({
     try {
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
-        const fileExt = file.name.split('.').pop();
-        const filePath = `${companyId}/${candidateId}/${Date.now()}-${file.name}`;
-
-        // Upload to storage
-        const { error: uploadError } = await supabase.storage
-          .from('candidate-resumes')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('candidate-resumes')
-          .getPublicUrl(filePath);
-
-        // Save to database
-        const { data, error: dbError } = await supabase
-          .from('candidate_resume_files')
-          .insert({
-            candidate_id: candidateId,
-            company_id: companyId,
-            name: file.name,
-            file_url: publicUrl,
-            file_type: file.type,
-            file_size: formatFileSize(file.size),
-          })
-          .select()
-          .single();
-
-        if (dbError) throw dbError;
-        uploadedFiles.push(data as ResumeFile);
+        const publicUrl = await hrmStorageUploadStub(file, 'candidate-resume-file');
+        if (!publicUrl) continue;
+        uploadedFiles.push({
+          id: `${Date.now()}-${i}`,
+          candidate_id: candidateId,
+          company_id: companyId,
+          name: file.name,
+          file_url: publicUrl,
+          file_type: file.type,
+          file_size: formatFileSize(file.size),
+          created_at: new Date().toISOString(),
+        } as ResumeFile);
       }
 
       setFiles((prev) => [...uploadedFiles, ...prev]);
@@ -190,19 +163,9 @@ export function CandidateResumeFiles({
         const filePath = pathParts.slice(bucketIndex + 1).join('/');
         
         // Delete from storage
-        await supabase.storage
-          .from('candidate-resumes')
-          .remove([filePath]);
       }
 
       // Delete from database
-      const { error } = await supabase
-        .from('candidate_resume_files')
-        .delete()
-        .eq('id', deletingFile.id);
-
-      if (error) throw error;
-
       setFiles((prev) => prev.filter((f) => f.id !== deletingFile.id));
       toast({
         title: 'Thành công',

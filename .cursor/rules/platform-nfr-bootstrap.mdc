@@ -1,0 +1,25 @@
+---
+description: Auto-bootstrap platform NFR (logging, metrics, production guard, observability) for API monorepos — apply on new backend work without user re-asking.
+globs:
+  - "apps/api/**"
+  - "packages/platform-core/**"
+  - "deploy/observability/**"
+  - "docs/ops/**"
+  - "scripts/verify-*.mjs"
+  - "scripts/*production*.mjs"
+alwaysApply: false
+---
+
+# Platform NFR Bootstrap Rule
+
+When creating or extending **backend APIs** in this monorepo:
+
+1. **Prefer shared `@xevn/platform-core`** — do not duplicate logging/metrics/CORS/rate-limit in each `main.ts`.
+2. **Production path** must reference `docs/ops/PRODUCTION_ENABLE_RUNBOOK.md`; DevOps sub-agent runs it autonomously (`agent-terminal-execution.mdc`).
+3. **New API service checklist:** wire tracing → prod guard → CORS → request context → rate limit → Prometheus metrics on DB layer.
+4. **Release evidence:** `pnpm verify:production-env`, metrics smoke, `test:e2e:security` paths documented in handoff.
+5. **Observability stack** is opt-in via compose profile `obs` — document ports in `OBSERVABILITY_RUNBOOK.md`.
+
+PM/SA/TM: on program start, confirm NFR baseline exists or dispatch bootstrap per `.cursor/skills/platform-nfr-bootstrap/SKILL.md`.
+
+Sub-agents must append lessons to `.cursor/knowledge-base/platform-nfr-bootstrap.md` after major NFR/production cycles.

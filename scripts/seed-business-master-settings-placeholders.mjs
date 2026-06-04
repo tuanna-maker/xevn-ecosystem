@@ -29,6 +29,18 @@ const regions = [
   { id: 'reg-central', code: 'MT', nameVi: 'Miền Trung', country: 'VN', status: 'active' },
 ];
 
+const deptSystemTemplates = [
+  {
+    id: 'dtpl-001',
+    code: 'PB-ORG-XEVN-01',
+    nameVi: 'Khung phòng/ban & chức danh chuẩn XeVN',
+    description:
+      'Tham chiếu ORG GRADE tập đoàn; phòng/ban cụ thể khai báo tại từng pháp nhân sau khi được gán khung.',
+    appliesToCompanyIds: ['comp-001', 'comp-002', 'comp-003'],
+    enabledOrgGradeLevels: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  },
+];
+
 const formulas = [
   {
     id: 'f-otif',
@@ -49,6 +61,10 @@ const formulas = [
 ];
 
 async function main() {
+  for (const row of deptSystemTemplates) {
+    const { id, ...p } = row;
+    await upsert('dept_system_templates', id, p);
+  }
   for (const row of departments) {
     const { id, ...p } = row;
     await upsert('department_catalog', id, p);

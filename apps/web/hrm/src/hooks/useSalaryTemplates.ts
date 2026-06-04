@@ -1,8 +1,19 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  addSalaryTemplateComponent,
+  createSalaryTemplate,
+  deleteSalaryTemplate,
+  duplicateSalaryTemplate,
+  listSalaryTemplateComponents,
+  listSalaryTemplates,
+  removeSalaryTemplateComponentRow,
+  updateSalaryTemplate,
+  updateSalaryTemplateComponentRow,
+  type HrmSalaryTemplateRow,
+} from '@/integrations/hrmApi';
 
 export interface SalaryTemplate {
   id: string;
@@ -49,266 +60,159 @@ export interface TemplateComponentFormData {
   sort_order: number;
 }
 
+function mapSalaryTemplate(row: HrmSalaryTemplateRow): SalaryTemplate {
+  return {
+    id: row.id,
+    company_id: row.company_id,
+    code: row.code,
+    name: row.name,
+    description: row.description,
+    is_default: Boolean(row.is_default),
+    status: row.status,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
 export const useSalaryTemplates = () => {
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch all salary templates
   const { data: templates = [], isLoading: isLoadingTemplates, refetch: refetchTemplates } = useQuery({
     queryKey: ['salary-templates', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      
-      const { data, error } = await supabase
-        .from('salary_templates')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as SalaryTemplate[];
+      const response = await listSalaryTemplates({ company_id: currentCompanyId });
+      return (response.data ?? []).map(mapSalaryTemplate);
     },
     enabled: !!currentCompanyId,
   });
 
-  // Fetch template components for a specific template
   const fetchTemplateComponents = async (templateId: string): Promise<SalaryTemplateComponent[]> => {
-    const { data, error } = await supabase
-      .from('salary_template_components')
-      .select(`
-        *,
-        component:salary_components(id, code, name, component_type, nature, value_type)
-      `)
-      .eq('template_id', templateId)
-      .order('sort_order', { ascending: true });
-
-    if (error) throw error;
-    return data as SalaryTemplateComponent[];
+    if (!currentCompanyId) return [];
+    const response = await listSalaryTemplateComponents(templateId, currentCompanyId);
+    return (response.data ?? []).map((row) => ({
+      id: String(row.id),
+      template_id: String(row.template_id),
+      component_id: String(row.component_id),
+      default_value: Number(row.default_value ?? 0),
+      is_required: Boolean(row.is_required),
+      sort_order: Number(row.sort_order ?? 0),
+      created_at: String(row.created_at ?? ''),
+      component: row.component as SalaryTemplateComponent['component'],
+    }));
   };
 
-  // Create template mutation
   const createTemplateMutation = useMutation({
-    mutationFn: async (formData: SalaryTemplateFormData) => {
-      if (!currentCompanyId) throw new Error('No company selected');
-
-      // If setting as default, unset other defaults first
-      if (formData.is_default) {
-        await supabase
-          .from('salary_templates')
-          .update({ is_default: false })
-          .eq('company_id', currentCompanyId);
-      }
-
-      const { data, error } = await supabase
-        .from('salary_templates')
-        .insert({
-          company_id: currentCompanyId,
-          ...formData,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+    mutationFn: async (data: SalaryTemplateFormData) => {
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return createSalaryTemplate({
+        company_id: currentCompanyId,
+        code: data.code,
+        name: data.name,
+        description: data.description || undefined,
+        is_default: data.is_default,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salary-templates', currentCompanyId] });
-      toast.success('Đã tạo mẫu bảng lương thành công');
+      toast.success('Đã tạo mẫu bảng lương');
     },
-    onError: (error: any) => {
-      if (error.code === '23505') {
-        toast.error('Mã mẫu bảng lương đã tồn tại');
-      } else {
-        toast.error('Lỗi khi tạo mẫu bảng lương');
-      }
+    onError: (error: unknown) => {
+      toast.error(toErrorMessage(error, 'Không thể tạo mẫu bảng lương'));
     },
   });
 
-  // Update template mutation
   const updateTemplateMutation = useMutation({
-    mutationFn: async ({ id, formData }: { id: string; formData: Partial<SalaryTemplateFormData> }) => {
-      if (!currentCompanyId) throw new Error('No company selected');
-
-      // If setting as default, unset other defaults first
-      if (formData.is_default) {
-        await supabase
-          .from('salary_templates')
-          .update({ is_default: false })
-          .eq('company_id', currentCompanyId)
-          .neq('id', id);
-      }
-
-      const { data, error } = await supabase
-        .from('salary_templates')
-        .update(formData)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+    mutationFn: async ({ id, data }: { id: string; data: Partial<SalaryTemplateFormData> }) => {
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return updateSalaryTemplate(id, {
+        company_id: currentCompanyId,
+        code: data.code,
+        name: data.name,
+        description: data.description,
+        is_default: data.is_default,
+        status: data.status,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salary-templates', currentCompanyId] });
       toast.success('Đã cập nhật mẫu bảng lương');
     },
-    onError: (error: any) => {
-      if (error.code === '23505') {
-        toast.error('Mã mẫu bảng lương đã tồn tại');
-      } else {
-        toast.error('Lỗi khi cập nhật mẫu bảng lương');
-      }
+    onError: (error: unknown) => {
+      toast.error(toErrorMessage(error, 'Không thể cập nhật mẫu bảng lương'));
     },
   });
 
-  // Delete template mutation
   const deleteTemplateMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('salary_templates')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return deleteSalaryTemplate(id, currentCompanyId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salary-templates', currentCompanyId] });
       toast.success('Đã xóa mẫu bảng lương');
     },
-    onError: () => {
-      toast.error('Lỗi khi xóa mẫu bảng lương');
+    onError: (error: unknown) => {
+      toast.error(toErrorMessage(error, 'Không thể xóa mẫu bảng lương'));
     },
   });
 
-  // Add component to template
   const addTemplateComponentMutation = useMutation({
-    mutationFn: async ({ templateId, componentData }: { templateId: string; componentData: TemplateComponentFormData }) => {
-      const { data, error } = await supabase
-        .from('salary_template_components')
-        .insert({
-          template_id: templateId,
-          ...componentData,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+    mutationFn: async ({
+      templateId,
+      data,
+    }: {
+      templateId: string;
+      data: TemplateComponentFormData;
+    }) => {
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return addSalaryTemplateComponent(templateId, {
+        company_id: currentCompanyId,
+        component_id: data.component_id,
+        default_value: data.default_value,
+        is_required: data.is_required,
+        sort_order: data.sort_order,
+      });
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['template-components', variables.templateId] });
-      toast.success('Đã thêm thành phần vào mẫu');
-    },
-    onError: (error: any) => {
-      if (error.code === '23505') {
-        toast.error('Thành phần này đã có trong mẫu');
-      } else {
-        toast.error('Lỗi khi thêm thành phần');
-      }
-    },
+    onSuccess: () => toast.success('Đã thêm thành phần vào mẫu'),
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Không thể thêm thành phần')),
   });
 
-  // Update template component
   const updateTemplateComponentMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<TemplateComponentFormData> }) => {
-      const { error } = await supabase
-        .from('salary_template_components')
-        .update(data)
-        .eq('id', id);
-
-      if (error) throw error;
+    mutationFn: async ({
+      componentRowId,
+      data,
+    }: {
+      componentRowId: string;
+      data: Partial<TemplateComponentFormData>;
+    }) => {
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return updateSalaryTemplateComponentRow(componentRowId, currentCompanyId, data);
     },
-    onSuccess: () => {
-      toast.success('Đã cập nhật thành phần');
-    },
-    onError: () => {
-      toast.error('Lỗi khi cập nhật thành phần');
-    },
+    onSuccess: () => toast.success('Đã cập nhật thành phần'),
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Không thể cập nhật thành phần')),
   });
 
-  // Remove component from template
   const removeTemplateComponentMutation = useMutation({
-    mutationFn: async ({ templateId, componentId }: { templateId: string; componentId: string }) => {
-      const { error } = await supabase
-        .from('salary_template_components')
-        .delete()
-        .eq('id', componentId);
-
-      if (error) throw error;
+    mutationFn: async (componentRowId: string) => {
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return removeSalaryTemplateComponentRow(componentRowId, currentCompanyId);
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['template-components', variables.templateId] });
-      toast.success('Đã xóa thành phần khỏi mẫu');
-    },
-    onError: () => {
-      toast.error('Lỗi khi xóa thành phần');
-    },
+    onSuccess: () => toast.success('Đã xóa thành phần khỏi mẫu'),
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Không thể xóa thành phần')),
   });
 
-  // Duplicate template
   const duplicateTemplateMutation = useMutation({
     mutationFn: async (templateId: string) => {
-      if (!currentCompanyId) throw new Error('No company selected');
-
-      // Get original template
-      const { data: original, error: fetchError } = await supabase
-        .from('salary_templates')
-        .select('*')
-        .eq('id', templateId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Create new template
-      const newCode = `${original.code}_copy_${Date.now()}`;
-      const { data: newTemplate, error: createError } = await supabase
-        .from('salary_templates')
-        .insert({
-          company_id: currentCompanyId,
-          code: newCode,
-          name: `${original.name} (Bản sao)`,
-          description: original.description,
-          is_default: false,
-          status: 'active',
-        })
-        .select()
-        .single();
-
-      if (createError) throw createError;
-
-      // Copy template components
-      const { data: components, error: componentsError } = await supabase
-        .from('salary_template_components')
-        .select('*')
-        .eq('template_id', templateId);
-
-      if (componentsError) throw componentsError;
-
-      if (components && components.length > 0) {
-        const newComponents = components.map(c => ({
-          template_id: newTemplate.id,
-          component_id: c.component_id,
-          default_value: c.default_value,
-          is_required: c.is_required,
-          sort_order: c.sort_order,
-        }));
-
-        const { error: insertError } = await supabase
-          .from('salary_template_components')
-          .insert(newComponents);
-
-        if (insertError) throw insertError;
-      }
-
-      return newTemplate;
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      return duplicateSalaryTemplate(templateId, currentCompanyId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salary-templates', currentCompanyId] });
       toast.success('Đã sao chép mẫu bảng lương');
     },
-    onError: () => {
-      toast.error('Lỗi khi sao chép mẫu bảng lương');
-    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Không thể sao chép mẫu')),
   });
 
   return {
@@ -317,7 +221,8 @@ export const useSalaryTemplates = () => {
     refetchTemplates,
     fetchTemplateComponents,
     createTemplate: createTemplateMutation.mutateAsync,
-    updateTemplate: updateTemplateMutation.mutateAsync,
+    updateTemplate: (id: string, data: Partial<SalaryTemplateFormData>) =>
+      updateTemplateMutation.mutateAsync({ id, data }),
     deleteTemplate: deleteTemplateMutation.mutateAsync,
     addTemplateComponent: addTemplateComponentMutation.mutateAsync,
     updateTemplateComponent: updateTemplateComponentMutation.mutateAsync,

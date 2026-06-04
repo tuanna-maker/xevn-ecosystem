@@ -29,8 +29,8 @@ import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Separator } from '@/components/ui/separator';
 import { useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -67,24 +67,11 @@ export function RichTextEditor({ content, onChange, placeholder, onImageUpload }
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const folder = currentCompanyId || 'global';
-    const ext = file.name.split('.').pop();
-    const path = `${folder}/${Date.now()}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from('guide-images')
-      .upload(path, file, { upsert: true });
-
-    if (error) {
+    const url = await hrmStorageUploadStub(file, 'guide-editor-image');
+    if (!url) {
       toast.error(t('guide.editor.uploadError', 'Lỗi upload ảnh'));
       return;
     }
-
-    const { data: urlData } = supabase.storage
-      .from('guide-images')
-      .getPublicUrl(path);
-
-    const url = urlData.publicUrl;
     editor.chain().focus().setImage({ src: url }).run();
     onImageUpload?.(url);
 

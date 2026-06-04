@@ -20,7 +20,6 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 import { MobileSidebarTrigger } from './AppSidebar';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Route to translation key mapping
@@ -63,8 +62,6 @@ export function AppHeader() {
     }
     setPwLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
       toast.success(t('header.passwordChanged', 'Đổi mật khẩu thành công'));
       setPwDialogOpen(false);
       setNewPassword('');

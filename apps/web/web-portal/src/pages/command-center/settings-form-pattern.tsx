@@ -74,9 +74,9 @@ export const SETTINGS_COL = {
   span12: 'col-span-12 min-w-0',
 } as const;
 
-/** Label trường form — 16px (base), medium; lớn hơn nhãn menu trái 1px (15px) */
+/** Label trường form — 0.9375rem (~15px @ 16px), scales with --xevn-ui-density */
 export const SETTINGS_LABEL_CLASS =
-  'block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-slate-500 hyphens-auto';
+  'block min-w-0 break-words text-left text-[0.9375rem] font-medium leading-snug text-slate-500 hyphens-auto';
 
 /**
  * Thứ bậc Typography (Workspace):
@@ -89,7 +89,7 @@ export const SETTINGS_PAGE_TITLE_CLASS =
 
 /** Phụ đề dưới tiêu đề trang */
 export const SETTINGS_PAGE_SUBTITLE_CLASS =
-  'mt-1 text-sm font-medium leading-snug text-slate-600 sm:text-[15px]';
+  'mt-1 text-sm font-medium leading-snug text-slate-600 sm:text-[0.9375rem]';
 
 /** Tiêu đề khối trong card (vd. "Khối Định danh") — cấp 2, dưới page title */
 export const SETTINGS_SECTION_TITLE_CLASS =
@@ -101,7 +101,7 @@ export const NAV_SUBSIDEBAR_TITLE_CLASS =
 
 /** Dòng phụ dưới tiêu đề cột Sub-sidebar */
 export const NAV_SUBSIDEBAR_HELPER_CLASS =
-  'mt-1 text-xs font-medium leading-snug text-slate-500 sm:text-[13px]';
+  'mt-1 text-xs font-medium leading-snug text-slate-500 sm:text-[0.8125rem]';
 
 /** Icon ↔ nhãn mục Sub-sidebar (hàng ngang): gap-1 hoặc gap-2 */
 export const NAV_SUBSIDEBAR_ITEM_ROW_GAP = 'gap-2';
@@ -110,7 +110,7 @@ export const NAV_SUBSIDEBAR_ITEM_ROW_GAP = 'gap-2';
  * Chữ mục menu Sub-sidebar — 15px, font-normal; active: font-bold (token ACTIVE).
  */
 export const NAV_SUBSIDEBAR_ITEM_BASE_CLASS =
-  'min-w-0 flex-1 text-left text-[14px] leading-snug break-words hyphens-auto';
+  'min-w-0 flex-1 text-left text-[0.875rem] leading-snug break-words hyphens-auto';
 
 export const NAV_SUBSIDEBAR_ITEM_IDLE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLASS} font-normal text-slate-500`;
 
@@ -121,21 +121,21 @@ export const NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLAS
  * (thường là chữ thường); chữ IN HOA trên nền hẹp trông “nặng” hơn nếu cùng 15px.
  */
 export const NAV_RAIL_MODULE_CAPTION_IDLE_CLASS =
-  'w-full max-w-full text-center text-balance text-[13px] font-normal leading-snug tracking-tight text-slate-500 break-words hyphens-auto';
+  'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-slate-500 break-words hyphens-auto';
 
 export const NAV_RAIL_MODULE_CAPTION_ACTIVE_CLASS =
-  'w-full max-w-full text-center text-balance text-[13px] font-bold leading-snug tracking-tight text-xevn-primary break-words hyphens-auto';
+  'w-full max-w-full text-center text-balance text-[0.8125rem] font-bold leading-snug tracking-tight text-xevn-primary break-words hyphens-auto';
 
 export const NAV_RAIL_MODULE_CAPTION_DISABLED_CLASS =
-  'w-full max-w-full text-center text-balance text-[13px] font-normal leading-snug tracking-tight text-slate-400 break-words hyphens-auto';
+  'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-slate-400 break-words hyphens-auto';
 
-/** Chiều ngang cột Sub-sidebar (X-BOS): 280px desktop; hẹp hơn khi viewport &lt;1200px */
+/** Chiều ngang cột Sub-sidebar — rem để theo VITE_UI_DENSITY */
 export const NAV_SUBSIDEBAR_WIDTH_CLASS =
-  'lg:w-[280px] lg:min-w-[280px] lg:max-w-[280px] max-[1199px]:lg:w-[220px] max-[1199px]:lg:min-w-[220px] max-[1199px]:lg:max-w-[220px]';
+  'lg:w-[17.5rem] lg:min-w-[17.5rem] lg:max-w-[17.5rem] max-[1199px]:lg:w-[13.75rem] max-[1199px]:lg:min-w-[13.75rem] max-[1199px]:lg:max-w-[13.75rem]';
 
 /** Rail: nhãn nhóm trên cùng ("Phân hệ") */
 export const NAV_RAIL_GROUP_LABEL_CLASS =
-  'mb-3 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-500';
+  'mb-3 text-center text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500';
 
 /**
  * Identity Block: icon + tên phân hệ — gap dọc chặt (4px; tối đa 8px nếu cần chỉnh).
@@ -148,25 +148,25 @@ export const NAV_RAIL_MODULE_STACK = 'space-y-6';
 
 /** Rail: caption dưới icon — 15px, font-normal; full width trong cột có px-3; active: font-bold ở component */
 export const NAV_RAIL_ICON_CAPTION_CLASS =
-  'w-full text-balance text-center text-[13px] font-normal leading-snug text-slate-600 break-words';
+  'w-full text-balance text-center text-[0.8125rem] font-normal leading-snug text-slate-600 break-words';
 
 /** Rail: nút phụ / mô tả persona */
 export const NAV_RAIL_META_TEXT_CLASS =
-  'text-center text-[12px] font-medium leading-snug text-slate-600 sm:text-sm';
+  'text-center text-[0.75rem] font-medium leading-snug text-slate-600 sm:text-sm';
 
 /** Rail: tiêu đề vùng link ("Mở phân hệ") */
 export const NAV_RAIL_LINK_SECTION_LABEL_CLASS =
-  'text-[11px] font-semibold uppercase tracking-wide text-slate-500';
+  'text-[0.6875rem] font-semibold uppercase tracking-wide text-slate-500';
 
 /** Khoảng cách dọc đồng nhất giữa các section / widget hàng đầu */
 export const SETTINGS_SECTION_STACK = 'space-y-4';
 
 /** Chuẩn chữ trong ô nhập (Input / Select / Textarea) — break-words trong Safe Area */
-export const SETTINGS_CONTROL_TEXT = 'break-words text-[15px] leading-snug';
+export const SETTINGS_CONTROL_TEXT = 'break-words text-[0.9375rem] leading-snug';
 
 /** Ô select/input/textarea: không tràn ô lưới */
 export const SETTINGS_FIELD_COMPACT =
-  'min-w-0 max-w-full [&_input]:w-full [&_input]:min-w-0 [&_input]:max-w-full [&_input]:text-[15px] [&_input]:leading-snug [&_select]:w-full [&_select]:min-w-0 [&_select]:text-[15px] [&_select]:leading-snug [&_textarea]:w-full [&_textarea]:min-w-0 [&_textarea]:max-w-full [&_textarea]:text-[15px] [&_textarea]:leading-snug';
+  'min-w-0 max-w-full [&_input]:w-full [&_input]:min-w-0 [&_input]:max-w-full [&_input]:text-[0.9375rem] [&_input]:leading-snug [&_select]:w-full [&_select]:min-w-0 [&_select]:text-[0.9375rem] [&_select]:leading-snug [&_textarea]:w-full [&_textarea]:min-w-0 [&_textarea]:max-w-full [&_textarea]:text-[0.9375rem] [&_textarea]:leading-snug';
 
 /** Label gọn trên field — min-w-0 để grid/flex không nuốt độ rộng (tránh overflow sai) */
 export const SETTINGS_FIELD_SHELL = 'flex min-w-0 flex-col gap-1 text-left';

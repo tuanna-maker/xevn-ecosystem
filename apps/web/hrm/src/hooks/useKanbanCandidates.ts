@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { listRecruitmentCandidates } from '@/integrations/hrmApi';
+import { listCandidatesPool, updateCandidatePoolStage } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 
 export interface KanbanCandidate {
   id: string;
@@ -34,17 +34,27 @@ interface UseKanbanCandidatesReturn {
   };
 }
 
+const STAGE_VALUES: KanbanCandidate['stage'][] = [
+  'applied',
+  'screening',
+  'interview',
+  'offer',
+  'hired',
+];
+
+function mapPoolStage(stage: string): KanbanCandidate['stage'] {
+  if (STAGE_VALUES.includes(stage as KanbanCandidate['stage'])) {
+    return stage as KanbanCandidate['stage'];
+  }
+  if (stage === 'new') return 'applied';
+  return 'applied';
+}
+
 export function useKanbanCandidates(): UseKanbanCandidatesReturn {
   const { currentCompanyId } = useAuth();
   const [candidates, setCandidates] = useState<KanbanCandidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-
-  const mapCandidateStage = (status: string): KanbanCandidate['stage'] => {
-    if (status === 'new') return 'applied';
-    if (status === 'rejected') return 'offer';
-    return (status as KanbanCandidate['stage']) || 'applied';
-  };
 
   const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) {
@@ -57,46 +67,24 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
       setLoading(true);
       setError(null);
 
-      try {
-        const response = await listRecruitmentCandidates({ company_id: currentCompanyId, page: 1, page_size: 200 });
-        const transformedCandidates: KanbanCandidate[] = (response.data || []).map((candidate) => ({
-          id: candidate.id,
-          fullName: candidate.full_name,
-          email: candidate.email,
-          phone: null,
-          position: null,
-          stage: mapCandidateStage(candidate.status),
-          appliedDate: candidate.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-          source: candidate.source,
-          rating: 0,
-          notes: null,
-          avatarUrl: null,
-        }));
-        setCandidates(transformedCandidates);
-      } catch {
-        const { data, error: fetchError } = await supabase
-          .from('candidates')
-          .select('*')
-          .eq('company_id', currentCompanyId)
-          .order('applied_date', { ascending: false });
-
-        if (fetchError) throw fetchError;
-
-        const transformedCandidates: KanbanCandidate[] = (data || []).map((candidate) => ({
-          id: candidate.id,
-          fullName: candidate.full_name,
-          email: candidate.email,
-          phone: candidate.phone,
-          position: candidate.position,
-          stage: (candidate.stage as KanbanCandidate['stage']) || 'applied',
-          appliedDate: candidate.applied_date || new Date().toISOString().split('T')[0],
-          source: candidate.source,
-          rating: candidate.rating || 0,
-          notes: candidate.notes,
-          avatarUrl: candidate.avatar_url,
-        }));
-        setCandidates(transformedCandidates);
-      }
+      const response = await listCandidatesPool({ company_id: currentCompanyId });
+      const transformedCandidates: KanbanCandidate[] = (response.data || []).map((candidate) => ({
+        id: candidate.id,
+        fullName: candidate.full_name,
+        email: candidate.email ?? '',
+        phone: candidate.phone,
+        position: null,
+        stage: mapPoolStage(candidate.stage),
+        appliedDate:
+          candidate.applied_date?.split('T')[0] ||
+          candidate.created_at?.split('T')[0] ||
+          new Date().toISOString().split('T')[0],
+        source: candidate.source,
+        rating: 0,
+        notes: candidate.notes,
+        avatarUrl: null,
+      }));
+      setCandidates(transformedCandidates);
     } catch (err) {
       console.error('Error fetching candidates:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch candidates'));
@@ -109,21 +97,16 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
     async (candidateId: string, newStage: KanbanCandidate['stage']) => {
       if (!currentCompanyId) return;
 
-      // Optimistic update
       setCandidates((prev) =>
         prev.map((candidate) =>
-          candidate.id === candidateId ? { ...candidate, stage: newStage } : candidate
-        )
+          candidate.id === candidateId ? { ...candidate, stage: newStage } : candidate,
+        ),
       );
 
       try {
-        const { error: updateError } = await supabase
-          .from('candidates')
-          .update({ stage: newStage, updated_at: new Date().toISOString() })
-          .eq('id', candidateId)
-          .eq('company_id', currentCompanyId);
-
-        if (updateError) throw updateError;
+        const apiStage =
+          newStage === 'applied' ? 'applied' : newStage;
+        await updateCandidatePoolStage(candidateId, currentCompanyId, apiStage);
 
         const stageLabels: Record<string, string> = {
           applied: 'Ứng tuyển',
@@ -142,16 +125,15 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
         }
       } catch (err) {
         console.error('Error updating candidate stage:', err);
-        // Revert on error
         await fetchCandidates();
         toast({
           title: 'Lỗi',
-          description: 'Không thể cập nhật trạng thái ứng viên',
+          description: toErrorMessage(err, 'Không thể cập nhật trạng thái ứng viên'),
           variant: 'destructive',
         });
       }
     },
-    [currentCompanyId, candidates, fetchCandidates]
+    [currentCompanyId, candidates, fetchCandidates],
   );
 
   useEffect(() => {

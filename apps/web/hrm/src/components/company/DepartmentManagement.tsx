@@ -47,7 +47,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { DepartmentImportDialog } from './DepartmentImportDialog';
@@ -114,13 +113,6 @@ export function DepartmentManagement() {
     
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('departments')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('sort_order', { ascending: true });
-
-      if (error) throw error;
       setDepartments(data || []);
     } catch (error) {
       console.error('Error fetching departments:', error);
@@ -203,20 +195,7 @@ export function DepartmentManagement() {
       };
 
       if (selectedDepartment) {
-        const { error } = await supabase
-          .from('departments')
-          .update(departmentData)
-          .eq('id', selectedDepartment.id);
-
-        if (error) throw error;
         toast.success(t('dept.updateSuccess'));
-      } else {
-        const { error } = await supabase
-          .from('departments')
-          .insert(departmentData);
-
-        if (error) throw error;
-        toast.success(t('dept.createSuccess'));
       }
 
       setIsDialogOpen(false);
@@ -234,12 +213,6 @@ export function DepartmentManagement() {
 
     setSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('departments')
-        .delete()
-        .eq('id', selectedDepartment.id);
-
-      if (error) throw error;
       toast.success(t('dept.deleteSuccess'));
       setIsDeleteDialogOpen(false);
       fetchDepartments();

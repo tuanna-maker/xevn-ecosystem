@@ -1,0 +1,100 @@
+﻿
+05-30 08:34:35.009     0     0 W healthd : battery l=100 v=5000 t=25.0 h=2 st=2 c=900000 fc=3000000 cc=10 chg=a
+05-30 08:34:36.059  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18497360, downTime=18497033, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-426754917 }
+05-30 08:34:36.060  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18497360, 
+downTime=18497033, deviceId=-1, source=0x1002, displayId=0, eventId=-426754917 }
+05-30 08:34:36.529  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18497824, downTime=18497499, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-105156852 }
+05-30 08:34:36.532  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18497824, 
+downTime=18497499, deviceId=-1, source=0x1002, displayId=0, eventId=-105156852 }
+05-30 08:34:36.988  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18498292, downTime=18497981, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-51313099 }
+05-30 08:34:36.990  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18498292, 
+downTime=18497981, deviceId=-1, source=0x1002, displayId=0, eventId=-51313099 }
+05-30 08:34:37.436  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18498734, downTime=18498424, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-350880922 }
+05-30 08:34:37.438  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18498734, 
+downTime=18498424, deviceId=-1, source=0x1002, displayId=0, eventId=-350880922 }
+05-30 08:34:37.903  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18499200, downTime=18498889, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-143475116 }
+05-30 08:34:37.905  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18499200, 
+downTime=18498889, deviceId=-1, source=0x1002, displayId=0, eventId=-143475116 }
+05-30 08:34:38.347  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18499640, downTime=18499340, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-865784472 }
+05-30 08:34:38.348  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18499640, 
+downTime=18499340, deviceId=-1, source=0x1002, displayId=0, eventId=-865784472 }
+05-30 08:34:38.789  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500088, downTime=18499776, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-403213376 }
+05-30 08:34:38.790  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500088, 
+downTime=18499776, deviceId=-1, source=0x1002, displayId=0, eventId=-403213376 }
+05-30 08:34:38.917  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=1900.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500216, downTime=18500216, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-1036183545 }
+05-30 08:34:38.919  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=540.0, y[0]=1900.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500216, 
+downTime=18500216, deviceId=-1, source=0x1002, displayId=0, eventId=-1036183545 }
+05-30 08:34:39.248  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500543, downTime=18500216, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-632201006 }
+05-30 08:34:39.249  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500543, 
+downTime=18500216, deviceId=-1, source=0x1002, displayId=0, eventId=-632201006 }
+05-30 08:34:39.396  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=1900.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500714, downTime=18500714, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-76157405 }
+05-30 08:34:39.398  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=540.0, y[0]=1900.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18500714, 
+downTime=18500714, deviceId=-1, source=0x1002, displayId=0, eventId=-76157405 }
+05-30 08:34:39.735  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18501033, downTime=18500714, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-704577890 }
+05-30 08:34:39.736  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18501033, 
+downTime=18500714, deviceId=-1, source=0x1002, displayId=0, eventId=-704577890 }
+05-30 08:34:40.246  1157  1157 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, 
+id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=0, 
+flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18501534, downTime=18501205, deviceId=-1, 
+source=0x1002, displayId=0, eventId=-728224616 }
+05-30 08:34:40.249  1157  1157 D TaplEvents: TIS / TouchInteractionService.onInputEvent: MotionEvent { 
+action=ACTION_UP, actionButton=0, id[0]=0, x[0]=540.0, y[0]=500.0, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, 
+classification=NONE, metaState=0, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=18501534, 
+downTime=18501205, deviceId=-1, source=0x1002, displayId=0, eventId=-728224616 }
+
+

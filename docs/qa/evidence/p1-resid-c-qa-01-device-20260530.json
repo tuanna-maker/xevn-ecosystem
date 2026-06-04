@@ -1,0 +1,22 @@
+{
+  "work_item_id": "P1-RESID-C-QA-01",
+  "date": "2026-05-30",
+  "results": [
+    {
+      "jId": "J-MOB-03",
+      "pass": true,
+      "note": "empty or no row"
+    },
+    {
+      "jId": "J-MOB-04",
+      "pass": false,
+      "note": "empty list"
+    },
+    {
+      "jId": "J-MOB-05",
+      "pass": true,
+      "note": "approvals screen, no Duyệt (may be approved)"
+    }
+  ],
+  "pass": false
+}

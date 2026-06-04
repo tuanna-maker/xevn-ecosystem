@@ -41,6 +41,8 @@ export function ManagerApprovalsScreen() {
       return;
     }
     const q = new URLSearchParams({ company_id: cid, status: 'pending' });
+    const mid = auth.employeeId.trim();
+    if (mid) q.set('manager_employee_id', mid);
     const [attRes, leaveRes] = await Promise.all([
       hrmRequest<unknown>(auth.getHrmAuth(), `/attendance/update-requests?${q.toString()}`, { method: 'GET' }),
       hrmRequest<unknown>(auth.getHrmAuth(), `/attendance/leave-requests?${q.toString()}`, { method: 'GET' }),

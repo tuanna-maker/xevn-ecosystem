@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -65,9 +65,9 @@ import { CandidateFormDialog } from './CandidateFormDialog';
 import { CandidateDetailView } from './CandidateDetailView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
 import { CandidateImportDialog } from './CandidateImportDialog';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { deleteCandidatePool, listCandidatesPool, updateCandidatePoolStage } from '@/integrations/hrmApi';
 
 interface Candidate {
   id: string;
@@ -141,18 +141,12 @@ export function CandidatesTab() {
   const [evaluatingCandidate, setEvaluatingCandidate] = useState<Candidate | null>(null);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
-  const fetchCandidates = async () => {
+  const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('candidates')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setCandidates(data || []);
+      const response = await listCandidatesPool({ company_id: currentCompanyId });
+      setCandidates(response.data ?? []);
     } catch (error: any) {
       console.error('Error fetching candidates:', error);
       toast({
@@ -163,22 +157,16 @@ export function CandidatesTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentCompanyId, t, toast]);
 
   useEffect(() => {
     fetchCandidates();
-  }, [currentCompanyId]);
+  }, [fetchCandidates]);
 
   const handleDelete = async () => {
-    if (!deletingCandidate) return;
+    if (!deletingCandidate || !currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('candidates')
-        .delete()
-        .eq('id', deletingCandidate.id);
-
-      if (error) throw error;
-
+      await deleteCandidatePool(deletingCandidate.id, currentCompanyId);
       toast({
         title: t('common.success'),
         description: t('recruitment.ct.deleteSuccess'),
@@ -215,13 +203,8 @@ export function CandidatesTab() {
 
   const handleUpdateStage = async (candidateId: string, newStage: string) => {
     try {
-      const { error } = await supabase
-        .from('candidates')
-        .update({ stage: newStage })
-        .eq('id', candidateId);
-
-      if (error) throw error;
-
+      if (!currentCompanyId) throw new Error('No company selected');
+      await updateCandidatePoolStage(candidateId, currentCompanyId, newStage);
       toast({
         title: t('common.success'),
         description: t('recruitment.ct.stageUpdateSuccess'),

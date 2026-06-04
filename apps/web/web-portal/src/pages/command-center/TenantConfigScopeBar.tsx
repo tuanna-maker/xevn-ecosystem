@@ -34,7 +34,7 @@ export const TenantConfigScopeBar: React.FC<TenantConfigScopeBarProps> = ({
   return (
     <div className={`space-y-3 border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
       <div>
-        <h4 className="text-[15px] font-semibold text-xevn-text">{title}</h4>
+        <h4 className="text-[0.9375rem] font-semibold text-xevn-text">{title}</h4>
         <p className={`mt-1 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>{subtitle}</p>
       </div>
       {loading ? (
@@ -59,7 +59,7 @@ export const TenantConfigScopeBar: React.FC<TenantConfigScopeBarProps> = ({
                   role="tab"
                   aria-selected={active}
                   onClick={() => onSelectEntityId(entity.id)}
-                  className={`rounded-input border px-3 py-2 text-left text-[15px] transition active:scale-95 ${
+                  className={`rounded-input border px-3 py-2 text-left text-[0.9375rem] transition active:scale-95 ${
                     active
                       ? 'border-xevn-primary bg-xevn-primary/10 font-semibold text-xevn-primary'
                       : 'border-xevn-border bg-white text-slate-700 hover:bg-slate-50'

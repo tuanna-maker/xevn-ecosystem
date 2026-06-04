@@ -32,7 +32,9 @@ export class OperationsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.createTask(body).then((data) => ok(data, 'HRM-OPS-201', 'Task created'));
+    return this.service
+      .createTask(body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-OPS-201', 'Task created'));
   }
 
   @Get('tasks')
@@ -45,7 +47,9 @@ export class OperationsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listTasks(query).then((data) => ok(data, 'HRM-OPS-200', 'Tasks listed'));
+    return this.service
+      .listTasks(query, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-OPS-200', 'Tasks listed'));
   }
 
   @Patch('tasks/:taskId/status')
@@ -59,7 +63,9 @@ export class OperationsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
-    return this.service.updateTaskStatus(taskId, body).then((data) => ok(data, 'HRM-OPS-202', 'Task updated'));
+    return this.service
+      .updateTaskStatus(taskId, body, companyId ?? 'main', authorization, tenantId)
+      .then((data) => ok(data, 'HRM-OPS-202', 'Task updated'));
   }
 
   @Get('reports/summary')
@@ -71,7 +77,9 @@ export class OperationsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
-    return this.service.getSummary(companyId).then((data) => ok(data, 'HRM-OPS-200', 'Summary generated'));
+    return this.service
+      .getSummary(companyId, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-OPS-200', 'Summary generated'));
   }
 
   @Post('service-requests')
@@ -85,7 +93,7 @@ export class OperationsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
     return this.service
-      .createServiceRequest(body)
+      .createServiceRequest(body, authorization, tenantId)
       .then((data) => ok(data, 'HRM-SVC-201', 'Service request created'));
   }
 
@@ -100,7 +108,7 @@ export class OperationsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
     return this.service
-      .listServiceRequests(query)
+      .listServiceRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-SVC-200', 'Service requests listed'));
   }
 
@@ -116,7 +124,7 @@ export class OperationsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .updateServiceRequest(requestId, body)
+      .updateServiceRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
       .then((data) => ok(data, 'HRM-SVC-202', 'Service request updated'));
   }
 
@@ -131,7 +139,7 @@ export class OperationsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .deleteServiceRequest(requestId)
+      .deleteServiceRequest(requestId, companyId ?? 'main', authorization, tenantId)
       .then((data) => ok(data, 'HRM-SVC-205', 'Service request deleted'));
   }
 
@@ -147,7 +155,7 @@ export class OperationsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .approveServiceRequest(requestId, body)
+      .approveServiceRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
       .then((data) => ok(data, 'HRM-SVC-203', 'Service request approved'));
   }
 
@@ -163,7 +171,7 @@ export class OperationsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .rejectServiceRequest(requestId, body)
+      .rejectServiceRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
       .then((data) => ok(data, 'HRM-SVC-204', 'Service request rejected'));
   }
 }

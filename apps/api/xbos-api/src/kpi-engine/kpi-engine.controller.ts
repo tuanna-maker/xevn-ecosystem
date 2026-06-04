@@ -3,6 +3,8 @@ import { resolveScopeContext, resolveTenantOnlyContext } from '../common/scope-c
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
+import type { KpiEvaluateBatchBody, KpiEvaluateInput, PublishPortalAlertBody } from './dto/kpi-evaluate.dto';
+import { resolveKpiRollupScopeContext } from './kpi-rollup-scope';
 import { KpiEngineService } from './kpi-engine.service';
 
 @Controller('kpi-engine')
@@ -16,23 +18,69 @@ export class KpiEngineController {
   }
 
   @Post('evaluate')
-  evaluate(
-    @Body() body: { target: number; actual: number; weight?: number; warningThreshold?: number; criticalThreshold?: number },
+  async evaluate(
+    @Body() body: KpiEvaluateInput,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') headerTenantId?: string,
+    @Headers('x-company-id') headerCompanyId?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    return ok(this.service.evaluate(body), 'XBOS-KPI-200', 'KPI evaluated');
+    const result = this.service.evaluate(body);
+    let alertId: string | null = null;
+    if (body.emitPortalAlert && (result.band === 'warning' || result.band === 'critical')) {
+      const scope = resolveScopeContext(authorization, {
+        tenantId: headerTenantId,
+        companyId: headerCompanyId,
+      });
+      const emitted = await this.service.emitKpiBandAlert({
+        tenantId: scope.tenantId,
+        companyId: scope.companyId,
+        metricCode: body.metricCode?.trim() || 'kpi_metric',
+        band: result.band,
+        score: result.score,
+        actual: Number(body.actual),
+        target: Number(body.target),
+      });
+      alertId = emitted.id;
+    }
+    return ok({ ...result, alertId }, 'XBOS-KPI-200', 'KPI evaluated');
   }
 
   @Post('evaluate-batch')
-  evaluateBatch(
-    @Body() body: { items?: Array<{ target: number; actual: number; weight?: number; warningThreshold?: number; criticalThreshold?: number }> },
+  async evaluateBatch(
+    @Body() body: KpiEvaluateBatchBody,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') headerTenantId?: string,
+    @Headers('x-company-id') headerCompanyId?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    return ok(this.service.evaluateBatch(body.items ?? []), 'XBOS-KPI-201', 'KPI batch evaluated');
+    const items = body.items ?? [];
+    const results = this.service.evaluateBatch(items);
+    const alerts: Array<{ index: number; alertId: string | null }> = [];
+    if (body.emitPortalAlerts) {
+      const scope = resolveScopeContext(authorization, {
+        tenantId: body.tenantId ?? headerTenantId,
+        companyId: body.companyId ?? headerCompanyId,
+      });
+      for (let i = 0; i < items.length; i += 1) {
+        const item = items[i];
+        const row = results[i];
+        if (!item || !row || (row.band !== 'warning' && row.band !== 'critical')) continue;
+        const emitted = await this.service.emitKpiBandAlert({
+          tenantId: scope.tenantId,
+          companyId: scope.companyId,
+          metricCode: item.metricCode?.trim() || `kpi_batch_${i}`,
+          band: row.band,
+          score: row.score,
+          actual: Number(item.actual),
+          target: Number(item.target),
+        });
+        alerts.push({ index: i, alertId: emitted.id });
+      }
+    }
+    return ok({ results, alerts }, 'XBOS-KPI-201', 'KPI batch evaluated');
   }
 
   @Get('rollup')
@@ -47,7 +95,7 @@ export class KpiEngineController {
     @Headers('x-company-id') headerCompanyId?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, {
+    const scope = resolveKpiRollupScopeContext(authorization, {
       tenantId: tenantId ?? headerTenantId,
       companyId: companyId ?? headerCompanyId,
     });
@@ -70,8 +118,41 @@ export class KpiEngineController {
       tenantId: tenantId ?? headerTenantId,
       companyId: companyId ?? headerCompanyId,
     });
-    const items = await this.service.listPortalAlerts(scope.tenantId, limit ? Number(limit) : 50);
+    const filterCompany = (companyId ?? headerCompanyId)?.trim() || undefined;
+    const items = await this.service.listPortalAlerts(
+      scope.tenantId,
+      limit ? Number(limit) : 50,
+      filterCompany,
+    );
     return ok({ items }, 'XBOS-KPI-203', 'Portal alerts loaded');
   }
-}
 
+  @Post('portal-alerts')
+  async publishPortalAlert(
+    @Body() body: PublishPortalAlertBody,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') headerTenantId?: string,
+    @Headers('x-company-id') headerCompanyId?: string,
+  ) {
+    this.assertInternalAccess(authorization, internalApiKey);
+    if (!body?.title?.trim() || !body?.moduleCode?.trim()) {
+      throw new ApiException('XBOS-VAL-003', 'Portal alert requires title and moduleCode', HttpStatus.BAD_REQUEST);
+    }
+    const scope = resolveScopeContext(authorization, {
+      tenantId: body.tenantId ?? headerTenantId,
+      companyId: body.companyId ?? headerCompanyId,
+    });
+    const published = await this.service.publishPortalAlert({
+      tenantId: scope.tenantId,
+      companyId: scope.companyId,
+      moduleCode: body.moduleCode.trim(),
+      level: body.level ?? 'info',
+      title: body.title.trim(),
+      detail: body.detail,
+      sourceSystem: body.sourceSystem?.trim() || 'xbos',
+      sourceId: body.sourceId,
+    });
+    return ok(published, 'XBOS-KPI-204', 'Portal alert published');
+  }
+}

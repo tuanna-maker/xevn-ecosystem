@@ -19,3 +19,14 @@ Enforcement:
 - No QC Go recommendation without completed checklist and evidence paths.
 - Missing critical checklist sections force `NOT-READY`.
 - Any waiver must include owner, rationale, and expiry.
+
+## Platform NFR evidence (API / release-impacting)
+
+When merging backend or preparing production cutover, checklist must cite:
+
+- `pnpm build:platform-core` + API build PASS
+- `pnpm test:e2e:security` or `scope-context.spec` PASS
+- `pnpm verify:production-env` (dry-run on dev; exit 0 on prod-like env before Go)
+- Metrics smoke: `/api/*/metrics?format=prometheus` contains `http_requests_total`
+- DevOps runbook executed or scheduled: `docs/ops/PRODUCTION_ENABLE_RUNBOOK.md`
+- Baseline doc: `docs/ecosystem/NFR_OBSERVABILITY_SECURITY_BASELINE.md`

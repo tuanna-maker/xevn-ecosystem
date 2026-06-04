@@ -1,10 +1,12 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import type { RequestsStackParamList } from '../../navigation/types';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError } from '../../integrations/mapApiError';
+import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
 
 type Req = { id: string; status: string; employee_name: string; update_type: string; attendance_date: string };
@@ -13,7 +15,7 @@ type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
 export function UpdateRequestsScreen() {
   const auth = useAuth();
-  const nav = useNavigation();
+  const nav = useNavigation<NativeStackNavigationProp<RequestsStackParamList>>();
   const [rows, setRows] = useState<Req[]>([]);
   const [err, setErr] = useState('');
   const [filter, setFilter] = useState<StatusFilter>('pending');
@@ -22,11 +24,14 @@ export function UpdateRequestsScreen() {
   useLayoutEffect(() => {
     nav.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingRight: 4 }}>
-          <Pressable onPress={() => nav.navigate('CreateLeaveRequest' as never)} style={{ paddingHorizontal: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 4 }}>
+          <Pressable onPress={() => nav.navigate('LeaveRequestsList')} style={{ paddingHorizontal: 6 }}>
+            <Text style={{ color: '#cbd5e1', fontWeight: '600', fontSize: 12 }}>{vi.leaveList}</Text>
+          </Pressable>
+          <Pressable onPress={() => nav.navigate('CreateLeaveRequest')} style={{ paddingHorizontal: 6 }}>
             <Text style={{ color: '#a7f3d0', fontWeight: '600' }}>+ {vi.createLeave}</Text>
           </Pressable>
-          <Pressable onPress={() => nav.navigate('CreateUpdateRequest' as never)} style={{ paddingHorizontal: 8 }}>
+          <Pressable onPress={() => nav.navigate('CreateUpdateRequest')} style={{ paddingHorizontal: 6 }}>
             <Text style={{ color: '#38bdf8', fontWeight: '600' }}>+ {vi.createRequest}</Text>
           </Pressable>
         </View>
@@ -43,6 +48,8 @@ export function UpdateRequestsScreen() {
     }
     const q = new URLSearchParams({ company_id: cid });
     if (filter !== 'all') q.set('status', filter);
+    const eid = auth.employeeId.trim();
+    if (eid) q.set('employee_id', eid);
     const res = await hrmRequest<unknown>(auth.getHrmAuth(), `/attendance/update-requests?${q.toString()}`, {
       method: 'GET',
     });
@@ -76,7 +83,9 @@ export function UpdateRequestsScreen() {
       <View style={styles.chips}>
         {(['all', 'pending', 'approved', 'rejected'] as const).map((k) => (
           <Pressable key={k} style={[styles.chip, filter === k && styles.chipOn]} onPress={() => setFilter(k)}>
-            <Text style={[styles.chipText, filter === k && styles.chipTextOn]}>{k}</Text>
+            <Text style={[styles.chipText, filter === k && styles.chipTextOn]}>
+              {k === 'all' ? 'Tất cả' : statusLabel(k)}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -86,14 +95,14 @@ export function UpdateRequestsScreen() {
         keyExtractor={(item) => item.id}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
         renderItem={({ item }) => (
-          <View style={styles.row}>
+          <Pressable style={styles.row} onPress={() => nav.navigate('UpdateRequestDetail', { id: item.id })}>
             <Text style={styles.rowMain}>
               {item.employee_name} — {item.update_type}
             </Text>
             <Text style={styles.rowSub}>
-              {item.attendance_date} — {item.status}
+              {item.attendance_date} — {statusLabel(item.status)}
             </Text>
-          </View>
+          </Pressable>
         )}
         ListEmptyComponent={<Text style={styles.empty}>Không có đơn</Text>}
       />

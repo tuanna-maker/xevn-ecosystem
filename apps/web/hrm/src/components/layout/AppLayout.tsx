@@ -4,8 +4,6 @@ import { AppSidebar } from './AppSidebar';
 import { AppHeader } from './AppHeader';
 import { TrialExpiredGuard } from './TrialExpiredGuard';
 import { MobileBottomNav } from './MobileBottomNav';
-import { HrmApiSyncBanner } from './HrmApiSyncBanner';
-
 export function AppLayout() {
   const location = useLocation();
   const portalEmbed = getHrmPortalMode(location.search);
@@ -15,7 +13,6 @@ export function AppLayout() {
       <div className="flex h-dvh w-full flex-col overflow-hidden bg-background">
         <TrialExpiredGuard>
           <main className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-4 py-4 md:px-6 md:py-5">
-            <HrmApiSyncBanner />
             <Outlet />
           </main>
         </TrialExpiredGuard>

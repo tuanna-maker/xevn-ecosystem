@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 export class ListTasksQueryDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsOptional()

@@ -1,0 +1,32 @@
+﻿[fix4] rotate INTERNAL_API_KEY if dev default (no secret printed)
+internal_key_rotated=skipped_existing
+INTERNAL_API_KEY=***redacted***
+NODE_ENV=production
+plink.exe :  Container xevn-hrm-be-dev  Restarting
+At C:\Users\ADMIN\OneDrive\Tài liệu\Vibe Coding\projects\xevn-ecosystem\scripts\tmp-hrm-502-fix4.ps1:41 char:8
++ $out = & $plink -ssh root@14.225.217.232 -pw $env:VPS_SSH_PASSWORD -h ...
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container xevn-hrm-be-dev  Restarting:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container xevn-hrm-be-dev  Started
+[fix4] smoke
+hrm-local:000
+hrm-metrics-local:000
+hrm-https:502
+hrm-metrics-https:502
+[2J[3J[H[[90m10:30:59 PM[0m] Starting compilation in watch mode...
+
+[[90m10:31:09 PM[0m] Found 0 errors. Watching for file changes.
+
+[hrm-api] hrm-api: INTERNAL_API_KEY must not use dev default in production
+â€‰ELIFECYCLEâ€‰ Command failed.
+
+> hrm-api@0.0.1 start:dev /app/apps/api/hrm-api
+> nest start --watch
+
+[2J[3J[H[[90m10:32:23 PM[0m] Starting compilation in watch mode...
+
+[[90m10:32:32 PM[0m] Found 0 errors. Watching for file changes.
+
+[hrm-api] hrm-api: INTERNAL_API_KEY must not use dev default in production

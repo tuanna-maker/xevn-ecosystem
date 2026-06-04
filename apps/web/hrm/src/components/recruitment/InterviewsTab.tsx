@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
@@ -89,10 +89,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
 import { InterviewCalendarView } from './InterviewCalendarView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
 import { useToast } from '@/hooks/use-toast';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  createInterviewCatalog,
+  deleteInterviewCatalog,
+  listCandidatesPool,
+  listInterviewsCatalog,
+  listJobPostings,
+  updateInterviewCatalog,
+} from '@/integrations/hrmApi';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Interview {
@@ -211,36 +219,35 @@ export function InterviewsTab() {
 
   const fetchInterviews = async () => {
     if (!currentCompanyId) return;
-    
+
     setLoading(true);
     try {
-      const [interviewsRes, jobPostingsRes, candidatesRes] = await Promise.all([
-        supabase
-          .from('interviews')
-          .select('*')
-          .eq('company_id', currentCompanyId)
-          .order('interview_date', { ascending: false }),
-        supabase
-          .from('job_postings')
-          .select('id, title, position')
-          .eq('company_id', currentCompanyId),
-        supabase
-          .from('candidates')
-          .select('id, full_name, email')
-          .eq('company_id', currentCompanyId),
+      const [interviewsRes, jobsRes, candidatesRes] = await Promise.all([
+        listInterviewsCatalog(currentCompanyId),
+        listJobPostings({ company_id: currentCompanyId }),
+        listCandidatesPool({ company_id: currentCompanyId }),
       ]);
-
-      if (interviewsRes.error) throw interviewsRes.error;
-      setInterviews(interviewsRes.data || []);
-      setJobPostings(jobPostingsRes.data || []);
-      setCandidates(candidatesRes.data || []);
+      setInterviews((interviewsRes.data ?? []) as Interview[]);
+      setJobPostings(
+        (jobsRes.data ?? []).map((j) => ({ id: j.id, title: j.title, position: j.position })),
+      );
+      setCandidates(
+        (candidatesRes.data ?? []).map((c) => ({
+          id: c.id,
+          full_name: c.full_name,
+          email: c.email ?? '',
+        })),
+      );
     } catch (error) {
       console.error('Error fetching interviews:', error);
       toast({
         title: t('common.error'),
-        description: t('recruitment.it.errorLoad'),
+        description: toErrorMessage(error, t('recruitment.it.errorLoad')),
         variant: 'destructive',
       });
+      setInterviews([]);
+      setJobPostings([]);
+      setCandidates([]);
     } finally {
       setLoading(false);
     }
@@ -294,16 +301,10 @@ export function InterviewsTab() {
   };
 
   const handleDelete = async () => {
-    if (!interviewToDelete) return;
+    if (!interviewToDelete || !currentCompanyId) return;
 
     try {
-      const { error } = await supabase
-        .from('interviews')
-        .delete()
-        .eq('id', interviewToDelete.id);
-
-      if (error) throw error;
-
+      await deleteInterviewCatalog(interviewToDelete.id, currentCompanyId);
       toast({
         title: t('common.success'),
         description: t('recruitment.it.deleteSuccess'),
@@ -315,7 +316,7 @@ export function InterviewsTab() {
       console.error('Error deleting interview:', error);
       toast({
         title: t('common.error'),
-        description: t('recruitment.it.deleteError'),
+        description: toErrorMessage(error, t('recruitment.it.deleteError')),
         variant: 'destructive',
       });
     }
@@ -342,33 +343,25 @@ export function InterviewsTab() {
       
       const nextDate = new Date();
       nextDate.setDate(nextDate.getDate() + 7);
-
-      const { error } = await supabase
-        .from('interviews')
-        .insert({
-          company_id: currentCompanyId,
-          candidate_id: interview.candidate_id,
-          candidate_name: interview.candidate_name,
-          candidate_email: interview.candidate_email,
-          candidate_phone: interview.candidate_phone,
-          job_posting_id: interview.job_posting_id,
-          position: interview.position,
-          interview_date: format(nextDate, 'yyyy-MM-dd'),
-          interview_time: interview.interview_time,
-          duration_minutes: interview.duration_minutes,
-          interview_type: interview.interview_type,
-          location: interview.location,
-          meeting_link: interview.meeting_link,
-          interviewer_name: interview.interviewer_name,
-          interviewer_email: interview.interviewer_email,
-          interview_round: nextRound,
-          status: 'scheduled',
-          result: 'pending',
-          notes: t('recruitment.it.nextRoundNote2', { num: nextRound, prev: interview.interview_round || 1 }),
-        });
-
-      if (error) throw error;
-
+      await createInterviewCatalog({
+        company_id: currentCompanyId,
+        candidate_id: interview.candidate_id,
+        candidate_name: interview.candidate_name,
+        candidate_email: interview.candidate_email,
+        candidate_phone: interview.candidate_phone,
+        job_posting_id: interview.job_posting_id,
+        position: interview.position,
+        interview_date: nextDate.toISOString().slice(0, 10),
+        interview_time: interview.interview_time,
+        interview_type: interview.interview_type,
+        location: interview.location,
+        meeting_link: interview.meeting_link,
+        interviewer_name: interview.interviewer_name,
+        interviewer_email: interview.interviewer_email,
+        interview_round: nextRound,
+        status: 'scheduled',
+        result: 'pending',
+      });
       toast({
         title: t('common.success'),
         description: t('recruitment.it.nextRoundSuccess', { num: nextRound, name: interview.candidate_name }),
@@ -395,20 +388,15 @@ export function InterviewsTab() {
     const isPassingResult = data.result === 'pass' && selectedInterview.result !== 'pass';
 
     try {
-      const { error } = await supabase
-        .from('interviews')
-        .update({
-          status: data.status,
-          rating: data.rating ? parseInt(data.rating) : null,
-          feedback: data.feedback || null,
-          result: data.result || 'pending',
-          next_steps: data.next_steps || null,
-          interview_round: data.interview_round || 1,
-        })
-        .eq('id', selectedInterview.id);
-
-      if (error) throw error;
-
+      if (!currentCompanyId) throw new Error('Missing company');
+      await updateInterviewCatalog(selectedInterview.id, currentCompanyId, {
+        status: data.status,
+        rating: data.rating ? parseInt(data.rating, 10) : null,
+        feedback: data.feedback,
+        result: data.result || 'pending',
+        next_steps: data.next_steps,
+        interview_round: data.interview_round || selectedInterview.interview_round || 1,
+      });
       toast({
         title: t('common.success'),
         description: t('recruitment.it.updateSuccess'),

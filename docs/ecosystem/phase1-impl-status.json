@@ -1,0 +1,1722 @@
+{
+  "$schema": "phase1-impl-status-v1",
+  "updated": "2026-05-29",
+  "notes": "P1-100-G2-01 — UC-ECO-MASTER-01 promoted e2e_pass; G2 104/104 XBOS (BA-WV-02 closed)",
+  "last_close_qa_w5": {
+    "work_item_id": "P1-CLOSE-QA-W5",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-qa-w5-20260525.md",
+    "qa_promoted_uc": [
+      "UC-CC-03",
+      "UC-CC-04"
+    ],
+    "qa_blocked_uc": [],
+    "g1_met": false,
+    "g2_met": false,
+    "matrix_delta": {
+      "closed_style": "238/245",
+      "e2e_pass": 236,
+      "g2_khoi_a": "96/104",
+      "planned_g2_gap": 0
+    },
+    "jest": {
+      "hrm_api": "183/183",
+      "xbos_api": "162/162",
+      "web_portal": "91/91",
+      "hrm_embed": "122/122"
+    },
+    "l2_w3_matrix": "9/9"
+  },
+  "last_close_qa_w3": {
+    "work_item_id": "P1-CLOSE-QA-W3",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-qa-w3-20260525.md",
+    "qa_promoted_uc": [
+      "UC-ECO-FE-01"
+    ],
+    "qa_blocked_uc": [
+      "UC-CC-03",
+      "UC-CC-04"
+    ],
+    "qa_confirmed_be_w4": [
+      "HRM-OP-01",
+      "HRM-OP-02",
+      "HRM-OP-03",
+      "HRM-SV-01",
+      "HRM-SV-02",
+      "HRM-SV-03",
+      "HRM-SV-04",
+      "HRM-SV-05",
+      "HRM-SV-06"
+    ],
+    "g1_met": false,
+    "g2_met": false,
+    "matrix_delta": {
+      "closed_style": "236/245",
+      "e2e_pass": 234,
+      "g2_khoi_a": "94/104",
+      "planned_g2_gap": 2
+    },
+    "jest": {
+      "hrm_api": "182/182",
+      "xbos_api": "154/154",
+      "web_portal": "87/87",
+      "hrm_embed": "101/101"
+    }
+  },
+  "last_close_be_w4": {
+    "work_item_id": "P1-CLOSE-BE-W4",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-be-w4-20260525.md",
+    "jest": {
+      "hrm_api": "182/182",
+      "xbos_api": "154/154"
+    },
+    "promoted_uc": [
+      "HRM-OP-01",
+      "HRM-OP-02",
+      "HRM-OP-03",
+      "HRM-SV-01",
+      "HRM-SV-02",
+      "HRM-SV-03",
+      "HRM-SV-04",
+      "HRM-SV-05",
+      "HRM-SV-06"
+    ],
+    "fix": "operations tasks/service-requests accept company_id=main (DTO + UUID rollup)"
+  },
+  "last_close_qa_w2": {
+    "work_item_id": "P1-CLOSE-QA-W2",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md",
+    "qa_confirmed_uc": [
+      "HRM-AT-04",
+      "HRM-AT-05",
+      "HRM-AT-06",
+      "HRM-AT-07",
+      "HRM-AT-08",
+      "HRM-AT-09",
+      "HRM-AT-10",
+      "HRM-AT-11",
+      "HRM-AT-12",
+      "HRM-AT-13",
+      "HRM-PR-01",
+      "HRM-PR-02",
+      "HRM-PR-03",
+      "HRM-PR-04",
+      "HRM-PR-05",
+      "HRM-PR-06",
+      "UC-HRM-22",
+      "UC-HRM-23",
+      "UC-HRM-24",
+      "UC-HRM-25",
+      "UC-XBOS-ORG-01",
+      "UC-XBOS-ORG-03",
+      "UC-XBOS-SYNC-01",
+      "UC-XBOS-08",
+      "UC-ECO-MASTER-02",
+      "UC-XBOS-CC-05",
+      "UC-XBOS-CC-07",
+      "UC-XBOS-CC-08",
+      "UC-XBOS-DASH-01",
+      "UC-XBOS-DASH-02",
+      "UC-XBOS-DASH-03",
+      "UC-CC-01",
+      "UC-ECO-SCOPE-01",
+      "UC-XBOS-16"
+    ],
+    "qa_reconfirmed_be_w2": 20,
+    "qa_reconfirmed_prior_close": 14,
+    "not_promoted": [
+      "UC-CC-03",
+      "UC-CC-04",
+      "UC-ECO-FE-01",
+      "HRM-OP-01",
+      "HRM-OP-02",
+      "HRM-OP-03"
+    ],
+    "g1_met": false,
+    "g2_met": false,
+    "matrix_delta": {
+      "e2e_pass": 178,
+      "g2_khoi_a": "101/104",
+      "closed_style": "180/245",
+      "planned_g2_gap": 3
+    }
+  },
+  "last_close_be_w3": {
+    "work_item_id": "P1-CLOSE-BE-W3",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-be-w3-20260525.md",
+    "jest": {
+      "xbos_api": "154/154",
+      "hrm_api": "154/154"
+    },
+    "promoted_uc": [
+      "XBOS-DM-HRM-09",
+      "XBOS-DM-HRM-10"
+    ],
+    "deferred_pm_only": [
+      "UC-ECO-MASTER-01"
+    ]
+  },
+  "last_close_qa_w1": {
+    "work_item_id": "P1-CLOSE-QA-W1",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-qa-w1-20260525.md",
+    "qa_confirmed_uc": [
+      "UC-XBOS-ORG-01",
+      "UC-XBOS-ORG-03",
+      "UC-XBOS-10",
+      "UC-XBOS-SYNC-01",
+      "UC-XBOS-08",
+      "UC-ECO-MASTER-02"
+    ],
+    "g2_met": false,
+    "matrix_delta": {
+      "e2e_pass_attributed_qa_w1": 6,
+      "g2_khoi_a": "71/104",
+      "closed_style": "149/245"
+    }
+  },
+  "last_close_qa_w1b": {
+    "work_item_id": "P1-CLOSE-QA-W1B",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md",
+    "qa_confirmed_uc": [
+      "UC-XBOS-CC-05",
+      "UC-XBOS-CC-07",
+      "UC-XBOS-CC-08",
+      "UC-XBOS-DASH-01",
+      "UC-XBOS-DASH-02",
+      "UC-XBOS-DASH-03",
+      "UC-CC-01",
+      "UC-ECO-SCOPE-01",
+      "UC-XBOS-16"
+    ],
+    "g2_met": false,
+    "matrix_delta": {
+      "g2_khoi_a": "79/104",
+      "closed_style": "157/245",
+      "qa_w1b_promoted": 8
+    }
+  },
+  "last_close_be_w1b": {
+    "work_item_id": "P1-CLOSE-BE-W1B",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-be-w1b-20260525.md",
+    "jest": {
+      "xbos_api": "153/153",
+      "hrm_api": "149/149"
+    },
+    "promoted_uc": [
+      "UC-XBOS-16"
+    ],
+    "deferred_pm_only": [
+      "UC-ECO-MASTER-01"
+    ]
+  },
+  "last_close_be_a2": {
+    "work_item_id": "P1-CLOSE-BE-A2",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-be-a2-20260525.md",
+    "jest": {
+      "xbos_api": "150/150",
+      "hrm_api": "139/139"
+    },
+    "promoted_uc": [
+      "UC-XBOS-ORG-01",
+      "UC-XBOS-ORG-03",
+      "UC-XBOS-10",
+      "UC-XBOS-SYNC-01",
+      "UC-XBOS-08",
+      "UC-ECO-MASTER-02"
+    ]
+  },
+  "last_u18_qa_g4": {
+    "work_item_id": "P1-U18-QA-G4",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md",
+    "matrix_delta": {
+      "e2e_pass": 22,
+      "before": 99,
+      "after": 121,
+      "closed_style_after": 122
+    },
+    "g4_met": true,
+    "promoted_uc": [
+      "XBOS-DM-LOG-01",
+      "XBOS-DM-LOG-02",
+      "XBOS-DM-LOG-03",
+      "XBOS-DM-LOG-04",
+      "XBOS-DM-LOG-05",
+      "XBOS-DM-LOG-06",
+      "XBOS-DM-LOG-07",
+      "XBOS-DM-LOG-08",
+      "XBOS-DM-LOG-09",
+      "XBOS-DM-LOG-10",
+      "XBOS-DM-LOG-11",
+      "XBOS-DM-LOG-12",
+      "XBOS-DM-LOG-13",
+      "XBOS-DM-LOG-14",
+      "XBOS-DM-LOG-15",
+      "XBOS-DM-LOG-16",
+      "XBOS-DM-LOG-17",
+      "XBOS-DM-LOG-18",
+      "XBOS-DM-LOG-19",
+      "XBOS-DM-LOG-20",
+      "XBOS-DM-LOG-21",
+      "XBOS-DM-LOG-22"
+    ]
+  },
+  "last_u18_qa_c1_retest": {
+    "work_item_id": "P1-U18-QA-C1-RETEST",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-retest-20260524.md",
+    "matrix_delta": {
+      "e2e_pass": 2,
+      "before": 97,
+      "after": 99,
+      "closed_style_after": 100
+    },
+    "closed_defects": [
+      "U18-C1-D-01"
+    ]
+  },
+  "last_u18_qa_c1": {
+    "work_item_id": "P1-U18-QA-C1",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md",
+    "matrix_delta": {
+      "e2e_pass": 1,
+      "before": 96,
+      "after": 97,
+      "closed_style_after": 98
+    },
+    "open_defects": []
+  },
+  "last_ar_inf_map": {
+    "work_item_id": "P1-S5-BE-AR-INF-MAP",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-s5-be-ar-inf-map-20260524.md",
+    "promoted_uc_count": 17
+  },
+  "last_gov_be_lead": {
+    "work_item_id": "P1-TODAY-GOV-BE-LEAD",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-today-be-lead-backlog-20260524.md",
+    "matrix_counts": {
+      "be": 95,
+      "planned": 36,
+      "e2e_pass": 56
+    }
+  },
+  "last_qa_promote": {
+    "work_item_id": "P1-U18-QA-1",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md",
+    "matrix_delta": {
+      "e2e_pass": 17,
+      "before": 62,
+      "after": 79,
+      "be_before": 110,
+      "be_after": 93
+    },
+    "clusters": [
+      "AR",
+      "INF",
+      "DM-10..18",
+      "WF-retest"
+    ]
+  },
+  "last_be_wave": {
+    "work_item_id": "P1-S5-BE-WAVE-FINAL",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md",
+    "xbos_jest": "125/125"
+  },
+  "last_u18_be_a1": {
+    "work_item_id": "P1-U18-BE-A1",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-u18-be-a1-20260524.md",
+    "xbos_jest": "145/145",
+    "openapi": "1.2.0-p1-s2",
+    "promoted_uc": [
+      "UC-XBOS-13",
+      "UC-XBOS-14",
+      "UC-XBOS-15",
+      "UC-XBOS-WF-01",
+      "UC-XBOS-CC-06",
+      "UC-CC-P0-06"
+    ]
+  },
+  "last_regression": {
+    "work_item_id": "P1-S5-QA-01",
+    "at": "2026-05-24",
+    "evidence_path": "docs/qa/evidence/p1-s5-qa-01-20260524.md",
+    "matrix_counts": {
+      "be": 88,
+      "data": 50,
+      "e2e_pass": 30,
+      "fe": 13,
+      "planned": 63,
+      "waived": 1,
+      "total": 245,
+      "note": "pre P1-S5-BE-WAVE-FINAL — regenerate via pnpm docs:phase1:matrix"
+    },
+    "uc_catalog_p1": {
+      "partial_or_covered": 245,
+      "covered": 33,
+      "partial": 212,
+      "none": 0
+    }
+  },
+  "statusLegend": {
+    "planned": "Chưa code — chỉ SRS/TechSpec",
+    "be": "API/BE sẵn sàng",
+    "fe": "FE nối API (chưa E2E)",
+    "data": "Seed/catalog publish",
+    "e2e_pass": "Smoke/E2E PASS",
+    "waived": "Waiver có hạn — ghi evidence_path"
+  },
+  "waves": {
+    "w0": {
+      "label": "Nền tracking + seed",
+      "status": "completed"
+    },
+    "w1": {
+      "label": "XBOS nền + M00",
+      "status": "completed"
+    },
+    "w2": {
+      "label": "183 DM + CAT + DM-LOG",
+      "status": "completed"
+    },
+    "w3": {
+      "label": "HRM 119 UC",
+      "status": "completed"
+    },
+    "w4": {
+      "label": "Gate P1",
+      "status": "completed"
+    }
+  },
+  "overrides": {
+    "UC-HRM-MOB-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile",
+      "evidence_path": "docs/hrm/MOBILE_BACKLOG.md"
+    },
+    "UC-HRM-MOB-02": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-03": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-04": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-05": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-06": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-07": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-08": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-09": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-10": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-11": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-12": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-13": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-14": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-MOB-15": {
+      "impl_status": "e2e_pass",
+      "owner": "Mobile"
+    },
+    "UC-HRM-27": {
+      "impl_status": "waived",
+      "owner": "FE",
+      "evidence_path": "docs/ecosystem/FE_MOCK_TO_API_AUDIT.md — backlog embed decisions/reports"
+    },
+    "HRM-RC-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-recruitment"
+    },
+    "HRM-RC-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-recruitment"
+    },
+    "HRM-RC-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-recruitment"
+    },
+    "HRM-RC-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-recruitment"
+    },
+    "HRM-RC-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-recruitment"
+    },
+    "HRM-RC-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-recruitment"
+    },
+    "HRM-CI-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-CI-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-CI-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-CI-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-CI-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-CI-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-CI-07": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-contracts-insurance"
+    },
+    "HRM-AT-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-attendance"
+    },
+    "HRM-AT-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-attendance"
+    },
+    "HRM-AT-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-attendance"
+    },
+    "HRM-AT-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-07": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-08": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-09": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-10": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-11": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-12": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-AT-13": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-attendance"
+    },
+    "HRM-PR-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-payroll"
+    },
+    "HRM-PR-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-payroll"
+    },
+    "HRM-PR-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-payroll"
+    },
+    "HRM-PR-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-payroll"
+    },
+    "HRM-PR-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-payroll"
+    },
+    "HRM-PR-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-payroll"
+    },
+    "UC-HRM-20": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-retest-20260524.md#uc-hrm-20"
+    },
+    "UC-HRM-21": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#uc-hrm-21"
+    },
+    "UC-HRM-26": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-retest-20260524.md#uc-hrm-26"
+    },
+    "UC-HRM-22": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-embed"
+    },
+    "UC-HRM-23": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-embed"
+    },
+    "UC-HRM-24": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-embed"
+    },
+    "UC-HRM-25": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-be-w2-embed"
+    },
+    "UC-XBOS-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-health-metrics"
+    },
+    "UC-XBOS-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#config-publish"
+    },
+    "UC-XBOS-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-be-defects-20260524.md#s2-d-01"
+    },
+    "UC-XBOS-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-config-list"
+    },
+    "UC-XBOS-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#config-publish"
+    },
+    "UC-XBOS-06": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-be-defects-20260524.md#s2-d-02"
+    },
+    "UC-XBOS-07": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#alerts"
+    },
+    "UC-XBOS-SYNC-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1-20260525.md#qa-confirm-sync-01"
+    },
+    "UC-XBOS-MET-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-health-metrics"
+    },
+    "UC-XBOS-08": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1-20260525.md#qa-confirm-08"
+    },
+    "UC-XBOS-KPI-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-kpi-evaluate"
+    },
+    "UC-XBOS-KPI-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-kpi-evaluate"
+    },
+    "UC-XBOS-KPI-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-kpi"
+    },
+    "UC-XBOS-KPI-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-kpi"
+    },
+    "UC-XBOS-MD-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-MD-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-MD-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-MD-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-MD-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-MD-06": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-MD-07": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-master-data"
+    },
+    "UC-XBOS-ORG-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1-20260525.md#qa-confirm-org-01"
+    },
+    "UC-XBOS-ORG-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-org-read"
+    },
+    "UC-XBOS-ORG-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1-20260525.md#qa-confirm-org-03"
+    },
+    "UC-XBOS-10": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w2-20260525.md#qa-confirm-uc-xbos-10"
+    },
+    "XBOS-DM-HRM-09": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-w3-20260525.md#xbos-dm-hrm-09-10"
+    },
+    "XBOS-DM-HRM-10": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-w3-20260525.md#xbos-dm-hrm-09-10"
+    },
+    "UC-ECO-MASTER-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-100-g2-01-20260529.md",
+      "promoted_by": "P1-100-G2-01",
+      "prior_waiver": "BA-WV-02",
+      "closed_at": "2026-05-29"
+    },
+    "UC-CC-03": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5-20260525.md#qa-promote-cc-03-04"
+    },
+    "UC-CC-04": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5-20260525.md#qa-promote-cc-03-04"
+    },
+    "UC-ECO-FE-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w3-20260525.md#qa-promote-eco-fe-01"
+    },
+    "UC-XBOS-CC-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-cc-05"
+    },
+    "UC-XBOS-CC-07": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-cc-07"
+    },
+    "UC-XBOS-CC-08": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-cc-08"
+    },
+    "UC-XBOS-DASH-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-dash-01"
+    },
+    "UC-XBOS-DASH-02": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-dash-02"
+    },
+    "UC-XBOS-DASH-03": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-dash-03"
+    },
+    "UC-CC-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-cc-01"
+    },
+    "UC-ECO-SCOPE-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-eco-scope-01"
+    },
+    "UC-XBOS-11": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-rbac"
+    },
+    "UC-XBOS-12": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-rbac"
+    },
+    "UC-XBOS-AUTH-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-auth"
+    },
+    "UC-XBOS-AUTH-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-auth"
+    },
+    "UC-XBOS-TENANT-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-tenant"
+    },
+    "UC-XBOS-TENANT-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-tenant"
+    },
+    "UC-XBOS-TENANT-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-tenant"
+    },
+    "UC-ECO-MASTER-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1-20260525.md#qa-confirm-master-02"
+    },
+    "UC-ECO-SCOPE-02": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s2-qa-01-20260524.md#cluster-auth"
+    },
+    "UC-XBOS-WF-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#workflow"
+    },
+    "UC-XBOS-WF-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-workflow"
+    },
+    "UC-XBOS-WF-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-workflow"
+    },
+    "UC-XBOS-WF-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#workflow"
+    },
+    "UC-XBOS-WF-06": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#workflow"
+    },
+    "UC-XBOS-WF-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-workflow"
+    },
+    "UC-XBOS-13": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-workflow"
+    },
+    "UC-XBOS-14": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-workflow"
+    },
+    "UC-XBOS-15": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-workflow"
+    },
+    "UC-XBOS-CC-06": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-workflow"
+    },
+    "UC-CC-P0-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#cc-routes"
+    },
+    "UC-CC-P0-02": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#cc-routes"
+    },
+    "UC-CC-P0-03": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#cc-routes"
+    },
+    "UC-CC-P0-04": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#cc-routes"
+    },
+    "UC-CC-P0-05": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#cc-routes"
+    },
+    "UC-CC-P0-06": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-workflow"
+    },
+    "UC-CC-P0-08": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-s5-be-wave-final-20260524.md#cc-routes"
+    },
+    "UC-XBOS-CAT-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-catalog-governance"
+    },
+    "UC-XBOS-CAT-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-s5-qa-02-20260524.md#cluster-catalog-governance"
+    },
+    "HRM-MD-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-metadata"
+    },
+    "HRM-MD-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-metadata"
+    },
+    "HRM-MD-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-metadata"
+    },
+    "HRM-MD-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-metadata"
+    },
+    "HRM-MD-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-metadata"
+    },
+    "HRM-SC-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-settings-catalogs"
+    },
+    "HRM-SC-07": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-settings-catalogs"
+    },
+    "HRM-SC-08": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-settings-catalogs"
+    },
+    "HRM-SC-09": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c1-20260525.md#cluster-settings-catalogs"
+    },
+    "HRM-IM-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-spreadsheet"
+    },
+    "HRM-IM-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-spreadsheet"
+    },
+    "HRM-IM-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-spreadsheet"
+    },
+    "HRM-IM-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-spreadsheet"
+    },
+    "HRM-OP-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-w4-20260525.md#cluster-operations-main"
+    },
+    "HRM-OP-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-w4-20260525.md#cluster-operations-main"
+    },
+    "HRM-OP-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-w4-20260525.md#cluster-operations-main"
+    },
+    "HRM-SV-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SV-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SV-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SV-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SV-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SV-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-OP-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-operations"
+    },
+    "HRM-PF-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-performance"
+    },
+    "HRM-PF-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-performance"
+    },
+    "HRM-PF-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-performance"
+    },
+    "HRM-PF-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-c1-20260524.md#be-c1-performance"
+    },
+    "UC-XBOS-AR-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-ar"
+    },
+    "UC-XBOS-AR-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-ar"
+    },
+    "UC-XBOS-AR-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-ar"
+    },
+    "UC-XBOS-16": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w1b-20260525.md#qa-confirm-xbos-16"
+    },
+    "UC-XBOS-AST-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-ast"
+    },
+    "UC-XBOS-AST-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-ast"
+    },
+    "UC-XBOS-INF-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-inf"
+    },
+    "UC-XBOS-INF-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-inf"
+    },
+    "UC-XBOS-INF-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-inf"
+    },
+    "XBOS-DM-10": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-11": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-12": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-13": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-14": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-15": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-16": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-17": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-18": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-1-20260524.md#cluster-dm"
+    },
+    "XBOS-DM-LOG-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-02": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-03": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-04": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-05": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-06": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-07": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-08": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-09": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-10": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-11": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-12": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-13": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-14": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-15": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-16": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-17": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-18": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-19": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#log-19-checklist"
+    },
+    "XBOS-DM-LOG-20": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-21": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "XBOS-DM-LOG-22": {
+      "impl_status": "e2e_pass",
+      "owner": "Data+XBOS",
+      "evidence_path": "docs/qa/evidence/p1-u18-qa-g4-20260524.md#cluster-dm-log"
+    },
+    "UC-HRM-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-06": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-07": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-08": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-HRM-12": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-NT-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-NT-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-EM-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-EM-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-EM-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-EM-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-EM-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SC-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SC-02": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SC-03": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SC-04": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-SC-05": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "HRM-FL-01": {
+      "impl_status": "e2e_pass",
+      "owner": "HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-06": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-07": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-08": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-09": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-XBOS-CAT-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-XBOS-CAT-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-XBOS-CAT-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-XBOS-CAT-06": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-XBOS-CAT-07": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-01": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-02": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-03": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-04": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-05": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-06": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-07": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-08": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-11": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-12": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-13": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-14": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "XBOS-DM-HRM-15": {
+      "impl_status": "e2e_pass",
+      "owner": "XBOS+HRM",
+      "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md"
+    },
+    "UC-CC-P0-09": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    },
+    "UC-RACI-01": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    },
+    "UC-RACI-02": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    },
+    "UC-RACI-03": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    },
+    "UC-RACI-04": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    },
+    "UC-RACI-05": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    },
+    "UC-RACI-06": {
+      "impl_status": "e2e_pass",
+      "owner": "Portal",
+      "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md#qa-promote-w5b"
+    }
+  },
+  "last_close_be_c2": {
+    "work_item_id": "P1-CLOSE-BE-C2",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-be-c2-20260525.md",
+    "jest": {
+      "hrm_api": "182/182",
+      "xbos_api": "156/156"
+    },
+    "matrix_after": {
+      "e2e_pass": 233,
+      "waived": 2,
+      "be": 0,
+      "data": 0,
+      "fe": 7,
+      "planned": 3
+    },
+    "promoted_count": 55,
+    "promoted_uc": [
+      "UC-HRM-01",
+      "UC-HRM-02",
+      "UC-HRM-03",
+      "UC-HRM-04",
+      "UC-HRM-05",
+      "UC-HRM-06",
+      "UC-HRM-07",
+      "UC-HRM-08",
+      "UC-HRM-12",
+      "HRM-SV-01",
+      "HRM-SV-02",
+      "HRM-SV-03",
+      "HRM-SV-04",
+      "HRM-SV-05",
+      "HRM-SV-06",
+      "HRM-NT-01",
+      "HRM-NT-02",
+      "HRM-EM-01",
+      "HRM-EM-02",
+      "HRM-EM-03",
+      "HRM-EM-04",
+      "HRM-EM-05",
+      "HRM-SC-01",
+      "HRM-SC-02",
+      "HRM-SC-03",
+      "HRM-SC-04",
+      "HRM-SC-05",
+      "HRM-FL-01",
+      "XBOS-DM-01",
+      "XBOS-DM-02",
+      "XBOS-DM-03",
+      "XBOS-DM-04",
+      "XBOS-DM-05",
+      "XBOS-DM-06",
+      "XBOS-DM-07",
+      "XBOS-DM-08",
+      "XBOS-DM-09",
+      "UC-XBOS-CAT-01",
+      "UC-XBOS-CAT-02",
+      "UC-XBOS-CAT-04",
+      "UC-XBOS-CAT-06",
+      "UC-XBOS-CAT-07",
+      "XBOS-DM-HRM-01",
+      "XBOS-DM-HRM-02",
+      "XBOS-DM-HRM-03",
+      "XBOS-DM-HRM-04",
+      "XBOS-DM-HRM-05",
+      "XBOS-DM-HRM-06",
+      "XBOS-DM-HRM-07",
+      "XBOS-DM-HRM-08",
+      "XBOS-DM-HRM-11",
+      "XBOS-DM-HRM-12",
+      "XBOS-DM-HRM-13",
+      "XBOS-DM-HRM-14",
+      "XBOS-DM-HRM-15"
+    ]
+  },
+  "last_close_qa_w5b": {
+    "work_item_id": "P1-CLOSE-QA-W5B",
+    "at": "2026-05-25",
+    "evidence_path": "docs/qa/evidence/p1-close-qa-w5b-20260525.md",
+    "qa_promoted_uc": [
+      "UC-CC-P0-09",
+      "UC-RACI-01",
+      "UC-RACI-02",
+      "UC-RACI-03",
+      "UC-RACI-04",
+      "UC-RACI-05",
+      "UC-RACI-06"
+    ],
+    "qa_residual": [
+      "RACI member legal-entity UUID matrix → 409; main slice OK"
+    ],
+    "g1_met": true,
+    "g2_met": false,
+    "jest": {
+      "hrm_api": "183/183",
+      "xbos_api": "162/162",
+      "web_portal": "96/96",
+      "hrm_embed": "122/122"
+    },
+    "l2_w3_matrix": "9/9",
+    "w5b_raci_probes": "9/9"
+  }
+}

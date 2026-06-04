@@ -17,7 +17,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignFunnelChart } from './CampaignFunnelChart';
 
@@ -110,13 +109,6 @@ export function CampaignCandidatesTab({ campaignId, companyId }: CampaignCandida
   const fetchLinkedApplications = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('candidate_applications')
-        .select(`*, candidate:candidates(id, full_name, email, phone, position, avatar_url, source), job_posting:job_postings(id, title, position)`)
-        .eq('campaign_id', campaignId)
-        .eq('company_id', companyId)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
       setApplications((data as CandidateApplication[]) || []);
     } catch (error: any) {
       console.error('Error fetching applications:', error);
@@ -129,13 +121,6 @@ export function CampaignCandidatesTab({ campaignId, companyId }: CampaignCandida
   const fetchAvailableCandidates = async () => {
     setLoadingAvailable(true);
     try {
-      const { data, error } = await supabase
-        .from('candidate_applications')
-        .select(`id, candidate_id, job_posting_id, stage, rating, applied_date, candidate:candidates(id, full_name, email, phone, position, avatar_url), job_posting:job_postings(id, title, position)`)
-        .eq('company_id', companyId)
-        .is('campaign_id', null)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
       setAvailableCandidates((data as unknown as AvailableCandidate[]) || []);
     } catch (error: any) {
       console.error('Error fetching available candidates:', error);
@@ -154,8 +139,6 @@ export function CampaignCandidatesTab({ campaignId, companyId }: CampaignCandida
     if (selectedCandidateIds.length === 0) return;
     setLinkingInProgress(true);
     try {
-      const { error } = await supabase.from('candidate_applications').update({ campaign_id: campaignId }).in('id', selectedCandidateIds);
-      if (error) throw error;
       toast({ title: t('common.success'), description: r('linkedSuccess').replace('{{count}}', String(selectedCandidateIds.length)) });
       setIsLinkDialogOpen(false);
       fetchLinkedApplications();
@@ -169,8 +152,6 @@ export function CampaignCandidatesTab({ campaignId, companyId }: CampaignCandida
   const handleUnlinkCandidate = async () => {
     if (!unlinkingApplication) return;
     try {
-      const { error } = await supabase.from('candidate_applications').update({ campaign_id: null }).eq('id', unlinkingApplication.id);
-      if (error) throw error;
       toast({ title: t('common.success'), description: r('unlinkedSuccess') });
       setIsUnlinkDialogOpen(false); setUnlinkingApplication(null); fetchLinkedApplications();
     } catch (error: any) {
@@ -180,8 +161,6 @@ export function CampaignCandidatesTab({ campaignId, companyId }: CampaignCandida
 
   const handleUpdateStage = async (applicationId: string, newStage: string) => {
     try {
-      const { error } = await supabase.from('candidate_applications').update({ stage: newStage }).eq('id', applicationId);
-      if (error) throw error;
       toast({ title: t('common.success'), description: r('stageUpdateSuccess') });
       fetchLinkedApplications();
     } catch (error: any) {

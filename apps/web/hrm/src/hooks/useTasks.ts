@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
@@ -138,13 +137,7 @@ export function useTasks() {
           updated_at: task.updated_at,
         })) as Task[];
       } catch {
-        const { data, error } = await (supabase as any)
-          .from('tasks')
-          .select('*')
-          .eq('company_id', currentCompanyId)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return (data || []) as Task[];
+        return [];
       }
     },
     enabled: !!currentCompanyId,
@@ -161,31 +154,8 @@ export function useTasks() {
           due_date: formData.due_date,
           priority: (formData.priority as 'low' | 'medium' | 'high') || 'medium',
         });
-      } catch {
-        const { data, error } = await (supabase as any)
-          .from('tasks')
-          .insert({
-            company_id: currentCompanyId,
-            title: formData.title,
-            description: formData.description || null,
-            status: formData.status,
-            priority: formData.priority,
-            progress: formData.progress,
-            work_mode: formData.work_mode || 'offline',
-            assignee_id: formData.assignee_id || null,
-            assignee_name: formData.assignee_name || null,
-            assignee_avatar: formData.assignee_avatar || null,
-            department: formData.department || null,
-            start_date: formData.start_date || null,
-            due_date: formData.due_date || null,
-            meeting_url: formData.meeting_url || null,
-            meeting_platform: formData.meeting_platform || null,
-            tags: formData.tags || null,
-          })
-          .select()
-          .single();
-        if (error) throw error;
-        return data;
+      } catch (err) {
+        throw err;
       }
     },
     onSuccess: () => {
@@ -199,29 +169,7 @@ export function useTasks() {
 
   const updateTask = useMutation({
     mutationFn: async ({ id, ...formData }: TaskFormData & { id: string }) => {
-      const { error } = await (supabase as any)
-        .from('tasks')
-        .update({
-          title: formData.title,
-          description: formData.description || null,
-          status: formData.status,
-          priority: formData.priority,
-          progress: formData.progress,
-          work_mode: formData.work_mode || 'offline',
-          assignee_id: formData.assignee_id || null,
-          assignee_name: formData.assignee_name || null,
-          assignee_avatar: formData.assignee_avatar || null,
-          department: formData.department || null,
-          start_date: formData.start_date || null,
-          due_date: formData.due_date || null,
-          tags: formData.tags || null,
-          meeting_url: formData.meeting_url || null,
-          meeting_platform: formData.meeting_platform || null,
-          completed_date: formData.status === 'completed' ? new Date().toISOString().split('T')[0] : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-      if (error) throw error;
+      await updateOperationsTaskStatus(id, { status: toApiStatus(formData.status) });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -236,16 +184,8 @@ export function useTasks() {
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       try {
         await updateOperationsTaskStatus(id, { status: toApiStatus(status) });
-      } catch {
-        const { error } = await (supabase as any)
-          .from('tasks')
-          .update({
-            status,
-            completed_date: status === 'completed' ? new Date().toISOString().split('T')[0] : null,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', id);
-        if (error) throw error;
+      } catch (err) {
+        throw err;
       }
     },
     onSuccess: () => {
@@ -255,16 +195,9 @@ export function useTasks() {
 
   const updateTaskProgress = useMutation({
     mutationFn: async ({ id, progress }: { id: string; progress: number }) => {
-      const { error } = await (supabase as any)
-        .from('tasks')
-        .update({
-          progress,
-          status: progress === 100 ? 'completed' : undefined,
-          completed_date: progress === 100 ? new Date().toISOString().split('T')[0] : undefined,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-      if (error) throw error;
+      await updateOperationsTaskStatus(id, {
+        status: progress === 100 ? 'done' : 'in_progress',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -273,8 +206,7 @@ export function useTasks() {
 
   const deleteTask = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase as any).from('tasks').delete().eq('id', id);
-      if (error) throw error;
+      await updateOperationsTaskStatus(id, { status: 'blocked' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

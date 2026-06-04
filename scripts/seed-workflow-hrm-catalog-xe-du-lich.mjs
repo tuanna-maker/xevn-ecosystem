@@ -36,7 +36,7 @@ async function main() {
       'x-internal-api-key': key,
       'x-tenant-id': 'xe-du-lich',
       'x-company-id': 'main',
-      'x-user-id': 'ceo@xe-du-lich.vn',
+      'x-user-id': 'du-lich.ceo@xe.vn',
       'content-type': 'application/json',
     },
     body: JSON.stringify({ items: [{ code: 'demo_wf_field', label: 'Trường demo quy trình', unit: 'text' }] }),
@@ -47,7 +47,7 @@ async function main() {
   const batchId = extJson?.data?.batchId;
   if (batchId) {
     await new Promise((r) => setTimeout(r, 500));
-    const inbox = await fetch(`${xbos}/api/xbos/catalog-governance/inbox?assigneeUserId=ceo@xevn.vn`, {
+    const inbox = await fetch(`${xbos}/api/xbos/catalog-governance/inbox?assigneeUserId=ceo@xe.vn`, {
       headers: { 'x-internal-api-key': key },
     });
     const inboxJson = await inbox.json();
@@ -56,7 +56,7 @@ async function main() {
     if (task?.id) {
       const approve = await fetch(`${xbos}/api/xbos/catalog-governance/tasks/${task.id}/approve`, {
         method: 'POST',
-        headers: { 'x-internal-api-key': key, 'x-user-id': 'ceo@xevn.vn', 'content-type': 'application/json' },
+        headers: { 'x-internal-api-key': key, 'x-user-id': 'ceo@xe.vn', 'content-type': 'application/json' },
         body: JSON.stringify({ review_note: 'Seed test approve' }),
       });
       console.log('approve', await approve.json());

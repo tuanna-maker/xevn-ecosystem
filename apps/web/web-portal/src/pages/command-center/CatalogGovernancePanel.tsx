@@ -17,9 +17,11 @@ import {
   SETTINGS_SECTION_GRID,
   SETTINGS_SECTION_STACK,
 } from './settings-form-pattern';
+import { fetchHrmEffectiveCatalogStats, type HrmCatalogEffectiveStats } from '../../integrations/hrmCatalogStats';
+import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
 
 const RAIL_STROKE = 1.5;
-const REVIEWER = import.meta.env.VITE_DEV_USER_ID?.trim() || 'ceo@xevn.vn';
+const REVIEWER = import.meta.env.VITE_DEV_USER_ID?.trim() || 'ceo@xe.vn';
 
 export type CatalogGovernancePanelProps = {
   onStatusMessage?: (message: string | null) => void;
@@ -33,6 +35,7 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [localMsg, setLocalMsg] = useState<string | null>(null);
+  const [catalogStats, setCatalogStats] = useState<HrmCatalogEffectiveStats | null>(null);
 
   const notify = useCallback(
     (message: string | null) => {
@@ -59,9 +62,17 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
     }
   }, [notify]);
 
+  const loadCatalogStats = useCallback(async () => {
+    const stats = await fetchHrmEffectiveCatalogStats();
+    setCatalogStats(stats);
+  }, []);
+
   useEffect(() => {
-    if (isMasterContext) void loadInbox();
-  }, [isMasterContext, loadInbox]);
+    if (isMasterContext) {
+      void loadInbox();
+      void loadCatalogStats();
+    }
+  }, [isMasterContext, loadInbox, loadCatalogStats]);
 
   useEffect(() => {
     if (!selected?.instance_id) {
@@ -88,6 +99,7 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
       setDetail(null);
       setNote('');
       await loadInbox();
+      await loadCatalogStats();
     } catch (e) {
       notify(e instanceof Error ? e.message : 'Thao tác thất bại');
     } finally {
@@ -129,6 +141,22 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
         </button>
         <span className={`ml-auto text-sm text-xevn-textSecondary ${SETTINGS_CONTROL_TEXT}`}>
           Quy trình: CT Du lịch → Tập đoàn · <span className="font-mono text-xs">wf_hrm_catalog_extension_xe_du_lich</span>
+          {catalogStats ? (
+            <>
+              {' '}
+              · Danh mục HRM hiệu lực:{' '}
+              <strong className="tabular-nums text-xevn-text">
+                {catalogStats.catalogCount}
+              </strong>{' '}
+              nhóm /{' '}
+              <strong className="tabular-nums text-xevn-text">
+                {catalogStats.effectiveItemCount}
+              </strong>{' '}
+              mục
+            </>
+          ) : (
+            <span className="text-xs"> · Đang đọc số danh mục HRM…</span>
+          )}
         </span>
       </div>
 
@@ -212,24 +240,25 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
                 />
               </label>
               <div className="mt-4 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => void act('approve')}
+                <CapabilityActionButton
+                  capabilityCode="BTN-A2-CATALOG-GOV-APPROVE"
+                  runtime={{ busy: loading, blocked: !selected }}
                   className={`inline-flex items-center gap-2 rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 disabled:opacity-50 ${SETTINGS_CONTROL_TEXT}`}
+                  onClick={() => void act('approve')}
                 >
                   <Check className="h-4 w-4" strokeWidth={RAIL_STROKE} aria-hidden />
                   Phê duyệt
-                </button>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => void act('reject')}
+                </CapabilityActionButton>
+                <CapabilityActionButton
+                  capabilityCode="BTN-A2-CATALOG-GOV-REJECT"
+                  variant="secondary"
+                  runtime={{ busy: loading, blocked: !selected }}
                   className={`inline-flex items-center gap-2 rounded-input border border-xevn-border bg-white px-4 py-2 font-semibold text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 disabled:opacity-50 ${SETTINGS_CONTROL_TEXT}`}
+                  onClick={() => void act('reject')}
                 >
                   <X className="h-4 w-4" strokeWidth={RAIL_STROKE} aria-hidden />
                   Từ chối
-                </button>
+                </CapabilityActionButton>
               </div>
             </>
           )}

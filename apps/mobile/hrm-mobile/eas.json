@@ -10,7 +10,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_HRM_API_BASE_URL": "http://14.225.217.232:3001",
+        "EXPO_PUBLIC_HRM_API_BASE_URL": "https://14-225-217-232.nip.io",
         "EXPO_PUBLIC_DEFAULT_TENANT_ID": "xevn",
         "EXPO_PUBLIC_DEFAULT_COMPANY_ID": "holding"
       }
@@ -20,7 +20,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_HRM_API_BASE_URL": "http://14.225.217.232:3001",
+        "EXPO_PUBLIC_HRM_API_BASE_URL": "https://14-225-217-232.nip.io",
         "EXPO_PUBLIC_DEFAULT_TENANT_ID": "xevn",
         "EXPO_PUBLIC_DEFAULT_COMPANY_ID": "holding"
       }

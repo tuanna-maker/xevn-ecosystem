@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toErrorMessage } from '@/lib/apiError';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -66,6 +66,10 @@ import { InsuranceImportDialog } from '@/components/insurance/InsuranceImportDia
 import { ExpiringInsuranceAlert } from '@/components/insurance/ExpiringInsuranceAlert';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
+import {
+  deleteInsurancePolicyParticipant,
+  listInsurancePolicyParticipants,
+} from '@/integrations/hrmApi';
 
 interface Insurance {
   id: string;
@@ -152,28 +156,22 @@ export default function Insurance() {
     queryKey: ['insurance', selectedStatus, currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-
-      let query = supabase
-        .from('insurance')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (selectedStatus !== 'all') {
-        query = query.eq('status', selectedStatus);
+      const response = await listInsurancePolicyParticipants(currentCompanyId);
+      const rows = (response.data ?? []) as Insurance[];
+      if (selectedStatus === 'all') {
+        return rows;
       }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as Insurance[];
+      return rows.filter((row) => row.status === selectedStatus);
     },
     enabled: !!currentCompanyId,
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('insurance').delete().eq('id', id);
-      if (error) throw error;
+      if (!currentCompanyId) {
+        throw new Error('Thiếu phạm vi công ty');
+      }
+      await deleteInsurancePolicyParticipant(id, currentCompanyId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['insurance'] });
@@ -181,15 +179,17 @@ export default function Insurance() {
       setIsDeleteDialogOpen(false);
       setSelectedInsurance(null);
     },
-    onError: (error) => {
-      toast.error(t('insurance.deleteError') + ': ' + error.message);
+    onError: (error: unknown) => {
+      toast.error(`${t('insurance.deleteError')}: ${toErrorMessage(error)}`);
     },
   });
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { error } = await supabase.from('insurance').delete().in('id', ids);
-      if (error) throw error;
+      if (!currentCompanyId) {
+        throw new Error('Thiếu phạm vi công ty');
+      }
+      await Promise.all(ids.map((id) => deleteInsurancePolicyParticipant(id, currentCompanyId)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['insurance'] });
@@ -197,8 +197,8 @@ export default function Insurance() {
       setIsBulkDeleteDialogOpen(false);
       setSelectedItems([]);
     },
-    onError: (error) => {
-      toast.error(t('insurance.deleteError') + ': ' + error.message);
+    onError: (error: unknown) => {
+      toast.error(`${t('insurance.deleteError')}: ${toErrorMessage(error)}`);
     },
   });
 

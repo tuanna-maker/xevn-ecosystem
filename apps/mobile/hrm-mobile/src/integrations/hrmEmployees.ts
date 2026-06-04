@@ -1,3 +1,4 @@
+import { resolveHrmCompanyHeaderId } from './hrmApiClient';
 import type { HrmAuthConfig } from './types';
 import { hrmRequest } from './hrmApiClient';
 import { readListRows } from './envelope';
@@ -20,7 +21,7 @@ export async function fetchEmployeeById(
 ): Promise<EmployeeRow | null> {
   const id = employeeId.trim();
   if (!id) return null;
-  const companyId = auth.companyId.trim();
+  const companyId = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
   if (!companyId) return null;
 
   let page = 1;

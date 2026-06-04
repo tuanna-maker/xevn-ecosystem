@@ -1,10 +1,15 @@
+import { resolveXbosStrictCompanyId } from './commandCenterScope';
 import { resolveIdentityScope } from './identityScope';
+import { normalizeRaciLettersInput } from './raciGovernanceHelpers';
+
+export { RACI_CATALOG_SEED_CMD } from './raciGovernanceHelpers';
 
 async function headers(tenantIdHint?: string | null, companyIdHint?: string | null, withBody = false) {
   const scope = resolveIdentityScope(tenantIdHint ?? null, companyIdHint ?? null);
+  const companyId = resolveXbosStrictCompanyId(scope.tenantId, companyIdHint ?? scope.companyId);
   const h: Record<string, string> = {
     'x-tenant-id': scope.tenantId,
-    'x-company-id': scope.companyId,
+    'x-company-id': companyId,
   };
   const key = import.meta.env.VITE_INTERNAL_API_KEY?.trim();
   if (key) h['x-internal-api-key'] = key;
@@ -16,6 +21,12 @@ export type RaciDomainSummary = {
   domain_code: string;
   domain_label: string;
   count: number;
+};
+
+export type RaciCatalogPayload = {
+  domains: RaciDomainSummary[];
+  activities: RaciActivityRow[];
+  total: number;
 };
 
 export type RaciActivityRow = {
@@ -56,10 +67,19 @@ export async function fetchRaciCatalog(domain?: string, tenantIdHint?: string | 
   const res = await fetch(`/api/xbos/raci-governance/catalog${q}`, { headers: h });
   if (!res.ok) throw new Error('Không tải được danh mục RACI');
   const json = await res.json();
-  return json?.data as {
-    domains: RaciDomainSummary[];
-    activities: RaciActivityRow[];
-    total: number;
+  return json?.data as RaciCatalogPayload;
+}
+
+/** UC-RACI-04 — local bindings until PUT /column-binding ships on xbos-api. */
+export function buildRaciMatrixCellBody(
+  activityId: string,
+  orgColumnId: string,
+  rawLetters: string,
+): { activity_id: string; org_column_id: string; raci_letters: string } {
+  return {
+    activity_id: activityId,
+    org_column_id: orgColumnId,
+    raci_letters: normalizeRaciLettersInput(rawLetters),
   };
 }
 

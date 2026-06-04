@@ -45,6 +45,10 @@ const SMOKE_BY_PREFIX = [
   { prefix: 'BTN-B3-', url: `${HRM}/attendance/records?company_id=demo&page=1&page_size=1` },
   { prefix: 'AUTH-', url: `${XBOS}/tenant-scope/accessible` },
   { prefix: 'G22-', url: `${XBOS}/auth/me` },
+  { prefix: 'CC-GROUP-MEMBER', url: `${XBOS}/tenant-scope/group-member-units` },
+  { prefix: 'CC-GROUP-HR', url: `${XBOS}/config-sync/catalogs?target=hrm` },
+  { prefix: 'BTN-A3-', url: `${XBOS}/config-sync/catalog/job_titles?target=hrm` },
+  { prefix: 'G13-', url: `${XBOS}/tenant-scope/group-member-units` },
 ];
 
 function filterRows() {

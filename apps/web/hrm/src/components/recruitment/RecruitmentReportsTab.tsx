@@ -48,7 +48,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -119,15 +118,7 @@ export function RecruitmentReportsTab() {
     queryKey: ['recruitment-report-candidates', currentCompanyId, dateRange],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('candidates')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .gte('created_at', dateRange.from.toISOString())
-        .lte('created_at', dateRange.to.toISOString())
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      return data || [];
+      return null || [];
     },
     enabled: !!currentCompanyId,
   });
@@ -137,15 +128,7 @@ export function RecruitmentReportsTab() {
     queryKey: ['recruitment-report-interviews', currentCompanyId, dateRange],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('interviews')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .gte('interview_date', format(dateRange.from, 'yyyy-MM-dd'))
-        .lte('interview_date', format(dateRange.to, 'yyyy-MM-dd'))
-        .order('interview_date', { ascending: true });
-      if (error) throw error;
-      return data || [];
+      return null || [];
     },
     enabled: !!currentCompanyId,
   });
@@ -155,14 +138,7 @@ export function RecruitmentReportsTab() {
     queryKey: ['recruitment-report-jobs', currentCompanyId, dateRange],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('job_postings')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .gte('created_at', dateRange.from.toISOString())
-        .lte('created_at', dateRange.to.toISOString());
-      if (error) throw error;
-      return data || [];
+      return null || [];
     },
     enabled: !!currentCompanyId,
   });
@@ -172,14 +148,7 @@ export function RecruitmentReportsTab() {
     queryKey: ['recruitment-report-campaigns', currentCompanyId, dateRange],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('recruitment_campaigns')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .gte('created_at', dateRange.from.toISOString())
-        .lte('created_at', dateRange.to.toISOString());
-      if (error) throw error;
-      return data || [];
+      return null || [];
     },
     enabled: !!currentCompanyId,
   });

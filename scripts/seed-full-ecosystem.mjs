@@ -1,5 +1,8 @@
 import pg from 'pg';
 import { randomUUID } from 'node:crypto';
+import { loadDeployEnv } from './seed-env-loader.mjs';
+
+loadDeployEnv();
 
 const { Client } = pg;
 
@@ -30,28 +33,20 @@ function pick(arr, idx) {
   return arr[idx % arr.length];
 }
 
-async function seedHrmEmployees(client) {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.employees (
-      id UUID PRIMARY KEY,
-      company_id TEXT NOT NULL,
-      employee_code TEXT NOT NULL,
-      email TEXT NOT NULL,
-      full_name TEXT NOT NULL,
-      job_title_key TEXT NULL,
-      status TEXT NOT NULL DEFAULT 'active',
-      hired_at DATE NULL,
-      archived_at TIMESTAMPTZ NULL,
-      custom_fields JSONB NOT NULL DEFAULT '{}'::jsonb,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS uq_employees_company_code
-    ON public.employees (company_id, employee_code);
-  `);
+const companyUuidList = () => Object.values(companyUuidMap);
 
+/** Resolve company_id column type per table (live DB may differ from migrations). */
+async function companyIdKind(client, table) {
+  const r = await client.query(
+    `SELECT data_type FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = $1 AND column_name = 'company_id'`,
+    [table],
+  );
+  return r.rows[0]?.data_type === 'uuid' ? 'uuid' : 'text';
+}
+
+async function seedHrmEmployees(client) {
+  const empCompanyKind = await companyIdKind(client, 'employees');
   const roles = [
     'CEO','COO','CFO','CHRO','CTO','HRBP_MANAGER','HR_SPECIALIST','PAYROLL_SPECIALIST','RECRUITER',
     'OPS_MANAGER','DISPATCH_SUPERVISOR','FLEET_SUPERVISOR','WAREHOUSE_SUP','WAREHOUSE_STAFF',
@@ -63,11 +58,17 @@ async function seedHrmEmployees(client) {
     'Kinh doanh','CNTT','Pháp chế','An toàn','CSKH',
   ];
 
-  await client.query(`DELETE FROM public.employees WHERE company_id = ANY($1::text[])`, [companyTextList]);
+  if (empCompanyKind === 'uuid') {
+    await client.query(`DELETE FROM public.employees WHERE company_id = ANY($1::uuid[])`, [companyUuidList()]);
+  } else {
+    await client.query(`DELETE FROM public.employees WHERE company_id = ANY($1::text[])`, [companyTextList]);
+  }
 
   for (let i = 0; i < 100; i += 1) {
     const seq = i + 1;
-    const company = pick(companyTextList, i);
+    const companySlug = pick(companyTextList, i);
+    const companyUuid = companyUuidMap[companySlug];
+    const companyId = empCompanyKind === 'uuid' ? companyUuid : companySlug;
     const role = pick(roles, i);
     const dept = pick(departments, i);
     const hiredAt = new Date(Date.UTC(2022 + (i % 4), (i * 3) % 12, ((i * 7) % 27) + 1)).toISOString().slice(0, 10);
@@ -82,16 +83,17 @@ async function seedHrmEmployees(client) {
       `,
       [
         employeeId,
-        company,
+        companyId,
         employeeCode,
-        `nhansu${String(seq).padStart(4, '0')}@xevn.vn`,
+        `nhansu${String(seq).padStart(4, '0')}@xe.vn`,
         `Nguyen NhanSu ${String(seq).padStart(3, '0')}`,
         role,
         i % 12 === 0 ? 'inactive' : 'active',
         hiredAt,
         JSON.stringify({
+          company_slug: companySlug,
           department: dept,
-          cost_center: `CC-${company.toUpperCase()}`,
+          cost_center: `CC-${companySlug.toUpperCase()}`,
           grade: `G${(i % 7) + 1}`,
           shift_group: i % 2 === 0 ? 'Ca hành chính' : 'Ca xoay',
         }),
@@ -101,116 +103,77 @@ async function seedHrmEmployees(client) {
 }
 
 async function seedHrmOperationalTables(client) {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.employee_contracts (
-      id UUID PRIMARY KEY, company_id TEXT NOT NULL, employee_id UUID NOT NULL,
-      contract_type TEXT NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL,
-      status TEXT NOT NULL DEFAULT 'active', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.employee_insurance_records (
-      id UUID PRIMARY KEY, company_id TEXT NOT NULL, employee_id UUID NOT NULL,
-      provider TEXT NOT NULL, policy_number TEXT NOT NULL, expiry_date DATE NOT NULL,
-      status TEXT NOT NULL DEFAULT 'active', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.attendance_records (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, employee_id UUID NOT NULL, attendance_date DATE NOT NULL,
-      check_in_at TIMESTAMPTZ NULL, check_out_at TIMESTAMPTZ NULL, status TEXT NOT NULL DEFAULT 'present',
-      note TEXT NULL, created_by TEXT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.payroll_periods (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, period_label TEXT NOT NULL,
-      start_date DATE NOT NULL, end_date DATE NOT NULL, status TEXT NOT NULL DEFAULT 'draft',
-      created_by TEXT NULL, processed_at TIMESTAMPTZ NULL, closed_at TIMESTAMPTZ NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.job_requisitions (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, title TEXT NOT NULL, department TEXT NOT NULL,
-      employment_type TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'open',
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.recruitment_candidates (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, requisition_id UUID NOT NULL,
-      full_name TEXT NOT NULL, email TEXT NOT NULL, source TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new',
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.recruitment_interviews (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, candidate_id UUID NOT NULL, scheduled_at TIMESTAMPTZ NOT NULL,
-      interviewer TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'scheduled',
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.hrm_tasks (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, title TEXT NOT NULL, description TEXT NULL, priority TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'todo', due_date DATE NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.service_requests (
-      id UUID PRIMARY KEY, company_id UUID NOT NULL, service_type TEXT NOT NULL,
-      employee_id UUID NULL, employee_name TEXT NOT NULL, employee_code TEXT NULL, department TEXT NULL, request_date DATE NOT NULL,
-      status TEXT NOT NULL DEFAULT 'pending', notes TEXT NULL, meal_type TEXT NULL, meal_date DATE NULL, meal_quantity INT NULL,
-      vehicle_purpose TEXT NULL, vehicle_destination TEXT NULL, vehicle_date DATE NULL, vehicle_time_start TEXT NULL, vehicle_time_end TEXT NULL,
-      vehicle_passengers INT NULL, supply_items JSONB NULL, supply_urgency TEXT NULL, approved_by TEXT NULL, approved_at TIMESTAMPTZ NULL,
-      rejected_reason TEXT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.performance_cycles (
-      id UUID PRIMARY KEY, company_id TEXT NOT NULL, cycle_name TEXT NOT NULL,
-      start_date DATE NOT NULL, end_date DATE NOT NULL, status TEXT NOT NULL DEFAULT 'draft',
-      created_by TEXT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.performance_evaluations (
-      id UUID PRIMARY KEY, company_id TEXT NOT NULL, employee_id UUID NOT NULL, cycle_id UUID NOT NULL,
-      score NUMERIC(5,2) NOT NULL, summary TEXT NOT NULL, reviewer TEXT NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-  `);
+  const kinds = {
+    employee_contracts: await companyIdKind(client, 'employee_contracts'),
+    employee_insurance_records: await companyIdKind(client, 'employee_insurance_records'),
+    attendance_records: await companyIdKind(client, 'attendance_records'),
+    payroll_periods: await companyIdKind(client, 'payroll_periods'),
+    job_requisitions: await companyIdKind(client, 'job_requisitions'),
+    recruitment_candidates: await companyIdKind(client, 'recruitment_candidates'),
+    recruitment_interviews: await companyIdKind(client, 'recruitment_interviews'),
+    service_requests: await companyIdKind(client, 'service_requests'),
+    hrm_tasks: await companyIdKind(client, 'hrm_tasks'),
+    performance_cycles: await companyIdKind(client, 'performance_cycles'),
+    performance_evaluations: await companyIdKind(client, 'performance_evaluations'),
+  };
 
-  const empRes = await client.query(`
-    SELECT id, company_id, employee_code, full_name
-    FROM public.employees
-    WHERE company_id = ANY($1::text[])
-    ORDER BY employee_code
-    LIMIT 100
-  `, [companyTextList]);
+  const empKind = await companyIdKind(client, 'employees');
+  const empFilter = empKind === 'uuid' ? companyUuidList() : companyTextList;
+  const empCast = empKind === 'uuid' ? 'uuid[]' : 'text[]';
+
+  const empRes = await client.query(
+    `SELECT id, company_id, employee_code, full_name
+     FROM public.employees
+     WHERE company_id = ANY($1::${empCast})
+     ORDER BY employee_code
+     LIMIT 100`,
+    [empFilter],
+  );
   const employees = empRes.rows;
 
-  await client.query(`DELETE FROM public.employee_contracts WHERE company_id = ANY($1::text[])`, [companyTextList]);
-  await client.query(`DELETE FROM public.employee_insurance_records WHERE company_id = ANY($1::text[])`, [companyTextList]);
-  await client.query(`DELETE FROM public.performance_evaluations WHERE company_id = ANY($1::text[])`, [companyTextList]);
-  await client.query(`DELETE FROM public.performance_cycles WHERE company_id = ANY($1::text[])`, [companyTextList]);
-  await client.query(`DELETE FROM public.attendance_records WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
-  await client.query(`DELETE FROM public.payroll_periods WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
-  await client.query(`DELETE FROM public.recruitment_interviews WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
-  await client.query(`DELETE FROM public.recruitment_candidates WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
-  await client.query(`DELETE FROM public.job_requisitions WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
-  await client.query(`DELETE FROM public.hrm_tasks WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
-  await client.query(`DELETE FROM public.service_requests WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)]);
+  async function del(table) {
+    const k = kinds[table];
+    if (!k) return;
+    const vals = k === 'uuid' ? companyUuidList() : companyTextList;
+    await client.query(
+      `DELETE FROM public.${table} WHERE company_id = ANY($1::${k}[])`,
+      [vals],
+    );
+  }
+
+  await del('employee_contracts');
+  await del('employee_insurance_records');
+  await del('attendance_records');
+  await del('payroll_periods');
+  await del('recruitment_interviews');
+  await del('recruitment_candidates');
+  await del('job_requisitions');
+  await del('service_requests');
+  await del('hrm_tasks');
+  await del('performance_evaluations');
+  await del('performance_cycles');
+
+  const hasPerfCycles = Boolean(kinds.performance_cycles);
+  const hasHrmTasks = kinds.hrm_tasks === 'uuid';
+
+  const slugFromEmp = (companyId) =>
+    empKind === 'text' ? companyId : Object.entries(companyUuidMap).find(([, u]) => u === companyId)?.[0] ?? 'holding';
+  const uuidFromEmp = (companyId) =>
+    empKind === 'uuid' ? companyId : companyUuidMap[companyId] ?? companyUuidMap.holding;
+  const cidFor = (slug, table) => (kinds[table] === 'uuid' ? companyUuidMap[slug] : slug);
 
   for (const [idx, e] of employees.entries()) {
+    const contractCompany =
+      kinds.employee_contracts === 'uuid' ? uuidFromEmp(e.company_id) : slugFromEmp(e.company_id);
+    const insuranceCompany =
+      kinds.employee_insurance_records === 'uuid' ? uuidFromEmp(e.company_id) : slugFromEmp(e.company_id);
     await client.query(
       `INSERT INTO public.employee_contracts
        (id, company_id, employee_id, contract_type, start_date, end_date, status)
        VALUES ($1::uuid,$2,$3::uuid,$4,$5::date,$6::date,$7)`,
       [
         randomUUID(),
-        e.company_id,
+        contractCompany,
         e.id,
         idx % 3 === 0 ? 'HĐ 3 năm' : idx % 3 === 1 ? 'HĐ 1 năm' : 'HĐ không thời hạn',
         '2024-01-01',
@@ -222,64 +185,87 @@ async function seedHrmOperationalTables(client) {
       `INSERT INTO public.employee_insurance_records
        (id, company_id, employee_id, provider, policy_number, expiry_date, status)
        VALUES ($1::uuid,$2,$3::uuid,$4,$5,$6::date,'active')`,
-      [randomUUID(), e.company_id, e.id, idx % 2 === 0 ? 'Bao Viet' : 'PVI', `POL-${e.employee_code}`, '2027-06-30'],
+      [randomUUID(), insuranceCompany, e.id, idx % 2 === 0 ? 'Bao Viet' : 'PVI', `POL-${e.employee_code}`, '2027-06-30'],
     );
   }
 
   for (const company of companyTextList) {
-    const compUuid = companyUuidMap[company];
+    const payrollCompany = cidFor(company, 'payroll_periods');
+    const perfCompany = cidFor(company, 'performance_cycles');
+    const reqCompany = cidFor(company, 'job_requisitions');
+    const svcCompany = cidFor(company, 'service_requests');
+    const taskCompany = cidFor(company, 'hrm_tasks');
     await client.query(
       `INSERT INTO public.payroll_periods
        (id, company_id, period_label, start_date, end_date, status, created_by, processed_at)
-       VALUES ($1::uuid,$2::uuid,$3,$4::date,$5::date,'processed','seed-system',NOW()),
-              ($6::uuid,$2::uuid,$7,$8::date,$9::date,'draft','seed-system',NULL)`,
-      [randomUUID(), compUuid, 'Payroll 2026-03', '2026-03-01', '2026-03-31', randomUUID(), 'Payroll 2026-04', '2026-04-01', '2026-04-30'],
+       VALUES ($1::uuid,$2,$3,$4::date,$5::date,'processed','seed-system',NOW()),
+              ($6::uuid,$2,$7,$8::date,$9::date,'draft','seed-system',NULL)`,
+      [randomUUID(), payrollCompany, 'Payroll 2026-03', '2026-03-01', '2026-03-31', randomUUID(), 'Payroll 2026-04', '2026-04-01', '2026-04-30'],
     );
-    await client.query(
-      `INSERT INTO public.performance_cycles
-       (id, company_id, cycle_name, start_date, end_date, status, created_by)
-       VALUES ($1::uuid,$2,'Q1 2026','2026-01-01','2026-03-31','closed','seed-system'),
-              ($3::uuid,$2,'Q2 2026','2026-04-01','2026-06-30','active','seed-system')`,
-      [randomUUID(), company, randomUUID()],
-    );
+    if (hasPerfCycles) {
+      await client.query(
+        `INSERT INTO public.performance_cycles
+         (id, company_id, cycle_name, start_date, end_date, status, created_by)
+         VALUES ($1::uuid,$2,'Q1 2026','2026-01-01','2026-03-31','closed','seed-system'),
+                ($3::uuid,$2,'Q2 2026','2026-04-01','2026-06-30','active','seed-system')`,
+        [randomUUID(), perfCompany, randomUUID()],
+      );
+    }
     await client.query(
       `INSERT INTO public.job_requisitions
        (id, company_id, title, department, employment_type, status)
-       VALUES ($1::uuid,$2::uuid,'Nhân viên vận hành','Vận hành','full-time','open'),
-              ($3::uuid,$2::uuid,'Chuyên viên nhân sự','Nhân sự','full-time','open')`,
-      [randomUUID(), compUuid, randomUUID()],
+       VALUES ($1::uuid,$2,'Nhân viên vận hành','Vận hành','full-time','open'),
+              ($3::uuid,$2,'Chuyên viên nhân sự','Nhân sự','full-time','open')`,
+      [randomUUID(), reqCompany, randomUUID()],
     );
-    await client.query(
-      `INSERT INTO public.hrm_tasks
-       (id, company_id, title, description, priority, status, due_date)
-       VALUES ($1::uuid,$2::uuid,'Rà soát KPI tuần','Kiểm tra KPI tuần cho đội vận hành','high','in_progress',CURRENT_DATE + INTERVAL '2 days'),
-              ($3::uuid,$2::uuid,'Cập nhật lịch trực','Điều chỉnh lịch trực tháng','medium','todo',CURRENT_DATE + INTERVAL '5 days')`,
-      [randomUUID(), compUuid, randomUUID()],
-    );
+    if (hasHrmTasks) {
+      await client.query(
+        `INSERT INTO public.hrm_tasks
+         (id, company_id, title, description, priority, status, due_date)
+         VALUES ($1::uuid,$2,'Rà soát KPI tuần','Kiểm tra KPI tuần cho đội vận hành','high','in_progress',CURRENT_DATE + INTERVAL '2 days'),
+                ($3::uuid,$2,'Cập nhật lịch trực','Điều chỉnh lịch trực tháng','medium','todo',CURRENT_DATE + INTERVAL '5 days')`,
+        [randomUUID(), taskCompany, randomUUID()],
+      );
+    }
     await client.query(
       `INSERT INTO public.service_requests
        (id, company_id, service_type, employee_name, employee_code, department, request_date, status, notes, meal_type, meal_date, meal_quantity)
        VALUES
-       ($1::uuid,$2::uuid,'meal','Nguyen Van A','NV0001','Vận hành',CURRENT_DATE,'pending','Suất ăn ca tối','Tối',CURRENT_DATE,15),
-       ($3::uuid,$2::uuid,'vehicle','Tran Thi B','NV0002','Nhân sự',CURRENT_DATE,'approved','Đi công tác nội bộ',NULL,NULL,NULL)`,
-      [randomUUID(), compUuid, randomUUID()],
+       ($1::uuid,$2,'meal','Nguyen Van A','NV0001','Vận hành',CURRENT_DATE,'pending','Suất ăn ca tối','Tối',CURRENT_DATE,15),
+       ($3::uuid,$2,'vehicle','Tran Thi B','NV0002','Nhân sự',CURRENT_DATE,'approved','Đi công tác nội bộ',NULL,NULL,NULL)`,
+      [randomUUID(), svcCompany, randomUUID()],
     );
   }
 
-  const cyclesRes = await client.query(`SELECT id, company_id FROM public.performance_cycles WHERE company_id = ANY($1::text[])`, [companyTextList]);
-  for (const row of cyclesRes.rows.slice(0, 10)) {
-    const emp = employees.find((x) => x.company_id === row.company_id);
-    if (!emp) continue;
-    await client.query(
-      `INSERT INTO public.performance_evaluations
-       (id, company_id, employee_id, cycle_id, score, summary, reviewer)
-       VALUES ($1::uuid,$2,$3::uuid,$4::uuid,$5,$6,$7)`,
-      [randomUUID(), row.company_id, emp.id, row.id, 70 + (Math.random() * 25), 'Đánh giá đạt kỳ vọng', 'Trưởng bộ phận'],
+  if (hasPerfCycles) {
+    const perfCast = kinds.performance_cycles === 'uuid' ? 'uuid[]' : 'text[]';
+    const perfFilter = kinds.performance_cycles === 'uuid' ? companyUuidList() : companyTextList;
+    const cyclesRes = await client.query(
+      `SELECT id, company_id FROM public.performance_cycles WHERE company_id = ANY($1::${perfCast})`,
+      [perfFilter],
     );
+    for (const row of cyclesRes.rows.slice(0, 10)) {
+      const emp = employees.find((x) => x.company_id === row.company_id);
+      if (!emp) continue;
+      await client.query(
+        `INSERT INTO public.performance_evaluations
+         (id, company_id, employee_id, cycle_id, score, summary, reviewer)
+         VALUES ($1::uuid,$2,$3::uuid,$4::uuid,$5,$6,$7)`,
+        [
+          randomUUID(),
+          kinds.performance_evaluations === 'uuid' ? row.company_id : slugFromEmp(row.company_id),
+          emp.id,
+          row.id,
+          70 + Math.random() * 25,
+          'Đánh giá đạt kỳ vọng',
+          'Trưởng bộ phận',
+        ],
+      );
+    }
   }
 
   for (const e of employees.slice(0, 60)) {
-    const compUuid = companyUuidMap[e.company_id];
+    const compUuid = cidFor(slugFromEmp(e.company_id), 'attendance_records');
     const date = new Date();
     date.setDate(date.getDate() - (Math.floor(Math.random() * 15)));
     const d = date.toISOString().slice(0, 10);
@@ -415,7 +401,7 @@ async function seedXbos(client) {
       { id: 'cus-001', code: 'CUS001', name: 'Công ty A', type: 'corporate', industry: 'Logistics', contactPerson: 'Nguyễn A', phone: '0900000001', totalOrders: 120, totalRevenue: 1500000000, status: 'active', createdAt: '2026-01-01', fromCompanyId: 'holding' },
     ],
     partners: [
-      { id: 'par-001', code: 'PAR001', name: 'Đối tác B', type: 'supplier', industry: 'Fuel', contactPerson: 'Trần B', phone: '0900000002', totalContracts: 12, totalValue: 2200000000, status: 'active', createdAt: '2026-01-01', relatedCompanies: ['all'], email: 'partnerb@xevn.vn' },
+      { id: 'par-001', code: 'PAR001', name: 'Đối tác B', type: 'supplier', industry: 'Fuel', contactPerson: 'Trần B', phone: '0900000002', totalContracts: 12, totalValue: 2200000000, status: 'active', createdAt: '2026-01-01', relatedCompanies: ['all'], email: 'partnerb@xe.vn' },
     ],
   };
 
@@ -497,18 +483,15 @@ async function main() {
     const summary = {
       tenant: tenantId,
       hrm: {
-        employees: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.employees WHERE company_id = ANY($1::text[])`, [companyTextList])).rows[0].c,
-        contracts: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.employee_contracts WHERE company_id = ANY($1::text[])`, [companyTextList])).rows[0].c,
-        insurance: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.employee_insurance_records WHERE company_id = ANY($1::text[])`, [companyTextList])).rows[0].c,
-        attendance: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.attendance_records WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        payroll_periods: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.payroll_periods WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        requisitions: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.job_requisitions WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        candidates: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.recruitment_candidates WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        interviews: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.recruitment_interviews WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        tasks: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.hrm_tasks WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        service_requests: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.service_requests WHERE company_id = ANY($1::uuid[])`, [Object.values(companyUuidMap)])).rows[0].c,
-        performance_cycles: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.performance_cycles WHERE company_id = ANY($1::text[])`, [companyTextList])).rows[0].c,
-        performance_evaluations: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.performance_evaluations WHERE company_id = ANY($1::text[])`, [companyTextList])).rows[0].c,
+        employees: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.employees`)).rows[0].c,
+        contracts: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.employee_contracts`)).rows[0].c,
+        insurance: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.employee_insurance_records`)).rows[0].c,
+        attendance: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.attendance_records`)).rows[0].c,
+        payroll_periods: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.payroll_periods`)).rows[0].c,
+        requisitions: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.job_requisitions`)).rows[0].c,
+        candidates: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.recruitment_candidates`)).rows[0].c,
+        interviews: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.recruitment_interviews`)).rows[0].c,
+        service_requests: (await hrm.query(`SELECT COUNT(*)::int AS c FROM public.service_requests`)).rows[0].c,
       },
       xbos: {
         catalogs: (await xbos.query(`SELECT COUNT(*)::int AS c FROM public.config_catalogs WHERE tenant_id = $1`, [tenantId])).rows[0].c,

@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import { RoutePending } from '@/components/feedback/RoutePending';
+import { UnifiedPortalRedirect } from '@/components/UnifiedPortalRedirect';
 
 const OrganizationPage = lazy(() =>
   import('@/pages/OrganizationPage').then((module) => ({ default: module.OrganizationPage })),
@@ -53,6 +54,7 @@ export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
+        <Route path="/command-center/*" element={<UnifiedPortalRedirect />} />
         <Route element={<MainLayout />}>
           <Route path="/" element={withRouteGuard(<OrganizationPage />)} />
           <Route path="/org-chart" element={withRouteGuard(<OrgChartPage />)} />

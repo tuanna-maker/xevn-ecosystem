@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createHmac } from 'node:crypto';
 import { RecruitmentController } from './recruitment.controller';
+import { RecruitmentCatalogService } from './recruitment-catalog.service';
 import { RecruitmentService } from './recruitment.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
@@ -11,7 +12,8 @@ function createInternalJwt(payload: Record<string, unknown>) {
   return `${header}.${body}.${sig}`;
 }
 
-describe('RecruitmentController', () => {
+/** UC: HRM-RC-01..06 · embed UC-HRM-22 */
+describe('RecruitmentController (HRM-RC-01..06)', () => {
   let controller: RecruitmentController;
 
   const serviceMock = {
@@ -23,18 +25,34 @@ describe('RecruitmentController', () => {
     updateInterviewStatus: jest.fn().mockResolvedValue({ id: 'int-1', status: 'passed' }),
   };
 
+  const catalogMock = {
+    listJobPostings: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createJobPosting: jest.fn().mockResolvedValue({ id: 'jp-1' }),
+    deleteJobPosting: jest.fn().mockResolvedValue({ id: 'jp-1' }),
+    listCandidatesTable: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
+    updateCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
+    deleteCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
+    listCandidateApplications: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listRecruitmentPlans: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    updateRecruitmentPlanStatus: jest.fn().mockResolvedValue({ id: 'plan-1', status: 'approved' }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     process.env.INTERNAL_API_KEY = 'test-key';
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RecruitmentController],
-      providers: [{ provide: RecruitmentService, useValue: serviceMock }],
+      providers: [
+        { provide: RecruitmentService, useValue: serviceMock },
+        { provide: RecruitmentCatalogService, useValue: catalogMock },
+      ],
     }).compile();
 
     controller = module.get<RecruitmentController>(RecruitmentController);
   });
 
-  it('returns deterministic recruitment codes', async () => {
+  it('HRM-RC-02 list HRM-RC-03 create HRM-RC-04 list HRM-RC-05 schedule HRM-RC-06 update interview codes', async () => {
     const createReqRes = await controller.createJobRequisition(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       title: 'Backend Engineer',
@@ -48,7 +66,7 @@ describe('RecruitmentController', () => {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       requisition_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
       full_name: 'Nguyen Van A',
-      email: 'a@xevn.vn',
+      email: 'a@xe.vn',
       source: 'linkedin',
     });
     const listCandidateRes = await controller.listCandidates(undefined, 'test-key', 'xevn', undefined, {
@@ -93,7 +111,7 @@ describe('RecruitmentController', () => {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       requisition_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
       full_name: 'Tran Thi B',
-      email: 'b@xevn.vn',
+      email: 'b@xe.vn',
       source: 'referral',
     };
     const candidateQuery = {
@@ -117,12 +135,17 @@ describe('RecruitmentController', () => {
     await controller.scheduleInterview(undefined, 'test-key', 'xevn', undefined, interviewBody);
     await controller.updateInterviewStatus('int-1', undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037', statusBody);
 
-    expect(serviceMock.createJobRequisition).toHaveBeenCalledWith(requisitionBody);
-    expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(requisitionQuery);
-    expect(serviceMock.createCandidate).toHaveBeenCalledWith(candidateBody);
-    expect(serviceMock.listCandidates).toHaveBeenCalledWith(candidateQuery);
-    expect(serviceMock.scheduleInterview).toHaveBeenCalledWith(interviewBody);
-    expect(serviceMock.updateInterviewStatus).toHaveBeenCalledWith('int-1', statusBody);
+    expect(serviceMock.createJobRequisition).toHaveBeenCalledWith(requisitionBody, undefined);
+    expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(requisitionQuery, undefined, { tenantId: 'xevn' });
+    expect(serviceMock.createCandidate).toHaveBeenCalledWith(candidateBody, undefined);
+    expect(serviceMock.listCandidates).toHaveBeenCalledWith(candidateQuery, undefined, { tenantId: 'xevn' });
+    expect(serviceMock.scheduleInterview).toHaveBeenCalledWith(interviewBody, undefined);
+    expect(serviceMock.updateInterviewStatus).toHaveBeenCalledWith(
+      'int-1',
+      statusBody,
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      undefined,
+    );
   });
 
   it('blocks unauthorized recruitment access', async () => {
@@ -140,11 +163,64 @@ describe('RecruitmentController', () => {
         company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
         requisition_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         full_name: 'Tran Thi B',
-        email: 'b@xevn.vn',
+        email: 'b@xe.vn',
         source: 'referral',
       }),
     ).toThrow('tenantId is required');
     expect(serviceMock.createCandidate).not.toHaveBeenCalled();
+  });
+
+  it('creates candidate pool row when requisition_id is omitted', async () => {
+    const res = await controller.createCandidate(undefined, 'test-key', 'xevn', undefined, {
+      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      full_name: 'Pool Candidate',
+      email: 'pool@xe.vn',
+      source: 'career_page',
+    });
+    expect(res.code).toBe('HRM-REC-CP-201');
+    expect(catalogMock.createCandidatePool).toHaveBeenCalledWith(
+      expect.objectContaining({ full_name: 'Pool Candidate' }),
+      undefined,
+    );
+    expect(serviceMock.createCandidate).not.toHaveBeenCalled();
+  });
+
+  it('updates and deletes candidate-pool rows', async () => {
+    const updated = await controller.updateCandidatePool(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      undefined,
+      'test-key',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      { stage: 'interview' },
+    );
+    const deleted = await controller.deleteCandidatePool(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      undefined,
+      'test-key',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
+    expect(updated.code).toBe('HRM-REC-CP-200');
+    expect(deleted.code).toBe('HRM-REC-CP-200');
+    expect(catalogMock.updateCandidatePool).toHaveBeenCalled();
+    expect(catalogMock.deleteCandidatePool).toHaveBeenCalled();
+  });
+
+  it('lists job requisitions when company_id is slug main (portal pilot)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const res = await controller.listJobRequisitions(`Bearer ${token}`, undefined, 'xevn', undefined, {
+      company_id: 'main',
+    });
+    expect(res.code).toBe('HRM-REC-200');
+    expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(
+      expect.objectContaining({ company_id: 'main' }),
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
   });
 
   it('rejects tenant scope mismatch against token', async () => {
@@ -160,5 +236,28 @@ describe('RecruitmentController', () => {
       }),
     ).toThrow('tenantId mismatches token scope');
     expect(serviceMock.listCandidates).not.toHaveBeenCalled();
+  });
+
+  it('accepts x-access-token fallback header for list requisitions', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const res = await controller.listJobRequisitions(
+      undefined,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+      { 'x-access-token': token },
+    );
+    expect(res.code).toBe('HRM-REC-200');
+    expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
   });
 });

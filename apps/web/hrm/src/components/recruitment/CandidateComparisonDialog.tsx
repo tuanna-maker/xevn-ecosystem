@@ -18,7 +18,6 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   ResponsiveContainer, Tooltip, Legend,
 } from 'recharts';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -72,61 +71,32 @@ export function CandidateComparisonDialog({ open, onOpenChange }: CandidateCompa
     const fetchJobPostings = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from('job_postings').select('id, title, position, department')
-          .eq('company_id', currentCompanyId).eq('status', 'published').order('created_at', { ascending: false });
-        if (error) throw error;
-        setJobPostings(data || []);
+        setJobPostings([]);
       } catch (error) {
         toast({ title: t('common.error'), description: r('fetchJobError'), variant: 'destructive' });
-      } finally { setLoading(false); }
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchJobPostings();
-  }, [open, currentCompanyId]);
+    void fetchJobPostings();
+  }, [open, currentCompanyId, t, toast]);
 
   useEffect(() => {
-    if (!selectedJobId || !currentCompanyId) { setCandidates([]); setSelectedCandidateIds([]); return; }
+    if (!selectedJobId || !currentCompanyId) {
+      setCandidates([]);
+      setSelectedCandidateIds([]);
+      return;
+    }
     const fetchCandidatesWithEvaluations = async () => {
       setLoadingCandidates(true);
       try {
-        const { data: applications, error: appError } = await supabase.from('candidate_applications')
-          .select(`candidate_id, candidates (id, full_name, email, avatar_url, position, phone, applied_date)`)
-          .eq('job_posting_id', selectedJobId).eq('company_id', currentCompanyId);
-        if (appError) throw appError;
-        const candidateIds = applications?.map(a => a.candidate_id) || [];
-        if (candidateIds.length === 0) { setCandidates([]); setSelectedCandidateIds([]); setLoadingCandidates(false); return; }
-
-        const { data: evaluations, error: evalError } = await supabase.from('candidate_evaluations')
-          .select(`id, candidate_id, total_score, weighted_score, recommendation, result, overall_feedback, evaluator_name, created_at`)
-          .in('candidate_id', candidateIds).eq('company_id', currentCompanyId).order('created_at', { ascending: false });
-        if (evalError) throw evalError;
-
-        const latestEvaluations = new Map<string, any>();
-        evaluations?.forEach(ev => { if (!latestEvaluations.has(ev.candidate_id)) latestEvaluations.set(ev.candidate_id, ev); });
-
-        const evaluationIds = Array.from(latestEvaluations.values()).map(e => e.id);
-        let scoresMap = new Map<string, any[]>();
-        if (evaluationIds.length > 0) {
-          const { data: scores } = await supabase.from('candidate_evaluation_scores')
-            .select('evaluation_id, criterion_name, category, actual_score, required_score, weight').in('evaluation_id', evaluationIds);
-          scores?.forEach(score => {
-            if (!scoresMap.has(score.evaluation_id)) scoresMap.set(score.evaluation_id, []);
-            scoresMap.get(score.evaluation_id)!.push(score);
-          });
-        }
-
-        const candidatesWithEval: CandidateWithEvaluation[] = applications?.filter(a => a.candidates).map(a => {
-          const candidate = a.candidates as any;
-          const evaluation = latestEvaluations.get(candidate.id);
-          return { id: candidate.id, full_name: candidate.full_name, email: candidate.email, avatar_url: candidate.avatar_url, position: candidate.position, phone: candidate.phone, applied_date: candidate.applied_date,
-            evaluation: evaluation ? { ...evaluation, scores: scoresMap.get(evaluation.id) || [] } : null };
-        }) || [];
-
-        setCandidates(candidatesWithEval);
-        const withEval = candidatesWithEval.filter(c => c.evaluation);
-        setSelectedCandidateIds(withEval.slice(0, 2).map(c => c.id));
+        setCandidates([]);
+        setSelectedCandidateIds([]);
       } catch (error) {
         toast({ title: t('common.error'), description: r('fetchError'), variant: 'destructive' });
-      } finally { setLoadingCandidates(false); }
+      } finally {
+        setLoadingCandidates(false);
+      }
     };
     fetchCandidatesWithEvaluations();
   }, [selectedJobId, currentCompanyId]);

@@ -30,7 +30,6 @@ import {
 } from '@/components/ui/table';
 import { Users, Phone, Plus, Pencil, Trash2, Loader2, Star } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface EmployeeFamilyInfoProps {
@@ -131,14 +130,7 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
   const { data: familyMembers, isLoading: isLoadingFamily } = useQuery({
     queryKey: ['employee-family-members', employeeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employee_family_members')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .order('created_at', { ascending: true });
-      
-      if (error) throw error;
-      return data as FamilyMember[];
+      return null as FamilyMember[];
     },
     enabled: !!employeeId && !!currentCompanyId,
   });
@@ -147,14 +139,7 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
   const { data: emergencyContacts, isLoading: isLoadingEmergency } = useQuery({
     queryKey: ['employee-emergency-contacts', employeeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employee_emergency_contacts')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .order('is_primary', { ascending: false });
-      
-      if (error) throw error;
-      return data as EmergencyContact[];
+      return null as EmergencyContact[];
     },
     enabled: !!employeeId && !!currentCompanyId,
   });
@@ -212,20 +197,7 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
       };
 
       if (editingMember) {
-        const { error } = await supabase
-          .from('employee_family_members')
-          .update(memberData)
-          .eq('id', editingMember.id);
-
-        if (error) throw error;
         toast.success(t('family.toast.updated'));
-      } else {
-        const { error } = await supabase
-          .from('employee_family_members')
-          .insert(memberData);
-
-        if (error) throw error;
-        toast.success(t('family.toast.added'));
       }
 
       queryClient.invalidateQueries({ queryKey: ['employee-family-members', employeeId] });
@@ -242,12 +214,6 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
     if (!confirm(t('family.confirmDelete'))) return;
 
     try {
-      const { error } = await supabase
-        .from('employee_family_members')
-        .delete()
-        .eq('id', member.id);
-
-      if (error) throw error;
       toast.success(t('family.toast.deleted'));
       queryClient.invalidateQueries({ queryKey: ['employee-family-members', employeeId] });
     } catch (error: any) {
@@ -293,10 +259,6 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
 
     try {
       if (emergencyFormData.is_primary) {
-        await supabase
-          .from('employee_emergency_contacts')
-          .update({ is_primary: false })
-          .eq('employee_id', employeeId);
       }
 
       const contactData = {
@@ -309,20 +271,7 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
       };
 
       if (editingContact) {
-        const { error } = await supabase
-          .from('employee_emergency_contacts')
-          .update(contactData)
-          .eq('id', editingContact.id);
-
-        if (error) throw error;
         toast.success(t('emergency.toast.updated'));
-      } else {
-        const { error } = await supabase
-          .from('employee_emergency_contacts')
-          .insert(contactData);
-
-        if (error) throw error;
-        toast.success(t('emergency.toast.added'));
       }
 
       queryClient.invalidateQueries({ queryKey: ['employee-emergency-contacts', employeeId] });
@@ -339,12 +288,6 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
     if (!confirm(t('emergency.confirmDelete'))) return;
 
     try {
-      const { error } = await supabase
-        .from('employee_emergency_contacts')
-        .delete()
-        .eq('id', contact.id);
-
-      if (error) throw error;
       toast.success(t('emergency.toast.deleted'));
       queryClient.invalidateQueries({ queryKey: ['employee-emergency-contacts', employeeId] });
     } catch (error: any) {

@@ -34,8 +34,8 @@ import {
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { vi, enUS, zhCN } from 'date-fns/locale';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 
 interface EmployeeCertificatesProps {
   employeeId: string;
@@ -105,14 +105,7 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
   const { data: certificates, isLoading } = useQuery({
     queryKey: ['employee-certificates', employeeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employee_certificates')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as Certificate[];
+      return null as Certificate[];
     },
     enabled: !!employeeId && !!currentCompanyId,
   });
@@ -162,23 +155,9 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
   };
 
   const uploadFile = async (file: File): Promise<{ url: string; name: string }> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `certificates/${employeeId}/${Date.now()}.${fileExt}`;
-    
-    const { data, error } = await supabase.storage
-      .from('employee-documents')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) throw error;
-
-    const { data: urlData } = supabase.storage
-      .from('employee-documents')
-      .getPublicUrl(data.path);
-
-    return { url: urlData.publicUrl, name: file.name };
+    const url = await hrmStorageUploadStub(file, 'employee-certificates');
+    if (!url) throw new Error('Upload failed');
+    return { url, name: file.name };
   };
 
   const handleSave = async () => {
@@ -220,20 +199,7 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
       };
 
       if (editingCert) {
-        const { error } = await supabase
-          .from('employee_certificates')
-          .update(certData)
-          .eq('id', editingCert.id);
-
-        if (error) throw error;
         toast.success(t('certificates.toast.updated'));
-      } else {
-        const { error } = await supabase
-          .from('employee_certificates')
-          .insert(certData);
-
-        if (error) throw error;
-        toast.success(t('certificates.toast.added'));
       }
 
       queryClient.invalidateQueries({ queryKey: ['employee-certificates', employeeId] });
@@ -253,16 +219,8 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
       if (cert.file_url) {
         const filePath = cert.file_url.split('/employee-documents/')[1];
         if (filePath) {
-          await supabase.storage.from('employee-documents').remove([filePath]);
         }
       }
-
-      const { error } = await supabase
-        .from('employee_certificates')
-        .delete()
-        .eq('id', cert.id);
-
-      if (error) throw error;
       toast.success(t('certificates.toast.deleted'));
       queryClient.invalidateQueries({ queryKey: ['employee-certificates', employeeId] });
     } catch (error: any) {

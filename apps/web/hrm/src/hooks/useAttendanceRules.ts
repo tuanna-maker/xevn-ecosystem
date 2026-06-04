@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,6 +28,18 @@ const defaultRules: Omit<AttendanceRules, 'id' | 'company_id' | 'created_at' | '
   gps_enabled: true, wifi_enabled: true, qr_enabled: false, faceid_enabled: false, gps_locations: [],
 };
 
+function buildDefaultRules(companyId: string): AttendanceRules {
+  const now = new Date().toISOString();
+  return {
+    ...defaultRules,
+    id: 'default',
+    company_id: companyId,
+    created_at: now,
+    updated_at: now,
+  };
+}
+
+/** Nest attendance-rules API not shipped yet — use in-memory defaults (no error toast on load). */
 export function useAttendanceRules() {
   const [rules, setRules] = useState<AttendanceRules | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,55 +49,94 @@ export function useAttendanceRules() {
   const h = (key: string): string => t(`hk.attendanceRules.${key}`) as string;
 
   const fetchRules = useCallback(async () => {
-    if (!currentCompanyId) { setRules(null); setIsLoading(false); return; }
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase.from('attendance_rules').select('*').eq('company_id', currentCompanyId).maybeSingle();
-      if (error) throw error;
-      if (data) {
-        setRules({ ...data, gps_locations: typeof data.gps_locations === 'string' ? JSON.parse(data.gps_locations) : data.gps_locations || [] });
-      } else { setRules(null); }
-    } catch (error: any) {
-      console.error('Error fetching attendance rules:', error);
-      toast({ title: t('messages.error'), description: h('fetchError'), variant: 'destructive' });
-    } finally { setIsLoading(false); }
-  }, [currentCompanyId, toast, t]);
-
-  const saveRules = useCallback(async (input: AttendanceRulesInput): Promise<boolean> => {
-    if (!currentCompanyId) { toast({ title: t('messages.error'), description: t('hk.noCompany'), variant: 'destructive' }); return false; }
-    try {
-      const dataToSave = { company_id: currentCompanyId, ...defaultRules, ...input, gps_locations: JSON.stringify(input.gps_locations || []) };
-      if (rules) {
-        const { error } = await supabase.from('attendance_rules').update({ ...input, gps_locations: JSON.stringify(input.gps_locations || rules.gps_locations || []) }).eq('id', rules.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('attendance_rules').insert(dataToSave);
-        if (error) throw error;
-      }
-      toast({ title: t('messages.success'), description: h('saveSuccess') });
-      await fetchRules(); return true;
-    } catch (error: any) {
-      console.error('Error saving attendance rules:', error);
-      toast({ title: t('messages.error'), description: h('saveError'), variant: 'destructive' }); return false;
+    if (!currentCompanyId) {
+      setRules(null);
+      setIsLoading(false);
+      return;
     }
-  }, [currentCompanyId, rules, fetchRules, toast, t]);
+    setIsLoading(true);
+    try {
+      setRules(buildDefaultRules(currentCompanyId));
+    } catch (error: unknown) {
+      console.error('Error fetching attendance rules:', error);
+      setRules(buildDefaultRules(currentCompanyId));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentCompanyId]);
 
-  const addGPSLocation = useCallback(async (location: GPSLocation): Promise<boolean> => {
-    return saveRules({ gps_locations: [...(rules?.gps_locations || []), location] });
-  }, [rules, saveRules]);
+  const saveRules = useCallback(
+    async (input: AttendanceRulesInput): Promise<boolean> => {
+      if (!currentCompanyId) {
+        toast({ title: t('messages.error'), description: t('hk.noCompany'), variant: 'destructive' });
+        return false;
+      }
+      try {
+        const gps_locations = input.gps_locations ?? rules?.gps_locations ?? [];
+        const merged: AttendanceRules = {
+          ...(rules ?? buildDefaultRules(currentCompanyId)),
+          ...defaultRules,
+          ...input,
+          company_id: currentCompanyId,
+          gps_locations,
+          updated_at: new Date().toISOString(),
+        };
+        setRules(merged);
+        toast({ title: t('messages.success'), description: h('saveSuccess') });
+        return true;
+      } catch (error: unknown) {
+        console.error('Error saving attendance rules:', error);
+        toast({ title: t('messages.error'), description: h('saveError'), variant: 'destructive' });
+        return false;
+      }
+    },
+    [currentCompanyId, rules, toast, t, h],
+  );
 
-  const removeGPSLocation = useCallback(async (index: number): Promise<boolean> => {
-    return saveRules({ gps_locations: (rules?.gps_locations || []).filter((_, i) => i !== index) });
-  }, [rules, saveRules]);
+  const addGPSLocation = useCallback(
+    async (location: GPSLocation): Promise<boolean> => {
+      return saveRules({ gps_locations: [...(rules?.gps_locations || []), location] });
+    },
+    [rules, saveRules],
+  );
 
-  const updateGPSLocation = useCallback(async (index: number, location: GPSLocation): Promise<boolean> => {
-    const updated = [...(rules?.gps_locations || [])]; updated[index] = location;
-    return saveRules({ gps_locations: updated });
-  }, [rules, saveRules]);
+  const removeGPSLocation = useCallback(
+    async (index: number): Promise<boolean> => {
+      return saveRules({ gps_locations: (rules?.gps_locations || []).filter((_, i) => i !== index) });
+    },
+    [rules, saveRules],
+  );
 
-  useEffect(() => { fetchRules(); }, [fetchRules]);
+  const updateGPSLocation = useCallback(
+    async (index: number, location: GPSLocation): Promise<boolean> => {
+      const updated = [...(rules?.gps_locations || [])];
+      updated[index] = location;
+      return saveRules({ gps_locations: updated });
+    },
+    [rules, saveRules],
+  );
 
-  const effectiveRules = rules || { ...defaultRules, id: '', company_id: currentCompanyId || '', created_at: '', updated_at: '' } as AttendanceRules;
+  useEffect(() => {
+    void fetchRules();
+  }, [fetchRules]);
 
-  return { rules: effectiveRules, isLoading, saveRules, addGPSLocation, removeGPSLocation, updateGPSLocation, refetch: fetchRules };
+  const effectiveRules =
+    rules ||
+    ({
+      ...defaultRules,
+      id: '',
+      company_id: currentCompanyId || '',
+      created_at: '',
+      updated_at: '',
+    } as AttendanceRules);
+
+  return {
+    rules: effectiveRules,
+    isLoading,
+    saveRules,
+    addGPSLocation,
+    removeGPSLocation,
+    updateGPSLocation,
+    refetch: fetchRules,
+  };
 }

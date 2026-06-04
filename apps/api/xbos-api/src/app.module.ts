@@ -13,6 +13,8 @@ import { InfrastructureController } from './infrastructure/infrastructure.contro
 import { InfrastructureService } from './infrastructure/infrastructure.service';
 import { KpiEngineController } from './kpi-engine/kpi-engine.controller';
 import { KpiEngineService } from './kpi-engine/kpi-engine.service';
+import { AlertsController } from './alerts/alerts.controller';
+import { AlertsService } from './alerts/alerts.service';
 import { OrgFoundationModule } from './org-foundation/org-foundation.module';
 import { TenantScopeModule } from './tenant-scope/tenant-scope.module';
 import { PositionRbacModule } from './position-rbac/position-rbac.module';
@@ -45,7 +47,15 @@ import { CommandCenterModule } from './command-center/command-center.module';
     InfrastructureController,
     BusinessMasterController,
     KpiEngineController,
+    AlertsController,
   ],
-  providers: [ConfigSyncService, AssetsService, InfrastructureService, BusinessMasterService, KpiEngineService],
+  providers: [
+    ConfigSyncService,
+    AssetsService,
+    InfrastructureService,
+    BusinessMasterService,
+    KpiEngineService,
+    AlertsService,
+  ],
 })
 export class AppModule {}

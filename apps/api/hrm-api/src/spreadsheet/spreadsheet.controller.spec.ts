@@ -54,7 +54,7 @@ describe('SpreadsheetController', () => {
     expect(spreadsheetMock.getLimitsSnapshot).toHaveBeenCalled();
   });
 
-  it('returns csv template as StreamableFile', async () => {
+  it('HRM-IM-04 returns csv template as StreamableFile', async () => {
     const file = await controller.downloadTemplate('employee_import', 'csv', undefined, 'test-key');
     expect(file).toBeInstanceOf(StreamableFile);
   });
@@ -65,7 +65,7 @@ describe('SpreadsheetController', () => {
     );
   });
 
-  it('rejects scope mismatch before service on preview', async () => {
+  it('HRM-IM-01 preview rejects scope mismatch before service', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
       aud: 'xevn-api',
@@ -86,5 +86,40 @@ describe('SpreadsheetController', () => {
       ),
     ).rejects.toThrow('companyId mismatches token scope');
     expect(spreadsheetMock.previewEmployeeImport).not.toHaveBeenCalled();
+  });
+
+  it('HRM-IM-02 commit returns SHEET-201', async () => {
+    const file = { buffer: Buffer.from('employee_code,email\nE1,a@xe.vn'), mimetype: 'text/csv', originalname: 'x.csv' } as Parameters<
+      SpreadsheetController['importCommit']
+    >[0];
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'vtc',
+      company_uuid: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    });
+    const res = await controller.importCommit(
+      file,
+      { kind: 'employee_import' },
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      `Bearer ${token}`,
+      undefined,
+    );
+    expect(res.code).toBe('SHEET-201');
+    expect(spreadsheetMock.commitEmployeeImport).toHaveBeenCalled();
+  });
+
+  it('HRM-IM-03 export returns StreamableFile', async () => {
+    const file = await controller.exportSheet(
+      { filter: { company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037' } },
+      'xevn',
+      undefined,
+      undefined,
+      'test-key',
+    );
+    expect(file).toBeInstanceOf(StreamableFile);
+    expect(spreadsheetMock.exportEmployeesCsv).toHaveBeenCalled();
   });
 });

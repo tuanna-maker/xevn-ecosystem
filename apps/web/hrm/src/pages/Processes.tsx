@@ -14,9 +14,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Search, Plus, FileText, BookOpen, Eye, Edit, Trash2, Loader2, Upload, X, Download, Paperclip } from 'lucide-react';
 import { useProcesses, CompanyProcess } from '@/hooks/useProcesses';
 import { useDepartments } from '@/hooks/useDepartments';
-import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 
 const emptyForm = {
   type: 'process' as string,
@@ -86,15 +86,12 @@ export default function Processes() {
     setUploading(true);
     const newUrls: string[] = [];
     for (const file of Array.from(files)) {
-      const ext = file.name.split('.').pop();
-      const path = `${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage.from('process-files').upload(path, file);
-      if (error) {
-        toast.error(`Lỗi tải file ${file.name}: ${error.message}`);
+      const url = await hrmStorageUploadStub(file, 'company-process-file');
+      if (!url) {
+        toast.error(`Lỗi tải file ${file.name}`);
         continue;
       }
-      const { data: urlData } = supabase.storage.from('process-files').getPublicUrl(path);
-      newUrls.push(urlData.publicUrl);
+      newUrls.push(url);
     }
     setForm(f => ({ ...f, file_urls: [...f.file_urls, ...newUrls] }));
     setUploading(false);

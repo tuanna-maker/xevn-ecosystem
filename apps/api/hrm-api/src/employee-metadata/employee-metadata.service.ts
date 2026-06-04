@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
+import { assertResourceInHrmScope, resolveHrmListScope } from '../common/hrm-list-scope';
 import { DecideEmployeeMetadataChangeDto } from './dto/decide-employee-metadata-change.dto';
 import { ListEmployeeMetadataChangeRequestsQueryDto } from './dto/list-employee-metadata-change-requests.query.dto';
 import { SubmitEmployeeMetadataChangeDto } from './dto/submit-employee-metadata-change.dto';
@@ -25,19 +26,33 @@ export class EmployeeMetadataService {
     });
   }
 
-  async listChangeRequests(query: ListEmployeeMetadataChangeRequestsQueryDto) {
-    return this.repository.listChangeRequests({
-      company_id: query.company_id,
-      employee_id: query.employee_id,
-      legal_entity_id: query.legal_entity_id,
-      status: query.status,
-      field_key: query.field_key?.trim(),
-      page: query.page ?? 1,
-      page_size: query.page_size ?? 20,
-    });
+  async listChangeRequests(query: ListEmployeeMetadataChangeRequestsQueryDto, authorization?: string) {
+    return this.repository.listChangeRequests(
+      {
+        employee_id: query.employee_id,
+        legal_entity_id: query.legal_entity_id,
+        status: query.status,
+        field_key: query.field_key?.trim(),
+        page: query.page ?? 1,
+        page_size: query.page_size ?? 20,
+      },
+      authorization,
+      query.company_id,
+    );
   }
 
-  async approveChangeRequest(changeRequestId: string, decision: DecideEmployeeMetadataChangeDto) {
+  async approveChangeRequest(
+    changeRequestId: string,
+    decision: DecideEmployeeMetadataChangeDto,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const pending = await this.repository.getChangeRequestById(changeRequestId);
+    assertResourceInHrmScope(pending, scope, {
+      notFoundCode: 'HRM-META-404',
+      mismatchCode: 'HRM-META-409',
+    });
     const request = await this.repository.approveChangeRequest(changeRequestId, decision);
     if (!request) {
       throw new ApiException('HRM-META-404', 'Metadata change request not found', HttpStatus.NOT_FOUND);
@@ -48,7 +63,18 @@ export class EmployeeMetadataService {
     return request;
   }
 
-  async rejectChangeRequest(changeRequestId: string, decision: DecideEmployeeMetadataChangeDto) {
+  async rejectChangeRequest(
+    changeRequestId: string,
+    decision: DecideEmployeeMetadataChangeDto,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const pending = await this.repository.getChangeRequestById(changeRequestId);
+    assertResourceInHrmScope(pending, scope, {
+      notFoundCode: 'HRM-META-404',
+      mismatchCode: 'HRM-META-409',
+    });
     const request = await this.repository.rejectChangeRequest(changeRequestId, decision);
     if (!request) {
       throw new ApiException('HRM-META-404', 'Metadata change request not found or not pending', HttpStatus.NOT_FOUND);
@@ -56,8 +82,8 @@ export class EmployeeMetadataService {
     return request;
   }
 
-  async listAuditLogs(companyId: string, employeeId?: string) {
-    const data = await this.repository.listAuditLogs(companyId, employeeId);
+  async listAuditLogs(companyId: string, employeeId: string | undefined, authorization?: string) {
+    const data = await this.repository.listAuditLogs(companyId, employeeId, authorization);
     return {
       total: data.length,
       data,

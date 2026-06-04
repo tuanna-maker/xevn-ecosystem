@@ -1,0 +1,47 @@
+import { IsIn, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+
+export class UpdateEmployeeInsuranceDto {
+  @IsString()
+  @MaxLength(64)
+  company_id!: string;
+
+  @IsOptional()
+  @IsIn(['social', 'health', 'unemployment', 'accident', 'life'])
+  type?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  provider?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  policy_number?: string;
+
+  @IsOptional()
+  @IsString()
+  start_date?: string;
+
+  @IsOptional()
+  @IsString()
+  end_date?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  contribution?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  employer_contribution?: number;
+
+  @IsOptional()
+  @IsIn(['active', 'expired', 'pending'])
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}

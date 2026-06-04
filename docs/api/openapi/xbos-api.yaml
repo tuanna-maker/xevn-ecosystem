@@ -1,0 +1,845 @@
+openapi: 3.1.0
+info:
+  title: XeVN XBOS API — M01 Hub Contract (Phase 1 S2)
+  version: 1.2.0-p1-s2
+  description: |
+    Canonical contract for Phase 1 Module M01 (catalog, KPI, org, tenant scope, business master, workflow).
+    U18 delta: docs/architecture/P1-TECHSPEC-OPENAPI-DELTA-U18-20260524.md
+    Bounded-context rules: docs/decisions/ADR-XBOS-M01-OPENAPI-BOUNDARIES.md
+    Scope ladder (holding vs main, multi-membership): docs/decisions/ADR-HRM-RBAC-SCOPE-LADDER.md
+servers:
+  - url: /api/xbos
+tags:
+  - name: Platform
+    description: Health, metrics (NFR)
+  - name: M01-Catalog
+    description: UC-XBOS-02..05, UC-XBOS-SYNC-01 — config-sync + catalog-governance
+  - name: M01-KPI
+    description: UC-XBOS-KPI-01..04 — kpi-engine (math source of truth)
+  - name: M01-Org
+    description: UC-XBOS-ORG-01..03, UC-XBOS-10..12 — org-foundation, position-rbac
+  - name: M01-Tenant
+    description: Global filter / membership — tenant-scope
+  - name: M01-Master
+    description: UC-XBOS-MD-01..07, UC-XBOS-08 — business-master domains
+  - name: M01-CC
+    description: Command Center presentation (not KPI math) — UC-CC-P0-09
+  - name: M01-Platform-Audit
+    description: UC-XBOS-06 emit path (catalog publish) — no GET /audit in S1
+  - name: M01-Alerts
+    description: UC-XBOS-07 satellite violation ingest
+  - name: M01-WF
+    description: UC-XBOS-13..15, UC-XBOS-WF-01..06, UC-XBOS-CC-06 — workflow-engine runtime
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    internalApiKey:
+      type: apiKey
+      in: header
+      name: x-internal-api-key
+  parameters:
+    TenantIdQuery:
+      name: tenantId
+      in: query
+      schema: { type: string }
+    CompanyIdQuery:
+      name: companyId
+      in: query
+      schema: { type: string }
+    CatalogTarget:
+      name: target
+      in: query
+      required: true
+      schema:
+        type: string
+        enum: [hrm, xbos, web-portal]
+    CatalogKey:
+      name: catalogKey
+      in: path
+      required: true
+      schema: { type: string }
+    Domain:
+      name: domain
+      in: path
+      required: true
+      schema:
+        type: string
+        description: Whitelist — see BusinessMasterService.allowedDomains
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema: { type: string }
+  headers:
+    XTenantId:
+      schema: { type: string }
+    XCompanyId:
+      schema: { type: string }
+    XRequestId:
+      schema: { type: string, format: uuid }
+  schemas:
+    ApiEnvelopeSuccess:
+      type: object
+      required: [success, code, message, data, timestamp]
+      properties:
+        success: { type: boolean, const: true }
+        code: { type: string, pattern: '^XBOS-' }
+        message: { type: string }
+        data: { type: object }
+        timestamp: { type: string, format: date-time }
+    ApiEnvelopeError:
+      type: object
+      required: [success, code, message, timestamp]
+      properties:
+        success: { type: boolean, const: false }
+        code: { type: string }
+        message: { type: string }
+        details: { type: object }
+        timestamp: { type: string, format: date-time }
+    KpiEvaluateBody:
+      type: object
+      required: [target, actual]
+      properties:
+        target: { type: number }
+        actual: { type: number }
+        weight: { type: number }
+        warningThreshold: { type: number }
+        criticalThreshold: { type: number }
+    PublishCatalogBody:
+      type: object
+      description: See PublishCatalogDto in config-sync module
+security:
+  - bearerAuth: []
+  - internalApiKey: []
+paths:
+  /:
+    get:
+      tags: [Platform]
+      operationId: xbosHealth
+      security: []
+      responses:
+        '200':
+          description: Health envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeSuccess'
+  /metrics:
+    get:
+      tags: [Platform]
+      operationId: xbosMetrics
+      security: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [prometheus]
+      responses:
+        '200':
+          description: Metrics JSON or Prometheus text
+  /auth/login:
+    post:
+      tags: [Platform]
+      operationId: xbosAuthLogin
+      security: []
+      summary: Portal login (JWT + memberships)
+      responses:
+        '200':
+          description: XBOS-AUTH-200 envelope
+  /tenant-scope/accessible:
+    get:
+      tags: [M01-Tenant]
+      operationId: tenantScopeAccessible
+      summary: UC-XBOS — list tenants/companies user may access
+      parameters:
+        - name: userId
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-TENANT-200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeSuccess'
+        '401':
+          description: XBOS-AUTH-001
+  /tenant-scope/group-org-overview:
+    get:
+      tags: [M01-Tenant]
+      operationId: tenantScopeGroupOrgOverview
+      summary: Command Center org overview (JWT sub — no companyId scope gate)
+      responses:
+        '200':
+          description: XBOS-TENANT-200
+        '401':
+          description: XBOS-AUTH-001
+        '403':
+          description: XBOS-TENANT-403 — requires master tenant membership
+  /tenant-scope/group-member-units:
+    get:
+      tags: [M01-Tenant]
+      operationId: tenantScopeGroupMemberUnits
+      summary: Group legal entities + member units (master membership only)
+      responses:
+        '200':
+          description: XBOS-TENANT-200
+        '401':
+          description: XBOS-AUTH-001
+        '403':
+          description: XBOS-TENANT-403 — member-only CEO must not access
+  /config-sync/bootstrap-xevn:
+    post:
+      tags: [M01-Catalog]
+      operationId: configSyncBootstrapXevn
+      summary: UC-XBOS-SYNC-01 — seed group catalogs
+      responses:
+        '200':
+          description: XBOS-CFG-200
+        '401':
+          description: XBOS-AUTH-001
+  /config-sync/catalogs:
+    get:
+      tags: [M01-Catalog]
+      operationId: configSyncListCatalogs
+      summary: UC-XBOS-04 — list catalogs for target
+      parameters:
+        - $ref: '#/components/parameters/CatalogTarget'
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: XBOS-CFG-202
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH — companyId must match JWT
+  /config-sync/catalog/{catalogKey}:
+    get:
+      tags: [M01-Catalog]
+      operationId: configSyncGetCatalog
+      summary: UC-XBOS-03 — get catalog by key
+      parameters:
+        - $ref: '#/components/parameters/CatalogKey'
+        - $ref: '#/components/parameters/CatalogTarget'
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: XBOS-CFG-201
+        '400':
+          description: XBOS-VAL-001 invalid target
+  /config-sync/catalog/{catalogKey}/publish:
+    post:
+      tags: [M01-Catalog]
+      operationId: configSyncPublishCatalog
+      summary: UC-XBOS-02 / UC-XBOS-05 — publish catalog version
+      parameters:
+        - $ref: '#/components/parameters/CatalogKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishCatalogBody'
+      responses:
+        '200':
+          description: XBOS-CFG-203
+  /catalog-governance/extension-requests:
+    get:
+      tags: [M01-Catalog]
+      operationId: catalogGovernanceListPending
+      summary: HRM catalog extension inbox (pending)
+      parameters:
+        - $ref: '#/components/parameters/TenantIdQuery'
+      responses:
+        '200':
+          description: XBOS-CAT-200
+  /catalog-governance/workflows/start:
+    post:
+      tags: [M01-Catalog]
+      operationId: catalogGovernanceStartWorkflow
+      responses:
+        '200':
+          description: XBOS-CAT-211
+  /catalog-governance/inbox:
+    get:
+      tags: [M01-Catalog]
+      operationId: catalogGovernanceInbox
+      responses:
+        '200':
+          description: XBOS-CAT-212
+  /catalog-governance/tasks/{taskId}/approve:
+    post:
+      tags: [M01-Catalog]
+      operationId: catalogGovernanceApproveTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-CAT-201
+  /kpi-engine/evaluate:
+    post:
+      tags: [M01-KPI]
+      operationId: kpiEngineEvaluate
+      summary: UC-XBOS-KPI-01 — single KPI evaluation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KpiEvaluateBody'
+      responses:
+        '200':
+          description: XBOS-KPI-200
+  /kpi-engine/evaluate-batch:
+    post:
+      tags: [M01-KPI]
+      operationId: kpiEngineEvaluateBatch
+      summary: UC-XBOS-KPI-02
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KpiEvaluateBody'
+      responses:
+        '200':
+          description: XBOS-KPI-201
+  /kpi-engine/rollup:
+    get:
+      tags: [M01-KPI]
+      operationId: kpiEngineRollup
+      summary: UC-XBOS-KPI-03 — multi-level rollup (JWT-aligned companyId)
+      parameters:
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: XBOS-KPI-202
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /kpi-engine/portal-alerts:
+    get:
+      tags: [M01-KPI]
+      operationId: kpiEnginePortalAlerts
+      summary: UC-XBOS-KPI-04 — tenant-level alerts (list)
+      parameters:
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: limit
+          in: query
+          schema: { type: integer, default: 50 }
+      responses:
+        '200':
+          description: XBOS-KPI-203
+    post:
+      tags: [M01-KPI]
+      operationId: kpiEnginePublishPortalAlert
+      summary: UC-XBOS-KPI-04 — publish alert to Command Center rail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [moduleCode, title]
+              properties:
+                tenantId: { type: string }
+                companyId: { type: string }
+                moduleCode: { type: string }
+                level: { type: string, enum: [info, warning, critical] }
+                title: { type: string }
+                detail: { type: string }
+                sourceSystem: { type: string }
+                sourceId: { type: string }
+      responses:
+        '200':
+          description: XBOS-KPI-204
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/legal-entities:
+    get:
+      tags: [M01-Org]
+      operationId: orgFoundationListLegalEntities
+      summary: UC-XBOS-ORG-03 — legal entity list (resolveScopeContext; group plane uses companyId=holding)
+      responses:
+        '200':
+          description: XBOS-ORG-200
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH — e.g. JWT holding vs header main
+    post:
+      tags: [M01-Org]
+      operationId: orgFoundationCreateLegalEntity
+      responses:
+        '200':
+          description: XBOS-ORG-201
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/legal-entities/{entityId}:
+    put:
+      tags: [M01-Org]
+      operationId: orgFoundationUpsertLegalEntity
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-ORG-201
+  /org-foundation/org-units/tree:
+    get:
+      tags: [M01-Org]
+      operationId: orgFoundationOrgTree
+      summary: UC-XBOS-ORG-01 — org tree (holding aligned with JWT for group legal entity)
+      responses:
+        '200':
+          description: XBOS-ORG-200 — tree payload
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/org-units:
+    post:
+      tags: [M01-Org]
+      operationId: orgFoundationCreateOrgUnit
+      summary: UC-XBOS-ORG-02
+      responses:
+        '200':
+          description: XBOS-ORG-201
+  /org-foundation/org-units/{unitId}:
+    put:
+      tags: [M01-Org]
+      operationId: orgFoundationUpsertOrgUnit
+      parameters:
+        - name: unitId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-ORG-201
+    delete:
+      tags: [M01-Org]
+      operationId: orgFoundationDeleteOrgUnit
+      responses:
+        '200':
+          description: XBOS-ORG-204
+  /org-foundation/segments/{segmentId}/promote:
+    post:
+      tags: [M01-Org]
+      operationId: orgFoundationPromoteSegment
+      summary: UC-XBOS-10 — segment to subsidiary
+      parameters:
+        - name: segmentId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-ORG-202
+  /position-rbac/templates:
+    get:
+      tags: [M01-Org]
+      operationId: positionRbacListTemplates
+      summary: UC-XBOS-11
+      responses:
+        '200':
+          description: XBOS-POS-200
+    post:
+      tags: [M01-Org]
+      operationId: positionRbacCreateTemplate
+      responses:
+        '200':
+          description: XBOS-POS-201
+  /position-rbac/assignments:
+    get:
+      tags: [M01-Org]
+      operationId: positionRbacListAssignments
+      summary: UC-XBOS-12 — company-scoped assignments (resolveScopeContext)
+      responses:
+        '200':
+          description: XBOS-POS-200
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    post:
+      tags: [M01-Org]
+      operationId: positionRbacCreateAssignment
+      responses:
+        '200':
+          description: XBOS-POS-201
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /position-rbac/matrix:
+    get:
+      tags: [M01-Org]
+      operationId: positionRbacGetMatrix
+      summary: UC-XBOS-11 — permission matrix (tenant-only)
+      parameters:
+        - name: roleId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-POS-200
+        '400':
+          description: XBOS-POS-400 roleId required
+    put:
+      tags: [M01-Org]
+      operationId: positionRbacSaveMatrix
+      responses:
+        '200':
+          description: XBOS-POS-201
+  /business-master/{domain}/items:
+    get:
+      tags: [M01-Master]
+      operationId: businessMasterListItems
+      summary: UC-XBOS-MD-* / UC-XBOS-08
+      parameters:
+        - $ref: '#/components/parameters/Domain'
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: XBOS-MASTER-200
+        '400':
+          description: Unknown domain
+  /business-master/{domain}/items/{itemId}:
+    put:
+      tags: [M01-Master]
+      operationId: businessMasterUpsertItem
+      parameters:
+        - $ref: '#/components/parameters/Domain'
+        - $ref: '#/components/parameters/ItemId'
+      responses:
+        '200':
+          description: XBOS-MASTER-201
+    delete:
+      tags: [M01-Master]
+      operationId: businessMasterDeleteItem
+      responses:
+        '200':
+          description: XBOS-MASTER-204
+  /command-center/workspace-meta:
+    get:
+      tags: [M01-CC]
+      operationId: commandCenterWorkspaceMeta
+      summary: Presentation metadata — not KPI rollup
+      parameters:
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: XBOS-CC-200
+  /workflow-engine/definitions:
+    get:
+      tags: [M01-WF]
+      operationId: wfListDefinitions
+      summary: UC-XBOS-WF-02 / UC-XBOS-CC-06 — list workflow definitions (canvas)
+      parameters:
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-200
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH — resolveScopeContext strict
+    post:
+      tags: [M01-WF]
+      operationId: wfCreateDefinition
+      summary: UC-XBOS-WF-01 / UC-XBOS-13 — create workflow definition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                definitionKey: { type: string }
+                name: { type: string }
+                steps:
+                  type: array
+                  items: { type: object }
+                payload:
+                  type: object
+                  description: Canvas graph — payload.graph for UC-XBOS-CC-06
+      responses:
+        '200':
+          description: XBOS-WF-201
+        '400':
+          description: BR-WF-01 — missing steps or role hat
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /workflow-engine/definitions/{definitionId}:
+    put:
+      tags: [M01-WF]
+      operationId: wfUpsertDefinition
+      summary: UC-XBOS-13 — update workflow definition (canvas persist)
+      parameters:
+        - name: definitionId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                definitionKey: { type: string }
+                steps:
+                  type: array
+                  items: { type: object }
+                payload:
+                  type: object
+      responses:
+        '200':
+          description: XBOS-WF-201
+        '400':
+          description: BR-WF-01 validation
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /workflow-engine/instances:
+    get:
+      tags: [M01-WF]
+      operationId: wfListInstances
+      summary: UC-XBOS-14 — list workflow instances by status
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-200
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    post:
+      tags: [M01-WF]
+      operationId: wfStartInstance
+      summary: UC-XBOS-WF-03 / UC-XBOS-14 — start workflow instance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workflowCode: { type: string }
+                businessType: { type: string }
+                businessId: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-201
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /workflow-engine/instances/{instanceId}/detail:
+    get:
+      tags: [M01-WF]
+      operationId: wfInstanceDetail
+      summary: UC-XBOS-WF-05 — instance detail with step tasks
+      parameters:
+        - name: instanceId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-204
+        '401':
+          description: XBOS-AUTH-001
+  /workflow-engine/tasks:
+    get:
+      tags: [M01-WF]
+      operationId: wfListTasks
+      summary: UC-CC-P0-06 / UC-XBOS-14 — workflow inbox tasks
+      parameters:
+        - name: assigneeUserId
+          in: query
+          schema: { type: string }
+        - name: tenantId
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, completed, rejected] }
+        - name: businessType
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-203
+        '401':
+          description: XBOS-AUTH-001
+  /workflow-engine/tasks/{taskId}/complete:
+    post:
+      tags: [M01-WF]
+      operationId: wfCompleteTask
+      summary: UC-XBOS-WF-04 / UC-XBOS-14 — approve workflow step
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decision: { type: string, enum: [approve] }
+                comment: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-200
+        '401':
+          description: XBOS-AUTH-001
+        '403':
+          description: BR-WF-02 — actor lacks hat for step
+  /workflow-engine/tasks/{taskId}/reject:
+    post:
+      tags: [M01-WF]
+      operationId: wfRejectTask
+      summary: UC-XBOS-WF-06 — reject workflow step
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-205
+        '401':
+          description: XBOS-AUTH-001
+  /workflow-engine/reporting-routes:
+    get:
+      tags: [M01-WF]
+      operationId: wfListReportingRoutes
+      summary: UC-XBOS-15 — list reporting routes
+      parameters:
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-200
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    post:
+      tags: [M01-WF]
+      operationId: wfUpsertReportingRoute
+      summary: UC-XBOS-15 — upsert reporting route configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                routeKey: { type: string }
+                rollupTargets:
+                  type: array
+                  items: { type: string }
+      responses:
+        '200':
+          description: XBOS-WF-201
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /alerts/violation-ingest:
+    post:
+      tags: [M01-Alerts]
+      operationId: alertsViolationIngest
+      summary: UC-XBOS-07 — satellite violation ingest (internal auth)
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tenantId
+                - moduleCode
+                - occurredAt
+                - entityRef
+                - ruleId
+                - severity
+                - metricSnapshot
+                - correlationId
+              properties:
+                tenantId: { type: string }
+                moduleCode: { type: string }
+                occurredAt: { type: string, format: date-time }
+                entityRef: { type: object }
+                ruleId: { type: string }
+                severity:
+                  type: string
+                  enum: [low, medium, high, critical]
+                metricSnapshot: { type: object }
+                correlationId: { type: string }
+                companyId: { type: string }
+                summary: { type: string }
+      responses:
+        '200':
+          description: XBOS-ALERT-202 (accepted; maps SRS XBOS-OK-ALERT-INGEST)
+        '400':
+          description: XBOS-ALERT-001 validation | XBOS-ALERT-002 module | XBOS-ALERT-003 datetime
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH when tenantId drifts from JWT

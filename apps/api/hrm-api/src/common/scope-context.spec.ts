@@ -1,0 +1,108 @@
+import { HttpStatus } from '@nestjs/common';
+import { signServiceJwt } from './jwt-sign';
+import { resolveScopeContext } from './scope-context';
+import { ApiException } from './api.exception';
+
+describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
+  it('accepts portal x-tenant-id main when JWT tenant is xevn (J-HRM-06 embed alias)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'main',
+      companyId: 'main',
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'main' });
+  });
+
+  it('throws SCOPE_CONTEXT_MISMATCH when header tenant differs from token', () => {
+    const token = signServiceJwt({ sub: 'user-1', tenantId: 'xevn', companyId: 'main' });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'other-tenant', companyId: 'main' }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+        getStatus: expect.any(Function),
+      }),
+    );
+  });
+
+  it('throws SCOPE_CONTEXT_MISMATCH when header company differs from token', () => {
+    const token = signServiceJwt({ sub: 'user-1', tenantId: 'xevn', companyId: 'main' });
+    try {
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'other-co' });
+      fail('expected mismatch');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiException);
+      expect((error as ApiException).code).toBe('SCOPE_CONTEXT_MISMATCH');
+      expect((error as ApiException).getStatus()).toBe(HttpStatus.CONFLICT);
+    }
+  });
+
+  it('accepts UUID request company_id when token has slug + matching company_uuid (mobile attendance)', () => {
+    const companyUuid = '85945933-632a-4bca-8fe9-3bbe8bc9294b';
+    const token = signServiceJwt({
+      sub: 'uat0001@xevn.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: companyUuid,
+      employee_id: 'emp-1',
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: companyUuid,
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'holding' });
+  });
+
+  it('accepts slug header when body uses matching attendance company UUID', () => {
+    const companyUuid = '85945933-632a-4bca-8fe9-3bbe8bc9294b';
+    const token = signServiceJwt({
+      sub: 'uat0001@xevn.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: companyUuid,
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: companyUuid,
+    });
+    expect(scope.companyId).toBe('holding');
+  });
+
+  it('throws SCOPE_CONTEXT_MISMATCH when UUID request does not match token company_uuid', () => {
+    const token = signServiceJwt({
+      sub: 'uat0001@xevn.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: '85945933-632a-4bca-8fe9-3bbe8bc9294b',
+    });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: '11111111-1111-4111-8111-111111111111',
+      }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+      }),
+    );
+  });
+
+  it('throws SCOPE_CONTEXT_MISMATCH when token lacks company_uuid and request uses foreign UUID', () => {
+    const token = signServiceJwt({ sub: 'user-1', tenantId: 'xevn', companyId: 'holding' });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: '85945933-632a-4bca-8fe9-3bbe8bc9294b',
+      }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+      }),
+    );
+  });
+});

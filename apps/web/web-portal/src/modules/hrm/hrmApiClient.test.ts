@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { listEmployeeMetadataQueue } from './hrmApiClient';
+import { listEmployeeMetadataQueue, listHrmInsurance } from './hrmApiClient';
 import { HrmApiClientError } from './hrmApiErrors';
 
 const scope = { tenantId: 't-unit', companyId: 'c-unit' };
 
 describe('hrmApiClient (fetch mocks)', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>
@@ -34,7 +35,22 @@ describe('hrmApiClient (fetch mocks)', () => {
     expect(fetch).toHaveBeenCalled();
     const callUrl = String(vi.mocked(fetch).mock.calls[0]?.[0]);
     expect(callUrl).toContain('/api/hrm/employee-metadata/change-requests');
-    expect(callUrl).toContain('company_id=c-unit');
+    expect(callUrl).toContain('company_id=main');
+  });
+
+  it('listHrmEmployees uses main when scope hint is holding (EX-SA01-P1-03)', async () => {
+    const { listHrmEmployees } = await import('./hrmApiClient');
+    await listHrmEmployees({ tenantId: 'xevn', companyId: 'holding' });
+    const callUrl = String(vi.mocked(fetch).mock.calls[0]?.[0]);
+    expect(callUrl).toContain('company_id=main');
+    expect(callUrl).not.toContain('company_id=holding');
+  });
+
+  it('listHrmInsurance calls contracts-insurance insurance endpoint (BR-INS-01)', async () => {
+    await listHrmInsurance(scope);
+    const callUrl = String(vi.mocked(fetch).mock.calls[0]?.[0]);
+    expect(callUrl).toContain('/api/hrm/contracts-insurance/insurance');
+    expect(callUrl).toContain('company_id=main');
   });
 
   it('throws HrmApiClientError with backend code on HTTP error', async () => {

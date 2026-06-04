@@ -1,5 +1,8 @@
 # TechSpec — Định danh, vai trò và phạm vi dữ liệu toàn hệ sinh thái XeVN
 
+> **TechSpec tổng hợp (kiến trúc, API, dữ liệu, triển khai, ánh xạ SRS):** [`TECHSPEC_HE_SINH_THAI_XEVN.md`](./TECHSPEC_HE_SINH_THAI_XEVN.md)  
+> File này giữ **chi tiết phạm vi tenant**, iframe portal và business-master — được trích dẫn từ tài liệu tổng, không nhân bản.
+
 ## 1. Mục tiêu kỹ thuật
 
 Chuẩn hóa cách **FE/BE/mobile** và lớp dữ liệu thể hiện hai chế độ:

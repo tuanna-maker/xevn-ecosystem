@@ -1,0 +1,36 @@
+﻿[fix5] which env has dev internal key (masked)
+/opt/xevn-ecosystem/deploy/xevn-ecosystem/.env=CUSTOM
+/opt/xevn-ecosystem/apps/api/hrm-api/.env=CUSTOM
+[fix5] after sync (masked)
+/opt/xevn-ecosystem/deploy/xevn-ecosystem/.env=CUSTOM
+/opt/xevn-ecosystem/apps/api/hrm-api/.env=CUSTOM
+plink.exe :  Container xevn-hrm-be-dev  Restarting
+At C:\Users\ADMIN\OneDrive\Tài liệu\Vibe Coding\projects\xevn-ecosystem\scripts\tmp-hrm-502-fix5.ps1:52 char:8
++ $out = & $plink -ssh root@14.225.217.232 -pw $env:VPS_SSH_PASSWORD -h ...
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container xevn-hrm-be-dev  Restarting:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container xevn-hrm-be-dev  Started
+hrm-local:200
+hrm-metrics-local:200
+hrm-https:200
+hrm-metrics-https:200
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/employees/:employeeId/assets, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/employees/:employeeId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/employees/:employeeId, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/employees/:employeeId/archive, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/employees/:employeeId/restore, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFleetController {/api/hrm/fleet}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/fleet/vehicles, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSpreadsheetController {/api/hrm/spreadsheet}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/spreadsheet/limits, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/spreadsheet/templates/:kind, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/spreadsheet/import/preview, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/spreadsheet/import/commit, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/hrm/spreadsheet/export, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 47  - [39m05/27/2026, 10:34:00 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +0ms[39m
+{"level":"info","time":"2026-05-27T22:34:48.018Z","service":"hrm-api","requestId":"cf49498e-7499-4d8e-9924-c42b186f2b48","method":"GET","path":"/api/hrm/","status":200,"durationMs":7,"msg":"request completed"}
+{"level":"info","time":"2026-05-27T22:34:48.031Z","service":"hrm-api","requestId":"8a08c9f4-3152-452a-b510-2e241c9cc51b","method":"GET","path":"/api/hrm/metrics?format=prometheus","status":200,"durationMs":7,"msg":"request completed"}
+{"level":"info","time":"2026-05-27T22:34:48.042Z","service":"hrm-api","requestId":"1b0b39f9a859f1caea11700310358d96","method":"GET","path":"/api/hrm/","status":200,"durationMs":1,"msg":"request completed"}
+{"level":"info","time":"2026-05-27T22:34:48.055Z","service":"hrm-api","requestId":"991b6591001130a335967237d53a27c9","method":"GET","path":"/api/hrm/metrics?format=prometheus","status":200,"durationMs":3,"msg":"request completed"}

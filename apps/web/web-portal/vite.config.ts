@@ -40,13 +40,16 @@ export default defineConfig(({ mode }) => {
       // Cho phép Host: <IP VPS> / tên miền khi chạy Vite dev trong Docker — mặc định Vite có thể từ chối hoặc không phục vụ đúng SPA khi truy cập qua IP công cộng.
       // Chỉ dùng cho môi trường dev; production build tĩnh không dùng cấu hình này.
       allowedHosts: true,
-      port: 5175,
+      // Unified Portal / Command Center — cổng quen thuộc localhost:5173 (x-bos-core chuyển 5176).
+      port: 5173,
       strictPort: true,
       proxy: {
         // HRM (base `/hr/`): HTML + HMR + assets đều đi qua prefix này khi nhúng iframe từ portal.
+        // Preserve browser Host (nip.io) — changeOrigin would send Host: hrm-fe and trip Vite allowedHosts.
         '/hr': {
           target: proxyHrmWeb,
-          changeOrigin: true,
+          changeOrigin: false,
+          secure: false,
         },
         // HRM API gọi cùng origin từ portal/iframe -> proxy sang NestJS.
         '/api/hrm': {

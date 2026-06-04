@@ -12,7 +12,7 @@ export class AssetRequestService {
     const code = String(body.requestCode ?? `AR-${Date.now()}`);
     const { rows } = await this.db.query(
       `INSERT INTO public.xbos_asset_request (tenant_id, company_id, asset_id, request_code, status, requested_by, payload)
-       VALUES ($1,$2,$3::uuid,$4,'pending_finance',$5,$6::jsonb) RETURNING *`,
+       VALUES ($1,$2,$3::uuid,$4,'draft',$5,$6::jsonb) RETURNING *`,
       [tenantId, companyId, body.assetId ?? null, code, body.requestedBy ?? 'system', JSON.stringify(body.payload ?? {})],
     );
     return rows[0];
@@ -35,8 +35,8 @@ export class AssetRequestService {
     const cur = current[0] as { status: string };
     const curIdx = STATUS_FLOW.indexOf(cur.status as (typeof STATUS_FLOW)[number]);
     const nextIdx = STATUS_FLOW.indexOf(nextStatus as (typeof STATUS_FLOW)[number]);
-    if (nextIdx < 0 || (curIdx >= 0 && nextIdx !== curIdx + 1 && nextStatus !== 'completed')) {
-      throw new ApiException('XBOS-AST-400', 'Invalid status transition', HttpStatus.BAD_REQUEST);
+    if (nextIdx < 0 || (curIdx >= 0 && nextIdx !== curIdx + 1)) {
+      throw new ApiException('ASSET-REQ-409', 'Invalid status transition', HttpStatus.CONFLICT);
     }
     const financeFields =
       nextStatus === 'finance_confirmed'

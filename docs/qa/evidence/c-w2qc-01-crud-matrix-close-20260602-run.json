@@ -1,0 +1,308 @@
+{
+  "work_item_id": "C-W2QC-01-CRUD-MATRIX-CLOSE",
+  "account": "ceo@xe.vn",
+  "portal": "http://127.0.0.1:5173",
+  "executed_at": "2026-06-02T15:09:56.170Z",
+  "checks": [
+    {
+      "module": "contracts-insurance",
+      "action": "C",
+      "request": {
+        "method": "POST",
+        "path": "/api/hrm/contracts-insurance/contracts"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts",
+        "status": 201,
+        "code": "HRM-CON-201",
+        "message": "Contract created",
+        "duration_ms": 1050,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"3d882cc6-2c02-4615-b3a1-b407ad97b7cb\",\"company_id\":\"holding\",\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"contract_code\":\"QACW2-950699\",\"contract_type\":\"labor_contract\",\"start_date\":\"2026-06-30T17:00:00.000Z\",\"end_date\":\"2027-06-29..."
+      },
+      "verdict": "PASS",
+      "list_before_total": 777,
+      "list_after_total": 778,
+      "created_id": "3d882cc6-2c02-4615-b3a1-b407ad97b7cb"
+    },
+    {
+      "module": "contracts-insurance",
+      "action": "R",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contracts/3d882cc6-2c02-4615-b3a1-b407ad97b7cb?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/3d882cc6-2c02-4615-b3a1-b407ad97b7cb?company_id=main",
+        "status": 200,
+        "code": "HRM-CON-200",
+        "message": "Contract detail",
+        "duration_ms": 980,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contract detail\",\"data\":{\"id\":\"3d882cc6-2c02-4615-b3a1-b407ad97b7cb\",\"company_id\":\"holding\",\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"contract_code\":\"QACW2-950699\",\"contract_type\":\"labor_contract\",\"start_date\":\"2026-06-30T17:00:00.000Z\",\"end_date\":\"2027-06-29T..."
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "contracts-insurance",
+      "action": "U",
+      "request": {
+        "method": "PATCH",
+        "path": "/api/hrm/contracts-insurance/contracts/3d882cc6-2c02-4615-b3a1-b407ad97b7cb?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/3d882cc6-2c02-4615-b3a1-b407ad97b7cb?company_id=main",
+        "status": 200,
+        "code": "HRM-CON-200",
+        "message": "Contract updated",
+        "duration_ms": 1470,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contract updated\",\"data\":{\"id\":\"3d882cc6-2c02-4615-b3a1-b407ad97b7cb\",\"company_id\":\"holding\",\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"contract_type\":\"labor_contract\",\"start_date\":\"2026-06-30T17:00:00.000Z\",\"end_date\":\"2027-06-29T17:00:00.000Z\",\"status\":\"activ..."
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "contracts-insurance",
+      "action": "NEG-R-SCOPE",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contracts?company_id=holding"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts?company_id=holding",
+        "status": 409,
+        "code": "SCOPE_CONTEXT_MISMATCH",
+        "message": "companyId mismatches token scope",
+        "duration_ms": 6,
+        "body_snippet": "{\"success\":false,\"code\":\"SCOPE_CONTEXT_MISMATCH\",\"message\":\"companyId mismatches token scope\",\"details\":{\"field\":\"companyId\",\"token\":\"main\",\"request\":\"holding\"},\"timestamp\":\"2026-06-02T15:09:21.811Z\"}"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "contracts-insurance",
+      "action": "D",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/hrm/contracts-insurance/contracts/3d882cc6-2c02-4615-b3a1-b407ad97b7cb?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/3d882cc6-2c02-4615-b3a1-b407ad97b7cb?company_id=main",
+        "status": 200,
+        "code": "HRM-CON-200",
+        "message": "Contract deleted",
+        "duration_ms": 2307,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contract deleted\",\"data\":{\"id\":\"3d882cc6-2c02-4615-b3a1-b407ad97b7cb\"},\"timestamp\":\"2026-06-02T15:09:24.118Z\"}"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "insurance",
+      "action": "R",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/insurance-policy-participants?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/insurance-policy-participants?company_id=main",
+        "status": 200,
+        "code": "HRM-INS-200",
+        "message": "Insurance policy participants listed",
+        "duration_ms": 3844,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-INS-200\",\"message\":\"Insurance policy participants listed\",\"data\":{\"total\":171,\"page\":1,\"page_size\":20,\"data\":[{\"id\":\"4948fc16-b894-4fef-8543-355c64a31a2b\",\"company_id\":\"trsport\",\"employee_id\":\"00000000-0000-4000-8000-000000000052\",\"provider\":\"MIC\",\"policy_number\":\"BH-NV0052-HDLD_XDHN_36\",\"ex..."
+      },
+      "verdict": "PASS",
+      "note": "Policy participants exposed as read-only in current API surface"
+    },
+    {
+      "module": "insurance",
+      "action": "NEG-R-SCOPE",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/insurance-policy-participants?company_id=holding"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/contracts-insurance/insurance-policy-participants?company_id=holding",
+        "status": 409,
+        "code": "SCOPE_CONTEXT_MISMATCH",
+        "message": "companyId mismatches token scope",
+        "duration_ms": 6,
+        "body_snippet": "{\"success\":false,\"code\":\"SCOPE_CONTEXT_MISMATCH\",\"message\":\"companyId mismatches token scope\",\"details\":{\"field\":\"companyId\",\"token\":\"main\",\"request\":\"holding\"},\"timestamp\":\"2026-06-02T15:09:27.970Z\"}"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "decisions",
+      "action": "C",
+      "request": {
+        "method": "POST",
+        "path": "/api/hrm/decisions"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/decisions",
+        "status": 201,
+        "code": "HRM-DEC-201",
+        "message": "Decision created",
+        "duration_ms": 615,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-DEC-201\",\"message\":\"Decision created\",\"data\":{\"id\":\"0b14ddbb-ca3b-4b65-8597-753c4573f04a\",\"company_id\":\"holding\",\"decision_code\":\"DEC-1780412968491\",\"decision_type\":\"promotion\",\"title\":\"QA CRUD matrix close\",\"content\":\"QA CRUD matrix close\",\"employee_id\":null,\"employee_name\":\"QA Decision 178..."
+      },
+      "verdict": "PASS",
+      "list_before_total": 0,
+      "list_after_total": 1,
+      "created_id": "0b14ddbb-ca3b-4b65-8597-753c4573f04a"
+    },
+    {
+      "module": "decisions",
+      "action": "R",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/decisions/0b14ddbb-ca3b-4b65-8597-753c4573f04a?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/decisions/0b14ddbb-ca3b-4b65-8597-753c4573f04a?company_id=main",
+        "status": 200,
+        "code": "HRM-DEC-200",
+        "message": "Decision detail",
+        "duration_ms": 473,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-DEC-200\",\"message\":\"Decision detail\",\"data\":{\"id\":\"0b14ddbb-ca3b-4b65-8597-753c4573f04a\",\"company_id\":\"holding\",\"decision_code\":\"DEC-1780412968491\",\"decision_type\":\"promotion\",\"title\":\"QA CRUD matrix close\",\"content\":\"QA CRUD matrix close\",\"employee_id\":null,\"employee_name\":\"QA Decision 1780..."
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "decisions",
+      "action": "U",
+      "request": {
+        "method": "PATCH",
+        "path": "/api/hrm/decisions/0b14ddbb-ca3b-4b65-8597-753c4573f04a?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/decisions/0b14ddbb-ca3b-4b65-8597-753c4573f04a?company_id=main",
+        "status": 200,
+        "code": "HRM-DEC-200",
+        "message": "Decision updated",
+        "duration_ms": 456,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-DEC-200\",\"message\":\"Decision updated\",\"data\":{\"id\":\"0b14ddbb-ca3b-4b65-8597-753c4573f04a\",\"company_id\":\"holding\",\"decision_code\":\"DEC-1780412968491\",\"decision_type\":\"promotion\",\"title\":\"QA CRUD matrix close\",\"content\":\"QA CRUD matrix close\",\"employee_id\":null,\"employee_name\":\"QA Decision 178..."
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "decisions",
+      "action": "NEG-R-SCOPE",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/decisions?company_id=holding&page_size=20"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/decisions?company_id=holding&page_size=20",
+        "status": 409,
+        "code": "SCOPE_CONTEXT_MISMATCH",
+        "message": "companyId mismatches token scope",
+        "duration_ms": 6,
+        "body_snippet": "{\"success\":false,\"code\":\"SCOPE_CONTEXT_MISMATCH\",\"message\":\"companyId mismatches token scope\",\"details\":{\"field\":\"companyId\",\"token\":\"main\",\"request\":\"holding\"},\"timestamp\":\"2026-06-02T15:09:30.563Z\"}"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "decisions",
+      "action": "D",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/hrm/decisions/0b14ddbb-ca3b-4b65-8597-753c4573f04a?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/decisions/0b14ddbb-ca3b-4b65-8597-753c4573f04a?company_id=main",
+        "status": 200,
+        "code": "HRM-DEC-200",
+        "message": "Decision deleted",
+        "duration_ms": 489,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-DEC-200\",\"message\":\"Decision deleted\",\"data\":{\"id\":\"0b14ddbb-ca3b-4b65-8597-753c4573f04a\"},\"timestamp\":\"2026-06-02T15:09:31.051Z\"}"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "settings/admin",
+      "action": "C",
+      "request": {
+        "method": "POST",
+        "path": "/api/hrm/settings-catalogs/items"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+        "status": 201,
+        "code": "HRM-SET-201",
+        "message": "Settings catalog item created",
+        "duration_ms": 915,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-SET-201\",\"message\":\"Settings catalog item created\",\"data\":{\"upserted\":1,\"item_key\":\"QACW2SET-950699\",\"category_key\":\"job_levels\"},\"timestamp\":\"2026-06-02T15:09:36.722Z\"}"
+      },
+      "verdict": "PASS",
+      "list_before_total": null,
+      "list_after_total": null,
+      "created_item": null
+    },
+    {
+      "module": "settings/admin",
+      "action": "R",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/settings-catalogs?company_id=main"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/settings-catalogs?company_id=main",
+        "status": 200,
+        "code": "HRM-SET-200",
+        "message": "Settings catalogs overview",
+        "duration_ms": 3899,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[{\"catalogKey\":\"activity_capability_map\",\"name\":\"Ánh xạ hoạt động ↔ chức năng phân hệ\",\"domain\":\"governance\",\"xbosVersion\":9,\"xbosSyncedAt\":\"2026-05-25T04:28:21.577Z\",\"xbosItems\":[{\"code\":\"ACM_01\",\"label\":\"HRM\",\"unit\":null,\"s..."
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "settings/admin",
+      "action": "U",
+      "request": {
+        "method": "PATCH",
+        "path": "/api/hrm/settings-catalogs/items"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+        "status": 200,
+        "code": "HRM-SET-202",
+        "message": "Settings catalog item updated",
+        "duration_ms": 1867,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-SET-202\",\"message\":\"Settings catalog item updated\",\"data\":{\"upserted\":1,\"item_key\":\"QACW2SET-950699\",\"category_key\":\"job_levels\"},\"timestamp\":\"2026-06-02T15:09:47.819Z\"}"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "module": "settings/admin",
+      "action": "NEG-R-HOLDING-POLICY",
+      "request": {
+        "method": "GET",
+        "path": "/api/hrm/settings-catalogs?company_id=holding"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/settings-catalogs?company_id=holding",
+        "status": 200,
+        "code": "HRM-SET-200",
+        "message": "Settings catalogs overview",
+        "duration_ms": 5686,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[{\"catalogKey\":\"activity_capability_map\",\"name\":\"Ánh xạ hoạt động ↔ chức năng phân hệ\",\"domain\":\"governance\",\"xbosVersion\":9,\"xbosSyncedAt\":\"2026-05-25T04:28:21.577Z\",\"xbosItems\":[{\"code\":\"ACM_01\",\"label\":\"HRM\",\"unit\":null,\"s..."
+      },
+      "verdict": "PASS",
+      "policy": "D16-FROZEN-ALLOW-200"
+    },
+    {
+      "module": "settings/admin",
+      "action": "D",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/hrm/settings-catalogs/items"
+      },
+      "response": {
+        "endpoint": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+        "status": 200,
+        "code": "HRM-SET-200",
+        "message": "Settings catalog item deleted",
+        "duration_ms": 2663,
+        "body_snippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalog item deleted\",\"data\":{\"item_key\":\"QACW2SET-950699\",\"category_key\":\"job_levels\"},\"timestamp\":\"2026-06-02T15:09:56.170Z\"}"
+      },
+      "verdict": "PASS"
+    }
+  ]
+}

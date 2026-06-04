@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -11,13 +10,16 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ChatMessageRenderer } from '@/components/ai/ChatMessageRenderer';
 import aiRobotImg from '@/assets/ai-robot.png';
-
+import { getPortalAccessToken } from '@/lib/portalAuthBridge';
 type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hrm-ai-chat`;
+const HRM_API_ORIGIN = (import.meta.env.VITE_HRM_API_ORIGIN ?? '').replace(/\/$/, '');
+const CHAT_URL = HRM_API_ORIGIN
+  ? `${HRM_API_ORIGIN}/api/hrm/ai/chat`
+  : '/api/hrm/ai/chat';
 
 const CATEGORY_ICONS = [Clock, Calendar, DollarSign, Shield, FileText, HelpCircle];
 const CATEGORY_KEYS = ['attendance', 'leave', 'salary', 'insurance', 'contract', 'other'];
@@ -61,14 +63,14 @@ export function HRMChatWidget() {
   ];
 
   const streamChat = async (userMessages: Message[]) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) throw new Error(t('hrmChat.errors.notLoggedIn'));
+    const accessToken = getPortalAccessToken();
+    if (!accessToken) throw new Error(t('hrmChat.errors.notLoggedIn'));
 
     const resp = await fetch(CHAT_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ messages: userMessages, language: i18n.language }),
     });

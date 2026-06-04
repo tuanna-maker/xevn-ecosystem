@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -36,20 +36,21 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { createInterviewCatalog } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 const interviewSchema = z.object({
-  interview_date: z.date({ required_error: 'Vui lòng chọn ngày phỏng vấn' }),
-  interview_time: z.string().min(1, 'Vui lòng chọn giờ phỏng vấn'),
-  duration_minutes: z.number().min(15, 'Thời lượng tối thiểu 15 phút').max(480, 'Thời lượng tối đa 8 giờ'),
+  interview_date: z.date({ required_error: 'Vui lĂ²ng chá»n ngĂ y phá»ng váº¥n' }),
+  interview_time: z.string().min(1, 'Vui lĂ²ng chá»n giá» phá»ng váº¥n'),
+  duration_minutes: z.number().min(15, 'Thá»i lÆ°á»£ng tá»‘i thiá»ƒu 15 phĂºt').max(480, 'Thá»i lÆ°á»£ng tá»‘i Ä‘a 8 giá»'),
   interview_type: z.enum(['onsite', 'online', 'phone']),
-  location: z.string().max(255, 'Địa điểm không quá 255 ký tự').optional(),
-  meeting_link: z.string().url('Link họp không hợp lệ').max(500, 'Link không quá 500 ký tự').optional().or(z.literal('')),
-  interviewer_name: z.string().max(100, 'Tên không quá 100 ký tự').optional(),
-  interviewer_email: z.string().email('Email không hợp lệ').max(255, 'Email không quá 255 ký tự').optional().or(z.literal('')),
-  notes: z.string().max(1000, 'Ghi chú không quá 1000 ký tự').optional(),
+  location: z.string().max(255, 'Äá»‹a Ä‘iá»ƒm khĂ´ng quĂ¡ 255 kĂ½ tá»±').optional(),
+  meeting_link: z.string().url('Link há»p khĂ´ng há»£p lá»‡').max(500, 'Link khĂ´ng quĂ¡ 500 kĂ½ tá»±').optional().or(z.literal('')),
+  interviewer_name: z.string().max(100, 'TĂªn khĂ´ng quĂ¡ 100 kĂ½ tá»±').optional(),
+  interviewer_email: z.string().email('Email khĂ´ng há»£p lá»‡').max(255, 'Email khĂ´ng quĂ¡ 255 kĂ½ tá»±').optional().or(z.literal('')),
+  notes: z.string().max(1000, 'Ghi chĂº khĂ´ng quĂ¡ 1000 kĂ½ tá»±').optional(),
 });
 
 type InterviewFormData = z.infer<typeof interviewSchema>;
@@ -76,11 +77,11 @@ const timeSlots = [
 ];
 
 const durationOptions = [
-  { value: 30, label: '30 phút' },
-  { value: 45, label: '45 phút' },
-  { value: 60, label: '1 giờ' },
-  { value: 90, label: '1.5 giờ' },
-  { value: 120, label: '2 giờ' },
+  { value: 30, label: '30 phĂºt' },
+  { value: 45, label: '45 phĂºt' },
+  { value: 60, label: '1 giá»' },
+  { value: 90, label: '1.5 giá»' },
+  { value: 120, label: '2 giá»' },
 ];
 
 export function ScheduleInterviewDialog({ 
@@ -112,8 +113,8 @@ export function ScheduleInterviewDialog({
   const handleSubmit = async (data: InterviewFormData) => {
     if (!candidate || !currentCompanyId) {
       toast({
-        title: 'Lỗi',
-        description: 'Thiếu thông tin ứng viên hoặc công ty',
+        title: 'Lá»—i',
+        description: 'Thiáº¿u thĂ´ng tin á»©ng viĂªn hoáº·c cĂ´ng ty',
         variant: 'destructive',
       });
       return;
@@ -122,26 +123,24 @@ export function ScheduleInterviewDialog({
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.from('interviews').insert({
+      await createInterviewCatalog({
         company_id: currentCompanyId,
+        candidate_id: candidate.id,
         candidate_name: candidate.fullName,
         candidate_email: candidate.email,
-        candidate_phone: candidate.phone || null,
-        position: candidate.position || null,
+        candidate_phone: candidate.phone ?? null,
+        position: candidate.position ?? null,
         interview_date: format(data.interview_date, 'yyyy-MM-dd'),
         interview_time: data.interview_time,
         duration_minutes: data.duration_minutes,
         interview_type: data.interview_type,
-        location: data.location || null,
+        location: data.location ?? null,
         meeting_link: data.meeting_link || null,
-        interviewer_name: data.interviewer_name || null,
+        interviewer_name: data.interviewer_name ?? null,
         interviewer_email: data.interviewer_email || null,
-        notes: data.notes || null,
+        notes: data.notes ?? null,
         status: 'scheduled',
       });
-
-      if (error) throw error;
-
       toast({
         title: 'Đã lên lịch phỏng vấn',
         description: `Lịch phỏng vấn cho ${candidate.fullName} đã được tạo thành công`,
@@ -150,11 +149,11 @@ export function ScheduleInterviewDialog({
       form.reset();
       onOpenChange(false);
       onSuccess?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error scheduling interview:', error);
       toast({
         title: 'Lỗi',
-        description: error.message || 'Không thể lên lịch phỏng vấn',
+        description: toErrorMessage(error, 'Không thể lên lịch phỏng vấn'),
         variant: 'destructive',
       });
     } finally {
@@ -170,7 +169,7 @@ export function ScheduleInterviewDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-primary" />
-            Lên lịch phỏng vấn
+            LĂªn lá»‹ch phá»ng váº¥n
           </DialogTitle>
         </DialogHeader>
 
@@ -182,7 +181,7 @@ export function ScheduleInterviewDialog({
             </div>
             <div>
               <p className="font-medium">{candidate.fullName}</p>
-              <p className="text-sm text-muted-foreground">{candidate.position || 'Chưa có vị trí'}</p>
+              <p className="text-sm text-muted-foreground">{candidate.position || 'ChÆ°a cĂ³ vá»‹ trĂ­'}</p>
             </div>
           </div>
         </div>
@@ -196,7 +195,7 @@ export function ScheduleInterviewDialog({
                 name="interview_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ngày phỏng vấn *</FormLabel>
+                    <FormLabel>NgĂ y phá»ng váº¥n *</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -210,7 +209,7 @@ export function ScheduleInterviewDialog({
                             {field.value ? (
                               format(field.value, "dd/MM/yyyy", { locale: vi })
                             ) : (
-                              <span>Chọn ngày</span>
+                              <span>Chá»n ngĂ y</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -236,12 +235,12 @@ export function ScheduleInterviewDialog({
                 name="interview_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Giờ phỏng vấn *</FormLabel>
+                    <FormLabel>Giá» phá»ng váº¥n *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <Clock className="w-4 h-4 mr-2 opacity-50" />
-                          <SelectValue placeholder="Chọn giờ" />
+                          <SelectValue placeholder="Chá»n giá»" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -265,14 +264,14 @@ export function ScheduleInterviewDialog({
                 name="duration_minutes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thời lượng</FormLabel>
+                    <FormLabel>Thá»i lÆ°á»£ng</FormLabel>
                     <Select 
                       onValueChange={(val) => field.onChange(parseInt(val))} 
                       value={field.value.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn thời lượng" />
+                          <SelectValue placeholder="Chá»n thá»i lÆ°á»£ng" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -293,7 +292,7 @@ export function ScheduleInterviewDialog({
                 name="interview_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hình thức</FormLabel>
+                    <FormLabel>HĂ¬nh thá»©c</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -304,7 +303,7 @@ export function ScheduleInterviewDialog({
                         <SelectItem value="onsite">
                           <div className="flex items-center gap-2">
                             <Building2 className="w-4 h-4" />
-                            Trực tiếp
+                            Trá»±c tiáº¿p
                           </div>
                         </SelectItem>
                         <SelectItem value="online">
@@ -316,7 +315,7 @@ export function ScheduleInterviewDialog({
                         <SelectItem value="phone">
                           <div className="flex items-center gap-2">
                             <Phone className="w-4 h-4" />
-                            Điện thoại
+                            Äiá»‡n thoáº¡i
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -334,13 +333,13 @@ export function ScheduleInterviewDialog({
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Địa điểm phỏng vấn</FormLabel>
+                    <FormLabel>Äá»‹a Ä‘iá»ƒm phá»ng váº¥n</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input 
                           {...field} 
-                          placeholder="Nhập địa điểm phỏng vấn" 
+                          placeholder="Nháº­p Ä‘á»‹a Ä‘iá»ƒm phá»ng váº¥n" 
                           className="pl-10"
                         />
                       </div>
@@ -357,7 +356,7 @@ export function ScheduleInterviewDialog({
                 name="meeting_link"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Link phòng họp</FormLabel>
+                    <FormLabel>Link phĂ²ng há»p</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Video className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -381,9 +380,9 @@ export function ScheduleInterviewDialog({
                 name="interviewer_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Người phỏng vấn</FormLabel>
+                    <FormLabel>NgÆ°á»i phá»ng váº¥n</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Tên người phỏng vấn" />
+                      <Input {...field} placeholder="TĂªn ngÆ°á»i phá»ng váº¥n" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -395,7 +394,7 @@ export function ScheduleInterviewDialog({
                 name="interviewer_email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email người phỏng vấn</FormLabel>
+                    <FormLabel>Email ngÆ°á»i phá»ng váº¥n</FormLabel>
                     <FormControl>
                       <Input {...field} type="email" placeholder="email@company.com" />
                     </FormControl>
@@ -411,11 +410,11 @@ export function ScheduleInterviewDialog({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
+                  <FormLabel>Ghi chĂº</FormLabel>
                   <FormControl>
                     <Textarea 
                       {...field} 
-                      placeholder="Thông tin thêm về buổi phỏng vấn..."
+                      placeholder="ThĂ´ng tin thĂªm vá» buá»•i phá»ng váº¥n..."
                       rows={3}
                     />
                   </FormControl>
@@ -432,11 +431,11 @@ export function ScheduleInterviewDialog({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Hủy
+                Há»§y
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Lên lịch phỏng vấn
+                LĂªn lá»‹ch phá»ng váº¥n
               </Button>
             </div>
           </form>

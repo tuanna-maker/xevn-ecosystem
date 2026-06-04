@@ -1,3 +1,4 @@
+import { resolveHrmOperationalCompanyId } from '../../integrations/commandCenterScope';
 import { IdentityScopeContext } from '../../integrations/identityScope';
 import { buildApiAuthHeaders } from '../../integrations/authSession';
 import {
@@ -15,6 +16,14 @@ const INTERNAL_API_KEY = import.meta.env.DEV
   ? import.meta.env.VITE_INTERNAL_API_KEY ?? 'xevn-dev-internal-key'
   : undefined;
 const REQUEST_TIMEOUT_MS = 10_000;
+
+/** EX-SA01-P1-03 — list/embed queries always use operational `main`, never `holding`. */
+function hrmListScope(scope: IdentityScopeContext): IdentityScopeContext {
+  return {
+    tenantId: scope.tenantId,
+    companyId: resolveHrmOperationalCompanyId(scope.tenantId, scope.companyId),
+  };
+}
 
 async function request<T>(path: string, init: RequestInit, scope?: IdentityScopeContext): Promise<T> {
   const headers: Record<string, string> = {
@@ -82,8 +91,9 @@ export type EmployeeMetadataQueueItem = {
 };
 
 export async function listEmployeeMetadataQueue(scope: IdentityScopeContext) {
+  const listScope = hrmListScope(scope);
   const search = new URLSearchParams({
-    company_id: scope.companyId,
+    company_id: listScope.companyId,
     tenant_id: scope.tenantId,
     status: 'pending',
     page_size: '10',
@@ -91,7 +101,7 @@ export async function listEmployeeMetadataQueue(scope: IdentityScopeContext) {
   return request<{ total: number; data: EmployeeMetadataQueueItem[] }>(
     `/api/hrm/employee-metadata/change-requests?${search.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
@@ -120,12 +130,18 @@ export type HrmEmployeeApiRow = {
   hired_at: string | null;
 };
 
+const HRM_LIST_MAX_PAGE_SIZE = 100;
+
 export async function listHrmEmployees(scope: IdentityScopeContext) {
-  const q = new URLSearchParams({ company_id: scope.companyId });
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({
+    company_id: listScope.companyId,
+    page_size: String(HRM_LIST_MAX_PAGE_SIZE),
+  });
   return request<{ total: number; data: HrmEmployeeApiRow[] }>(
     `/api/hrm/employees?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
@@ -141,11 +157,12 @@ export type HrmPayslipApiRow = {
 };
 
 export async function listHrmPayslips(scope: IdentityScopeContext) {
-  const q = new URLSearchParams({ company_id: scope.companyId });
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
   return request<{ total: number; data: HrmPayslipApiRow[] }>(
     `/api/hrm/payroll/payslips?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
@@ -188,30 +205,60 @@ export type HrmContractRow = {
   end_date?: string | null;
 };
 
+/** BR-INS-01 — dedicated BHXH list (P1-EX-BE-02 shaped fields). */
+export type HrmInsuranceApiRow = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  provider: string;
+  policy_number: string;
+  expiry_date: string;
+  status: string;
+  social_insurance_number?: string | null;
+  health_insurance_number?: string | null;
+  employee_name?: string | null;
+  employee_code?: string | null;
+  department?: string | null;
+  effective_date?: string | null;
+};
+
 export async function listHrmJobRequisitions(scope: IdentityScopeContext) {
-  const q = new URLSearchParams({ company_id: scope.companyId });
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
   return request<{ total: number; data: HrmJobRequisitionRow[] }>(
     `/api/hrm/recruitment/requisitions?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
 export async function listHrmAttendanceRecords(scope: IdentityScopeContext) {
-  const q = new URLSearchParams({ company_id: scope.companyId });
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
   return request<{ total: number; data: HrmAttendanceRecordRow[] }>(
     `/api/hrm/attendance/records?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
 export async function listHrmContracts(scope: IdentityScopeContext) {
-  const q = new URLSearchParams({ company_id: scope.companyId });
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
   return request<{ total: number; data: HrmContractRow[] }>(
     `/api/hrm/contracts-insurance/contracts?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
+  );
+}
+
+export async function listHrmInsurance(scope: IdentityScopeContext) {
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
+  return request<{ total: number; data: HrmInsuranceApiRow[] }>(
+    `/api/hrm/contracts-insurance/insurance?${q.toString()}`,
+    { method: 'GET' },
+    listScope,
   );
 }
 
@@ -220,7 +267,8 @@ const HRM_OPS_COMPANY_UUID =
   import.meta.env.VITE_HRM_OPERATIONS_COMPANY_ID ?? '10000000-0000-4000-8000-000000000001';
 
 function resolveHrmCompanyId(scope: IdentityScopeContext): string {
-  return UUID_RE.test(scope.companyId) ? scope.companyId : HRM_OPS_COMPANY_UUID;
+  const listScope = hrmListScope(scope);
+  return UUID_RE.test(listScope.companyId) ? listScope.companyId : HRM_OPS_COMPANY_UUID;
 }
 
 export type HrmOperationsTaskRow = {
@@ -249,32 +297,35 @@ export type HrmOperationsSummary = {
 };
 
 export async function listHrmOperationsTasks(scope: IdentityScopeContext) {
-  const companyId = resolveHrmCompanyId(scope);
+  const listScope = hrmListScope(scope);
+  const companyId = resolveHrmCompanyId(listScope);
   const q = new URLSearchParams({ company_id: companyId, page_size: '50' });
   return request<{ total: number; data: HrmOperationsTaskRow[] }>(
     `/api/hrm/operations/tasks?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
 export async function listHrmServiceRequests(scope: IdentityScopeContext) {
-  const companyId = resolveHrmCompanyId(scope);
+  const listScope = hrmListScope(scope);
+  const companyId = resolveHrmCompanyId(listScope);
   const q = new URLSearchParams({ company_id: companyId, page_size: '50' });
   return request<{ total: number; data: HrmServiceRequestRow[] }>(
     `/api/hrm/operations/service-requests?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
 export async function getHrmOperationsSummary(scope: IdentityScopeContext) {
-  const companyId = resolveHrmCompanyId(scope);
-  const q = new URLSearchParams({ company_id: companyId, tenant_id: scope.tenantId });
+  const listScope = hrmListScope(scope);
+  const companyId = resolveHrmCompanyId(listScope);
+  const q = new URLSearchParams({ company_id: companyId, tenant_id: listScope.tenantId });
   return request<HrmOperationsSummary>(
     `/api/hrm/operations/reports/summary?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 

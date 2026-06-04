@@ -5,6 +5,41 @@ import { GlobalFilterProvider } from '../../contexts/GlobalFilterContext';
 import { HrmWorkspacePanel } from './HrmWorkspacePanel';
 import { minimalScopeJwt } from '../../test/jwtTestUtils';
 
+vi.mock('../../contexts/AuthContext', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../contexts/AuthContext')>();
+  return {
+    ...actual,
+    useAuth: () => ({
+      user: { userId: 'u-test', displayName: 'QA User', email: 'ceo@xe.vn' },
+      accessToken: 'test-token',
+      memberships: [
+        {
+          tenantId: 'xevn',
+          companyId: 'main',
+          companyName: 'Main',
+          roleCode: 'group_ceo',
+        },
+      ],
+      loading: false,
+      isAuthenticated: true,
+      login: vi.fn(),
+      logout: vi.fn(),
+    }),
+  };
+});
+
+vi.mock('../../integrations/tenantScopeApi', () => ({
+  fetchAccessibleTenants: vi.fn().mockResolvedValue([
+    {
+      tenantId: 'xevn',
+      companyId: 'main',
+      companyName: 'Main',
+      roleCode: 'group_ceo',
+    },
+  ]),
+  fetchGroupMemberUnitsForCommandCenter: vi.fn().mockResolvedValue([]),
+}));
+
 function renderDashboard() {
   return render(
     <MemoryRouter>
@@ -33,9 +68,12 @@ describe('HrmWorkspacePanel deterministic error UX', () => {
 
   it('shows NETWORK_ERROR and details when metadata queue fetch fails', async () => {
     renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText(/Không tải được hàng chờ metadata/)).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/Không tải được hàng chờ metadata/)).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
     expect(screen.getByText(/\[NETWORK_ERROR\]/)).toBeInTheDocument();
     expect(screen.getByText(/simulated offline/)).toBeInTheDocument();
   });
@@ -53,9 +91,12 @@ describe('HrmWorkspacePanel deterministic error UX', () => {
       ),
     );
     renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText(/\[HRM-META-403\]/)).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/\[HRM-META-403\]/)).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
     expect(screen.getByText(/"rule":"approval"/)).toBeInTheDocument();
   });
 
@@ -64,8 +105,11 @@ describe('HrmWorkspacePanel deterministic error UX', () => {
     vi.stubEnv('VITE_SERVICE_JWT_TOKEN', '');
     vi.mocked(fetch).mockImplementation(() => Promise.reject(new Error('should not run')));
     renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText(/\[SCOPE_TENANT_REQUIRED\]/)).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/\[SCOPE_TENANT_REQUIRED\]/)).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 });

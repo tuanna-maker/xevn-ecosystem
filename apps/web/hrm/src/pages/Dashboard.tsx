@@ -66,8 +66,8 @@ import { toast } from 'sonner';
 import { ExpiringContractsAlert } from '@/components/dashboard/ExpiringContractsAlert';
 import { HrmApiReminders } from '@/components/dashboard/HrmApiReminders';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { listAttendanceRecords, listExpiringContracts } from '@/integrations/hrmApi';
 
 // Hook to get expiring contracts count
 function useExpiringContractsCount() {
@@ -76,17 +76,8 @@ function useExpiringContractsCount() {
     queryKey: ['expiring-contracts-count', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return 0;
-      const thirtyDaysLater = new Date();
-      thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
-      const { count, error } = await supabase
-        .from('employee_contracts')
-        .select('id', { count: 'exact', head: true })
-        .eq('company_id', currentCompanyId)
-        .eq('status', 'active')
-        .not('expiry_date', 'is', null)
-        .lte('expiry_date', thirtyDaysLater.toISOString().split('T')[0]);
-      if (error) return 0;
-      return count || 0;
+      const res = await listExpiringContracts({ company_id: currentCompanyId, days: 30 });
+      return res.data?.length ?? 0;
     },
     enabled: !!currentCompanyId,
   });
@@ -101,13 +92,15 @@ function useAttendanceDashboard() {
       if (!currentCompanyId) return [];
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const { data, error } = await supabase
-        .from('attendance_records')
-        .select('attendance_date, status, employee_id')
-        .eq('company_id', currentCompanyId)
-        .gte('attendance_date', thirtyDaysAgo.toISOString().split('T')[0]);
-      if (error) return [];
-      return data || [];
+      const toDate = new Date().toISOString().slice(0, 10);
+      const fromDate = thirtyDaysAgo.toISOString().slice(0, 10);
+      const res = await listAttendanceRecords({
+        company_id: currentCompanyId,
+        from_date: fromDate,
+        to_date: toDate,
+        page_size: 200,
+      });
+      return res.data ?? [];
     },
     enabled: !!currentCompanyId,
   });

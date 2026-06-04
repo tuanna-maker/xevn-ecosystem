@@ -1,0 +1,74 @@
+---
+description: PM nắm toàn cảnh dự án — journey map, scope parity, điều phối UAT→Production; team chủ động trước khi user thấy lỗi.
+alwaysApply: true
+---
+
+# UAT → Production readiness orchestration (PM accountability)
+
+Bổ sung `pm-post-delivery-verification.mdc`, `business-flow-zero-defect-gate.mdc`, `team-execution-vs-governance.mdc`.
+
+## PM — nắm toàn cảnh (bắt buộc trước dispatch)
+
+Trước mỗi wave sprint hoặc sau user báo lỗi, PM **đọc** (không đoán):
+
+| Artifact | Mục đích |
+|----------|----------|
+| `docs/program/PROGRAM_JOURNEY_MAP.md` | Luồng end-to-end user thật (load tab ≠ xong) |
+| `docs/program/SERVICE_READINESS_UAT_PRODUCTION.md` | Trạng thái từng dịch vụ UAT/Prod |
+| `docs/qa/PILOT_BUSINESS_FLOW_MATRIX.md` + **J-* rows** | L2 + L2.5 cross-nav |
+| `docs/architecture/ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md` | Scope `main` vs member slugs |
+| `docs/program/PHASE1_UC_SRS_TECHSPEC_MATRIX.md` (hoặc delta gần nhất) | UC còn mở / planned |
+
+PM **không** dispatch QA chỉ với «route load 200». Mỗi dispatch QA **phải** liệt kê ít nhất 1 **J-* journey** liên quan wave đó.
+
+## Bốn lớp sẵn sàng (thay vì chỉ HTTP 200)
+
+| Lớp | Tên | Owner | PASS khi |
+|-----|-----|-------|----------|
+| L0 | Stack health | DevOps/QA | `qc:dev-stack` 200 |
+| L1 | API integration | QA | `test:system:uat` exit 0 |
+| L2 | Page load (P-CC-*) | QA | Tab embed load; không 409/54321 |
+| **L2.5** | **Cross-navigation (J-*)** | **QA** | Click list→detail, deep link, back — không 404 scope |
+| L3 | QC gate | QC | GO/GWC có danh sách J-* đã/không kiểm |
+
+**L2 PASS mà L2.5 FAIL = QA FAIL** — không được `PASS_TO_PM`.
+
+## Scope parity (Dev-BE + SA audit)
+
+Mọi endpoint **GET by id** phải dùng **cùng scope resolver** với **list** trong cùng module (`resolveHrmListScope`, `companyScopeMatches`, …).
+
+Dev-BE trước `READY_FOR_QA`: grep module — nếu list có rollup mà get-by-id không → **block handoff**.
+
+SA/TM: flag `scope_parity` trong review wave HRM/embed.
+
+## Sau mỗi lỗi user (incident → governance)
+
+1. PM ghi `work_item_id` + route/J-* trên bus.
+2. Hotfix execution (Dev) + retest QA **J-* liên quan**.
+3. **Cùng phiên:** PM cập nhật ít nhất 2 artifact:
+   - matrix (`PILOT_BUSINESS_FLOW_MATRIX.md` hoặc `PROGRAM_JOURNEY_MAP.md`)
+   - rule hoặc agent prompt (QA/QC/Dev-BE)
+4. QC **NO-GO** wave nếu incident P0 chưa có J-* trong matrix.
+
+## UAT-READY vs PROD-READY (PM nói với user)
+
+- **UAT-READY:** L0–L2.5 PASS cho **persona slice** (vd. `ceo@xe.vn` CC+HRM 8 tab + J-* bắt buộc).
+- **UAT-PASS:** BA/QA sign-off script UAT + defect P0/P1 = 0.
+- **PROD-READY:** QC GO + security/deploy/backup evidence (`DEPLOY_GUIDE.md`, `verify:production-env`).
+
+Không dùng «Phase 1 DONE» khi `SERVICE_READINESS` còn 🔴 PROD hoặc UC matrix < closure target.
+
+## Team chủ động (mọi role)
+
+| Role | Chủ động |
+|------|----------|
+| PM | Duy trì journey map; dispatch có J-*; không idle sau QA PASS |
+| SA | ADR scope + API parity checklist mỗi wave HRM |
+| BA | Bổ sung J-* vào BA trace khi phát hiện luồng thiếu AC |
+| Dev-BE | Scope parity test trong spec |
+| Dev-FE | Deep link/embed navigation smoke trước handoff |
+| QA | L2.5 bắt buộc; evidence có URL + click path |
+| QC | Từ chối GO nếu thiếu J-* coverage hoặc user defect lặp |
+| TM | Audit scope_parity + production checklist |
+
+Chi tiết vận hành: `docs/program/UAT_PRODUCTION_OPERATING_PLAN.md`

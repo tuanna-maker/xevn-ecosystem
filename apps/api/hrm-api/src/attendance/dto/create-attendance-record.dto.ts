@@ -1,7 +1,8 @@
-import { IsDateString, IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { IsDateString, IsIn, IsNumber, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class CreateAttendanceRecordDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsUUID()
@@ -31,4 +32,12 @@ export class CreateAttendanceRecordDto {
   @IsString()
   @MaxLength(120)
   created_by?: string;
+
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
 }

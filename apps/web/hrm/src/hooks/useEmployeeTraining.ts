@@ -1,8 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
 import i18n from '@/i18n';
+import {
+  createEmployeeTraining,
+  deleteEmployeeTraining,
+  listEmployeeTraining,
+  updateEmployeeTraining,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
+import { toast } from 'sonner';
 
 export interface TrainingItem {
   id: string;
@@ -53,6 +59,13 @@ export interface TrainingFormData {
   skills?: string[];
 }
 
+function mapTraining(row: Record<string, unknown>): TrainingItem {
+  return {
+    ...(row as unknown as TrainingItem),
+    skills: Array.isArray(row.skills) ? (row.skills as string[]) : [],
+  };
+}
+
 export function useEmployeeTraining(employeeId: string | undefined) {
   const { currentCompanyId } = useAuth();
   const [trainings, setTrainings] = useState<TrainingItem[]>([]);
@@ -64,110 +77,74 @@ export function useEmployeeTraining(employeeId: string | undefined) {
       setIsLoading(false);
       return;
     }
-
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('employee_trainings')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setTrainings((data || []) as TrainingItem[]);
-    } catch (error: any) {
-      console.error('Error fetching trainings:', error);
-      toast.error(i18n.t('training.messages.fetchError'));
+      const result = await listEmployeeTraining(employeeId, currentCompanyId);
+      setTrainings((result.data ?? []).map(mapTraining));
+    } catch (error: unknown) {
+      console.error('Error fetching training:', error);
+      toast.error(toErrorMessage(error, i18n.t('messages.error', 'Không thể tải đào tạo')));
+      setTrainings([]);
     } finally {
       setIsLoading(false);
     }
   }, [employeeId, currentCompanyId]);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
   const createTraining = async (data: TrainingFormData): Promise<boolean> => {
     if (!employeeId || !currentCompanyId) return false;
-
     try {
-      const { error } = await supabase
-        .from('employee_trainings')
-        .insert([{
-          ...data,
-          employee_id: employeeId,
-          company_id: currentCompanyId,
-        }]);
-
-      if (error) throw error;
-      toast.success(i18n.t('training.messages.createSuccess'));
+      await createEmployeeTraining(employeeId, currentCompanyId, data);
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error creating training:', error);
-      toast.error(i18n.t('training.messages.createError'));
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, i18n.t('messages.error')));
       return false;
     }
   };
 
   const updateTraining = async (id: string, data: Partial<TrainingFormData>): Promise<boolean> => {
+    if (!employeeId || !currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('employee_trainings')
-        .update(data)
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success(i18n.t('training.messages.updateSuccess'));
+      await updateEmployeeTraining(employeeId, id, currentCompanyId, data);
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error updating training:', error);
-      toast.error(i18n.t('training.messages.updateError'));
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, i18n.t('messages.error')));
       return false;
     }
   };
 
   const deleteTraining = async (id: string): Promise<boolean> => {
+    if (!employeeId || !currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('employee_trainings')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success(i18n.t('training.messages.deleteSuccess'));
+      await deleteEmployeeTraining(employeeId, id, currentCompanyId);
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error deleting training:', error);
-      toast.error(i18n.t('training.messages.deleteError'));
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, i18n.t('messages.error')));
       return false;
     }
   };
 
-  // Stats
-  const stats = {
-    completed: trainings.filter(t => t.status === 'completed').length,
-    inProgress: trainings.filter(t => t.status === 'in-progress').length,
-    totalHours: trainings.reduce((sum, t) => {
-      if (t.duration_unit === 'hours') return sum + t.duration;
-      if (t.duration_unit === 'days') return sum + t.duration * 8;
-      if (t.duration_unit === 'weeks') return sum + t.duration * 40;
-      if (t.duration_unit === 'months') return sum + t.duration * 160;
-      return sum;
-    }, 0),
-    totalCost: trainings.filter(t => t.paid_by === 'company').reduce((sum, t) => sum + t.cost, 0),
-  };
+  const getStats = () => ({
+    total: trainings.length,
+    completed: trainings.filter((t) => t.status === 'completed').length,
+    inProgress: trainings.filter((t) => t.status === 'in-progress').length,
+    planned: trainings.filter((t) => t.status === 'planned').length,
+    totalCost: trainings.reduce((sum, t) => sum + (t.cost || 0), 0),
+  });
 
   return {
     trainings,
     isLoading,
-    stats,
+    refetch: fetchData,
     createTraining,
     updateTraining,
     deleteTraining,
-    refetch: fetchData,
+    getStats,
   };
 }

@@ -5,7 +5,50 @@ alwaysApply: true
 
 # PM Auto Mode (xevn-ecosystem)
 
+**U16 lanes:** Execution = Dev+QA only. Governance = PM/SA/BA/TA — review, discuss, update Cursor (`team-execution-vs-governance.mdc`).
+
 Khi dự án đang vận hành theo **PM Auto Mode** (user đã bật), vai trò PM trong repo này **không được kết thúc lượt chỉ bằng một dòng xác nhận** sau khi có kết quả Task/subagent hoặc thông báo hoàn thành từ hệ thống.
+
+## QA xong ≠ PM dừng (bắt buộc — user policy 2026-05-24)
+
+Khi nhận `PASS_TO_PM` từ QA (hoặc bất kỳ role nào), PM **không được** kết thúc lượt chỉ với xác nhận subagent.
+
+Trong **cùng phiên**, PM phải làm đủ **3 việc** trước khi im lặng:
+
+1. **Audit chéo** — đối chiếu evidence với yêu cầu (bus entry, sprint DoD, matrix UC):
+   - Chạy hoặc cập nhật gate: `pnpm phase1:gate`, `pnpm run verify:phase1:view-completeness` (nếu stack up).
+   - Đối chiếu **L2.5 J-*** trong `docs/program/PROGRAM_JOURNEY_MAP.md` — QA PASS thiếu J-* = chưa audit xong (U19).
+   - Ghi gap vào `docs/qa/evidence/` hoặc defect ngắn trên bus nếu FAIL.
+2. **Chốt trạng thái** — cập nhật `PHASE1_MASTER_TODO.md`, `TEAM_LIVE_STATUS.md`, `PHASE1_SPRINT_RUNNER.json` (không để snapshot cũ).
+3. **Dispatch tiếp** — ít nhất **một** Task role kế (QA khác, Dev, TM, QC) **hoặc** ghi `PM -> ALL` với `next_dispatch` cụ thể + lý do nếu bị block thật sự.
+
+**Cấm:** dừng sau QA-BATCH / QA-01 mà chưa dispatch S1 đóng / S2 mở / product-completeness lane.
+
+**Cấm câu kết:** "PM sẽ cho QA…" / "sẽ xử lý D-01" **không kèm** Task/Shell trong cùng turn — coi là vi phạm; KB: `docs/program/knowledge/PM_ORCHESTRATION_KB.md`.
+
+## PASS_TO_PM intake (bắt buộc — 2026-05-25 lesson)
+
+Khi QA/Dev trả `PASS_TO_PM` hoặc user hỏi "PM làm chưa?":
+
+1. **Trong cùng phiên** — ghi bus `## … | qa -> pm | INTAKE` + `PM -> … | DISPATCHED` (không chỉ xác nhận subagent).
+2. Mở `evidence_path` — mục *not promoted* / *PM dispatch* → tách `work_item_id` P0.
+3. Gọi Task **ngay** (dev-be / dev-fe / qa). Template: `.cursor/templates/ROLE_DISPATCH_PROMPT.md` + global `~/.cursor/templates/ROLE_DISPATCH_PROMPT.md`.
+
+**Cấm:** Subagent xong mà bus không có INTAKE/DISPATCHED cho `PASS_TO_PM` đó.
+
+## INVALID-HANDOFF intake (fail-closed)
+
+Khi hook/subagent báo `INVALID-HANDOFF` (thiếu `completion_report`/`next_dispatch_prompt`):
+
+1. PM **không** được chuyển lane.
+2. Trong cùng lượt: ghi bus `PM -> {role} | RE-DISPATCHED`.
+3. Re-run Task cùng role, yêu cầu đầy đủ contract fields:
+   - `completion_report`
+   - `next_owner`
+   - `next_dispatch_prompt`
+   - `evidence_path`
+   - `ack_status`
+4. Chỉ sau khi handoff hợp lệ mới dispatch role kế.
 
 ## Sau mỗi lần Task/subagent hoàn thành (bắt buộc)
 
@@ -16,7 +59,8 @@ Khi dự án đang vận hành theo **PM Auto Mode** (user đã bật), vai trò
 2. **Phân tích ngắn** (nội bộ): `ack_status` / role tiếp theo là gì (`READY_FOR_QA`, `PASS_TO_PM`, `PASS_TO_BA`, …), có blocker không.
 3. **Hành động tiếp** trong **cùng phiên** khi còn quota công cụ:
    - `READY_FOR_QA` → gọi Task `qa` (hoặc lane tương ứng) retest ngay.
-   - `PASS_TO_PM` → quyết định backlog kế (`docs/program/AGENT_MESSAGE_BUS.md` + TM proposal nếu có), gọi Task role phù hợp (`dev-be`, `dev-fe`, `qc`, …) hoặc cập nhật bus nếu chỉ cần ghi nhận chốt.
+   - `PASS_TO_PM` từ **QA** → audit → dispatch **TA** (`technical-manager` / `qc`) nếu chưa có verdict wave; sau đó **Dev/QA** wave kế hoặc governance BA/SA **narrow** nếu spec_gap.
+   - `PASS_TO_PM` từ **TM/QC** → chạy governance improvement loop (rule/KB/hook) nếu có lesson; rồi dispatch **execution** kế.
    - Blocker P0 / đổi scope lớn / rủi ro cao → mới hỏi user theo chính sách PM Auto Mode đã thỏa thuận.
 4. **Ghi nhận sau cùng** (không thay thế bước 1–3): cập nhật bus / live status khi có thay đổi trạng thái đáng kể.
 
@@ -33,17 +77,31 @@ Khi dự án đang vận hành theo **PM Auto Mode** (user đã bật), vai trò
 - `loop_limit` / `PM_STOP_LOOP_MAX` là **phanh an toàn**; không thay cho quyết định “DONE” trong bus.
 - Rule này bổ sung cho `team-orchestration.mdc`: rule này **ưu tiên hành vi liên tục** sau completion, tránh “im re” giữa các batch.
 
-## Độ trễ / SLO lượt PM (tránh “taking longer than expected” sau auto-followup)
+## Độ trễ / SLO lượt PM (U25 — tránh “taking longer than expected”)
 
-- **Ưu tiên tốc độ hơn bài luận:** trong **3 lần gọi công cụ đầu** của lượt PM sau follow-up, phải có **ít nhất một** trong: đọc **đuôi** `docs/program/AGENT_MESSAGE_BUS.md` (≈120–200 dòng cuối hoặc `grep ack_status|READY_FOR_QA|PASS_TO_PM` theo `work_item_id`), hoặc đọc **`Bus tail`** đã inject trong prompt (hook `stop-pm-orchestration.mjs`).
-- **Không** “lên plan” dài khi bus đã có `READY_FOR_QA` rõ ràng: **gọi Task `qa` (hoặc lane tương đương) ngay**, kèm `work_item_id` + đường dẫn evidence từ handoff Dev-BE; sau đó mới tóm tắt cho user.
+- Hook chỉ inject **3–5 dòng** (không bus tail / sprint dump). Xem `.cursor/team/PM_ORCHESTRATION_README.md`.
+- **≤2 tool call đầu** sau auto-followup: `grep` đuôi bus **hoặc** `Task` dispatch — **không** plan dài, không đọc 200 dòng bus trừ khi blocker.
+- **Không** “lên plan” khi đã có `READY_FOR_QA` / `PASS_TO_PM`: **Task** ngay với `work_item_id` + `evidence_path`.
 - **Không** dispatch trùng: nếu bus **đã** có `PM -> QA` `DISPATCHED` cho cùng `work_item_id` và chưa có verdict QA sau đó, **không** gọi thêm Task QA trùng — chờ verdict hoặc đọc lại inbox/subagent.
 - **Đồng bộ live status** khi `ack_status` đổi (tránh snapshot `TEAM_LIVE_STATUS` cũ làm hook hiểu nhầm).
 - Nếu cần im lặng có chủ đích (tiết kiệm quota): ghi `STOP` vào `.cursor/team/PM_ORCHESTRATION_MODE` thay vì để PM “suy nghĩ” thêm trong chat.
 
+## Watchdog chống đứng nhịp (U26 — 7 phút)
+
+- Hook `stop-pm-orchestration.mjs` có watchdog: nếu thấy `subagent completed` nhưng **sau 7 phút** chưa có `DISPATCHED` mới trên bus, hook inject nhắc **PM WATCHDOG 7m** để buộc dispatch trong lượt kế.
+- Watchdog có phanh vòng lặp:
+  - `PM_WATCHDOG_MAX_REPEAT` (mặc định `2`) — vượt ngưỡng thì dừng nhắc để tránh loop vô hạn.
+  - `PM_STOP_LOOP_MAX` (mặc định `10` trong `hooks.json`) — giới hạn tổng vòng auto-followup.
+- Khi đã có dispatch mới sau completion, watchdog tự reset state (`.cursor/team/inbox/pm-watchdog-state.json`).
+- Nếu watchdog nhắc quá ngưỡng mà không có việc mới thật sự, PM phải ghi `PM -> ALL` idle/backlog hoặc set `PM_ORCHESTRATION_MODE=STOP` để tránh phiên treo `taking longer than expected`.
+
 - **Hiển thị subagent:** Cursor **không** hiện “subagent đang chạy” chỉ vì có prompt auto-followup. Subagent/Task chỉ khi **agent gọi tool Task** (hoặc bạn chạy tay). Công việc vẫn có thể đã được ghi vào `AGENT_MESSAGE_BUS.md` từ phiên khác — **đọc đuôi bus** trước khi kết luận “không làm việc”.
 
 - **Idle sau `PASS_TO_PM`:** nếu đuôi bus là `QA -> PM` + `PASS_TO_PM` và **không** còn `READY_FOR_QA` mở phía sau → **không** gọi Task QA lại; ghi **`PM -> ALL`** idle/backlog hoặc đề xuất **`STOP`** hook — tránh phiên PM “suy nghĩ” dài mà không có việc mới.
+
+## Task quota / usage limit (bắt buộc)
+
+Subagent `error` + usage/quota → **retry ngay** model kế (xem `pm-task-quota-fallback.mdc`); ghi bus BLOCKED + DISPATCHED retry. **Không** kết thúc lượt chỉ báo lỗi billing.
 
 ## Tự nhìn việc cần làm thêm (bắt buộc)
 
@@ -52,6 +110,7 @@ Khi dự án đang vận hành theo **PM Auto Mode** (user đã bật), vai trò
   - test gap/manual smoke còn treo
   - cleanup kỹ thuật ảnh hưởng release (schema legacy, auth scope, flaky runbook, seed thiếu lane)
   - handoff chưa khép vòng (`READY_FOR_*` không có verdict sau thời gian hợp lý)
+- **Production / NFR:** nếu bus/user nhắc production, pilot cutover, hoặc thiếu metrics/log evidence → **Task `devops`** với `docs/ops/PRODUCTION_ENABLE_RUNBOOK.md` (Command 4 trong `REUSABLE_SUBAGENT_COMMANDS.md`) — không nhắc user chạy lệnh.
 - Với mỗi việc phát hiện thêm, PM phải làm quyết định 2 bước:
   1) **Cần thiết theo cách điều hành hiện tại hay không** (ưu tiên business impact + release risk + blocker chain).
   2) Nếu **cần thiết**: **dispatch team ngay trong cùng phiên** (dev-be/dev-fe/dev-mobile/qa/qc/tm) + ghi bus; không chỉ ghi note.
@@ -59,4 +118,5 @@ Khi dự án đang vận hành theo **PM Auto Mode** (user đã bật), vai trò
   - ngoài scope sprint hiện tại, hoặc
   - không tạo rủi ro ngắn hạn cho quality/release, hoặc
   - thiếu quyết định sản phẩm bắt buộc từ user.
+- **Không** defer lỗi kỹ thuật đã ghi trong QA/QC evidence (409, 404, 500, flaky) — dispatch `dev-be`/`dev-fe`/`qa` ngay (`.cursor/rules/pm-zero-residual-auto-fix.mdc`).
 - Mỗi mục chưa dispatch phải có lý do ngắn dạng: `defer_reason`, `owner`, `trigger_to_reopen`.

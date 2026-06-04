@@ -54,10 +54,8 @@ const App: React.FC = () => {
               <Route path="cockpit" element={<ExecutiveDashboardPage />} />
               <Route path="catalog-governance" element={<CatalogGovernancePage />} />
               <Route path="command-center" element={<CommandCenterPage />}>
-                <Route path="hrm">
-                  <Route index element={<Navigate to="dashboard" replace />} />
-                  <Route path=":view" element={<HrmWorkspaceRoute />} />
-                </Route>
+                <Route path="hrm" element={<Navigate to="hrm/dashboard" replace />} />
+                <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
               </Route>
             </Route>
 

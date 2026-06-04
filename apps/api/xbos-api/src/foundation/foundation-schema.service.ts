@@ -34,6 +34,7 @@ export class FoundationSchemaService implements OnModuleInit {
         UNIQUE (tenant_id, company_id, code)
       );
     `);
+    await this.ensureLegalEntityProfileColumns();
 
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.xbos_org_unit (
@@ -256,6 +257,23 @@ export class FoundationSchemaService implements OnModuleInit {
     `);
 
     await this.ensureRaciGovernanceTables();
+  }
+
+  /** Legacy seeds used minimal DDL — align live DB with org-foundation upsert (UC-XBOS-10 promote). */
+  private async ensureLegalEntityProfileColumns() {
+    const columns: Array<[string, string]> = [
+      ['tax_code', 'TEXT'],
+      ['established_at', 'DATE'],
+      ['address', 'TEXT'],
+      ['business_lines', 'TEXT'],
+      ['charter_capital', 'NUMERIC'],
+      ['legal_representative', 'TEXT'],
+    ];
+    for (const [name, sqlType] of columns) {
+      await this.db.query(
+        `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS ${name} ${sqlType}`,
+      );
+    }
   }
 
   private async ensureRaciGovernanceTables() {

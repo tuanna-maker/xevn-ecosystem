@@ -1,0 +1,21 @@
+# PM — Hook nhắc = bắt buộc Task (không chỉ xác nhận)
+
+## Giới hạn Cursor (user cần biết)
+
+- Hook `subagentStop` / `stop` chỉ **inject tin nhắn** vào chat Composer.
+- **Task subagent chỉ chạy khi Composer gọi tool Task** trong lượt đó.
+- Nếu Composer trả lời 1 câu «subagent xong» rồi **kết thúc lượt** → chuỗi **dừng** dù hook đã nhắc.
+
+## Bắt buộc Composer (PM)
+
+Khi nhận **bất kỳ** thông báo subagent xong (notification, hook followup, user paste):
+
+1. **Tool đầu tiên** = `Task` (hoặc `Task` + ghi bus trong cùng lượt).
+2. **Cấm** kết thúc lượt chỉ bằng xác nhận ngắn khi còn `READY_FOR_QA` / `FAIL_TO_PM` / QC GWC có condition chưa dispatch.
+3. Wave đóng hết → ghi `PM -> ALL` idle + cập nhật `TEAM_WORKING_NOW.md`; nếu còn residual trong QC evidence → **Task dev-be/dev-fe** ngay.
+
+## User
+
+- Theo dõi: `docs/program/TEAM_WORKING_NOW.md`
+- Kích hoạt: **`điều phối team đi`**
+- `PM_ORCHESTRATION_MODE=RUN` đã bật — vẫn cần Composer thực thi Task.

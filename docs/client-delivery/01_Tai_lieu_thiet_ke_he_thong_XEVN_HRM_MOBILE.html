@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRD — XeVN HRM Mobile | UNICOM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#d0d0d0;font-family:'Be Vietnam Pro','Segoe UI',sans-serif;font-size:13px;}
+.doc-page{width:210mm;min-height:297mm;margin:10mm auto;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+@media print{body{background:#fff;}.doc-page{margin:0;box-shadow:none;page-break-after:always;}}
+.doc-page[data-pg="0"] .page{width:210mm;min-height:297mm;background:#fff;display:flex;flex-direction:column;margin:0 auto;}
+.doc-page[data-pg="0"] .accent-bar{height:5px;background:linear-gradient(90deg,#3d7de8,#0ab4d8);}
+.doc-page[data-pg="0"] .header{padding:22px 52px;display:flex;justify-content:space-between;align-items:center;}
+.doc-page[data-pg="0"] .header-code{font-size:9.5px;font-weight:600;color:#0d1e34;}
+.doc-page[data-pg="0"] .main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 52px 80px;text-align:center;}
+.doc-page[data-pg="0"] .logo-wrap{margin-bottom:32px;}
+.doc-page[data-pg="0"] .logo-wrap img{width:260px;max-width:85vw;height:auto;display:block;margin:0 auto;}
+.doc-page[data-pg="0"] .sep{width:52px;height:3px;background:linear-gradient(90deg,#3d7de8,#0ab4d8);border-radius:2px;margin:0 auto 24px;}
+.doc-page[data-pg="0"] .doc-label{font-size:10px;font-weight:700;letter-spacing:3px;color:#0d1e34;margin-bottom:12px;}
+.doc-page[data-pg="0"] .project-title{font-size:28px;font-weight:800;color:#0d1e34;line-height:1.2;}
+.doc-page[data-pg="0"] .project-title .grad{background:linear-gradient(135deg,#3d7de8,#0ab4d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.doc-page[data-pg="0"] .subtitle{margin-top:14px;font-size:12px;color:#4a6080;}
+.doc-page[data-pg="0"] .footer{padding:18px 52px;border-top:1px solid #eaeff8;display:flex;justify-content:space-between;font-size:9.5px;color:#0d1e34;}
+.inner-h{padding:18px 48px 12px 68px;border-bottom:1px solid #eaeff8;display:flex;justify-content:space-between;align-items:center;}
+.inner-h .code{font-size:9.5px;font-weight:600;color:#0d1e34;}
+.content-area{padding:14px 48px 28px 68px;flex:1;}
+.md-render{font-size:13px;line-height:1.45;color:#333;}
+.md-render h1{font-size:18px;font-weight:800;margin:18px 0 10px;color:#000;}
+.md-render h2{font-size:15px;font-weight:700;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #000;color:#000;}
+.md-render h3{font-size:14px;font-weight:700;margin:12px 0 6px;color:#000;}
+.md-render p{margin:6px 0;}
+.md-render table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;}
+.md-render th,.md-render td{border:1px solid #cbd5e0;padding:5px 6px;vertical-align:top;text-align:left;}
+.md-render th{background:#edf2f7;color:#1e3a5f;font-weight:700;}
+.md-render ul,.md-render ol{margin:8px 0;padding-left:22px;}
+.md-render li{margin:3px 0;}
+.md-render .mermaid{text-align:center;margin:14px 0;}
+.md-render code{background:#f0f4f8;padding:1px 5px;border-radius:3px;font-size:12px;}
+.fn-shot-section{margin:14px 0;padding:12px;border:1px dashed #94a3b8;background:#f8fafc;border-radius:6px;}
+.fn-shot-section .cap{font-size:11px;color:#64748b;margin-top:8px;text-align:center;}
+.apx-title{font-size:14px;font-weight:700;color:#1e3a5f;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid #3b6cb5;}
+.inner-ft{padding:14px 48px 18px 68px;border-top:1px solid #eaeff8;font-size:9.5px;color:#4a6080;display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+<!-- Bìa -->
+<div class="doc-page" data-pg="0">
+  <div class="page">
+    <div class="accent-bar"></div>
+    <div class="header">
+      <div class="header-code">UNICOM <span>|</span> AI SOFTWARE FACTORY</div>
+      <div class="header-code" style="text-align:right">Phiên bản 1.0</div>
+    </div>
+    <div class="main">
+      <div class="logo-wrap">
+        <img src="assets/logo-unicom.png" alt="UNICOM — AI Software Factory" width="280" height="auto">
+      </div>
+      <div class="sep"></div>
+      <div class="doc-label">TÀI LIỆU YÊU CẦU HỆ THỐNG (BRD)</div>
+      <h1 class="project-title"><span class="grad">XeVN</span> — HRM Mobile</h1>
+      <p class="subtitle">Ứng dụng nhân sự đa tenant &middot; Chấm công &middot; Đơn nghỉ &middot; Lương &middot; Thông báo</p>
+    </div>
+    <div class="footer">
+      <span>20/05/2026</span>
+      <span>Bản gửi khách hàng / pilot</span>
+    </div>
+  </div>
+</div>
+
+<!-- Nội dung -->
+<div class="doc-page" data-pg="1">
+  <div class="inner-h">
+    <span class="code">BRD · XeVN HRM Mobile</span>
+    <span class="code">UNICOM</span>
+  </div>
+  <div class="content-area">
+    <div class="md-render">
+
+      <h2>Chương 1. Tổng quan hệ thống và nghiệp vụ</h2>
+      <h3>I. Bối cảnh và mục tiêu</h3>
+      <p>Doanh nghiệp cần ứng dụng di động thống nhất để CBCNV chấm công, gửi đơn nghỉ / điều chỉnh chấm công, xem phiếu lương và nhận thông báo. <strong>Phạm vi tenant</strong> được xác định từ hồ sơ trên server (email <code>@xe.vn</code>), không cấu hình cố định tenant trên từng máy.</p>
+
+      <h3>II. Yêu cầu nghiệp vụ chính</h3>
+      <table>
+        <thead><tr><th>#</th><th>Yêu cầu</th><th>Đáp ứng</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Đăng nhập đa tenant</td><td>API login + memberships + JWT</td></tr>
+          <tr><td>2</td><td>Chấm công có địa điểm</td><td>GPS + work site / geofence</td></tr>
+          <tr><td>3</td><td>Đơn nghỉ &amp; điều chỉnh</td><td>Luồng tạo — theo dõi — duyệt</td></tr>
+          <tr><td>4</td><td>Phiếu lương</td><td>Lọc theo <code>employee_id</code></td></tr>
+          <tr><td>5</td><td>Thông báo</td><td>In-app; push (lộ trình)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>III. Đối tượng sử dụng</h3>
+      <table>
+        <thead><tr><th>Nhóm</th><th>Vai trò</th></tr></thead>
+        <tbody>
+          <tr><td>Nhân viên</td><td>Chấm công, đơn, lương, thông báo</td></tr>
+          <tr><td>Trưởng / quản lý</td><td>Duyệt đơn, badge việc chờ</td></tr>
+          <tr><td>CNTT / UNICOM</td><td>Triển khai API, seed, tài liệu</td></tr>
+        </tbody>
+      </table>
+
+      <h3>IV. Luồng nghiệp vụ tổng quan</h3>
+      <div class="mermaid">
+flowchart LR
+  A[Đăng nhập] --> B[Server xác định tenant]
+  B --> C[Dashboard]
+  C --> D[Chấm công]
+  C --> E[Đơn]
+  C --> F[Phiếu lương]
+      </div>
+
+      <h2>Chương 2. Phạm vi use case</h2>
+      <p>Bảy nhóm chức năng chính (xác thực, chấm công, nghỉ, điều chỉnh, duyệt, lương, thông báo/cài đặt). Chi tiết từng UC nằm mục D và đối chiếu SRS.</p>
+
+      <h2>C. Kiến trúc hệ thống</h2>
+      <h3>I. Thành phần</h3>
+      <table>
+        <thead><tr><th>Thành phần</th><th>Vai trò</th></tr></thead>
+        <tbody>
+          <tr><td>HRM Mobile (Expo)</td><td>Ứng dụng iOS/Android</td></tr>
+          <tr><td>HRM API (NestJS)</td><td>Nghiệp vụ, JWT, attendance, payroll</td></tr>
+          <tr><td>XBOS + Portal</td><td>Đăng nhập doanh nghiệp, tenant registry</td></tr>
+          <tr><td>PostgreSQL</td><td>Dữ liệu HRM / XBOS</td></tr>
+        </tbody>
+      </table>
+      <div class="mermaid">
+flowchart TB
+  APP[HRM Mobile]
+  API[HRM API]
+  DB[(PostgreSQL)]
+  APP -->|HTTPS| API
+  API --> DB
+      </div>
+
+      <h2>D. Chi tiết use case (trích yếu)</h2>
+      <h3>UC-MOB-01 — Đăng nhập</h3>
+      <table>
+        <thead><tr><th>Thuộc tính</th><th>Nội dung</th></tr></thead>
+        <tbody>
+          <tr><td>Mục đích</td><td>Xác thực và nhận JWT + memberships</td></tr>
+          <tr><td>Tác nhân</td><td>Nhân viên</td></tr>
+          <tr><td>Luồng chính</td><td>Email + mật khẩu → <code>POST /api/hrm/auth/mobile/login</code></td></tr>
+          <tr><td>Mức độ</td><td>Bắt buộc</td></tr>
+        </tbody>
+      </table>
+      <div class="mermaid">
+sequenceDiagram
+  actor U as Nhân viên
+  participant A as App
+  participant S as HRM API
+  U->>A: Nhập email, MK
+  A->>S: POST /auth/mobile/login
+  S-->>A: JWT + memberships
+  A-->>U: Vào Dashboard
+      </div>
+
+      <div class="fn-shot-section">
+        <p><strong>Ảnh minh họa (chèn khi có UAT):</strong> chụp màn hình màn Đăng nhập HRM Mobile (email + mật khẩu, không nhập tenant). Khuyến nghị PNG ngang ≥ 1080px, đặt tệp cạnh tài liệu và thay thế bằng thẻ <code>&lt;img src="..."&gt;</code> trong khối này.</p>
+        <p class="cap">Hình 1 — Gợi ý vị trí ảnh minh họa giao diện</p>
+      </div>
+
+      <h3>UC-MOB-02 — Phạm vi công ty</h3>
+      <p>Nhiều membership: <strong>Cài đặt → Phạm vi</strong> → chọn thẻ → API <code>select-membership</code>.</p>
+      <div class="fn-shot-section">
+        <p><strong>Ảnh minh họa:</strong> màn Phạm vi với danh sách thẻ công ty (tenant + tên hiển thị).</p>
+        <p class="cap">Hình 2 — Gợi ý vị trí ảnh minh họa</p>
+      </div>
+
+      <h3>UC-MOB-03 — Chấm công</h3>
+      <p>GPS + <code>company_id</code> UUID theo phạm vi đăng nhập.</p>
+      <div class="fn-shot-section">
+        <p><strong>Ảnh minh họa:</strong> màn Chấm công (trạng thái thành công / ngoài vùng).</p>
+        <p class="cap">Hình 3 — Gợi ý vị trí ảnh minh họa</p>
+      </div>
+
+      <div class="apx-title">Phụ lục — Tài khoản pilot</div>
+      <p>Chi tiết bảng tài khoản, mật khẩu và URL: xem tệp <code>docs/hrm/HUONG_DAN_DANG_NHAP_PILOT.md</code> trong mã nguồn hoặc bản đính kèm gửi khách.</p>
+
+    </div>
+  </div>
+  <div class="inner-ft">
+    <span>UNICOM · AI Software Factory</span>
+    <span>BRD v1.0 · XeVN HRM Mobile</span>
+  </div>
+</div>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+</script>
+</body>
+</html>

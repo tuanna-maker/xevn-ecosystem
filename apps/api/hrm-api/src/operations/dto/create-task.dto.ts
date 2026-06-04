@@ -1,9 +1,10 @@
-import { IsDateString, IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { IsDateString, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
 
 const TASK_PRIORITIES = ['low', 'medium', 'high'] as const;
 
 export class CreateTaskDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsString()

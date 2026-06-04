@@ -1,0 +1,150 @@
+{
+  "work_item_id": "P1-QUAL-QA-W4",
+  "date": "2026-05-30",
+  "portal": "http://127.0.0.1:5175",
+  "group_ceo": {
+    "email": "ceo@xe.vn",
+    "journeys": {
+      "J-HRM-01": {
+        "route": "P-CC-04 contracts→employee",
+        "pass": true,
+        "listStatus": 200,
+        "getStatus": 200,
+        "employee_id": "00000000-0000-4000-8000-000000000075",
+        "clickPath": "/command-center/hrm/contracts → GET /api/hrm/employees/00000000-0000-4000-8000-000000000075?company_id=main"
+      },
+      "J-HRM-02": {
+        "route": "P-CC-03 employees→detail",
+        "pass": true,
+        "listStatus": 200,
+        "getStatus": 200,
+        "employee_id": "5fff399b-93b1-47f4-8380-d66cd2f4517e",
+        "clickPath": "/command-center/hrm/employees → GET /api/hrm/employees/5fff399b-93b1-47f4-8380-d66cd2f4517e?company_id=main"
+      },
+      "J-HRM-03": {
+        "route": "P-CC-04 contract drawer",
+        "pass": true,
+        "contract_id": "82ce870f-5c92-4d4f-83b1-6a0564a7ec2d",
+        "employee_id": "00000000-0000-4000-8000-000000000075",
+        "clickPath": "/command-center/hrm/contracts → open contract row"
+      },
+      "J-HRM-04": {
+        "route": "P-CC-05 insurance→employee",
+        "pass": true,
+        "listStatus": 200,
+        "getStatus": 200,
+        "employee_id": "00000000-0000-4000-8000-000000000052",
+        "clickPath": "/command-center/hrm/insurance → GET /api/hrm/employees/00000000-0000-4000-8000-000000000052?company_id=main"
+      },
+      "J-HRM-05": {
+        "route": "P-CC-06 recruitment",
+        "pass": true,
+        "requisitionsStatus": 200,
+        "candidatesStatus": 200,
+        "clickPath": "/command-center/hrm/recruitment → requisitions + candidates APIs"
+      },
+      "J-HRM-06": {
+        "route": "P-CC-07 attendance→employee",
+        "pass": true,
+        "getStatus": 200,
+        "employee_id": "89604c9b-bcc6-464f-8b24-ce525a607788",
+        "clickPath": "/command-center/hrm/attendance → GET /api/hrm/employees/89604c9b-bcc6-464f-8b24-ce525a607788?company_id=main"
+      },
+      "J-HRM-07": {
+        "route": "P-CC-08 payroll→employee",
+        "pass": true,
+        "listStatus": 200,
+        "getStatus": 200,
+        "payslip_id": "2bf7ebfa-38a3-4c19-8137-83771c8f5b3f",
+        "employee_id": "00000000-0000-4000-8000-000000000003",
+        "clickPath": "/command-center/hrm/payroll → GET /api/hrm/employees/00000000-0000-4000-8000-000000000003?company_id=main"
+      }
+    },
+    "l2": [],
+    "tenant": "xevn",
+    "company": "main"
+  },
+  "member_ceo": {
+    "email": "du-lich.ceo@xe.vn",
+    "checks": [
+      {
+        "id": "P-CC-01-login",
+        "expected": "201 + token",
+        "http": 201,
+        "pass": true
+      },
+      {
+        "id": "P-CC-02-negative",
+        "expected": "403 (not group CEO)",
+        "http": 403,
+        "code": "XBOS-TENANT-403",
+        "pass": true
+      },
+      {
+        "id": "J-CC-03-negative",
+        "expected": "409 SCOPE_CONTEXT_MISMATCH",
+        "http": 409,
+        "code": "SCOPE_CONTEXT_MISMATCH",
+        "pass": true
+      },
+      {
+        "id": "P-CC-03",
+        "expected": "200 no scope 409",
+        "http": 200,
+        "code": "HRM-EMP-200",
+        "total": 10,
+        "pass": true
+      },
+      {
+        "id": "P-CC-04",
+        "expected": "200 no scope 409",
+        "http": 200,
+        "code": "HRM-CON-200",
+        "total": 5,
+        "pass": true
+      },
+      {
+        "id": "P-CC-05",
+        "expected": "200 no scope 409",
+        "http": 200,
+        "code": "HRM-CON-200",
+        "total": 5,
+        "pass": true
+      },
+      {
+        "id": "P-CC-06",
+        "expected": "200 no scope 409",
+        "http": 200,
+        "code": "HRM-REC-200",
+        "total": 0,
+        "pass": true
+      },
+      {
+        "id": "P-CC-07",
+        "expected": "200 no scope 409",
+        "http": 200,
+        "code": "HRM-ATT-200",
+        "total": 27,
+        "pass": true
+      },
+      {
+        "id": "P-CC-08",
+        "expected": "200 no scope 409",
+        "http": 200,
+        "code": "HRM-PAY-200",
+        "total": 8,
+        "pass": true
+      },
+      {
+        "id": "J-HRM-02-positive",
+        "expected": "list→detail 200",
+        "http": 200,
+        "employee_id": "8d846eb9-fcf7-4fe3-8987-24c503d80ce3",
+        "pass": true
+      }
+    ],
+    "pass": true,
+    "tenant": "xe-du-lich"
+  },
+  "pass": true
+}

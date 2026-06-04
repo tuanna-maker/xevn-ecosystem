@@ -1,20 +1,42 @@
-import { IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+
+function pickScalar(value: unknown): string | undefined {
+  if (Array.isArray(value)) {
+    const first = value[0];
+    return first == null ? undefined : String(first).trim();
+  }
+  if (value == null) return undefined;
+  return String(value).trim();
+}
 
 export class ListJobRequisitionsQueryDto {
-  @IsUUID()
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  companyId?: string;
+
+  @IsString()
+  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
+  @MaxLength(64)
   company_id!: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
+  @Transform(({ value, obj }) => {
+    return pickScalar(value) ?? pickScalar(obj?.page);
+  })
+  @Matches(/^\d+$/)
+  page?: number | string = '1';
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  page_size?: number = 20;
+  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.page_size) ?? pickScalar(obj?.pageSize))
+  @Matches(/^\d+$/)
+  pageSize?: number | string;
+
+  @IsOptional()
+  @Transform(({ value, obj }) => {
+    return pickScalar(value) ?? pickScalar(obj?.pageSize) ?? pickScalar(obj?.page_size);
+  })
+  @Matches(/^\d+$/)
+  page_size?: number | string = '20';
 }

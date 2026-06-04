@@ -18,6 +18,10 @@ export type HrmAuthConfig = {
   baseUrl: string;
   accessToken?: string;
   internalApiKey?: string;
-  tenantId: string;
-  companyId: string;
+  /** Bỏ trống khi gọi login công khai (server tự suy tenant từ hồ sơ). */
+  tenantId?: string;
+  /** Scope slug from membership (e.g. main, holding); used only when companyUuid absent. */
+  companyId?: string;
+  /** Active membership legal-entity UUID — preferred for x-company-id. */
+  companyUuid?: string;
 };

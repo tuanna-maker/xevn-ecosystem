@@ -1,0 +1,33 @@
+# PM — Continuous delivery, no infinite loop (user mandate)
+
+## Hai nguyên tắc (cùng lúc)
+
+| # | Bắt buộc | Cấm |
+|---|----------|-----|
+| 1 | **Không ngưng nghỉ** khi còn residual có owner trong backlog **có giới hạn** | Dispatch vô hạn cùng `work_item_id` đã PASS/QC GO |
+| 2 | **Không vòng lặp vô hạn** | QA→QC→QA→QC trùng gate; hook + «điều phối team đi» re-open wave đã đóng |
+
+## Cơ chế chống loop
+
+1. **`docs/program/PM_ORCHESTRATION_STATE.json`** — `closed_work_items[]`: PM **không** Task lại item trong list trừ regression user.
+2. **Một wave = một mục tiêu đo được** — tối đa **3 Task song song** execution; **1 QA** + **0–1 QC** sau wave (không lặp QC nếu QA PASS cùng scope).
+3. **Sau QC GO/GWC trên scope S** — ghi `SCOPE-S-CLOSED` trên bus; wave kế phải là **ID mới** (ví dụ `P1-BND-*`), không `P1-SUPA-QA-04-R2`.
+4. **Hook `PM_ORCHESTRATION_MODE`**: `STOP` khi backlog bounded = 0; không inject «điều phối team đi» tự động nếu `closed_work_items` đã cover hint.
+5. **Cấm prompt team:** «chạy lại toàn bộ gate», «verify lại strict gate», «re-audit Wave N» khi evidence PASS < 24h và không có regression.
+
+## Khi nào được dừng (hợp lệ)
+
+- `BOUNDED_BACKLOG.md` tất cả hàng **DONE** hoặc **WAIVED** có owner.
+- User chỉ yêu cầu policy (không có delivery mới).
+- Blocker cần secret/SSH — ghi bus `BLOCKED` + 1 hành động user.
+
+## Khi nào tiếp tục (không idle)
+
+- Còn hàng **PENDING** trong `BOUNDED_BACKLOG.md`.
+- User báo lỗi route cụ thể → **1** hotfix chain (Dev → 1 QA), không full program re-gate.
+
+## Tham chiếu
+
+- `docs/program/BOUNDED_BACKLOG.md`
+- `pm-zero-residual-auto-fix.mdc` (residual có owner, không re-gate cả program)
+- `PM_ORCHESTRATION_README.md` — `loop_limit`, watchdog reset

@@ -20,7 +20,7 @@ describe('HrmAdminController', () => {
     controller = module.get<HrmAdminController>(HrmAdminController);
   });
 
-  it('wraps platform admin response with deterministic code', async () => {
+  it('UC-HRM-02: wraps platform admin response with deterministic code', async () => {
     const result = await controller.createPlatformAdmin('Bearer t', {
       email: 'a@x.com',
       password: '12345678',
@@ -30,7 +30,7 @@ describe('HrmAdminController', () => {
     expect(result.code).toBe('HRM-ADMIN-201');
   });
 
-  it('wraps company admin response with deterministic code', async () => {
+  it('UC-HRM-03: wraps company admin response with deterministic code', async () => {
     const result = await controller.createCompanyAdmin('Bearer t', {
       email: 'a@x.com',
       password: '12345678',
@@ -42,7 +42,7 @@ describe('HrmAdminController', () => {
     expect(result.code).toBe('HRM-ADMIN-202');
   });
 
-  it('wraps invite response with deterministic code', async () => {
+  it('UC-HRM-04: wraps invite response with deterministic code', async () => {
     const result = await controller.inviteEmployees('Bearer t', {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       employees: [{ email: 'e@x.com' }],
@@ -51,7 +51,7 @@ describe('HrmAdminController', () => {
     expect(result.code).toBe('HRM-ADMIN-203');
   });
 
-  it('wraps reset response with deterministic code', async () => {
+  it('UC-HRM-05: wraps reset response with deterministic code', async () => {
     const result = await controller.resetUserPassword('Bearer t', {
       user_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       new_password: 'newpass123',

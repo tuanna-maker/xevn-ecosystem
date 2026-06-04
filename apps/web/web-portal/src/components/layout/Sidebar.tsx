@@ -263,13 +263,13 @@ const Sidebar: React.FC = () => {
   });
   const visibleSettingsMenus = isMasterContext ? [] : settingsMenus;
 
-  const hrmOrigin =
-    import.meta.env.VITE_HRM_ORIGIN ?? (import.meta.env.DEV ? 'http://localhost:8080' : '');
-
   const resolveExternalHref = (href: string) => {
-    // HRM app chạy độc lập ở port khác (dev) và mount theo basename `/hr`.
+    if (href.startsWith('/command-center/hrm')) return href;
+    // Legacy menu paths `/hr/...` → in-app Command Center embed (no :8080 hop).
     if (href.startsWith('/hr')) {
-      return hrmOrigin ? `${hrmOrigin}${href}` : href;
+      const rest = href.slice('/hr'.length) || '/dashboard';
+      const suffix = rest === '/' ? '/dashboard' : rest.startsWith('/') ? rest : `/${rest}`;
+      return `/command-center/hrm${suffix}`;
     }
     return href;
   };

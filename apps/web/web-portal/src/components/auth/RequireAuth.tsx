@@ -2,6 +2,32 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
+export function isCommandCenterPath(pathname: string): boolean {
+  return pathname === '/command-center' || pathname.startsWith('/command-center/');
+}
+
+/** UC-ECO-SCOPE-01 — every portal route behind RequireAuth must redirect unauthenticated users. */
+export function isProtectedPortalPath(pathname: string): boolean {
+  if (pathname === '/' || pathname === '/cockpit') return true;
+  if (pathname.startsWith('/catalog-governance')) return true;
+  if (isCommandCenterPath(pathname)) return true;
+  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) return true;
+  return false;
+}
+
+/**
+ * Dev bypass (internal API key, no JWT) is disabled on all protected portal paths.
+ * UC-ECO-SCOPE-01: unauthenticated users on pilot routes must land on /login.
+ */
+export function allowDevBypass(pathname: string): boolean {
+  if (isProtectedPortalPath(pathname)) return false;
+  if (import.meta.env.VITE_REQUIRE_LOGIN === 'true') return false;
+  return (
+    import.meta.env.DEV &&
+    Boolean(import.meta.env.VITE_INTERNAL_API_KEY?.trim())
+  );
+}
+
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
@@ -11,11 +37,7 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    const allowDevBypass =
-      import.meta.env.DEV &&
-      Boolean(import.meta.env.VITE_INTERNAL_API_KEY?.trim()) &&
-      import.meta.env.VITE_REQUIRE_LOGIN !== 'true';
-    if (allowDevBypass) {
+    if (allowDevBypass(location.pathname)) {
       return <>{children}</>;
     }
     return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;

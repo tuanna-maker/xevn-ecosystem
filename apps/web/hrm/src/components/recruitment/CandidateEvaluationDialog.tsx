@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -40,9 +40,15 @@ import {
   ClipboardList,
   Settings,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { CandidateEvaluationRadarChart } from './CandidateEvaluationRadarChart';
 import { useToast } from '@/hooks/use-toast';
+import {
+  createCandidateEvaluation,
+  listCandidateEvaluations,
+  listEvaluationCriteriaTemplates,
+  replaceEvaluationCriteriaTemplates,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -159,28 +165,26 @@ export function CandidateEvaluationDialog({
     
     setLoading(true);
     try {
-      // Fetch templates
-      const { data: templatesData } = await supabase
-        .from('evaluation_criteria')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .eq('is_active', true)
-        .order('sort_order');
+      const [templatesRes, evaluationsRes] = await Promise.all([
+        listEvaluationCriteriaTemplates(currentCompanyId),
+        listCandidateEvaluations({ company_id: currentCompanyId, candidate_id: candidate.id }),
+      ]);
+      const templatesData = (templatesRes.data ?? []) as EvaluationCriteriaTemplate[];
+      const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
+        id: String(row.id),
+        evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
+        total_score: row.total_score != null ? Number(row.total_score) : null,
+        weighted_score: row.weighted_score != null ? Number(row.weighted_score) : null,
+        result: String(row.result ?? 'pending'),
+        overall_feedback: row.overall_feedback ? String(row.overall_feedback) : null,
+        recommendation: row.recommendation ? String(row.recommendation) : null,
+        created_at: String(row.created_at ?? ''),
+      }));
 
-      setTemplates(templatesData || []);
+      setTemplates(templatesData);
+      setExistingEvaluations(evaluationsData);
 
-      // Fetch existing evaluations for this candidate
-      const { data: evaluationsData } = await supabase
-        .from('candidate_evaluations')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .eq('candidate_id', candidate.id)
-        .order('created_at', { ascending: false });
-
-      setExistingEvaluations(evaluationsData || []);
-
-      // Initialize criteria from templates or defaults
-      if (templatesData && templatesData.length > 0) {
+      if (templatesData.length > 0) {
         setCriteria(templatesData.map((t, idx) => ({
           id: `temp-${idx}`,
           criterion_id: t.id,
@@ -307,43 +311,25 @@ export function CandidateEvaluationDialog({
 
     setSaving(true);
     try {
-      // Create evaluation record
-      const { data: evaluation, error: evalError } = await supabase
-        .from('candidate_evaluations')
-        .insert({
-          company_id: currentCompanyId,
-          candidate_id: candidate.id,
-          interview_id: interviewId || null,
-          evaluator_name: evaluatorName || null,
-          evaluator_email: user?.email || null,
-          total_score: totalScore,
-          weighted_score: weightedScore,
-          result,
-          overall_feedback: overallFeedback || null,
-          recommendation: recommendation || null,
-        })
-        .select()
-        .single();
-
-      if (evalError) throw evalError;
-
-      // Create score records
-      const scores = criteria.map(c => ({
-        evaluation_id: evaluation.id,
-        criterion_id: c.criterion_id || null,
-        category: c.category,
-        criterion_name: c.name,
-        weight: c.weight,
-        required_score: c.requiredScore,
-        actual_score: c.actualScore,
-      }));
-
-      const { error: scoresError } = await supabase
-        .from('candidate_evaluation_scores')
-        .insert(scores);
-
-      if (scoresError) throw scoresError;
-
+      await createCandidateEvaluation({
+        company_id: currentCompanyId,
+        candidate_id: candidate.id,
+        interview_id: interviewId ?? null,
+        evaluator_name: evaluatorName || user?.email || null,
+        evaluator_email: user?.email ?? null,
+        total_score: totalScore,
+        weighted_score: weightedScore,
+        result,
+        overall_feedback: overallFeedback,
+        recommendation,
+        scores: criteria.map((c) => ({
+          criterion_name: c.name,
+          category: c.category,
+          actual_score: c.actualScore,
+          required_score: c.requiredScore,
+          weight: c.weight,
+        })),
+      });
       toast({
         title: t('common.success'),
         description: r('evalSaveSuccess'),
@@ -369,29 +355,16 @@ export function CandidateEvaluationDialog({
 
     setSaving(true);
     try {
-      // Delete existing templates
-      await supabase
-        .from('evaluation_criteria')
-        .delete()
-        .eq('company_id', currentCompanyId);
-
-      // Insert new templates
-      const templatesData = criteria.map((c, idx) => ({
-        company_id: currentCompanyId,
-        category: c.category,
-        name: c.name,
-        weight: c.weight,
-        default_required_score: c.requiredScore,
-        sort_order: idx,
-        is_active: true,
-      }));
-
-      const { error } = await supabase
-        .from('evaluation_criteria')
-        .insert(templatesData);
-
-      if (error) throw error;
-
+      await replaceEvaluationCriteriaTemplates(
+        currentCompanyId,
+        criteria.map((c, index) => ({
+          category: c.category,
+          name: c.name,
+          weight: c.weight,
+          default_required_score: c.requiredScore,
+          sort_order: index,
+        })),
+      );
       toast({
         title: t('common.success'),
         description: r('evalTemplateSaveSuccess'),

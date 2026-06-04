@@ -35,6 +35,19 @@ export class CatalogSyncController {
       .then((data) => ok(data, 'HRM-SYNC-200', 'Catalog pulled from XBOS'));
   }
 
+  @Get('status')
+  async getCatalogSyncStatus(
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    this.assertSyncAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const data = await this.catalogSyncService.getCatalogSyncStatus(scope.tenantId, scope.companyId);
+    return ok(data, 'HRM-SYNC-203', 'Catalog sync status fetched');
+  }
+
   @Get(':catalogKey')
   async getLocalCatalog(
     @Param('catalogKey') catalogKey: string,

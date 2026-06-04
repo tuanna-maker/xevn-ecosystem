@@ -5,7 +5,8 @@ import { loadDeployEnv } from './seed-env-loader.mjs';
 loadDeployEnv();
 
 const TENANT = 'xevn';
-const COMPANY = 'xevn';
+/** Pilot scopes: member unit `main` + group rollup `holding` (ADR M01 / P1-S1-BE-02). */
+const COMPANIES = ['main', 'holding'];
 
 async function main() {
   const client = new pg.Client({
@@ -35,20 +36,22 @@ async function main() {
     { code: 'REV001', target: 100, actuals: [82, 85, 88, 86, 90, 88] },
   ];
   const today = new Date();
-  for (const m of metrics) {
-    for (let i = 0; i < m.actuals.length; i += 1) {
-      const d = new Date(today);
-      d.setMonth(d.getMonth() - (m.actuals.length - 1 - i));
-      const period = d.toISOString().slice(0, 10);
-      await client.query(
-        `
+  for (const companyId of COMPANIES) {
+    for (const m of metrics) {
+      for (let i = 0; i < m.actuals.length; i += 1) {
+        const d = new Date(today);
+        d.setMonth(d.getMonth() - (m.actuals.length - 1 - i));
+        const period = d.toISOString().slice(0, 10);
+        await client.query(
+          `
         INSERT INTO public.xbos_kpi_actuals (tenant_id, company_id, metric_code, period_date, actual_value, target_value)
         VALUES ($1,$2,$3,$4::date,$5,$6)
         ON CONFLICT (tenant_id, company_id, metric_code, period_date)
         DO UPDATE SET actual_value = EXCLUDED.actual_value, target_value = EXCLUDED.target_value
         `,
-        [TENANT, COMPANY, m.code, period, m.actuals[i], m.target],
-      );
+          [TENANT, companyId, m.code, period, m.actuals[i], m.target],
+        );
+      }
     }
   }
   await client.end();

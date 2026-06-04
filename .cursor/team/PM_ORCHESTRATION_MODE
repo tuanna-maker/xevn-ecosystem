@@ -1,2 +1,3 @@
-STOP
-# Auto-followup tắt: M2 employee slice đã PASS + idle checkpoint trên bus. Đổi dòng 1 thành RUN khi mở slice kế (dept/insurance / gỡ xlsx thêm).
+RUN
+# User 2026-05-23: auto-followup gây treo máy — tắt hook inject.
+# Bật lại: đổi dòng 1 thành RUN chỉ khi cần sprint auto (khuyến nghị PM_STOP_LOOP_MAX=3).

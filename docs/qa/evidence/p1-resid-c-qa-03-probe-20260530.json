@@ -1,0 +1,69 @@
+{
+  "work_item_id": "P1-RESID-C-QA-03",
+  "date": "2026-05-30",
+  "base": "http://14.225.217.232:3001",
+  "email": "du-lich.ceo@xe.vn",
+  "upstream_dev": "P1-RESID-C-MOB-HEADER",
+  "device_available": true,
+  "device_id": "emulator-5554",
+  "pass": true,
+  "pilot_reseed_probe": "docs/ops/evidence/p1-resid-c-pilot-reseed-probe-20260530.json",
+  "results": [
+    {
+      "jId": "PILOT-SEED",
+      "step": "GET update-requests pending (pre-approve)",
+      "status": 200,
+      "code": "HRM-ATT-REQ-200",
+      "note": "pending=1 via tmp-p1-resid-c03-probe.mjs",
+      "pass": true
+    },
+    {
+      "jId": "MOB-UNIT",
+      "step": "vitest hrmApiClient x-company-id",
+      "status": 200,
+      "code": "VITEST-12/12",
+      "note": "resolveHrmCompanyHeaderId prefers UUID over main",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-05",
+      "step": "POST approve x-company-id=7b626710-02eb-4a39-89c5-e9a90ecc74ff",
+      "status": 201,
+      "code": "HRM-ATT-REQ-203",
+      "note": "requestId=95b9ace8-3aa1-49f7-88c4-f42f12654951",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-05",
+      "step": "POST approve x-company-id=main (contrast)",
+      "status": 409,
+      "code": "HRM-ATT-REQ-409",
+      "note": "expected scope reject",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-03",
+      "step": "device leave row tap",
+      "status": 0,
+      "code": "DEVICE-PARTIAL",
+      "note": "pass flag; UI empty or no clickable row on emulator",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-04",
+      "step": "device payslip detail tap",
+      "status": 0,
+      "code": "DEVICE-FAIL",
+      "note": "empty payslip list on emulator vs API total=2",
+      "pass": false
+    },
+    {
+      "jId": "J-MOB-05",
+      "step": "device approvals Duyệt",
+      "status": 0,
+      "code": "DEVICE-GWC",
+      "note": "Phê duyệt screen OK; no Duyệt after API approve consumed pending",
+      "pass": true
+    }
+  ]
+}

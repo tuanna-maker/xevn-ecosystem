@@ -1,9 +1,15 @@
 import { resolveIdentityScope } from './identityScope';
+import { resolveXbosApiCompanyIdForPath } from './commandCenterScope';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 
-function scopeHeaders(tenantIdHint?: string | null, companyHint?: string | null) {
+function scopeHeaders(
+  apiPath: string,
+  tenantIdHint?: string | null,
+  companyHint?: string | null,
+) {
   const scope = resolveIdentityScope(tenantIdHint ?? null, companyHint ?? null);
-  return { tenantId: scope.tenantId, companyId: scope.companyId };
+  const companyId = resolveXbosApiCompanyIdForPath(apiPath, scope.tenantId, companyHint ?? scope.companyId);
+  return { tenantId: scope.tenantId, companyId };
 }
 
 export async function listBusinessMasterItems<T>(
@@ -11,11 +17,12 @@ export async function listBusinessMasterItems<T>(
   tenantIdHint?: string | null,
   companyHint?: string | null,
 ): Promise<T[]> {
-  const { tenantId, companyId } = scopeHeaders(tenantIdHint, companyHint);
+  const path = `/business-master/${encodeURIComponent(domain)}/items`;
+  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint);
   const search = new URLSearchParams({ tenantId, companyId });
   try {
     const data = await xbosGetData<{ items?: T[] } | T[]>(
-      `/business-master/${encodeURIComponent(domain)}/items?${search.toString()}`,
+      `${path}?${search.toString()}`,
       {
         scope: `business-master.${domain}.list`,
         tenantId,
@@ -36,9 +43,10 @@ export async function upsertBusinessMasterItem(
   tenantIdHint?: string | null,
   companyHint?: string | null,
 ) {
-  const { tenantId, companyId } = scopeHeaders(tenantIdHint, companyHint);
+  const path = `/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`;
+  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint);
   try {
-    return await xbosFetch(`/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`, {
+    return await xbosFetch(path, {
       method: 'PUT',
       scope: `business-master.${domain}.upsert`,
       tenantId,
@@ -57,9 +65,10 @@ export async function deleteBusinessMasterItem(
   tenantIdHint?: string | null,
   companyHint?: string | null,
 ) {
-  const { tenantId, companyId } = scopeHeaders(tenantIdHint, companyHint);
+  const path = `/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`;
+  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint);
   try {
-    return await xbosFetch(`/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`, {
+    return await xbosFetch(path, {
       method: 'DELETE',
       scope: `business-master.${domain}.delete`,
       tenantId,

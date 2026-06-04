@@ -1,0 +1,53 @@
+---
+description: Sau khi team implement xong, PM bắt buộc điều phối QA/QC/Dev kiểm tra lại hệ thống — monitoring chất lượng, không báo xong khi user vẫn thấy lỗi.
+alwaysApply: true
+---
+
+# PM — Post-delivery verification & monitoring (mặc định)
+
+Bổ sung cho `pm-composer-delegate-only.mdc` và `pm-auto-mode-orchestration.mdc`.
+
+## Luồng mặc định sau mỗi yêu cầu user
+
+```text
+User request → PM phân tích → Task Dev lane(s) → Task QA (smoke) → Task QC (gate) → PM tổng hợp cho user
+```
+
+PM **không** được kết thúc sau Dev xong. **Bắt buộc** có ít nhất một vòng **QA retest** trên môi trường thật (local hoặc pilot).
+
+## Sau khi sub-agent báo READY_FOR_QA / completed
+
+PM **trong cùng phiên** (không hỏi user chạy lệnh):
+
+1. **Đọc** đuôi `.cursor/team/AGENT_MESSAGE_BUS.md` + evidence path sub-agent ghi.
+2. **Dispatch QA** với L0–L2.5: matrix P-CC-* **+ J-*** ids từ `docs/program/PROGRAM_JOURNEY_MAP.md` (URL, account, click path).
+3. Nếu QA **FAIL** hoặc user screenshot lỗi → **PM orchestration gap (U19)**: dispatch owner + cập nhật journey map/rule **cùng phiên**; không chỉ hotfix im lặng.
+4. **Dispatch QC** khi QA PASS và phạm vi ảnh hưởng release/pilot.
+5. **Ghi bus** `PM -> USER` tóm tắt + residual risk; chỉ nói «xong» khi QC GO hoặc GO WITH CONDITIONS đã ghi.
+
+## Monitoring chất lượng (PM accountability)
+
+Tuân **`business-flow-zero-defect-gate.mdc`**: L0 → L1 → L2 → **L2.5 J-*** → L3 QC. Rule: `uat-production-readiness-orchestration.mdc`.
+
+| Checkpoint | Owner kiểm tra | PM điều phối khi FAIL |
+|------------|----------------|------------------------|
+| L0 API health | DevOps / QA | `devops` restart + smoke |
+| L1 System UAT | QA | `dev-be` / `dev-fe` / mobile |
+| L2 Portal routes (P-CC-*) | QA | matrix row owner |
+| **L2.5 J-* journeys** | QA | `PROGRAM_JOURNEY_MAP.md` — PM dispatch explicit J-ids |
+| L3 QC GO | QC | NO-GO → PM re-dispatch + governance update |
+| Console 409 scope / 54321 | QA | `dev-fe` scope + API mode |
+
+## User chỉ thụ hưởng kết quả
+
+- PM **không** đưa checklist «bạn chạy pnpm…» làm exit chính.
+- Sub-agent chạy lệnh; PM tổng hợp URL đăng nhập + tài khoản pilot.
+
+## Coaching
+
+Mỗi dispatch kèm mục liên quan từ `.cursor/team/PM_COACHING_FOR_ROLES.md`.
+
+## Cấm
+
+- PM tự `Write`/`StrReplace` `apps/**` sau dispatch Dev (trừ user nói «tự sửa»).
+- Báo «đã xong» khi chưa có QA evidence hoặc user vẫn báo lỗi trên UI.

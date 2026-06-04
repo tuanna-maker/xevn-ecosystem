@@ -24,7 +24,7 @@ export class TenantScopeController {
       (typeof jwt?.sub === 'string' && jwt.sub.trim()) ||
       (typeof jwt?.email === 'string' && jwt.email.trim()) ||
       undefined;
-    return (fromJwt ?? headerUserId ?? queryUserId ?? process.env.DEV_DEFAULT_USER_ID ?? 'admin@xevn.vn').trim();
+    return (fromJwt ?? headerUserId ?? queryUserId ?? process.env.DEV_DEFAULT_USER_ID ?? 'admin@xe.vn').trim();
   }
 
   @Get('accessible')

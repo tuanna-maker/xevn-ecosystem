@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDepartments } from '@/hooks/useDepartments';
+import { useContracts, type Contract } from '@/hooks/useContracts';
+import { hrmStorageUploadStub, hrmStorageRemoveStub } from '@/lib/hrmStorageUploadStub';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -79,28 +80,10 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
   getSettingsCatalogsOverview,
+  listEmployees,
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
-
-interface Contract {
-  id: string;
-  contract_code: string;
-  employee_name: string;
-  employee_avatar: string | null;
-  department: string | null;
-  contract_type: string;
-  effective_date: string | null;
-  expiry_date: string | null;
-  status: string;
-  created_by: string | null;
-  created_at: string;
-  file_url: string | null;
-  notes: string | null;
-  company_id: string;
-  source: 'contracts' | 'employee_contracts'; // Track which table the contract came from
-  employee_id?: string; // Only for employee_contracts
-}
 
 interface FormData {
   contract_code: string;
@@ -113,6 +96,7 @@ interface FormData {
   status: string;
   notes: string;
   file_url: string;
+  employee_id?: string;
 }
 
 const initialFormData: FormData = {
@@ -199,9 +183,8 @@ const getStatusBadge = (status: string, t: any) => {
 
 export default function Contracts() {
   const { t } = useTranslation();
-  const { currentCompanyId, user } = useAuth();
+  const { currentCompanyId } = useAuth();
   const { departments } = useDepartments();
-  const queryClient = useQueryClient();
   const scope = useMemo(() => resolveCatalogScope(currentCompanyId), [currentCompanyId]);
   const contractTypes = getContractTypes(t);
   const STATUS_OPTIONS = getStatusOptions(t);
@@ -239,14 +222,8 @@ export default function Contracts() {
     queryKey: ['employees-list', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('employees')
-        .select('id, full_name, employee_code, department, position, avatar_url')
-        .eq('company_id', currentCompanyId)
-        .is('deleted_at', null)
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
+      const res = await listEmployees({ company_id: currentCompanyId, page: 1, page_size: 500 });
+      return res.data ?? [];
     },
     enabled: !!currentCompanyId,
   });
@@ -302,208 +279,29 @@ export default function Contracts() {
   }, [departmentCatalog, departments]);
 
   const handleEmployeeSelect = (employeeId: string) => {
-    const emp = employeesList.find(e => e.id === employeeId);
+    const emp = employeesList.find((e) => e.id === employeeId);
     if (emp) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
+        employee_id: employeeId,
         employee_name: emp.full_name,
-        employee_avatar: emp.avatar_url || '',
-        department: emp.department || '',
+        employee_avatar: (emp as { avatar_url?: string }).avatar_url || '',
+        department:
+          (emp.custom_fields as { department?: string } | undefined)?.department ||
+          emp.job_title_key ||
+          '',
       }));
     }
   };
 
-  const { data: contracts = [], isLoading } = useQuery({
-    queryKey: ['contracts', selectedType, currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      
-      // Fetch from contracts table
-      let contractsQuery = supabase
-        .from('contracts')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (selectedType !== 'all') {
-        contractsQuery = contractsQuery.eq('contract_type', selectedType);
-      }
-
-      const { data: contractsData, error: contractsError } = await contractsQuery;
-      if (contractsError) throw contractsError;
-
-      // Fetch from employee_contracts table
-      let employeeContractsQuery = supabase
-        .from('employee_contracts')
-        .select('*, employees!inner(full_name, avatar_url)')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (selectedType !== 'all') {
-        employeeContractsQuery = employeeContractsQuery.eq('contract_type', selectedType);
-      }
-
-      const { data: employeeContractsData, error: employeeContractsError } = await employeeContractsQuery;
-      if (employeeContractsError) throw employeeContractsError;
-
-      // Transform contracts table data
-      const contractsFromTable: Contract[] = (contractsData || []).map((c) => ({
-        id: c.id,
-        contract_code: c.contract_code,
-        employee_name: c.employee_name,
-        employee_avatar: c.employee_avatar,
-        department: c.department,
-        contract_type: c.contract_type,
-        effective_date: c.effective_date,
-        expiry_date: c.expiry_date,
-        status: c.status,
-        created_by: c.created_by,
-        created_at: c.created_at,
-        file_url: c.file_url,
-        notes: c.notes,
-        company_id: c.company_id,
-        source: 'contracts' as const,
-      }));
-
-      // Transform employee_contracts table data
-      const contractsFromEmployees: Contract[] = (employeeContractsData || []).map((ec: any) => ({
-        id: ec.id,
-        contract_code: ec.contract_code,
-        employee_name: ec.employees?.full_name || 'Unknown',
-        employee_avatar: ec.employees?.avatar_url || null,
-        department: ec.department,
-        contract_type: ec.contract_type,
-        effective_date: ec.effective_date,
-        expiry_date: ec.expiry_date,
-        status: ec.status,
-        created_by: ec.created_by,
-        created_at: ec.created_at,
-        file_url: ec.file_url,
-        notes: ec.notes,
-        company_id: ec.company_id,
-        source: 'employee_contracts' as const,
-        employee_id: ec.employee_id,
-      }));
-
-      // Combine and sort by created_at
-      const allContracts = [...contractsFromTable, ...contractsFromEmployees]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-      return allContracts;
-    },
-    enabled: !!currentCompanyId,
-  });
-
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: async (data: FormData) => {
-      if (!currentCompanyId) throw new Error('No company selected');
-      
-      const { error } = await supabase.from('contracts').insert({
-        contract_code: data.contract_code,
-        employee_name: data.employee_name,
-        employee_avatar: data.employee_avatar || null,
-        department: data.department || null,
-        contract_type: data.contract_type,
-        effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-        expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-        status: data.status,
-        notes: data.notes || null,
-        file_url: data.file_url || null,
-        company_id: currentCompanyId,
-        created_by: user?.email || null,
-      });
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      toast.success(t('contracts.createSuccess'));
-      handleCloseDialog();
-    },
-    onError: (error) => {
-      toast.error(t('contracts.createError') + ': ' + error.message);
-    },
-  });
-
-  // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: async ({ contract, data }: { contract: Contract; data: FormData }) => {
-      const table = contract.source === 'employee_contracts' ? 'employee_contracts' : 'contracts';
-      const payload = {
-        contract_code: data.contract_code,
-        contract_type: data.contract_type,
-        effective_date: data.effective_date ? format(data.effective_date, 'yyyy-MM-dd') : null,
-        expiry_date: data.expiry_date ? format(data.expiry_date, 'yyyy-MM-dd') : null,
-        status: data.status,
-        notes: data.notes || null,
-        file_url: data.file_url || null,
-        ...(contract.source === 'employee_contracts'
-          ? { department: data.department || null }
-          : {
-              employee_name: data.employee_name,
-              employee_avatar: data.employee_avatar || null,
-              department: data.department || null,
-            }),
-      };
-      const { error } = await supabase.from(table).update(payload).eq('id', contract.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      toast.success(t('contracts.updateSuccess'));
-      handleCloseDialog();
-    },
-    onError: (error) => {
-      toast.error(t('contracts.updateError') + ': ' + error.message);
-    },
-  });
-
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (contract: Contract) => {
-      const table = contract.source === 'employee_contracts' ? 'employee_contracts' : 'contracts';
-      const { error } = await supabase.from(table).delete().eq('id', contract.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      toast.success(t('contracts.deleteSuccess'));
-      setDeleteDialogOpen(false);
-      setDeletingContract(null);
-    },
-    onError: (error) => {
-      toast.error(t('contracts.deleteError') + ': ' + error.message);
-    },
-  });
-
-  // Bulk delete mutation
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (contractsToDelete: Contract[]) => {
-      // Group by source table
-      const contractsIds = contractsToDelete.filter(c => c.source === 'contracts').map(c => c.id);
-      const employeeContractsIds = contractsToDelete.filter(c => c.source === 'employee_contracts').map(c => c.id);
-      
-      if (contractsIds.length > 0) {
-        const { error } = await supabase.from('contracts').delete().in('id', contractsIds);
-        if (error) throw error;
-      }
-      
-      if (employeeContractsIds.length > 0) {
-        const { error } = await supabase.from('employee_contracts').delete().in('id', employeeContractsIds);
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      toast.success(t('contracts.bulkDeleteSuccess', { count: selectedContracts.length }));
-      setBulkDeleteDialogOpen(false);
-      setSelectedContracts([]);
-    },
-    onError: (error) => {
-      toast.error(t('contracts.deleteError') + ': ' + error.message);
-    },
-  });
+  const {
+    contracts,
+    isLoading,
+    createContract,
+    updateContract,
+    deleteContract,
+    bulkDeleteContracts,
+  } = useContracts(selectedType);
 
   const handleOpenCreate = () => {
     setEditingContract(null);
@@ -563,39 +361,17 @@ export default function Contracts() {
     }
   };
 
-  const uploadFile = async (file: File, contractCode: string): Promise<string | null> => {
+  const uploadFile = async (file: File): Promise<string | null> => {
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${currentCompanyId}/${contractCode}-${Date.now()}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('contracts')
-        .upload(fileName, file);
-      
-      if (uploadError) throw uploadError;
-      
-      const { data: { publicUrl } } = supabase.storage
-        .from('contracts')
-        .getPublicUrl(fileName);
-      
-      return publicUrl;
+      return await hrmStorageUploadStub(file, 'contracts-file');
     } catch (error) {
       console.error('Upload error:', error);
       return null;
     }
   };
 
-  const removeExistingFile = async (fileUrl: string) => {
-    try {
-      // Extract file path from URL
-      const urlParts = fileUrl.split('/contracts/');
-      if (urlParts.length > 1) {
-        const filePath = urlParts[1];
-        await supabase.storage.from('contracts').remove([filePath]);
-      }
-    } catch (error) {
-      console.error('Error removing file:', error);
-    }
+  const removeExistingFile = async (_fileUrl: string) => {
+    hrmStorageRemoveStub('contracts-file');
   };
 
   const handleSubmit = async () => {
@@ -611,7 +387,7 @@ export default function Contracts() {
       // Upload new file if selected
       if (selectedFile) {
         setIsUploading(true);
-        const uploadedUrl = await uploadFile(selectedFile, formData.contract_code);
+        const uploadedUrl = await uploadFile(selectedFile);
         if (uploadedUrl) {
           // Remove old file if editing and had a previous file
           if (editingContract?.file_url) {
@@ -630,9 +406,11 @@ export default function Contracts() {
       const dataWithFile = { ...formData, file_url: fileUrl };
 
       if (editingContract) {
-        await updateMutation.mutateAsync({ contract: editingContract, data: dataWithFile });
+        const ok = await updateContract(editingContract, dataWithFile);
+        if (ok) handleCloseDialog();
       } else {
-        await createMutation.mutateAsync(dataWithFile);
+        const ok = await createContract(dataWithFile);
+        if (ok) handleCloseDialog();
       }
     } finally {
       setIsSubmitting(false);
@@ -1638,7 +1416,14 @@ export default function Contracts() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('contracts.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deletingContract && deleteMutation.mutate(deletingContract)}
+              onClick={async () => {
+                if (!deletingContract) return;
+                const ok = await deleteContract(deletingContract);
+                if (ok) {
+                  setDeleteDialogOpen(false);
+                  setDeletingContract(null);
+                }
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t('contracts.delete')}
@@ -1659,9 +1444,15 @@ export default function Contracts() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('contracts.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                const contractsToDelete = contracts.filter(c => selectedContracts.includes(c.id));
-                bulkDeleteMutation.mutate(contractsToDelete);
+              onClick={async () => {
+                const contractsToDelete = contracts.filter((c) =>
+                  selectedContracts.includes(c.id),
+                );
+                const ok = await bulkDeleteContracts(contractsToDelete);
+                if (ok) {
+                  setBulkDeleteDialogOpen(false);
+                  setSelectedContracts([]);
+                }
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

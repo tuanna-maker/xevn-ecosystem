@@ -1,53 +1,47 @@
-import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { hrmRequest } from './hrmApiClient';
 import type { HrmAuthConfig } from './types';
+import { hrmRequest } from './hrmApiClient';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: true,
-  }),
-});
+export async function registerHrmPushToken(
+  auth: HrmAuthConfig,
+  companyId: string,
+  employeeId: string,
+): Promise<string | null> {
+  if (!employeeId.trim() || !companyId.trim()) return null;
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') return null;
 
-function resolveEasProjectId(): string | undefined {
-  const extra = Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined;
-  const fromExtra = extra?.eas?.projectId?.trim();
-  if (fromExtra) return fromExtra;
-  const fromEnv = process.env.EXPO_PUBLIC_EAS_PROJECT_ID?.trim();
-  return fromEnv || undefined;
+  const projectId =
+    Constants.expoConfig?.extra?.eas?.projectId ??
+    Constants.easConfig?.projectId;
+  const tokenData = await Notifications.getExpoPushTokenAsync(
+    projectId ? { projectId: String(projectId) } : undefined,
+  );
+  const token = tokenData.data;
+  const platform = Platform.OS === 'ios' ? 'ios' : 'android';
+  const res = await hrmRequest<unknown>(auth, '/notifications/push-tokens', {
+    method: 'POST',
+    body: JSON.stringify({
+      company_id: companyId,
+      employee_id: employeeId,
+      platform,
+      token,
+    }),
+  });
+  return res.ok ? token : null;
 }
 
-/** Đăng ký Expo push token lên `hrm-api` (bỏ qua lỗi nếu Expo Go / thiếu projectId). */
+/** Best-effort push registration on signed-in boot; must not crash the app shell. */
 export async function tryRegisterExpoPushToken(
   auth: HrmAuthConfig,
-  companyUuid: string,
+  companyId: string,
   employeeId: string,
 ): Promise<void> {
-  if (Platform.OS === 'web' || !employeeId.trim() || !companyUuid.trim()) return;
   try {
-    const perm = await Notifications.getPermissionsAsync();
-    const status =
-      perm.status === 'granted' ? perm.status : (await Notifications.requestPermissionsAsync()).status;
-    if (status !== 'granted') return;
-
-    const projectId = resolveEasProjectId();
-    const expo = projectId
-      ? await Notifications.getExpoPushTokenAsync({ projectId })
-      : await Notifications.getExpoPushTokenAsync();
-
-    await hrmRequest(auth, '/notifications/push-tokens', {
-      method: 'POST',
-      body: JSON.stringify({
-        company_id: companyUuid,
-        employee_id: employeeId.trim(),
-        platform: 'expo',
-        token: expo.data,
-      }),
-    });
+    await registerHrmPushToken(auth, companyId, employeeId);
   } catch {
-    /* pilot: Expo Go / missing EAS project — ignore */
+    /* permissions / network / missing EAS project — non-fatal */
   }
 }

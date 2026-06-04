@@ -14,6 +14,8 @@ import { useOfflineWriteGuard } from '../../hooks/useOfflineWriteGuard';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError } from '../../integrations/mapApiError';
+import { enqueueOfflineWrite } from '../../integrations/offlineQueue';
+import { useNetwork } from '../../context/NetworkContext';
 import { vi } from '../../i18n/vi';
 
 type EmpRow = { id: string; employee_code: string; full_name: string };
@@ -21,7 +23,11 @@ type EmpRow = { id: string; employee_code: string; full_name: string };
 export function CheckInScreen() {
   const auth = useAuth();
   const nav = useNavigation();
+  const net = useNetwork();
   const blockIfOffline = useOfflineWriteGuard();
+  const [useGps, setUseGps] = useState(false);
+  const [latitude, setLatitude] = useState('21.0285');
+  const [longitude, setLongitude] = useState('105.8542');
   const [employeeId, setEmployeeId] = useState(auth.employeeId);
   const [employees, setEmployees] = useState<EmpRow[]>([]);
   const [busy, setBusy] = useState(false);
@@ -29,11 +35,15 @@ export function CheckInScreen() {
   const cid = auth.getAttendanceCompanyId();
 
   const loadEmployees = useCallback(async () => {
-    const q = new URLSearchParams({ company_id: auth.companyId.trim(), page: '1', page_size: '40' });
+    if (!cid) {
+      setEmployees([]);
+      return;
+    }
+    const q = new URLSearchParams({ company_id: cid, page: '1', page_size: '40' });
     const res = await hrmRequest<unknown>(auth.getHrmAuth(), `/employees?${q.toString()}`, { method: 'GET' });
     if (res.ok) setEmployees(readListRows<EmpRow>(res.data));
     else setEmployees([]);
-  }, [auth]);
+  }, [auth, cid]);
 
   useFocusEffect(
     useCallback(() => {
@@ -47,11 +57,6 @@ export function CheckInScreen() {
   };
 
   const submit = async () => {
-    const off = blockIfOffline();
-    if (off) {
-      Alert.alert(vi.error, `${off}: không gửi chấm công khi ngoại tuyến.`);
-      return;
-    }
     if (!cid) {
       Alert.alert('Thiếu UUID công ty', 'Nhập UUID công ty (chấm công) trên Phạm vi / Cài đặt.');
       return;
@@ -61,18 +66,39 @@ export function CheckInScreen() {
       return;
     }
     const today = new Date().toISOString().slice(0, 10);
+    const body: Record<string, unknown> = {
+      company_id: cid,
+      employee_id: employeeId.trim(),
+      attendance_date: today,
+      check_in_at: new Date().toISOString(),
+      status: 'present',
+      note: 'XeVN HRM Mobile UC-HRM-MOB-04',
+    };
+    if (useGps) {
+      const lat = Number(latitude);
+      const lng = Number(longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        Alert.alert(vi.error, 'Tọa độ GPS không hợp lệ.');
+        return;
+      }
+      body.latitude = lat;
+      body.longitude = lng;
+    }
     setBusy(true);
     try {
+      if (net.offline) {
+        await enqueueOfflineWrite('/attendance/records', 'POST', body);
+        Alert.alert('Đã xếp hàng', 'Chấm công sẽ gửi khi có mạng (MOB-401).');
+        return;
+      }
+      const off = blockIfOffline();
+      if (off) {
+        Alert.alert(vi.error, off);
+        return;
+      }
       const res = await hrmRequest<unknown>(auth.getHrmAuth(), '/attendance/records', {
         method: 'POST',
-        body: JSON.stringify({
-          company_id: cid,
-          employee_id: employeeId.trim(),
-          attendance_date: today,
-          check_in_at: new Date().toISOString(),
-          status: 'present',
-          note: 'XeVN HRM Mobile UC-HRM-MOB-04',
-        }),
+        body: JSON.stringify(body),
       });
       if (res.ok) Alert.alert('Thành công', res.code);
       else Alert.alert(vi.error, formatHrmError(res));
@@ -108,6 +134,15 @@ export function CheckInScreen() {
         autoCapitalize="none"
         placeholderTextColor="#64748b"
       />
+      <Pressable style={styles.gpsToggle} onPress={() => setUseGps((v) => !v)}>
+        <Text style={styles.gpsToggleText}>{useGps ? '✓ Gửi kèm GPS (MOB-402)' : 'Bật GPS / geofence'}</Text>
+      </Pressable>
+      {useGps ? (
+        <View style={styles.gpsRow}>
+          <TextInput style={[styles.input, styles.gpsInput]} value={latitude} onChangeText={setLatitude} placeholder="lat" placeholderTextColor="#64748b" />
+          <TextInput style={[styles.input, styles.gpsInput]} value={longitude} onChangeText={setLongitude} placeholder="lng" placeholderTextColor="#64748b" />
+        </View>
+      ) : null}
       <Pressable style={styles.btn} onPress={() => void submit()} disabled={busy}>
         <Text style={styles.btnText}>{busy ? vi.loading : 'Ghi nhận check-in'}</Text>
       </Pressable>
@@ -156,4 +191,8 @@ const styles = StyleSheet.create({
   btnText: { color: '#0f172a', fontWeight: '700' },
   link: { marginTop: 16 },
   linkText: { color: '#38bdf8' },
+  gpsToggle: { marginTop: 8 },
+  gpsToggleText: { color: '#a7f3d0', fontSize: 13 },
+  gpsRow: { flexDirection: 'row', gap: 8 },
+  gpsInput: { flex: 1 },
 });

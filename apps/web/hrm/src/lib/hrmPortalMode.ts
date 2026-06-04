@@ -25,3 +25,13 @@ export function getHrmPortalMode(search: string): boolean {
 
   return qsPortal || storedSession || storedLocal;
 }
+
+/** True when HRM runs inside a parent portal iframe (Command Center embed). */
+export function isHrmPortalEmbedFrame(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}

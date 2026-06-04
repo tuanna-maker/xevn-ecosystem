@@ -1,0 +1,33 @@
+---
+description: Mọi role — sau khi PM đóng sprint không được để program đứng im; plan phải kèm dispatch W0.
+alwaysApply: true
+---
+
+# Sprint transition — team rule (S0→S5)
+
+## Khi PM ghi `P1-SN-PM-02` / unlock sprint kế
+
+**Cấm** chỉ cập nhật `PHASE1_SPRINT_RUNNER.json` `active_sprint` mà không:
+
+1. Publish `docs/program/sprints/S{N+1}_SPRINT_BACKLOG.md`
+2. Refresh `docs/program/SPRINT_STATUS_AT_A_GLANCE.md` + `SPRINT_ROADMAP_S0-S5.md`
+3. `next_dispatch` — **≥1** item `status: "dispatched"` (Task đã gọi)
+4. `pnpm run verify:sprint:transition` exit **0**
+
+## Mọi role sau `PASS_TO_PM` / subagent xong
+
+- Đọc `SPRINT_STATUS_AT_A_GLANCE.md` — biết sprint active và work_item P0.
+- **Không** kết thúc chỉ bằng xác nhận; PM (hoặc role kế) phải có hành động trong cùng phiên.
+- Dev/QA: nếu `READY_FOR_QA` → QA retest; nếu `PASS_TO_PM` → PM dispatch (không phải user nhắc).
+
+## Plan ≠ tự động
+
+Có backlog file **không** thay cho Task chạy. **Tự động** = hook/rule nhắc PM dispatch + gate script FAIL nếu thiếu dispatch.
+
+## Gate
+
+```bash
+pnpm run verify:sprint:transition
+```
+
+Playbook: `docs/program/PM_ORCHESTRATION_PLAYBOOK.md` §3b · KB: `docs/program/knowledge/PM_ORCHESTRATION_KB.md`

@@ -133,6 +133,7 @@ function applyGradlePathEnv(env) {
   env.GRADLE_PATH_EXPO_PKG = gradlePath(expoPkg);
   env.GRADLE_PATH_RN_PKG = gradlePath(rnPkg);
   env.GRADLE_PATH_RN_PKG_METRO = gradlePath(rnPkg);
+  env.GRADLE_PATH_RN_DIR = gradlePath(rnDir);
   env.GRADLE_PATH_EXPO_MODULES_AUTOLINKING_PKG = gradlePath(expoAutolinking);
   env.GRADLE_PATH_EXPO_AUTOLINKING_IMPL = gradlePath(
     path.join(path.dirname(expoAutolinking), 'scripts/android/autolinking_implementation.gradle'),
@@ -146,6 +147,12 @@ function applyGradlePathEnv(env) {
     paths: [rnDir, mobileRoot, repoRoot],
   });
   env.GRADLE_RN_CLI_BIN = gradlePath(cliBin);
+  const cliAndroid = resolveFromMobile(
+    '@react-native-community/cli-platform-android/package.json',
+  );
+  env.GRADLE_PATH_CLI_ANDROID_PKG = gradlePath(cliAndroid);
+  const expoConstants = resolveFromMobile('expo-constants/package.json');
+  env.GRADLE_PATH_EXPO_CONSTANTS_PKG = gradlePath(path.dirname(expoConstants));
 
   const link = path.join(mobileRoot, 'android', '.rn-gradle-plugin');
   if (fs.existsSync(link)) {

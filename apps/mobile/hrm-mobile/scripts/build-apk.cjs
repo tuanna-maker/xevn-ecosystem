@@ -74,6 +74,8 @@ function prebundle() {
       env: {
         ...process.env,
         NODE_ENV: 'production',
+        EXPO_PUBLIC_HRM_API_BASE_URL:
+          process.env.EXPO_PUBLIC_HRM_API_BASE_URL || 'https://14-225-217-232.nip.io',
         EXPO_PROJECT_ROOT: bundleRoot,
         PROJECT_ROOT: bundleRoot,
         NODE_PATH: [

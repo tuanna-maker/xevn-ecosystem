@@ -226,9 +226,12 @@ if (-not (Test-Path $plink)) { $plink = "plink" }
 
 Write-Step "Deploying on VPS ($VPS_HOST)..."
 
-$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($REMOTE_DEPLOY))
+# Normalize Windows CRLF payload to LF before base64 transfer to remote bash.
+$remoteDeployNormalized = ($REMOTE_DEPLOY -replace "`r`n", "`n" -replace "`r", "`n").TrimStart("`n")
+$b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($remoteDeployNormalized))
 
-$remoteCmd = "echo $b64 | base64 -d | bash"
+# Decode to a temp script, strip any accidental CR, syntax-check, then execute.
+$remoteCmd = "tmp=`$(mktemp /tmp/xevn-deploy.XXXXXX.sh) && printf '%s' '$b64' | base64 -d | tr -d '\r' > `"$tmp`" && chmod +x `"$tmp`" && bash -n `"$tmp`" && bash `"$tmp`"; rc=`$?; rm -f `"$tmp`"; exit `$rc"
 
 
 

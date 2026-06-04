@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -33,23 +32,13 @@ export function useProcesses() {
     queryKey: ['company-processes', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const { data, error } = await supabase
-        .from('company_processes' as any)
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return (data || []) as unknown as CompanyProcess[];
+      return [] as unknown as CompanyProcess[];
     },
     enabled: !!currentCompanyId,
   });
 
   const addProcess = useMutation({
     mutationFn: async (item: Partial<CompanyProcess>) => {
-      const { error } = await supabase
-        .from('company_processes' as any)
-        .insert({ ...item, company_id: currentCompanyId });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-processes'] });
@@ -60,11 +49,6 @@ export function useProcesses() {
 
   const updateProcess = useMutation({
     mutationFn: async ({ id, ...data }: Partial<CompanyProcess> & { id: string }) => {
-      const { error } = await supabase
-        .from('company_processes' as any)
-        .update(data)
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-processes'] });
@@ -75,11 +59,6 @@ export function useProcesses() {
 
   const deleteProcess = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('company_processes' as any)
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-processes'] });

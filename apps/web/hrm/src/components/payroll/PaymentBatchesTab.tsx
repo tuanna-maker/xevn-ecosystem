@@ -75,6 +75,7 @@ export function PaymentBatchesTab() {
     updateBatch,
     deleteBatch,
     processPayment,
+    processAllPayments,
     isCreating,
   } = usePaymentBatches();
 
@@ -189,6 +190,17 @@ export function PaymentBatchesTab() {
     }
   };
 
+  const handleProcessAllPayments = async () => {
+    if (!selectedBatch) return;
+    try {
+      await processAllPayments({ batchId: selectedBatch.id });
+      const updatedRecords = await fetchBatchRecords(selectedBatch.id);
+      setBatchRecords(updatedRecords);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const stats = {
     total: batches.length,
     pending: batches.filter(b => b.status === 'pending').length,
@@ -256,7 +268,7 @@ export function PaymentBatchesTab() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-medium">{t('payment.paymentDetails')}</h3>
               {pendingRecords.length > 0 && (
-                <Button size="sm">
+                <Button size="sm" onClick={handleProcessAllPayments}>
                   <Send className="w-4 h-4 mr-2" />
                   {t('payment.payAll')} ({pendingRecords.length})
                 </Button>

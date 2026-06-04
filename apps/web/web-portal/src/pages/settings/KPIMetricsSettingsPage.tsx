@@ -12,13 +12,16 @@ import { mockKPIMetrics, KPIMetric } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const KPIMetricsSettingsPage: React.FC = () => {
   const { companies: globalCompanies } = useGlobalFilter();
   const { companies } = useCompanyFilterOptions();
   const { tenantId, companyId } = useTenantScope();
   const [metrics, setMetrics] = useState<KPIMetric[]>([]);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [usingMockFallback, setUsingMockFallback] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMetric, setEditingMetric] = useState<KPIMetric | null>(null);
   const [formData, setFormData] = useState({
@@ -37,12 +40,20 @@ const KPIMetricsSettingsPage: React.FC = () => {
   const categories = ['Tài chính', 'Vận hành', 'Nhân sự', 'Y tế', 'Khách hàng', 'Công nghệ'];
 
   useEffect(() => {
+    setLoadFailed(false);
+    setUsingMockFallback(false);
     void listBusinessMasterItems<KPIMetric>('kpi_metrics', tenantId, companyId)
       .then((rows) => {
         setMetrics(rows);
       })
       .catch(() => {
-        setMetrics(allowMockFallback() ? mockKPIMetrics : []);
+        setLoadFailed(true);
+        if (allowMockFallback()) {
+          setMetrics(mockKPIMetrics);
+          setUsingMockFallback(true);
+        } else {
+          setMetrics([]);
+        }
       });
   }, [tenantId, companyId]);
 
@@ -276,6 +287,11 @@ const KPIMetricsSettingsPage: React.FC = () => {
             Thêm metric mới
           </Button>
         }
+      />
+      <ApiLoadBanner
+        loadFailed={loadFailed && !allowMockFallback()}
+        usingMockFallback={usingMockFallback}
+        message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />
 
       {/* Info Banner */}

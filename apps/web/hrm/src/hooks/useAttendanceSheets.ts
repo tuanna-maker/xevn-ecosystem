@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  createAttendanceSheet,
+  deleteAttendanceSheet,
+  listAttendanceSheets,
+  updateAttendanceSheet,
+} from '@/integrations/hrmApi';
 
 export interface AttendanceSheet {
   id: string; company_id: string; name: string; start_date: string; end_date: string;
@@ -15,7 +21,8 @@ export interface AttendanceSheetInput {
   department?: string; positions?: string; notes?: string;
 }
 
-export function useAttendanceSheets() {
+export function useAttendanceSheets(opts?: { enabled?: boolean }) {
+  const enabled = opts?.enabled !== false;
   const [sheets, setSheets] = useState<AttendanceSheet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { currentCompanyId } = useAuth();
@@ -25,58 +32,72 @@ export function useAttendanceSheets() {
 
   const fetchSheets = useCallback(async () => {
     if (!currentCompanyId) { setSheets([]); setIsLoading(false); return; }
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { data, error } = await supabase.from('attendance_sheets').select('*').eq('company_id', currentCompanyId).order('created_at', { ascending: false });
-      if (error) throw error; setSheets(data || []);
-    } catch (error: any) {
+      const res = await listAttendanceSheets(currentCompanyId);
+      setSheets((res.data ?? []) as AttendanceSheet[]);
+    } catch (error: unknown) {
       console.error('Error fetching attendance sheets:', error);
-      toast({ title: t('messages.error'), description: h('fetchError'), variant: 'destructive' });
-    } finally { setIsLoading(false); }
-  }, [currentCompanyId, toast, t]);
+      setSheets([]);
+      toast({
+        title: t('messages.error'),
+        description: toErrorMessage(error, h('fetchError')),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentCompanyId, toast, t, h]);
 
   const createSheet = useCallback(async (input: AttendanceSheetInput): Promise<AttendanceSheet | null> => {
-    if (!currentCompanyId) { toast({ title: t('messages.error'), description: t('hk.noCompany'), variant: 'destructive' }); return null; }
-    try {
-      const { data, error } = await supabase.from('attendance_sheets').insert({
-        company_id: currentCompanyId, name: input.name, start_date: input.start_date, end_date: input.end_date,
-        attendance_type: input.attendance_type || 'daily', standard_type: input.standard_type || 'fixed',
-        department: input.department || null, positions: input.positions || null, notes: input.notes || null,
-      }).select().single();
-      if (error) throw error;
-      toast({ title: t('messages.success'), description: h('createSuccess') });
-      await fetchSheets(); return data;
-    } catch (error: any) {
-      console.error('Error creating attendance sheet:', error);
-      toast({ title: t('messages.error'), description: h('createError'), variant: 'destructive' }); return null;
+    if (!currentCompanyId) {
+      toast({ title: t('messages.error'), description: t('hk.noCompany'), variant: 'destructive' });
+      return null;
     }
-  }, [currentCompanyId, fetchSheets, toast, t]);
+    try {
+      const created = await createAttendanceSheet({ company_id: currentCompanyId, ...input });
+      toast({ title: t('messages.success'), description: h('createSuccess') });
+      await fetchSheets();
+      return created as AttendanceSheet;
+    } catch (error: unknown) {
+      toast({ title: t('messages.error'), description: toErrorMessage(error, h('createError')), variant: 'destructive' });
+      return null;
+    }
+  }, [currentCompanyId, fetchSheets, toast, t, h]);
 
   const updateSheet = useCallback(async (id: string, updates: Partial<AttendanceSheetInput>): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase.from('attendance_sheets').update(updates).eq('id', id);
-      if (error) throw error;
+      await updateAttendanceSheet(id, currentCompanyId, updates);
       toast({ title: t('messages.success'), description: h('updateSuccess') });
-      await fetchSheets(); return true;
-    } catch (error: any) {
-      console.error('Error updating attendance sheet:', error);
-      toast({ title: t('messages.error'), description: h('updateError'), variant: 'destructive' }); return false;
+      await fetchSheets();
+      return true;
+    } catch (error: unknown) {
+      toast({ title: t('messages.error'), description: toErrorMessage(error, h('updateError')), variant: 'destructive' });
+      return false;
     }
-  }, [fetchSheets, toast, t]);
+  }, [currentCompanyId, fetchSheets, toast, t, h]);
 
   const deleteSheet = useCallback(async (id: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase.from('attendance_sheets').delete().eq('id', id);
-      if (error) throw error;
+      await deleteAttendanceSheet(id, currentCompanyId);
       toast({ title: t('messages.success'), description: h('deleteSuccess') });
-      await fetchSheets(); return true;
-    } catch (error: any) {
-      console.error('Error deleting attendance sheet:', error);
-      toast({ title: t('messages.error'), description: h('deleteError'), variant: 'destructive' }); return false;
+      await fetchSheets();
+      return true;
+    } catch (error: unknown) {
+      toast({ title: t('messages.error'), description: toErrorMessage(error, h('deleteError')), variant: 'destructive' });
+      return false;
     }
-  }, [fetchSheets, toast, t]);
+  }, [currentCompanyId, fetchSheets, toast, t, h]);
 
-  useEffect(() => { fetchSheets(); }, [fetchSheets]);
+  useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
+    void fetchSheets();
+  }, [fetchSheets, enabled]);
 
   return { sheets, isLoading, createSheet, updateSheet, deleteSheet, refetch: fetchSheets };
 }

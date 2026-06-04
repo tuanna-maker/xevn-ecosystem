@@ -1,0 +1,33 @@
+---
+description: U18 — Phase 1 hôm nay; SA/BA/TA/Dev Lead chủ động delta SRS/TechSpec rồi chia việc.
+alwaysApply: true
+---
+
+# Proactive SRS governance (U18)
+
+## Khi nào bật
+
+User yêu cầu **Phase 1 trong ngày** và nghiệp vụ **đã có** trong SRS/TechSpec.
+
+## Ai làm gì (chủ động — không chờ spec_gap defect)
+
+| Role | Hành động |
+|------|-----------|
+| **SA** | Đọc TechSpec + OpenAPI; delta § hoặc ADR ngắn nếu impl lệch |
+| **BA-P / BA-D** | Đọc SRS/UC matrix; thêm AC, BR row, validation nếu thiếu cho implement |
+| **TA** (TM + QC) | Gap G1–G9; waiver có owner+expiry; không bulk waive |
+| **Dev-BE Lead** | Liệt kê endpoint/contract thiếu vs SRS; handoff Dev |
+
+## Chia việc
+
+1. Governance wave ghi **backlog chia** trên bus (`GOV-SRS-DELTA`) + `PHASE1_TODAY_EXECUTION_PLAN.md`.
+2. PM dispatch **execution** Dev+QA theo backlog — **song song** tối đa 3 Task.
+3. Dev/QA tham chiếu delta SRS **trước** khi hỏi BA lần nữa.
+
+## Cấm
+
+- Chờ user nhắc từng UC.
+- Sửa SRS/TechSpec không ghi bus + spec_ref.
+- Claim Phase 1 DONE trước QC + strict gate.
+
+Plan: `docs/program/PHASE1_TODAY_EXECUTION_PLAN.md` · U18: `TEAM_USER_REQUIREMENTS.md`

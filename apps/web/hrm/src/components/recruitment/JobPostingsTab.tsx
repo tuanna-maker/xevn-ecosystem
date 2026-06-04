@@ -1,11 +1,10 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,6 +73,12 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  createJobPosting,
+  deleteJobPosting,
+  listJobPostings,
+  updateJobPosting,
+} from '@/integrations/hrmApi';
 import { cn } from '@/lib/utils';
 import { JobCandidatesDialog } from './JobCandidatesDialog';
 
@@ -215,53 +220,68 @@ export function JobPostingsTab() {
     queryKey: ['job_postings', currentCompanyId, statusFilter],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      
-      let query = supabase
-        .from('job_postings')
-        .select(`
-          *,
-          candidate_applications (count)
-        `)
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      
-      return data.map(job => ({
-        ...job,
-        candidate_count: job.candidate_applications?.[0]?.count || 0,
+      const res = await listJobPostings({
+        company_id: currentCompanyId,
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+      });
+      const rows = res.data ?? [];
+      return rows.map((job) => ({
+        id: job.id,
+        title: job.title,
+        department: job.department,
+        position: job.position,
+        employment_type: job.employment_type,
+        work_location: job.work_location,
+        salary_min: job.salary_min,
+        salary_max: job.salary_max,
+        is_salary_visible: job.is_salary_visible,
+        description: job.description,
+        requirements: job.requirements,
+        benefits: job.benefits,
+        headcount: job.headcount,
+        deadline: job.deadline,
+        priority: job.priority,
+        status: job.status,
+        company_id: job.company_id,
+        created_at: job.created_at,
+        candidate_count: job.applied_count ?? 0,
       })) as (JobPosting & { candidate_count: number })[];
     },
     enabled: !!currentCompanyId,
   });
 
+  const parseOptionalNumber = (value: string | undefined): number | undefined => {
+    if (value == null || value.trim() === '') return undefined;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  const buildCreatePayload = (values: JobPostingFormValues) => {
+    if (!currentCompanyId) throw new Error('Missing company scope');
+    return {
+      company_id: currentCompanyId,
+      title: values.title,
+      position: values.position,
+      department: values.department || undefined,
+      employment_type: values.employment_type,
+      work_location: values.work_location || undefined,
+      salary_min: parseOptionalNumber(values.salary_min),
+      salary_max: parseOptionalNumber(values.salary_max),
+      is_salary_visible: values.is_salary_visible,
+      description: values.description || undefined,
+      requirements: values.requirements || undefined,
+      benefits: values.benefits || undefined,
+      headcount: Number(values.headcount) || 1,
+      deadline: values.deadline ? format(values.deadline, 'yyyy-MM-dd') : undefined,
+      priority: values.priority,
+      status: values.status,
+    };
+  };
+
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (values: JobPostingFormValues) => {
-      const { error } = await supabase.from('job_postings').insert({
-        company_id: currentCompanyId!,
-        title: values.title,
-        department: values.department || null,
-        position: values.position,
-        employment_type: values.employment_type,
-        work_location: values.work_location || null,
-        salary_min: values.salary_min ? parseFloat(values.salary_min.replace(/,/g, '')) : null,
-        salary_max: values.salary_max ? parseFloat(values.salary_max.replace(/,/g, '')) : null,
-        is_salary_visible: values.is_salary_visible,
-        description: values.description || null,
-        requirements: values.requirements || null,
-        benefits: values.benefits || null,
-        headcount: parseInt(values.headcount),
-        deadline: values.deadline ? format(values.deadline, 'yyyy-MM-dd') : null,
-        priority: values.priority,
-        status: values.status,
-      });
-      if (error) throw error;
+      await createJobPosting(buildCreatePayload(values));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
@@ -276,27 +296,9 @@ export function JobPostingsTab() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async (values: JobPostingFormValues & { id: string }) => {
-      const { error } = await supabase
-        .from('job_postings')
-        .update({
-          title: values.title,
-          department: values.department || null,
-          position: values.position,
-          employment_type: values.employment_type,
-          work_location: values.work_location || null,
-          salary_min: values.salary_min ? parseFloat(values.salary_min.replace(/,/g, '')) : null,
-          salary_max: values.salary_max ? parseFloat(values.salary_max.replace(/,/g, '')) : null,
-          is_salary_visible: values.is_salary_visible,
-          description: values.description || null,
-          requirements: values.requirements || null,
-          benefits: values.benefits || null,
-          headcount: parseInt(values.headcount),
-          deadline: values.deadline ? format(values.deadline, 'yyyy-MM-dd') : null,
-          priority: values.priority,
-          status: values.status,
-        })
-        .eq('id', values.id);
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      const payload = buildCreatePayload(values);
+      await updateJobPosting(values.id, currentCompanyId, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
@@ -311,8 +313,8 @@ export function JobPostingsTab() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('job_postings').delete().eq('id', id);
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      await deleteJobPosting(id, currentCompanyId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
@@ -328,8 +330,8 @@ export function JobPostingsTab() {
   // Bulk delete mutation
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { error } = await supabase.from('job_postings').delete().in('id', ids);
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      await Promise.all(ids.map((id) => deleteJobPosting(id, currentCompanyId)));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
@@ -633,7 +635,7 @@ export function JobPostingsTab() {
                     <TableCell>
                       {job.salary_min || job.salary_max ? (
                         <span className="text-sm">
-                          {job.salary_min ? formatCurrency(job.salary_min) : '...'} - {job.salary_max ? formatCurrency(job.salary_max) : '...'} đ
+                          {job.salary_min ? formatCurrency(job.salary_min) : '...'} - {job.salary_max ? formatCurrency(job.salary_max) : '...'} Ä‘
                         </span>
                       ) : (
                         <span className="text-muted-foreground">{t('recruitment.jt.negotiable')}</span>
@@ -715,7 +717,7 @@ export function JobPostingsTab() {
                   <div className="text-sm">
                     {job.salary_min || job.salary_max ? (
                       <span className="text-primary font-medium">
-                        {formatCurrency(job.salary_min || 0)} - {formatCurrency(job.salary_max || 0)} đ
+                        {formatCurrency(job.salary_min || 0)} - {formatCurrency(job.salary_max || 0)} Ä‘
                       </span>
                     ) : (
                       <span className="text-muted-foreground">{t('recruitment.jt.negotiable')}</span>
@@ -1142,7 +1144,7 @@ export function JobPostingsTab() {
                     <span className="text-muted-foreground">{t('recruitment.jt.salaryInfo')}</span>
                     <span>
                       {selectedJob.salary_min || selectedJob.salary_max ? (
-                        `${formatCurrency(selectedJob.salary_min || 0)} - ${formatCurrency(selectedJob.salary_max || 0)} VNĐ`
+                        `${formatCurrency(selectedJob.salary_min || 0)} - ${formatCurrency(selectedJob.salary_max || 0)} VNÄ`
                       ) : t('recruitment.jt.negotiable')}
                     </span>
                   </div>

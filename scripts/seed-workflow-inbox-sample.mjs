@@ -8,7 +8,7 @@ import { loadDeployEnv, xbosBase, xbosHeaders } from './seed-env-loader.mjs';
 loadDeployEnv();
 
 const TENANT = process.env.MASTER_TENANT_ID ?? 'xevn';
-const ASSIGNEE = process.env.SEED_USER_ID ?? 'admin@xevn.vn';
+const ASSIGNEE = process.env.SEED_USER_ID ?? 'admin@xe.vn';
 
 const MINIMAL_GRAPH = {
   applyingEntityId: TENANT,

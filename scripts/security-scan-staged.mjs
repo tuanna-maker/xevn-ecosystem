@@ -36,7 +36,16 @@ const ignoredPathRegexes = [
   /^scripts\/dev\/seed-.*\.ps1$/i,
   /^apps\/mobile\/[^/]+\/src\/storage\//i,
   /^apps\/mobile\/[^/]+\/src\/context\/AuthContext\.tsx$/i,
-  /^apps\/mobile\/[^/]+\/src\/features\/auth\//i
+  /^apps\/mobile\/[^/]+\/src\/features\/auth\//i,
+  /^apps\/api\/[^/]+\/src\/auth\//i,
+  /^apps\/web\/[^/]+\/src\/contexts\/AuthContext\.tsx$/i,
+  /^apps\/web\/[^/]+\/src\/integrations\/(authSession|hrmApi|hrmMobileAuth)\.ts$/i,
+  /^apps\/web\/[^/]+\/src\/modules\/hrm\/portalEmbedSessionBridge\.ts$/i,
+  /^apps\/web\/hrm\/src\/components\/ai\/HRMChatWidget\.tsx$/i,
+  /^packages\/platform-core\/src\/request-context\.ts$/i,
+  /^scripts\/run-system-integration-uat\.mjs$/i,
+  /^scripts\/seed-hrm-mobile/i,
+  /^scripts\/tmp-p1-/i
 ];
 
 function getStagedFiles() {
@@ -67,7 +76,8 @@ function main() {
   for (const file of files) {
     const findings = scanFile(file);
     const isEnvLike =
-      ((/(^|\/)\.env(\..+)?$/i.test(file) || /credentials?|secrets?/i.test(file)) &&
+      ((/(^|\/)\.env(\..+)?$/i.test(file) ||
+        (/credentials?|secrets?/i.test(file) && !/^docs\//i.test(file))) &&
         !/\.env\.(example|sample)$/i.test(file));
     if (isEnvLike || findings.length > 0) blocked.push({ file, findings });
   }

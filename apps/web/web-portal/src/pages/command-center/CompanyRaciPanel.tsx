@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { MASTER_TENANT_ID } from '../../constants/tenant';
 import {
   formatTechnicalHint,
   resolveFeatureLabel,
@@ -8,16 +10,24 @@ import {
   resolveRaciLetterDisplay,
 } from '../../data/raci-ecosystem-display-labels';
 import { RACI_LETTER_MEANINGS, RACI_ORG_COLUMNS } from '../../data/xevn-raci-catalog';
+import { listDeptSystemTemplates, type DeptSystemTemplateRow } from '../../integrations/deptSystemTemplatesApi';
 import {
+  buildRaciMatrixCellBody,
   fetchCompanyRaciMatrix,
   fetchRaciCapabilities,
   fetchRaciCatalog,
   fetchRaciCoverage,
   saveRaciMatrixCell,
+  type RaciActivityRow,
   type RaciCapabilityRow,
   type RaciDomainSummary,
   type RaciMatrixRow,
 } from '../../integrations/raciGovernanceApi';
+import {
+  raciCatalogSeedHint,
+  readRaciColumnBindings,
+  writeRaciColumnBinding,
+} from '../../integrations/raciGovernanceHelpers';
 import {
   SETTINGS_CONTROL_TEXT,
   SETTINGS_LABEL_CLASS,
@@ -29,9 +39,10 @@ import {
 
 const RAIL_STROKE = 1.5;
 
-type SubView = 'matrix' | 'capabilities' | 'bindings';
+type SubView = 'catalog' | 'matrix' | 'capabilities' | 'bindings';
 
 export type CompanyRaciPanelProps = {
+  /** Scope key for API matrix/coverage (resolved legal-entity UUID when available). */
   companyId: string;
   companyLabel?: string;
   tenantIdHint?: string | null;
@@ -44,48 +55,108 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
   tenantIdHint,
   companyIdHint,
 }) => {
+  const tenantId = tenantIdHint?.trim() || MASTER_TENANT_ID;
   const [subView, setSubView] = useState<SubView>('matrix');
   const [domains, setDomains] = useState<RaciDomainSummary[]>([]);
+  const [catalogActivities, setCatalogActivities] = useState<RaciActivityRow[]>([]);
+  const [catalogTotal, setCatalogTotal] = useState(0);
   const [domainFilter, setDomainFilter] = useState<string>('');
   const [matrixRows, setMatrixRows] = useState<RaciMatrixRow[]>([]);
   const [capabilities, setCapabilities] = useState<RaciCapabilityRow[]>([]);
   const [activityNamesByCode, setActivityNamesByCode] = useState<Record<string, string>>({});
   const [coverage, setCoverage] = useState<Awaited<ReturnType<typeof fetchRaciCoverage>> | null>(null);
+  const [columnBindings, setColumnBindings] = useState<Record<string, string>>({});
+  const [deptTemplates, setDeptTemplates] = useState<DeptSystemTemplateRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [matrixLoading, setMatrixLoading] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
+  const catalogSeedHint = useMemo(
+    () => raciCatalogSeedHint(catalogTotal, catalogActivities),
+    [catalogTotal, catalogActivities],
+  );
+
+  const loadCatalog = useCallback(async () => {
+    const catalog = await fetchRaciCatalog(undefined, tenantIdHint, companyIdHint);
+    setDomains(catalog.domains);
+    setCatalogActivities(catalog.activities ?? []);
+    setCatalogTotal(catalog.total ?? catalog.activities?.length ?? 0);
+    setActivityNamesByCode(
+      Object.fromEntries((catalog.activities ?? []).map((a) => [a.activity_code, a.name])),
+    );
+    return catalog;
+  }, [companyIdHint, tenantIdHint]);
+
+  const loadMatrixForDomain = useCallback(
+    async (domain: string) => {
+      setMatrixLoading(true);
+      try {
+        const matrix = await fetchCompanyRaciMatrix(
+          companyId,
+          domain || undefined,
+          tenantIdHint,
+          companyIdHint,
+        );
+        setMatrixRows(matrix.rows);
+      } catch (e) {
+        setMessage(e instanceof Error ? e.message : 'Không tải được ma trận RACI');
+        setMatrixRows([]);
+      } finally {
+        setMatrixLoading(false);
+      }
+    },
+    [companyId, companyIdHint, tenantIdHint],
+  );
+
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadFailed(false);
     setMessage(null);
     try {
-      const catalog = await fetchRaciCatalog(undefined, tenantIdHint, companyIdHint);
-      setDomains(catalog.domains);
-      setActivityNamesByCode(
-        Object.fromEntries(
-          (catalog.activities ?? []).map((a) => [a.activity_code, a.name]),
-        ),
-      );
+      const catalog = await loadCatalog();
       const domain = domainFilter || catalog.domains[0]?.domain_code || '';
       if (!domainFilter && domain) setDomainFilter(domain);
-      const [matrix, caps, cov] = await Promise.all([
-        fetchCompanyRaciMatrix(companyId, domain || undefined, tenantIdHint, companyIdHint),
+      const [caps, cov] = await Promise.all([
         fetchRaciCapabilities(undefined, tenantIdHint, companyIdHint),
         fetchRaciCoverage(companyId, tenantIdHint, companyIdHint),
       ]);
-      setMatrixRows(matrix.rows);
       setCapabilities(caps);
       setCoverage(cov);
+      await loadMatrixForDomain(domain);
+      setColumnBindings(readRaciColumnBindings(tenantId, companyId));
     } catch (e) {
+      setLoadFailed(true);
       setMessage(e instanceof Error ? e.message : 'Không tải được dữ liệu RACI');
     } finally {
       setLoading(false);
     }
-  }, [companyId, companyIdHint, domainFilter, tenantIdHint]);
+  }, [companyId, companyIdHint, domainFilter, loadCatalog, loadMatrixForDomain, tenantId, tenantIdHint]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!domainFilter || loading) return;
+    void loadMatrixForDomain(domainFilter);
+  }, [domainFilter, loadMatrixForDomain, loading]);
+
+  useEffect(() => {
+    if (subView !== 'bindings') return;
+    let cancelled = false;
+    void listDeptSystemTemplates(tenantId, companyIdHint ?? undefined)
+      .then((rows) => {
+        if (!cancelled) setDeptTemplates(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setDeptTemplates([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [subView, tenantId, companyIdHint]);
 
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -95,21 +166,26 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
     );
   }, [matrixRows, search]);
 
+  const filteredCatalogRows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let rows = catalogActivities;
+    if (domainFilter) rows = rows.filter((a) => a.domain_code === domainFilter);
+    if (!q) return rows;
+    return rows.filter(
+      (a) => a.name.toLowerCase().includes(q) || a.activity_code.toLowerCase().includes(q),
+    );
+  }, [catalogActivities, domainFilter, search]);
+
   const onCellBlur = async (row: RaciMatrixRow, colId: string, value: string) => {
+    const body = buildRaciMatrixCellBody(row.activity_id, colId, value);
     const prev = row.matrix[colId] ?? '';
-    const next = value.trim().replace(/\s+/g, '').toUpperCase();
-    if (prev === next) return;
+    if (prev === body.raci_letters) return;
     try {
-      await saveRaciMatrixCell(
-        companyId,
-        { activity_id: row.activity_id, org_column_id: colId, raci_letters: next },
-        tenantIdHint,
-        companyIdHint,
-      );
+      await saveRaciMatrixCell(companyId, body, tenantIdHint, companyIdHint);
       setMatrixRows((rows) =>
         rows.map((r) =>
           r.activity_id === row.activity_id
-            ? { ...r, matrix: { ...r.matrix, [colId]: next }, has_override: true }
+            ? { ...r, matrix: { ...r.matrix, [colId]: body.raci_letters }, has_override: true }
             : r,
         ),
       );
@@ -118,7 +194,14 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
     }
   };
 
+  const onBindingChange = (colId: string, templateId: string) => {
+    const next = writeRaciColumnBinding(tenantId, companyId, colId, templateId);
+    setColumnBindings(next);
+    setMessage(null);
+  };
+
   const subTabs: { id: SubView; label: string }[] = [
+    { id: 'catalog', label: 'Danh mục hoạt động' },
     { id: 'matrix', label: 'Ma trận RACI' },
     { id: 'capabilities', label: 'Ánh xạ phân hệ' },
     { id: 'bindings', label: 'Gán chức danh' },
@@ -144,6 +227,16 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
           Tải lại
         </button>
       </div>
+
+      <ApiLoadBanner
+        loadFailed={loadFailed}
+        title="RACI governance (UC-RACI-01..06)"
+        message={
+          loadFailed
+            ? 'Không tải catalog/ma trận từ /api/xbos/raci-governance — kiểm tra xbos-api (28002) và đăng nhập.'
+            : catalogSeedHint ?? undefined
+        }
+      />
 
       {coverage ? (
         <div className={`grid grid-cols-2 gap-3 border border-xevn-border p-4 md:grid-cols-4 ${SETTINGS_RADIUS_CARD}`}>
@@ -175,34 +268,69 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
         ))}
       </div>
 
+      {(subView === 'matrix' || subView === 'catalog') && (
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="min-w-[12rem]">
+            <span className={SETTINGS_LABEL_CLASS}>Khối nghiệp vụ</span>
+            <select
+              value={domainFilter}
+              onChange={(e) => setDomainFilter(e.target.value)}
+              className={`mt-1 w-full ${SETTINGS_RADIUS_INPUT} border border-xevn-border px-3 py-2 text-[15px]`}
+            >
+              {domains.map((d) => (
+                <option key={d.domain_code} value={d.domain_code}>
+                  {d.domain_label} ({d.count})
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="min-w-[14rem] flex-1">
+            <span className={SETTINGS_LABEL_CLASS}>Tìm hoạt động</span>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Mã hoặc tên hoạt động..."
+              className={`mt-1 w-full ${SETTINGS_RADIUS_INPUT} border border-xevn-border px-3 py-2 text-[15px]`}
+            />
+          </label>
+        </div>
+      )}
+
+      {subView === 'catalog' ? (
+        <div className={`overflow-x-auto border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
+          <p className={`mb-3 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>
+            UC-RACI-01 — danh mục hoạt động chuẩn tập đoàn theo khối (API catalog).
+          </p>
+          <table className="min-w-[640px] w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-xevn-border bg-slate-50 text-slate-500">
+                <th className="py-2 pr-3">STT</th>
+                <th className="py-2 pr-3">Mã</th>
+                <th className="py-2 pr-3">Khối</th>
+                <th className="py-2">Tên hoạt động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCatalogRows.map((a) => (
+                <tr key={a.id} className="border-b border-slate-100">
+                  <td className="py-2 pr-3 text-slate-500">{a.seq_no}</td>
+                  <td className="py-2 pr-3 font-mono text-xs">{a.activity_code}</td>
+                  <td className="py-2 pr-3">{a.domain_label}</td>
+                  <td className="py-2">{a.name}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!loading && filteredCatalogRows.length === 0 ? (
+            <p className={`mt-3 ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+              Không có hoạt động trong khối đã chọn.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {subView === 'matrix' ? (
         <div className={`space-y-3 border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="min-w-[12rem]">
-              <span className={SETTINGS_LABEL_CLASS}>Khối nghiệp vụ</span>
-              <select
-                value={domainFilter}
-                onChange={(e) => setDomainFilter(e.target.value)}
-                className={`mt-1 w-full ${SETTINGS_RADIUS_INPUT} border border-xevn-border px-3 py-2 text-[15px]`}
-              >
-                {domains.map((d) => (
-                  <option key={d.domain_code} value={d.domain_code}>
-                    {d.domain_label} ({d.count})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="min-w-[14rem] flex-1">
-              <span className={SETTINGS_LABEL_CLASS}>Tìm hoạt động</span>
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Mã hoặc tên hoạt động..."
-                className={`mt-1 w-full ${SETTINGS_RADIUS_INPUT} border border-xevn-border px-3 py-2 text-[15px]`}
-              />
-            </label>
-          </div>
-
           <div className="flex flex-wrap gap-2 text-xs text-slate-600">
             {RACI_LETTER_MEANINGS.map((m) => (
               <span key={m.letter}>
@@ -239,7 +367,8 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
                           defaultValue={row.matrix[c.id] ?? ''}
                           onBlur={(e) => void onCellBlur(row, c.id, e.target.value)}
                           maxLength={4}
-                          className="w-11 rounded border border-xevn-border px-0.5 py-1 text-center text-xs uppercase"
+                          disabled={matrixLoading}
+                          className="w-11 rounded border border-xevn-border px-0.5 py-1 text-center text-xs uppercase disabled:opacity-50"
                           aria-label={`${row.activity_code} ${c.orgUnit}`}
                         />
                       </td>
@@ -249,7 +378,7 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
               </tbody>
             </table>
           </div>
-          {!loading && filteredRows.length === 0 ? (
+          {!loading && !matrixLoading && filteredRows.length === 0 ? (
             <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Không có hoạt động trong khối đã chọn.</p>
           ) : null}
         </div>
@@ -258,7 +387,7 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
       {subView === 'capabilities' ? (
         <div className={`overflow-x-auto border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
           <p className={`mb-3 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>
-            Liên kết hoạt động nghiệp vụ với phân hệ và chức năng trên hệ sinh thái XEVN. Di chuột vào ô để xem mã kỹ thuật (dành cho quản trị).
+            UC-RACI-03 — liên kết hoạt động với phân hệ và chức năng trên hệ sinh thái XEVN.
           </p>
           <table className="min-w-[880px] w-full text-left text-sm">
             <thead>
@@ -323,8 +452,8 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
       {subView === 'bindings' ? (
         <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
           <p className={SETTINGS_PAGE_SUBTITLE_CLASS}>
-            Gán cột RACI với chức danh / đơn vị tổ chức — form chỉnh sửa sắp có; hiện tham chiếu 18 cột
-            chuẩn tập đoàn.
+            UC-RACI-04 — gán cột RACI với khung chức danh (dept_system_templates). Lưu cục bộ trên
+            trình duyệt cho đến khi API column-binding có trên xbos-api.
           </p>
           <ul className="mt-4 space-y-2">
             {RACI_ORG_COLUMNS.map((c) => (
@@ -333,10 +462,27 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
                 className="flex flex-wrap items-center justify-between gap-2 rounded-input border border-xevn-border px-3 py-2"
               >
                 <span className="font-medium text-xevn-text">{c.workflowRoleLabel}</span>
-                <span className="text-sm text-slate-500">{c.id}</span>
+                <select
+                  value={columnBindings[c.id] ?? ''}
+                  onChange={(e) => onBindingChange(c.id, e.target.value)}
+                  className={`min-w-[14rem] ${SETTINGS_RADIUS_INPUT} border border-xevn-border px-2 py-1.5 text-sm`}
+                  aria-label={`Gán chức danh cho ${c.workflowRoleLabel}`}
+                >
+                  <option value="">— Chưa gán —</option>
+                  {deptTemplates.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.code} — {t.nameVi}
+                    </option>
+                  ))}
+                </select>
               </li>
             ))}
           </ul>
+          {deptTemplates.length === 0 ? (
+            <p className={`mt-3 ${SETTINGS_CONTROL_TEXT} text-amber-800`}>
+              Chưa tải khung phòng/ban — mở tab Khung phòng/ban hoặc chạy seed business-master.
+            </p>
+          ) : null}
         </div>
       ) : null}
     </div>

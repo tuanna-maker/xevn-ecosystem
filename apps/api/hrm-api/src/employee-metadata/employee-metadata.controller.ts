@@ -44,7 +44,7 @@ export class EmployeeMetadataController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
     return this.employeeMetadataService
-      .listChangeRequests(query)
+      .listChangeRequests(query, authorization)
       .then((data) => ok(data, 'HRM-META-200', 'Metadata change requests listed'));
   }
 
@@ -58,9 +58,9 @@ export class EmployeeMetadataController {
     @Body() body: DecideEmployeeMetadataChangeDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeeMetadataService
-      .approveChangeRequest(changeRequestId, body)
+      .approveChangeRequest(changeRequestId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-META-202', 'Metadata change request approved'));
   }
 
@@ -74,9 +74,9 @@ export class EmployeeMetadataController {
     @Body() body: DecideEmployeeMetadataChangeDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeeMetadataService
-      .rejectChangeRequest(changeRequestId, body)
+      .rejectChangeRequest(changeRequestId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-META-203', 'Metadata change request rejected'));
   }
 
@@ -91,7 +91,7 @@ export class EmployeeMetadataController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeeMetadataService
-      .listAuditLogs(companyId, employeeId)
+      .listAuditLogs(companyId, employeeId, authorization)
       .then((data) => ok(data, 'HRM-META-204', 'Metadata audit logs listed'));
   }
 }

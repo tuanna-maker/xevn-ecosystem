@@ -30,7 +30,10 @@ import { fetchPortalAlerts } from '../../integrations/portalAlertsApi';
 import { allowMockFallback } from '../../utils/mockPolicy';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import { useKpiDashboardSnapshot } from '../../hooks/useKpiDashboardSnapshot';
+import { useCommandCenterKpiRail } from '../../hooks/useCommandCenterKpiRail';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
+import { resolveExecModuleAccessRoute } from '../../integrations/capabilityActionRegistry';
 
 // Sparkline component
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -68,6 +71,8 @@ const ExecutiveDashboardPage: React.FC = () => {
     usingMockFallback: kpiMockFallback,
     isLoading: kpiLoading,
   } = useKpiDashboardSnapshot(tenantId, companyId, 'all');
+  const executiveKpiRail = useCommandCenterKpiRail('bod', tenantId, companyId);
+  const showDemoCockpitLayout = allowMockFallback();
 
   const kpiCompliancePercent = useMemo(() => {
     if (!kpiRows.length) return null;
@@ -185,20 +190,32 @@ const ExecutiveDashboardPage: React.FC = () => {
       </header>
 
       <main className="xevn-safe-inline py-6">
-        <div className="mb-6">
+        <div className="mb-6 space-y-3">
           <ApiLoadBanner
             loadFailed={kpiLoadFailed}
             usingMockFallback={kpiMockFallback}
             title="KPI Cockpit"
             message={
               kpiLoadFailed && !kpiMockFallback
-                ? 'Chưa tải được KPI từ business-master. Các thẻ tài chính vận hành vẫn dùng dữ liệu cockpit tĩnh.'
+                ? 'Chưa tải được KPI từ business-master + kpi-engine/evaluate-batch.'
                 : undefined
             }
+          />
+          <ApiLoadBanner
+            loadFailed={!showDemoCockpitLayout}
+            title="Executive cockpit layout"
+            message="Chế độ strict: các thẻ doanh thu/vận hành demo bị ẩn. Dùng KPI rollup và business-master khi có dữ liệu."
+          />
+          <ApiLoadBanner
+            loadFailed={executiveKpiRail.loadFailed && !executiveKpiRail.usingMockFallback}
+            usingMockFallback={executiveKpiRail.usingMockFallback}
+            title="KPI rollup (Command Center)"
           />
         </div>
         {/* ROW 2: Top Metrics */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          {showDemoCockpitLayout ? (
+          <>
           {/* Tổng doanh thu */}
           <div className="relative overflow-hidden rounded-2xl shadow-xl transform hover:-translate-y-1 transition-transform duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-700"></div>
@@ -218,7 +235,14 @@ const ExecutiveDashboardPage: React.FC = () => {
                 {(mockExecutiveDashboardStats.totalRevenue / 1e12).toFixed(1)} <span className="text-lg">Tỷ VND</span>
               </p>
               <div className="mt-2">
-                <Sparkline data={[85, 90, 88, 92, 95, 93, 97]} color="#ffffff" />
+                <Sparkline
+                  data={
+                    executiveKpiRail.series.length
+                      ? executiveKpiRail.series.map((p) => p.value)
+                      : [85, 90, 88, 92, 95, 93, 97]
+                  }
+                  color="#ffffff"
+                />
               </div>
             </div>
           </div>
@@ -319,6 +343,41 @@ const ExecutiveDashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
+          </>
+          ) : (
+            <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">KPI rollup</p>
+                <p className="mt-2 text-3xl font-black text-slate-900">
+                  {executiveKpiRail.headlinePercent != null
+                    ? `${executiveKpiRail.headlinePercent}%`
+                    : '—'}
+                </p>
+                <p className="mt-1 text-sm text-slate-500">Nguồn: {executiveKpiRail.source}</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Chỉ số KPI</p>
+                <p className="mt-2 text-3xl font-black text-slate-900">{kpiRows.length}</p>
+                <p className="mt-1 text-sm text-slate-500">business-master + kpi-engine</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tuân thủ KPI</p>
+                <p className="mt-2 text-3xl font-black text-purple-700">
+                  {kpiCompliancePercent != null ? `${kpiCompliancePercent}%` : '—'}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">WF / báo cáo</p>
+                <p className="mt-2 text-3xl font-black text-slate-900">{rollupCount ?? '—'}</p>
+                <p className="mt-1 text-sm text-slate-500">instances + routes</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Việc chờ</p>
+                <p className="mt-2 text-3xl font-black text-slate-900">{pendingTasks ?? '—'}</p>
+                <p className="mt-1 text-sm text-slate-500">workflow-engine tasks</p>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ROW 3: Module Cards */}
@@ -355,24 +414,7 @@ const ModuleCard: React.FC<{ card: typeof mockModuleCards[0] }> = ({ card }) => 
   const navigate = useNavigate();
 
   const handleAccessClick = () => {
-    const routes: Record<string, string> = {
-      'x-bos': '/command-center',
-      hrm: '/command-center/hrm/dashboard',
-      trsport: '/command-center',
-      lgs: '/command-center',
-      express: '/command-center',
-      'x-scm': '/command-center',
-      'x-office': '/command-center',
-      'x-finance': '/command-center',
-      crm: '/customers',
-      'x-maintenance': '/command-center',
-    };
-    const target = routes[card.id];
-    if (target) {
-      navigate(target);
-      return;
-    }
-    navigate('/command-center');
+    navigate(resolveExecModuleAccessRoute(card.id));
   };
 
   const getIconComponent = (iconName: string) => {
@@ -436,13 +478,14 @@ const ModuleCard: React.FC<{ card: typeof mockModuleCards[0] }> = ({ card }) => 
           ))}
         </div>
 
-        {/* Access Button */}
-        <button
+        {/* Access Button — BTN-A5-EXEC-MODULE-ACCESS */}
+        <CapabilityActionButton
+          capabilityCode="BTN-A5-EXEC-MODULE-ACCESS"
+          className="w-full rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 py-3 px-6 text-sm font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50"
           onClick={handleAccessClick}
-          className="w-full py-3 px-6 rounded-2xl font-bold text-sm bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
         >
-          <span className="text-white tracking-wide">TRUY CẬP</span>
-        </button>
+          <span className="tracking-wide text-white">TRUY CẬP</span>
+        </CapabilityActionButton>
       </div>
     </div>
   );

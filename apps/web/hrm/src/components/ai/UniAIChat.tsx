@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +40,6 @@ export function UniAIChat() {
   }, [messages]);
 
   const streamChat = async (userMessages: Message[]) => {
-    const { data: { session } } = await supabase.auth.getSession();
     if (!session?.access_token) throw new Error('Chưa đăng nhập');
 
     const resp = await fetch(CHAT_URL, {

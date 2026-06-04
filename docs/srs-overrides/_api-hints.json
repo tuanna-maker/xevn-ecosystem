@@ -1,0 +1,1657 @@
+{
+  "generatedAt": "2026-05-21T06:50:22.137Z",
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/hrm/metrics",
+      "file": "apps\\api\\hrm-api\\src\\app.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/records",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/attendance/records",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/attendance/records/:recordId/status",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/update-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/attendance/update-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/attendance/update-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/update-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/update-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/hrm/attendance/update-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/leave-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/attendance/leave-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/leave-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/attendance/leave-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/auth/mobile/login",
+      "file": "apps\\api\\hrm-api\\src\\auth\\mobile-auth.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/auth/mobile/select-membership",
+      "file": "apps\\api\\hrm-api\\src\\auth\\mobile-auth.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/auth/mobile/refresh",
+      "file": "apps\\api\\hrm-api\\src\\auth\\mobile-auth.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/catalog-sync/pull/:catalogKey",
+      "file": "apps\\api\\hrm-api\\src\\catalog-sync\\catalog-sync.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/catalog-sync/:catalogKey",
+      "file": "apps\\api\\hrm-api\\src\\catalog-sync\\catalog-sync.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/contracts-insurance/contracts",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/contracts-insurance/insurance",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/contracts/expiring",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/contracts",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/contracts-insurance/contracts/:contractId",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/hrm/contracts-insurance/contracts/:contractId",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/insurance/expiring",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/employee-metadata/change-requests",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/employee-metadata/change-requests",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/employee-metadata/change-requests/:changeRequestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/employee-metadata/change-requests/:changeRequestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/employee-metadata/audit-logs",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/employees/:employeeId",
+      "file": "apps\\api\\hrm-api\\src\\employees\\employees.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/employees/:employeeId/archive",
+      "file": "apps\\api\\hrm-api\\src\\employees\\employees.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/employees/:employeeId/restore",
+      "file": "apps\\api\\hrm-api\\src\\employees\\employees.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/fleet/vehicles",
+      "file": "apps\\api\\hrm-api\\src\\fleet\\fleet.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/admin/platform-admin",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/admin/company-admin",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/admin/invite-employee",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/admin/reset-user-password",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/notifications/inbox",
+      "file": "apps\\api\\hrm-api\\src\\notifications\\notifications.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/notifications/inbox/:notificationId/read",
+      "file": "apps\\api\\hrm-api\\src\\notifications\\notifications.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/notifications/push-tokens",
+      "file": "apps\\api\\hrm-api\\src\\notifications\\notifications.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/operations/tasks",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/operations/tasks",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/operations/tasks/:taskId/status",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/operations/reports/summary",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/operations/service-requests",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/operations/service-requests",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/operations/service-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/hrm/operations/service-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/operations/service-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/operations/service-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/:periodId/process",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/:periodId/close",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/payslips",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/reports/reconciliation",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/performance/cycles",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/performance/cycles",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/performance/evaluations",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/performance/evaluations",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/requisitions",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/candidates",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/interviews",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/hrm/recruitment/interviews/:interviewId/status",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/group-employee-import-all",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/group-employee-import",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/tourism-fleet",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/tenant-position-catalog-all",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/tenant-position-catalog",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/settings-catalogs/batches/:batchId",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/batches/:batchId/workflow",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/batches/:batchId/review",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/settings-catalogs/extension-requests",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/extension-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/extension-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/employee-profile-template",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/:catalogKey/extension-items",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/:catalogKey/removal-requests",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/spreadsheet/limits",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/spreadsheet/templates/:kind",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/spreadsheet/import/preview",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/spreadsheet/import/commit",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/spreadsheet/export",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/metrics",
+      "file": "apps\\api\\xbos-api\\src\\app.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/asset-requests/:requestId/transition",
+      "file": "apps\\api\\xbos-api\\src\\asset-request\\asset-request.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/assets/:assetId",
+      "file": "apps\\api\\xbos-api\\src\\assets\\assets.controller.ts"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/xbos/assets/:assetId",
+      "file": "apps\\api\\xbos-api\\src\\assets\\assets.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/auth/login",
+      "file": "apps\\api\\xbos-api\\src\\auth\\auth.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/auth/me",
+      "file": "apps\\api\\xbos-api\\src\\auth\\auth.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/business-master/:domain/items",
+      "file": "apps\\api\\xbos-api\\src\\business-master\\business-master.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/business-master/:domain/items/:itemId",
+      "file": "apps\\api\\xbos-api\\src\\business-master\\business-master.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/xbos/business-master/:domain/items/:itemId",
+      "file": "apps\\api\\xbos-api\\src\\business-master\\business-master.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/workflows/seed-xe-du-lich-catalog",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/workflows/start",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/catalog-governance/inbox",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/catalog-governance/instances/:instanceId",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/tasks/:taskId/approve",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/tasks/:taskId/reject",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/catalog-governance/extension-requests",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/command-center/workspace-meta",
+      "file": "apps\\api\\xbos-api\\src\\command-center\\command-center.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/config-sync/bootstrap-xevn",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/config-sync/catalog/:catalogKey/publish",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/config-sync/catalog/:catalogKey",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/config-sync/catalogs",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/infrastructure/settings",
+      "file": "apps\\api\\xbos-api\\src\\infrastructure\\infrastructure.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/infrastructure/summary",
+      "file": "apps\\api\\xbos-api\\src\\infrastructure\\infrastructure.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/infrastructure/settings",
+      "file": "apps\\api\\xbos-api\\src\\infrastructure\\infrastructure.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/kpi-engine/evaluate",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/kpi-engine/evaluate-batch",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/kpi-engine/rollup",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/kpi-engine/portal-alerts",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId/upload",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-documents/:documentId/file",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-entities",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/org-units/tree",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/org-units",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/org-units/:unitId",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/xbos/org-foundation/org-units/:unitId",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/segments/:segmentId/promote",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/templates",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/templates",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/position-rbac/templates/:templateId",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/assignments",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/assignments",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/permissions",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/permissions",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/grants/conflicts",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/grants",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/matrix",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/position-rbac/matrix",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/position-rbac/job-descriptions/:templateId",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/catalog",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/companies/:companyId/matrix",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/capabilities",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/companies/:companyId/coverage",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/raci-governance/companies/:companyId/matrix/cell",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/tenant-scope/accessible",
+      "file": "apps\\api\\xbos-api\\src\\tenant-scope\\tenant-scope.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/tenant-scope/group-org-overview",
+      "file": "apps\\api\\xbos-api\\src\\tenant-scope\\tenant-scope.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/tenant-scope/group-member-units",
+      "file": "apps\\api\\xbos-api\\src\\tenant-scope\\tenant-scope.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/definitions",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/definitions",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/xbos/workflow-engine/definitions/:definitionId",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/instances",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/instances",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/tasks",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/instances/:instanceId/detail",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/tasks/:taskId/complete",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/tasks/:taskId/reject",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/reporting-routes",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/reporting-routes",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    }
+  ],
+  "index": {
+    "GET /api/hrm/metrics": {
+      "method": "GET",
+      "path": "/api/hrm/metrics",
+      "file": "apps\\api\\hrm-api\\src\\app.controller.ts"
+    },
+    "POST /api/hrm/attendance/records": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/records",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "GET /api/hrm/attendance/records": {
+      "method": "GET",
+      "path": "/api/hrm/attendance/records",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "PATCH /api/hrm/attendance/records/:recordId/status": {
+      "method": "PATCH",
+      "path": "/api/hrm/attendance/records/:recordId/status",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/attendance/update-requests": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/update-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "GET /api/hrm/attendance/update-requests": {
+      "method": "GET",
+      "path": "/api/hrm/attendance/update-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "PATCH /api/hrm/attendance/update-requests/:requestId": {
+      "method": "PATCH",
+      "path": "/api/hrm/attendance/update-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/attendance/update-requests/:requestId/approve": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/update-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/attendance/update-requests/:requestId/reject": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/update-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "DELETE /api/hrm/attendance/update-requests/:requestId": {
+      "method": "DELETE",
+      "path": "/api/hrm/attendance/update-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/attendance/leave-requests": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/leave-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "GET /api/hrm/attendance/leave-requests": {
+      "method": "GET",
+      "path": "/api/hrm/attendance/leave-requests",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/attendance/leave-requests/:requestId/approve": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/leave-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/attendance/leave-requests/:requestId/reject": {
+      "method": "POST",
+      "path": "/api/hrm/attendance/leave-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\attendance\\attendance.controller.ts"
+    },
+    "POST /api/hrm/auth/mobile/login": {
+      "method": "POST",
+      "path": "/api/hrm/auth/mobile/login",
+      "file": "apps\\api\\hrm-api\\src\\auth\\mobile-auth.controller.ts"
+    },
+    "POST /api/hrm/auth/mobile/select-membership": {
+      "method": "POST",
+      "path": "/api/hrm/auth/mobile/select-membership",
+      "file": "apps\\api\\hrm-api\\src\\auth\\mobile-auth.controller.ts"
+    },
+    "POST /api/hrm/auth/mobile/refresh": {
+      "method": "POST",
+      "path": "/api/hrm/auth/mobile/refresh",
+      "file": "apps\\api\\hrm-api\\src\\auth\\mobile-auth.controller.ts"
+    },
+    "POST /api/hrm/catalog-sync/pull/:catalogKey": {
+      "method": "POST",
+      "path": "/api/hrm/catalog-sync/pull/:catalogKey",
+      "file": "apps\\api\\hrm-api\\src\\catalog-sync\\catalog-sync.controller.ts"
+    },
+    "GET /api/hrm/catalog-sync/:catalogKey": {
+      "method": "GET",
+      "path": "/api/hrm/catalog-sync/:catalogKey",
+      "file": "apps\\api\\hrm-api\\src\\catalog-sync\\catalog-sync.controller.ts"
+    },
+    "POST /api/hrm/contracts-insurance/contracts": {
+      "method": "POST",
+      "path": "/api/hrm/contracts-insurance/contracts",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "POST /api/hrm/contracts-insurance/insurance": {
+      "method": "POST",
+      "path": "/api/hrm/contracts-insurance/insurance",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "GET /api/hrm/contracts-insurance/contracts/expiring": {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/contracts/expiring",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "GET /api/hrm/contracts-insurance/contracts": {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/contracts",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "PATCH /api/hrm/contracts-insurance/contracts/:contractId": {
+      "method": "PATCH",
+      "path": "/api/hrm/contracts-insurance/contracts/:contractId",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "DELETE /api/hrm/contracts-insurance/contracts/:contractId": {
+      "method": "DELETE",
+      "path": "/api/hrm/contracts-insurance/contracts/:contractId",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "GET /api/hrm/contracts-insurance/insurance/expiring": {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/insurance/expiring",
+      "file": "apps\\api\\hrm-api\\src\\contracts-insurance\\contracts-insurance.controller.ts"
+    },
+    "POST /api/hrm/employee-metadata/change-requests": {
+      "method": "POST",
+      "path": "/api/hrm/employee-metadata/change-requests",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    "GET /api/hrm/employee-metadata/change-requests": {
+      "method": "GET",
+      "path": "/api/hrm/employee-metadata/change-requests",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    "POST /api/hrm/employee-metadata/change-requests/:changeRequestId/approve": {
+      "method": "POST",
+      "path": "/api/hrm/employee-metadata/change-requests/:changeRequestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    "POST /api/hrm/employee-metadata/change-requests/:changeRequestId/reject": {
+      "method": "POST",
+      "path": "/api/hrm/employee-metadata/change-requests/:changeRequestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    "GET /api/hrm/employee-metadata/audit-logs": {
+      "method": "GET",
+      "path": "/api/hrm/employee-metadata/audit-logs",
+      "file": "apps\\api\\hrm-api\\src\\employee-metadata\\employee-metadata.controller.ts"
+    },
+    "PATCH /api/hrm/employees/:employeeId": {
+      "method": "PATCH",
+      "path": "/api/hrm/employees/:employeeId",
+      "file": "apps\\api\\hrm-api\\src\\employees\\employees.controller.ts"
+    },
+    "POST /api/hrm/employees/:employeeId/archive": {
+      "method": "POST",
+      "path": "/api/hrm/employees/:employeeId/archive",
+      "file": "apps\\api\\hrm-api\\src\\employees\\employees.controller.ts"
+    },
+    "POST /api/hrm/employees/:employeeId/restore": {
+      "method": "POST",
+      "path": "/api/hrm/employees/:employeeId/restore",
+      "file": "apps\\api\\hrm-api\\src\\employees\\employees.controller.ts"
+    },
+    "GET /api/hrm/fleet/vehicles": {
+      "method": "GET",
+      "path": "/api/hrm/fleet/vehicles",
+      "file": "apps\\api\\hrm-api\\src\\fleet\\fleet.controller.ts"
+    },
+    "POST /api/hrm/admin/platform-admin": {
+      "method": "POST",
+      "path": "/api/hrm/admin/platform-admin",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    "POST /api/hrm/admin/company-admin": {
+      "method": "POST",
+      "path": "/api/hrm/admin/company-admin",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    "POST /api/hrm/admin/invite-employee": {
+      "method": "POST",
+      "path": "/api/hrm/admin/invite-employee",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    "POST /api/hrm/admin/reset-user-password": {
+      "method": "POST",
+      "path": "/api/hrm/admin/reset-user-password",
+      "file": "apps\\api\\hrm-api\\src\\hrm-admin\\hrm-admin.controller.ts"
+    },
+    "GET /api/hrm/notifications/inbox": {
+      "method": "GET",
+      "path": "/api/hrm/notifications/inbox",
+      "file": "apps\\api\\hrm-api\\src\\notifications\\notifications.controller.ts"
+    },
+    "PATCH /api/hrm/notifications/inbox/:notificationId/read": {
+      "method": "PATCH",
+      "path": "/api/hrm/notifications/inbox/:notificationId/read",
+      "file": "apps\\api\\hrm-api\\src\\notifications\\notifications.controller.ts"
+    },
+    "POST /api/hrm/notifications/push-tokens": {
+      "method": "POST",
+      "path": "/api/hrm/notifications/push-tokens",
+      "file": "apps\\api\\hrm-api\\src\\notifications\\notifications.controller.ts"
+    },
+    "POST /api/hrm/operations/tasks": {
+      "method": "POST",
+      "path": "/api/hrm/operations/tasks",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "GET /api/hrm/operations/tasks": {
+      "method": "GET",
+      "path": "/api/hrm/operations/tasks",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "PATCH /api/hrm/operations/tasks/:taskId/status": {
+      "method": "PATCH",
+      "path": "/api/hrm/operations/tasks/:taskId/status",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "GET /api/hrm/operations/reports/summary": {
+      "method": "GET",
+      "path": "/api/hrm/operations/reports/summary",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "POST /api/hrm/operations/service-requests": {
+      "method": "POST",
+      "path": "/api/hrm/operations/service-requests",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "GET /api/hrm/operations/service-requests": {
+      "method": "GET",
+      "path": "/api/hrm/operations/service-requests",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "PATCH /api/hrm/operations/service-requests/:requestId": {
+      "method": "PATCH",
+      "path": "/api/hrm/operations/service-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "DELETE /api/hrm/operations/service-requests/:requestId": {
+      "method": "DELETE",
+      "path": "/api/hrm/operations/service-requests/:requestId",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "POST /api/hrm/operations/service-requests/:requestId/approve": {
+      "method": "POST",
+      "path": "/api/hrm/operations/service-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "POST /api/hrm/operations/service-requests/:requestId/reject": {
+      "method": "POST",
+      "path": "/api/hrm/operations/service-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\operations\\operations.controller.ts"
+    },
+    "POST /api/hrm/payroll/periods": {
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    "GET /api/hrm/payroll/periods": {
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    "POST /api/hrm/payroll/periods/:periodId/process": {
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/:periodId/process",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    "POST /api/hrm/payroll/periods/:periodId/close": {
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/:periodId/close",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    "GET /api/hrm/payroll/payslips": {
+      "method": "GET",
+      "path": "/api/hrm/payroll/payslips",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    "GET /api/hrm/payroll/reports/reconciliation": {
+      "method": "GET",
+      "path": "/api/hrm/payroll/reports/reconciliation",
+      "file": "apps\\api\\hrm-api\\src\\payroll\\payroll.controller.ts"
+    },
+    "POST /api/hrm/performance/cycles": {
+      "method": "POST",
+      "path": "/api/hrm/performance/cycles",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    "GET /api/hrm/performance/cycles": {
+      "method": "GET",
+      "path": "/api/hrm/performance/cycles",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    "POST /api/hrm/performance/evaluations": {
+      "method": "POST",
+      "path": "/api/hrm/performance/evaluations",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    "GET /api/hrm/performance/evaluations": {
+      "method": "GET",
+      "path": "/api/hrm/performance/evaluations",
+      "file": "apps\\api\\hrm-api\\src\\performance\\performance.controller.ts"
+    },
+    "POST /api/hrm/recruitment/requisitions": {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/requisitions",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    "GET /api/hrm/recruitment/requisitions": {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    "POST /api/hrm/recruitment/candidates": {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/candidates",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    "GET /api/hrm/recruitment/candidates": {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    "POST /api/hrm/recruitment/interviews": {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/interviews",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    "PATCH /api/hrm/recruitment/interviews/:interviewId/status": {
+      "method": "PATCH",
+      "path": "/api/hrm/recruitment/interviews/:interviewId/status",
+      "file": "apps\\api\\hrm-api\\src\\recruitment\\recruitment.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/sync-from-xbos": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/seed/group-employee-import-all": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/group-employee-import-all",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/seed/group-employee-import": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/group-employee-import",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/seed/tourism-fleet": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/tourism-fleet",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/seed/tenant-position-catalog-all": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/tenant-position-catalog-all",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/seed/tenant-position-catalog": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/tenant-position-catalog",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "GET /api/hrm/settings-catalogs/batches/:batchId": {
+      "method": "GET",
+      "path": "/api/hrm/settings-catalogs/batches/:batchId",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/batches/:batchId/workflow": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/batches/:batchId/workflow",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/batches/:batchId/review": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/batches/:batchId/review",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "GET /api/hrm/settings-catalogs/extension-requests": {
+      "method": "GET",
+      "path": "/api/hrm/settings-catalogs/extension-requests",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/extension-requests/:requestId/approve": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/extension-requests/:requestId/approve",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/extension-requests/:requestId/reject": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/extension-requests/:requestId/reject",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/seed/employee-profile-template": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/seed/employee-profile-template",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/:catalogKey/extension-items": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/:catalogKey/extension-items",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "POST /api/hrm/settings-catalogs/:catalogKey/removal-requests": {
+      "method": "POST",
+      "path": "/api/hrm/settings-catalogs/:catalogKey/removal-requests",
+      "file": "apps\\api\\hrm-api\\src\\settings-catalogs\\settings-catalogs.controller.ts"
+    },
+    "GET /api/hrm/spreadsheet/limits": {
+      "method": "GET",
+      "path": "/api/hrm/spreadsheet/limits",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    "GET /api/hrm/spreadsheet/templates/:kind": {
+      "method": "GET",
+      "path": "/api/hrm/spreadsheet/templates/:kind",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    "POST /api/hrm/spreadsheet/import/preview": {
+      "method": "POST",
+      "path": "/api/hrm/spreadsheet/import/preview",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    "POST /api/hrm/spreadsheet/import/commit": {
+      "method": "POST",
+      "path": "/api/hrm/spreadsheet/import/commit",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    "POST /api/hrm/spreadsheet/export": {
+      "method": "POST",
+      "path": "/api/hrm/spreadsheet/export",
+      "file": "apps\\api\\hrm-api\\src\\spreadsheet\\spreadsheet.controller.ts"
+    },
+    "GET /api/xbos/metrics": {
+      "method": "GET",
+      "path": "/api/xbos/metrics",
+      "file": "apps\\api\\xbos-api\\src\\app.controller.ts"
+    },
+    "POST /api/xbos/asset-requests/:requestId/transition": {
+      "method": "POST",
+      "path": "/api/xbos/asset-requests/:requestId/transition",
+      "file": "apps\\api\\xbos-api\\src\\asset-request\\asset-request.controller.ts"
+    },
+    "GET /api/xbos/assets/:assetId": {
+      "method": "GET",
+      "path": "/api/xbos/assets/:assetId",
+      "file": "apps\\api\\xbos-api\\src\\assets\\assets.controller.ts"
+    },
+    "PATCH /api/xbos/assets/:assetId": {
+      "method": "PATCH",
+      "path": "/api/xbos/assets/:assetId",
+      "file": "apps\\api\\xbos-api\\src\\assets\\assets.controller.ts"
+    },
+    "POST /api/xbos/auth/login": {
+      "method": "POST",
+      "path": "/api/xbos/auth/login",
+      "file": "apps\\api\\xbos-api\\src\\auth\\auth.controller.ts"
+    },
+    "GET /api/xbos/auth/me": {
+      "method": "GET",
+      "path": "/api/xbos/auth/me",
+      "file": "apps\\api\\xbos-api\\src\\auth\\auth.controller.ts"
+    },
+    "GET /api/xbos/business-master/:domain/items": {
+      "method": "GET",
+      "path": "/api/xbos/business-master/:domain/items",
+      "file": "apps\\api\\xbos-api\\src\\business-master\\business-master.controller.ts"
+    },
+    "PUT /api/xbos/business-master/:domain/items/:itemId": {
+      "method": "PUT",
+      "path": "/api/xbos/business-master/:domain/items/:itemId",
+      "file": "apps\\api\\xbos-api\\src\\business-master\\business-master.controller.ts"
+    },
+    "DELETE /api/xbos/business-master/:domain/items/:itemId": {
+      "method": "DELETE",
+      "path": "/api/xbos/business-master/:domain/items/:itemId",
+      "file": "apps\\api\\xbos-api\\src\\business-master\\business-master.controller.ts"
+    },
+    "POST /api/xbos/catalog-governance/workflows/seed-xe-du-lich-catalog": {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/workflows/seed-xe-du-lich-catalog",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "POST /api/xbos/catalog-governance/workflows/start": {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/workflows/start",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "GET /api/xbos/catalog-governance/inbox": {
+      "method": "GET",
+      "path": "/api/xbos/catalog-governance/inbox",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "GET /api/xbos/catalog-governance/instances/:instanceId": {
+      "method": "GET",
+      "path": "/api/xbos/catalog-governance/instances/:instanceId",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "POST /api/xbos/catalog-governance/tasks/:taskId/approve": {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/tasks/:taskId/approve",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "POST /api/xbos/catalog-governance/tasks/:taskId/reject": {
+      "method": "POST",
+      "path": "/api/xbos/catalog-governance/tasks/:taskId/reject",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "GET /api/xbos/catalog-governance/extension-requests": {
+      "method": "GET",
+      "path": "/api/xbos/catalog-governance/extension-requests",
+      "file": "apps\\api\\xbos-api\\src\\catalog-governance\\catalog-governance.controller.ts"
+    },
+    "GET /api/xbos/command-center/workspace-meta": {
+      "method": "GET",
+      "path": "/api/xbos/command-center/workspace-meta",
+      "file": "apps\\api\\xbos-api\\src\\command-center\\command-center.controller.ts"
+    },
+    "POST /api/xbos/config-sync/bootstrap-xevn": {
+      "method": "POST",
+      "path": "/api/xbos/config-sync/bootstrap-xevn",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    "POST /api/xbos/config-sync/catalog/:catalogKey/publish": {
+      "method": "POST",
+      "path": "/api/xbos/config-sync/catalog/:catalogKey/publish",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    "GET /api/xbos/config-sync/catalog/:catalogKey": {
+      "method": "GET",
+      "path": "/api/xbos/config-sync/catalog/:catalogKey",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    "GET /api/xbos/config-sync/catalogs": {
+      "method": "GET",
+      "path": "/api/xbos/config-sync/catalogs",
+      "file": "apps\\api\\xbos-api\\src\\config-sync\\config-sync.controller.ts"
+    },
+    "GET /api/xbos/infrastructure/settings": {
+      "method": "GET",
+      "path": "/api/xbos/infrastructure/settings",
+      "file": "apps\\api\\xbos-api\\src\\infrastructure\\infrastructure.controller.ts"
+    },
+    "GET /api/xbos/infrastructure/summary": {
+      "method": "GET",
+      "path": "/api/xbos/infrastructure/summary",
+      "file": "apps\\api\\xbos-api\\src\\infrastructure\\infrastructure.controller.ts"
+    },
+    "PUT /api/xbos/infrastructure/settings": {
+      "method": "PUT",
+      "path": "/api/xbos/infrastructure/settings",
+      "file": "apps\\api\\xbos-api\\src\\infrastructure\\infrastructure.controller.ts"
+    },
+    "POST /api/xbos/kpi-engine/evaluate": {
+      "method": "POST",
+      "path": "/api/xbos/kpi-engine/evaluate",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    "POST /api/xbos/kpi-engine/evaluate-batch": {
+      "method": "POST",
+      "path": "/api/xbos/kpi-engine/evaluate-batch",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    "GET /api/xbos/kpi-engine/rollup": {
+      "method": "GET",
+      "path": "/api/xbos/kpi-engine/rollup",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    "GET /api/xbos/kpi-engine/portal-alerts": {
+      "method": "GET",
+      "path": "/api/xbos/kpi-engine/portal-alerts",
+      "file": "apps\\api\\xbos-api\\src\\kpi-engine\\kpi-engine.controller.ts"
+    },
+    "GET /api/xbos/org-foundation/legal-entities/:entityId/shareholders": {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "POST /api/xbos/org-foundation/legal-entities/:entityId/shareholders": {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "PUT /api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId": {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "DELETE /api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId": {
+      "method": "DELETE",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "GET /api/xbos/org-foundation/legal-entities/:entityId/documents": {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "POST /api/xbos/org-foundation/legal-entities/:entityId/documents": {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "PUT /api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId": {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "DELETE /api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId": {
+      "method": "DELETE",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "POST /api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId/upload": {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId/upload",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "GET /api/xbos/org-foundation/legal-documents/:documentId/file": {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-documents/:documentId/file",
+      "file": "apps\\api\\xbos-api\\src\\legal-entity-profile\\legal-entity-profile.controller.ts"
+    },
+    "GET /api/xbos/org-foundation/legal-entities": {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/legal-entities",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "POST /api/xbos/org-foundation/legal-entities": {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/legal-entities",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "PUT /api/xbos/org-foundation/legal-entities/:entityId": {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/legal-entities/:entityId",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "GET /api/xbos/org-foundation/org-units/tree": {
+      "method": "GET",
+      "path": "/api/xbos/org-foundation/org-units/tree",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "POST /api/xbos/org-foundation/org-units": {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/org-units",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "PUT /api/xbos/org-foundation/org-units/:unitId": {
+      "method": "PUT",
+      "path": "/api/xbos/org-foundation/org-units/:unitId",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "DELETE /api/xbos/org-foundation/org-units/:unitId": {
+      "method": "DELETE",
+      "path": "/api/xbos/org-foundation/org-units/:unitId",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "POST /api/xbos/org-foundation/segments/:segmentId/promote": {
+      "method": "POST",
+      "path": "/api/xbos/org-foundation/segments/:segmentId/promote",
+      "file": "apps\\api\\xbos-api\\src\\org-foundation\\org-foundation.controller.ts"
+    },
+    "GET /api/xbos/position-rbac/templates": {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/templates",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "POST /api/xbos/position-rbac/templates": {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/templates",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "PUT /api/xbos/position-rbac/templates/:templateId": {
+      "method": "PUT",
+      "path": "/api/xbos/position-rbac/templates/:templateId",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "GET /api/xbos/position-rbac/assignments": {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/assignments",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "POST /api/xbos/position-rbac/assignments": {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/assignments",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "GET /api/xbos/position-rbac/permissions": {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/permissions",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "POST /api/xbos/position-rbac/permissions": {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/permissions",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "GET /api/xbos/position-rbac/grants/conflicts": {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/grants/conflicts",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "POST /api/xbos/position-rbac/grants": {
+      "method": "POST",
+      "path": "/api/xbos/position-rbac/grants",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "GET /api/xbos/position-rbac/matrix": {
+      "method": "GET",
+      "path": "/api/xbos/position-rbac/matrix",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "PUT /api/xbos/position-rbac/matrix": {
+      "method": "PUT",
+      "path": "/api/xbos/position-rbac/matrix",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "PUT /api/xbos/position-rbac/job-descriptions/:templateId": {
+      "method": "PUT",
+      "path": "/api/xbos/position-rbac/job-descriptions/:templateId",
+      "file": "apps\\api\\xbos-api\\src\\position-rbac\\position-rbac.controller.ts"
+    },
+    "GET /api/xbos/raci-governance/catalog": {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/catalog",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    "GET /api/xbos/raci-governance/companies/:companyId/matrix": {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/companies/:companyId/matrix",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    "GET /api/xbos/raci-governance/capabilities": {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/capabilities",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    "GET /api/xbos/raci-governance/companies/:companyId/coverage": {
+      "method": "GET",
+      "path": "/api/xbos/raci-governance/companies/:companyId/coverage",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    "PUT /api/xbos/raci-governance/companies/:companyId/matrix/cell": {
+      "method": "PUT",
+      "path": "/api/xbos/raci-governance/companies/:companyId/matrix/cell",
+      "file": "apps\\api\\xbos-api\\src\\raci-governance\\raci-governance.controller.ts"
+    },
+    "GET /api/xbos/tenant-scope/accessible": {
+      "method": "GET",
+      "path": "/api/xbos/tenant-scope/accessible",
+      "file": "apps\\api\\xbos-api\\src\\tenant-scope\\tenant-scope.controller.ts"
+    },
+    "GET /api/xbos/tenant-scope/group-org-overview": {
+      "method": "GET",
+      "path": "/api/xbos/tenant-scope/group-org-overview",
+      "file": "apps\\api\\xbos-api\\src\\tenant-scope\\tenant-scope.controller.ts"
+    },
+    "GET /api/xbos/tenant-scope/group-member-units": {
+      "method": "GET",
+      "path": "/api/xbos/tenant-scope/group-member-units",
+      "file": "apps\\api\\xbos-api\\src\\tenant-scope\\tenant-scope.controller.ts"
+    },
+    "GET /api/xbos/workflow-engine/definitions": {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/definitions",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "POST /api/xbos/workflow-engine/definitions": {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/definitions",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "PUT /api/xbos/workflow-engine/definitions/:definitionId": {
+      "method": "PUT",
+      "path": "/api/xbos/workflow-engine/definitions/:definitionId",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "POST /api/xbos/workflow-engine/instances": {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/instances",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "GET /api/xbos/workflow-engine/instances": {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/instances",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "GET /api/xbos/workflow-engine/tasks": {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/tasks",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "GET /api/xbos/workflow-engine/instances/:instanceId/detail": {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/instances/:instanceId/detail",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "POST /api/xbos/workflow-engine/tasks/:taskId/complete": {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/tasks/:taskId/complete",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "POST /api/xbos/workflow-engine/tasks/:taskId/reject": {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/tasks/:taskId/reject",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "GET /api/xbos/workflow-engine/reporting-routes": {
+      "method": "GET",
+      "path": "/api/xbos/workflow-engine/reporting-routes",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    },
+    "POST /api/xbos/workflow-engine/reporting-routes": {
+      "method": "POST",
+      "path": "/api/xbos/workflow-engine/reporting-routes",
+      "file": "apps\\api\\xbos-api\\src\\workflow-engine\\workflow-engine.controller.ts"
+    }
+  }
+}

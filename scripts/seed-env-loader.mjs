@@ -43,7 +43,7 @@ export function xbosHeaders(extra = {}) {
     'x-internal-api-key': internalKey(),
     'x-tenant-id': process.env.MASTER_TENANT_ID ?? 'xevn',
     'x-company-id': process.env.MASTER_TENANT_ID ?? 'xevn',
-    'x-user-id': process.env.SEED_USER_ID ?? 'admin@xevn.vn',
+    'x-user-id': process.env.SEED_USER_ID ?? 'admin@xe.vn',
     ...extra,
   };
 }

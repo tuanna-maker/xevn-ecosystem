@@ -34,3 +34,22 @@ Quality rules:
 - No screen flow is DONE without edge-case/error-state handling.
 - No API integration is DONE without contract-aligned validation mapping.
 - No completion claim without build/test evidence and reproducible run steps.
+
+## Embed deep-link & cross-nav (U19 — mandatory)
+
+HRM iframe / Command Center embed:
+1. Before `READY_FOR_QA`: smoke **list → detail** links for the module you touched (employee profile, contract detail, payslip, …).
+2. Use Group CEO path: portal JWT `company_id=main` — detail API must succeed, not only list.
+3. Read `docs/program/PROGRAM_JOURNEY_MAP.md` J-HRM-* for your module.
+4. Links like `/employees/:id` from contracts must pass `company_id` consistent with list API (`hrmApi.ts`, `useEmployee.ts`).
+5. No Supabase `54321` on pilot paths when `VITE_HRM_USE_API=true`.
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

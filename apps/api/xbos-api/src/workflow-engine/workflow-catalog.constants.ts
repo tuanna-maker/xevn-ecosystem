@@ -5,7 +5,7 @@ export const MEMBER_TENANT_XE_DU_LICH = 'xe-du-lich';
 export const MEMBER_COMPANY_MAIN = 'main';
 export const MASTER_TENANT_XEVN = 'xevn';
 export const MASTER_COMPANY_HOLDING = 'holding';
-export const GROUP_APPROVER_USER = 'ceo@xevn.vn';
+export const GROUP_APPROVER_USER = 'ceo@xe.vn';
 
 export function buildXeDuLichCatalogWorkflowDefinition() {
   return {

@@ -1,0 +1,404 @@
+﻿{
+  "work_item_id": "P1-QUAL-QA-FE-W2",
+  "steps": [
+    {
+      "name": "employees-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees?page_size=5&company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-200",
+      "total": 1100,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "skills-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/skills?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "skills-create",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/skills?company_id=main",
+      "status": 201,
+      "code": "HRM-EMP-PROFILE-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "skills-patch",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/skills/f007ed8e-3da0-41d8-b5be-4116d2aef06c?company_id=main",
+      "status": 400,
+      "code": "HRM-EMP-PROFILE-400",
+      "total": null,
+      "pass": false,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "skills-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/skills/f007ed8e-3da0-41d8-b5be-4116d2aef06c?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "work-timeline-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/work-timeline?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "work-timeline-create",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/work-timeline?company_id=main",
+      "status": 201,
+      "code": "HRM-EMP-PROFILE-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "work-timeline-patch",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/work-timeline/5ee71506-a062-4822-80d0-862a6586bf95?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-202",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "work-timeline-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/work-timeline/5ee71506-a062-4822-80d0-862a6586bf95?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "resume-files-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/resume-files?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "resume-files-create",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/resume-files?company_id=main",
+      "status": 201,
+      "code": "HRM-EMP-PROFILE-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "resume-files-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/resume-files/3701ef63-1466-4522-afb0-bb4bde8371d3?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "rewards-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/rewards?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "rewards-create",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/rewards?company_id=main",
+      "status": 201,
+      "code": "HRM-EMP-PROFILE-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "rewards-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/rewards/50594745-e7a9-4662-9196-de68c7c224c7?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "discipline-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/discipline?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "training-list",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/training?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "training-create",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/training?company_id=main",
+      "status": 201,
+      "code": "HRM-EMP-PROFILE-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "training-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/employees/293b5900-8f99-4a97-878b-26270fb01827/training/9b93b263-419f-42d8-a249-efe4d7225871?company_id=main",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "admin-companies-list",
+      "url": "http://127.0.0.1:5175/api/hrm/admin/companies",
+      "status": 200,
+      "code": "HRM-ADMIN-205",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "company-memberships-list",
+      "url": "http://127.0.0.1:5175/api/hrm/admin/company-memberships?company_id=main",
+      "status": 200,
+      "code": "HRM-ADMIN-206",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "headcount-proposals-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/headcount-proposals?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-HC-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "headcount-proposals-create",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/headcount-proposals",
+      "status": 201,
+      "code": "HRM-REC-HC-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "headcount-proposals-status",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/headcount-proposals/68e11ee9-352b-4ad4-b2d9-aa547d6fc5c0/status?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-HC-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "job-postings-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/job-postings?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JP-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "candidates-pool-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200",
+      "total": 5,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "candidate-evaluations-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/candidate-evaluations?company_id=main&candidate_id=289a9388-22c5-49be-a795-f498a0c72436",
+      "status": 500,
+      "code": "HRM-SYS-001",
+      "total": null,
+      "pass": false,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "evaluation-templates-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/evaluation-criteria-templates?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-EVAL-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "interviews-catalog-create",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog",
+      "status": 201,
+      "code": "HRM-REC-INT-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "interviews-catalog-patch",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog/226f5c66-97ab-4e3f-9817-ccb7882679ff?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-INT-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "interviews-catalog-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog/226f5c66-97ab-4e3f-9817-ccb7882679ff?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-INT-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    }
+  ],
+  "pass": false,
+  "supabase_hits": [],
+  "summary": {
+    "pass_steps": 29,
+    "total_steps": 31,
+    "employee_id": "293b5900-8f99-4a97-878b-26270fb01827"
+  }
+}

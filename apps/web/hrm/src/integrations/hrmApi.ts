@@ -1,5 +1,9 @@
-import { supabase } from "@/integrations/supabase/client";
 import { ApiClientError } from "@/lib/apiError";
+import { clampHrmPageSize } from "@/lib/hrmDataMode";
+import { coerceHrmListCompanyId } from "@/lib/hrmListScope";
+import { getHrmPortalMode } from "@/lib/hrmPortalMode";
+import { resolveHrmSpreadsheetScope } from "@/lib/hrmSpreadsheetScope";
+import { getPortalAccessToken, getPortalSessionUser, waitForPortalAccessToken } from "@/lib/portalAuthBridge";
 
 const HRM_API_ORIGIN = (import.meta.env.VITE_HRM_API_ORIGIN ?? "").replace(/\/$/, "");
 const SERVICE_JWT_TOKEN = import.meta.env.VITE_SERVICE_JWT_TOKEN;
@@ -27,21 +31,11 @@ type HrmHeaderOptions = {
 
 function inferRuntimeScope(): HrmSpreadsheetScope | undefined {
   if (typeof window === "undefined") return undefined;
-  const rawCompanyId =
+  const storedCompany =
     localStorage.getItem("hrm_current_company_id") ||
-    sessionStorage.getItem("hrm_current_company_id") ||
-    undefined;
-  const companyId =
-    rawCompanyId && rawCompanyId !== "all"
-      ? rawCompanyId
-      : (import.meta.env.VITE_HRM_SCOPE_COMPANY_ID?.trim() || "holding");
-  if (!companyId) return undefined;
-  const tenantId =
-    localStorage.getItem("hrm_current_tenant_id") ||
-    sessionStorage.getItem("hrm_current_tenant_id") ||
-    import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim() ||
-    companyId;
-  return { tenantId, companyId };
+    sessionStorage.getItem("hrm_current_company_id");
+  const scopeHint = storedCompany?.trim() ? coerceHrmListCompanyId(storedCompany) : storedCompany;
+  return resolveHrmSpreadsheetScope(scopeHint, window.location.search) ?? undefined;
 }
 
 async function headers(opts?: HrmHeaderOptions) {
@@ -52,15 +46,27 @@ async function headers(opts?: HrmHeaderOptions) {
     baseHeaders["Content-Type"] = "application/json";
   }
 
-  const { data } = await supabase.auth.getSession();
-  const sessionToken = data.session?.access_token;
-  if (sessionToken) {
-    baseHeaders.Authorization = `Bearer ${sessionToken}`;
-  } else if (SERVICE_JWT_TOKEN) {
-    baseHeaders.Authorization = `Bearer ${SERVICE_JWT_TOKEN}`;
-  } else if (INTERNAL_API_KEY) {
-    // Dev-only fallback when no JWT token is provisioned in local environment.
-    baseHeaders["x-internal-api-key"] = INTERNAL_API_KEY;
+  const portalMode =
+    typeof window !== "undefined" && getHrmPortalMode(window.location.search);
+  let portalToken = getPortalAccessToken();
+  if (!portalToken && portalMode) {
+    portalToken = await waitForPortalAccessToken(5000);
+  }
+  if (portalToken) {
+    baseHeaders.Authorization = `Bearer ${portalToken}`;
+    baseHeaders["x-access-token"] = portalToken;
+    baseHeaders["x-portal-access-token"] = portalToken;
+    const portalUser = getPortalSessionUser();
+    if (portalUser?.userId) {
+      baseHeaders["x-user-id"] = portalUser.userId;
+    }
+  }
+  if (!baseHeaders.Authorization) {
+    if (SERVICE_JWT_TOKEN) {
+      baseHeaders.Authorization = `Bearer ${SERVICE_JWT_TOKEN}`;
+    } else if (INTERNAL_API_KEY) {
+      baseHeaders["x-internal-api-key"] = INTERNAL_API_KEY;
+    }
   }
 
   const effectiveScope = opts?.scope ?? inferRuntimeScope();
@@ -582,6 +588,509 @@ export async function updateRecruitmentInterviewStatus(interviewId: string, payl
   });
 }
 
+export type HrmJobPostingRow = {
+  id: string;
+  company_id: string;
+  title: string;
+  department: string | null;
+  position: string;
+  employment_type: string;
+  work_location: string | null;
+  salary_min: number | null;
+  salary_max: number | null;
+  is_salary_visible: boolean;
+  description: string | null;
+  requirements: string | null;
+  benefits: string | null;
+  headcount: number;
+  applied_count: number;
+  status: string;
+  deadline: string | null;
+  priority: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HrmCandidatePoolRow = {
+  id: string;
+  company_id: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  stage: string;
+  source: string | null;
+  applied_date: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HrmCandidateApplicationRow = {
+  id: string;
+  candidate_id: string;
+  job_posting_id: string;
+  company_id: string;
+  applied_date: string | null;
+  stage: string;
+  rating: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HrmRecruitmentPlanPositionRow = {
+  id: string;
+  department_id: string;
+  company_id: string;
+  name: string;
+  months_data: unknown;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HrmRecruitmentPlanDepartmentRow = {
+  id: string;
+  plan_id: string;
+  company_id: string;
+  name: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  positions?: HrmRecruitmentPlanPositionRow[];
+};
+
+export type HrmRecruitmentPlanRow = {
+  id: string;
+  company_id: string;
+  title: string;
+  start_month: number;
+  end_month: number;
+  year: number;
+  note: string | null;
+  status: string;
+  creator_name: string | null;
+  created_at: string;
+  updated_at: string;
+  departments?: HrmRecruitmentPlanDepartmentRow[];
+};
+
+export async function listJobPostings(params: { company_id: string; status?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.status) search.set("status", params.status);
+  return requestHrm<{ total: number; data: HrmJobPostingRow[] }>(
+    `/api/hrm/recruitment/job-postings?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createJobPosting(payload: {
+  company_id: string;
+  title: string;
+  position: string;
+  department?: string;
+  employment_type?: string;
+  work_location?: string;
+  salary_min?: number;
+  salary_max?: number;
+  is_salary_visible?: boolean;
+  description?: string;
+  requirements?: string;
+  benefits?: string;
+  headcount?: number;
+  deadline?: string;
+  priority?: string;
+  status?: string;
+}) {
+  return requestHrm<HrmJobPostingRow>("/api/hrm/recruitment/job-postings", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function deleteJobPosting(jobPostingId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/job-postings/${jobPostingId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listCandidatesPool(params: { company_id: string; stage?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.stage) search.set("stage", params.stage);
+  return requestHrm<{ total: number; data: HrmCandidatePoolRow[] }>(
+    `/api/hrm/recruitment/candidates-pool?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createCandidatePool(payload: {
+  company_id: string;
+  full_name: string;
+  email: string;
+  phone?: string | null;
+  position?: string | null;
+  source?: string | null;
+  stage?: string;
+  rating?: number | null;
+  applied_date?: string | null;
+  expected_start_date?: string | null;
+  nationality?: string | null;
+  hometown?: string | null;
+  marital_status?: string | null;
+  notes?: string | null;
+  requisition_id?: string | null;
+}) {
+  return requestHrm<HrmCandidatePoolRow>("/api/hrm/recruitment/candidates", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function updateCandidatePool(
+  candidateId: string,
+  companyId: string,
+  payload: Partial<{
+    full_name: string;
+    email: string;
+    phone: string | null;
+    position: string | null;
+    source: string | null;
+    stage: string;
+    rating: number | null;
+    applied_date: string | null;
+    expected_start_date: string | null;
+    nationality: string | null;
+    hometown: string | null;
+    marital_status: string | null;
+    notes: string | null;
+  }>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmCandidatePoolRow>(
+    `/api/hrm/recruitment/candidates-pool/${candidateId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteCandidatePool(candidateId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/candidates-pool/${candidateId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listCandidateApplications(params: {
+  company_id: string;
+  job_posting_id?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.job_posting_id) search.set("job_posting_id", params.job_posting_id);
+  return requestHrm<{ total: number; data: HrmCandidateApplicationRow[] }>(
+    `/api/hrm/recruitment/candidate-applications?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function listRecruitmentPlans(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmRecruitmentPlanRow[] }>(
+    `/api/hrm/recruitment/recruitment-plans?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function updateRecruitmentPlanStatus(
+  planId: string,
+  companyId: string,
+  status: string,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmRecruitmentPlanRow>(
+    `/api/hrm/recruitment/recruitment-plans/${planId}/status?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify({ status }) },
+  );
+}
+
+export type HrmEmployeeInsuranceRow = {
+  id: string;
+  employee_id: string;
+  company_id: string;
+  type: string;
+  provider: string;
+  policy_number: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  contribution: number;
+  employer_contribution: number;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listEmployeeInsurances(params: { company_id: string; employee_id: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("employee_id", params.employee_id);
+  return requestHrm<{ total: number; data: HrmEmployeeInsuranceRow[] }>(
+    `/api/hrm/employee-insurances?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeInsurance(payload: {
+  company_id: string;
+  employee_id: string;
+  type?: string;
+  provider: string;
+  policy_number?: string;
+  start_date?: string;
+  end_date?: string;
+  contribution?: number;
+  employer_contribution?: number;
+  status?: string;
+  notes?: string;
+}) {
+  return requestHrm<HrmEmployeeInsuranceRow>("/api/hrm/employee-insurances", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function updateEmployeeInsurance(
+  insuranceId: string,
+  payload: Partial<{
+    company_id: string;
+    type: string;
+    provider: string;
+    policy_number: string;
+    start_date: string;
+    end_date: string;
+    contribution: number;
+    employer_contribution: number;
+    status: string;
+    notes: string;
+  }>,
+) {
+  return requestHrm<HrmEmployeeInsuranceRow>(`/api/hrm/employee-insurances/${insuranceId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteEmployeeInsurance(insuranceId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employee-insurances/${insuranceId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmEmployeeBenefitRow = {
+  id: string;
+  employee_id: string;
+  company_id: string;
+  name: string;
+  category: string;
+  value: number;
+  unit: string | null;
+  frequency: string;
+  start_date: string | null;
+  end_date: string | null;
+  status: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listEmployeeBenefits(params: { company_id: string; employee_id: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("employee_id", params.employee_id);
+  return requestHrm<{ total: number; data: HrmEmployeeBenefitRow[] }>(
+    `/api/hrm/employee-benefits?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeBenefit(payload: {
+  company_id: string;
+  employee_id: string;
+  name: string;
+  category?: string;
+  value: number;
+  unit?: string;
+  frequency?: string;
+  start_date?: string;
+  end_date?: string;
+  status?: string;
+  description?: string;
+}) {
+  return requestHrm<HrmEmployeeBenefitRow>("/api/hrm/employee-benefits", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function updateEmployeeBenefit(
+  benefitId: string,
+  payload: Partial<{
+    company_id: string;
+    name: string;
+    category: string;
+    value: number;
+    unit: string;
+    frequency: string;
+    start_date: string;
+    end_date: string;
+    status: string;
+    description: string;
+  }>,
+) {
+  return requestHrm<HrmEmployeeBenefitRow>(`/api/hrm/employee-benefits/${benefitId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteEmployeeBenefit(benefitId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employee-benefits/${benefitId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmEmployeeKpiRow = {
+  id: string;
+  employee_id: string;
+  company_id: string;
+  kpi_name: string;
+  kpi_type: string | null;
+  target_value: number | null;
+  actual_value: number | null;
+  unit: string | null;
+  weight: number | null;
+  period_start: string | null;
+  period_end: string | null;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listEmployeeKpis(params: { company_id: string; employee_id: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("employee_id", params.employee_id);
+  return requestHrm<{ total: number; data: HrmEmployeeKpiRow[] }>(
+    `/api/hrm/employee-kpis?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeKpi(payload: {
+  company_id: string;
+  employee_id: string;
+  kpi_name: string;
+  kpi_type?: string;
+  target_value?: number;
+  actual_value?: number | null;
+  unit?: string;
+  weight?: number;
+  period_start?: string;
+  period_end?: string;
+  status?: string;
+  notes?: string;
+}) {
+  return requestHrm<HrmEmployeeKpiRow>("/api/hrm/employee-kpis", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function deleteEmployeeKpi(kpiId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(`/api/hrm/employee-kpis/${kpiId}?${search.toString()}`, {
+    method: "DELETE",
+  });
+}
+
+export type HrmSalaryTemplateRow = {
+  id: string;
+  company_id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  is_default: boolean;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listSalaryTemplates(params: { company_id: string; status?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.status) search.set("status", params.status);
+  return requestHrm<{ total: number; data: HrmSalaryTemplateRow[] }>(
+    `/api/hrm/payroll/salary-templates?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createSalaryTemplate(payload: {
+  company_id: string;
+  code: string;
+  name: string;
+  description?: string;
+  is_default?: boolean;
+}) {
+  return requestHrm<HrmSalaryTemplateRow>("/api/hrm/payroll/salary-templates", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function updateSalaryTemplate(
+  templateId: string,
+  payload: {
+    company_id: string;
+    code?: string;
+    name?: string;
+    description?: string;
+    is_default?: boolean;
+    status?: string;
+  },
+) {
+  return requestHrm<HrmSalaryTemplateRow>(`/api/hrm/payroll/salary-templates/${templateId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSalaryTemplate(templateId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/payroll/salary-templates/${templateId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
 export type HrmContractRecord = {
   id: string;
   company_id: string;
@@ -629,16 +1138,85 @@ export async function listEmployees(params: {
   page?: number;
   page_size?: number;
 }) {
-  const search = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      search.set(key, String(value));
-    }
-  });
+  const search = buildListSearchParams(params);
   return requestHrm<{ total: number; page: number; page_size: number; data: HrmEmployeeRecord[] }>(
     `/api/hrm/employees?${search.toString()}`,
     { method: "GET" },
   );
+}
+
+function setListCompanyId(search: URLSearchParams, companyId: string) {
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+}
+
+function buildListSearchParams(
+  params: Record<string, string | number | boolean | undefined | null>,
+): URLSearchParams {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    if (key === "page_size") {
+      search.set(key, String(clampHrmPageSize(Number(value))));
+      return;
+    }
+    if (key === "company_id" && typeof value === "string") {
+      setListCompanyId(search, value);
+      return;
+    }
+    search.set(key, String(value));
+  });
+  return search;
+}
+
+/** Scope fallback for embed J-HRM-02 — main first, then other company_ids. */
+export async function getEmployeeById(
+  employeeId: string,
+  companyIds: string[],
+): Promise<HrmEmployeeRecord | null> {
+  const id = employeeId.trim();
+  if (!id) return null;
+
+  const scopes = [
+    ...new Set(
+      [...companyIds]
+        .filter(Boolean)
+        .map((c) => coerceHrmListCompanyId(c))
+        .sort((a, b) => {
+          if (a === "main") return -1;
+          if (b === "main") return 1;
+          return 0;
+        }),
+    ),
+  ];
+
+  let lastError: unknown;
+  for (const companyId of scopes) {
+    const search = new URLSearchParams();
+    setListCompanyId(search, companyId);
+    try {
+      const res = await fetch(
+        `${HRM_API_ORIGIN}/api/hrm/employees/${encodeURIComponent(id)}?${search.toString()}`,
+        { method: "GET", headers: await headers() },
+      );
+      const { data, envelope } = await parseHrmJson<HrmEmployeeRecord>(res);
+      if (data?.id?.toLowerCase() === id.toLowerCase()) {
+        return data;
+      }
+      return data ?? null;
+    } catch (err: unknown) {
+      lastError = err;
+      if (err instanceof ApiClientError) {
+        const status = err.status ?? 0;
+        if (status === 400 || status === 404 || status === 409) continue;
+      }
+      throw err;
+    }
+  }
+
+  if (lastError instanceof ApiClientError && (lastError.status === 404 || lastError.status === 409)) {
+    return null;
+  }
+  return null;
 }
 
 export async function createEmployee(payload: {
@@ -723,6 +1301,22 @@ export async function listExpiringInsurance(params: { company_id: string; days?:
   if (params.days) search.set("days", String(params.days));
   return requestHrm<{ total: number; days: number; data: HrmInsuranceRecord[] }>(
     `/api/hrm/contracts-insurance/insurance/expiring?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+/** BR-INS-01 embed / insurance module list (`GET /api/hrm/contracts-insurance/insurance`). */
+export async function listInsuranceRecords(params: {
+  company_id: string;
+  employee_id?: string;
+  status?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.employee_id) search.set("employee_id", params.employee_id);
+  if (params.status) search.set("status", params.status);
+  return requestHrm<{ total: number; data: HrmInsuranceRecord[] }>(
+    `/api/hrm/contracts-insurance/insurance?${search.toString()}`,
     { method: "GET" },
   );
 }
@@ -978,6 +1572,428 @@ export async function deleteAttendanceUpdateRequest(requestId: string) {
   });
 }
 
+export type HrmDecideAttendanceRequestPayload = {
+  reviewer_name: string;
+  reviewer_employee_id?: string;
+  rejected_reason?: string;
+};
+
+function attendanceRequestListParams(params: {
+  company_id: string;
+  status?: string;
+  employee_id?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.status) search.set("status", params.status);
+  if (params.employee_id) search.set("employee_id", params.employee_id);
+  return search;
+}
+
+export type HrmOvertimeRequest = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  department: string | null;
+  position: string | null;
+  overtime_date: string;
+  start_time: string;
+  end_time: string;
+  total_hours: number;
+  overtime_type: string;
+  coefficient: number | null;
+  reason: string;
+  compensation_type: string | null;
+  approver_id: string | null;
+  approver_name: string | null;
+  status: string;
+  approved_at: string | null;
+  rejected_reason: string | null;
+  actual_hours: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listOvertimeRequests(params: {
+  company_id: string;
+  status?: string;
+  employee_id?: string;
+}) {
+  const search = attendanceRequestListParams(params);
+  return requestHrm<{ total: number; data: HrmOvertimeRequest[] }>(
+    `/api/hrm/attendance/overtime-requests?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createOvertimeRequest(payload: Record<string, unknown>) {
+  return requestHrm<HrmOvertimeRequest>("/api/hrm/attendance/overtime-requests", {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+    }),
+  });
+}
+
+export async function approveOvertimeRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmOvertimeRequest>(
+    `/api/hrm/attendance/overtime-requests/${requestId}/approve`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function rejectOvertimeRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmOvertimeRequest>(
+    `/api/hrm/attendance/overtime-requests/${requestId}/reject`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteOvertimeRequest(requestId: string) {
+  return requestHrm<{ id: string; deleted?: boolean }>(
+    `/api/hrm/attendance/overtime-requests/${requestId}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmBusinessTripRequest = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  department: string | null;
+  position: string | null;
+  destination: string;
+  start_date: string;
+  end_date: string;
+  total_days: number;
+  purpose: string;
+  transportation: string | null;
+  accommodation: string | null;
+  estimated_cost: number | null;
+  advance_amount: number | null;
+  companions: string | null;
+  contact_info: string | null;
+  approver_id: string | null;
+  approver_name: string | null;
+  status: string;
+  approved_at: string | null;
+  rejected_reason: string | null;
+  actual_cost: number | null;
+  expense_report_url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listBusinessTripRequests(params: {
+  company_id: string;
+  status?: string;
+  employee_id?: string;
+}) {
+  const search = attendanceRequestListParams(params);
+  return requestHrm<{ total: number; data: HrmBusinessTripRequest[] }>(
+    `/api/hrm/attendance/business-trip-requests?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createBusinessTripRequest(payload: Record<string, unknown>) {
+  return requestHrm<HrmBusinessTripRequest>("/api/hrm/attendance/business-trip-requests", {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+    }),
+  });
+}
+
+export async function approveBusinessTripRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmBusinessTripRequest>(
+    `/api/hrm/attendance/business-trip-requests/${requestId}/approve`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function rejectBusinessTripRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmBusinessTripRequest>(
+    `/api/hrm/attendance/business-trip-requests/${requestId}/reject`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteBusinessTripRequest(requestId: string) {
+  return requestHrm<{ id: string; deleted?: boolean }>(
+    `/api/hrm/attendance/business-trip-requests/${requestId}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmLateEarlyRequest = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  department: string | null;
+  position: string | null;
+  request_date: string;
+  request_type: string;
+  late_time: string | null;
+  late_minutes: number | null;
+  early_time: string | null;
+  early_minutes: number | null;
+  reason: string;
+  approver_id: string | null;
+  approver_name: string | null;
+  status: string;
+  approved_at: string | null;
+  rejected_reason: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listLateEarlyRequests(params: {
+  company_id: string;
+  status?: string;
+  employee_id?: string;
+}) {
+  const search = attendanceRequestListParams(params);
+  return requestHrm<{ total: number; data: HrmLateEarlyRequest[] }>(
+    `/api/hrm/attendance/late-early-requests?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createLateEarlyRequest(payload: Record<string, unknown>) {
+  return requestHrm<HrmLateEarlyRequest>("/api/hrm/attendance/late-early-requests", {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+    }),
+  });
+}
+
+export async function approveLateEarlyRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmLateEarlyRequest>(
+    `/api/hrm/attendance/late-early-requests/${requestId}/approve`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function rejectLateEarlyRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmLateEarlyRequest>(
+    `/api/hrm/attendance/late-early-requests/${requestId}/reject`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteLateEarlyRequest(requestId: string) {
+  return requestHrm<{ id: string; deleted?: boolean }>(
+    `/api/hrm/attendance/late-early-requests/${requestId}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmShiftChangeRequest = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  employee_code: string;
+  employee_name: string;
+  department: string | null;
+  position: string | null;
+  change_date: string;
+  change_type: string;
+  current_shift: string;
+  current_shift_time: string | null;
+  requested_shift: string;
+  requested_shift_time: string | null;
+  swap_with_employee_id: string | null;
+  swap_with_employee_name: string | null;
+  swap_with_employee_code: string | null;
+  reason: string;
+  approver_id: string | null;
+  approver_name: string | null;
+  status: string;
+  approved_at: string | null;
+  rejected_reason: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listShiftChangeRequests(params: {
+  company_id: string;
+  status?: string;
+  employee_id?: string;
+}) {
+  const search = attendanceRequestListParams(params);
+  return requestHrm<{ total: number; data: HrmShiftChangeRequest[] }>(
+    `/api/hrm/attendance/shift-change-requests?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createShiftChangeRequest(payload: Record<string, unknown>) {
+  return requestHrm<HrmShiftChangeRequest>("/api/hrm/attendance/shift-change-requests", {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+    }),
+  });
+}
+
+export async function approveShiftChangeRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmShiftChangeRequest>(
+    `/api/hrm/attendance/shift-change-requests/${requestId}/approve`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function rejectShiftChangeRequest(
+  requestId: string,
+  payload: HrmDecideAttendanceRequestPayload,
+) {
+  return requestHrm<HrmShiftChangeRequest>(
+    `/api/hrm/attendance/shift-change-requests/${requestId}/reject`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteShiftChangeRequest(requestId: string) {
+  return requestHrm<{ id: string; deleted?: boolean }>(
+    `/api/hrm/attendance/shift-change-requests/${requestId}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmAdvanceRequest = {
+  id: string;
+  company_id: string;
+  name: string;
+  salary_period: string;
+  department: string | null;
+  position: string | null;
+  employee_count: number;
+  total_amount: number;
+  status: string;
+  current_approval_level: number;
+  approval_steps: unknown[] | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HrmAdvanceRequestEmployee = {
+  id: string;
+  company_id: string;
+  request_id: string;
+  employee_id: string | null;
+  employee_code: string;
+  employee_name: string;
+  department: string | null;
+  position: string | null;
+  advance_amount: number;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listAdvanceRequests(params: { company_id: string; status?: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.status) search.set("status", params.status);
+  return requestHrm<{ total: number; data: HrmAdvanceRequest[] }>(
+    `/api/hrm/payroll/advance-requests?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createAdvanceRequest(payload: Record<string, unknown>) {
+  return requestHrm<HrmAdvanceRequest>("/api/hrm/payroll/advance-requests", {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+    }),
+  });
+}
+
+export async function listAdvanceRequestEmployees(requestId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmAdvanceRequestEmployee[] }>(
+    `/api/hrm/payroll/advance-requests/${requestId}/employees?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export type HrmDecideAdvanceRequestPayload = {
+  reviewer_name: string;
+  reviewer_employee_id?: string;
+  rejected_reason?: string;
+};
+
+export async function approveAdvanceRequest(
+  requestId: string,
+  payload: HrmDecideAdvanceRequestPayload,
+) {
+  return requestHrm<HrmAdvanceRequest>(
+    `/api/hrm/payroll/advance-requests/${requestId}/approve`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function rejectAdvanceRequest(
+  requestId: string,
+  payload: HrmDecideAdvanceRequestPayload,
+) {
+  return requestHrm<HrmAdvanceRequest>(
+    `/api/hrm/payroll/advance-requests/${requestId}/reject`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function markAdvanceRequestPaid(
+  requestId: string,
+  payload: HrmDecideAdvanceRequestPayload,
+) {
+  return requestHrm<HrmAdvanceRequest>(
+    `/api/hrm/payroll/advance-requests/${requestId}/mark-paid`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
 export type HrmLeaveRequest = {
   id: string;
   company_id: string;
@@ -1000,6 +2016,31 @@ export type HrmLeaveRequest = {
   approver_employee_id: string | null;
   rejected_reason: string | null;
 };
+
+export type HrmAttendanceOverview = {
+  stats: {
+    lateEarlyToday: number;
+    lateEarlyChange: number;
+    actualLeaveThisWeek: number;
+    actualLeaveChange: number;
+    plannedLeaveNextWeek: number;
+    plannedLeaveChange: number;
+  };
+  monthlyLeaveData: Array<{ month: string; value: number }>;
+  departmentLeaveData: Array<{ name: string; value: number }>;
+  leaveTypeData: Array<{ name: string; value: number; color: string }>;
+  lateEarlyList: Array<{ name: string; dept: string; count: number }>;
+};
+
+export async function fetchAttendanceOverview(params: { company_id: string; year?: number }) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.year != null) search.set("year", String(params.year));
+  return requestHrm<HrmAttendanceOverview>(
+    `/api/hrm/attendance/overview?${search.toString()}`,
+    { method: "GET" },
+  );
+}
 
 export async function listLeaveRequests(params: { company_id: string; status?: string }) {
   const search = new URLSearchParams();
@@ -1207,4 +2248,1147 @@ export async function createPerformanceEvaluation(payload: {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+export type HrmDecisionRecord = {
+  id: string;
+  company_id: string;
+  decision_code: string;
+  decision_type: string;
+  title: string;
+  content: string | null;
+  employee_id: string | null;
+  employee_name: string;
+  employee_code: string | null;
+  department: string | null;
+  position: string | null;
+  effective_date: string | null;
+  expiry_date: string | null;
+  signer_name: string | null;
+  signer_position: string | null;
+  signing_date: string | null;
+  file_url: string | null;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function listHrDecisions(params: {
+  company_id: string;
+  decision_type?: string;
+  status?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  if (params.decision_type) search.set("decision_type", params.decision_type);
+  if (params.status) search.set("status", params.status);
+  return requestHrm<{ total: number; data: HrmDecisionRecord[] }>(
+    `/api/hrm/decisions?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createHrDecision(payload: {
+  company_id: string;
+  decision_code: string;
+  decision_type: string;
+  title: string;
+  content?: string;
+  employee_id?: string;
+  employee_name: string;
+  employee_code?: string;
+  department?: string;
+  position?: string;
+  effective_date?: string;
+  expiry_date?: string;
+  signer_name?: string;
+  signer_position?: string;
+  signing_date?: string;
+  file_url?: string;
+  status?: string;
+  notes?: string;
+}) {
+  return requestHrm<HrmDecisionRecord>("/api/hrm/decisions", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateHrDecision(
+  decisionId: string,
+  payload: Partial<{
+    company_id: string;
+    decision_code: string;
+    decision_type: string;
+    title: string;
+    content?: string;
+    employee_id?: string;
+    employee_name: string;
+    employee_code?: string;
+    department?: string;
+    position?: string;
+    effective_date?: string;
+    expiry_date?: string;
+    signer_name?: string;
+    signer_position?: string;
+    signing_date?: string;
+    file_url?: string;
+    status?: string;
+    notes?: string;
+  }>,
+) {
+  return requestHrm<HrmDecisionRecord>(`/api/hrm/decisions/${decisionId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteHrDecision(decisionId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(`/api/hrm/decisions/${decisionId}?${search.toString()}`, {
+    method: "DELETE",
+  });
+}
+
+export type HrmSalaryComponentRow = Record<string, unknown> & {
+  id: string;
+  company_id: string;
+  code: string;
+  name: string;
+  category?: Record<string, unknown> | null;
+};
+
+export async function listSalaryComponents(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmSalaryComponentRow[] }>(
+    `/api/hrm/payroll/salary-components?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function listSalaryComponentCategories(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/payroll/salary-component-categories?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createSalaryComponent(payload: Record<string, unknown>) {
+  return requestHrm<HrmSalaryComponentRow>("/api/hrm/payroll/salary-components", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateSalaryComponent(
+  componentId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmSalaryComponentRow>(
+    `/api/hrm/payroll/salary-components/${componentId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteSalaryComponent(componentId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/payroll/salary-components/${componentId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function createSalaryComponentCategory(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/payroll/salary-component-categories", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function deleteSalaryComponentCategory(categoryId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/payroll/salary-component-categories/${categoryId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmPaymentBatchRow = Record<string, unknown> & { id: string; company_id: string };
+
+export async function listPaymentBatches(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmPaymentBatchRow[] }>(
+    `/api/hrm/payroll/payment-batches?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function listPaymentBatchRecords(batchId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/payroll/payment-batches/${batchId}/records?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function addPaymentBatchRecord(
+  batchId: string,
+  companyId: string,
+  payload: {
+    employee_code: string;
+    employee_name: string;
+    amount: number;
+    department?: string | null;
+    bank_name?: string | null;
+    bank_account?: string | null;
+    payroll_record_id?: string | null;
+    employee_id?: string | null;
+    notes?: string | null;
+  },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/payroll/payment-batches/${batchId}/records?${search.toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function processPaymentBatchRecord(
+  batchId: string,
+  recordId: string,
+  companyId: string,
+  payload?: { transaction_ref?: string; notes?: string },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/payroll/payment-batches/${batchId}/records/${recordId}/process?${search.toString()}`,
+    { method: "POST", body: JSON.stringify(payload ?? {}) },
+  );
+}
+
+export async function processPaymentBatch(
+  batchId: string,
+  companyId: string,
+  payload?: { notes?: string },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/payroll/payment-batches/${batchId}/process?${search.toString()}`,
+    { method: "POST", body: JSON.stringify(payload ?? {}) },
+  );
+}
+
+export async function createPaymentBatch(payload: Record<string, unknown>) {
+  return requestHrm<HrmPaymentBatchRow>("/api/hrm/payroll/payment-batches", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updatePaymentBatch(
+  batchId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmPaymentBatchRow>(
+    `/api/hrm/payroll/payment-batches/${batchId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deletePaymentBatch(batchId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/payroll/payment-batches/${batchId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmWorkShiftRow = Record<string, unknown> & { id: string; company_id: string };
+
+export async function listWorkShifts(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmWorkShiftRow[] }>(
+    `/api/hrm/attendance/work-shifts?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createWorkShift(payload: Record<string, unknown>) {
+  return requestHrm<HrmWorkShiftRow>("/api/hrm/attendance/work-shifts", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateWorkShift(shiftId: string, companyId: string, payload: Record<string, unknown>) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmWorkShiftRow>(
+    `/api/hrm/attendance/work-shifts/${shiftId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteWorkShift(shiftId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/attendance/work-shifts/${shiftId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmAttendanceSheetRow = Record<string, unknown> & { id: string; company_id: string };
+
+export async function listAttendanceSheets(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmAttendanceSheetRow[] }>(
+    `/api/hrm/attendance/attendance-sheets?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createAttendanceSheet(payload: Record<string, unknown>) {
+  return requestHrm<HrmAttendanceSheetRow>("/api/hrm/attendance/attendance-sheets", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateAttendanceSheet(
+  sheetId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmAttendanceSheetRow>(
+    `/api/hrm/attendance/attendance-sheets/${sheetId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteAttendanceSheet(sheetId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/attendance/attendance-sheets/${sheetId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function updateJobPosting(
+  jobPostingId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmJobPostingRow>(
+    `/api/hrm/recruitment/job-postings/${jobPostingId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateCandidatePoolStage(
+  candidateId: string,
+  companyId: string,
+  stage: string,
+) {
+  return updateCandidatePool(candidateId, companyId, { stage });
+}
+
+export async function createRecruitmentPlan(payload: Record<string, unknown>) {
+  return requestHrm<HrmRecruitmentPlanRow>("/api/hrm/recruitment/recruitment-plans", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function deleteRecruitmentPlan(planId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/recruitment-plans/${planId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export type HrmInterviewCatalogRow = Record<string, unknown> & {
+  id: string;
+  company_id: string;
+  candidate_name: string;
+};
+
+export async function listInterviewsCatalog(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ total: number; data: HrmInterviewCatalogRow[] }>(
+    `/api/hrm/recruitment/interviews-catalog?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createInterviewCatalog(payload: Record<string, unknown>) {
+  return requestHrm<HrmInterviewCatalogRow>("/api/hrm/recruitment/interviews-catalog", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateInterviewCatalog(
+  interviewId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<HrmInterviewCatalogRow>(
+    `/api/hrm/recruitment/interviews-catalog/${interviewId}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteInterviewCatalog(interviewId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", coerceHrmListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/interviews-catalog/${interviewId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+function employeeProfileQuery(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return search;
+}
+
+type ProfileListResult<T> = { total: number; data: T[] };
+
+export async function listEmployeeSkills(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/skills?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeSkill(employeeId: string, companyId: string, payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/skills?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateEmployeeSkill(
+  employeeId: string,
+  skillId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/skills/${skillId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeSkill(employeeId: string, skillId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/skills/${skillId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listEmployeeWorkTimeline(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/work-timeline?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeWorkTimelineItem(
+  employeeId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/work-timeline?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateEmployeeWorkTimelineItem(
+  employeeId: string,
+  itemId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/work-timeline/${itemId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeWorkTimelineItem(employeeId: string, itemId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/work-timeline/${itemId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listEmployeeResumeFiles(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/resume-files?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeResumeFile(employeeId: string, companyId: string, payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/resume-files?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeResumeFile(employeeId: string, fileId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/resume-files/${fileId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listEmployeeRewards(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/rewards?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function listEmployeeDiscipline(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/discipline?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeReward(employeeId: string, companyId: string, payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/rewards?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateEmployeeReward(
+  employeeId: string,
+  rewardId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/rewards/${rewardId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeReward(employeeId: string, rewardId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/rewards/${rewardId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function createEmployeeDiscipline(employeeId: string, companyId: string, payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/discipline?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateEmployeeDiscipline(
+  employeeId: string,
+  disciplineId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/discipline/${disciplineId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeDiscipline(employeeId: string, disciplineId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/discipline/${disciplineId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listEmployeeTraining(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/training?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeTraining(employeeId: string, companyId: string, payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/training?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateEmployeeTraining(
+  employeeId: string,
+  trainingId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/training/${trainingId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeTraining(employeeId: string, trainingId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/training/${trainingId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function inviteEmployees(payload: {
+  company_id: string;
+  employees: Array<{ email: string; full_name?: string; employee_id?: string }>;
+}) {
+  return requestHrm<{
+    success: boolean;
+    total: number;
+    invited: number;
+    failed: number;
+    results: Array<{ email: string; success: boolean; error?: string }>;
+  }>("/api/hrm/admin/invite-employee", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function listAdminCompanies() {
+  return requestHrm<{ total: number; data: Array<{ id: string; name: string; code: string | null }> }>(
+    "/api/hrm/admin/companies",
+    { method: "GET" },
+  );
+}
+
+export async function listCompanyMemberships(companyId?: string) {
+  const search = new URLSearchParams();
+  if (companyId) setListCompanyId(search, companyId);
+  const qs = search.toString();
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/admin/company-memberships${qs ? `?${qs}` : ""}`,
+    { method: "GET" },
+  );
+}
+
+export async function upsertCompanyMembership(payload: {
+  email: string;
+  full_name: string;
+  role: string;
+  company_id: string;
+  employee_id?: string | null;
+  status?: string;
+}) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/admin/company-memberships", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateCompanyMembership(
+  membershipId: string,
+  payload: { role?: string; employee_id?: string | null; status?: string; full_name?: string; email?: string },
+) {
+  return requestHrm<Record<string, unknown>>(`/api/hrm/admin/company-memberships/${membershipId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCompanyMembership(membershipId: string) {
+  return requestHrm<{ id: string }>(`/api/hrm/admin/company-memberships/${membershipId}`, { method: "DELETE" });
+}
+
+export type HrmCandidateApplicationEnriched = HrmCandidateApplicationRow & {
+  candidates: {
+    id: string;
+    full_name: string;
+    email: string;
+    phone: string | null;
+    position: string | null;
+    stage: string | null;
+    rating: number | null;
+    avatar_url: string | null;
+    applied_date: string | null;
+    source: string | null;
+  };
+};
+
+export async function createCandidateApplication(payload: {
+  company_id: string;
+  candidate_id: string;
+  job_posting_id: string;
+  stage?: string;
+}) {
+  return requestHrm<HrmCandidateApplicationRow>("/api/hrm/recruitment/candidate-applications", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function deleteCandidateApplication(applicationId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/candidate-applications/${applicationId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function updateCandidateApplicationStage(applicationId: string, companyId: string, stage: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<HrmCandidateApplicationRow>(
+    `/api/hrm/recruitment/candidate-applications/${applicationId}/stage?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify({ stage }) },
+  );
+}
+
+export async function listHeadcountProposals(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/recruitment/headcount-proposals?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createHeadcountProposal(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/recruitment/headcount-proposals", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateHeadcountProposalStatus(
+  proposalId: string,
+  companyId: string,
+  status: string,
+  rejectedReason?: string,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/recruitment/headcount-proposals/${proposalId}/status?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify({ status, rejected_reason: rejectedReason }) },
+  );
+}
+
+export async function listCandidateEvaluations(params: { company_id: string; candidate_id?: string }) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, params.company_id);
+  if (params.candidate_id) search.set("candidate_id", params.candidate_id);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/recruitment/candidate-evaluations?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createCandidateEvaluation(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/recruitment/candidate-evaluations", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function deleteCandidateEvaluation(evaluationId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/candidate-evaluations/${evaluationId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function listEvaluationCriteriaTemplates(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/recruitment/evaluation-criteria-templates?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function replaceEvaluationCriteriaTemplates(companyId: string, templates: Record<string, unknown>[]) {
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    "/api/hrm/recruitment/evaluation-criteria-templates/replace",
+    {
+      method: "POST",
+      body: JSON.stringify({ company_id: coerceHrmListCompanyId(companyId), templates }),
+    },
+  );
+}
+
+export async function listDepartments(params: { company_id: string }) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, params.company_id);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/departments?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createDepartment(payload: {
+  company_id: string;
+  name: string;
+  code?: string;
+  description?: string;
+  parent_id?: string;
+  level?: number;
+  sort_order?: number;
+}) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/departments", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+// --- P1-QUAL-FE-W3 catalog extensions ---
+
+export async function listSalesData(params: { company_id: string; period_month?: number; period_year?: number }) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, params.company_id);
+  if (params.period_month) search.set("period_month", String(params.period_month));
+  if (params.period_year) search.set("period_year", String(params.period_year));
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(`/api/hrm/sales-data?${search}`, { method: "GET" });
+}
+
+export async function createSalesData(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/sales-data", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateSalesData(id: string, companyId: string, payload: Record<string, unknown>) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/sales-data/${id}?${search}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSalesData(id: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(`/api/hrm/sales-data/${id}?${search}`, { method: "DELETE" });
+}
+
+export async function syncSalesData(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ synced: number; company_id: string }>(`/api/hrm/sales-data/sync?${search}`, { method: "POST" });
+}
+
+export async function listBonusPolicies(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(`/api/hrm/bonus-policies?${search}`, { method: "GET" });
+}
+
+export async function createBonusPolicy(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/bonus-policies", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateBonusPolicy(id: string, companyId: string, payload: Record<string, unknown>) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/bonus-policies/${id}?${search}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteBonusPolicy(id: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(`/api/hrm/bonus-policies/${id}?${search}`, { method: "DELETE" });
+}
+
+export async function listBonusPolicyParticipants(policyId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/bonus-policies/${policyId}/participants?${search}`,
+    { method: "GET" },
+  );
+}
+
+export async function createBonusPolicyParticipant(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/bonus-policies/participants", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function listInsurancePolicyParticipants(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/insurance-policy-participants?${search}`,
+    { method: "GET" },
+  );
+}
+
+export async function createInsurancePolicyParticipant(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/insurance-policy-participants", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateInsurancePolicyParticipant(id: string, companyId: string, payload: Record<string, unknown>) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/insurance-policy-participants/${id}?${search}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteInsurancePolicyParticipant(id: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(`/api/hrm/insurance-policy-participants/${id}?${search}`, { method: "DELETE" });
+}
+
+export async function listTaxPolicyParticipants(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/tax-policy-participants?${search}`,
+    { method: "GET" },
+  );
+}
+
+export async function createTaxPolicyParticipant(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/tax-policy-participants", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function updateTaxPolicyParticipant(id: string, companyId: string, payload: Record<string, unknown>) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/tax-policy-participants/${id}?${search}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteTaxPolicyParticipant(id: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(`/api/hrm/tax-policy-participants/${id}?${search}`, { method: "DELETE" });
+}
+
+export async function listFaceData(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(`/api/hrm/face-data?${search}`, { method: "GET" });
+}
+
+export async function upsertFaceData(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/face-data", {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+  });
+}
+
+export async function deleteFaceData(employeeId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ employee_id: string }>(`/api/hrm/face-data/${employeeId}?${search}`, { method: "DELETE" });
+}
+
+export async function getCompanySubscription(companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/company-subscription?${search}`, { method: "GET" });
+}
+
+export async function upgradeCompanySubscription(companyId: string, payload: Record<string, unknown>) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/company-subscription/upgrade?${search}`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function listGuideContent(companyId?: string) {
+  const search = new URLSearchParams();
+  if (companyId) setListCompanyId(search, companyId);
+  const q = search.toString();
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/guide-content${q ? `?${q}` : ""}`,
+    { method: "GET" },
+  );
+}
+
+export async function upsertGuideContent(payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/guide-content", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteGuideContent(payload: { section_id: string; step_index: number | null; company_id?: string }) {
+  return requestHrm<{ ok: boolean }>("/api/hrm/guide-content", {
+    method: "DELETE",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function listSalaryTemplateComponents(templateId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/payroll/salary-templates/${templateId}/components?${search}`,
+    { method: "GET" },
+  );
+}
+
+export async function addSalaryTemplateComponent(
+  templateId: string,
+  payload: { company_id: string; component_id: string; default_value?: number; is_required?: boolean; sort_order?: number },
+) {
+  return requestHrm<Record<string, unknown>>(`/api/hrm/payroll/salary-templates/${templateId}/components`, {
+    method: "POST",
+    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+  });
+}
+
+export async function updateSalaryTemplateComponentRow(
+  componentRowId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(`/api/hrm/payroll/salary-template-components/${componentRowId}?${search}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function removeSalaryTemplateComponentRow(componentRowId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(`/api/hrm/payroll/salary-template-components/${componentRowId}?${search}`, {
+    method: "DELETE",
+  });
+}
+
+export async function duplicateSalaryTemplate(templateId: string, companyId: string) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<HrmSalaryTemplateRow>(`/api/hrm/payroll/salary-templates/${templateId}/duplicate?${search}`, {
+    method: "POST",
+  });
+}
+
+export async function listEmployeeAssets(employeeId: string, companyId: string) {
+  return requestHrm<ProfileListResult<Record<string, unknown>>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/assets?${employeeProfileQuery(companyId).toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createEmployeeAsset(employeeId: string, companyId: string, payload: Record<string, unknown>) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/assets?${employeeProfileQuery(companyId).toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function updateEmployeeAsset(
+  employeeId: string,
+  assetId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/assets/${assetId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteEmployeeAsset(employeeId: string, assetId: string, companyId: string) {
+  return requestHrm<{ id: string }>(
+    `/api/hrm/employees/${encodeURIComponent(employeeId)}/assets/${assetId}?${employeeProfileQuery(companyId).toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+export async function uploadHrmFile(file: File, feature: string): Promise<string> {
+  const scope = inferRuntimeScope();
+  if (!scope?.companyId) {
+    throw new ApiClientError({
+      status: 400,
+      code: "HRM-FILE-400",
+      message: "Operating company scope is required for file upload",
+    });
+  }
+  const search = new URLSearchParams();
+  search.set("feature", feature);
+  setListCompanyId(search, scope.companyId);
+  const form = new FormData();
+  form.append("file", file);
+  const origin = HRM_API_ORIGIN;
+  const res = await fetch(`${origin}/api/hrm/files/upload?${search.toString()}`, {
+    method: "POST",
+    headers: await headers({ omitContentType: true, scope }),
+    body: form,
+  });
+  const { data } = await parseHrmJson<{ url: string }>(res);
+  const url = data?.url ?? "";
+  if (!url) {
+    throw new ApiClientError({ status: res.status, code: "HRM-FILE-NO-URL", message: "Upload succeeded without URL" });
+  }
+  return url.startsWith("http") ? url : `${origin}${url}`;
 }

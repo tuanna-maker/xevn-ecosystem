@@ -1,0 +1,324 @@
+﻿{
+  "work_item_id": "P1-100-QA-FE-W1",
+  "steps": [
+    {
+      "name": "salary-components-list",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/salary-components?company_id=main",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "salary-components-create",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/salary-components",
+      "status": 201,
+      "code": "HRM-SC-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "salary-components-patch",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/salary-components/aac115c0-d6f1-4f68-8b00-74d7851d3e92?company_id=main",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "salary-components-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/salary-components/aac115c0-d6f1-4f68-8b00-74d7851d3e92?company_id=main",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "payment-batches-list",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/payment-batches?company_id=main",
+      "status": 200,
+      "code": "HRM-PB-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "payment-batches-create",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/payment-batches",
+      "status": 201,
+      "code": "HRM-PB-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "payment-batches-records-list",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/payment-batches/397b3515-b632-4c1a-9ee3-803624ea2f3b/records?company_id=main",
+      "status": 200,
+      "code": "HRM-PB-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "payment-batches-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/payroll/payment-batches/397b3515-b632-4c1a-9ee3-803624ea2f3b?company_id=main",
+      "status": 200,
+      "code": "HRM-PB-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "work-shifts-list",
+      "url": "http://127.0.0.1:5175/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "code": "HRM-WS-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "work-shifts-create",
+      "url": "http://127.0.0.1:5175/api/hrm/attendance/work-shifts",
+      "status": 201,
+      "code": "HRM-WS-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "work-shifts-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/attendance/work-shifts/e3aa177d-2493-465b-b52d-db623170bfc2?company_id=main",
+      "status": 200,
+      "code": "HRM-WS-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "attendance-sheets-list",
+      "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "code": "HRM-AS-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "job-postings-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/job-postings?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JP-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "job-postings-create",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/job-postings",
+      "status": 201,
+      "code": "HRM-REC-JP-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "job-postings-patch",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/job-postings/9588e88a-e52a-41f6-990a-41c73f09b2e6?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JP-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "job-postings-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/job-postings/9588e88a-e52a-41f6-990a-41c73f09b2e6?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JP-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "candidates-pool-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200",
+      "total": 4,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "candidates-pool-stage",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/candidates-pool/8942bb51-b207-41e1-a1ce-6036f9b89fcd/stage?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "recruitment-plans-create",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/recruitment-plans",
+      "status": 201,
+      "code": "HRM-REC-PLAN-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "recruitment-plans-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/recruitment-plans/2c425a81-c411-418d-86cc-6cacfbd1e9e0?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-PLAN-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    },
+    {
+      "name": "interviews-catalog-list",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-INT-200",
+      "total": 0,
+      "pass": true,
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "interviews-catalog-create",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog",
+      "status": 201,
+      "code": "HRM-REC-INT-201",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "interviews-catalog-patch",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog/4c4489d9-4281-4a30-afcf-3783809dbd40?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-INT-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          201
+        ]
+      }
+    },
+    {
+      "name": "interviews-catalog-delete",
+      "url": "http://127.0.0.1:5175/api/hrm/recruitment/interviews-catalog/4c4489d9-4281-4a30-afcf-3783809dbd40?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-INT-200",
+      "total": null,
+      "pass": true,
+      "expect": {
+        "status": [
+          200,
+          204
+        ]
+      }
+    }
+  ],
+  "pass": true,
+  "supabase_hits": [],
+  "summary": {
+    "pass_steps": 24,
+    "total_steps": 24,
+    "sc_list_total": 0
+  }
+}

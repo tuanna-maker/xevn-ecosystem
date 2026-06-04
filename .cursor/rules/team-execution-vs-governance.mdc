@@ -1,0 +1,43 @@
+---
+description: Lệnh user — chỉ Dev+QA thực thi; PM/SA/BA/TA giám sát, đánh giá, thảo luận, cập nhật Cursor cho nhau.
+alwaysApply: true
+---
+
+# Execution vs Governance (lệnh user — authoritative)
+
+## Hai lane
+
+| Lane | Roles | Làm gì | Không làm |
+|------|-------|---------|-----------|
+| **Execution** | Dev-BE, Dev-FE, Dev-Mobile, **QA** | Code, fix, seed, test, evidence, handoff `READY_FOR_QA` / `PASS_TO_PM` | Viết lại SRS; ADR kiến trúc lớn; đổi rule/hook |
+| **Governance** | **PM**, **SA**, **BA** (process+data), **TA** (TM+QC) | Giám sát chất lượng, đánh giá evidence, gap spec/kiến trúc, Go/No-Go | Implement feature trừ hotfix P0 PM ghi bus |
+
+**TA** = Technical Auditor lane: `.cursor/agents/technical-manager.md` (review kỹ thuật) + **QC** (Go/No-Go release).
+
+## Chu kỳ bắt buộc
+
+```
+Dev/QA wave (evidence) → PM/SA/BA/TA review → thảo luận (retro/bus)
+  → cập nhật chung Cursor (rules, skills, KB, hooks, agents, prompts)
+  → PM dispatch wave Dev/QA kế
+```
+
+Chi tiết: `docs/program/GOVERNANCE_IMPROVEMENT_LOOP.md` · registry: `.cursor/team/GOVERNANCE_ARTIFACT_REGISTRY.md`
+
+## PM dispatch (mặc định)
+
+- **Trong sprint:** Task **`dev-be` / `dev-fe` / `dev-mobile` / `qa`** (+ `devops` khi stack/seed).
+- **Sau wave Dev/QA:** Task **`technical-manager`** và/hoặc **`qc`**; PM/SA/BA **không** song song full pack.
+- **BA/SA Task** chỉ khi trigger trong `TEAM_OPERATING_MODEL.md` (spec_gap, arch_drift, TM condition).
+- **Governance sprint-close:** retro → `ROLE_SPRINT_IMPROVEMENT_LOG.md` → **cập nhật** `.cursor/rules`, `.cursor/skills`, `.cursor/knowledge-base`, hooks nếu lesson lặp.
+
+## Cấm
+
+- Dispatch BA+SA+Dev+QA cùng lúc “đủ 10 role”.
+- Governance role tự sửa `apps/**` production path (trừ PM hotfix P0 có bus).
+- Kết thúc sprint mà **chưa** có ít nhất một cập nhật Cursor artifact từ vòng governance (rule/KB/skill/agent prompt).
+
+## SoT policy
+
+- User requirement lock: `docs/program/TEAM_USER_REQUIREMENTS.md` (**U16**).
+- Operating model: `docs/program/TEAM_OPERATING_MODEL.md`.

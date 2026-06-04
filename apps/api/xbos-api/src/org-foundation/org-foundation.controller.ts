@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest } from '../common/internal-auth';
-import { resolveScopeContext } from '../common/scope-context';
+import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../common/internal-auth';
+import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
 import { OrgFoundationService } from './org-foundation.service';
 import type { LegalEntityInput, OrgUnitInput } from './org-foundation.service';
 
@@ -17,10 +17,33 @@ export class OrgFoundationController {
   }
 
   private scope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
-    return resolveScopeContext(headers.authorization, {
+    return resolveXbosGroupLegalReadScopeContext(headers.authorization, {
       tenantId: headers.tenantId,
       companyId: headers.companyId,
     });
+  }
+
+  private resolveUserId(authorization?: string): string | undefined {
+    const jwt = getVerifiedInternalJwtPayload(authorization);
+    const fromJwt =
+      (typeof jwt?.sub === 'string' && jwt.sub.trim()) ||
+      (typeof jwt?.email === 'string' && jwt.email.trim()) ||
+      undefined;
+    return fromJwt;
+  }
+
+  @Get('legal-entities/:entityId')
+  async getLegalEntity(
+    @Param('entityId') entityId: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    this.assertInternal(authorization, internalApiKey);
+    this.scope({ tenantId, companyId, authorization });
+    const data = await this.service.getLegalEntityById(entityId);
+    return ok(data, 'XBOS-ORG-200', 'Legal entity loaded');
   }
 
   @Get('legal-entities')
@@ -74,8 +97,13 @@ export class OrgFoundationController {
   ) {
     this.assertInternal(authorization, internalApiKey);
     const scope = this.scope({ tenantId, companyId, authorization });
-    const data = await this.service.listOrgTree(scope.tenantId, scope.companyId);
-    return ok({ tree: data }, 'XBOS-ORG-200', 'Org tree loaded');
+    const data = await this.service.listOrgTree(scope.tenantId, scope.companyId, this.resolveUserId(authorization));
+    const isGroup = Array.isArray(data) && data.length > 0 && 'tenantId' in (data[0] as object);
+    return ok(
+      isGroup ? { mode: 'group', tree: data } : { mode: 'single', tree: data },
+      'XBOS-ORG-200',
+      isGroup ? 'Group org trees loaded' : 'Org tree loaded',
+    );
   }
 
   @Post('org-units')
@@ -119,6 +147,23 @@ export class OrgFoundationController {
     const scope = this.scope({ tenantId, companyId, authorization });
     const data = await this.service.deleteOrgUnit(scope.tenantId, scope.companyId, unitId);
     return ok(data, 'XBOS-ORG-204', 'Org unit deleted');
+  }
+
+  /** UC-XBOS-10 — alias for portal probes expecting business-lines path (SRS: segments/:id/promote). */
+  @Post('business-lines/promote')
+  async promoteBusinessLine(
+    @Body() body: LegalEntityInput & { segmentId?: string },
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    const segmentId = (body.segmentId ?? (body.payload as { segmentId?: string } | undefined)?.segmentId)?.trim();
+    if (!segmentId) {
+      throw new ApiException('XBOS-ORG-400', 'segmentId is required', HttpStatus.BAD_REQUEST);
+    }
+    const { segmentId: _segmentId, ...legalBody } = body;
+    return this.promoteSegment(segmentId, legalBody, tenantId, companyId, authorization, internalApiKey);
   }
 
   @Post('segments/:segmentId/promote')

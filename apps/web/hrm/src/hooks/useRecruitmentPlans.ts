@@ -1,120 +1,238 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  createRecruitmentPlan,
+  deleteRecruitmentPlan,
+  listRecruitmentPlans,
+  updateRecruitmentPlanStatus,
+  type HrmRecruitmentPlanDepartmentRow,
+  type HrmRecruitmentPlanPositionRow,
+  type HrmRecruitmentPlanRow,
+} from '@/integrations/hrmApi';
 
-interface MonthData { ns: number; dx: number; }
-interface PlanPosition { id: string; name: string; months: MonthData[]; sort_order: number; }
-interface PlanDepartment { id: string; name: string; positions: PlanPosition[]; sort_order: number; }
+interface MonthData {
+  ns: number;
+  dx: number;
+}
+interface PlanPosition {
+  id: string;
+  name: string;
+  months: MonthData[];
+  sort_order: number;
+}
+interface PlanDepartment {
+  id: string;
+  name: string;
+  positions: PlanPosition[];
+  sort_order: number;
+}
 
 export interface RecruitmentPlan {
-  id: string; title: string; period: string; creator: string; createdDate: string;
-  status: 'pending' | 'approved' | 'rejected' | 'draft'; startMonth: number; endMonth: number;
-  year: number; note?: string; departments: PlanDepartment[];
+  id: string;
+  title: string;
+  period: string;
+  creator: string;
+  createdDate: string;
+  status: 'pending' | 'approved' | 'rejected' | 'draft';
+  startMonth: number;
+  endMonth: number;
+  year: number;
+  note?: string;
+  departments: PlanDepartment[];
 }
 
 interface CreatePlanData {
-  title: string; startMonth: number; endMonth: number; year: number; note?: string; status?: string;
-  departments: { name: string; positions: { name: string; months: MonthData[]; }[]; }[];
+  title: string;
+  startMonth: number;
+  endMonth: number;
+  year: number;
+  note?: string;
+  status?: string;
+  departments: { name: string; positions: { name: string; months: MonthData[] }[] }[];
+}
+
+function parseMonthsData(raw: unknown): MonthData[] {
+  if (Array.isArray(raw)) {
+    return raw.map((m) => ({
+      ns: Number((m as MonthData).ns ?? 0),
+      dx: Number((m as MonthData).dx ?? 0),
+    }));
+  }
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      return parseMonthsData(parsed);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function mapPosition(row: HrmRecruitmentPlanPositionRow): PlanPosition {
+  return {
+    id: row.id,
+    name: row.name,
+    months: parseMonthsData(row.months_data),
+    sort_order: row.sort_order ?? 0,
+  };
+}
+
+function mapDepartment(row: HrmRecruitmentPlanDepartmentRow): PlanDepartment {
+  return {
+    id: row.id,
+    name: row.name,
+    sort_order: row.sort_order ?? 0,
+    positions: (row.positions ?? []).map(mapPosition),
+  };
+}
+
+function mapRecruitmentPlan(row: HrmRecruitmentPlanRow): RecruitmentPlan {
+  const status = row.status as RecruitmentPlan['status'];
+  const safeStatus: RecruitmentPlan['status'] = ['pending', 'approved', 'rejected', 'draft'].includes(
+    status,
+  )
+    ? status
+    : 'pending';
+  return {
+    id: row.id,
+    title: row.title,
+    period: `T${row.start_month}–T${row.end_month}/${row.year}`,
+    creator: row.creator_name ?? '',
+    createdDate: row.created_at?.split('T')[0] ?? '',
+    status: safeStatus,
+    startMonth: row.start_month,
+    endMonth: row.end_month,
+    year: row.year,
+    note: row.note ?? undefined,
+    departments: (row.departments ?? []).map(mapDepartment),
+  };
 }
 
 export function useRecruitmentPlans() {
   const [plans, setPlans] = useState<RecruitmentPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const { currentCompanyId, profile } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
   const h = (key: string): string => t(`hk.recruitmentPlan.${key}`) as string;
 
   const fetchPlans = useCallback(async () => {
-    if (!currentCompanyId) { setPlans([]); setLoading(false); return; }
+    if (!currentCompanyId) {
+      setPlans([]);
+      setFetchError(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setFetchError(null);
     try {
-      setLoading(true);
-      const { data: plansData, error: plansError } = await supabase.from('recruitment_plans').select('*').eq('company_id', currentCompanyId).order('created_at', { ascending: false });
-      if (plansError) throw plansError;
-      const planIds = plansData?.map(p => p.id) || [];
-      let departmentsData: any[] = []; let positionsData: any[] = [];
-      if (planIds.length > 0) {
-        const { data: depts, error: deptsError } = await supabase.from('recruitment_plan_departments').select('*').in('plan_id', planIds).order('sort_order', { ascending: true });
-        if (deptsError) throw deptsError; departmentsData = depts || [];
-        const deptIds = departmentsData.map(d => d.id);
-        if (deptIds.length > 0) {
-          const { data: positions, error: posError } = await supabase.from('recruitment_plan_positions').select('*').in('department_id', deptIds).order('sort_order', { ascending: true });
-          if (posError) throw posError; positionsData = positions || [];
-        }
-      }
-      const formattedPlans: RecruitmentPlan[] = (plansData || []).map(plan => {
-        const planDepts = departmentsData.filter(d => d.plan_id === plan.id);
-        const departments: PlanDepartment[] = planDepts.map(dept => ({
-          id: dept.id, name: dept.name, sort_order: dept.sort_order || 0,
-          positions: positionsData.filter(p => p.department_id === dept.id).map(pos => ({
-            id: pos.id, name: pos.name, months: (pos.months_data as MonthData[]) || [], sort_order: pos.sort_order || 0,
-          })),
-        }));
-        const startMonth = plan.start_month || 1; const endMonth = plan.end_month || 12; const year = plan.year || new Date().getFullYear();
-        return {
-          id: plan.id, title: plan.title,
-          period: `${String(startMonth).padStart(2, '0')}/${year} - ${String(endMonth).padStart(2, '0')}/${year}`,
-          creator: plan.creator_name || 'Unknown', createdDate: new Date(plan.created_at).toLocaleDateString('vi-VN'),
-          status: plan.status as RecruitmentPlan['status'], startMonth, endMonth, year, note: plan.note || undefined, departments,
-        };
-      });
-      setPlans(formattedPlans);
-    } catch (error) {
+      const response = await listRecruitmentPlans(currentCompanyId);
+      setPlans((response.data ?? []).map(mapRecruitmentPlan));
+    } catch (error: unknown) {
       console.error('Error fetching recruitment plans:', error);
-      toast({ title: t('messages.error'), description: h('fetchError'), variant: 'destructive' });
-    } finally { setLoading(false); }
-  }, [currentCompanyId, toast, t]);
+      setPlans([]);
+      setFetchError(toErrorMessage(error, 'Không thể tải kế hoạch tuyển dụng'));
+    } finally {
+      setLoading(false);
+    }
+  }, [currentCompanyId]);
 
-  useEffect(() => { fetchPlans(); }, [fetchPlans]);
+  useEffect(() => {
+    void fetchPlans();
+  }, [fetchPlans]);
 
   const createPlan = async (data: CreatePlanData): Promise<boolean> => {
-    if (!currentCompanyId) { toast({ title: t('messages.error'), description: t('hk.selectCompany'), variant: 'destructive' }); return false; }
+    if (!currentCompanyId) {
+      toast({ title: t('messages.error'), description: t('hk.selectCompany'), variant: 'destructive' });
+      return false;
+    }
     try {
-      const { data: newPlan, error: planError } = await supabase.from('recruitment_plans').insert({
-        company_id: currentCompanyId, title: data.title, start_month: data.startMonth, end_month: data.endMonth,
-        year: data.year, note: data.note || null, status: data.status || 'pending', creator_name: profile?.full_name || 'Unknown',
-      }).select().single();
-      if (planError) throw planError;
-      for (let i = 0; i < data.departments.length; i++) {
-        const dept = data.departments[i];
-        const { data: newDept, error: deptError } = await supabase.from('recruitment_plan_departments').insert({ plan_id: newPlan.id, company_id: currentCompanyId, name: dept.name, sort_order: i }).select().single();
-        if (deptError) throw deptError;
-        const positionsToInsert = dept.positions.map((pos, idx) => ({ department_id: newDept.id, company_id: currentCompanyId, name: pos.name, months_data: JSON.parse(JSON.stringify(pos.months)), sort_order: idx }));
-        if (positionsToInsert.length > 0) { const { error: posError } = await supabase.from('recruitment_plan_positions').insert(positionsToInsert); if (posError) throw posError; }
-      }
-      toast({ title: t('messages.success'), description: h('createSuccess') });
-      await fetchPlans(); return true;
-    } catch (error) {
+      await createRecruitmentPlan({
+        company_id: currentCompanyId,
+        title: data.title,
+        start_month: data.startMonth,
+        end_month: data.endMonth,
+        year: data.year,
+        note: data.note,
+        status: data.status ?? 'pending',
+        creator_name: profile?.full_name ?? 'Unknown',
+        departments: data.departments.map((dept) => ({
+          name: dept.name,
+          positions: dept.positions.map((pos) => ({ name: pos.name, months: pos.months })),
+        })),
+      });
+      toast({ title: h('createSuccess') || t('messages.success') });
+      await fetchPlans();
+      return true;
+    } catch (error: unknown) {
       console.error('Error creating recruitment plan:', error);
-      toast({ title: t('messages.error'), description: h('createError'), variant: 'destructive' }); return false;
+      toast({
+        title: h('createError') || t('messages.error'),
+        description: toErrorMessage(error, 'Không thể tạo kế hoạch'),
+        variant: 'destructive',
+      });
+      return false;
     }
   };
 
-  const updatePlanStatus = async (planId: string, status: RecruitmentPlan['status']): Promise<boolean> => {
+  const updatePlanStatus = async (
+    planId: string,
+    status: RecruitmentPlan['status'],
+  ): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase.from('recruitment_plans').update({ status }).eq('id', planId);
-      if (error) throw error;
-      toast({ title: t('messages.success'), description: h('updateSuccess') });
-      await fetchPlans(); return true;
-    } catch (error) {
-      toast({ title: t('messages.error'), description: h('updateError'), variant: 'destructive' }); return false;
+      await updateRecruitmentPlanStatus(planId, currentCompanyId, status);
+      await fetchPlans();
+      toast({ title: h('statusUpdated') || 'Đã cập nhật trạng thái kế hoạch' });
+      return true;
+    } catch (error: unknown) {
+      toast({
+        title: h('statusUpdateError') || 'Lỗi',
+        description: toErrorMessage(error, 'Không thể cập nhật trạng thái'),
+        variant: 'destructive',
+      });
+      return false;
     }
   };
 
   const deletePlan = async (planId: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase.from('recruitment_plans').delete().eq('id', planId);
-      if (error) throw error;
-      toast({ title: t('messages.success'), description: h('deleteSuccess') });
-      await fetchPlans(); return true;
-    } catch (error) {
-      toast({ title: t('messages.error'), description: h('deleteError'), variant: 'destructive' }); return false;
+      await deleteRecruitmentPlan(planId, currentCompanyId);
+      toast({ title: h('deleteSuccess') || t('messages.success') });
+      await fetchPlans();
+      return true;
+    } catch (error: unknown) {
+      toast({
+        title: h('deleteError') || t('messages.error'),
+        description: toErrorMessage(error, 'Không thể xóa kế hoạch'),
+        variant: 'destructive',
+      });
+      return false;
     }
   };
 
-  const stats = { total: plans.length, approved: plans.filter(p => p.status === 'approved').length, pending: plans.filter(p => p.status === 'pending').length, draft: plans.filter(p => p.status === 'draft').length, rejected: plans.filter(p => p.status === 'rejected').length };
+  const stats = {
+    total: plans.length,
+    approved: plans.filter((p) => p.status === 'approved').length,
+    pending: plans.filter((p) => p.status === 'pending').length,
+    draft: plans.filter((p) => p.status === 'draft').length,
+    rejected: plans.filter((p) => p.status === 'rejected').length,
+  };
 
-  return { plans, loading, stats, createPlan, updatePlanStatus, deletePlan, refetch: fetchPlans };
+  return {
+    plans,
+    loading,
+    fetchError,
+    stats,
+    createPlan,
+    updatePlanStatus,
+    deletePlan,
+    refetch: fetchPlans,
+  };
 }

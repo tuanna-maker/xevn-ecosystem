@@ -1,0 +1,777 @@
+openapi: 3.1.0
+info:
+  title: XeVN HRM API — Phase 1 S3b (Metadata · Spreadsheet · Operations · Performance)
+  version: 1.3.0-p1-s3b
+  description: |
+    Canonical REST contract for HRM khối C (Sprint 3) + U18 S3b extensions.
+    Scope: internal JWT or x-internal-api-key; tenant/company via headers or body.
+    List paths use resolveHrmListScope — group CEO company_id=main returns rollup partition.
+    ADR: docs/decisions/ADR-HRM-RBAC-SCOPE-LADDER.md
+servers:
+  - url: /api/hrm
+tags:
+  - name: Platform
+    description: Health, metrics (NFR)
+  - name: Attendance
+    description: HRM-AT-01..13 — records, update-requests, leave-requests (UC-HRM-23 embed)
+  - name: Payroll
+    description: HRM-PR-01..06 — periods, payslips, reconciliation (UC-HRM-24 embed)
+  - name: Recruitment
+    description: HRM-RC-01..06 — requisitions, candidates, interviews (UC-HRM-22 embed)
+  - name: ContractsInsurance
+    description: HRM-CI-01..07 — labor contracts and insurance (UC-HRM-25 embed)
+  - name: Metadata
+    description: HRM-MD-01..05 — employee metadata change queue (UC-HRM-26 embed)
+  - name: Spreadsheet
+    description: HRM-IM-01..04 — employee import/export
+  - name: Operations
+    description: HRM-OP-01..04 — tasks, summary, service requests (UC-HRM-MOB-11)
+  - name: Performance
+    description: HRM-PF-01..04 — performance cycles and evaluations
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    internalApiKey:
+      type: apiKey
+      in: header
+      name: x-internal-api-key
+  parameters:
+    CompanyIdQuery:
+      name: company_id
+      in: query
+      required: true
+      description: Company UUID or scope slug (main, holding, member slug per ADR scope ladder)
+      schema: { type: string, minLength: 1, maxLength: 64 }
+    TenantHeader:
+      name: x-tenant-id
+      in: header
+      schema: { type: string }
+    CompanyHeader:
+      name: x-company-id
+      in: header
+      description: Company UUID or scope slug (main, holding, member slug)
+      schema: { type: string, minLength: 1, maxLength: 64 }
+  schemas:
+    ApiEnvelope:
+      type: object
+      required: [code, message, data]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        data: {}
+paths:
+  /:
+    get:
+      tags: [Platform]
+      operationId: hrmHealth
+      summary: UC-HRM-01 service health
+      responses:
+        '200':
+          description: Health envelope (HRM-HEALTH-200)
+  /metrics:
+    get:
+      tags: [Platform]
+      operationId: hrmMetrics
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [prometheus] }
+      responses:
+        '200':
+          description: Metrics JSON or Prometheus text
+  /employees/{employeeId}:
+    get:
+      operationId: getEmployeeById
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: include_archived
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Employee envelope (HRM-EMP-200)
+        '404':
+          description: Employee not found (HRM-EMP-404)
+  /attendance/records:
+    post:
+      tags: [Attendance]
+      operationId: createAttendanceRecord
+      summary: HRM-AT-01
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id, employee_id, attendance_date, status]
+      responses:
+        '200':
+          description: HRM-AT-201
+    get:
+      tags: [Attendance]
+      operationId: listAttendanceRecords
+      summary: HRM-AT-02
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1 }
+        - name: page_size
+          in: query
+          schema: { type: integer, maximum: 100 }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/records/{recordId}/status:
+    patch:
+      tags: [Attendance]
+      operationId: updateAttendanceRecordStatus
+      summary: HRM-AT-03
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/update-requests:
+    post:
+      tags: [Attendance]
+      operationId: createAttendanceUpdateRequest
+      summary: HRM-AT-04
+      responses:
+        '200':
+          description: HRM-AT-201
+    get:
+      tags: [Attendance]
+      operationId: listAttendanceUpdateRequests
+      summary: HRM-AT-05
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/update-requests/{requestId}:
+    patch:
+      tags: [Attendance]
+      operationId: patchAttendanceUpdateRequest
+      summary: HRM-AT-06
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+    delete:
+      tags: [Attendance]
+      operationId: deleteAttendanceUpdateRequest
+      summary: HRM-AT-09
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/update-requests/{requestId}/approve:
+    post:
+      tags: [Attendance]
+      operationId: approveAttendanceUpdateRequest
+      summary: HRM-AT-07
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/update-requests/{requestId}/reject:
+    post:
+      tags: [Attendance]
+      operationId: rejectAttendanceUpdateRequest
+      summary: HRM-AT-08
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/leave-requests:
+    post:
+      tags: [Attendance]
+      operationId: createLeaveRequest
+      summary: HRM-AT-10
+      responses:
+        '200':
+          description: HRM-AT-201
+    get:
+      tags: [Attendance]
+      operationId: listLeaveRequests
+      summary: HRM-AT-11
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/leave-requests/{requestId}/approve:
+    post:
+      tags: [Attendance]
+      operationId: approveLeaveRequest
+      summary: HRM-AT-12
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /attendance/leave-requests/{requestId}/reject:
+    post:
+      tags: [Attendance]
+      operationId: rejectLeaveRequest
+      summary: HRM-AT-13
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-AT-200
+  /payroll/periods:
+    post:
+      tags: [Payroll]
+      operationId: createPayrollPeriod
+      summary: HRM-PR-01
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-PR-201
+    get:
+      tags: [Payroll]
+      operationId: listPayrollPeriods
+      summary: HRM-PR-02
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-PR-200
+  /payroll/periods/{periodId}/process:
+    post:
+      tags: [Payroll]
+      operationId: processPayrollPeriod
+      summary: HRM-PR-03
+      parameters:
+        - name: periodId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-PR-200
+  /payroll/periods/{periodId}/close:
+    post:
+      tags: [Payroll]
+      operationId: closePayrollPeriod
+      summary: HRM-PR-04
+      parameters:
+        - name: periodId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-PR-200
+  /payroll/payslips:
+    get:
+      tags: [Payroll]
+      operationId: listPayslips
+      summary: HRM-PR-05
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-PR-200
+  /payroll/reports/reconciliation:
+    get:
+      tags: [Payroll]
+      operationId: payrollReconciliationReport
+      summary: HRM-PR-06
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-PR-200
+  /recruitment/requisitions:
+    post:
+      tags: [Recruitment]
+      operationId: createJobRequisition
+      summary: HRM-RC-01
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-REC-201
+    get:
+      tags: [Recruitment]
+      operationId: listJobRequisitions
+      summary: HRM-RC-02
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-REC-200
+  /recruitment/candidates:
+    post:
+      tags: [Recruitment]
+      operationId: createCandidate
+      summary: HRM-RC-03
+      responses:
+        '200':
+          description: HRM-REC-202
+    get:
+      tags: [Recruitment]
+      operationId: listCandidates
+      summary: HRM-RC-04
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-REC-200
+  /recruitment/interviews:
+    post:
+      tags: [Recruitment]
+      operationId: scheduleInterview
+      summary: HRM-RC-05
+      responses:
+        '200':
+          description: HRM-REC-203
+  /recruitment/interviews/{interviewId}/status:
+    patch:
+      tags: [Recruitment]
+      operationId: updateInterviewStatus
+      summary: HRM-RC-06
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-REC-204
+  /contracts-insurance/contracts:
+    post:
+      tags: [ContractsInsurance]
+      operationId: createLaborContract
+      summary: HRM-CI-01
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-CON-201
+    get:
+      tags: [ContractsInsurance]
+      operationId: listLaborContracts
+      summary: HRM-CI-03
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-CON-200
+  /contracts-insurance/contracts/expiring:
+    get:
+      tags: [ContractsInsurance]
+      operationId: listExpiringContracts
+      summary: HRM-CI-04
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: days
+          in: query
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: HRM-CON-200
+  /contracts-insurance/contracts/{contractId}:
+    patch:
+      tags: [ContractsInsurance]
+      operationId: updateLaborContract
+      summary: HRM-CI-05
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-CON-200
+    delete:
+      tags: [ContractsInsurance]
+      operationId: deleteLaborContract
+      summary: HRM-CI-06
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-CON-200
+  /contracts-insurance/insurance:
+    post:
+      tags: [ContractsInsurance]
+      operationId: createInsuranceRecord
+      summary: HRM-CI-02
+      responses:
+        '200':
+          description: HRM-CON-202
+    get:
+      tags: [ContractsInsurance]
+      operationId: listInsuranceRecords
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-CON-200
+  /contracts-insurance/insurance/expiring:
+    get:
+      tags: [ContractsInsurance]
+      operationId: listExpiringInsurance
+      summary: HRM-CI-07
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: days
+          in: query
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: HRM-CON-200
+  /employee-metadata/change-requests:
+    post:
+      tags: [Metadata]
+      operationId: metaSubmit
+      summary: HRM-MD-01 — submit metadata change request
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id, employee_id, field_key, requested_value]
+      responses:
+        '200':
+          description: HRM-META-201
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    get:
+      tags: [Metadata]
+      operationId: metaList
+      summary: HRM-MD-02 — list pending metadata changes
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, approved, rejected] }
+      responses:
+        '200':
+          description: HRM-META-200
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /employee-metadata/change-requests/{changeRequestId}/approve:
+    post:
+      tags: [Metadata]
+      operationId: metaApprove
+      summary: HRM-MD-03 — approve metadata change
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: changeRequestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-META-202
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /employee-metadata/change-requests/{changeRequestId}/reject:
+    post:
+      tags: [Metadata]
+      operationId: metaReject
+      summary: HRM-MD-04 — reject metadata change
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: changeRequestId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-META-203
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /employee-metadata/audit-logs:
+    get:
+      tags: [Metadata]
+      operationId: metaAuditLog
+      summary: HRM-MD-05 — metadata audit trail
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: employee_id
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-META-204
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /spreadsheet/limits:
+    get:
+      tags: [Spreadsheet]
+      operationId: sheetLimits
+      summary: Spreadsheet upload/export caps
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: SHEET-200
+  /spreadsheet/templates/{kind}:
+    get:
+      tags: [Spreadsheet]
+      operationId: sheetTemplate
+      summary: HRM-IM-04 — download import template
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: kind
+          in: path
+          required: true
+          schema: { type: string, enum: [employee_import] }
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx], default: csv }
+      responses:
+        '200':
+          description: Template file (csv or xlsx)
+        '400':
+          description: SHEET-400
+  /spreadsheet/import/preview:
+    post:
+      tags: [Spreadsheet]
+      operationId: sheetPreview
+      summary: HRM-IM-01 — preview employee import
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, kind]
+              properties:
+                file: { type: string, format: binary }
+                kind: { type: string, enum: [employee_import] }
+                dryRun: { type: string, enum: ['true', 'false'] }
+      responses:
+        '200':
+          description: SHEET-200 preview envelope
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /spreadsheet/import/commit:
+    post:
+      tags: [Spreadsheet]
+      operationId: sheetCommit
+      summary: HRM-IM-02 — commit employee import
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, kind]
+              properties:
+                file: { type: string, format: binary }
+                kind: { type: string, enum: [employee_import] }
+      responses:
+        '200':
+          description: SHEET-201
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /spreadsheet/export:
+    post:
+      tags: [Spreadsheet]
+      operationId: sheetExport
+      summary: HRM-IM-03 — export employee list CSV
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [filter]
+              properties:
+                filter:
+                  type: object
+                  properties:
+                    company_id: { type: string }
+      responses:
+        '200':
+          description: CSV attachment
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /operations/tasks:
+    post:
+      tags: [Operations]
+      operationId: opsTaskCreate
+      summary: HRM-OP-01 — create operations task
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-OPS-201
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    get:
+      tags: [Operations]
+      operationId: opsTaskList
+      summary: HRM-OP-02 — list operations tasks
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-OPS-200
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /operations/tasks/{taskId}/status:
+    patch:
+      tags: [Operations]
+      operationId: opsTaskStatus
+      summary: HRM-OP-03 — update task status
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-OPS-202
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /operations/reports/summary:
+    get:
+      tags: [Operations]
+      operationId: opsSummary
+      summary: HRM-OP-04 — operations summary report
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: tenant_id
+          in: query
+          required: true
+          schema: { type: string }
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-OPS-200
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /operations/service-requests:
+    post:
+      tags: [Operations]
+      operationId: opsServiceRequestCreate
+      summary: HRM-SV-01 — create service request
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-SVC-201
+    get:
+      tags: [Operations]
+      operationId: opsServiceRequestList
+      summary: HRM-SV-02 — list service requests
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-SVC-200
+  /performance/cycles:
+    post:
+      tags: [Performance]
+      operationId: perfCycleCreate
+      summary: HRM-PF-01 — create performance cycle
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-PERF-201
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    get:
+      tags: [Performance]
+      operationId: perfCycleList
+      summary: HRM-PF-02 — list performance cycles
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-PERF-200
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /performance/evaluations:
+    post:
+      tags: [Performance]
+      operationId: perfEvalCreate
+      summary: HRM-PF-03 — create performance evaluation
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-PERF-202
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    get:
+      tags: [Performance]
+      operationId: perfEvalList
+      summary: HRM-PF-04 — list performance evaluations
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: cycle_id
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-PERF-200
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /auth/mobile/login:
+    post:
+      operationId: mobileLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Login success envelope

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import {
   Upload,
@@ -29,8 +29,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
+import { createInsurancePolicyParticipant } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 
 interface InsuranceImportDialogProps {
   open: boolean;
@@ -60,23 +62,24 @@ interface ImportRow {
 }
 
 const TEMPLATE_COLUMNS = [
-  { key: 'employee_code', label: 'Mã nhân viên', required: true },
-  { key: 'employee_name', label: 'Tên nhân viên', required: true },
-  { key: 'department', label: 'Phòng ban', required: false },
-  { key: 'social_insurance_number', label: 'Số BHXH', required: false },
-  { key: 'health_insurance_number', label: 'Số BHYT', required: false },
-  { key: 'unemployment_insurance_number', label: 'Số BHTN', required: false },
-  { key: 'base_salary', label: 'Mức lương đóng BH', required: false },
-  { key: 'effective_date', label: 'Ngày hiệu lực (DD/MM/YYYY)', required: false },
-  { key: 'expiry_date', label: 'Ngày hết hạn (DD/MM/YYYY)', required: false },
-  { key: 'status', label: 'Trạng thái (active/pending/expired)', required: false },
-  { key: 'notes', label: 'Ghi chú', required: false },
+  { key: 'employee_code', label: 'MĂ£ nhĂ¢n viĂªn', required: true },
+  { key: 'employee_name', label: 'TĂªn nhĂ¢n viĂªn', required: true },
+  { key: 'department', label: 'PhĂ²ng ban', required: false },
+  { key: 'social_insurance_number', label: 'Sá»‘ BHXH', required: false },
+  { key: 'health_insurance_number', label: 'Sá»‘ BHYT', required: false },
+  { key: 'unemployment_insurance_number', label: 'Sá»‘ BHTN', required: false },
+  { key: 'base_salary', label: 'Má»©c lÆ°Æ¡ng Ä‘Ă³ng BH', required: false },
+  { key: 'effective_date', label: 'NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)', required: false },
+  { key: 'expiry_date', label: 'NgĂ y háº¿t háº¡n (DD/MM/YYYY)', required: false },
+  { key: 'status', label: 'Tráº¡ng thĂ¡i (active/pending/expired)', required: false },
+  { key: 'notes', label: 'Ghi chĂº', required: false },
 ];
 
 export function InsuranceImportDialog({
   open,
   onOpenChange,
 }: InsuranceImportDialogProps) {
+  const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -102,18 +105,18 @@ export function InsuranceImportDialog({
   const downloadTemplate = () => {
     const templateData = [
       TEMPLATE_COLUMNS.map(col => col.label),
-      ['NV001', 'Nguyễn Văn A', 'Phòng Kỹ thuật', '1234567890', 'DN123456789', 'TN12345678', '15000000', '01/01/2024', '31/12/2024', 'active', ''],
-      ['NV002', 'Trần Thị B', 'Phòng Nhân sự', '0987654321', 'DN987654321', 'TN98765432', '12000000', '01/02/2024', '31/01/2025', 'active', 'Ghi chú'],
+      ['NV001', 'Nguyá»…n VÄƒn A', 'PhĂ²ng Ká»¹ thuáº­t', '1234567890', 'DN123456789', 'TN12345678', '15000000', '01/01/2024', '31/12/2024', 'active', ''],
+      ['NV002', 'Tráº§n Thá»‹ B', 'PhĂ²ng NhĂ¢n sá»±', '0987654321', 'DN987654321', 'TN98765432', '12000000', '01/02/2024', '31/01/2025', 'active', 'Ghi chĂº'],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(templateData);
     ws['!cols'] = TEMPLATE_COLUMNS.map(() => ({ wch: 22 }));
     
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Mẫu nhập bảo hiểm');
+    XLSX.utils.book_append_sheet(wb, ws, 'Máº«u nháº­p báº£o hiá»ƒm');
     
     XLSX.writeFile(wb, 'mau_import_bao_hiem.xlsx');
-    toast.success('Đã tải file mẫu thành công');
+    toast.success('ÄĂ£ táº£i file máº«u thĂ nh cĂ´ng');
   };
 
   const parseDate = (dateStr: string): string | null => {
@@ -150,33 +153,33 @@ export function InsuranceImportDialog({
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    const employeeCode = row['Mã nhân viên']?.toString().trim();
-    const employeeName = row['Tên nhân viên']?.toString().trim();
-    const department = row['Phòng ban']?.toString().trim();
-    const socialInsuranceNumber = row['Số BHXH']?.toString().trim();
-    const healthInsuranceNumber = row['Số BHYT']?.toString().trim();
-    const unemploymentInsuranceNumber = row['Số BHTN']?.toString().trim();
-    const baseSalaryStr = row['Mức lương đóng BH']?.toString().trim();
-    const effectiveDateStr = row['Ngày hiệu lực (DD/MM/YYYY)']?.toString().trim();
-    const expiryDateStr = row['Ngày hết hạn (DD/MM/YYYY)']?.toString().trim();
-    const statusStr = row['Trạng thái (active/pending/expired)']?.toString().trim().toLowerCase();
-    const notes = row['Ghi chú']?.toString().trim();
+    const employeeCode = row['MĂ£ nhĂ¢n viĂªn']?.toString().trim();
+    const employeeName = row['TĂªn nhĂ¢n viĂªn']?.toString().trim();
+    const department = row['PhĂ²ng ban']?.toString().trim();
+    const socialInsuranceNumber = row['Sá»‘ BHXH']?.toString().trim();
+    const healthInsuranceNumber = row['Sá»‘ BHYT']?.toString().trim();
+    const unemploymentInsuranceNumber = row['Sá»‘ BHTN']?.toString().trim();
+    const baseSalaryStr = row['Má»©c lÆ°Æ¡ng Ä‘Ă³ng BH']?.toString().trim();
+    const effectiveDateStr = row['NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)']?.toString().trim();
+    const expiryDateStr = row['NgĂ y háº¿t háº¡n (DD/MM/YYYY)']?.toString().trim();
+    const statusStr = row['Tráº¡ng thĂ¡i (active/pending/expired)']?.toString().trim().toLowerCase();
+    const notes = row['Ghi chĂº']?.toString().trim();
 
     // Required fields
-    if (!employeeCode) errors.push('Mã nhân viên không được để trống');
-    if (!employeeName) errors.push('Tên nhân viên không được để trống');
+    if (!employeeCode) errors.push('MĂ£ nhĂ¢n viĂªn khĂ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng');
+    if (!employeeName) errors.push('TĂªn nhĂ¢n viĂªn khĂ´ng Ä‘Æ°á»£c Ä‘á»ƒ trá»‘ng');
 
     // Duplicate checks
     if (employeeCode && existingCodes.has(employeeCode.toUpperCase())) {
-      errors.push(`Mã NV "${employeeCode}" đã có bảo hiểm trong hệ thống`);
+      errors.push(`MĂ£ NV "${employeeCode}" Ä‘Ă£ cĂ³ báº£o hiá»ƒm trong há»‡ thá»‘ng`);
     }
     if (employeeCode && fileCodesSoFar.has(employeeCode.toUpperCase())) {
-      errors.push(`Mã NV "${employeeCode}" bị trùng trong file import`);
+      errors.push(`MĂ£ NV "${employeeCode}" bá»‹ trĂ¹ng trong file import`);
     }
 
     // Insurance number validation
     if (!socialInsuranceNumber && !healthInsuranceNumber && !unemploymentInsuranceNumber) {
-      warnings.push('Chưa có số bảo hiểm nào được nhập');
+      warnings.push('ChÆ°a cĂ³ sá»‘ báº£o hiá»ƒm nĂ o Ä‘Æ°á»£c nháº­p');
     }
 
     // Salary validation
@@ -186,19 +189,19 @@ export function InsuranceImportDialog({
       if (!isNaN(parsedSalary)) {
         baseSalary = parsedSalary;
       } else {
-        warnings.push('Mức lương không hợp lệ');
+        warnings.push('Má»©c lÆ°Æ¡ng khĂ´ng há»£p lá»‡');
       }
     }
 
     // Date validation
     const effectiveDate = parseDate(effectiveDateStr || '');
     if (effectiveDateStr && !effectiveDate) {
-      warnings.push('Ngày hiệu lực không hợp lệ');
+      warnings.push('NgĂ y hiá»‡u lá»±c khĂ´ng há»£p lá»‡');
     }
 
     const expiryDate = parseDate(expiryDateStr || '');
     if (expiryDateStr && !expiryDate) {
-      warnings.push('Ngày hết hạn không hợp lệ');
+      warnings.push('NgĂ y háº¿t háº¡n khĂ´ng há»£p lá»‡');
     }
 
     // Status validation
@@ -207,7 +210,7 @@ export function InsuranceImportDialog({
       if (['active', 'pending', 'expired'].includes(statusStr)) {
         status = statusStr;
       } else {
-        warnings.push('Trạng thái không hợp lệ, mặc định là "active"');
+        warnings.push('Tráº¡ng thĂ¡i khĂ´ng há»£p lá»‡, máº·c Ä‘á»‹nh lĂ  "active"');
       }
     }
 
@@ -239,14 +242,11 @@ export function InsuranceImportDialog({
     if (!uploadedFile) return;
 
     if (!uploadedFile.name.match(/\.(xlsx|xls|csv)$/i)) {
-      toast.error('Vui lòng chọn file Excel (.xlsx, .xls) hoặc CSV');
+      toast.error('Vui lĂ²ng chá»n file Excel (.xlsx, .xls) hoáº·c CSV');
       return;
     }
 
     // Fetch existing insurance records
-    const { data: existingInsurance } = await supabase
-      .from('insurance')
-      .select('employee_code');
     
     const existingCodes = new Set(
       (existingInsurance || []).map(i => i.employee_code.toUpperCase())
@@ -264,14 +264,14 @@ export function InsuranceImportDialog({
         const jsonData = XLSX.utils.sheet_to_json<Record<string, string>>(worksheet);
 
         if (jsonData.length === 0) {
-          toast.error('File không có dữ liệu');
+          toast.error('File khĂ´ng cĂ³ dá»¯ liá»‡u');
           return;
         }
 
         const fileCodesSoFar = new Set<string>();
         const parsedData = jsonData.map((row, index) => {
           const result = validateRow(row, index + 2, existingCodes, fileCodesSoFar);
-          const code = row['Mã nhân viên']?.toString().trim();
+          const code = row['MĂ£ nhĂ¢n viĂªn']?.toString().trim();
           if (code) fileCodesSoFar.add(code.toUpperCase());
           return result;
         });
@@ -279,7 +279,7 @@ export function InsuranceImportDialog({
         setImportData(parsedData);
         setStep('preview');
       } catch (error) {
-        toast.error('Lỗi đọc file. Vui lòng kiểm tra định dạng file');
+        toast.error('Lá»—i Ä‘á»c file. Vui lĂ²ng kiá»ƒm tra Ä‘á»‹nh dáº¡ng file');
         console.error('Error reading file:', error);
       }
     };
@@ -298,30 +298,31 @@ export function InsuranceImportDialog({
       const row = validRows[i];
       
       try {
-        const { error } = await supabase.from('insurance').insert({
+        if (!currentCompanyId || row.status === 'invalid') {
+          failedCount++;
+          continue;
+        }
+        await createInsurancePolicyParticipant({
+          company_id: currentCompanyId,
           employee_code: row.data.employee_code,
           employee_name: row.data.employee_name,
           department: row.data.department,
           social_insurance_number: row.data.social_insurance_number,
           health_insurance_number: row.data.health_insurance_number,
           unemployment_insurance_number: row.data.unemployment_insurance_number,
-          base_salary: row.data.base_salary,
+          base_salary: Number(row.data.base_salary ?? 0),
           effective_date: row.data.effective_date,
           expiry_date: row.data.expiry_date,
-          status: row.data.status,
-          notes: row.data.notes,
+          status: 'active',
         });
-
-        if (error) throw error;
-
         if (row.status === 'warning') {
           warningCount++;
-        } else {
-          successCount++;
         }
+        successCount++;
       } catch (error) {
         failedCount++;
         console.error('Import error:', error);
+        if (i === 0) toast.error(toErrorMessage(error, 'Import bảo hiểm thất bại'));
       }
       
       setImportProgress(Math.round(((i + 1) / validRows.length) * 100));
@@ -336,11 +337,11 @@ export function InsuranceImportDialog({
   const getStatusBadge = (status: ImportRow['status']) => {
     switch (status) {
       case 'valid':
-        return <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"><CheckCircle2 className="w-3 h-3 mr-1" />Hợp lệ</Badge>;
+        return <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"><CheckCircle2 className="w-3 h-3 mr-1" />Há»£p lá»‡</Badge>;
       case 'warning':
-        return <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"><AlertCircle className="w-3 h-3 mr-1" />Cảnh báo</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"><AlertCircle className="w-3 h-3 mr-1" />Cáº£nh bĂ¡o</Badge>;
       case 'invalid':
-        return <Badge className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"><XCircle className="w-3 h-3 mr-1" />Lỗi</Badge>;
+        return <Badge className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"><XCircle className="w-3 h-3 mr-1" />Lá»—i</Badge>;
     }
   };
 
@@ -354,7 +355,7 @@ export function InsuranceImportDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5" />
-            Import bảo hiểm từ Excel
+            Import báº£o hiá»ƒm tá»« Excel
           </DialogTitle>
         </DialogHeader>
 
@@ -366,13 +367,13 @@ export function InsuranceImportDialog({
                   <Download className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium mb-1">Tải file mẫu</h4>
+                  <h4 className="font-medium mb-1">Táº£i file máº«u</h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Tải file Excel mẫu để biết định dạng dữ liệu cần nhập
+                    Táº£i file Excel máº«u Ä‘á»ƒ biáº¿t Ä‘á»‹nh dáº¡ng dá»¯ liá»‡u cáº§n nháº­p
                   </p>
                   <Button variant="outline" size="sm" onClick={downloadTemplate}>
                     <Download className="w-4 h-4 mr-2" />
-                    Tải file mẫu (.xlsx)
+                    Táº£i file máº«u (.xlsx)
                   </Button>
                 </div>
               </div>
@@ -394,21 +395,21 @@ export function InsuranceImportDialog({
                   <Upload className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium">Kéo thả file hoặc click để chọn</p>
+                  <p className="font-medium">KĂ©o tháº£ file hoáº·c click Ä‘á»ƒ chá»n</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Hỗ trợ: .xlsx, .xls, .csv (tối đa 5MB)
+                    Há»— trá»£: .xlsx, .xls, .csv (tá»‘i Ä‘a 5MB)
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4">
-              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Hướng dẫn:</h4>
+              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">HÆ°á»›ng dáº«n:</h4>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                <li>• Các cột bắt buộc: Mã nhân viên, Tên nhân viên</li>
-                <li>• Nhập ít nhất một số bảo hiểm (BHXH, BHYT hoặc BHTN)</li>
-                <li>• Định dạng ngày: DD/MM/YYYY (VD: 01/01/2024)</li>
-                <li>• Trạng thái: active, pending, expired</li>
+                <li>â€¢ CĂ¡c cá»™t báº¯t buá»™c: MĂ£ nhĂ¢n viĂªn, TĂªn nhĂ¢n viĂªn</li>
+                <li>â€¢ Nháº­p Ă­t nháº¥t má»™t sá»‘ báº£o hiá»ƒm (BHXH, BHYT hoáº·c BHTN)</li>
+                <li>â€¢ Äá»‹nh dáº¡ng ngĂ y: DD/MM/YYYY (VD: 01/01/2024)</li>
+                <li>â€¢ Tráº¡ng thĂ¡i: active, pending, expired</li>
               </ul>
             </div>
           </div>
@@ -419,20 +420,20 @@ export function InsuranceImportDialog({
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
               <div className="flex-1">
                 <p className="text-sm text-muted-foreground">File: <span className="font-medium text-foreground">{file?.name}</span></p>
-                <p className="text-sm text-muted-foreground mt-1">Tổng số dòng: <span className="font-medium text-foreground">{importData.length}</span></p>
+                <p className="text-sm text-muted-foreground mt-1">Tá»•ng sá»‘ dĂ²ng: <span className="font-medium text-foreground">{importData.length}</span></p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium">{validCount} hợp lệ</span>
+                  <span className="text-sm font-medium">{validCount} há»£p lá»‡</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 text-yellow-600" />
-                  <span className="text-sm font-medium">{warningCount} cảnh báo</span>
+                  <span className="text-sm font-medium">{warningCount} cáº£nh bĂ¡o</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <XCircle className="w-4 h-4 text-red-600" />
-                  <span className="text-sm font-medium">{invalidCount} lỗi</span>
+                  <span className="text-sm font-medium">{invalidCount} lá»—i</span>
                 </div>
               </div>
             </div>
@@ -441,13 +442,13 @@ export function InsuranceImportDialog({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-16">Dòng</TableHead>
-                    <TableHead className="w-24">Trạng thái</TableHead>
-                    <TableHead>Mã NV</TableHead>
-                    <TableHead>Tên NV</TableHead>
-                    <TableHead>Số BHXH</TableHead>
-                    <TableHead>Số BHYT</TableHead>
-                    <TableHead className="w-48">Lỗi/Cảnh báo</TableHead>
+                    <TableHead className="w-16">DĂ²ng</TableHead>
+                    <TableHead className="w-24">Tráº¡ng thĂ¡i</TableHead>
+                    <TableHead>MĂ£ NV</TableHead>
+                    <TableHead>TĂªn NV</TableHead>
+                    <TableHead>Sá»‘ BHXH</TableHead>
+                    <TableHead>Sá»‘ BHYT</TableHead>
+                    <TableHead className="w-48">Lá»—i/Cáº£nh bĂ¡o</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -478,13 +479,13 @@ export function InsuranceImportDialog({
             <div className="flex justify-between items-center">
               <Button variant="outline" onClick={resetDialog}>
                 <X className="w-4 h-4 mr-2" />
-                Chọn file khác
+                Chá»n file khĂ¡c
               </Button>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={handleClose}>Hủy</Button>
+                <Button variant="outline" onClick={handleClose}>Há»§y</Button>
                 <Button onClick={handleImport} disabled={validCount + warningCount === 0}>
                   <Upload className="w-4 h-4 mr-2" />
-                  Import {validCount + warningCount} bảo hiểm
+                  Import {validCount + warningCount} báº£o hiá»ƒm
                 </Button>
               </div>
             </div>
@@ -495,11 +496,11 @@ export function InsuranceImportDialog({
           <div className="py-8 space-y-6">
             <div className="text-center">
               <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" />
-              <p className="mt-4 font-medium">Đang import dữ liệu...</p>
+              <p className="mt-4 font-medium">Äang import dá»¯ liá»‡u...</p>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Tiến độ</span>
+                <span>Tiáº¿n Ä‘á»™</span>
                 <span>{importProgress}%</span>
               </div>
               <Progress value={importProgress} className="h-2" />
@@ -513,26 +514,26 @@ export function InsuranceImportDialog({
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="mt-4 text-lg font-medium">Import hoàn tất!</h3>
+              <h3 className="mt-4 text-lg font-medium">Import hoĂ n táº¥t!</h3>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-green-50 dark:bg-green-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-green-600">{importResults.success}</p>
-                <p className="text-sm text-green-700 dark:text-green-400">Thành công</p>
+                <p className="text-sm text-green-700 dark:text-green-400">ThĂ nh cĂ´ng</p>
               </div>
               <div className="bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-yellow-600">{importResults.warnings}</p>
-                <p className="text-sm text-yellow-700 dark:text-yellow-400">Có cảnh báo</p>
+                <p className="text-sm text-yellow-700 dark:text-yellow-400">CĂ³ cáº£nh bĂ¡o</p>
               </div>
               <div className="bg-red-50 dark:bg-red-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-red-600">{importResults.failed}</p>
-                <p className="text-sm text-red-700 dark:text-red-400">Thất bại</p>
+                <p className="text-sm text-red-700 dark:text-red-400">Tháº¥t báº¡i</p>
               </div>
             </div>
 
             <div className="flex justify-center">
-              <Button onClick={handleClose}>Đóng</Button>
+              <Button onClick={handleClose}>ÄĂ³ng</Button>
             </div>
           </div>
         )}

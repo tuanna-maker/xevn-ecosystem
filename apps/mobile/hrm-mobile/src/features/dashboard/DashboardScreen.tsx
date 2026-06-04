@@ -5,7 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useNetwork } from '../../context/NetworkContext';
 import { readListRows } from '../../integrations/envelope';
-import { hrmRequest } from '../../integrations/hrmApiClient';
+import { hrmRequest, resolveHrmCompanyHeaderId } from '../../integrations/hrmApiClient';
 import { formatHrmError } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
 import { ASYNC_CACHE } from '../../storage/asyncKeys';
@@ -70,14 +70,15 @@ export function DashboardScreen() {
       return;
     }
 
-    const scopeText = `tenant: ${auth.tenantId}\ncompany (header): ${auth.companyId}\nUUID chấm công/lương: ${cid || '(thiếu)'}\nemployeeId: ${eid || '(thiếu)'}`;
+    const headerCompany = resolveHrmCompanyHeaderId(cfg.companyUuid, cfg.companyId);
+    const scopeText = `tenant: ${auth.tenantId}\ncompany slug: ${auth.companyId}\nx-company-id: ${headerCompany || '(thiếu)'}\nemployeeId: ${eid || '(thiếu)'}`;
     setScopeCard(scopeText);
 
     const batch1 = await Promise.allSettled([
       hrmRequest<Health>(cfg, '/', { method: 'GET' }),
       hrmRequest<unknown>(
         cfg,
-        `/employees?${new URLSearchParams({ company_id: cfg.companyId, page: '1', page_size: '5' }).toString()}`,
+        `/employees?${new URLSearchParams({ company_id: cid || headerCompany, page: '1', page_size: '5' }).toString()}`,
         { method: 'GET' },
       ),
     ]);

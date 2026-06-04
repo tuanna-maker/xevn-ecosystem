@@ -1,3 +1,6 @@
+import { RELEASE_PILOT_HRM_API_BASE_URL } from '../config/pilotApiBase';
+import { isUuid } from '../utils/uuid';
+import { isHrmWireBlockedSlug } from './companyWireScope';
 import type { ApiEnvelopeError, ApiEnvelopeSuccess, HrmAuthConfig } from './types';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -17,13 +20,26 @@ function randomRequestId(): string {
   return `mob-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+/**
+ * Value for `x-company-id` on every HRM REST call.
+ * Prefer active membership `company_uuid`; never send scope slug (e.g. `main`) when UUID exists.
+ */
+export function resolveHrmCompanyHeaderId(companyUuid?: string, companySlugOrId?: string): string {
+  const uuid = companyUuid?.trim() ?? '';
+  if (uuid && isUuid(uuid)) return uuid;
+  const fallback = companySlugOrId?.trim() ?? '';
+  if (fallback && isUuid(fallback)) return fallback;
+  if (fallback && isHrmWireBlockedSlug(fallback)) return '';
+  return fallback;
+}
+
 export function getDefaultBaseUrl(): string {
   const fromEnv = process.env.EXPO_PUBLIC_HRM_API_BASE_URL;
   if (fromEnv && fromEnv.trim()) return stripTrailingSlash(fromEnv.trim());
   if (typeof __DEV__ !== 'undefined' && __DEV__) {
     return 'http://localhost:3001';
   }
-  throw new Error('EXPO_PUBLIC_HRM_API_BASE_URL is required in production builds');
+  return RELEASE_PILOT_HRM_API_BASE_URL;
 }
 
 export async function hrmRequest<T>(
@@ -40,10 +56,11 @@ export async function hrmRequest<T>(
     Accept: 'application/json',
     'Content-Type': 'application/json',
     'x-request-id': requestId,
-    'x-tenant-id': auth.tenantId,
-    'x-company-id': auth.companyId,
     ...(fetchInit.headers as Record<string, string> | undefined),
   };
+  if (auth.tenantId?.trim()) headers['x-tenant-id'] = auth.tenantId.trim();
+  const companyHeader = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
+  if (companyHeader) headers['x-company-id'] = companyHeader;
 
   if (auth.accessToken) {
     headers.Authorization = auth.accessToken.startsWith('Bearer ')

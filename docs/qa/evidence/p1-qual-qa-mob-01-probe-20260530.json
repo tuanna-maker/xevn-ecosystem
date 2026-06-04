@@ -1,0 +1,81 @@
+{
+  "work_item_id": "P1-QUAL-QA-MOB-01",
+  "date": "2026-05-30",
+  "base": "http://14.225.217.232:3001",
+  "email": "du-lich.ceo@xe.vn",
+  "pass": false,
+  "results": [
+    {
+      "jId": "NET",
+      "step": "GET /api/hrm/",
+      "status": 200,
+      "code": "HRM-HEALTH-200",
+      "note": "ok",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-01",
+      "step": "POST /auth/mobile/login",
+      "status": 201,
+      "code": "HRM-AUTH-200",
+      "note": "memberships=1",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-03",
+      "step": "GET /attendance/leave-requests (list)",
+      "status": 200,
+      "code": "HRM-LEAVE-200",
+      "note": "rows=1",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-03",
+      "step": "detail: find row in list by id (LeaveRequestDetail)",
+      "status": 200,
+      "code": "HRM-LEAVE-DETAIL-OK",
+      "note": "id=adc8b5c3-6175-46f3-89d3-db941fd8adc8",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-04",
+      "step": "GET /payroll/payslips (list)",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "note": "rows=0",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-04",
+      "step": "detail: empty payslips (UI Chưa có phiếu lương)",
+      "status": 200,
+      "code": "HRM-PAY-EMPTY-OK",
+      "note": "no rows — detail N/A",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-05",
+      "step": "GET leave-requests pending (manager)",
+      "status": 200,
+      "code": "HRM-LEAVE-200",
+      "note": "pending=0",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-05",
+      "step": "GET update-requests pending (manager)",
+      "status": 200,
+      "code": "HRM-ATT-REQ-200",
+      "note": "rows=1",
+      "pass": true
+    },
+    {
+      "jId": "J-MOB-05",
+      "step": "POST update-requests/:id/approve",
+      "status": 409,
+      "code": "HRM-ATT-REQ-409",
+      "note": "requestId=95b9ace8-3aa1-49f7-88c4-f42f12654951",
+      "pass": false
+    }
+  ]
+}

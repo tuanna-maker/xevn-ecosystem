@@ -95,6 +95,8 @@ services:
       - ../../apps/api/hrm-api/.env
     environment:
       CI: "true"
+      # Wins over apps/api/hrm-api/.env env_file — VPS deploy .env must set NODE_ENV=production
+      NODE_ENV: ${NODE_ENV:-development}
       # Force container-side port — HRM_BE_PORT in .env is the HOST port, not app port
       PORT: "3001"
     ports:
@@ -118,6 +120,7 @@ services:
       - ../../apps/api/xbos-api/.env
     environment:
       CI: "true"
+      NODE_ENV: ${NODE_ENV:-development}
       # xbos-api reads XBOS_BE_PORT as its listen port (not generic PORT).
       # Port mapping host:container must match — both sides use XBOS_BE_PORT value.
     ports:

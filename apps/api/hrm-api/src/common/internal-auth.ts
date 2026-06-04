@@ -9,6 +9,27 @@ type JwtPayload = {
 };
 export type InternalJwtPayload = JwtPayload & Record<string, unknown>;
 
+const BEARER_PREFIX_RE = /^bearer\s+/i;
+
+function readConfiguredJwtSecrets(): string[] {
+  const candidates = [
+    process.env.SERVICE_JWT_SECRET,
+    process.env.JWT_SECRET,
+    process.env.ACCESS_TOKEN_SECRET,
+    process.env.XBOS_JWT_SECRET,
+  ];
+  const normalized = candidates
+    .map((value) => (typeof value === 'string' ? value.trim() : ''))
+    .filter((value) => value.length > 0);
+  if (normalized.length > 0) {
+    return [...new Set(normalized)];
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    return ['xevn-dev-jwt-secret'];
+  }
+  return [];
+}
+
 function base64UrlDecode(input: string): string {
   const padded = input.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(input.length / 4) * 4, '=');
   return Buffer.from(padded, 'base64').toString('utf8');
@@ -42,16 +63,16 @@ function parseJwtPayload(token: string): InternalJwtPayload | null {
 }
 
 export function getVerifiedInternalJwtPayload(authorizationHeader?: string): InternalJwtPayload | null {
-  const bearerToken = authorizationHeader?.startsWith('Bearer ')
-    ? authorizationHeader.slice('Bearer '.length).trim()
-    : undefined;
-  const secret =
-    process.env.SERVICE_JWT_SECRET ??
-    (process.env.NODE_ENV !== 'production' ? 'xevn-dev-jwt-secret' : undefined);
+  const bearerToken = extractBearerToken(authorizationHeader);
+  const secrets = readConfiguredJwtSecrets();
   const issuer = process.env.SERVICE_JWT_ISSUER ?? 'xevn-internal';
   const audience = process.env.SERVICE_JWT_AUDIENCE ?? 'xevn-api';
 
-  if (!bearerToken || !secret || !verifyHs256Signature(bearerToken, secret)) {
+  if (!bearerToken || secrets.length === 0) {
+    return null;
+  }
+  const signatureMatches = secrets.some((secret) => verifyHs256Signature(bearerToken, secret));
+  if (!signatureMatches) {
     return null;
   }
 
@@ -65,6 +86,104 @@ export function getVerifiedInternalJwtPayload(authorizationHeader?: string): Int
   const nbfOk = !payload.nbf || payload.nbf <= nowSec;
   if (!audienceOk || !issuerOk || !expOk || !nbfOk) return null;
   return payload;
+}
+
+function readHeaderValue(headers: Record<string, unknown>, key: string): string | undefined {
+  const value = headers[key];
+  if (typeof value === 'string' && value.trim()) {
+    return value.trim();
+  }
+  if (Array.isArray(value)) {
+    const firstString = value.find((item) => typeof item === 'string' && item.trim());
+    if (typeof firstString === 'string') {
+      return firstString.trim();
+    }
+  }
+  return undefined;
+}
+
+function parseCookie(cookieHeader: string, cookieName: string): string | undefined {
+  const pairs = cookieHeader.split(';');
+  for (const pair of pairs) {
+    const [rawName, ...rest] = pair.split('=');
+    if (!rawName || rest.length === 0) continue;
+    if (rawName.trim() !== cookieName) continue;
+    const rawValue = rest.join('=').trim();
+    if (!rawValue) return undefined;
+    try {
+      const decoded = decodeURIComponent(rawValue);
+      const unquoted = decoded.replace(/^"(.*)"$/, '$1').trim();
+      return unquoted || undefined;
+    } catch {
+      const unquoted = rawValue.replace(/^"(.*)"$/, '$1').trim();
+      return unquoted || undefined;
+    }
+  }
+  return undefined;
+}
+
+export function extractBearerToken(rawAuthorization?: string): string | undefined {
+  if (!rawAuthorization) return undefined;
+  const trimmed = rawAuthorization.trim();
+  if (!trimmed) return undefined;
+  if (BEARER_PREFIX_RE.test(trimmed)) {
+    const token = trimmed.replace(BEARER_PREFIX_RE, '').trim();
+    return token || undefined;
+  }
+  return undefined;
+}
+
+/**
+ * Browser/pilot requests can pass JWT in fallback headers/cookie when
+ * intermediate proxy strips `Authorization`. Normalize to `Bearer <token>`.
+ */
+export function resolveAuthorizationHeader(
+  authorizationHeader?: string,
+  headers?: Record<string, unknown>,
+): string | undefined {
+  const directToken = extractBearerToken(authorizationHeader);
+  if (directToken) {
+    return `Bearer ${directToken}`;
+  }
+  if (!headers) return authorizationHeader;
+
+  const headerTokenCandidates = [
+    readHeaderValue(headers, 'x-access-token'),
+    readHeaderValue(headers, 'x-portal-access-token'),
+    readHeaderValue(headers, 'x-auth-token'),
+  ];
+  for (const candidate of headerTokenCandidates) {
+    if (candidate) {
+      const normalized = extractBearerToken(candidate) ?? candidate.trim();
+      if (normalized) return `Bearer ${normalized}`;
+    }
+  }
+
+  const cookieHeader = readHeaderValue(headers, 'cookie');
+  if (cookieHeader) {
+    const cookieToken = (
+      parseCookie(cookieHeader, 'xevn.portal.accessToken') ??
+      parseCookie(cookieHeader, 'xevn.portal.access_token') ??
+      parseCookie(cookieHeader, 'xevn_portal_access_token')
+    )?.trim();
+    if (cookieToken) {
+      return `Bearer ${cookieToken}`;
+    }
+  }
+
+  return authorizationHeader;
+}
+
+/**
+ * Canonicalizes browser-session auth transport into `authorization` header.
+ * This runs before controllers so guard checks share one extraction path.
+ */
+export function normalizeAuthorizationHeaderInPlace(headers: Record<string, unknown>): void {
+  const currentAuthorization = readHeaderValue(headers, 'authorization');
+  const resolvedAuthorization = resolveAuthorizationHeader(currentAuthorization, headers);
+  if (resolvedAuthorization) {
+    headers.authorization = resolvedAuthorization;
+  }
 }
 
 export function isAuthorizedInternalRequest(

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
 import { XbosDbService } from '../db/xbos-db.service';
+import { PlatformAuditService } from '../platform/platform-audit.service';
+import { assertMasterGroupBootstrapScope } from '../platform/tenant-bootstrap.policy';
 import { createHash } from 'node:crypto';
 
 export type AssignmentTarget = 'hrm' | 'xbos' | 'web-portal';
@@ -40,7 +42,10 @@ export interface PublishCatalogPayload {
 
 @Injectable()
 export class ConfigSyncService {
-  constructor(private readonly db: XbosDbService) {}
+  constructor(
+    private readonly db: XbosDbService,
+    private readonly platformAudit: PlatformAuditService,
+  ) {}
 
   private readonly targetSet = new Set<AssignmentTarget>(['hrm', 'xbos', 'web-portal']);
 
@@ -417,6 +422,10 @@ export class ConfigSyncService {
       },
     ];
     for (const catalog of records) {
+      assertMasterGroupBootstrapScope({
+        tenantId: catalog.tenantId,
+        companyId: catalog.companyId,
+      });
       await this.publishCatalog(catalog.key, {
         tenantId: catalog.tenantId,
         companyId: catalog.companyId,
@@ -672,6 +681,21 @@ export class ConfigSyncService {
     `,
       [normalizedCatalogKey, validated.actor ?? 'system', JSON.stringify(persisted)],
     );
+
+    await this.platformAudit.emit({
+      actor: validated.actor ?? 'system',
+      tenantId: validated.tenantId,
+      companyId: validated.companyId,
+      action: 'config_catalog.publish',
+      entityType: 'config_catalog',
+      entityId: normalizedCatalogKey,
+      payload: {
+        version: nextVersion,
+        checksum,
+        itemCount: validated.items.length,
+        domain: validated.domain,
+      },
+    });
 
     return this.getCatalogForTarget(normalizedCatalogKey, 'xbos', validated.tenantId, validated.companyId);
   }

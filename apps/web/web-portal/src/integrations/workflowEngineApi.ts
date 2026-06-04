@@ -1,5 +1,9 @@
 import { xbosFetch, xbosGetData } from './xbosHttp';
 import type { WorkflowDefinitionApiRow } from './workflowMapper';
+import {
+  apiRowToWorkflowInstanceListItem,
+  type WorkflowInstanceListItem,
+} from './workflowInstanceMapper';
 
 function scopeInit(
   tenantIdHint?: string | null,
@@ -49,14 +53,14 @@ export async function listWorkflowInstances(
   tenantIdHint?: string | null,
   companyIdHint?: string | null,
   status?: string,
-) {
+): Promise<WorkflowInstanceListItem[]> {
   const init = scopeInit(tenantIdHint, companyIdHint);
   const q = status ? `?status=${encodeURIComponent(status)}` : '';
-  const data = await xbosGetData<{ items?: unknown[] }>(`/workflow-engine/instances${q}`, {
+  const data = await xbosGetData<{ items?: Record<string, unknown>[] }>(`/workflow-engine/instances${q}`, {
     scope: 'workflow-engine.instances.list',
     ...init,
   });
-  return data?.items ?? [];
+  return (data?.items ?? []).map((row) => apiRowToWorkflowInstanceListItem(row));
 }
 
 export type WorkflowStepTaskRow = {

@@ -5,12 +5,15 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { logHttpException } from '@xevn/platform-core';
+import type { Request } from 'express';
 
 @Catch()
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+    const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let code = 'HRM-SYS-001';
@@ -44,6 +47,15 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       message = exception.message || message;
     }
 
+    logHttpException(request.log, {
+      status,
+      code,
+      message,
+      exception,
+      method: request.method,
+      path: request.url,
+    });
+    response.setHeader('x-api-code', code);
     response.status(status).json({
       success: false,
       code,

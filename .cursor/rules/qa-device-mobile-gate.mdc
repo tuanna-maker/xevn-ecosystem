@@ -1,0 +1,27 @@
+---
+description: PM dispatches qa-device agent for J-MOB device L2.5 closure (adb, release APK).
+alwaysApply: false
+globs: apps/mobile/**,docs/qa/evidence/p1-resid-c-device*.md
+---
+
+# QA Device — mobile L2.5 gate
+
+## When PM dispatches
+
+- QC/QA **GWC** on J-MOB-03/04/05 device row tap, **Duyệt**, or payslip list empty on emulator.
+- After `dev-mobile` delivers **release APK** path with MOB-HEADER fix.
+
+## Dispatch
+
+- Prompt file: `.cursor/agents/qa-device.md`
+- Use Task `qa` with prompt «operate as **qa-device** per `.cursor/agents/qa-device.md`» until `qa-device` is a native subagent type.
+- Prerequisite: DevOps `P1-RESID-*-PILOT-RESEED` pending ≥1.
+
+## PASS
+
+- List ≥1 row, detail opens, approve UI **201** on pilot with UUID header evidence.
+- Evidence under `docs/qa/evidence/p1-resid-c-device-*.md`.
+
+## FAIL → PM
+
+- `pm_dispatch_hint` with layer: seed / APK base URL / header / FE screen.

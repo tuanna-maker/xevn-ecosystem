@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createHmac } from 'node:crypto';
+import { PATH_METADATA } from '@nestjs/common/constants';
 import { ContractsInsuranceController } from './contracts-insurance.controller';
 import { ContractsInsuranceService } from './contracts-insurance.service';
 
@@ -11,13 +12,19 @@ function createInternalJwt(payload: Record<string, unknown>) {
   return `${header}.${body}.${sig}`;
 }
 
-describe('ContractsInsuranceController', () => {
+/** UC: HRM-CI-01..07 · embed UC-HRM-25 */
+describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
   let controller: ContractsInsuranceController;
 
   const serviceMock = {
     createContract: jest.fn().mockResolvedValue({ id: 'con-1' }),
     createInsuranceRecord: jest.fn().mockResolvedValue({ id: 'ins-1' }),
+    listContracts: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'con-1' }] }),
+    getContractById: jest.fn().mockResolvedValue({ id: 'con-1' }),
     listExpiringContracts: jest.fn().mockResolvedValue({ total: 1, days: 30, data: [{ id: 'con-1' }] }),
+    updateContract: jest.fn().mockResolvedValue({ id: 'con-1', contract_type: 'permanent' }),
+    deleteContract: jest.fn().mockResolvedValue({ id: 'con-1', deleted: true }),
+    listInsurance: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ins-1' }] }),
     listExpiringInsurance: jest.fn().mockResolvedValue({ total: 1, days: 30, data: [{ id: 'ins-1' }] }),
   };
 
@@ -32,7 +39,7 @@ describe('ContractsInsuranceController', () => {
     controller = module.get<ContractsInsuranceController>(ContractsInsuranceController);
   });
 
-  it('returns deterministic contracts-insurance codes', async () => {
+  it('HRM-CI-02 create insurance HRM-CI-04 HRM-CI-07 expiring alerts return deterministic codes', async () => {
     const createContractRes = await controller.createContract(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
@@ -62,6 +69,48 @@ describe('ContractsInsuranceController', () => {
     expect(expiringInsuranceRes.code).toBe('HRM-CON-200');
   });
 
+  it('keeps GET insurance route metadata registered', () => {
+    const routePath = Reflect.getMetadata(PATH_METADATA, controller.listInsurance);
+    expect(routePath).toBe('insurance');
+  });
+
+  it('HRM-CI-03 list HRM-CI-05 update HRM-CI-06 delete contract paths', async () => {
+    const companyId = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
+    const listRes = await controller.listContracts(undefined, 'test-key', 'xevn', undefined, {
+      company_id: companyId,
+    });
+    const detailRes = await controller.getContractById(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+      { company_id: companyId },
+    );
+    const updateRes = await controller.updateContract(undefined, 'test-key', 'xevn', companyId, 'con-1', {
+      contract_type: 'permanent',
+    });
+    const deleteRes = await controller.deleteContract(undefined, 'test-key', 'xevn', companyId, 'con-1');
+    const listInsRes = await controller.listInsurance(undefined, 'test-key', 'xevn', undefined, {
+      company_id: companyId,
+    });
+
+    expect(listRes.code).toBe('HRM-CON-200');
+    expect(detailRes.code).toBe('HRM-CON-200');
+    expect(updateRes.code).toBe('HRM-CON-200');
+    expect(deleteRes.code).toBe('HRM-CON-200');
+    expect(listInsRes.code).toBe('HRM-CON-200');
+    expect(serviceMock.listContracts).toHaveBeenCalled();
+    expect(serviceMock.getContractById).toHaveBeenCalledWith(
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+      companyId,
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.updateContract).toHaveBeenCalledWith('con-1', { contract_type: 'permanent' }, companyId, undefined);
+    expect(serviceMock.deleteContract).toHaveBeenCalledWith('con-1', companyId, undefined);
+  });
+
   it('accepts internal API key and forwards contracts-insurance payloads', async () => {
     const contractBody = {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
@@ -87,10 +136,10 @@ describe('ContractsInsuranceController', () => {
     await controller.listExpiringContracts(undefined, 'test-key', 'xevn', undefined, expiringQuery);
     await controller.listExpiringInsurance(undefined, 'test-key', 'xevn', undefined, expiringQuery);
 
-    expect(serviceMock.createContract).toHaveBeenCalledWith(contractBody);
-    expect(serviceMock.createInsuranceRecord).toHaveBeenCalledWith(insuranceBody);
-    expect(serviceMock.listExpiringContracts).toHaveBeenCalledWith(expiringQuery);
-    expect(serviceMock.listExpiringInsurance).toHaveBeenCalledWith(expiringQuery);
+    expect(serviceMock.createContract).toHaveBeenCalledWith(contractBody, undefined);
+    expect(serviceMock.createInsuranceRecord).toHaveBeenCalledWith(insuranceBody, undefined);
+    expect(serviceMock.listExpiringContracts).toHaveBeenCalledWith(expiringQuery, undefined);
+    expect(serviceMock.listExpiringInsurance).toHaveBeenCalledWith(expiringQuery, undefined);
   });
 
   it('blocks unauthorized contracts-insurance access', async () => {
@@ -112,6 +161,25 @@ describe('ContractsInsuranceController', () => {
     expect(serviceMock.listExpiringContracts).not.toHaveBeenCalled();
   });
 
+  it('BR-INS-01: lists insurance for embed with company_id=main (group CEO)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const result = await controller.listInsurance(`Bearer ${token}`, undefined, 'xevn', 'main', {
+      company_id: 'main',
+    });
+    expect(result.code).toBe('HRM-CON-200');
+    expect(serviceMock.listInsurance).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+  });
+
   it('rejects company scope mismatch against token', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
@@ -129,5 +197,43 @@ describe('ContractsInsuranceController', () => {
       }),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.createContract).not.toHaveBeenCalled();
+  });
+
+  it('accepts x-access-token fallback header for contracts and insurance lists', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const contractsRes = await controller.listContracts(
+      undefined,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+      { 'x-access-token': token },
+    );
+    const insuranceRes = await controller.listInsurance(
+      undefined,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+      { 'x-access-token': token },
+    );
+
+    expect(contractsRes.code).toBe('HRM-CON-200');
+    expect(insuranceRes.code).toBe('HRM-CON-200');
+    expect(serviceMock.listContracts).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.listInsurance).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
   });
 });

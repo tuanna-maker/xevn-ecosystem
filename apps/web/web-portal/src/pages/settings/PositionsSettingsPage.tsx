@@ -13,14 +13,19 @@ import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { listPositionTemplates, savePositionTemplate } from '../../integrations/positionRbacApi';
 import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const PositionsSettingsPage: React.FC = () => {
   const { selectedCompany, companies: globalCompanies } = useGlobalFilter();
   const { companies } = useCompanyFilterOptions();
   const { tenantId, companyId } = useTenantScope();
   const [positions, setPositions] = useState<Position[]>([]);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [usingMockFallback, setUsingMockFallback] = useState(false);
   useEffect(() => {
+    setLoadFailed(false);
+    setUsingMockFallback(false);
     void listPositionTemplates(tenantId, companyId)
       .then((templates) => {
         if (templates.length) {
@@ -42,7 +47,13 @@ const PositionsSettingsPage: React.FC = () => {
         });
       })
       .catch(() => {
-        setPositions(allowMockFallback() ? mockPositions : []);
+        setLoadFailed(true);
+        if (allowMockFallback()) {
+          setPositions(mockPositions);
+          setUsingMockFallback(true);
+        } else {
+          setPositions([]);
+        }
       });
   }, [tenantId, companyId]);
 
@@ -242,6 +253,11 @@ const PositionsSettingsPage: React.FC = () => {
             Thêm chức vụ mới
           </Button>
         }
+      />
+      <ApiLoadBanner
+        loadFailed={loadFailed && !allowMockFallback()}
+        usingMockFallback={usingMockFallback}
+        message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />
 
       {/* Info Banner */}

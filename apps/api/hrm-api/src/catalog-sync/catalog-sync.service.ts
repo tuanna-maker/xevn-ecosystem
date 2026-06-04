@@ -16,6 +16,17 @@ export interface HrmSyncedCatalog {
   payload: unknown;
 }
 
+export interface HrmCatalogSyncStatus {
+  tenantId: string;
+  companyId: string;
+  key: 'status';
+  source: 'hrm';
+  status: 'connected';
+  hasSyncedCatalogs: boolean;
+  totalSyncedCatalogs: number;
+  lastSyncedAt: string | null;
+}
+
 @Injectable()
 export class CatalogSyncService {
   private readonly xbosApiUrl = process.env.XBOS_API_URL ?? 'http://localhost:3002';
@@ -268,6 +279,26 @@ export class CatalogSyncService {
         }) as HrmSyncedCatalog,
     );
     return { total: data.length, data };
+  }
+
+  async getCatalogSyncStatus(tenantId: string, companyId: string): Promise<HrmCatalogSyncStatus> {
+    const catalogs = await this.listSyncedCatalogs(tenantId, companyId);
+    const lastSyncedAt =
+      catalogs.data.reduce<string | null>((latest, item) => {
+        if (!latest) return item.syncedAt;
+        return item.syncedAt > latest ? item.syncedAt : latest;
+      }, null) ?? null;
+
+    return {
+      tenantId,
+      companyId,
+      key: 'status',
+      source: 'hrm',
+      status: 'connected',
+      hasSyncedCatalogs: catalogs.total > 0,
+      totalSyncedCatalogs: catalogs.total,
+      lastSyncedAt,
+    };
   }
 
   /**

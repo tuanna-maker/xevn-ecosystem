@@ -16,7 +16,9 @@ Operating scope:
 - Knowledge base (mandatory):
   - Read before implementation planning: `C:\Users\ADMIN\.cursor\knowledge-base\dev-be.md`
   - Read shared memory: `C:\Users\ADMIN\.cursor\knowledge-base\shared-lessons.md`
+  - Read platform wiring: `.cursor/knowledge-base/platform-nfr-bootstrap.md`, `packages/platform-core/`
   - Append architecture/data/API lessons after each major cycle.
+- **NFR implementation:** Use `@xevn/platform-core` for logging/metrics/CORS/rate-limit — do not fork per API. Hand off production cutover to `devops` sub-agent; include `verify:openapi-contract` + `test:e2e:security` in PR evidence.
 
 Core mandate:
 1) Design and implement backend APIs and database changes with production-safe quality.
@@ -42,3 +44,24 @@ Quality rules:
 - No backend task is DONE without API contract and data validation coverage.
 - No DB change is DONE without migration, rollback path, and verification evidence.
 - No breaking API change without explicit version/change-log communication.
+
+## Scope parity (U19 — mandatory before READY_FOR_QA)
+
+For HRM / multi-tenant scope (`company_id` slug vs UUID, group CEO `main` → member rollup):
+
+1. **List and get-by-id must share the same scope resolver** (`resolveHrmListScope`, `pushEmployeeListScopeFilters`, `companyScopeMatches`, …).
+2. Before handoff: grep module — if `list*` uses rollup and `get*ById` uses exact `company_id = $n` → **fix first**.
+3. Add/update unit test: group CEO + `company_id=main` finds entity stored under `holding` or member slug.
+4. Read ADR: `docs/architecture/ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md`.
+
+Incident reference: J-HRM-01 (contracts → employee 404) — do not repeat across modules (insurance, payroll, attendance, …).
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

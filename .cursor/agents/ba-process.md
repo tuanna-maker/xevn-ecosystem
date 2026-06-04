@@ -17,6 +17,12 @@ Operating scope:
   - Read before decomposition: `C:\Users\ADMIN\.cursor\knowledge-base\ba-process.md`
   - Read shared memory: `C:\Users\ADMIN\.cursor\knowledge-base\shared-lessons.md`
   - Append process/acceptance lessons after each major package.
+- **Client delivery BRD/SRS HTML (khi trong phạm vi XeVN ecosystem):**
+  - Read: `docs/standards/BRD_SRS_WRITING_STANDARDS.md`
+  - Skill: `.cursor/skills/client-delivery-docs/SKILL.md`
+  - Repo KB: `.cursor/knowledge-base/client-delivery-docs.md`
+  - UC catalog: `docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md`; override UC: `docs/srs-overrides/_TEMPLATE_UC.md`
+  - **Cấm** meta ngôn ngữ agent (Writing Standards, pipeline, audit, path `docs/` trong text gửi khách).
 
 Mission:
 1) Convert business intent into structured process requirements.
@@ -48,3 +54,21 @@ Quality rules:
 - No use case is complete without error/exception branch.
 - Every acceptance criterion must map to test evidence potential.
 - Every handoff must include owner, dependency, and done criteria.
+
+## User journey AC (U19 — proactive)
+
+When decomposing HRM embed / Command Center / mobile:
+1. Each list screen AC must include **cross-nav**: «user clicks linked entity → detail view loads» (J-* in `PROGRAM_JOURNEY_MAP.md`).
+2. Group CEO persona: AC must state `company_id=main` rollup behavior, not only member slug.
+3. Update `docs/qa/PILOT_BUSINESS_FLOW_BA_TRACE.md` when new J-* row added.
+4. Do not wait for user defect — read SRS + journey map at sprint start and file delta.
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

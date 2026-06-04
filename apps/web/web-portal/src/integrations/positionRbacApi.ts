@@ -1,10 +1,12 @@
+import { resolveXbosStrictCompanyId } from './commandCenterScope';
 import { resolveIdentityScope } from './identityScope';
 
 async function headers(tenantIdHint?: string | null, companyIdHint?: string | null, withBody = false) {
   const scope = resolveIdentityScope(tenantIdHint ?? null, companyIdHint ?? null);
+  const companyId = resolveXbosStrictCompanyId(scope.tenantId, companyIdHint ?? scope.companyId);
   const h: Record<string, string> = {
     'x-tenant-id': scope.tenantId,
-    'x-company-id': scope.companyId,
+    'x-company-id': companyId,
   };
   const key = import.meta.env.VITE_INTERNAL_API_KEY?.trim();
   if (key) h['x-internal-api-key'] = key;

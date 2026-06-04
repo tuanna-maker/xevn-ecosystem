@@ -10,11 +10,26 @@ import { EmployeesModule } from './employees/employees.module';
 import { FleetModule } from './fleet/fleet.module';
 import { PayrollController } from './payroll/payroll.controller';
 import { PayrollService } from './payroll/payroll.service';
+import { PayrollCatalogService } from './payroll/payroll-catalog.service';
+import { AttendanceCatalogService } from './attendance/attendance-catalog.service';
 import { AttendanceController } from './attendance/attendance.controller';
 import { AttendanceService } from './attendance/attendance.service';
+import { AttendanceRequestsService } from './attendance/attendance-requests.service';
 import { LeaveRequestsService } from './attendance/leave-requests.service';
+import { AttendanceOverviewService } from './attendance/attendance-overview.service';
 import { RecruitmentController } from './recruitment/recruitment.controller';
+import { RecruitmentCatalogService } from './recruitment/recruitment-catalog.service';
 import { RecruitmentService } from './recruitment/recruitment.service';
+import { DecisionsController } from './decisions/decisions.controller';
+import { DecisionsService } from './decisions/decisions.service';
+import { DepartmentsController } from './departments/departments.controller';
+import { DepartmentsService } from './departments/departments.service';
+import { EmployeeBenefitsController } from './employee-benefits/employee-benefits.controller';
+import { EmployeeBenefitsService } from './employee-benefits/employee-benefits.service';
+import { EmployeeInsurancesController } from './employee-insurances/employee-insurances.controller';
+import { EmployeeInsurancesService } from './employee-insurances/employee-insurances.service';
+import { EmployeeKpisController } from './employee-kpis/employee-kpis.controller';
+import { EmployeeKpisService } from './employee-kpis/employee-kpis.service';
 import { ContractsInsuranceController } from './contracts-insurance/contracts-insurance.controller';
 import { ContractsInsuranceService } from './contracts-insurance/contracts-insurance.service';
 import { OperationsController } from './operations/operations.controller';
@@ -34,6 +49,11 @@ import { HrmInboxService } from './notifications/hrm-inbox.service';
 import { NotificationsController } from './notifications/notifications.controller';
 import { PushOutboundService } from './notifications/push-outbound.service';
 import { WebhookOutboundService } from './notifications/webhook-outbound.service';
+import { MobileAuthController } from './auth/mobile-auth.controller';
+import { MobileAuthService } from './auth/mobile-auth.service';
+import { PlatformQueueService } from './queue/platform-queue.service';
+import { CatalogExtensionsController } from './catalog-extensions/catalog-extensions.controller';
+import { CatalogExtensionsService } from './catalog-extensions/catalog-extensions.service';
 
 @Module({
   imports: [CoreModule, EmployeesModule, FleetModule, SpreadsheetModule],
@@ -46,12 +66,20 @@ import { WebhookOutboundService } from './notifications/webhook-outbound.service
     AttendanceController,
     RecruitmentController,
     ContractsInsuranceController,
+    DecisionsController,
+    DepartmentsController,
+    EmployeeInsurancesController,
+    EmployeeBenefitsController,
+    EmployeeKpisController,
     OperationsController,
     EmployeeMetadataController,
     PerformanceController,
     NotificationsController,
+    MobileAuthController,
+    CatalogExtensionsController,
   ],
   providers: [
+    MobileAuthService,
     HrmRealtimeService,
     HrmRealtimeGateway,
     HrmInboxService,
@@ -63,14 +91,26 @@ import { WebhookOutboundService } from './notifications/webhook-outbound.service
     SettingsCatalogsService,
     XbosCatalogWorkflowBridge,
     PayrollService,
+    PayrollCatalogService,
+    AttendanceCatalogService,
     AttendanceService,
     LeaveRequestsService,
+    AttendanceOverviewService,
+    AttendanceRequestsService,
     RecruitmentService,
+    RecruitmentCatalogService,
     ContractsInsuranceService,
+    DecisionsService,
+    DepartmentsService,
+    EmployeeInsurancesService,
+    EmployeeBenefitsService,
+    EmployeeKpisService,
     OperationsService,
     EmployeeMetadataService,
     EmployeeMetadataRepository,
     PerformanceService,
+    PlatformQueueService,
+    CatalogExtensionsService,
   ],
 })
 export class AppModule {}

@@ -96,16 +96,16 @@ const HEADER_TO_FIELD = {
 };
 
 const TOURISM_STAFF = [
-  { code: 'DL-001', name: 'Nguyễn Minh Tuấn', email: 'ceo@xe-du-lich.vn', title: 'CEO', base: 85000000 },
-  { code: 'DL-002', name: 'Trần Thị Hương', email: 'hr@xe-du-lich.vn', title: 'HR_MANAGER', base: 32000000 },
-  { code: 'DL-003', name: 'Lê Văn Phúc', email: 'dieuhanh@xe-du-lich.vn', title: 'DISPATCH', base: 28000000 },
-  { code: 'DL-004', name: 'Phạm Quốc Bình', email: 'ketoan@xe-du-lich.vn', title: 'ACCOUNTANT', base: 26000000 },
-  { code: 'DL-005', name: 'Hoàng Thị Lan', email: 'fleet@xe-du-lich.vn', title: 'FLEET_MANAGER', base: 30000000 },
-  { code: 'DL-006', name: 'Vũ Đức Anh', email: 'laixe01@xe-du-lich.vn', title: 'DRIVER', base: 15000000 },
-  { code: 'DL-007', name: 'Đỗ Minh Khôi', email: 'laixe02@xe-du-lich.vn', title: 'DRIVER', base: 15000000 },
-  { code: 'DL-008', name: 'Bùi Thanh Tùng', email: 'laixe03@xe-du-lich.vn', title: 'DRIVER', base: 14800000 },
-  { code: 'DL-009', name: 'Ngô Văn Hải', email: 'laixe04@xe-du-lich.vn', title: 'DRIVER', base: 14700000 },
-  { code: 'DL-010', name: 'Đặng Thị Mai', email: 'cs@xe-du-lich.vn', title: 'CS', base: 18000000 },
+  { code: 'DL-001', name: 'Nguyễn Minh Tuấn', email: 'du-lich.ceo@xe.vn', title: 'CEO', base: 85000000 },
+  { code: 'DL-002', name: 'Trần Thị Hương', email: 'du-lich.hr@xe.vn', title: 'HR_MANAGER', base: 32000000 },
+  { code: 'DL-003', name: 'Lê Văn Phúc', email: 'du-lich.dieuhanh@xe.vn', title: 'DISPATCH', base: 28000000 },
+  { code: 'DL-004', name: 'Phạm Quốc Bình', email: 'du-lich.ketoan@xe.vn', title: 'ACCOUNTANT', base: 26000000 },
+  { code: 'DL-005', name: 'Hoàng Thị Lan', email: 'du-lich.fleet@xe.vn', title: 'FLEET_MANAGER', base: 30000000 },
+  { code: 'DL-006', name: 'Vũ Đức Anh', email: 'du-lich.laixe01@xe.vn', title: 'DRIVER', base: 15000000 },
+  { code: 'DL-007', name: 'Đỗ Minh Khôi', email: 'du-lich.laixe02@xe.vn', title: 'DRIVER', base: 15000000 },
+  { code: 'DL-008', name: 'Bùi Thanh Tùng', email: 'du-lich.laixe03@xe.vn', title: 'DRIVER', base: 14800000 },
+  { code: 'DL-009', name: 'Ngô Văn Hải', email: 'du-lich.laixe04@xe.vn', title: 'DRIVER', base: 14700000 },
+  { code: 'DL-010', name: 'Đặng Thị Mai', email: 'du-lich.cs@xe.vn', title: 'CS', base: 18000000 },
 ];
 
 const PAYROLL_MONTHS = [
@@ -355,7 +355,7 @@ async function main() {
       [COMPANY, TENANT],
     );
     console.log('Tổng trong DB:', summary.rows[0]);
-    console.log('\nĐăng nhập Portal: ceo@xe-du-lich.vn / Xevn@2026 → tenant xe-du-lich');
+    console.log('\nĐăng nhập Portal: du-lich.ceo@xe.vn / Xevn@2026 → tenant xe-du-lich');
   } finally {
     client.release();
     await pool.end();

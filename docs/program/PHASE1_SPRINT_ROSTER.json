@@ -1,0 +1,38 @@
+{
+  "$schema": "phase1-sprint-roster-v1",
+  "program": "PHASE1_AGILE_SCRUM",
+  "active_sprint": "S0",
+  "orchestration": "RUN",
+  "updated": "2026-05-23T00:00:00Z",
+  "sprints": {
+    "S0": {
+      "name": "Pilot zero-defect",
+      "status": "active",
+      "goal": "P-CC-01..08 PASS, vitest portal PASS",
+      "assignments": [
+        { "work_item_id": "P1-S0-PM-01", "role": "pm", "status": "in_progress" },
+        { "work_item_id": "P1-S0-DO-01", "role": "devops", "status": "dispatched" },
+        { "work_item_id": "P1-S0-FE-01", "role": "dev-fe", "status": "dispatched" },
+        { "work_item_id": "P1-S0-FE-02", "role": "dev-fe", "status": "dispatched" },
+        { "work_item_id": "P1-S0-BA-P-01", "role": "ba-process", "status": "dispatched" },
+        { "work_item_id": "P1-S0-BA-D-01", "role": "ba-data", "status": "done" },
+        { "work_item_id": "P1-S0-BE-01", "role": "dev-be", "status": "dispatched" },
+        { "work_item_id": "P1-S0-SA-01", "role": "sa", "status": "dispatched" },
+        { "work_item_id": "P1-S0-MOB-01", "role": "dev-mobile", "status": "ready_for_qa", "evidence": "docs/qa/evidence/scrum-s0-mobile-smoke-20260523.md" },
+        { "work_item_id": "P1-S0-QA-01", "role": "qa", "status": "dispatched" },
+        { "work_item_id": "P1-S0-TM-01", "role": "technical-manager", "status": "dispatched" },
+        { "work_item_id": "P1-S0-QC-01", "role": "qc", "status": "wait_qa", "depends": ["P1-S0-QA-01", "P1-S0-FE-01"] }
+      ]
+    },
+    "S1": { "name": "XBOS planned to be", "status": "queued" },
+    "S2": { "name": "XBOS e2e_pass 104", "status": "queued" },
+    "S3": { "name": "HRM 119 UC", "status": "queued" },
+    "S4": { "name": "DM 183 + DM-LOG 22", "status": "queued" },
+    "S5": { "name": "Phase 1 gate", "status": "queued" }
+  },
+  "done_criteria": {
+    "impl_status_planned_max": 0,
+    "phase1_gate_exit": 0,
+    "qc_verdict": "GO"
+  }
+}

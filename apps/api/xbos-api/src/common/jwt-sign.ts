@@ -5,7 +5,13 @@ function base64UrlEncode(input: Buffer): string {
   return input.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
-export function signServiceJwt(claims: Record<string, unknown>, ttlSec = 12 * 60 * 60): string {
+/** Default service JWT lifetime (24h) — portal login must pass explicit TTL. */
+export const DEFAULT_SERVICE_JWT_TTL_SEC = 24 * 60 * 60;
+
+export function signServiceJwt(
+  claims: Record<string, unknown>,
+  ttlSec: number = DEFAULT_SERVICE_JWT_TTL_SEC,
+): string {
   const secret =
     process.env.SERVICE_JWT_SECRET ??
     (process.env.NODE_ENV !== 'production' ? 'xevn-dev-jwt-secret' : undefined);

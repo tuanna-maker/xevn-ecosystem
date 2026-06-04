@@ -19,22 +19,25 @@
 
 ## 3. Ma Trận Use Case → Hạng Mục Công Việc
 
-| UC | Tên | Màn hình / module | API chính (hrm-api) | Giai đoạn | Ghi chú triển khai |
-|---|---|---|---|---|---|
-| UC-HRM-MOB-01 | Đăng nhập & phiên | `features/auth/LoginScreen.tsx` | `GET /api/hrm` | P0 | Form: Bearer token + (tuỳ chọn) internal key dev; lưu `expo-secure-store` |
+Backlog chi tiết: [`MOBILE_BACKLOG.md`](MOBILE_BACKLOG.md).
+
+| UC | work_item_id | Tên | Màn hình / module | API chính (hrm-api) | Giai đoạn | Ghi chú triển khai |
+|---|---|---|---|---|---|---|
+| UC-HRM-MOB-01 | MOB-103 | Đăng nhập & phiên | `features/auth/LoginScreen.tsx` | `POST /api/hrm/auth/mobile/login`, `POST .../refresh` | P0.5 | Email/password pilot + dev JWT; SecureStore |
 | UC-HRM-MOB-02 | Phạm vi công ty | `features/auth/ScopeScreen.tsx` + Cài đặt + `AuthContext` | Headers mọi request | P0 | `ScopeScreen`: chỉnh tenant / companyId / UUID / employeeId, lưu SecureStore |
 | UC-HRM-MOB-03 | Dashboard | `features/dashboard/DashboardScreen.tsx` | `GET /api/hrm`, `GET .../employees`, `GET .../attendance/records` | P0 | `Promise.allSettled` tối đa 4 request; card lỗi từng phần |
 | UC-HRM-MOB-04 | Chấm công | `features/attendance/CheckInScreen.tsx` | `POST /api/hrm/attendance/records` | P0 | Body `CreateAttendanceRecordDto`; chọn `employee_id` từ danh sách |
 | UC-HRM-MOB-05 | Lịch sử chấm công | `features/attendance/AttendanceHistoryScreen.tsx` | `GET /api/hrm/attendance/records` | P0 | Query `company_id`, `employee_id`, `from_date`, `to_date` |
 | UC-HRM-MOB-06 | Tạo đơn cập nhật công | `features/attendance/CreateUpdateRequestScreen.tsx` | `POST /api/hrm/attendance/update-requests` | P0 | Form tối thiểu theo `CreateAttendanceUpdateRequestDto` |
-| UC-HRM-MOB-07 | Danh sách đơn | `features/attendance/UpdateRequestsScreen.tsx` | `GET /api/hrm/attendance/update-requests` | P0 | Query `company_id`, `status` |
-| UC-HRM-MOB-08 | Phê duyệt đơn | `features/attendance/ManagerApprovalsScreen.tsx` | `POST .../update-requests/:id/approve`, `POST .../reject` | P1 | Body `DecideAttendanceUpdateRequestDto` |
-| UC-HRM-MOB-09 | Tóm tắt lương | `features/payroll/PayrollSummaryScreen.tsx` | `GET /api/hrm/payroll/...` | P1 | Gọi `GET .../payroll/periods` + danh sách thật |
+| UC-HRM-MOB-07 | MOB-101 | Danh sách đơn nghỉ | `LeaveRequestsListScreen.tsx` | `GET .../leave-requests?employee_id=` | P0.5 | MOB-BE-01 |
+| UC-HRM-MOB-07 | MOB-104 | Danh sách / chi tiết đơn công | `UpdateRequestsScreen.tsx`, `UpdateRequestDetailScreen.tsx` | `GET .../update-requests` | P0.5 | `employee_id` filter |
+| UC-HRM-MOB-08 | MOB-301 | Phê duyệt đơn | `ManagerApprovalsScreen.tsx` | approve/reject + `manager_employee_id` | P1 | MOB-BE-02 team scope |
+| UC-HRM-MOB-09 | MOB-202 | Tóm tắt lương | `PayrollSummaryScreen.tsx`, `PayslipList/Detail` | `GET .../payroll/payslips` | P1 | MOB-BE-05 |
 | UC-HRM-MOB-10 | Hợp đồng / BH | `features/contracts/ContractsScreen.tsx` | `GET /api/hrm/contracts-insurance/...` | P1 | Read-only list |
 | UC-HRM-MOB-11 | Tasks / dịch vụ | `features/operations/OperationsScreen.tsx` | `GET /api/hrm/operations/...` | P1 | Tab danh sách |
 | UC-HRM-MOB-12 | Hồ sơ cá nhân | `features/profile/ProfileScreen.tsx` | `GET/PATCH .../employees/:id` | P1 | `employee_id` từ cấu hình hoặc danh sách |
-| UC-HRM-MOB-13 | Thông báo | `features/notifications/InAppNotificationsScreen.tsx` | Tổng hợp từ fetch định kỳ / pull | P0/P1 | Badge trên tab; push = backlog |
-| UC-HRM-MOB-14 | Ngoại tuyến | `integrations/networkState.ts` + `NetworkContext` + banner | Không ghi khi offline | P2 | `HRM-MOB-ERR-OFFLINE` khi ghi |
+| UC-HRM-MOB-13 | MOB-201 | Thông báo | `InAppNotificationsScreen.tsx` | inbox + mark read; MOB-205 push | P1 | Badge manager tab |
+| UC-HRM-MOB-14 | MOB-401 | Ngoại tuyến | `offlineQueue.ts`, `OfflineSync` | Queue POST khi offline | P2 | Flush khi online |
 | UC-HRM-MOB-15 | Đăng xuất | `features/settings/SettingsScreen.tsx` | Xoá SecureStore | P0 | Nút đăng xuất |
 
 ## 4. Cấu Trúc Thư Mục (Đích)

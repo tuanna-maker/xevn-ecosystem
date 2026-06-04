@@ -33,9 +33,9 @@ export function ContractsScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    const companyId = auth.companyId.trim();
+    const companyId = auth.getAttendanceCompanyId();
     if (!companyId) {
-      setErr('Thiếu companyId header.');
+      setErr('Thiếu UUID công ty (membership company_uuid).');
       return;
     }
     const q = new URLSearchParams({ company_id: companyId });

@@ -40,7 +40,7 @@ describe('OperationsController', () => {
     controller = module.get<OperationsController>(OperationsController);
   });
 
-  it('returns deterministic operations codes', async () => {
+  it('HRM-OP-01 create HRM-OP-02 list HRM-OP-03 update HRM-OP-04 summary operations codes', async () => {
     const createRes = await controller.createTask(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       title: 'Follow up recruiting pipeline',
@@ -92,10 +92,143 @@ describe('OperationsController', () => {
     await controller.updateTaskStatus('task-1', undefined, 'test-key', 'xevn', createBody.company_id, statusBody);
     await controller.getSummary(undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037');
 
-    expect(serviceMock.createTask).toHaveBeenCalledWith(createBody);
-    expect(serviceMock.listTasks).toHaveBeenCalledWith(listQuery);
-    expect(serviceMock.updateTaskStatus).toHaveBeenCalledWith('task-1', statusBody);
-    expect(serviceMock.getSummary).toHaveBeenCalledWith('78b8a663-f5e5-4f4d-a020-b8f950ec2037');
+    expect(serviceMock.createTask).toHaveBeenCalledWith(createBody, undefined, 'xevn');
+    expect(serviceMock.listTasks).toHaveBeenCalledWith(listQuery, undefined, 'xevn');
+    expect(serviceMock.updateTaskStatus).toHaveBeenCalledWith(
+      'task-1',
+      statusBody,
+      createBody.company_id,
+      undefined,
+      'xevn',
+    );
+    expect(serviceMock.getSummary).toHaveBeenCalledWith('78b8a663-f5e5-4f4d-a020-b8f950ec2037', undefined, 'xevn');
+  });
+
+  it('HRM-OP-02 accepts portal slug company_id=main for task list', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.listTasks(`Bearer ${token}`, 'test-key', 'xevn', 'main', {
+      company_id: 'main',
+    });
+    expect(res.code).toBe('HRM-OPS-200');
+    expect(serviceMock.listTasks).toHaveBeenCalledWith({ company_id: 'main' }, `Bearer ${token}`, 'xevn');
+  });
+
+  const svcBody = {
+    company_id: '10000000-0000-4000-8000-000000000001',
+    service_type: 'meal' as const,
+    employee_name: 'Nguyen Van A',
+    request_date: '2026-04-28',
+  };
+  const svcId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+
+  it('HRM-SV-01: create service request returns HRM-SVC-201', async () => {
+    const createRes = await controller.createServiceRequest(undefined, 'test-key', 'xevn', undefined, svcBody);
+    expect(createRes.code).toBe('HRM-SVC-201');
+  });
+
+  it('HRM-SV-03: update service request returns HRM-SVC-202', async () => {
+    const updateRes = await controller.updateServiceRequest(
+      svcId,
+      undefined,
+      'test-key',
+      'xevn',
+      svcBody.company_id,
+      { status: 'pending' },
+    );
+    expect(updateRes.code).toBe('HRM-SVC-202');
+  });
+
+  it('HRM-SV-04: delete service request returns HRM-SVC-205', async () => {
+    const deleteRes = await controller.deleteServiceRequest(
+      svcId,
+      undefined,
+      'test-key',
+      'xevn',
+      svcBody.company_id,
+    );
+    expect(deleteRes.code).toBe('HRM-SVC-205');
+  });
+
+  it('HRM-SV-05: approve service request returns HRM-SVC-203', async () => {
+    const approveRes = await controller.approveServiceRequest(
+      svcId,
+      undefined,
+      'test-key',
+      'xevn',
+      svcBody.company_id,
+      { approved_by: 'hr-1' },
+    );
+    expect(approveRes.code).toBe('HRM-SVC-203');
+  });
+
+  it('HRM-SV-06: reject service request returns HRM-SVC-204', async () => {
+    const rejectRes = await controller.rejectServiceRequest(
+      svcId,
+      undefined,
+      'test-key',
+      'xevn',
+      svcBody.company_id,
+      { rejected_reason: 'no budget' },
+    );
+    expect(rejectRes.code).toBe('HRM-SVC-204');
+  });
+
+  it('HRM-SV-02 accepts portal slug company_id=main for service request list', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.listServiceRequests(`Bearer ${token}`, 'test-key', 'xevn', 'main', {
+      company_id: 'main',
+    });
+    expect(res.code).toBe('HRM-SVC-200');
+    expect(serviceMock.listServiceRequests).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      'xevn',
+    );
+  });
+
+  it('HRM-SV-02 accepts page_size on service request list (P1-CLOSE-BE-W5)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.listServiceRequests(`Bearer ${token}`, 'test-key', 'xevn', 'main', {
+      company_id: 'main',
+      page_size: 10,
+    });
+    expect(res.code).toBe('HRM-SVC-200');
+    expect(serviceMock.listServiceRequests).toHaveBeenCalledWith(
+      { company_id: 'main', page_size: 10 },
+      `Bearer ${token}`,
+      'xevn',
+    );
+  });
+
+  it('UC-HRM-20 accepts portal slug company_id=main for operations summary', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.getSummary(`Bearer ${token}`, 'test-key', 'xevn', 'main');
+    expect(res.code).toBe('HRM-OPS-200');
+    expect(serviceMock.getSummary).toHaveBeenCalledWith('main', `Bearer ${token}`, 'xevn');
   });
 
   it('validates required scope for summary', async () => {

@@ -1,7 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  addPaymentBatchRecord,
+  createPaymentBatch,
+  deletePaymentBatch,
+  listPaymentBatchRecords,
+  listPaymentBatches,
+  processPaymentBatch,
+  processPaymentBatchRecord,
+  updatePaymentBatch,
+} from '@/integrations/hrmApi';
 
 export interface PaymentBatch {
   id: string;
@@ -57,216 +67,159 @@ export interface PaymentBatchFormData {
   payment_date?: string;
 }
 
+function mapBatch(row: Record<string, unknown>): PaymentBatch {
+  return {
+    ...(row as PaymentBatch),
+    employee_count: Number(row.employee_count ?? 0),
+    total_amount: Number(row.total_amount ?? 0),
+    paid_count: Number(row.paid_count ?? 0),
+    paid_amount: Number(row.paid_amount ?? 0),
+  };
+}
+
 export const usePaymentBatches = () => {
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch all payment batches
   const { data: batches = [], isLoading, refetch } = useQuery({
     queryKey: ['payment-batches', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-
-      const { data, error } = await supabase
-        .from('payment_batches')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as PaymentBatch[];
+      const res = await listPaymentBatches(currentCompanyId);
+      return (res.data ?? []).map(mapBatch);
     },
     enabled: !!currentCompanyId,
   });
 
-  // Fetch records for a batch
   const fetchBatchRecords = async (batchId: string): Promise<PaymentRecord[]> => {
-    const { data, error } = await supabase
-      .from('payment_records')
-      .select('*')
-      .eq('payment_batch_id', batchId)
-      .order('employee_name', { ascending: true });
-
-    if (error) throw error;
-    return data as PaymentRecord[];
+    if (!currentCompanyId) return [];
+    try {
+      const res = await listPaymentBatchRecords(batchId, currentCompanyId);
+      return (res.data ?? []).map((row) => ({
+        ...(row as PaymentRecord),
+        amount: Number((row as PaymentRecord).amount ?? 0),
+      }));
+    } catch (error: unknown) {
+      console.error('Error fetching payment records:', error);
+      return [];
+    }
   };
 
-  // Create batch mutation
   const createBatchMutation = useMutation({
     mutationFn: async (formData: PaymentBatchFormData) => {
       if (!currentCompanyId) throw new Error('No company selected');
-
-      const { data, error } = await supabase
-        .from('payment_batches')
-        .insert({
-          company_id: currentCompanyId,
-          ...formData,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+      return createPaymentBatch({ company_id: currentCompanyId, ...formData });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
       toast.success('Đã tạo bảng chi trả');
     },
-    onError: () => {
-      toast.error('Lỗi khi tạo bảng chi trả');
-    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi tạo bảng chi trả')),
   });
 
-  // Update batch mutation
   const updateBatchMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<PaymentBatch> }) => {
-      const { error } = await supabase
-        .from('payment_batches')
-        .update(data)
-        .eq('id', id);
-
-      if (error) throw error;
+    mutationFn: async ({ id, data }: { id: string; data: Partial<PaymentBatchFormData> }) => {
+      if (!currentCompanyId) throw new Error('No company selected');
+      return updatePaymentBatch(id, currentCompanyId, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
       toast.success('Đã cập nhật bảng chi trả');
     },
-    onError: () => {
-      toast.error('Lỗi khi cập nhật bảng chi trả');
-    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi cập nhật bảng chi trả')),
   });
 
-  // Delete batch mutation
   const deleteBatchMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('payment_batches')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      if (!currentCompanyId) throw new Error('No company selected');
+      return deletePaymentBatch(id, currentCompanyId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
       toast.success('Đã xóa bảng chi trả');
     },
-    onError: () => {
-      toast.error('Lỗi khi xóa bảng chi trả');
-    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi xóa bảng chi trả')),
   });
 
-  // Process payment for single record
   const processPaymentMutation = useMutation({
-    mutationFn: async ({ recordId, batchId, transactionRef }: { 
-      recordId: string; 
+    mutationFn: async ({
+      batchId,
+      recordId,
+      transactionRef,
+      notes,
+    }: {
       batchId: string;
+      recordId: string;
       transactionRef?: string;
+      notes?: string;
     }) => {
-      const { error } = await supabase
-        .from('payment_records')
-        .update({
-          status: 'paid',
-          paid_at: new Date().toISOString(),
-          transaction_ref: transactionRef,
-        })
-        .eq('id', recordId);
-
-      if (error) throw error;
-
-      // Update batch paid count and amount
-      await updateBatchPaymentStats(batchId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
-      toast.success('Đã chi trả thành công');
-    },
-    onError: () => {
-      toast.error('Lỗi khi chi trả');
-    },
-  });
-
-  // Process all payments in a batch
-  const processAllPaymentsMutation = useMutation({
-    mutationFn: async (batchId: string) => {
-      const { error } = await supabase
-        .from('payment_records')
-        .update({
-          status: 'paid',
-          paid_at: new Date().toISOString(),
-        })
-        .eq('payment_batch_id', batchId)
-        .eq('status', 'pending');
-
-      if (error) throw error;
-
-      // Update batch status
-      await supabase
-        .from('payment_batches')
-        .update({
-          status: 'completed',
-          processed_at: new Date().toISOString(),
-        })
-        .eq('id', batchId);
-
-      await updateBatchPaymentStats(batchId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
-      toast.success('Đã chi trả toàn bộ thành công');
-    },
-    onError: () => {
-      toast.error('Lỗi khi chi trả');
-    },
-  });
-
-  // Add record to batch
-  const addRecordMutation = useMutation({
-    mutationFn: async (data: Omit<PaymentRecord, 'id' | 'created_at' | 'updated_at'>) => {
       if (!currentCompanyId) throw new Error('No company selected');
+      return processPaymentBatchRecord(batchId, recordId, currentCompanyId, {
+        transaction_ref: transactionRef,
+        notes,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
+    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi chi trả')),
+  });
 
-      const { data: result, error } = await supabase
-        .from('payment_records')
-        .insert({
-          company_id: currentCompanyId,
-          ...data,
-        })
-        .select()
-        .single();
+  const processAllPaymentsMutation = useMutation({
+    mutationFn: async ({ batchId, notes }: { batchId: string; notes?: string }) => {
+      if (!currentCompanyId) throw new Error('No company selected');
+      return processPaymentBatch(batchId, currentCompanyId, { notes });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
+      toast.success('Đã gửi lệnh chi trả toàn bộ');
+    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi chi trả toàn bộ')),
+  });
 
-      if (error) throw error;
-
-      // Update batch stats
-      await updateBatchPaymentStats(data.payment_batch_id);
-
-      return result;
+  const addRecordMutation = useMutation({
+    mutationFn: async ({
+      batchId,
+      employeeCode,
+      employeeName,
+      amount,
+      department,
+      bankName,
+      bankAccount,
+      payrollRecordId,
+      employeeId,
+      notes,
+    }: {
+      batchId: string;
+      employeeCode: string;
+      employeeName: string;
+      amount: number;
+      department?: string | null;
+      bankName?: string | null;
+      bankAccount?: string | null;
+      payrollRecordId?: string | null;
+      employeeId?: string | null;
+      notes?: string | null;
+    }) => {
+      if (!currentCompanyId) throw new Error('No company selected');
+      return addPaymentBatchRecord(batchId, currentCompanyId, {
+        employee_code: employeeCode,
+        employee_name: employeeName,
+        amount,
+        department,
+        bank_name: bankName,
+        bank_account: bankAccount,
+        payroll_record_id: payrollRecordId,
+        employee_id: employeeId,
+        notes,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
       toast.success('Đã thêm nhân viên vào bảng chi trả');
     },
-    onError: () => {
-      toast.error('Lỗi khi thêm nhân viên');
-    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi thêm nhân viên')),
   });
-
-  // Helper function to update batch payment stats
-  const updateBatchPaymentStats = async (batchId: string) => {
-    const records = await fetchBatchRecords(batchId);
-    const paidRecords = records.filter(r => r.status === 'paid');
-    const totalAmount = records.reduce((sum, r) => sum + Number(r.amount), 0);
-    const paidAmount = paidRecords.reduce((sum, r) => sum + Number(r.amount), 0);
-
-    await supabase
-      .from('payment_batches')
-      .update({
-        employee_count: records.length,
-        total_amount: totalAmount,
-        paid_count: paidRecords.length,
-        paid_amount: paidAmount,
-        status: paidRecords.length === records.length && records.length > 0 ? 'completed' : 'processing',
-      })
-      .eq('id', batchId);
-  };
 
   return {
     batches,

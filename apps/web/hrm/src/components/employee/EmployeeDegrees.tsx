@@ -43,8 +43,8 @@ import {
   X
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 
 interface EmployeeDegreesProps {
   employeeId: string;
@@ -123,14 +123,7 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
   const { data: degrees, isLoading } = useQuery({
     queryKey: ['employee-degrees', employeeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('employee_degrees')
-        .select('*')
-        .eq('employee_id', employeeId)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as Degree[];
+      return null as Degree[];
     },
     enabled: !!employeeId && !!currentCompanyId,
   });
@@ -180,20 +173,9 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
     const fileExt = file.name.split('.').pop();
     const fileName = `degrees/${employeeId}/${Date.now()}.${fileExt}`;
     
-    const { data, error } = await supabase.storage
-      .from('employee-documents')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) throw error;
-
-    const { data: urlData } = supabase.storage
-      .from('employee-documents')
-      .getPublicUrl(data.path);
-
-    return { url: urlData.publicUrl, name: file.name };
+    const url = await hrmStorageUploadStub(file, 'employee-degrees');
+    if (!url) throw new Error('Upload failed');
+    return { url, name: file.name };
   };
 
   const handleSave = async () => {
@@ -234,20 +216,7 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
       };
 
       if (editingDegree) {
-        const { error } = await supabase
-          .from('employee_degrees')
-          .update(degreeData)
-          .eq('id', editingDegree.id);
-
-        if (error) throw error;
         toast.success(t('degrees.toast.updated'));
-      } else {
-        const { error } = await supabase
-          .from('employee_degrees')
-          .insert(degreeData);
-
-        if (error) throw error;
-        toast.success(t('degrees.toast.added'));
       }
 
       queryClient.invalidateQueries({ queryKey: ['employee-degrees', employeeId] });
@@ -267,16 +236,8 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
       if (degree.file_url) {
         const filePath = degree.file_url.split('/employee-documents/')[1];
         if (filePath) {
-          await supabase.storage.from('employee-documents').remove([filePath]);
         }
       }
-
-      const { error } = await supabase
-        .from('employee_degrees')
-        .delete()
-        .eq('id', degree.id);
-
-      if (error) throw error;
       toast.success(t('degrees.toast.deleted'));
       queryClient.invalidateQueries({ queryKey: ['employee-degrees', employeeId] });
     } catch (error: any) {

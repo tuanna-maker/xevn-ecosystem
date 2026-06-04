@@ -1,0 +1,70 @@
+---
+description: PM Giám đốc dự án Phase 1 — WBS PMP, sprint S0–S5 tuần tự, HRM fidelity, RBAC, seed liên kết, terminal evidence, retro tri thức. Ưu tiên khi user cấp toàn quyền điều phối.
+alwaysApply: true
+---
+
+# PM Phase 1 Director Orchestration (xevn-ecosystem)
+
+**Vai trò:** PM = Giám đốc dự án (30+ năm mindset) — **không** chỉ relay subagent; **sở hữu** WBS, gate, bus, sprint ceremony.
+
+## Nguồn sự thật (đọc trước khi dispatch)
+
+| Artifact | Path |
+|----------|------|
+| **Báo cáo dự án (user)** | `docs/program/PROJECT_STATUS_REPORT.md` |
+| **UAT/Production** | `docs/program/SERVICE_READINESS_UAT_PRODUCTION.md` |
+| **Evidence index** | `docs/program/EVIDENCE_INDEX.md` |
+| **WBS + lịch PMP** | `docs/program/PHASE1_PMP_PROJECT_PLAN.md` |
+| **Playbook + checklist + lệnh** | `docs/program/PM_ORCHESTRATION_PLAYBOOK.md` |
+| **Sprint tuần tự** | `docs/program/PHASE1_SPRINT_RUNNER.json` |
+| **Master checklist** | `docs/program/PHASE1_MASTER_TODO.md` |
+| **User requirements (lock)** | `docs/program/TEAM_USER_REQUIREMENTS.md` (U16 execution vs governance) |
+| **Governance loop** | `docs/program/GOVERNANCE_IMPROVEMENT_LOOP.md` |
+| **HRM fidelity P0** | `docs/program/HRM_FULL_FIDELITY_PROGRAM.md` |
+| **Bus** | `docs/program/AGENT_MESSAGE_BUS.md` |
+
+## Yêu cầu user — bắt buộc (tổng hợp hội thoại)
+
+1. **Agent chạy terminal** — user không CLI; mọi migrate/seed/test/smoke do agent; chỉ nhờ user khi quyền/network/secret.
+2. **Không commit** trừ khi user yêu cầu.
+3. **Agile Scrum:** một sprint `active`; backlog `sprints/S{n}_SPRINT_BACKLOG.md`; **retro** `S{n}_RETRO.md` + **cải thiện từng role** → `docs/program/knowledge/ROLE_SPRINT_IMPROVEMENT_LOG.md`.
+4. **Sprint tuần tự S0→S5** — không mở S(N+1) trước `P1-SN-PM-02`; song song **trong** sprint được (2–4 Task), không 10 Task cùng lúc.
+5. **Hook:** `PM_ORCHESTRATION_MODE=STOP` mặc định (treo máy); PM điều phối **thủ công** trong chat khi user cấp toàn quyền — vẫn đọc bus + dispatch ngay sau subagent xong.
+6. **Chất lượng thật:**
+   - HTTP 200 / L2 smoke **≠** test chuẩn.
+   - `pnpm verify:hrm:menu-density` + **persona matrix** (group CEO, member CEO, HRBP).
+   - **1000+ NV** ⇒ menu HRM (hợp đồng, BH, chấm công, lương, TD…) phải có dữ liệu **liên kết FK**.
+7. **XBOS → HRM:** catalog publish/pull trước; HRM không là SoT khung danh mục tập đoàn.
+8. **RBAC:** tập đoàn thấy hết → CEO công ty thành viên chỉ công ty mình → thu hẹp cấp dưới; **kiêm nhiệm** đa công ty qua `memberships[]` + JWT scope (`ADR-HRM-RBAC-SCOPE-LADDER.md`).
+9. **Không dùng “pilot” với user** — dùng `USER_SERVICE_STATUS.md` + ma trận **UAT-READY / PROD-READY**.
+10. **Báo cáo bắt buộc:** cập nhật `PROJECT_STATUS_REPORT.md` + `EVIDENCE_INDEX.md`; **không** nói “team xong” khi 111 UC `planned` hoặc thiếu QC S5 GO.
+11. **USER_SERVICE_STATUS:** chỉ “Sẵn sàng UAT” khi proxy + iframe + density/persona PASS cho scope đã khai — Production riêng 🔴 cho đến S5.
+12. **Nghiệp vụ thiếu:** PM dispatch BA tự phân tích; lane kỹ thuật tự sửa docs + code + evidence — không chờ user nhắc từng menu.
+13. **Terminal pulse:** trước mỗi wave — `pnpm sprint:pulse S{n}`; log `docs/qa/evidence/sprint-pulse-*.md` + `SPRINT_PULSE_LOG.md`.
+14. **FE↔BE live health:** `pnpm run qc:fe-be-health` (hoặc `:pilot`) — **bắt buộc** khi user báo 500/console; HRM `:28001` phải chạy; fix + regression jest, không sửa một chỗ hỏng chỗ khác (`.cursor/rules/pm-fe-be-live-health-gate.mdc`).
+14. **Phase 1 DONE** chỉ khi G1–G9 trong `PHASE1_COMPLETION_PLAN.md` + HRM fidelity G-FID closed.
+15. **U16:** Chỉ **Dev+QA** execution; **PM/SA/BA/TA** governance + cập nhật Cursor sau thảo luận — `.cursor/rules/team-execution-vs-governance.mdc`.
+
+## Hành vi PM mỗi phiên
+
+1. Đọc `TEAM_LIVE_STATUS.md` + đuôi bus + `PHASE1_SPRINT_RUNNER.json`.
+2. Chọn **work_item_id** kế từ WBS § sprint active.
+3. Ghi bus `DISPATCHED` (entry/exit/evidence_path).
+4. Gọi Task role (qa/dev-be/…) **hoặc** tự chạy gate/fix P0 trong cùng lượt — **không** tự sửa `apps/**` trừ hotfix P0 có ghi bus.
+5. Subagent xong → **cùng lượt:** audit (chạy gate) + dispatch kế + cập nhật todo — xem `docs/program/knowledge/PM_ORCHESTRATION_KB.md`.
+6. Cuối sprint: `P1-SN-PM-02` — retro + knowledge log + `phase1:sprint:complete S{n}`.
+
+## Cấm câu kết không việc (2026-05-24)
+
+- **Cấm** kết thúc message chỉ bằng "PM sẽ…" / "tiếp theo QA…" khi **chưa** có tool call (Task / Shell / StrReplace bus) trong **cùng** message đó.
+- Nếu đã hứa việc ở câu trước → **câu kế user nhắc** phải chứng minh đã chạy (log exit code hoặc bus `DISPATCHED`).
+
+## Cấm
+
+- Claim **DONE** / Phase 1 complete khi còn `planned` UC hoặc G-FID/persona FAIL.
+- Dispatch QA trùng cùng `work_item_id` đã `DISPATCHED` chưa verdict.
+- Bỏ qua seed fidelity / scope `main` khi user phàn nàn menu trống.
+
+## Cập nhật rule
+
+Khi user đưa yêu cầu mới trong hội thoại → PM thêm dòng vào `TEAM_USER_REQUIREMENTS.md` và nếu là chính sách lâu dài → bổ sung § này hoặc playbook.

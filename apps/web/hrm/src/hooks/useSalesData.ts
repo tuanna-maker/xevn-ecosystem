@@ -1,6 +1,13 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  createSalesData,
+  deleteSalesData,
+  listSalesData,
+  syncSalesData,
+  updateSalesData,
+} from '@/integrations/hrmApi';
 import { toast } from 'sonner';
 
 export interface SalesRecord {
@@ -36,6 +43,36 @@ interface UseSalesDataOptions {
   periodYear?: number;
 }
 
+function mapRow(row: Record<string, unknown>): SalesRecord {
+  return {
+    id: String(row.id),
+    company_id: String(row.company_id),
+    employee_id: row.employee_id ? String(row.employee_id) : null,
+    employee_code: String(row.employee_code ?? ''),
+    employee_name: String(row.employee_name ?? ''),
+    department: row.department ? String(row.department) : null,
+    position: row.position ? String(row.position) : null,
+    period_month: Number(row.period_month ?? 0),
+    period_year: Number(row.period_year ?? 0),
+    sales_target: Number(row.sales_target ?? 0),
+    actual_sales: Number(row.actual_sales ?? 0),
+    achievement_rate: Number(row.achievement_rate ?? 0),
+    commission_rate: Number(row.commission_rate ?? 0),
+    commission_amount: Number(row.commission_amount ?? 0),
+    bonus_amount: Number(row.bonus_amount ?? 0),
+    total_earnings: Number(row.total_earnings ?? 0),
+    order_count: Number(row.order_count ?? 0),
+    customer_count: Number(row.customer_count ?? 0),
+    new_customer_count: Number(row.new_customer_count ?? 0),
+    sync_source: row.sync_source ? String(row.sync_source) : null,
+    synced_at: row.synced_at ? String(row.synced_at) : null,
+    external_id: row.external_id ? String(row.external_id) : null,
+    notes: row.notes ? String(row.notes) : null,
+    created_at: String(row.created_at ?? ''),
+    updated_at: String(row.updated_at ?? ''),
+  };
+}
+
 export function useSalesData(options: UseSalesDataOptions = {}) {
   const { currentCompanyId } = useAuth();
   const [salesData, setSalesData] = useState<SalesRecord[]>([]);
@@ -46,185 +83,103 @@ export function useSalesData(options: UseSalesDataOptions = {}) {
   const month = options.periodMonth || currentDate.getMonth() + 1;
   const year = options.periodYear || currentDate.getFullYear();
 
-  const fetchSalesData = async () => {
-    if (!currentCompanyId) return;
-    
+  const fetchSalesData = useCallback(async () => {
+    if (!currentCompanyId) {
+      setSalesData([]);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
-      let query = supabase
-        .from('sales_data')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('employee_code', { ascending: true });
-
-      if (options.periodMonth && options.periodYear) {
-        query = query
-          .eq('period_month', options.periodMonth)
-          .eq('period_year', options.periodYear);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setSalesData(data || []);
+      const response = await listSalesData({
+        company_id: currentCompanyId,
+        period_month: month,
+        period_year: year,
+      });
+      setSalesData((response.data ?? []).map(mapRow));
     } catch (error) {
-      console.error('Error fetching sales data:', error);
-      toast.error('Không thể tải dữ liệu doanh số');
+      console.error('fetchSalesData:', error);
+      toast.error(toErrorMessage(error, 'Không thể tải dữ liệu doanh số'));
+      setSalesData([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentCompanyId, month, year]);
 
   useEffect(() => {
-    fetchSalesData();
-  }, [currentCompanyId, options.periodMonth, options.periodYear]);
+    void fetchSalesData();
+  }, [fetchSalesData]);
 
-  const syncFromAPI = async (apiEndpoint?: string) => {
+  const syncFromAPI = async (_apiEndpoint?: string) => {
     if (!currentCompanyId) return;
-    
     setIsSyncing(true);
     try {
-      // If apiEndpoint is provided, call external API
-      // For now, simulate API sync
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Update synced_at for existing records
-      const now = new Date().toISOString();
-      const { error } = await supabase
-        .from('sales_data')
-        .update({ synced_at: now, sync_source: 'api' })
-        .eq('company_id', currentCompanyId)
-        .eq('period_month', month)
-        .eq('period_year', year);
-
-      if (error) throw error;
-      
+      await syncSalesData(currentCompanyId);
       await fetchSalesData();
-      toast.success('Đồng bộ dữ liệu thành công!');
+      toast.success('Đã đồng bộ dữ liệu doanh số');
     } catch (error) {
-      console.error('Error syncing data:', error);
-      toast.error('Không thể đồng bộ dữ liệu');
+      toast.error(toErrorMessage(error, 'Đồng bộ thất bại'));
     } finally {
       setIsSyncing(false);
     }
   };
 
   const importFromExcel = async (records: Partial<SalesRecord>[]) => {
-    if (!currentCompanyId) return;
-
+    if (!currentCompanyId) return false;
     try {
-      const now = new Date().toISOString();
-      const dataToInsert = records.map(record => ({
-      company_id: currentCompanyId,
-        employee_code: record.employee_code || '',
-        employee_name: record.employee_name || '',
-        department: record.department || null,
-        position: record.position || null,
-        period_month: record.period_month || month,
-        period_year: record.period_year || year,
-        sales_target: record.sales_target || 0,
-        actual_sales: record.actual_sales || 0,
-        commission_rate: record.commission_rate || 0,
-        commission_amount: record.commission_amount || 0,
-        bonus_amount: record.bonus_amount || 0,
-        order_count: record.order_count || 0,
-        customer_count: record.customer_count || 0,
-        new_customer_count: record.new_customer_count || 0,
-        sync_source: 'import',
-        synced_at: now,
-        notes: record.notes || null,
-      }));
-
-      const { error } = await supabase
-        .from('sales_data')
-        .upsert(dataToInsert, {
-          onConflict: 'company_id,employee_code,period_month,period_year',
+      for (const record of records) {
+        await createSalesData({
+          company_id: currentCompanyId,
+          ...record,
+          period_month: record.period_month ?? month,
+          period_year: record.period_year ?? year,
         });
-
-      if (error) throw error;
-
+      }
       await fetchSalesData();
-      toast.success(`Import thành công ${records.length} bản ghi!`);
       return true;
     } catch (error) {
-      console.error('Error importing data:', error);
-      toast.error('Không thể import dữ liệu');
+      toast.error(toErrorMessage(error, 'Import thất bại'));
       return false;
     }
   };
 
   const addRecord = async (record: Partial<SalesRecord>) => {
-    if (!currentCompanyId) return;
-
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('sales_data')
-        .insert({
-          company_id: currentCompanyId,
-          employee_code: record.employee_code || '',
-          employee_name: record.employee_name || '',
-          department: record.department || null,
-          position: record.position || null,
-          period_month: record.period_month || month,
-          period_year: record.period_year || year,
-          sales_target: record.sales_target || 0,
-          actual_sales: record.actual_sales || 0,
-          commission_rate: record.commission_rate || 0,
-          commission_amount: record.commission_amount || 0,
-          bonus_amount: record.bonus_amount || 0,
-          order_count: record.order_count || 0,
-          customer_count: record.customer_count || 0,
-          new_customer_count: record.new_customer_count || 0,
-          sync_source: 'manual',
-          notes: record.notes || null,
-        });
-
-      if (error) throw error;
-
+      await createSalesData({
+        company_id: currentCompanyId,
+        ...record,
+        period_month: record.period_month ?? month,
+        period_year: record.period_year ?? year,
+      });
       await fetchSalesData();
-      toast.success('Thêm dữ liệu thành công!');
       return true;
     } catch (error) {
-      console.error('Error adding record:', error);
-      toast.error('Không thể thêm dữ liệu');
+      toast.error(toErrorMessage(error, 'Không thể thêm bản ghi'));
       return false;
     }
   };
 
   const updateRecord = async (id: string, updates: Partial<SalesRecord>) => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('sales_data')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await updateSalesData(id, currentCompanyId, updates);
       await fetchSalesData();
-      toast.success('Cập nhật thành công!');
       return true;
     } catch (error) {
-      console.error('Error updating record:', error);
-      toast.error('Không thể cập nhật dữ liệu');
+      toast.error(toErrorMessage(error, 'Không thể cập nhật'));
       return false;
     }
   };
 
   const deleteRecord = async (id: string) => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('sales_data')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await deleteSalesData(id, currentCompanyId);
       await fetchSalesData();
-      toast.success('Xóa thành công!');
       return true;
     } catch (error) {
-      console.error('Error deleting record:', error);
-      toast.error('Không thể xóa dữ liệu');
+      toast.error(toErrorMessage(error, 'Không thể xóa'));
       return false;
     }
   };
@@ -233,16 +188,12 @@ export function useSalesData(options: UseSalesDataOptions = {}) {
     const totalEmployees = salesData.length;
     const totalSales = salesData.reduce((sum, r) => sum + Number(r.actual_sales || 0), 0);
     const totalCommission = salesData.reduce((sum, r) => sum + Number(r.commission_amount || 0), 0);
-    const avgAchievement = totalEmployees > 0
-      ? salesData.reduce((sum, r) => sum + Number(r.achievement_rate || 0), 0) / totalEmployees
-      : 0;
+    const avgAchievement =
+      totalEmployees > 0
+        ? salesData.reduce((sum, r) => sum + Number(r.achievement_rate || 0), 0) / totalEmployees
+        : 0;
 
-    return {
-      totalEmployees,
-      totalSales,
-      totalCommission,
-      avgAchievement,
-    };
+    return { totalEmployees, totalSales, totalCommission, avgAchievement };
   };
 
   return {
@@ -256,5 +207,7 @@ export function useSalesData(options: UseSalesDataOptions = {}) {
     updateRecord,
     deleteRecord,
     getStats,
+    month,
+    year,
   };
 }

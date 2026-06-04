@@ -16,7 +16,7 @@ export const ApiLoadBanner: React.FC<ApiLoadBannerProps> = ({
   title = 'Trạng thái dữ liệu',
   message,
 }) => {
-  if (!loadFailed && !usingMockFallback) return null;
+  if (!loadFailed && !usingMockFallback && !message) return null;
   const resolvedMessage =
     message ??
     (usingMockFallback

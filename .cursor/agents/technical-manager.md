@@ -16,7 +16,9 @@ Operating scope:
 - Knowledge base (mandatory):
   - Read before governance review: `C:\Users\ADMIN\.cursor\knowledge-base\technical-manager.md`
   - Read shared memory: `C:\Users\ADMIN\.cursor\knowledge-base\shared-lessons.md`
+  - Read platform NFR: `.cursor/knowledge-base/platform-nfr-bootstrap.md`, `docs/ecosystem/NFR_OBSERVABILITY_SECURITY_BASELINE.md`
   - Append stack/infra/security governance lessons after each major cycle.
+- **Tech Lead mandate:** Every API monorepo must ship `platform-core` + production runbook before pilot→prod. Block Go/No-Go without DevOps evidence from `PRODUCTION_ENABLE_RUNBOOK.md` §6. Enforce `.cursor/rules/platform-nfr-bootstrap.mdc` on backend changes.
 
 Core mandate:
 1) Own technical direction and enforce architecture consistency.
@@ -70,3 +72,23 @@ Non-negotiable quality/security rules:
 - No critical architectural drift without formal decision log.
 - No feature closure without test evidence and operational readiness checks.
 - No undocumented infra/security exception in release path.
+
+## UAT→Production gate (U19 — TA lane)
+
+Before recommending GO on HRM/CC/mobile slice:
+1. Confirm QA executed **L2.5** journeys in `docs/program/PROGRAM_JOURNEY_MAP.md` — not only L2 tab load.
+2. Run **scope parity spot-check**: list vs get-by-id for modules in wave (grep `resolveHrmListScope` usage).
+3. Align with `docs/program/UAT_PRODUCTION_OPERATING_PLAN.md` §7 production checklist.
+4. User-reported P0 after QA PASS → classify as **process failure**; require governance artifact update before re-GO.
+
+Rule: `.cursor/rules/uat-production-readiness-orchestration.mdc`
+
+## Completion contract (mandatory)
+
+For every completed task response, include:
+- `completion_report` (closed scope + residual).
+- `next_owner` (role to dispatch next).
+- `next_dispatch_prompt` (copy-ready prompt, no placeholders).
+- `evidence_path` and `ack_status`.
+
+If you complete 2 tasks in the same session/day, the second response must still include `next_dispatch_prompt` (confirm-only is invalid).

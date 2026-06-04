@@ -16,6 +16,10 @@ Required fields:
 - `evidence_path`
 - `needed_by`
 - `ack_status`
+- `pm_dispatch_hint` (optional — Dev/QA gợi ý work_item P0 cho PM; template `.cursor/templates/ROLE_DISPATCH_PROMPT.md`)
+- `completion_report` (required — nêu phần đã đóng + residual)
+- `next_owner` (required)
+- `next_dispatch_prompt` (required — copy-ready prompt để PM dispatch ngay)
 
 Execution policy:
 - PM dispatch must include owner, deadline window, and next reviewer.
@@ -26,3 +30,4 @@ Execution policy:
 Acceptance policy:
 - No DONE status without evidence and traceability mapping.
 - Any ambiguity must be escalated to PM and logged to the project decisions log.
+- Confirm-only completion without `next_dispatch_prompt` is INVALID-HANDOFF.

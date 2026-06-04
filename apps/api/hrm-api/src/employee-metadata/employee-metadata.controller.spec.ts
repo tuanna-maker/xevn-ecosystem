@@ -32,7 +32,7 @@ describe('EmployeeMetadataController', () => {
     controller = module.get<EmployeeMetadataController>(EmployeeMetadataController);
   });
 
-  it('returns deterministic metadata codes', async () => {
+  it('HRM-MD-01 submit HRM-MD-02 list HRM-MD-03 approve HRM-MD-04 reject HRM-MD-05 audit metadata codes', async () => {
     const createRes = await controller.submitChangeRequest(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
@@ -99,5 +99,25 @@ describe('EmployeeMetadataController', () => {
       }),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.listChangeRequests).not.toHaveBeenCalled();
+  });
+
+  it('UC-HRM-26 accepts portal slug company_id=main and optional tenant_id query', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.listChangeRequests(`Bearer ${token}`, undefined, 'xevn', 'main', {
+      company_id: 'main',
+      tenant_id: 'xevn',
+      status: 'pending',
+    });
+    expect(res.code).toBe('HRM-META-200');
+    expect(serviceMock.listChangeRequests).toHaveBeenCalledWith(
+      expect.objectContaining({ company_id: 'main', status: 'pending', tenant_id: 'xevn' }),
+      `Bearer ${token}`,
+    );
   });
 });

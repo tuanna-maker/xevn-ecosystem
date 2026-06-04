@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import { pushCompanyIdFilter } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 
 export type FleetVehicleRow = {
@@ -55,10 +56,15 @@ export class FleetService implements OnModuleInit {
     };
   }
 
-  async listVehicles(tenantId: string, companyId: string, opts?: { status?: string; limit?: number }) {
+  async listVehicles(
+    tenantId: string,
+    companyIds: string[],
+    opts?: { status?: string; limit?: number },
+  ) {
     await this.ensureSchema();
-    const filters = ['tenant_id = $1', 'company_id = $2'];
-    const values: unknown[] = [tenantId, companyId];
+    const filters = ['tenant_id = $1'];
+    const values: unknown[] = [tenantId];
+    pushCompanyIdFilter(filters, values, companyIds);
     if (opts?.status) {
       filters.push(`status = $${values.length + 1}`);
       values.push(opts.status);

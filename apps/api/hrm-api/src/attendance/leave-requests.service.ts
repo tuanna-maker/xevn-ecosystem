@@ -1,6 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import {
+  assertResourceInHrmScope,
+  pushWorkforceEmployeeScopeFilter,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { AttendanceEventFanoutService } from '../notifications/attendance-event-fanout.service';
 import type { LeaveRequestRealtimePayload } from '../realtime/hrm-realtime.service';
@@ -105,19 +110,62 @@ export class LeaveRequestsService {
     return row;
   }
 
-  async listLeaveRequests(query: ListLeaveRequestsQueryDto) {
-    const params: unknown[] = [query.company_id];
-    let sql = `SELECT * FROM public.leave_requests WHERE company_id = $1::uuid`;
+  async listLeaveRequests(
+    query: ListLeaveRequestsQueryDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const params: unknown[] = [];
+    const filters: string[] = [];
+    if (scope.masterTenantPartition || scope.memberTenantId) {
+      pushWorkforceEmployeeScopeFilter(filters, params, scope, 'lr.employee_id');
+    } else {
+      params.push(query.company_id);
+      filters.push(`lr.company_id = $${params.length}::uuid`);
+    }
+    let sql = `SELECT lr.* FROM public.leave_requests lr WHERE ${filters.join(' AND ')}`;
     if (query.status?.trim()) {
       params.push(query.status.trim());
-      sql += ` AND status = $${params.length}`;
+      sql += ` AND lr.status = $${params.length}`;
     }
-    sql += ` ORDER BY requested_at DESC LIMIT 200`;
+    if (query.employee_id) {
+      params.push(query.employee_id);
+      sql += ` AND lr.employee_id = $${params.length}::uuid`;
+    }
+    if (query.manager_employee_id) {
+      params.push(query.manager_employee_id);
+      sql += ` AND lr.employee_id IN (
+        SELECT e.id FROM public.employees e
+        WHERE e.manager_id = $${params.length}::uuid AND e.archived_at IS NULL
+      )`;
+    }
+    sql += ` ORDER BY lr.requested_at DESC LIMIT 200`;
     const res = await this.db.query<LeaveRow>(sql, params);
-    return { data: res.rows };
+    return { total: res.rows.length, data: res.rows };
   }
 
-  async approveLeaveRequest(requestId: string, body: DecideLeaveRequestDto) {
+  private async loadLeaveRequestCompany(requestId: string): Promise<{ company_id: string } | null> {
+    const res = await this.db.query<{ company_id: string }>(
+      `SELECT company_id::text AS company_id FROM public.leave_requests WHERE id = $1::uuid LIMIT 1;`,
+      [requestId],
+    );
+    return res.rows[0] ?? null;
+  }
+
+  async approveLeaveRequest(
+    requestId: string,
+    body: DecideLeaveRequestDto,
+    requestedCompanyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const existing = await this.loadLeaveRequestCompany(requestId);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-LEAVE-404',
+      mismatchCode: 'HRM-LEAVE-409',
+    });
     const res = await this.db.query<LeaveRow>(
       `
         UPDATE public.leave_requests
@@ -138,7 +186,19 @@ export class LeaveRequestsService {
     return row;
   }
 
-  async rejectLeaveRequest(requestId: string, body: DecideLeaveRequestDto) {
+  async rejectLeaveRequest(
+    requestId: string,
+    body: DecideLeaveRequestDto,
+    requestedCompanyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const existing = await this.loadLeaveRequestCompany(requestId);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-LEAVE-404',
+      mismatchCode: 'HRM-LEAVE-409',
+    });
     const res = await this.db.query<LeaveRow>(
       `
         UPDATE public.leave_requests

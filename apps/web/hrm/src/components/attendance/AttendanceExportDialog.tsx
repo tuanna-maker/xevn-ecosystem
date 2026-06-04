@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/select';
 import { FileSpreadsheet, Download, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
@@ -110,18 +109,7 @@ export function AttendanceExportDialog({ children }: AttendanceExportDialogProps
     if (!currentCompanyId) {
       throw new Error(t('attendanceExport.errors.noCompany'));
     }
-
-    const { data, error } = await supabase
-      .from('attendance_records')
-      .select('*')
-      .eq('company_id', currentCompanyId)
-      .gte('attendance_date', startDate)
-      .lte('attendance_date', endDate)
-      .order('attendance_date', { ascending: true })
-      .order('employee_name', { ascending: true });
-
-    if (error) throw error;
-    return data || [];
+      return null || [];
   };
 
   const calculateSummary = (records: AttendanceRecord[]): EmployeeSummary[] => {

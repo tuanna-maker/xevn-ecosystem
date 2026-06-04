@@ -3,6 +3,7 @@ import { createReadStream, existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, extname, join } from 'node:path';
 import { ApiException } from '../common/api.exception';
 import { XbosDbService } from '../db/xbos-db.service';
+import { OrgFoundationService } from '../org-foundation/org-foundation.service';
 
 const ALLOWED_EXT = new Set(['.pdf', '.doc', '.docx', '.xls', '.xlsx']);
 const MAX_BYTES = Number(process.env.XBOS_LEGAL_DOC_MAX_BYTES ?? 25 * 1024 * 1024);
@@ -45,21 +46,23 @@ export type DocumentInput = {
 
 @Injectable()
 export class LegalEntityProfileService {
-  constructor(private readonly db: XbosDbService) {}
+  constructor(
+    private readonly db: XbosDbService,
+    private readonly org: OrgFoundationService,
+  ) {}
 
-  private async assertEntity(tenantId: string, companyId: string, entityId: string) {
-    const { rows } = await this.db.query(
-      `SELECT id FROM public.xbos_legal_entity
-       WHERE id = $1::uuid AND tenant_id = $2 AND company_id = $3 AND status <> 'deleted'`,
-      [entityId, tenantId, companyId],
-    );
-    if (!rows[0]) {
+  private async resolveEntityPartition(
+    entityId: string,
+  ): Promise<{ tenantId: string; companyId: string }> {
+    const partition = await this.org.resolveLegalEntityPartition(entityId);
+    if (!partition) {
       throw new ApiException('XBOS-DOC-404', 'Legal entity not found', HttpStatus.NOT_FOUND);
     }
+    return partition;
   }
 
-  async listShareholders(tenantId: string, companyId: string, entityId: string) {
-    await this.assertEntity(tenantId, companyId, entityId);
+  async listShareholders(_tenantId: string, _companyId: string, entityId: string) {
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     const { rows } = await this.db.query(
       `SELECT * FROM public.xbos_legal_entity_shareholder
        WHERE legal_entity_id = $1::uuid AND tenant_id = $2 AND status = 'active'
@@ -70,12 +73,12 @@ export class LegalEntityProfileService {
   }
 
   async createShareholder(
-    tenantId: string,
-    companyId: string,
+    _tenantId: string,
+    _companyId: string,
     entityId: string,
     body: ShareholderInput,
   ) {
-    await this.assertEntity(tenantId, companyId, entityId);
+    const { tenantId, companyId } = await this.resolveEntityPartition(entityId);
     const name = body.holderName?.trim();
     if (!name) {
       throw new ApiException('XBOS-SHR-400', 'holderName is required', HttpStatus.BAD_REQUEST);
@@ -102,13 +105,13 @@ export class LegalEntityProfileService {
   }
 
   async updateShareholder(
-    tenantId: string,
-    companyId: string,
+    _tenantId: string,
+    _companyId: string,
     entityId: string,
     shareholderId: string,
     body: ShareholderInput,
   ) {
-    await this.assertEntity(tenantId, companyId, entityId);
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     const { rows } = await this.db.query(
       `UPDATE public.xbos_legal_entity_shareholder SET
         holder_name = COALESCE($4, holder_name),
@@ -134,8 +137,8 @@ export class LegalEntityProfileService {
     return rows[0];
   }
 
-  async deleteShareholder(tenantId: string, companyId: string, entityId: string, shareholderId: string) {
-    await this.assertEntity(tenantId, companyId, entityId);
+  async deleteShareholder(_tenantId: string, _companyId: string, entityId: string, shareholderId: string) {
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     const { rows } = await this.db.query(
       `UPDATE public.xbos_legal_entity_shareholder SET status = 'deleted', updated_at = NOW()
        WHERE id = $1::uuid AND legal_entity_id = $2::uuid AND tenant_id = $3 RETURNING id`,
@@ -147,8 +150,8 @@ export class LegalEntityProfileService {
     return { deleted: true };
   }
 
-  async listDocuments(tenantId: string, companyId: string, entityId: string) {
-    await this.assertEntity(tenantId, companyId, entityId);
+  async listDocuments(_tenantId: string, _companyId: string, entityId: string) {
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     const { rows } = await this.db.query(
       `SELECT * FROM public.xbos_legal_entity_document
        WHERE legal_entity_id = $1::uuid AND tenant_id = $2 AND status = 'active'
@@ -158,8 +161,8 @@ export class LegalEntityProfileService {
     return rows;
   }
 
-  async createDocument(tenantId: string, companyId: string, entityId: string, body: DocumentInput) {
-    await this.assertEntity(tenantId, companyId, entityId);
+  async createDocument(_tenantId: string, _companyId: string, entityId: string, body: DocumentInput) {
+    const { tenantId, companyId } = await this.resolveEntityPartition(entityId);
     const name = body.documentName?.trim();
     if (!name) {
       throw new ApiException('XBOS-DOC-400', 'documentName is required', HttpStatus.BAD_REQUEST);
@@ -182,13 +185,13 @@ export class LegalEntityProfileService {
   }
 
   async updateDocument(
-    tenantId: string,
-    companyId: string,
+    _tenantId: string,
+    _companyId: string,
     entityId: string,
     documentId: string,
     body: DocumentInput,
   ) {
-    await this.assertEntity(tenantId, companyId, entityId);
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     const { rows } = await this.db.query(
       `UPDATE public.xbos_legal_entity_document SET
         document_code = COALESCE($4, document_code),
@@ -214,8 +217,8 @@ export class LegalEntityProfileService {
     return rows[0];
   }
 
-  async deleteDocument(tenantId: string, companyId: string, entityId: string, documentId: string) {
-    await this.assertEntity(tenantId, companyId, entityId);
+  async deleteDocument(_tenantId: string, _companyId: string, entityId: string, documentId: string) {
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     const { rows } = await this.db.query(
       `UPDATE public.xbos_legal_entity_document SET status = 'deleted', updated_at = NOW()
        WHERE id = $1::uuid AND legal_entity_id = $2::uuid AND tenant_id = $3 RETURNING id`,
@@ -228,13 +231,13 @@ export class LegalEntityProfileService {
   }
 
   async uploadDocumentFile(
-    tenantId: string,
-    companyId: string,
+    _tenantId: string,
+    _companyId: string,
     entityId: string,
     documentId: string,
     file: { buffer: Buffer; size: number; originalname?: string },
   ) {
-    await this.assertEntity(tenantId, companyId, entityId);
+    const { tenantId } = await this.resolveEntityPartition(entityId);
     if (!file?.buffer?.length) {
       throw new ApiException('XBOS-DOC-400', 'file is required', HttpStatus.BAD_REQUEST);
     }

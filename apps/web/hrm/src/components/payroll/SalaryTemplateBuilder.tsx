@@ -51,8 +51,9 @@ import { useSalaryComponents, SalaryComponent } from '@/hooks/useSalaryComponent
 import { FormulaInput } from '@/components/payroll/FormulaInput';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDepartments } from '@/hooks/useDepartments';
+import { listEmployees } from '@/integrations/hrmApi';
 
 interface ExtendedSalaryTemplateFormData extends SalaryTemplateFormData {
   applicable_departments: string[];
@@ -135,33 +136,22 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [positions, setPositions] = useState<string[]>([]);
 
-  // Fetch departments and positions
+  const { departments: catalogDepartments } = useDepartments();
+
   useEffect(() => {
-    const fetchDepartmentsAndPositions = async () => {
-      if (!currentCompanyId) return;
-
-      const { data: deptData } = await supabase
-        .from('departments')
-        .select('id, name')
-        .eq('company_id', currentCompanyId)
-        .eq('status', 'active');
-
-      if (deptData) setDepartments(deptData);
-
-      const { data: empData } = await supabase
-        .from('employees')
-        .select('position')
-        .eq('company_id', currentCompanyId)
-        .not('position', 'is', null);
-
-      if (empData) {
-        const uniquePositions = [...new Set(empData.map(e => e.position).filter(Boolean))];
-        setPositions(uniquePositions as string[]);
-      }
-    };
-
-    fetchDepartmentsAndPositions();
-  }, [currentCompanyId]);
+    if (!currentCompanyId) return;
+    setDepartments(catalogDepartments.map((d) => ({ id: d.id, name: d.name })));
+    void listEmployees({ company_id: currentCompanyId, page: 1, page_size: 500 }).then((res) => {
+      const uniquePositions = [
+        ...new Set(
+          (res.data ?? [])
+            .map((e) => e.job_title_key)
+            .filter((p): p is string => Boolean(p && p.trim())),
+        ),
+      ];
+      setPositions(uniquePositions);
+    });
+  }, [currentCompanyId, catalogDepartments]);
 
   // Load template data
   useEffect(() => {
@@ -283,28 +273,12 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
             ...formData,
           } as any,
         });
-      } else {
-        const result = await supabase
-          .from('salary_templates')
-          .insert({
-            company_id: currentCompanyId,
-            ...formData,
-          })
-          .select()
-          .single();
-
-        if (result.error) throw result.error;
-        templateId = result.data.id;
       }
 
       // Update components
       if (templateId) {
         // Remove existing components and add new ones
         if (template) {
-          await supabase
-            .from('salary_template_components')
-            .delete()
-            .eq('template_id', templateId);
         }
 
         if (templateComponents.length > 0) {
@@ -325,9 +299,6 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
             is_editable: tc.is_editable,
           }));
 
-          await supabase
-            .from('salary_template_components')
-            .insert(componentsToInsert);
         }
       }
 

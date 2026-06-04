@@ -1,6 +1,6 @@
 /**
  * Mỗi tenant một tài khoản CEO (dev) — membership trên xbos_user_tenant_membership.
- * Không xóa admin@xevn.vn (super dev); CEO chỉ thuộc đúng một tenant.
+ * Không xóa admin@xe.vn (super dev); CEO chỉ thuộc đúng một tenant.
  *
  * Usage: cd apps/api/xbos-api && npx ts-node scripts/seed-tenant-ceo-users.ts
  */
@@ -16,11 +16,18 @@ const TENANT_CEOS: Array<{
   displayName: string;
   companyId: string;
 }> = [
-  { userId: 'ceo@xevn.vn', tenantId: MASTER, roleCode: 'group_ceo', displayName: 'CEO Tập đoàn', companyId: 'holding' },
-  { userId: 'ceo@xe-du-lich.vn', tenantId: 'xe-du-lich', roleCode: 'subsidiary_ceo', displayName: 'CEO Du lịch', companyId: 'main' },
-  { userId: 'ceo@xe-vietnam.vn', tenantId: 'xe-vietnam', roleCode: 'subsidiary_ceo', displayName: 'CEO X.E Việt Nam', companyId: 'main' },
-  { userId: 'ceo@xe-tmdv.vn', tenantId: 'xe-tmdv', roleCode: 'subsidiary_ceo', displayName: 'CEO TM-DV', companyId: 'main' },
-  { userId: 'ceo@visun.vn', tenantId: 'visun', roleCode: 'subsidiary_ceo', displayName: 'CEO Visun', companyId: 'main' },
+  { userId: 'ceo@xe.vn', tenantId: MASTER, roleCode: 'group_ceo', displayName: 'CEO Tập đoàn', companyId: 'holding' },
+  { userId: 'du-lich.ceo@xe.vn', tenantId: 'xe-du-lich', roleCode: 'subsidiary_ceo', displayName: 'CEO Du lịch', companyId: 'main' },
+  {
+    userId: 'du-lich.hr@xe.vn',
+    tenantId: 'xe-du-lich',
+    roleCode: 'HRBP_MANAGER',
+    displayName: 'HR Du lịch (HRBP)',
+    companyId: 'main',
+  },
+  { userId: 'vietnam.ceo@xe.vn', tenantId: 'xe-vietnam', roleCode: 'subsidiary_ceo', displayName: 'CEO X.E Việt Nam', companyId: 'main' },
+  { userId: 'tmdv.ceo@xe.vn', tenantId: 'xe-tmdv', roleCode: 'subsidiary_ceo', displayName: 'CEO TM-DV', companyId: 'main' },
+  { userId: 'visun.ceo@xe.vn', tenantId: 'visun', roleCode: 'subsidiary_ceo', displayName: 'CEO Visun', companyId: 'main' },
 ];
 
 function poolFromEnv(): Pool {
@@ -62,7 +69,7 @@ async function main() {
     for (const ceo of TENANT_CEOS) {
       console.log(`  - ${ceo.userId}  |  ${ceo.displayName}  |  tenant=${ceo.tenantId}`);
     }
-    console.log('\nSuper dev (đa tenant): admin@xevn.vn — giữ từ seed org.');
+    console.log('\nSuper dev (đa tenant): admin@xe.vn — giữ từ seed org.');
   } finally {
     await pool.end();
   }

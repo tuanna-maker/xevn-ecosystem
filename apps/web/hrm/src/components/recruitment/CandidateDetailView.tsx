@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,6 @@ import { CandidateResumeFiles } from './CandidateResumeFiles';
 import { 
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from '@/components/ui/table';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -113,12 +112,12 @@ const getInterviewStatusConfig = (r: (key: string) => string) => ({
 
 // Mock evaluation data for radar chart
 const radarChartData = [
-  { subject: 'Kỹ năng chuyên môn', required: 4, actual: 4, fullMark: 5 },
-  { subject: 'Giao tiếp', required: 4, actual: 3.75, fullMark: 5 },
-  { subject: 'Làm việc nhóm', required: 4, actual: 4.25, fullMark: 5 },
-  { subject: 'Giải quyết vấn đề', required: 3.5, actual: 3.5, fullMark: 5 },
-  { subject: 'Học hỏi', required: 4, actual: 4.5, fullMark: 5 },
-  { subject: 'Thích nghi', required: 3.5, actual: 3.9, fullMark: 5 },
+  { subject: 'Ká»¹ nÄƒng chuyĂªn mĂ´n', required: 4, actual: 4, fullMark: 5 },
+  { subject: 'Giao tiáº¿p', required: 4, actual: 3.75, fullMark: 5 },
+  { subject: 'LĂ m viá»‡c nhĂ³m', required: 4, actual: 4.25, fullMark: 5 },
+  { subject: 'Giáº£i quyáº¿t váº¥n Ä‘á»', required: 3.5, actual: 3.5, fullMark: 5 },
+  { subject: 'Há»c há»i', required: 4, actual: 4.5, fullMark: 5 },
+  { subject: 'ThĂ­ch nghi', required: 3.5, actual: 3.9, fullMark: 5 },
 ];
 
 // Computed scores for display
@@ -158,15 +157,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
       if (!currentCompanyId) return;
       setLoadingInterviews(true);
       try {
-        const { data, error } = await supabase
-          .from('interviews')
-          .select('*')
-          .eq('company_id', currentCompanyId)
-          .eq('candidate_id', candidate.id)
-          .order('interview_date', { ascending: false });
-
-        if (error) throw error;
-        setInterviews(data || []);
+        setInterviews([]);
       } catch (error: any) {
         console.error('Error fetching interviews:', error);
       } finally {
@@ -185,19 +176,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
       if (!currentCompanyId) return;
       setLoadingApplications(true);
       try {
-        const { data, error } = await supabase
-          .from('candidate_applications')
-          .select(`
-            *,
-            job_posting:job_postings(title, position, department),
-            campaign:recruitment_campaigns(name)
-          `)
-          .eq('company_id', currentCompanyId)
-          .eq('candidate_id', candidate.id)
-          .order('applied_date', { ascending: false });
-
-        if (error) throw error;
-        setApplications((data as CandidateApplication[]) || []);
+        setApplications([]);
       } catch (error: any) {
         console.error('Error fetching applications:', error);
       } finally {
@@ -214,13 +193,6 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
   const handleAvatarChange = async (url: string | null) => {
     setAvatarUrl(url);
     try {
-      const { error } = await supabase
-        .from('candidates')
-        .update({ avatar_url: url })
-        .eq('id', candidate.id);
-
-      if (error) throw error;
-      
       toast({
         title: t('common.success'),
         description: r('avatarUpdateSuccess'),

@@ -52,7 +52,7 @@ Tham chiếu placeholder: `apps/mobile/README.md`.
   - `baseUrl` từ biến môi trường build (ví dụ `HRM_API_BASE_URL`),
   - header `Authorization`,
   - header phạm vi `x-tenant-id` / `x-company-id` (đúng contract BE hiện hành — đồng bộ với web),
-  - giá trị gợi ý ban đầu trên form đăng nhập từ biến build **`EXPO_PUBLIC_DEFAULT_TENANT_ID`** / **`EXPO_PUBLIC_DEFAULT_COMPANY_ID`** (xem `apps/mobile/hrm-mobile/.env.example` và `src/config/tenantDefaults.ts`) — **không** thay thế SecureStore/phiên; không hardcode slug tenant trong mã nguồn,
+  - đăng nhập **email + mật khẩu**; server trả `memberships[]` / JWT scope (xem `docs/hrm/HRM_MOBILE_ACCOUNT.md`); app chỉ cấu hình **`EXPO_PUBLIC_HRM_API_BASE_URL`**,
   - header `x-request-id` sinh UUID mỗi request,
   - xử lý envelope `success` / `code` / `message` theo `docs/hrm/TECHSPEC.md`.
 - Mapper lỗi:
@@ -70,9 +70,14 @@ Tham chiếu placeholder: `apps/mobile/README.md`.
 
 - Chỉ **HTTPS** cho môi trường thật; chặn trust user CA trên build production (theo policy cửa hàng ứng dụng).
 
-### 5.2 Phiên và làm mới token
+### 5.2 Phiên và làm mới token (MOB-BE-03 / MOB-103)
 
-- Access token ngắn hạn; refresh token trong secure storage.
+- `POST /api/hrm/auth/mobile/login` — body `{ email, password }`, headers `x-tenant-id`, `x-company-id`.
+- Response: `access_token`, `refresh_token`, `expires_in_sec`, `employee`, `roles[]`.
+- JWT claims: `sub`, `tenantId`, `companyId`, `employee_id`, `roles` (HS256, `SERVICE_JWT_SECRET`).
+- Pilot password: env `HRM_MOBILE_PILOT_PASSWORD` (dev default `xevn-pilot`) hoặc `employees.custom_fields.mobile_password_hash`.
+- `POST /api/hrm/auth/mobile/refresh` — body `{ refresh_token }` (`typ: refresh` trong JWT).
+- Access token ngắn hạn (12h); refresh trong SecureStore (`STORAGE.REFRESH_TOKEN`).
 - If refresh thất bại -> xoá state và buộc UC-HRM-MOB-01.
 
 ### 5.3 Thu hồi từ xa

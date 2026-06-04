@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,8 +30,6 @@ export function useLeaveRequests() {
     if (!currentCompanyId) return;
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.from('leave_requests').select('*').eq('company_id', currentCompanyId).order('created_at', { ascending: false });
-      if (error) throw error;
       setRequests(data || []);
     } catch (error: any) {
       console.error('Error fetching leave requests:', error);
@@ -45,8 +42,6 @@ export function useLeaveRequests() {
   const createRequest = async (data: LeaveRequestFormData): Promise<LeaveRequest | null> => {
     if (!currentCompanyId) return null;
     try {
-      const { data: newRequest, error } = await supabase.from('leave_requests').insert({ company_id: currentCompanyId, ...data }).select().single();
-      if (error) throw error;
       setRequests(prev => [newRequest, ...prev]);
       toast({ title: t('messages.success'), description: h('createSuccess') }); return newRequest;
     } catch (error: any) {
@@ -57,8 +52,6 @@ export function useLeaveRequests() {
 
   const updateRequest = async (id: string, data: Partial<LeaveRequest>): Promise<boolean> => {
     try {
-      const { error } = await supabase.from('leave_requests').update(data).eq('id', id);
-      if (error) throw error;
       setRequests(prev => prev.map(r => r.id === id ? { ...r, ...data } : r)); return true;
     } catch (error: any) {
       console.error('Error updating leave request:', error);
@@ -76,8 +69,6 @@ export function useLeaveRequests() {
 
   const deleteRequest = async (id: string): Promise<boolean> => {
     try {
-      const { error } = await supabase.from('leave_requests').delete().eq('id', id);
-      if (error) throw error;
       setRequests(prev => prev.filter(r => r.id !== id));
       toast({ title: t('messages.success'), description: h('deleteSuccess') }); return true;
     } catch (error: any) {

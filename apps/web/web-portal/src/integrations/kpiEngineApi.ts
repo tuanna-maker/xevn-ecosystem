@@ -1,4 +1,7 @@
+import type { KpiRollupData } from './commandCenterKpi';
+import { resolveXbosKpiRollupCompanyId } from './commandCenterScope';
 import { resolveIdentityScope } from './identityScope';
+import { xbosGetData } from './xbosHttp';
 
 export type KpiEvaluateInput = {
   target: number;
@@ -28,6 +31,32 @@ async function kpiHeaders(tenantIdHint?: string | null, companyHint?: string | n
   const internalApiKey = import.meta.env.VITE_INTERNAL_API_KEY?.trim();
   if (internalApiKey) headers['x-internal-api-key'] = internalApiKey;
   return { headers, scope };
+}
+
+export async function fetchKpiRollup(
+  tenantIdHint?: string | null,
+  companyIdHint?: string | null,
+  range?: { from?: string; to?: string },
+): Promise<KpiRollupData | null> {
+  const { tenantId } = resolveIdentityScope(tenantIdHint, companyIdHint);
+  const rollupCompanyId = resolveXbosKpiRollupCompanyId(tenantIdHint, companyIdHint);
+  const q = new URLSearchParams({
+    tenantId,
+    companyId: rollupCompanyId,
+  });
+  if (range?.from) q.set('from', range.from);
+  if (range?.to) q.set('to', range.to);
+  try {
+    return await xbosGetData<KpiRollupData>(`/kpi-engine/rollup?${q.toString()}`, {
+      scope: 'kpi-engine.rollup',
+      tenantId,
+      companyId: rollupCompanyId,
+      headers: { 'x-company-id': rollupCompanyId },
+      suppressLogStatuses: [409],
+    });
+  } catch {
+    return null;
+  }
 }
 
 export async function evaluateKpiBatch(

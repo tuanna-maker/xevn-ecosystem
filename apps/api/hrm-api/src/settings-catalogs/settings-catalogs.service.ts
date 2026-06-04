@@ -22,6 +22,7 @@ import {
   getTenantPositionCatalog,
 } from './tenant-position-catalog';
 import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
+import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
 
 export type SettingsCatalogItem = {
   code: string;
@@ -496,6 +497,40 @@ export class SettingsCatalogsService {
       upserted += 1;
     }
     return { upserted };
+  }
+
+  async upsertCatalogItem(tenantId: string, body: SettingsCatalogItemMutationDto) {
+    const result = await this.appendExtensionItems(tenantId, body.company_id, body.category_key, [
+      {
+        code: body.item_key,
+        label: body.item_name,
+        unit: body.item_value ?? undefined,
+        status: 'active',
+      },
+    ]);
+    return {
+      upserted: result.upserted,
+      item_key: body.item_key,
+      category_key: body.category_key,
+    };
+  }
+
+  async deleteCatalogItem(tenantId: string, body: Pick<SettingsCatalogItemMutationDto, 'company_id' | 'category_key' | 'item_key'>) {
+    await this.ensureExtensionSchema();
+    const t = tenantId.trim().toLowerCase();
+    const c = body.company_id.trim().toLowerCase();
+    const catalogKey = this.normalizeCatalogKey(body.category_key);
+    const code = body.item_key.trim();
+    const res = await this.db.query<{ code: string }>(
+      `DELETE FROM public.hrm_catalog_extension_items
+       WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3 AND code = $4
+       RETURNING code`,
+      [t, c, catalogKey, code],
+    );
+    if (!res.rows[0]) {
+      throw new ApiException('HRM-SET-404', 'Catalog item not found', HttpStatus.NOT_FOUND);
+    }
+    return { item_key: res.rows[0].code, category_key: catalogKey };
   }
 
   async requestFieldRemoval(

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { pushCompanyIdUuidFilter, pushCompanyIdTextColumnFilter, resolveHrmListScope } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 
 export type EmployeeMetadataChangeStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
@@ -52,7 +53,6 @@ export type EmployeeMetadataAuditLogRecord = {
 };
 
 type ListFilters = {
-  company_id: string;
   employee_id?: string;
   legal_entity_id?: string;
   status?: EmployeeMetadataChangeStatus;
@@ -205,11 +205,17 @@ export class EmployeeMetadataRepository {
     return created;
   }
 
-  async listChangeRequests(filters: ListFilters) {
+  async listChangeRequests(
+    filters: ListFilters,
+    authorization: string | undefined,
+    requestedCompanyId: string,
+  ) {
     await this.ensureSchema();
-    const clauses = ['company_id = $1::uuid'];
-    const values: unknown[] = [filters.company_id];
-    let idx = 2;
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const clauses: string[] = [];
+    const values: unknown[] = [];
+    pushCompanyIdTextColumnFilter(clauses, values, scope.companyIds);
+    let idx = values.length + 1;
 
     if (filters.employee_id) {
       clauses.push(`employee_id = $${idx}::uuid`);
@@ -402,13 +408,15 @@ export class EmployeeMetadataRepository {
     return rejected;
   }
 
-  async listAuditLogs(companyId: string, employeeId?: string) {
+  async listAuditLogs(requestedCompanyId: string, employeeId?: string, authorization?: string) {
     await this.ensureSchema();
-    const clauses = ['company_id = $1::uuid'];
-    const values: unknown[] = [companyId];
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const clauses: string[] = [];
+    const values: unknown[] = [];
+    pushCompanyIdUuidFilter(clauses, values, scope.companyIds);
     if (employeeId) {
-      clauses.push('employee_id = $2::uuid');
       values.push(employeeId);
+      clauses.push(`employee_id = $${values.length}::uuid`);
     }
     const res = await this.db.query<EmployeeMetadataAuditLogRecord>(
       `

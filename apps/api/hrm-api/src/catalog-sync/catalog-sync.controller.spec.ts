@@ -18,6 +18,13 @@ describe('CatalogSyncController', () => {
     pullCatalogFromXbos: jest.fn().mockResolvedValue({ key: 'job_titles' }),
     getSyncedCatalog: jest.fn().mockResolvedValue({ key: 'job_titles' }),
     listSyncedCatalogs: jest.fn().mockResolvedValue({ total: 1, data: [{ key: 'job_titles' }] }),
+    getCatalogSyncStatus: jest.fn().mockResolvedValue({
+      key: 'status',
+      status: 'connected',
+      hasSyncedCatalogs: false,
+      totalSyncedCatalogs: 0,
+      lastSyncedAt: null,
+    }),
   };
 
   beforeEach(async () => {
@@ -35,17 +42,34 @@ describe('CatalogSyncController', () => {
     expect(serviceMock.listSyncedCatalogs).not.toHaveBeenCalled();
   });
 
-  it('allows sync with internal key', async () => {
+  it('UC-HRM-06: allows sync with internal key', async () => {
     const result = await controller.pullFromXbos('job_titles', 'xevn', 'vtc', undefined, 'test-key');
     expect(result.success).toBe(true);
     expect(result.code).toBe('HRM-SYNC-200');
   });
 
-  it('returns deterministic code for get/list', async () => {
+  it('UC-HRM-07: get local catalog returns HRM-SYNC-201', async () => {
     const one = await controller.getLocalCatalog('job_titles', 'xevn', 'vtc', undefined, 'test-key');
-    const many = await controller.listLocalCatalogs('xevn', 'vtc', undefined, 'test-key');
     expect(one.code).toBe('HRM-SYNC-201');
+  });
+
+  it('UC-HRM-08: list local catalogs returns HRM-SYNC-202', async () => {
+    const many = await controller.listLocalCatalogs('xevn', 'vtc', undefined, 'test-key');
     expect(many.code).toBe('HRM-SYNC-202');
+  });
+
+  it('UC-HRM-08A: catalog sync status returns deterministic HRM-SYNC-203 envelope', async () => {
+    const status = await controller.getCatalogSyncStatus('xevn', 'main', undefined, 'test-key');
+    expect(status.code).toBe('HRM-SYNC-203');
+    expect(status.data).toEqual(
+      expect.objectContaining({
+        key: 'status',
+        status: 'connected',
+        hasSyncedCatalogs: false,
+        totalSyncedCatalogs: 0,
+      }),
+    );
+    expect(serviceMock.getCatalogSyncStatus).toHaveBeenCalledWith('xevn', 'main');
   });
 
   it('rejects missing scope before service mutation', async () => {

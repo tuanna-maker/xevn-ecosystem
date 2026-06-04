@@ -1,0 +1,50 @@
+---
+description: Tiêu chuẩn 100% luồng nghiệp vụ pilot — PM tự check điều phối, QA auto UAT + matrix UI, QC không GO khi còn lỗi console/API.
+alwaysApply: true
+---
+
+# Business flow zero-defect gate (pilot / release)
+
+Mục tiêu: **không** báo «xong» khi user vào màn nghiệp vụ vẫn thấy lỗi đỏ, bảng trống do API fail, hoặc `companyId` lệch token.
+
+## Ba lớp kiểm tra (bắt buộc trước QC GO)
+
+| Lớp | Lệnh / artifact | Owner chạy | PASS khi |
+|-----|-----------------|------------|----------|
+| **L0 Stack** | `pnpm run qc:dev-stack` | DevOps / QA | HRM + XBOS + portal health 200 |
+| **L1 API UAT** | `pnpm run test:system:uat` | QA | `verdict: PASS`, exit 0 — `docs/qa/evidence/system-integration-uat-report.json` |
+| **L2 Pilot UI matrix** | `docs/qa/PILOT_BUSINESS_FLOW_MATRIX.md` | QA (+ QC audit) | Mọi route **bắt buộc** trong matrix: không ERROR banner, không HTTP 409 scope trên load, không `54321` bắt buộc |
+| **L2.5 Cross-nav journeys** | `docs/program/PROGRAM_JOURNEY_MAP.md` (J-*) | QA (+ QC audit) | Mọi J-* bắt buộc in-scope: list→detail/deep link PASS; không 404 scope |
+| **L3 QC gate** | evidence `docs/qa/evidence/qc-*.md` | QC | GO chỉ khi L0–L2.5 PASS hoặc GO WITH CONDITIONS có **danh sách J-* đã/khưa** kiểm |
+
+**L1 alone không đủ** cho Command Center / HRM embed (đã ghi trong scenario UAT out-of-scope UI).
+
+## PM tự check (sau mỗi delivery — không implement)
+
+1. Dev `READY_FOR_QA` → dispatch **QA** với matrix L1 + L2 + **L2.5 J-*** (`PROGRAM_JOURNEY_MAP.md`).
+2. QA FAIL hoặc user screenshot → dispatch **đúng lane** + **QC** ghi **NO-GO** (không im lặng).
+3. QA PASS L1 + L2 + L2.5 → dispatch **QC** re-gate; PM mới tóm tắt cho user.
+4. Lỗi mới trên route/journey **ngoài** matrix → BA cập nhật matrix + journey map + QA bổ sung kịch bản **cùng ngày**.
+
+## Tiêu chí FAIL tức thì (báo PM + technical-manager)
+
+- Console: `ERR_CONNECTION_REFUSED` tới `54321` trên route pilot.
+- HTTP **409** `companyId mismatches token scope` (kpi-engine, settings-catalogs, HRM sync, …).
+- Banner **HRM API Sync ERROR** trên embed.
+- «Không có dữ liệu» khi API trả 4xx/5xx hoặc không gọi Nest API.
+- Ngày hiển thị **01/01/1970** do timestamp 0.
+
+## Tài khoản chuẩn matrix
+
+| Luồng | Account |
+|-------|---------|
+| Tập đoàn / Command Center / member units | `ceo@xe.vn` / `Xevn@2026` |
+| Mobile UAT 1000 | `uat.nv####@xe.vn` / `xevn-uat-2026` |
+| Công ty con only | `du-lich.ceo@xe.vn` (expect 403 trên tập đoàn) |
+
+## Tham chiếu
+
+- API UAT: `docs/qa/SYSTEM_INTEGRATION_UAT_SCENARIO.md`
+- UI matrix: `docs/qa/PILOT_BUSINESS_FLOW_MATRIX.md`
+- PM điều phối: `pm-composer-delegate-only.mdc`, `pm-post-delivery-verification.mdc`
+- Coaching: `.cursor/team/PM_COACHING_FOR_ROLES.md`

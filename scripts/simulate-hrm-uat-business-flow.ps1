@@ -109,7 +109,7 @@ $candidate = Invoke-Json -Method Post -Url "http://localhost:3001/api/hrm/recrui
   company_id = $companyId
   requisition_id = $requisition.data.id
   full_name = "Nguyen Minh Khoa"
-  email = "khoa.nguyen.operations@xevn.vn"
+  email = "khoa.nguyen.operations@xe.vn"
   source = "linkedin"
 }
 $interview = Invoke-Json -Method Post -Url "http://localhost:3001/api/hrm/recruitment/interviews" -Body @{

@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { resolveCorsOptions } from '@xevn/platform-core';
 import {
   ConnectedSocket,
   MessageBody,
@@ -12,9 +13,11 @@ import type { Server, Socket } from 'socket.io';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { HrmRealtimeService } from './hrm-realtime.service';
 
+const wsCors = resolveCorsOptions();
+
 @WebSocketGateway({
   namespace: '/hrm-realtime',
-  cors: { origin: true, credentials: true },
+  cors: { origin: wsCors.origin, credentials: wsCors.credentials },
 })
 export class HrmRealtimeGateway implements OnGatewayInit, OnGatewayConnection {
   @WebSocketServer()

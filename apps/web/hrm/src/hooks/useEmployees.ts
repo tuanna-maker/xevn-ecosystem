@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
+import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import {
   archiveEmployee as archiveEmployeeApi,
   createEmployee as createEmployeeApi,
@@ -80,7 +81,12 @@ export interface EmployeeFormData {
   custom_fields?: Record<string, string>;
 }
 
-export function useEmployees(includeDeleted: boolean = false, companyIdFilter?: string | null) {
+export function useEmployees(
+  includeDeleted: boolean = false,
+  companyIdFilter?: string | null,
+  opts?: { enabled?: boolean },
+) {
+  const enabled = opts?.enabled !== false;
   const { currentCompanyId, memberships } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [deletedEmployees, setDeletedEmployees] = useState<Employee[]>([]);
@@ -129,7 +135,15 @@ export function useEmployees(includeDeleted: boolean = false, companyIdFilter?: 
   });
 
   const fetchEmployees = useCallback(async () => {
-    const companyIdsRaw = targetCompanyId ? [targetCompanyId] : memberships.map((m) => m.company_id);
+    const portalEmbed =
+      typeof window !== 'undefined' && getHrmPortalMode(window.location.search);
+    const companyIdsRaw = targetCompanyId
+      ? [targetCompanyId]
+      : portalEmbed
+        ? currentCompanyId
+          ? [currentCompanyId]
+          : []
+        : memberships.map((m) => m.company_id);
     const companyIds = [...new Set(companyIdsRaw.filter((id) => !!id && id !== 'all'))];
 
     if (companyIds.length === 0) {
@@ -160,11 +174,15 @@ export function useEmployees(includeDeleted: boolean = false, companyIdFilter?: 
     } finally {
       setIsLoading(false);
     }
-  }, [targetCompanyId, includeDeleted, memberships]);
+  }, [targetCompanyId, includeDeleted, memberships, currentCompanyId]);
 
   useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees]);
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
+    void fetchEmployees();
+  }, [fetchEmployees, enabled]);
 
   const createEmployee = async (data: EmployeeFormData): Promise<Employee | null> => {
     if (!currentCompanyId) {

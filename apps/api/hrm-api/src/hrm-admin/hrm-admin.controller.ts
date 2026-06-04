@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
 import { HrmAdminService } from './hrm-admin.service';
 import { CreateCompanyAdminDto } from './dto/create-company-admin.dto';
 import { CreatePlatformAdminDto } from './dto/create-platform-admin.dto';
@@ -48,5 +48,61 @@ export class HrmAdminController {
     return this.hrmAdminService
       .resetUserPassword(authorization, body)
       .then((data) => ok(data, 'HRM-ADMIN-204', 'User credential updated'));
+  }
+
+  @Get('companies')
+  listAdminCompanies(@Headers('authorization') authorization: string | undefined) {
+    return this.hrmAdminService
+      .listAdminCompanies(authorization)
+      .then((data) => ok(data, 'HRM-ADMIN-205', 'Admin companies listed'));
+  }
+
+  @Get('company-memberships')
+  listCompanyMemberships(
+    @Headers('authorization') authorization: string | undefined,
+    @Query('company_id') companyId?: string,
+  ) {
+    return this.hrmAdminService
+      .listCompanyMemberships(authorization, companyId)
+      .then((data) => ok(data, 'HRM-ADMIN-206', 'Company memberships listed'));
+  }
+
+  @Post('company-memberships')
+  upsertCompanyMembership(
+    @Headers('authorization') authorization: string | undefined,
+    @Body()
+    body: {
+      email: string;
+      full_name: string;
+      role: string;
+      company_id: string;
+      employee_id?: string | null;
+      status?: string;
+    },
+  ) {
+    return this.hrmAdminService
+      .upsertCompanyMembership(authorization, body)
+      .then((data) => ok(data, 'HRM-ADMIN-207', 'Company membership saved'));
+  }
+
+  @Patch('company-memberships/:membershipId')
+  updateCompanyMembership(
+    @Headers('authorization') authorization: string | undefined,
+    @Param('membershipId') membershipId: string,
+    @Body() body: { role?: string; employee_id?: string | null; status?: string; full_name?: string; email?: string },
+  ) {
+    return this.hrmAdminService
+      .updateCompanyMembership(authorization, membershipId, body)
+      .then((data) => ok(data, 'HRM-ADMIN-208', 'Company membership updated'));
+  }
+
+  @Delete('company-memberships/:membershipId')
+  deleteCompanyMembership(
+    @Headers('authorization') authorization: string | undefined,
+    @Param('membershipId') membershipId: string,
+  ) {
+    return this.hrmAdminService
+      .deleteCompanyMembership(authorization, membershipId)
+      .then((data) => ok(data, 'HRM-ADMIN-209', 'Company membership deleted'));
   }
 }

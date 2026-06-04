@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import {
@@ -41,9 +41,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { CampaignFormDialog } from './CampaignFormDialog';
 import { CampaignCandidatesTab } from './CampaignCandidatesTab';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  deleteJobPosting,
+  HrmJobPostingRow,
+  listJobPostings,
+} from '@/integrations/hrmApi';
 
 interface Campaign {
   id: string;
@@ -69,6 +73,34 @@ interface Campaign {
   created_at: string;
   updated_at: string;
 }
+
+const mapJobPostingToCampaign = (row: HrmJobPostingRow): Campaign => ({
+  id: row.id,
+  company_id: row.company_id,
+  name: row.title,
+  description: row.description,
+  status: row.status,
+  start_date: row.created_at,
+  end_date: row.deadline,
+  owner_name: null,
+  follower_name: null,
+  position: row.position,
+  title: row.title,
+  department: row.department,
+  work_type: row.employment_type,
+  location: row.work_location,
+  evaluation_criteria: null,
+  salary_level:
+    row.salary_min != null || row.salary_max != null
+      ? `${row.salary_min ?? '-'} - ${row.salary_max ?? '-'}`
+      : null,
+  quantity: row.headcount,
+  requirements: row.requirements,
+  degree: null,
+  major: null,
+  created_at: row.created_at,
+  updated_at: row.updated_at,
+});
 
 
 const getStatusConfig = (t: any): Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> => ({
@@ -100,18 +132,12 @@ export function CampaignsTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     if (!currentCompanyId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('recruitment_campaigns')
-        .select('*')
-        .eq('company_id', currentCompanyId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setCampaigns(data || []);
+      const response = await listJobPostings({ company_id: currentCompanyId });
+      setCampaigns((response.data ?? []).map(mapJobPostingToCampaign));
     } catch (error: any) {
       console.error('Error fetching campaigns:', error);
       toast({
@@ -122,22 +148,16 @@ export function CampaignsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentCompanyId, t, toast]);
 
   useEffect(() => {
     fetchCampaigns();
-  }, [currentCompanyId]);
+  }, [fetchCampaigns]);
 
   const handleDelete = async () => {
     if (!deletingCampaign) return;
     try {
-      const { error } = await supabase
-        .from('recruitment_campaigns')
-        .delete()
-        .eq('id', deletingCampaign.id);
-
-      if (error) throw error;
-
+      await deleteJobPosting(deletingCampaign.id, currentCompanyId || deletingCampaign.company_id);
       toast({
         title: t('common.success'),
         description: t('recruitment.cam.deleteSuccess'),

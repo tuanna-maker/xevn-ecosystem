@@ -32,6 +32,11 @@ import {
   WORKFLOW_EDGE_FULL_LABELS,
   workflowHandlerRoleAllowsRejectOutcome,
 } from '../../data/workflow-graph';
+import {
+  resolveStepRuntimeStatus,
+  workflowInstanceStatusLabelVi,
+  type WorkflowStepRuntimeStatus,
+} from '../../integrations/workflowInstanceMapper';
 import { SETTINGS_RADIUS_CARD } from './settings-form-pattern';
 
 export type { WorkflowGraphStep } from '../../data/workflow-graph';
@@ -588,7 +593,22 @@ export type WorkflowCanvasProps = {
   onSelectStep: (id: string | null) => void;
   resolveRoleLabel: (handlerRoleId: string) => string;
   resolveModuleLabel: (relatedModuleId: string) => string;
+  /** Runtime task status keyed by step_key / step id (from workflow-engine instance detail). */
+  stepRuntimeStatus?: Record<string, WorkflowStepRuntimeStatus>;
 };
+
+function runtimeStatusNodeClasses(status?: WorkflowStepRuntimeStatus): string {
+  switch (status) {
+    case 'completed':
+      return 'border-emerald-300/90 ring-2 ring-emerald-400/35';
+    case 'rejected':
+      return 'border-rose-300/90 ring-2 ring-rose-400/35';
+    case 'pending':
+      return 'border-amber-300/80 ring-2 ring-amber-300/40';
+    default:
+      return '';
+  }
+}
 
 export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   steps,
@@ -596,6 +616,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   onSelectStep,
   resolveRoleLabel,
   resolveModuleLabel,
+  stepRuntimeStatus,
 }) => {
   const sorted = useMemo(
     () => [...steps].sort((a, b) => a.order - b.order),
@@ -868,6 +889,9 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
               const step = sorted.find((s) => s.id === id);
               if (!step) return null;
               const selected = selectedStepId === id;
+              const runtimeStatus = stepRuntimeStatus
+                ? resolveStepRuntimeStatus(step, stepRuntimeStatus)
+                : undefined;
               const ModIcon = MODULE_ICONS[step.relatedModuleId] ?? Box;
               const roleTitle = resolveRoleLabel(step.handlerRoleId);
               const moduleTitle = resolveModuleLabel(step.relatedModuleId);
@@ -884,7 +908,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                     selected
                       ? 'z-[2] scale-105 border-xevn-primary/35 shadow-[0_12px_40px_rgb(30,64,175,0.09)]'
                       : 'hover:border-slate-200'
-                  }`}
+                  } ${runtimeStatusNodeClasses(runtimeStatus)}`}
                   style={{
                     left: r.x,
                     top: r.y,
@@ -892,9 +916,19 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                     height: r.h,
                   }}
                 >
-                  <p className="min-w-0 text-center text-[15px] font-bold leading-snug text-xevn-text">
-                    {roleTitle}
-                  </p>
+                  <div className="flex min-w-0 items-start justify-center gap-2">
+                    <p className="min-w-0 flex-1 text-center text-[15px] font-bold leading-snug text-xevn-text">
+                      {roleTitle}
+                    </p>
+                    {runtimeStatus ? (
+                      <span
+                        className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600"
+                        title="Trạng thái runtime"
+                      >
+                        {workflowInstanceStatusLabelVi(runtimeStatus)}
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="min-w-0 self-center text-center text-base font-medium leading-snug text-slate-800 [text-wrap:balance] line-clamp-4">
                     {step.taskName?.trim() || '—'}
                   </p>

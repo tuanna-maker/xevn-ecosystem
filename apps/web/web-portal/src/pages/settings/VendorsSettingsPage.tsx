@@ -12,19 +12,30 @@ import { mockVendors, Vendor } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const VendorsSettingsPage: React.FC = () => {
   const { companies } = useCompanyFilterOptions();
   const { tenantId, companyId } = useTenantScope();
   const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [usingMockFallback, setUsingMockFallback] = useState(false);
   useEffect(() => {
+    setLoadFailed(false);
+    setUsingMockFallback(false);
     void listBusinessMasterItems<Vendor>('vendors', tenantId, companyId)
       .then((rows) => {
         setVendors(rows);
       })
       .catch(() => {
-        setVendors(allowMockFallback() ? mockVendors : []);
+        setLoadFailed(true);
+        if (allowMockFallback()) {
+          setVendors(mockVendors);
+          setUsingMockFallback(true);
+        } else {
+          setVendors([]);
+        }
       });
   }, [tenantId, companyId]);
 
@@ -307,6 +318,11 @@ const VendorsSettingsPage: React.FC = () => {
             Thêm đối tác mới
           </Button>
         }
+      />
+      <ApiLoadBanner
+        loadFailed={loadFailed && !allowMockFallback()}
+        usingMockFallback={usingMockFallback}
+        message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />
 
       {/* Stats & Filter */}

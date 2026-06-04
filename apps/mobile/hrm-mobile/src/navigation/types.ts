@@ -7,8 +7,11 @@ export type AttendanceStackParamList = {
 
 export type RequestsStackParamList = {
   UpdateRequests: undefined;
+  LeaveRequestsList: undefined;
   CreateUpdateRequest: undefined;
   CreateLeaveRequest: undefined;
+  UpdateRequestDetail: { id: string };
+  LeaveRequestDetail: { id: string };
 };
 
 export type MoreStackParamList = {
@@ -16,6 +19,8 @@ export type MoreStackParamList = {
   Scope: undefined;
   ManagerApprovals: undefined;
   PayrollSummary: undefined;
+  PayslipList: { periodId: string; periodLabel: string };
+  PayslipDetail: { payslipId: string; periodLabel: string };
   Contracts: undefined;
   Operations: undefined;
   Profile: undefined;

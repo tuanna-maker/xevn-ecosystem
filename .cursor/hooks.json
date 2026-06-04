@@ -33,15 +33,16 @@
     "subagentStop": [
       {
         "command": "node .cursor/hooks/subagent-stop.mjs",
-        "timeout": 15,
-        "loop_limit": 10
+        "timeout": 10,
+        "loop_limit": 6,
+        "failClosed": true
       }
     ],
     "stop": [
       {
         "command": "node .cursor/hooks/stop-pm-orchestration.mjs",
-        "timeout": 15,
-        "loop_limit": 12
+        "timeout": 8,
+        "loop_limit": 10
       }
     ],
     "postToolUse": [

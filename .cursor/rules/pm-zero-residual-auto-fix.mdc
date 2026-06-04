@@ -1,0 +1,12 @@
+---
+description: Auto-dispatch every residual defect including minor — never wait for user to ask
+alwaysApply: true
+---
+
+# PM — Zero residual (project)
+
+Mirror global: `~/.cursor/rules/pm-zero-residual-auto-fix.mdc`.
+
+After **P1-S5-QC-02** or any QA `PASS_TO_PM`: scan evidence **Residual** / **Condition** → `Task` same session.
+
+**Example (active):** RACI matrix **409** on member legal-entity UUID → `dev-be` without user prompt.

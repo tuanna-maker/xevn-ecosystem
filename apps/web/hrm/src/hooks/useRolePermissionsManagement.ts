@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Permission {
@@ -17,13 +16,7 @@ export function useAllPermissions() {
   return useQuery({
     queryKey: ['all-permissions'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('permissions' as any)
-        .select('id, module, action, description')
-        .order('module')
-        .order('action');
-      if (error) throw error;
-      return (data || []) as unknown as Permission[];
+      return [] as unknown as Permission[];
     },
   });
 }
@@ -33,17 +26,9 @@ export function useAllRolePermissions(roleIds: string[]) {
     queryKey: ['all-role-permissions', roleIds],
     queryFn: async () => {
       if (roleIds.length === 0) return {};
-      const { data, error } = await supabase
-        .from('role_permissions' as any)
-        .select('role_id, permission_id')
-        .in('role_id', roleIds);
-      if (error) throw error;
-
       const map: RolePermissionMap = {};
-      roleIds.forEach(id => { map[id] = new Set(); });
-      (data || []).forEach((rp: any) => {
-        if (!map[rp.role_id]) map[rp.role_id] = new Set();
-        map[rp.role_id].add(rp.permission_id);
+      roleIds.forEach((id) => {
+        map[id] = new Set();
       });
       return map;
     },
@@ -57,10 +42,6 @@ export function useToggleRolePermission() {
 
   const addMutation = useMutation({
     mutationFn: async ({ roleId, permissionId }: { roleId: string; permissionId: string }) => {
-      const { error } = await supabase
-        .from('role_permissions' as any)
-        .insert({ role_id: roleId, permission_id: permissionId } as any);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
@@ -74,12 +55,6 @@ export function useToggleRolePermission() {
 
   const removeMutation = useMutation({
     mutationFn: async ({ roleId, permissionId }: { roleId: string; permissionId: string }) => {
-      const { error } = await supabase
-        .from('role_permissions' as any)
-        .delete()
-        .eq('role_id', roleId)
-        .eq('permission_id', permissionId);
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });

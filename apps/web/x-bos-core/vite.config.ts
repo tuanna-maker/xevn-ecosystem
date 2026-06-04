@@ -38,8 +38,8 @@ export default defineConfig({
   },
   server: {
     host: true,
-    // Cổng 5173 trùng thói quen mở `localhost:5173` — tránh xem nhầm bản build cũ trên port khác.
-    port: 5173,
+    // KPI/org UI — cổng 5176 (Unified Portal / Command Center dùng web-portal :5173).
+    port: 5176,
     strictPort: true,
     headers: { 'Cache-Control': 'no-store' },
   },

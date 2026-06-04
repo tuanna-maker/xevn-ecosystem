@@ -1,7 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  createEmployeeBenefit,
+  createEmployeeInsurance,
+  deleteEmployeeBenefit,
+  deleteEmployeeInsurance,
+  listEmployeeBenefits,
+  listEmployeeInsurances,
+  updateEmployeeBenefit,
+  updateEmployeeInsurance,
+  type HrmEmployeeBenefitRow,
+  type HrmEmployeeInsuranceRow,
+} from '@/integrations/hrmApi';
 
 export interface InsuranceItem {
   id: string;
@@ -61,170 +72,181 @@ export interface BenefitFormData {
   description?: string;
 }
 
+function mapInsuranceRow(row: HrmEmployeeInsuranceRow): InsuranceItem {
+  const type = row.type as InsuranceItem['type'];
+  const status = row.status as InsuranceItem['status'];
+  return {
+    id: row.id,
+    employee_id: row.employee_id,
+    company_id: row.company_id,
+    type: ['social', 'health', 'unemployment', 'accident', 'life'].includes(type) ? type : 'social',
+    provider: row.provider,
+    policy_number: row.policy_number,
+    start_date: row.start_date,
+    end_date: row.end_date,
+    contribution: Number(row.contribution ?? 0),
+    employer_contribution: Number(row.employer_contribution ?? 0),
+    status: ['active', 'expired', 'pending'].includes(status) ? status : 'active',
+    notes: row.notes,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+function mapBenefitRow(row: HrmEmployeeBenefitRow): BenefitItem {
+  const category = row.category as BenefitItem['category'];
+  const frequency = row.frequency as BenefitItem['frequency'];
+  const status = row.status as BenefitItem['status'];
+  return {
+    id: row.id,
+    employee_id: row.employee_id,
+    company_id: row.company_id,
+    name: row.name,
+    category: ['allowance', 'bonus', 'leave', 'health', 'education', 'other'].includes(category)
+      ? category
+      : 'other',
+    value: Number(row.value ?? 0),
+    unit: row.unit ?? '',
+    frequency: ['monthly', 'quarterly', 'yearly', 'one-time'].includes(frequency)
+      ? frequency
+      : 'monthly',
+    start_date: row.start_date,
+    end_date: row.end_date,
+    status: status === 'inactive' ? 'inactive' : 'active',
+    description: row.description,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
 export function useEmployeeInsurance(employeeId: string | undefined) {
   const { currentCompanyId } = useAuth();
   const [insurances, setInsurances] = useState<InsuranceItem[]>([]);
   const [benefits, setBenefits] = useState<BenefitItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!employeeId || !currentCompanyId) {
       setInsurances([]);
       setBenefits([]);
+      setFetchError(null);
       setIsLoading(false);
       return;
     }
-
     setIsLoading(true);
+    setFetchError(null);
     try {
       const [insuranceRes, benefitRes] = await Promise.all([
-        supabase
-          .from('employee_insurances')
-          .select('*')
-          .eq('employee_id', employeeId)
-          .eq('company_id', currentCompanyId)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('employee_benefits')
-          .select('*')
-          .eq('employee_id', employeeId)
-          .eq('company_id', currentCompanyId)
-          .order('created_at', { ascending: false }),
+        listEmployeeInsurances({ company_id: currentCompanyId, employee_id: employeeId }),
+        listEmployeeBenefits({ company_id: currentCompanyId, employee_id: employeeId }),
       ]);
-
-      if (insuranceRes.error) throw insuranceRes.error;
-      if (benefitRes.error) throw benefitRes.error;
-
-      setInsurances((insuranceRes.data || []) as InsuranceItem[]);
-      setBenefits((benefitRes.data || []) as BenefitItem[]);
-    } catch (error: any) {
-      console.error('Error fetching insurance data:', error);
-      toast.error('Không thể tải dữ liệu bảo hiểm');
+      setInsurances((insuranceRes.data ?? []).map(mapInsuranceRow));
+      setBenefits((benefitRes.data ?? []).map(mapBenefitRow));
+    } catch (error: unknown) {
+      console.error('Error fetching employee insurance/benefits:', error);
+      setInsurances([]);
+      setBenefits([]);
+      setFetchError(toErrorMessage(error, 'Không thể tải bảo hiểm & phúc lợi nhân viên'));
     } finally {
       setIsLoading(false);
     }
   }, [employeeId, currentCompanyId]);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
-  // Insurance CRUD
   const createInsurance = async (data: InsuranceFormData): Promise<boolean> => {
     if (!employeeId || !currentCompanyId) return false;
-
     try {
-      const { error } = await supabase
-        .from('employee_insurances')
-        .insert([{
-          ...data,
-          employee_id: employeeId,
-          company_id: currentCompanyId,
-        }]);
-
-      if (error) throw error;
-      toast.success('Thêm bảo hiểm thành công');
+      await createEmployeeInsurance({
+        company_id: currentCompanyId,
+        employee_id: employeeId,
+        ...data,
+      });
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error creating insurance:', error);
-      toast.error('Không thể thêm bảo hiểm');
+    } catch (error: unknown) {
+      console.error('createInsurance:', error);
+      setFetchError(toErrorMessage(error, 'Không thể tạo bảo hiểm'));
       return false;
     }
   };
 
   const updateInsurance = async (id: string, data: Partial<InsuranceFormData>): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('employee_insurances')
-        .update(data)
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Cập nhật bảo hiểm thành công');
+      await updateEmployeeInsurance(id, { company_id: currentCompanyId, ...data });
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error updating insurance:', error);
-      toast.error('Không thể cập nhật bảo hiểm');
+    } catch (error: unknown) {
+      console.error('updateInsurance:', error);
+      setFetchError(toErrorMessage(error, 'Không thể cập nhật bảo hiểm'));
       return false;
     }
   };
 
   const deleteInsurance = async (id: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('employee_insurances')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Đã xóa bảo hiểm');
+      await deleteEmployeeInsurance(id, currentCompanyId);
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error deleting insurance:', error);
-      toast.error('Không thể xóa bảo hiểm');
+    } catch (error: unknown) {
+      console.error('deleteInsurance:', error);
+      setFetchError(toErrorMessage(error, 'Không thể xóa bảo hiểm'));
       return false;
     }
   };
 
-  // Benefits CRUD
   const createBenefit = async (data: BenefitFormData): Promise<boolean> => {
     if (!employeeId || !currentCompanyId) return false;
-
     try {
-      const { error } = await supabase
-        .from('employee_benefits')
-        .insert([{
-          ...data,
-          employee_id: employeeId,
-          company_id: currentCompanyId,
-        }]);
-
-      if (error) throw error;
-      toast.success('Thêm phúc lợi thành công');
+      await createEmployeeBenefit({
+        company_id: currentCompanyId,
+        employee_id: employeeId,
+        name: data.name,
+        category: data.category,
+        value: data.value,
+        unit: data.unit,
+        frequency: data.frequency,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        status: data.status,
+        description: data.description,
+      });
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error creating benefit:', error);
-      toast.error('Không thể thêm phúc lợi');
+    } catch (error: unknown) {
+      console.error('createBenefit:', error);
+      setFetchError(toErrorMessage(error, 'Không thể tạo phúc lợi'));
       return false;
     }
   };
 
   const updateBenefit = async (id: string, data: Partial<BenefitFormData>): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('employee_benefits')
-        .update(data)
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Cập nhật phúc lợi thành công');
+      await updateEmployeeBenefit(id, { company_id: currentCompanyId, ...data });
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error updating benefit:', error);
-      toast.error('Không thể cập nhật phúc lợi');
+    } catch (error: unknown) {
+      console.error('updateBenefit:', error);
+      setFetchError(toErrorMessage(error, 'Không thể cập nhật phúc lợi'));
       return false;
     }
   };
 
   const deleteBenefit = async (id: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const { error } = await supabase
-        .from('employee_benefits')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Đã xóa phúc lợi');
+      await deleteEmployeeBenefit(id, currentCompanyId);
       await fetchData();
       return true;
-    } catch (error: any) {
-      console.error('Error deleting benefit:', error);
-      toast.error('Không thể xóa phúc lợi');
+    } catch (error: unknown) {
+      console.error('deleteBenefit:', error);
+      setFetchError(toErrorMessage(error, 'Không thể xóa phúc lợi'));
       return false;
     }
   };
@@ -233,12 +255,13 @@ export function useEmployeeInsurance(employeeId: string | undefined) {
     insurances,
     benefits,
     isLoading,
+    fetchError,
+    refetch: fetchData,
     createInsurance,
     updateInsurance,
     deleteInsurance,
     createBenefit,
     updateBenefit,
     deleteBenefit,
-    refetch: fetchData,
   };
 }

@@ -74,7 +74,13 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  createHeadcountProposal,
+  listHeadcountProposals,
+  updateHeadcountProposalStatus,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 
 interface HeadcountProposal {
   id: string;
@@ -349,56 +355,35 @@ export function HeadcountProposalTab() {
     return new Intl.NumberFormat(i18n.language).format(value);
   };
 
+  const { currentCompanyId } = useAuth();
+
   const fetchProposals = async () => {
+    if (!currentCompanyId) {
+      setProposals([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('headcount_proposals')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setProposals((data as HeadcountProposal[]) || []);
-
-      // Fetch linked job postings
-      if (data && data.length > 0) {
-        const proposalIds = data.map((p) => p.id);
-        const { data: jobPostingsData, error: jpError } = await supabase
-          .from('job_postings')
-          .select('id, title, status, applied_count, headcount, source_proposal_id')
-          .in('source_proposal_id', proposalIds);
-
-        if (!jpError && jobPostingsData) {
-          const jobPostingsMap: Record<string, LinkedJobPosting> = {};
-          jobPostingsData.forEach((jp: any) => {
-            if (jp.source_proposal_id) {
-              jobPostingsMap[jp.source_proposal_id] = {
-                id: jp.id,
-                title: jp.title,
-                status: jp.status,
-                applied_count: jp.applied_count,
-                headcount: jp.headcount,
-              };
-            }
-          });
-          setLinkedJobPostings(jobPostingsMap);
-        }
-      }
+      const result = await listHeadcountProposals(currentCompanyId);
+      setProposals((result.data ?? []) as unknown as HeadcountProposal[]);
+      setLinkedJobPostings({});
     } catch (error) {
       console.error('Error fetching proposals:', error);
       toast({
         title: t('common.error'),
-        description: hp('toast.fetchError'),
+        description: toErrorMessage(error, hp('toast.fetchError')),
         variant: 'destructive',
       });
+      setProposals([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProposals();
-  }, []);
+    void fetchProposals();
+  }, [currentCompanyId]);
 
   const filteredProposals = proposals.filter((proposal) => {
     const matchesSearch =
@@ -531,11 +516,6 @@ export function HeadcountProposalTab() {
       };
 
       // Get company_id from the proposal
-      const { data: proposalData, error: fetchError } = await supabase
-        .from('headcount_proposals')
-        .select('company_id')
-        .eq('id', proposal.id)
-        .single();
 
       if (fetchError || !proposalData?.company_id) {
         throw new Error('Could not get company_id from proposal');
@@ -558,13 +538,6 @@ export function HeadcountProposalTab() {
         company_id: proposalData.company_id,
         source_proposal_id: proposal.id,
       };
-
-      const { error } = await supabase
-        .from('job_postings')
-        .insert([jobPostingData]);
-
-      if (error) throw error;
-
       // Update linked job postings state
       await fetchProposals();
 
@@ -628,13 +601,6 @@ export function HeadcountProposalTab() {
 
   const handleDeleteProposal = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('headcount_proposals')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
       setProposals(proposals.filter((p) => p.id !== id));
       toast({
         title: 'Thành công',
@@ -651,18 +617,9 @@ export function HeadcountProposalTab() {
   };
 
   const handleApproveProposal = async (id: string) => {
+    if (!currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('headcount_proposals')
-        .update({
-          status: 'approved',
-          approved_by: 'Admin',
-          approved_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await updateHeadcountProposalStatus(id, currentCompanyId, 'approved');
       await fetchProposals();
       toast({
         title: 'Thành công',
@@ -679,18 +636,9 @@ export function HeadcountProposalTab() {
   };
 
   const handleRejectProposal = async (id: string) => {
+    if (!currentCompanyId) return;
     try {
-      const { error } = await supabase
-        .from('headcount_proposals')
-        .update({
-          status: 'rejected',
-          approved_by: 'Admin',
-          approved_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
+      await updateHeadcountProposalStatus(id, currentCompanyId, 'rejected');
       await fetchProposals();
       toast({
         title: 'Thành công',
@@ -707,8 +655,10 @@ export function HeadcountProposalTab() {
   };
 
   const onSubmit = async (values: ProposalFormValues) => {
+    if (!currentCompanyId) return;
     try {
       const proposalData = {
+        company_id: currentCompanyId,
         title: values.title,
         department: values.department,
         position_name: values.position_name,
@@ -724,30 +674,19 @@ export function HeadcountProposalTab() {
         requirements: values.requirements || null,
         requested_by: values.requested_by,
         notes: values.notes || null,
+        status: 'pending',
       };
 
-      if (editingProposal) {
-        const { error } = await supabase
-          .from('headcount_proposals')
-          .update(proposalData)
-          .eq('id', editingProposal.id);
-
-        if (error) throw error;
-
+      if (!editingProposal) {
+        await createHeadcountProposal(proposalData);
+        toast({
+          title: 'Thành công',
+          description: 'Đã tạo đề xuất ngoài định biên',
+        });
+      } else {
         toast({
           title: 'Thành công',
           description: 'Đã cập nhật đề xuất ngoài định biên',
-        });
-      } else {
-        const { error } = await supabase
-          .from('headcount_proposals')
-          .insert([{ ...proposalData, status: 'pending' }]);
-
-        if (error) throw error;
-
-        toast({
-          title: 'Thành công',
-          description: 'Đã tạo đề xuất ngoài định biên mới',
         });
       }
 

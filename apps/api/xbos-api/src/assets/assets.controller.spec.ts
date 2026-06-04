@@ -21,7 +21,7 @@ function signToken(payload: Record<string, unknown>) {
   return `${signingInput}.${signature}`;
 }
 
-describe('AssetsController', () => {
+describe('AssetsController (UC-XBOS-AST)', () => {
   let controller: AssetsController;
 
   const serviceMock = {
@@ -62,7 +62,7 @@ describe('AssetsController', () => {
     ).rejects.toThrow('Unauthorized internal access');
   });
 
-  it('returns deterministic envelope codes', async () => {
+  it('UC-XBOS-AST-01: create returns ASSET-REG-201', async () => {
     const token = signToken({ mod: 'operations', aud: 'xevn-api', iss: 'xevn-internal' });
     const createResult = await controller.createAsset(
       {
@@ -84,6 +84,21 @@ describe('AssetsController', () => {
     );
     expect(createResult.code).toBe('ASSET-REG-201');
     expect(listResult.code).toBe('ASSET-REG-200');
+  });
+
+  it('UC-XBOS-AST-02: update asset lifecycle via PATCH', async () => {
+    const token = signToken({ mod: 'operations', aud: 'xevn-api', iss: 'xevn-internal' });
+    const result = await controller.updateAsset(
+      'asset-1',
+      'tn-1',
+      'cp-1',
+      { assetName: 'Updated truck', status: 'active' },
+      'operations',
+      `Bearer ${token}`,
+      undefined,
+    );
+    expect(result.code).toBe('ASSET-REG-200');
+    expect(serviceMock.updateAsset).toHaveBeenCalledWith('asset-1', 'tn-1', 'cp-1', expect.any(Object), 'operations');
   });
 
   it('canonicalizes token module claim for create', async () => {

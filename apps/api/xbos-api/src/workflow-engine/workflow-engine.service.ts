@@ -2,6 +2,25 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { XbosDbService } from '../db/xbos-db.service';
 
+function normalizeJsonbPayload(value: unknown): string {
+  if (value === undefined || value === null) {
+    return '{}';
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return '{}';
+    }
+    try {
+      JSON.parse(trimmed);
+      return trimmed;
+    } catch {
+      return '{}';
+    }
+  }
+  return JSON.stringify(value);
+}
+
 @Injectable()
 export class WorkflowEngineService {
   constructor(private readonly db: XbosDbService) {}
@@ -18,29 +37,42 @@ export class WorkflowEngineService {
   }
 
   async upsertDefinition(tenantId: string, companyId: string | null, definitionId: string | null, body: Record<string, unknown>) {
-    const code = String(body.workflowCode ?? body.code ?? '').trim();
+    const code = String(
+      body.workflowCode ?? body.workflow_code ?? body.code ?? body.definitionKey ?? '',
+    ).trim();
     const name = String(body.name ?? '').trim();
-    if (!code || !name) {
-      throw new ApiException('XBOS-WF-400', 'workflowCode and name required', HttpStatus.BAD_REQUEST);
-    }
-    const graph = body.graph ?? body.steps ?? {};
-    const conditions = body.conditions ?? {};
+    const nested = (body.payload as Record<string, unknown> | undefined) ?? undefined;
+    const graphPayload = body.graph ?? nested?.graph ?? body.steps ?? nested?.steps ?? {};
+    const conditionsPayload = body.conditions ?? nested?.conditions ?? {};
+    const graphJson = normalizeJsonbPayload(graphPayload);
+    const conditionsJson = normalizeJsonbPayload(conditionsPayload);
+    const category = String(body.category ?? 'general');
+    const scopeLevel = String(body.scopeLevel ?? body.scope_level ?? 'group');
+    const status = body.status != null ? String(body.status) : null;
+
     if (definitionId) {
+      if (!name) {
+        throw new ApiException('XBOS-WF-400', 'name is required', HttpStatus.BAD_REQUEST);
+      }
       const { rows } = await this.db.query(
         `UPDATE public.xbos_workflow_definition SET
-          name = $4, category = $5, scope_level = $6, graph = $7::jsonb, conditions = $8::jsonb,
-          status = COALESCE($9, status), updated_at = NOW()
+          name = $3, category = $4, scope_level = $5, graph = $6::jsonb, conditions = $7::jsonb,
+          status = COALESCE($8, status), updated_at = NOW()
          WHERE id = $1::uuid AND tenant_id = $2 RETURNING *`,
-        [definitionId, tenantId, companyId, name, body.category ?? 'general', body.scopeLevel ?? 'group', JSON.stringify(graph), JSON.stringify(conditions), body.status ?? null],
+        [definitionId, tenantId, name, category, scopeLevel, graphJson, conditionsJson, status],
       );
       if (!rows[0]) throw new ApiException('XBOS-WF-404', 'Definition not found', HttpStatus.NOT_FOUND);
       return rows[0];
+    }
+
+    if (!code || !name) {
+      throw new ApiException('XBOS-WF-400', 'workflowCode and name required', HttpStatus.BAD_REQUEST);
     }
     const { rows } = await this.db.query(
       `INSERT INTO public.xbos_workflow_definition (
         tenant_id, workflow_code, name, category, scope_level, company_id, graph, conditions, status
       ) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9) RETURNING *`,
-      [tenantId, code, name, body.category ?? 'general', body.scopeLevel ?? 'group', companyId, JSON.stringify(graph), JSON.stringify(conditions), body.status ?? 'draft'],
+      [tenantId, code, name, category, scopeLevel, companyId, graphJson, conditionsJson, status ?? 'draft'],
     );
     return rows[0];
   }

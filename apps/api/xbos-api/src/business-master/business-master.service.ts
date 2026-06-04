@@ -13,7 +13,8 @@ type MasterEntryRow = {
   updated_at: string;
 };
 
-const allowedDomains = new Set([
+/** UC-ECO-MASTER-01 / UC-XBOS-08 — tenant+company scoped master domains. */
+export const BUSINESS_MASTER_ALLOWED_DOMAINS = [
   'companies',
   'kpi_metrics',
   'positions',
@@ -22,16 +23,21 @@ const allowedDomains = new Set([
   'organizations',
   'customers',
   'partners',
-  /** Command Center — khung PB mẫu (chưa có module riêng). */
   'dept_system_templates',
-  /** Command Center — danh mục văn bản / đo lường / giá (singleton rows per kind). */
   'command_center_catalogs',
   'kpi_policies',
   'kpi_sparkline_snapshots',
   'department_catalog',
+  'departments',
   'geographic_regions',
   'kpi_formulas',
-]);
+] as const;
+
+const allowedDomains = new Set<string>(BUSINESS_MASTER_ALLOWED_DOMAINS);
+
+const domainAliases: Record<string, string> = {
+  departments: 'department_catalog',
+};
 
 @Injectable()
 export class BusinessMasterService {
@@ -59,12 +65,13 @@ export class BusinessMasterService {
 
   private assertDomain(domain: string): string {
     const normalized = (domain || '').trim().toLowerCase();
-    if (!allowedDomains.has(normalized)) {
+    const resolved = domainAliases[normalized] ?? normalized;
+    if (!allowedDomains.has(resolved)) {
       throw new ApiException('XBOS-MASTER-400', 'Invalid business master domain', HttpStatus.BAD_REQUEST, {
         domain,
       });
     }
-    return normalized;
+    return resolved;
   }
 
   private defaultCompanies(tenantId: string, companyId: string) {
@@ -100,6 +107,15 @@ export class BusinessMasterService {
         companyId,
       },
     ];
+  }
+
+  /** UC-ECO-MASTER-01 — read-only domain catalog for portal/settings probes. */
+  listDomainCatalog() {
+    return BUSINESS_MASTER_ALLOWED_DOMAINS.map((domain) => ({
+      domain,
+      aliases: domain === 'department_catalog' ? ['departments'] : [],
+      readPath: `/business-master/${domain}/items`,
+    }));
   }
 
   async list(tenantId: string, companyId: string, domainRaw: string) {

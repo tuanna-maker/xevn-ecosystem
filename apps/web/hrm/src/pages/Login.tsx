@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -63,19 +62,6 @@ export default function Login() {
           variant: 'destructive',
         });
         return;
-      }
-      // Check if user is platform admin
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        const { data: isAdmin } = await supabase.rpc('is_platform_admin', { _user_id: userData.user.id });
-        if (isAdmin) {
-          toast({
-            title: isEn ? 'Login successful' : 'Đăng nhập thành công',
-            description: isEn ? 'Redirecting to Platform Admin...' : 'Đang chuyển đến trang Platform Admin...',
-          });
-          navigate('/platform-admin');
-          return;
-        }
       }
       toast({
         title: isEn ? 'Login successful' : 'Đăng nhập thành công',

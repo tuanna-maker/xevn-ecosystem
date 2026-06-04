@@ -2,6 +2,7 @@ import { Body, Controller, Get, Headers, HttpStatus, Param, Patch, Post, Query }
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
+import { resolveScopeContext } from '../common/scope-context';
 import { ListInboxQueryDto } from './dto/list-inbox.query.dto';
 import { MarkInboxReadDto } from './dto/mark-inbox-read.dto';
 import { MarkInboxReadQueryDto } from './dto/mark-inbox-read.query.dto';
@@ -26,12 +27,15 @@ export class NotificationsController {
   listInbox(
     @Headers('authorization') authorization: string | undefined,
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
     @Query() query: ListInboxQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
     const limit = query.limit ?? 40;
     return this.inbox
-      .listInbox(query.company_id, query.employee_id, limit)
+      .listInbox(query.company_id, query.employee_id, limit, authorization, tenantId)
       .then((data) => ok(data, 'HRM-NOTIF-200', 'Inbox listed'));
   }
 

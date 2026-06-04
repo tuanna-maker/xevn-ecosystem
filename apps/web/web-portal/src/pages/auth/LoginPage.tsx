@@ -2,14 +2,32 @@ import React, { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Building2, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { consumeLoginRedirect } from '../../integrations/authSession';
+
+/** Must match `PORTAL_LOGIN_REDIRECT_PARAM` in apps/web/hrm `portalLogin.ts`. */
+const LOGIN_REDIRECT_QUERY = 'redirect';
+
+function safeRedirectPath(raw: string | null | undefined): string | null {
+  const path = raw?.trim();
+  if (!path || !path.startsWith('/') || path.startsWith('//')) return null;
+  return path;
+}
 
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string } | null)?.from ?? '/command-center';
+  const [from] = useState(() => {
+    const fromQuery = safeRedirectPath(
+      new URLSearchParams(location.search).get(LOGIN_REDIRECT_QUERY),
+    );
+    if (fromQuery) return fromQuery;
+    const fromState = safeRedirectPath((location.state as { from?: string } | null)?.from);
+    if (fromState) return fromState;
+    return consumeLoginRedirect() ?? '/command-center';
+  });
 
-  const [email, setEmail] = useState('ceo@xe-du-lich.vn');
+  const [email, setEmail] = useState('ceo@xe.vn');
   const [password, setPassword] = useState('Xevn@2026');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +105,7 @@ const LoginPage: React.FC = () => {
         </form>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          Dev: <span className="font-mono">ceo@xe-du-lich.vn</span> / <span className="font-mono">Xevn@2026</span>
+          Dev: <span className="font-mono">du-lich.ceo@xe.vn</span> / <span className="font-mono">Xevn@2026</span>
         </p>
       </div>
     </div>

@@ -52,9 +52,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useEmployees, Employee, EmployeeFormData } from '@/hooks/useEmployees';
-import { supabase } from '@/integrations/supabase/client';
 import { useCanAddEmployee } from '@/hooks/useCompanySubscription';
 import { useAuth } from '@/contexts/AuthContext';
+import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 
 export default function Employees() {
@@ -109,15 +109,8 @@ export default function Employees() {
       
       if (companyIds.length === 0) return;
 
-      const { data } = await supabase
-        .from('departments')
-        .select('id, name')
-        .in('company_id', companyIds)
-        .eq('status', 'active');
-      
-      if (data) {
-        setDepartments(data);
-      }
+      const rows = await listDepartmentsFromSettingsCatalog(companyIds[0]);
+      setDepartments(rows.map((d) => ({ id: d.id, name: d.name })));
     };
     
     fetchDepartments();

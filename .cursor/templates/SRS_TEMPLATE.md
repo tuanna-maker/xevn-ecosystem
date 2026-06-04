@@ -1,5 +1,8 @@
 # Software Requirements Specification (SRS)
 
+> **Module / phân hệ nội bộ:** dùng template này.  
+> **Hệ sinh thái XeVN — HTML gửi khách:** xem `docs/standards/BRD_SRS_WRITING_STANDARDS.md` + `.cursor/skills/client-delivery-docs/SKILL.md` + `.cursor/templates/CLIENT_DELIVERY_BRD_SRS.md` (build `docs/client-delivery/02_SRS_XeVN_OS.html`).
+
 ## 1. Document Control
 - Module/System:
 - Owner (BA/SA):

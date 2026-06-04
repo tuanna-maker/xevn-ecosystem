@@ -1,6 +1,8 @@
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import type { MoreStackParamList } from '../../navigation/types';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
@@ -17,14 +19,15 @@ type Period = {
 
 export function PayrollSummaryScreen() {
   const auth = useAuth();
+  const nav = useNavigation<NativeStackNavigationProp<MoreStackParamList>>();
   const [rows, setRows] = useState<Period[]>([]);
   const [err, setErr] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    const cid = auth.getAttendanceCompanyId();
+    const cid = auth.getPayrollQueryCompanyId();
     if (!cid) {
-      setErr('Cần UUID công ty để gọi UC-HRM-MOB-09.');
+      setErr('Cần phạm vi công ty để gọi UC-HRM-MOB-09.');
       setRows([]);
       return;
     }
@@ -65,12 +68,15 @@ export function PayrollSummaryScreen() {
         keyExtractor={(item) => item.id}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
         renderItem={({ item }) => (
-          <View style={styles.row}>
+          <Pressable
+            style={styles.row}
+            onPress={() => nav.navigate('PayslipList', { periodId: item.id, periodLabel: item.period_label })}
+          >
             <Text style={styles.main}>{item.period_label}</Text>
             <Text style={styles.sub}>
               {item.start_date} → {item.end_date} · {item.status}
             </Text>
-          </View>
+          </Pressable>
         )}
         ListEmptyComponent={<Text style={styles.empty}>Chưa có kỳ lương trong phạm vi</Text>}
       />

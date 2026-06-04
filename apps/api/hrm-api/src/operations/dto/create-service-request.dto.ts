@@ -1,7 +1,8 @@
-import { IsJSON, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsJSON, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class CreateServiceRequestDto {
-  @IsUUID()
+  @IsString()
+  @MaxLength(64)
   company_id!: string;
 
   @IsString()

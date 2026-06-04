@@ -1,5 +1,6 @@
 import { isMasterTenant, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import { getActiveTenantScope } from './activeTenantScope';
+import { getStoredAccessToken } from './authSession';
 
 export type IdentityScopeContext = {
   tenantId: string;
@@ -24,6 +25,14 @@ function readBase64Url(input: string): string {
   return atob(padded);
 }
 
+/** Portal session JWT first; dev service JWT fallback (aligned with buildApiAuthHeaders). */
+function getIdentityJwtToken(): string | undefined {
+  const portal = getStoredAccessToken()?.trim();
+  if (portal) return portal;
+  const service = import.meta.env.VITE_SERVICE_JWT_TOKEN;
+  return typeof service === 'string' && service.trim() ? service.trim() : undefined;
+}
+
 function parseJwtClaims(token: string | undefined): Record<string, unknown> {
   if (!token) return {};
   const parts = token.split('.');
@@ -36,12 +45,12 @@ function parseJwtClaims(token: string | undefined): Record<string, unknown> {
 }
 
 export function getJwtCompanyId(): string | null {
-  const claims = parseJwtClaims(import.meta.env.VITE_SERVICE_JWT_TOKEN);
+  const claims = parseJwtClaims(getIdentityJwtToken());
   return pickClaim(claims, ['companyId', 'company_id', 'activeCompanyId', 'active_company_id']);
 }
 
 export function getJwtTenantId(): string | null {
-  const claims = parseJwtClaims(import.meta.env.VITE_SERVICE_JWT_TOKEN);
+  const claims = parseJwtClaims(getIdentityJwtToken());
   return pickClaim(claims, ['tenantId', 'tenant_id', 'tid']);
 }
 
@@ -66,13 +75,13 @@ function usePortalIdentityDefaults(): boolean {
 
 /**
  * Phạm vi runtime: mỗi tenant thành viên dùng company_id = main.
- * Tenant master (xevn) dùng cho X-BOS group; company_id = xevn hoặc main tùy API.
+ * Tenant master (xevn): ưu tiên companyId từ portal JWT (vd. main cho ceo@xe.vn), không dùng tenant id làm company.
  */
 export function resolveIdentityScope(
   tenantIdHint?: string | null,
   companyIdHint?: string | null,
 ): IdentityScopeContext {
-  const claims = parseJwtClaims(import.meta.env.VITE_SERVICE_JWT_TOKEN);
+  const claims = parseJwtClaims(getIdentityJwtToken());
   const runtime = getActiveTenantScope();
   let tenantId =
     tenantIdHint ?? runtime?.tenantId ?? pickClaim(claims, ['tenantId', 'tenant_id', 'tid']);
@@ -88,17 +97,22 @@ export function resolveIdentityScope(
     throw new ScopeContextError('Thiếu tenantId trong identity context', 'SCOPE_TENANT_REQUIRED');
   }
 
+  const masterTenantSlugAsCompany = (id: string | null | undefined): boolean =>
+    typeof id === 'string' && id.trim().toLowerCase() === tenantId.trim().toLowerCase();
+
   let companyId: string;
   if (isMasterTenant(tenantId)) {
+    const pickOperational = (id: string | null | undefined): string | null => {
+      if (!id || isGroupCompanyId(id) || masterTenantSlugAsCompany(id)) return null;
+      return id;
+    };
     companyId =
-      companyIdHint && !isGroupCompanyId(companyIdHint)
-        ? companyIdHint
-        : runtime?.companyId && !isGroupCompanyId(runtime.companyId)
-          ? runtime.companyId
-          : MASTER_TENANT_ID;
+      pickOperational(claimCompanyId) ??
+      pickOperational(companyIdHint) ??
+      pickOperational(runtime?.companyId) ??
+      MEMBER_DEFAULT_COMPANY_ID;
   } else {
     companyId = MEMBER_DEFAULT_COMPANY_ID;
-    void claimCompanyId;
   }
 
   return { tenantId, companyId };

@@ -2,6 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createHmac } from 'node:crypto';
 import { AttendanceController } from './attendance.controller';
 import { AttendanceService } from './attendance.service';
+import { AttendanceRequestsService } from './attendance-requests.service';
+import { AttendanceCatalogService } from './attendance-catalog.service';
+import { LeaveRequestsService } from './leave-requests.service';
+import { AttendanceOverviewService } from './attendance-overview.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
@@ -11,13 +15,60 @@ function createInternalJwt(payload: Record<string, unknown>) {
   return `${header}.${body}.${sig}`;
 }
 
-describe('AttendanceController', () => {
+/** UC: HRM-AT-01..13 · embed UC-HRM-23 */
+describe('AttendanceController (HRM-AT-01..13)', () => {
   let controller: AttendanceController;
 
   const serviceMock = {
     createRecord: jest.fn().mockResolvedValue({ id: 'r1' }),
     listRecords: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'r1' }] }),
     updateStatus: jest.fn().mockResolvedValue({ id: 'r1', status: 'present' }),
+    createUpdateRequest: jest.fn().mockResolvedValue({ id: 'ur-1' }),
+    listUpdateRequests: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ur-1' }] }),
+    updateUpdateRequest: jest.fn().mockResolvedValue({ id: 'ur-1', status: 'pending' }),
+    approveUpdateRequest: jest.fn().mockResolvedValue({ id: 'ur-1', status: 'approved' }),
+    rejectUpdateRequest: jest.fn().mockResolvedValue({ id: 'ur-1', status: 'rejected' }),
+    deleteUpdateRequest: jest.fn().mockResolvedValue({ id: 'ur-1', deleted: true }),
+  };
+
+  const leaveMock = {
+    createLeaveRequest: jest.fn().mockResolvedValue({ id: 'lr-1' }),
+    listLeaveRequests: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'lr-1' }] }),
+    approveLeaveRequest: jest.fn().mockResolvedValue({ id: 'lr-1', status: 'approved' }),
+    rejectLeaveRequest: jest.fn().mockResolvedValue({ id: 'lr-1', status: 'rejected' }),
+  };
+
+  const attendanceCatalogMock = {
+    listWorkShifts: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createWorkShift: jest.fn().mockResolvedValue({ id: 'ws-1' }),
+    updateWorkShift: jest.fn().mockResolvedValue({ id: 'ws-1' }),
+    deleteWorkShift: jest.fn().mockResolvedValue({ id: 'ws-1' }),
+    listAttendanceSheets: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createAttendanceSheet: jest.fn().mockResolvedValue({ id: 'as-1' }),
+    updateAttendanceSheet: jest.fn().mockResolvedValue({ id: 'as-1' }),
+    deleteAttendanceSheet: jest.fn().mockResolvedValue({ id: 'as-1' }),
+  };
+
+  const attendanceRequestsMock = {
+    listOvertimeRequests: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createOvertimeRequest: jest.fn().mockResolvedValue({ id: 'ot-1' }),
+    approveOvertimeRequest: jest.fn().mockResolvedValue({ id: 'ot-1', status: 'approved' }),
+    rejectOvertimeRequest: jest.fn().mockResolvedValue({ id: 'ot-1', status: 'rejected' }),
+    deleteOvertimeRequest: jest.fn().mockResolvedValue({ id: 'ot-1', deleted: true }),
+    listBusinessTripRequests: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createBusinessTripRequest: jest.fn().mockResolvedValue({ id: 'bt-1' }),
+    approveBusinessTripRequest: jest.fn().mockResolvedValue({ id: 'bt-1', status: 'approved' }),
+    rejectBusinessTripRequest: jest.fn().mockResolvedValue({ id: 'bt-1', status: 'rejected' }),
+    deleteBusinessTripRequest: jest.fn().mockResolvedValue({ id: 'bt-1', deleted: true }),
+    listLateEarlyRequests: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createLateEarlyRequest: jest.fn().mockResolvedValue({ id: 'le-1' }),
+    approveLateEarlyRequest: jest.fn().mockResolvedValue({ id: 'le-1', status: 'approved' }),
+    rejectLateEarlyRequest: jest.fn().mockResolvedValue({ id: 'le-1', status: 'rejected' }),
+    deleteLateEarlyRequest: jest.fn().mockResolvedValue({ id: 'le-1', deleted: true }),
+  };
+
+  const attendanceOverviewMock = {
+    getOverview: jest.fn().mockResolvedValue({ summary: { total_employees: 0 } }),
   };
 
   beforeEach(async () => {
@@ -25,34 +76,145 @@ describe('AttendanceController', () => {
     process.env.INTERNAL_API_KEY = 'test-key';
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AttendanceController],
-      providers: [{ provide: AttendanceService, useValue: serviceMock }],
+      providers: [
+        { provide: AttendanceService, useValue: serviceMock },
+        { provide: AttendanceCatalogService, useValue: attendanceCatalogMock },
+        { provide: LeaveRequestsService, useValue: leaveMock },
+        { provide: AttendanceRequestsService, useValue: attendanceRequestsMock },
+        { provide: AttendanceOverviewService, useValue: attendanceOverviewMock },
+      ],
     }).compile();
 
     controller = module.get<AttendanceController>(AttendanceController);
   });
 
-  it('returns deterministic attendance codes', async () => {
+  const companyId = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
+  const employeeId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+
+  it('HRM-AT-01: create attendance record returns HRM-ATT-201', async () => {
     const createRes = await controller.createRecord(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      company_id: companyId,
+      employee_id: employeeId,
       attendance_date: '2026-04-22',
       status: 'pending',
     });
+    expect(createRes.code).toBe('HRM-ATT-201');
+  });
+
+  it('HRM-AT-02: list attendance records returns HRM-ATT-200', async () => {
     const listRes = await controller.listRecords(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      company_id: companyId,
     });
+    expect(listRes.code).toBe('HRM-ATT-200');
+  });
+
+  it('HRM-AT-03: update attendance record status returns HRM-ATT-202', async () => {
     const statusRes = await controller.updateStatus(
-      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      employeeId,
       undefined,
       'test-key',
       'xevn',
-      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      companyId,
       { status: 'present' },
     );
-
-    expect(createRes.code).toBe('HRM-ATT-201');
-    expect(listRes.code).toBe('HRM-ATT-200');
     expect(statusRes.code).toBe('HRM-ATT-202');
+  });
+
+  it('HRM-AT-04: create attendance update request returns HRM-ATT-REQ-201', async () => {
+    const createUr = await controller.createUpdateRequest(undefined, 'test-key', 'xevn', undefined, {
+      company_id: companyId,
+      employee_id: employeeId,
+      employee_code: 'NV0001',
+      employee_name: 'Nguyen Van A',
+      attendance_date: '2026-04-22',
+      update_type: 'check_in',
+      reason: 'correction',
+    });
+    expect(createUr.code).toBe('HRM-ATT-REQ-201');
+  });
+
+  it('HRM-AT-05: list attendance update requests returns HRM-ATT-REQ-200', async () => {
+    const listUr = await controller.listUpdateRequests(undefined, 'test-key', 'xevn', undefined, {
+      company_id: companyId,
+    });
+    expect(listUr.code).toBe('HRM-ATT-REQ-200');
+  });
+
+  it('HRM-AT-06: patch attendance update request returns HRM-ATT-REQ-202', async () => {
+    const patchUr = await controller.updateUpdateRequest('ur-1', undefined, 'test-key', 'xevn', companyId, {
+      reason: 'updated note',
+    });
+    expect(patchUr.code).toBe('HRM-ATT-REQ-202');
+  });
+
+  it('HRM-AT-07: approve attendance update request returns HRM-ATT-REQ-203', async () => {
+    const approveUr = await controller.approveUpdateRequest('ur-1', undefined, 'test-key', 'xevn', companyId, {
+      approver_name: 'mgr-1',
+    });
+    expect(approveUr.code).toBe('HRM-ATT-REQ-203');
+  });
+
+  it('HRM-AT-08: reject attendance update request returns HRM-ATT-REQ-204', async () => {
+    const rejectUr = await controller.rejectUpdateRequest('ur-2', undefined, 'test-key', 'xevn', companyId, {
+      approver_name: 'mgr-1',
+      rejected_reason: 'invalid',
+    });
+    expect(rejectUr.code).toBe('HRM-ATT-REQ-204');
+  });
+
+  it('HRM-AT-09: delete attendance update request returns HRM-ATT-REQ-205', async () => {
+    const deleteUr = await controller.deleteUpdateRequest('ur-3', undefined, 'test-key', 'xevn', companyId);
+    expect(deleteUr.code).toBe('HRM-ATT-REQ-205');
+  });
+
+  it('HRM-AT-10: create leave request returns HRM-LEAVE-201', async () => {
+    const createLeave = await controller.createLeaveRequest(undefined, 'test-key', {
+      company_id: companyId,
+      employee_id: employeeId,
+      employee_code: 'NV0001',
+      employee_name: 'Nguyen Van A',
+      leave_type: 'annual',
+      start_date: '2026-05-01',
+      end_date: '2026-05-03',
+      total_days: 3,
+    });
+    expect(createLeave.code).toBe('HRM-LEAVE-201');
+  });
+
+  it('HRM-AT-11: list leave requests returns HRM-LEAVE-200', async () => {
+    const listLeave = await controller.listLeaveRequests(undefined, 'test-key', 'xevn', undefined, {
+      company_id: companyId,
+    });
+    expect(listLeave.code).toBe('HRM-LEAVE-200');
+  });
+
+  it('HRM-AT-12: approve leave request returns HRM-LEAVE-203', async () => {
+    const approveLeave = await controller.approveLeaveRequest('lr-1', undefined, 'test-key', 'xevn', companyId, {
+      reviewer_name: 'mgr-1',
+    });
+    expect(approveLeave.code).toBe('HRM-LEAVE-203');
+  });
+
+  it('UC-HRM-MOB-08: mobile manager approves pending leave (HRM-LEAVE-203)', async () => {
+    const approveLeave = await controller.approveLeaveRequest('lr-mob-1', undefined, 'test-key', 'xevn', companyId, {
+      reviewer_name: 'mobile-mgr',
+    });
+    expect(approveLeave.code).toBe('HRM-LEAVE-203');
+    expect(leaveMock.approveLeaveRequest).toHaveBeenCalledWith(
+      'lr-mob-1',
+      { reviewer_name: 'mobile-mgr' },
+      companyId,
+      undefined,
+      'xevn',
+    );
+  });
+
+  it('HRM-AT-13: reject leave request returns HRM-LEAVE-204', async () => {
+    const rejectLeave = await controller.rejectLeaveRequest('lr-2', undefined, 'test-key', 'xevn', companyId, {
+      reviewer_name: 'mgr-1',
+      rejected_reason: 'overlap',
+    });
+    expect(rejectLeave.code).toBe('HRM-LEAVE-204');
   });
 
   it('accepts internal API key and forwards payloads to service', async () => {
@@ -74,9 +236,9 @@ describe('AttendanceController', () => {
     await controller.listRecords(undefined, 'test-key', 'xevn', undefined, query);
     await controller.updateStatus('r1', undefined, 'test-key', 'xevn', body.company_id, patch);
 
-    expect(serviceMock.createRecord).toHaveBeenCalledWith(body);
-    expect(serviceMock.listRecords).toHaveBeenCalledWith(query);
-    expect(serviceMock.updateStatus).toHaveBeenCalledWith('r1', patch);
+    expect(serviceMock.createRecord).toHaveBeenCalledWith(body, undefined, 'xevn');
+    expect(serviceMock.listRecords).toHaveBeenCalledWith(query, undefined, { tenantId: 'xevn' });
+    expect(serviceMock.updateStatus).toHaveBeenCalledWith('r1', patch, body.company_id, undefined, 'xevn');
   });
 
   it('blocks unauthorized attendance access', async () => {
@@ -114,5 +276,28 @@ describe('AttendanceController', () => {
       }),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.listRecords).not.toHaveBeenCalled();
+  });
+
+  it('accepts x-access-token fallback header for list records', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const res = await controller.listRecords(
+      undefined,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+      { 'x-access-token': token },
+    );
+    expect(res.code).toBe('HRM-ATT-200');
+    expect(serviceMock.listRecords).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
   });
 });

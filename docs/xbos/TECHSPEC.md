@@ -36,7 +36,17 @@ Chuẩn hóa thiết kế kỹ thuật cho XBOS theo baseline toàn hệ, bảo 
 - Nguồn dữ liệu chuẩn PostgreSQL.
 - Thiết kế bảng theo key catalog và cấu trúc item có khả năng truy vấn theo target.
 
-## 5. API Contract Chuẩn
+## 5. API Contract Chuẩn (M01 OpenAPI — Sprint S1)
+
+**Canonical spec:** `docs/api/openapi/xbos-api.yaml` · **Boundaries:** `docs/decisions/ADR-XBOS-M01-OPENAPI-BOUNDARIES.md` · **Verify:** `pnpm verify:openapi-m01` (static), `pnpm verify:openapi-contract` (runtime).
+
+| Tag OpenAPI | Controller | UC cluster (Phase 1) |
+|-------------|------------|----------------------|
+| M01-Catalog | `config-sync`, `catalog-governance` | UC-XBOS-02..05, SYNC |
+| M01-KPI | `kpi-engine` | UC-XBOS-KPI-01..04 |
+| M01-Org | `org-foundation`, `position-rbac` | UC-XBOS-ORG-*, 10..12 |
+| M01-Tenant | `tenant-scope` | Global filter / group overview |
+| M01-Master | `business-master` | UC-XBOS-MD-*, 08 |
 
 Envelope thành công:
 

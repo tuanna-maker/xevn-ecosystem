@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import { pushCompanyIdUuidFilter, resolveHrmListScope } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import type { HrmRealtimeEventEnvelope } from '../realtime/hrm-realtime.service';
 
@@ -86,19 +87,30 @@ export class HrmInboxService {
     );
   }
 
-  async listInbox(companyId: string, employeeId: string, limit: number) {
+  async listInbox(
+    requestedCompanyId: string,
+    employeeId: string,
+    limit: number,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushCompanyIdUuidFilter(filters, values, scope.companyIds);
+    values.push(employeeId);
+    filters.push(`(recipient_employee_id IS NULL OR recipient_employee_id = $${values.length}::uuid)`);
     const lim = Math.min(Math.max(limit, 1), 100);
     const res = await this.db.query<InboxRow>(
       `
         SELECT id, company_id, event_type, payload, recipient_employee_id, read_at, created_at
         FROM public.hrm_inbox_notifications
-        WHERE company_id = $1::uuid
-          AND (recipient_employee_id IS NULL OR recipient_employee_id = $2::uuid)
+        WHERE ${filters.join(' AND ')}
         ORDER BY created_at DESC
-        LIMIT $3;
+        LIMIT ${lim};
       `,
-      [companyId, employeeId, lim],
+      values,
     );
     return {
       total: res.rows.length,

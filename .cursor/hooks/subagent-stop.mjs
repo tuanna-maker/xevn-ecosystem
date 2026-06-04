@@ -11,10 +11,24 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { deriveDispatchHint, buildPmFollowupVi } from "./pm-dispatch-hint.mjs";
 
 const WEBHOOK_MS = 8000;
 /** Suppress duplicate PM follow-up injects for the same subagent/task/status within this window (ms). */
 const DEDUPE_WINDOW_MS = 20 * 60 * 1000;
+const COUNT_WINDOW_MS = 24 * 60 * 60 * 1000;
+const ENFORCED_ROLES = new Set([
+  "dev-be",
+  "dev-fe",
+  "dev-mobile",
+  "devops",
+  "qa",
+  "qc",
+  "ba-process",
+  "ba-data",
+  "sa",
+  "technical-manager",
+]);
 
 function str(v) {
   if (v === null || v === undefined) return "";
@@ -52,15 +66,67 @@ function buildSignal(payload) {
   };
 }
 
-function followupMessage(signal) {
-  const line = JSON.stringify(signal);
-  return [
-    "[PM Auto / subagentStop] Subagent vừa xong — KHÔNG được trả lời user bằng một câu xác nhận ngắn rồi dừng.",
-    "Bắt buộc trong lượt tiếp theo: (1) đọc vài dòng cuối `.cursor/team/inbox/subagent-stop.jsonl` nếu có; (2) đọc đoạn cuối `docs/program/AGENT_MESSAGE_BUS.md` + `docs/program/TEAM_LIVE_STATUS.md`; (3) phân tích ack_status/work_item mới nhất; (4) gọi Task dispatch role kế (QA/Dev/QC/…) hoặc cập nhật bus nếu đã chốt; (5) chỉ sau đó mới tóm tắt ngắn cho user nếu cần.",
-    "Ngoại lệ hỏi user: đổi scope lớn, thao tác rủi ro cao, thiếu quyền truy cập — theo PM Auto Mode đã thỏa thuận.",
-    "",
-    `SIGNAL_JSON: ${line}`,
-  ].join("\n");
+async function readBusTailShort(root) {
+  const p = path.join(root, "docs", "program", "AGENT_MESSAGE_BUS.md");
+  try {
+    const fh = await fs.open(p, "r");
+    const st = await fh.stat();
+    const n = Math.min(st.size, 32 * 1024);
+    const buf = Buffer.alloc(n);
+    await fh.read(buf, 0, n, st.size - n);
+    await fh.close();
+    return buf.toString("utf8");
+  } catch {
+    return "";
+  }
+}
+
+function followupMessage(signal, busTail) {
+  const hint = deriveDispatchHint({
+    busTail,
+    inboxRec: {
+      subagent_type: signal.subagent_type,
+      title: signal.title,
+      status: signal.status,
+    },
+  });
+  return buildPmFollowupVi({ hint, variant: "subagent" });
+}
+
+function extractCompletionText(payload) {
+  const candidates = [
+    payload?.response,
+    payload?.result,
+    payload?.output,
+    payload?.assistant_response,
+    payload?.final_response,
+    payload?.message,
+    payload?.detail,
+  ];
+  for (const v of candidates) {
+    if (typeof v === "string" && v.trim()) return v;
+    if (v && typeof v === "object") {
+      try {
+        const s = JSON.stringify(v);
+        if (s && s !== "{}") return s;
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  return "";
+}
+
+function hasHandoffContract(text) {
+  const t = (text || "").toLowerCase();
+  if (!t) return false;
+  return (
+    t.includes("completion_report") &&
+    t.includes("next_dispatch_prompt") &&
+    (t.includes("next_owner") || t.includes("to_role")) &&
+    t.includes("evidence_path") &&
+    t.includes("ack_status")
+  );
 }
 
 async function appendJsonl(inboxPath, record) {
@@ -109,6 +175,32 @@ async function latestMatchingAtFromJsonl(inboxPath, dKey) {
       }
     }
     return best;
+  } catch {
+    return 0;
+  }
+}
+
+async function countRoleCompletions24h(inboxPath, role) {
+  if (!role) return 0;
+  const now = Date.now();
+  try {
+    const raw = await fs.readFile(inboxPath, "utf8");
+    let n = 0;
+    for (const line of raw.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const rec = JSON.parse(line);
+        if (str(rec.subagent_type) !== role) continue;
+        const status = str(rec.status).toLowerCase();
+        if (status !== "completed" && status !== "success") continue;
+        const t = Date.parse(rec.at);
+        if (!Number.isFinite(t)) continue;
+        if (now - t <= COUNT_WINDOW_MS) n++;
+      } catch {
+        /* ignore bad line */
+      }
+    }
+    return n;
   } catch {
     return 0;
   }
@@ -178,6 +270,17 @@ async function main() {
     const busPath = path.join(teamDir, "AGENT_MESSAGE_BUS.md");
 
     const signal = buildSignal(payload);
+    const completionText = extractCompletionText(payload);
+    const role = signal.subagent_type;
+    const statusLower = str(signal.status).toLowerCase();
+    const shouldEnforceContract =
+      ENFORCED_ROLES.has(role) &&
+      (statusLower === "completed" || statusLower === "success");
+    if (shouldEnforceContract && completionText && !hasHandoffContract(completionText)) {
+      throw new Error(
+        `INVALID-HANDOFF ${role}: missing completion_report/next_dispatch_prompt contract in subagent completion`
+      );
+    }
     const dKey = dedupeKey(signal);
     const dedupePrev = await readDedupeState(dedupePath);
     const jsonlLatestMs = await latestMatchingAtFromJsonl(inboxPath, dKey);
@@ -187,6 +290,8 @@ async function main() {
       dKey && lastSameKeyMs > 0 && Date.now() - lastSameKeyMs < DEDUPE_WINDOW_MS;
 
     const webhookResult = withinWindow ? { skipped: true, reason: "dedupe_window" } : await postWebhook(signal);
+    const member_completed_count_24h = await countRoleCompletions24h(inboxPath, signal.subagent_type);
+    signal.member_completed_count_24h = member_completed_count_24h + 1;
 
     const inboxRecord = {
       ...signal,
@@ -206,7 +311,6 @@ async function main() {
 
     if (dKey) await writeDedupeState(dedupePath, dKey);
 
-    const role = signal.subagent_type;
     const summaryBits = [signal.status, signal.task_id, signal.title].filter(Boolean);
     const summary = summaryBits.length ? summaryBits.join(" | ") : `${role} finished`;
 
@@ -231,9 +335,10 @@ async function main() {
     await fs.mkdir(teamDir, { recursive: true });
     await fs.appendFile(busPath, entry, "utf8");
 
+    const busTail = await readBusTailShort(root);
     process.stdout.write(
       JSON.stringify({
-        followup_message: followupMessage(signal),
+        followup_message: followupMessage(signal, busTail),
       })
     );
   } catch {

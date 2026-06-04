@@ -34,8 +34,12 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  createJobPosting,
+  listDepartments,
+  updateJobPosting,
+} from '@/integrations/hrmApi';
 
 type CampaignFormValues = z.infer<ReturnType<typeof createSchema>>;
 
@@ -145,13 +149,16 @@ export function CampaignFormDialog({
   useEffect(() => {
     const fetchDepartments = async () => {
       if (!companyId) return;
-      const { data } = await supabase
-        .from('departments')
-        .select('id, name')
-        .eq('company_id', companyId)
-        .eq('status', 'active')
-        .order('name');
-      if (data) setDepartments(data);
+      try {
+        const response = await listDepartments({ company_id: companyId });
+        const mappedDepartments = (response.data ?? []).map((item) => ({
+          id: String(item.id ?? ''),
+          name: String(item.name ?? ''),
+        })).filter((item) => item.id && item.name);
+        setDepartments(mappedDepartments);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
     };
     fetchDepartments();
   }, [companyId]);
@@ -187,38 +194,45 @@ export function CampaignFormDialog({
     try {
       const campaignData = {
         company_id: companyId,
-        name: data.name,
-        description: data.description || null,
+        title: data.title?.trim() ? data.title : data.name,
+        position: data.position?.trim() ? data.position : data.name,
+        department: data.department || undefined,
+        employment_type: data.work_type || undefined,
+        work_location: data.location || undefined,
+        description: data.description || undefined,
+        requirements: data.requirements || undefined,
+        headcount: data.quantity || 1,
+        deadline: data.end_date ? format(data.end_date, 'yyyy-MM-dd') : undefined,
         status: data.status,
-        start_date: format(data.start_date, 'yyyy-MM-dd'),
-        end_date: data.end_date ? format(data.end_date, 'yyyy-MM-dd') : null,
-        owner_name: data.owner_name || null,
-        follower_name: data.follower_name || null,
-        position: data.position || null,
-        title: data.title || null,
-        department: data.department || null,
-        work_type: data.work_type || null,
-        location: data.location || null,
-        evaluation_criteria: data.evaluation_criteria || null,
-        salary_level: data.salary_level || null,
-        quantity: data.quantity || null,
-        requirements: data.requirements || null,
-        degree: data.degree || null,
-        major: data.major || null,
-      };
+        benefits: data.evaluation_criteria || undefined,
+        // Keep rich campaign metadata in extra fields until BE model is expanded.
+        note: [
+          data.owner_name ? `owner:${data.owner_name}` : null,
+          data.follower_name ? `follower:${data.follower_name}` : null,
+          data.salary_level ? `salary:${data.salary_level}` : null,
+          data.degree ? `degree:${data.degree}` : null,
+          data.major ? `major:${data.major}` : null,
+        ].filter(Boolean).join(' | ') || undefined,
+      } as Record<string, unknown>;
 
       if (campaign) {
-        const { error } = await supabase
-          .from('recruitment_campaigns')
-          .update(campaignData)
-          .eq('id', campaign.id);
-        if (error) throw error;
+        await updateJobPosting(campaign.id, companyId, campaignData);
         toast({ title: t('common.success'), description: d('updateSuccess') });
       } else {
-        const { error } = await supabase
-          .from('recruitment_campaigns')
-          .insert(campaignData);
-        if (error) throw error;
+        await createJobPosting({
+          company_id: companyId,
+          title: String(campaignData.title ?? data.name),
+          position: String(campaignData.position ?? data.name),
+          department: campaignData.department as string | undefined,
+          employment_type: campaignData.employment_type as string | undefined,
+          work_location: campaignData.work_location as string | undefined,
+          description: campaignData.description as string | undefined,
+          requirements: campaignData.requirements as string | undefined,
+          benefits: campaignData.benefits as string | undefined,
+          headcount: campaignData.headcount as number | undefined,
+          deadline: campaignData.deadline as string | undefined,
+          status: campaignData.status as string | undefined,
+        });
         toast({ title: t('common.success'), description: d('createSuccess') });
       }
 

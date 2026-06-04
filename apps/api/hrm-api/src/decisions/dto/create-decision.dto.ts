@@ -1,0 +1,96 @@
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+
+export class CreateDecisionDto {
+  @IsString()
+  @MaxLength(64)
+  company_id!: string;
+
+  @IsOptional()
+  @Transform(({ value, obj }) => value ?? obj?.decisionCode ?? obj?.decision_code)
+  @IsString()
+  @MaxLength(64)
+  decision_code?: string;
+
+  @IsString()
+  @MaxLength(64)
+  decision_type!: string;
+
+  @IsOptional()
+  @Transform(({ value, obj }) => value ?? obj?.name ?? obj?.decision_title)
+  @IsString()
+  @MaxLength(512)
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  content?: string;
+
+  @IsOptional()
+  @Transform(({ value, obj }) => value ?? obj?.decision_date)
+  @IsString()
+  decision_date?: string;
+
+  @IsOptional()
+  @IsString()
+  reason?: string;
+
+  @IsOptional()
+  @IsUUID()
+  employee_id?: string;
+
+  @Transform(({ value, obj }) => value ?? obj?.full_name ?? 'Unknown employee')
+  @IsString()
+  @MaxLength(256)
+  employee_name!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  employee_code?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  department?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  position?: string;
+
+  @IsOptional()
+  @IsString()
+  effective_date?: string;
+
+  @IsOptional()
+  @IsString()
+  expiry_date?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  signer_name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  signer_position?: string;
+
+  @IsOptional()
+  @IsString()
+  signing_date?: string;
+
+  @IsOptional()
+  @IsString()
+  file_url?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}

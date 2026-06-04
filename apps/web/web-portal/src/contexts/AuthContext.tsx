@@ -4,8 +4,11 @@ import {
   fetchPortalMe,
   getStoredAccessToken,
   getStoredUser,
+  getValidAccessToken,
+  isStoredSessionExpired,
   loginPortal,
   persistAuthSession,
+  setUnauthorizedHandler,
   type LoginResult,
   type PortalUser,
 } from '../integrations/authSession';
@@ -25,16 +28,46 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<PortalUser | null>(() => getStoredUser());
-  const [accessToken, setAccessToken] = useState<string | null>(() => getStoredAccessToken());
+  const [accessToken, setAccessToken] = useState<string | null>(() => getValidAccessToken());
   const [memberships, setMemberships] = useState<AccessibleTenant[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const logout = useCallback(() => {
+    clearAuthSession();
+    setAccessToken(null);
+    setUser(null);
+    setMemberships([]);
+  }, []);
+
   useEffect(() => {
-    const token = getStoredAccessToken();
-    if (!token) {
+    setUnauthorizedHandler(() => {
+      setAccessToken(null);
+      setUser(null);
+      setMemberships([]);
+      if (window.location.pathname !== '/login') {
+        window.location.replace('/login');
+      }
+    });
+    return () => setUnauthorizedHandler(null);
+  }, []);
+
+  useEffect(() => {
+    if (isStoredSessionExpired()) {
+      clearAuthSession();
+      setAccessToken(null);
+      setUser(null);
+      setMemberships([]);
       setLoading(false);
       return;
     }
+
+    const token = getStoredAccessToken();
+    if (!token) {
+      setAccessToken(null);
+      setLoading(false);
+      return;
+    }
+
     void fetchPortalMe(token)
       .then((data) => {
         setUser(data.user);
@@ -59,20 +92,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return result;
   }, []);
 
-  const logout = useCallback(() => {
-    clearAuthSession();
-    setAccessToken(null);
-    setUser(null);
-    setMemberships([]);
-  }, []);
-
   const value = useMemo(
     () => ({
       user,
       accessToken,
       memberships,
       loading,
-      isAuthenticated: Boolean(accessToken),
+      isAuthenticated: Boolean(accessToken) && !isStoredSessionExpired(),
       login,
       logout,
     }),

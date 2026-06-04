@@ -1,0 +1,50 @@
+# QC Evidence Pack Gate (mandatory — 2026-06-03)
+
+Reform plan: `docs/program/QC_ZERO_DEFECT_REFORM_PLAN.md`
+
+## Problem this rule fixes
+
+- QC GO when UI/CRUD still broken (L1/L2 only).
+- QC NO-GO when bus references evidence files that were never written.
+- ENV failures (5173 vs 5175, stack down) treated same as product defects.
+
+## Layer B — fail-closed before QC dispatch
+
+PM **must not** Task `qc` until:
+
+```bash
+pnpm run verify:qc:evidence-pack -- --evidence <exact-qa-md-path>
+```
+
+exits **0**.
+
+QA **must** generate consolidated pack via:
+
+```bash
+pnpm run qa:strict-minigate:crud
+```
+
+then fill J-* + CRUD matrix in **the same file**.
+
+## QC verdict constraints
+
+- **NO-GO (process):** pack missing or verify FAIL → return to QA only.
+- **NO-GO (product):** PRODUCT-classified FAIL in commands, J-*, or CRUD matrix.
+- **GO WITH CONDITIONS:** bounded scope only; must say «NOT Phase 1 DONE» if program gates open.
+- **GO:** scoped slice; L2.5 J-* rows listed PASS; residual none or closed.
+
+QC must **not** issue GO from hook/subagent status without readable evidence file.
+
+## ENV vs PRODUCT
+
+| Signal | Class |
+|--------|-------|
+| ECONNREFUSED :28001/:5173 | ENV — fix stack/port, retry minigate |
+| 409 scope, CRUD 4xx business, empty UI with API 200 | PRODUCT |
+| TS6133 build, jest FAIL in touched module | PRODUCT |
+
+Document class in evidence **Classification** section.
+
+## Single evidence path handoff
+
+Bus and QC verdict reference **one** `evidence_path`. No multi-file closeout without consolidated index MD.

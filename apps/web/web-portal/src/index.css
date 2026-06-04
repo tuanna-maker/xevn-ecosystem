@@ -10,11 +10,11 @@
 }
 
 /**
- * Mật độ giao diện: gọn hơn 100% zoom gốc (~87.5% ≈ 14px/rem) để khớp “compact shell”,
- * đồng thời đủ lớn để chữ workspace (bảng, meta) không quá nhỏ trên laptop.
+ * UI density: rem base ≈ browser 90% zoom at 100% zoom (default --xevn-ui-density 0.9).
+ * Set in main via applyUiDensity() from VITE_UI_DENSITY; fallback matches default.
  */
 html {
-  font-size: 82.5%;
+  font-size: calc(100% * var(--xevn-ui-density, 0.9));
   scroll-behavior: smooth;
 }
 

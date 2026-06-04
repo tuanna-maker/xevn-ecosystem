@@ -2,9 +2,9 @@ import { useState, useRef } from 'react';
 import { Camera, Upload, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 
 interface CandidateAvatarUploadProps {
   candidateId: string;
@@ -72,24 +72,10 @@ export function CandidateAvatarUpload({
       const fileName = `${candidateId}-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('candidate-avatars')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true,
-        });
-
-      if (uploadError) {
-        throw uploadError;
+      const newAvatarUrl = await hrmStorageUploadStub(file, 'candidate-avatar');
+      if (!newAvatarUrl) {
+        throw new Error('Upload failed');
       }
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('candidate-avatars')
-        .getPublicUrl(filePath);
-
-      const newAvatarUrl = urlData.publicUrl;
       setAvatarUrl(newAvatarUrl);
       onAvatarChange?.(newAvatarUrl);
 

@@ -77,7 +77,7 @@ function buildEmployee(i) {
     id: `00000000-0000-4000-8000-${pad(seq, 12)}`,
     company_id: companyId,
     employee_code: `NV${pad(seq)}`,
-    email: `nhansu${pad(seq)}@xevn.vn`,
+    email: `nhansu${pad(seq)}@xe.vn`,
     full_name: fullName,
     job_title_key: role,
     status,

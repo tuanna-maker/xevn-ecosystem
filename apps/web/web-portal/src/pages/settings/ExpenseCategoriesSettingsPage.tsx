@@ -12,19 +12,30 @@ import { mockExpenseCategories, ExpenseCategory } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const ExpenseCategoriesSettingsPage: React.FC = () => {
   const { companies } = useCompanyFilterOptions();
   const { tenantId, companyId } = useTenantScope();
   const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [usingMockFallback, setUsingMockFallback] = useState(false);
   useEffect(() => {
+    setLoadFailed(false);
+    setUsingMockFallback(false);
     void listBusinessMasterItems<ExpenseCategory>('expense_categories', tenantId, companyId)
       .then((rows) => {
         setExpenseCategories(rows);
       })
       .catch(() => {
-        setExpenseCategories(allowMockFallback() ? mockExpenseCategories : []);
+        setLoadFailed(true);
+        if (allowMockFallback()) {
+          setExpenseCategories(mockExpenseCategories);
+          setUsingMockFallback(true);
+        } else {
+          setExpenseCategories([]);
+        }
       });
   }, [tenantId, companyId]);
 
@@ -310,6 +321,11 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
             Thêm loại chi phí
           </Button>
         }
+      />
+      <ApiLoadBanner
+        loadFailed={loadFailed && !allowMockFallback()}
+        usingMockFallback={usingMockFallback}
+        message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />
 
       {/* Stats Cards */}

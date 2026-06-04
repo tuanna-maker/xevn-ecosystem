@@ -1,0 +1,56 @@
+﻿[fix2] build platform-core...
+plink.exe : + echo '[fix2] build platform-core...'
+At C:\Users\ADMIN\OneDrive\Tài liệu\Vibe Coding\projects\xevn-ecosystem\scripts\tmp-hrm-502-fix2.ps1:31 char:8
++ $out = & $plink -ssh root@14.225.217.232 -pw $env:VPS_SSH_PASSWORD -h ...
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (+ echo '[fix2] build platform-core...':String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
++ docker exec xevn-hrm-be-dev sh -lc 'corepack enable && cd /app && pnpm build:platform-core'
++ tail -20
+undefined
+â€‰ERR_PNPM_RECURSIVE_EXEC_FIRST_FAILâ€‰ Command "build:platform-core" not found
+
+Did you mean "pnpm build:hrm-mobile"?
+[fix2] restart hrm-be...
++ echo '[fix2] restart hrm-be...'
++ cd /opt/xevn-ecosystem/deploy/xevn-ecosystem
++ docker compose restart hrm-be
+ Container xevn-hrm-be-dev  Restarting
+ Container xevn-hrm-be-dev  Started
++ sleep 50
+[fix2] smoke local
++ echo '[fix2] smoke local'
++ curl -si http://127.0.0.1:3001/api/hrm/
++ head -5
++ curl -si 'http://127.0.0.1:3001/api/hrm/metrics?format=prometheus'
++ head -8
+[fix2] smoke https perimeter
++ echo '[fix2] smoke https perimeter'
++ curl -sk -o /dev/null -w 'hrm-https:%{http_code}\n' https://127.0.0.1/api/hrm/ -H 'Host: 14-225-217-232.nip.io'
+hrm-https:502
++ curl -sk -o /dev/null -w 'hrm-metrics-https:%{http_code}\n' 'https://127.0.0.1/api/hrm/metrics?format=prometheus' -H 
+'Host: 14-225-217-232.nip.io'
++ docker logs xevn-hrm-be-dev
+hrm-metrics-https:502
++ tail -20
+[7m17[0m     this.queue = new Queue('xevn-platform', { connection: this.connection });
+[7m  [0m [91m                                              ~~~~~~~~~~[0m
+
+[96msrc/queue/platform-queue.service.ts[0m:[93m26[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType 'Redis' is not assignable to type 'ConnectionOptions'.
+  Type 'Redis' is not assignable to type 'IRedisClient | ClusterOptions | Redis | Cluster'.
+    Type 'import("/app/node_modules/.pnpm/ioredis@5.11.0/node_modules/ioredis/built/Redis").default' is not assignable to type 'import("/app/node_modules/.pnpm/ioredis@5.10.1/node_modules/ioredis/built/Redis").default'.
+      Types of property 'options' are incompatible.
+        Type 'import("/app/node_modules/.pnpm/ioredis@5.11.0/node_modules/ioredis/built/redis/RedisOptions").RedisOptions' is not assignable to type 'import("/app/node_modules/.pnpm/ioredis@5.10.1/node_modules/ioredis/built/redis/RedisOptions").RedisOptions'.
+          Type 'RedisOptions' is not assignable to type 'CommonRedisOptions'.
+            Types of property 'Connector' are incompatible.
+              Type 'import("/app/node_modules/.pnpm/ioredis@5.11.0/node_modules/ioredis/built/connectors/ConnectorConstructor").default | undefined' is not assignable to type 'import("/app/node_modules/.pnpm/ioredis@5.10.1/node_modules/ioredis/built/connectors/ConnectorConstructor").default | undefined'.
+                Type 'import("/app/node_modules/.pnpm/ioredis@5.11.0/node_modules/ioredis/built/connectors/ConnectorConstructor").default' is not assignable to type 'import("/app/node_modules/.pnpm/ioredis@5.10.1/node_modules/ioredis/built/connectors/ConnectorConstructor").default'.
+                  Type 'import("/app/node_modules/.pnpm/ioredis@5.11.0/node_modules/ioredis/built/connectors/AbstractConnector").default' is not assignable to type 'import("/app/node_modules/.pnpm/ioredis@5.10.1/node_modules/ioredis/built/connectors/AbstractConnector").default'.
+                    Property 'connecting' is protected but type 'AbstractConnector' is not a class derived from 'AbstractConnector'.
+
+[7m26[0m       { connection: this.connection },
+[7m  [0m [91m        ~~~~~~~~~~[0m
+
+[[90m10:28:50 PM[0m] Found 2 errors. Watching for file changes.
+

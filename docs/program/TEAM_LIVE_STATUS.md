@@ -1,9 +1,13 @@
 # TEAM LIVE STATUS
 
-Last updated: 2026-05-04 (M2 idle chốt; **`PM_ORCHESTRATION_MODE` = `STOP`** — tắt hook inject; backlog dept/insurance + xlsx — bus; BA prompt asset pack `PASS_TO_PM`; XBOS->HRM sync coverage gap remediation **`PM -> Dev-BE DISPATCHED`**; **HRM Command Center modal full-viewport** `2e8bea66-623c-4b75-88d8-f8821805b087` → **`PM -> QA DISPATCHED`** sau `Dev-FE READY_FOR_QA`)
+Last updated: 2026-05-25T02:00 ICT · **OVERNIGHT RUN** · W1 BE-A2+FE-A2 **READY_FOR_QA** · **4 lanes** QA+FE-W1B+BE-W1B+BE-C1 · target user return ~**180–200/245** (honest); full **245** → W2–W4
+
+**Plan:** `PHASE1_TODAY_EXECUTION_PLAN.md`
 
 ## Where to track team work
 
+- **Báo cáo user:** `PROJECT_STATUS_REPORT.md` · `USER_SERVICE_STATUS.md` · `EVIDENCE_INDEX.md`
+- **WBS / playbook:** `PHASE1_PMP_PROJECT_PLAN.md` · `PM_ORCHESTRATION_PLAYBOOK.md`
 - Command stream and handoffs: `docs/program/AGENT_MESSAGE_BUS.md`
 - Current PM dispatch and deadlines: `docs/PM_EXECUTION_DISPATCH_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_CYCLE_P0_CLOSURE_V1.md`
 - PM release order (next 24h): `docs/PM_RELEASE_EXECUTION_ORDER_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_24H_V1.md`
@@ -13,9 +17,34 @@ Last updated: 2026-05-04 (M2 idle chốt; **`PM_ORCHESTRATION_MODE` = `STOP`** �
 - QC final gate state: `docs/QC_GATE_DECISION_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_CYCLE_M7_V1.md`
 - Technical baseline: `docs/TM_TECHNICAL_SPEC_PACKAGE_XEVN_MULTI_COMPANY_GOVERNANCE_V1.md`
 
+## Phase 1 Scrum — Sprint S1 (ACTIVE)
+
+| Role | work_item_id | Status |
+|------|--------------|--------|
+| PM | P1-S1-PM-01 | IN_PROGRESS (`pnpm sprint:pulse S1`) |
+| SA | P1-S1-SA-01 | **DONE** (OpenAPI M01) |
+| Dev-FE | S1-FE-DEBT | **DONE** (QA PASS 2026-05-23) |
+| Dev-FE | P1-S1-FE-01, FE-02 | **READY_FOR_QA** |
+| Dev-FE | P1-S1-FE-03 | **IN_PROGRESS** |
+| Dev-BE | P1-S1-BE-01 | **DONE** (QA PASS) |
+| Dev-BE | P1-S1-BE-02..05 | **READY_FOR_QA** → QA batch |
+| Overlay | HRM-REALISTIC-DATA-RESET | **DONE** (7/7 + 4/4 gates) |
+| QA | P1-S1-QA-BATCH | **IN_PROGRESS** |
+| BA-Process | P1-S1-BA-P-01 | **DISPATCHED** |
+| BA-Data | P1-S1-BA-D-01 | **DISPATCHED** |
+| QA | S1-FE-DEBT | **DONE** |
+| DevOps | P1-S1-DO-01 | **DONE** (pulse 0 fails 2026-05-23) |
+| Technical Manager | P1-S1-TM-01 | WAIT |
+| QC | — | WAIT S1 gate |
+
+S0 **done**. Board: `PHASE1_SCRUM_BOARD.md` · Pulse: `SPRINT_PULSE_LOG.md` · Hook: **STOP**
+
+---
+
 ## Current cycle snapshot
 
 - Overall gate: `GO` (MVP1 gate passed; runtime controls active in hypercare window).
+- **Phase 1 program:** Sprint **S1** active (XBOS khối A `planned`→`be`); S0 closed; pulse **0 fails** 2026-05-23.
 - Role sequence active:
   - `MVP1 coding execution cycle` -> completed (`Dev-BE + Dev-FE delivered`)
   - `MVP1 M3 QA` -> completed (`PASS_TO_BA`)

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { ApiClientError, toErrorMessage } from '@/lib/apiError';
+import { clampHrmPageSize } from '@/lib/hrmDataMode';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import {
   createAttendanceRecord,
   HrmAttendanceRecord,
@@ -27,6 +29,14 @@ export interface CheckInData {
 }
 
 export interface CheckOutData { check_out_location?: string; check_out_device?: string; notes?: string; }
+
+export function buildAttendanceRecordsQuery(companyId: string, fromDate?: string) {
+  return {
+    company_id: coerceHrmListCompanyId(companyId),
+    ...(fromDate ? { from_date: fromDate } : {}),
+    page_size: clampHrmPageSize(100),
+  };
+}
 
 function toTime(value?: string | null) {
   if (!value) return null;

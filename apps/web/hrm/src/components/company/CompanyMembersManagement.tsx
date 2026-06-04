@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -84,7 +84,16 @@ import {
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import {
+  deleteCompanyMembership,
+  inviteEmployees,
+  listAdminCompanies,
+  listCompanyMemberships,
+  listEmployees,
+  updateCompanyMembership,
+  upsertCompanyMembership,
+} from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { useSystemRoles } from '@/hooks/usePermissions';
 
 interface Company {
@@ -190,36 +199,27 @@ export function CompanyMembersManagement() {
 
   const fetchCompanies = async () => {
     try {
-      const { data, error } = await supabase
-        .from('companies')
-        .select('id, name, code')
-        .eq('status', 'active')
-        .order('name');
-
-      if (error) throw error;
-      setCompanies((data as Company[]) || []);
+      const result = await listAdminCompanies();
+      setCompanies((result.data ?? []) as Company[]);
     } catch (error) {
       console.error('Error fetching companies:', error);
+      setCompanies([]);
     }
   };
 
   const fetchMembers = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('user_company_memberships')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setMembers((data as CompanyMember[]) || []);
+      const result = await listCompanyMemberships();
+      setMembers((result.data ?? []) as CompanyMember[]);
     } catch (error) {
       console.error('Error fetching members:', error);
       toast({
         title: t('common.error'),
-        description: t('company.memberLoadError'),
+        description: toErrorMessage(error, t('company.memberLoadError', 'Không thể tải thành viên')),
         variant: 'destructive',
       });
+      setMembers([]);
     } finally {
       setLoading(false);
     }
@@ -227,24 +227,39 @@ export function CompanyMembersManagement() {
 
   const fetchEmployees = async () => {
     try {
-      const { data, error } = await supabase
-        .from('employees')
-        .select('id, employee_code, full_name, email, department, position, company_id')
-        .is('deleted_at', null)
-        .order('full_name');
-
-      if (error) throw error;
-      setEmployees((data as EmployeeOption[]) || []);
+      const companyIds = companies.length ? companies.map((c) => c.id) : ['main'];
+      const rows: EmployeeOption[] = [];
+      for (const cid of companyIds.slice(0, 5)) {
+        const res = await listEmployees({ company_id: cid, page_size: 200 });
+        for (const emp of res.data ?? []) {
+          rows.push({
+            id: emp.id,
+            employee_code: emp.employee_code ?? '',
+            full_name: emp.full_name,
+            email: emp.email,
+            department: emp.department ?? null,
+            position: emp.job_title_key ?? null,
+            company_id: emp.company_id,
+          });
+        }
+      }
+      setEmployees(rows);
     } catch (error) {
       console.error('Error fetching employees:', error);
+      setEmployees([]);
     }
   };
 
   useEffect(() => {
-    fetchCompanies();
-    fetchMembers();
-    fetchEmployees();
+    void fetchCompanies();
+    void fetchMembers();
   }, []);
+
+  useEffect(() => {
+    if (companies.length > 0) {
+      void fetchEmployees();
+    }
+  }, [companies.length]);
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
@@ -298,13 +313,7 @@ export function CompanyMembersManagement() {
     if (!deletingMemberId) return;
 
     try {
-      const { error } = await supabase
-        .from('user_company_memberships')
-        .delete()
-        .eq('id', deletingMemberId);
-
-      if (error) throw error;
-
+      await deleteCompanyMembership(deletingMemberId);
       setMembers(members.filter((m) => m.id !== deletingMemberId));
       toast({
         title: t('common.success'),
@@ -340,13 +349,7 @@ export function CompanyMembersManagement() {
     const empId = selectedEmployeeId && selectedEmployeeId !== 'none' ? selectedEmployeeId : null;
 
     try {
-      const { error } = await supabase
-        .from('user_company_memberships')
-        .update({ employee_id: empId })
-        .eq('id', linkingMember.id);
-
-      if (error) throw error;
-
+      await updateCompanyMembership(linkingMember.id, { employee_id: empId });
       if (empId) {
         await syncMemberEmployee(linkingMember.id, empId);
       }
@@ -371,50 +374,7 @@ export function CompanyMembersManagement() {
   };
 
   const syncMemberEmployee = async (membershipId: string, employeeId: string) => {
-    const [{ data: member }, { data: employee }] = await Promise.all([
-      supabase.from('user_company_memberships').select('*').eq('id', membershipId).single(),
-      supabase.from('employees').select('*').eq('id', employeeId).single(),
-    ]);
-
-    if (!member || !employee) return;
-
-    const memberUpdated = new Date(member.updated_at).getTime();
-    const employeeUpdated = new Date(employee.updated_at).getTime();
-
-    const employeeUpdates: Record<string, any> = {};
-    if (member.full_name && memberUpdated > employeeUpdated) {
-      employeeUpdates.full_name = member.full_name;
-    }
-    if (member.email && memberUpdated > employeeUpdated) {
-      employeeUpdates.email = member.email;
-    }
-    if (member.avatar_url && memberUpdated > employeeUpdated) {
-      employeeUpdates.avatar_url = member.avatar_url;
-    }
-
-    const memberUpdates: Record<string, any> = {};
-    if (employee.full_name && employeeUpdated >= memberUpdated) {
-      memberUpdates.full_name = employee.full_name;
-    }
-    if (employee.email && employeeUpdated >= memberUpdated) {
-      memberUpdates.email = employee.email;
-    }
-    if (employee.avatar_url && employeeUpdated >= memberUpdated) {
-      memberUpdates.avatar_url = employee.avatar_url;
-    }
-
-    const promises = [];
-    if (Object.keys(employeeUpdates).length > 0) {
-      promises.push(
-        supabase.from('employees').update(employeeUpdates).eq('id', employeeId)
-      );
-    }
-    if (Object.keys(memberUpdates).length > 0) {
-      promises.push(
-        supabase.from('user_company_memberships').update(memberUpdates).eq('id', membershipId)
-      );
-    }
-    await Promise.all(promises);
+    await updateCompanyMembership(membershipId, { employee_id: employeeId });
   };
 
   const handleSyncMember = async (member: CompanyMember) => {
@@ -473,8 +433,8 @@ export function CompanyMembersManagement() {
 
       if (empsWithoutEmail.length > 0) {
         toast({
-          title: t('common.warning') || 'Cảnh báo',
-          description: `${empsWithoutEmail.length} nhân viên không có email sẽ bị bỏ qua`,
+          title: t('common.warning') || 'Cáº£nh bĂ¡o',
+          description: `${empsWithoutEmail.length} nhĂ¢n viĂªn khĂ´ng cĂ³ email sáº½ bá»‹ bá» qua`,
           variant: 'destructive',
         });
       }
@@ -482,38 +442,24 @@ export function CompanyMembersManagement() {
       if (empsWithEmail.length === 0) {
         toast({
           title: t('common.error'),
-          description: 'Không có nhân viên nào có email để mời',
+          description: 'KhĂ´ng cĂ³ nhĂ¢n viĂªn nĂ o cĂ³ email Ä‘á»ƒ má»i',
           variant: 'destructive',
         });
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('invite-employee', {
-        body: {
-          company_id: bulkInviteCompanyId,
-          employees: empsWithEmail.map(emp => ({
-            email: (emp as any).email,
-            full_name: emp.full_name,
-            employee_id: emp.id,
-          })),
-        },
+      await inviteEmployees({
+        company_id: bulkInviteCompanyId,
+        employees: empsWithEmail.map((emp) => ({
+          email: emp.email!,
+          full_name: emp.full_name,
+          employee_id: emp.id,
+        })),
       });
-
-      if (error) throw error;
-
-      if (data?.failed > 0) {
-        const failedEmails = data.results?.filter((r: any) => !r.success).map((r: any) => r.email).join(', ');
-        toast({
-          title: `Đã mời ${data.invited}/${data.total} nhân viên`,
-          description: failedEmails ? `Lỗi: ${failedEmails}` : undefined,
-          variant: data.invited > 0 ? 'default' : 'destructive',
-        });
-      } else {
-        toast({
-          title: t('common.success'),
-          description: `Đã gửi email mời cho ${data.invited} nhân viên thành công`,
-        });
-      }
+      toast({
+        title: t('common.success'),
+        description: `Đã mời ${empsWithEmail.length} nhân viên`,
+      });
 
       await fetchMembers();
       setIsBulkInviteDialogOpen(false);
@@ -534,36 +480,7 @@ export function CompanyMembersManagement() {
     if (!changingRoleMember || !newRole) return;
 
     try {
-      // Update old membership role
-      const { error } = await supabase
-        .from('user_company_memberships')
-        .update({ role: newRole })
-        .eq('id', changingRoleMember.id);
-
-      if (error) throw error;
-
-      // Update new permission system: delete old role, insert new
-      if (changingRoleMember.user_id) {
-        // Delete existing roles for this user+company
-        await supabase
-          .from('company_user_roles' as any)
-          .delete()
-          .eq('user_id', changingRoleMember.user_id)
-          .eq('company_id', changingRoleMember.company_id);
-
-        // Find system role by code
-        const targetRole = systemRoles.find(r => r.code === newRole);
-        if (targetRole) {
-          await supabase
-            .from('company_user_roles' as any)
-            .insert({
-              user_id: changingRoleMember.user_id,
-              company_id: changingRoleMember.company_id,
-              role_id: targetRole.id,
-            });
-        }
-      }
-
+      await updateCompanyMembership(changingRoleMember.id, { role: newRole });
       setMembers(members.map((m) => 
         m.id === changingRoleMember.id ? { ...m, role: newRole } : m
       ));
@@ -586,41 +503,28 @@ export function CompanyMembersManagement() {
 
   const onSubmit = async (values: MemberFormValues) => {
     try {
-      const memberData = {
-        email: values.email,
-        full_name: values.full_name,
-        role: values.role,
-        company_id: values.company_id,
-        user_id: crypto.randomUUID(),
-        status: 'active',
-        invited_at: new Date().toISOString(),
-        invited_by: 'Admin',
-      };
+      if (editingMember) {
+        await updateCompanyMembership(editingMember.id, {
+          email: values.email,
+          full_name: values.full_name,
+          role: values.role,
+        });
+      } else {
+        await upsertCompanyMembership({
+          email: values.email,
+          full_name: values.full_name,
+          role: values.role,
+          company_id: values.company_id,
+          status: 'active',
+        });
+      }
 
       if (editingMember) {
-        const { error } = await supabase
-          .from('user_company_memberships')
-          .update({
-            email: values.email,
-            full_name: values.full_name,
-            role: values.role,
-            company_id: values.company_id,
-          })
-          .eq('id', editingMember.id);
-
-        if (error) throw error;
-
         toast({
           title: t('common.success'),
           description: t('company.memberUpdated'),
         });
       } else {
-        const { error } = await supabase
-          .from('user_company_memberships')
-          .insert([memberData]);
-
-        if (error) throw error;
-
         toast({
           title: t('common.success'),
           description: t('company.memberCreated'),
@@ -1102,7 +1006,7 @@ export function CompanyMembersManagement() {
                 <SelectValue placeholder={t('company.selectEmployee')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">— {t('company.noLink')} —</SelectItem>
+                <SelectItem value="none">â€” {t('company.noLink')} â€”</SelectItem>
                 {employees
                   .filter(emp => {
                     const alreadyLinked = members.some(
@@ -1215,7 +1119,7 @@ export function CompanyMembersManagement() {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{emp.full_name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {emp.employee_code} {emp.department ? `• ${emp.department}` : ''} {emp.position ? `• ${emp.position}` : ''}
+                              {emp.employee_code} {emp.department ? `â€¢ ${emp.department}` : ''} {emp.position ? `â€¢ ${emp.position}` : ''}
                             </p>
                           </div>
                         </div>

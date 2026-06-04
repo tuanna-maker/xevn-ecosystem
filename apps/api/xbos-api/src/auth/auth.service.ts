@@ -6,6 +6,23 @@ import { XbosDbService } from '../db/xbos-db.service';
 import { TenantScopeService } from '../tenant-scope/tenant-scope.service';
 
 const DEV_PASSWORD = 'Xevn@2026';
+/** Portal web login access token lifetime (24h) — probe P-CC-01-jwt expects 86400. */
+export const PORTAL_LOGIN_JWT_TTL_DEFAULT_SEC = 24 * 60 * 60;
+
+/** Resolved at process start from `PORTAL_LOGIN_JWT_TTL_SEC` when set. */
+export function resolvePortalLoginJwtTtlSec(): number {
+  const raw = process.env.PORTAL_LOGIN_JWT_TTL_SEC?.trim();
+  if (raw) {
+    const parsed = Number.parseInt(raw, 10);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+  return PORTAL_LOGIN_JWT_TTL_DEFAULT_SEC;
+}
+
+/** @deprecated Use {@link resolvePortalLoginJwtTtlSec} — kept for specs importing the constant. */
+export const PORTAL_LOGIN_JWT_TTL_SEC = PORTAL_LOGIN_JWT_TTL_DEFAULT_SEC;
 
 type PortalUserRow = {
   user_id: string;
@@ -50,12 +67,13 @@ export class AuthService implements OnModuleInit {
       return;
     }
     const users: Array<{ userId: string; displayName: string }> = [
-      { userId: 'admin@xevn.vn', displayName: 'Admin Dev (đa tenant)' },
-      { userId: 'ceo@xevn.vn', displayName: 'CEO Tập đoàn' },
-      { userId: 'ceo@xe-du-lich.vn', displayName: 'CEO Du lịch XeVN' },
-      { userId: 'ceo@xe-vietnam.vn', displayName: 'CEO X.E Việt Nam' },
-      { userId: 'ceo@xe-tmdv.vn', displayName: 'CEO TM-DV' },
-      { userId: 'ceo@visun.vn', displayName: 'CEO Visun' },
+      { userId: 'admin@xe.vn', displayName: 'Admin Dev (đa tenant)' },
+      { userId: 'ceo@xe.vn', displayName: 'CEO Tập đoàn' },
+      { userId: 'du-lich.ceo@xe.vn', displayName: 'CEO Du lịch XeVN' },
+      { userId: 'du-lich.hr@xe.vn', displayName: 'HR Du lịch XeVN (HRBP)' },
+      { userId: 'vietnam.ceo@xe.vn', displayName: 'CEO X.E Việt Nam' },
+      { userId: 'tmdv.ceo@xe.vn', displayName: 'CEO TM-DV' },
+      { userId: 'visun.ceo@xe.vn', displayName: 'CEO Visun' },
     ];
     for (const u of users) {
       await this.db.query(
@@ -93,17 +111,21 @@ export class AuthService implements OnModuleInit {
       throw new ApiException('XBOS-AUTH-403', 'Tài khoản chưa được gán tenant', HttpStatus.FORBIDDEN);
     }
     const defaultMembership = memberships.find((m) => m.roleCode.includes('ceo')) ?? memberships[0];
-    const accessToken = signServiceJwt({
-      sub: userId,
-      email: userId,
-      tenantId: defaultMembership.tenantId,
-      companyId: defaultMembership.companyId,
-      roleCode: defaultMembership.roleCode,
-    });
+    const expiresInSec = resolvePortalLoginJwtTtlSec();
+    const accessToken = signServiceJwt(
+      {
+        sub: userId,
+        email: userId,
+        tenantId: defaultMembership.tenantId,
+        companyId: defaultMembership.companyId,
+        roleCode: defaultMembership.roleCode,
+      },
+      expiresInSec,
+    );
 
     return {
       accessToken,
-      expiresInSec: 12 * 60 * 60,
+      expiresInSec,
       user: { userId, displayName: row.display_name },
       memberships,
       defaultTenantId: defaultMembership.tenantId,

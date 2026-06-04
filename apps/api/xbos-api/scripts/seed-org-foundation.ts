@@ -52,6 +52,12 @@ async function ensureSchema(pool: Pool) {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       UNIQUE (tenant_id, company_id, code)
     )`,
+    `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS tax_code TEXT`,
+    `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS established_at DATE`,
+    `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS address TEXT`,
+    `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS business_lines TEXT`,
+    `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS charter_capital NUMERIC`,
+    `ALTER TABLE public.xbos_legal_entity ADD COLUMN IF NOT EXISTS legal_representative TEXT`,
     `CREATE TABLE IF NOT EXISTS public.xbos_org_unit (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       tenant_id TEXT NOT NULL, company_id TEXT NOT NULL, parent_id UUID REFERENCES public.xbos_org_unit(id) ON DELETE SET NULL,
@@ -95,7 +101,7 @@ async function ensureSchema(pool: Pool) {
 
 const MASTER = process.env.MASTER_TENANT_ID?.trim() || 'xevn';
 const MEMBER_COMPANY = 'main';
-const DEV_USER = process.env.DEV_DEFAULT_USER_ID?.trim() || 'admin@xevn.vn';
+const DEV_USER = process.env.DEV_DEFAULT_USER_ID?.trim() || 'admin@xe.vn';
 
 async function seedTenantOrg(pool: Pool, tenantId: string, companyId: string, sub: SeedSubsidiary) {
   await clearTenantOrg(pool, tenantId);
@@ -131,6 +137,22 @@ async function seedTenantOrg(pool: Pool, tenantId: string, companyId: string, su
         [tenantId, pos.code, pos.name, dept.name, JSON.stringify({ departmentCode: dept.code })],
       );
     }
+  }
+}
+
+/** UC-XBOS-10 — promotable segment under holding for group CEO live probes. */
+async function seedHoldingPilotBusinessSegments(pool: Pool) {
+  const res = await pool.query<{ id: string }>(
+    `INSERT INTO public.xbos_org_unit (tenant_id, company_id, code, name, org_type, status, payload)
+     VALUES ($1, $2, 'pilot-segment-tourism', 'Mảng Du lịch (UAT pilot)', 'segment', 'active', $3::jsonb)
+     ON CONFLICT (tenant_id, company_id, code)
+     DO UPDATE SET org_type = 'segment', status = 'active', name = EXCLUDED.name, updated_at = NOW()
+     RETURNING id`,
+    [MASTER, 'holding', JSON.stringify({ pilot: true, segmentKey: 'tourism', source: 'p1-close-be-w1b' })],
+  );
+  const segmentId = res.rows[0]?.id;
+  if (segmentId) {
+    console.log(`  ✓ UC-XBOS-10 pilot segment (holding): id=${segmentId} code=pilot-segment-tourism`);
   }
 }
 
@@ -178,6 +200,14 @@ async function seed(pool: Pool, data: SeedFile) {
   );
 
   await clearTenantOrg(pool, MASTER);
+  await seedHoldingPilotBusinessSegments(pool);
+
+  await pool.query(
+    `INSERT INTO public.xbos_legal_entity (tenant_id, company_id, code, name, entity_type, payload)
+     VALUES ($1, 'holding', 'xevn-holding', $2, 'holding', $3::jsonb)
+     ON CONFLICT (tenant_id, company_id, code) DO UPDATE SET name = EXCLUDED.name, updated_at = NOW()`,
+    [MASTER, data.holding.name, JSON.stringify({ pilot: true, source: 'p1-close-be-w5' })],
+  );
 
   for (const sub of data.subsidiaries) {
     const memberTenantId = sub.companyId;
