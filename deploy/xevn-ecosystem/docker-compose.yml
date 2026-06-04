@@ -29,9 +29,9 @@ services:
       VITE_DEV_PROXY_HRM_API: http://hrm-be:3001
       # xbos-be reads XBOS_BE_PORT as its bind port (28002); proxy must match container-side port
       VITE_DEV_PROXY_XBOS_API: http://xbos-be:28002
-    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/web-portal exec vite -- --host 0.0.0.0 --port 5175"
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/web-portal exec vite -- --host 0.0.0.0 --port 5173"
     ports:
-      - "${PORTAL_FE_PORT:-8088}:5175"
+      - "${PORTAL_FE_PORT:-8088}:5173"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
