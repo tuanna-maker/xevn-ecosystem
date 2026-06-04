@@ -121,12 +121,19 @@ export class OrgFoundationService {
   }
 
   private normalizeLegalEntityBody(body: LegalEntityInput & Record<string, unknown>): LegalEntityInput {
+    if (!body || typeof body !== 'object') {
+      throw new ApiException('XBOS-ORG-400', 'Request body is required (HTTP 400)', HttpStatus.BAD_REQUEST);
+    }
     const raw = body as Record<string, unknown>;
+    const establishedRaw = body.establishedAt ?? (raw.established_at as string | undefined);
+    const establishedAt =
+      typeof establishedRaw === 'string' && establishedRaw.trim() ? establishedRaw.trim() : undefined;
     return {
       ...body,
       code: String(body.code ?? raw.code ?? '').trim(),
       name: String(body.name ?? raw.name ?? '').trim(),
       taxCode: body.taxCode ?? (raw.tax_code != null ? String(raw.tax_code) : undefined),
+      establishedAt,
       charterCapital:
         body.charterCapital ??
         (raw.charter_capital != null ? Number(raw.charter_capital) : undefined),

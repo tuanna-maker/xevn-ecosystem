@@ -42,8 +42,28 @@ export function resolveXbosGroupLegalReadScopeContext(
   const claimCompanyId = jwtPayload ? readClaim(jwtPayload, 'companyId', 'company_id', 'cid') : undefined;
   const normalized = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
   const roleCode = (jwtPayload ? readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '' : '').toLowerCase();
+  const requestedTenant = normalized.tenantId?.trim().toLowerCase();
   const requestedCompanyId = normalized.companyId?.trim().toLowerCase();
+  const requestedCompany = normalized.companyId?.trim();
   const claimCompany = claimCompanyId?.trim().toLowerCase();
+
+  // Group CEO reads member legal-entity rows with registry tenant slug headers (edit preload / list).
+  if (
+    isGroupCeoOnMasterTenant(claimTenantId, roleCode) &&
+    claimCompany === XBOS_GROUP_OPERATING_MAIN &&
+    requestedTenant &&
+    requestedTenant !== XBOS_MASTER_TENANT_ID &&
+    requestedTenant !== XBOS_GROUP_OPERATING_MAIN
+  ) {
+    resolveScopeContext(authorization, {
+      tenantId: claimTenantId,
+      companyId: claimCompanyId,
+    });
+    return {
+      tenantId: assertScopeSlug(requestedTenant, 'tenantId'),
+      companyId: assertScopeSlug(requestedCompany ?? MEMBER_DEFAULT_COMPANY_ID, 'companyId'),
+    };
+  }
 
   if (
     isGroupCeoOnMasterTenant(claimTenantId, roleCode) &&

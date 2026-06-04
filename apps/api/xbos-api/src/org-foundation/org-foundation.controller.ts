@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  UseInterceptors,
+} from '@nestjs/common';
+import { LegalEntityBodyInterceptor } from './interceptors/legal-entity-body.interceptor';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -7,9 +19,11 @@ import {
   resolveXbosGroupLegalReadScopeContext,
 } from '../common/xbos-group-legal-scope';
 import { OrgFoundationService } from './org-foundation.service';
+import { UpsertLegalEntityDto } from './dto/upsert-legal-entity.dto';
 import type { LegalEntityInput, OrgUnitInput } from './org-foundation.service';
 
 @Controller('org-foundation')
+@UseInterceptors(LegalEntityBodyInterceptor)
 export class OrgFoundationController {
   constructor(private readonly service: OrgFoundationService) {}
 
@@ -71,7 +85,7 @@ export class OrgFoundationController {
 
   @Post('legal-entities')
   async createLegalEntity(
-    @Body() body: LegalEntityInput,
+    @Body() body: UpsertLegalEntityDto,
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
     @Headers('authorization') authorization?: string,
@@ -86,7 +100,7 @@ export class OrgFoundationController {
   @Put('legal-entities/:entityId')
   async upsertLegalEntity(
     @Param('entityId') entityId: string,
-    @Body() body: LegalEntityInput,
+    @Body() body: UpsertLegalEntityDto,
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
     @Headers('authorization') authorization?: string,

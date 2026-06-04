@@ -243,6 +243,63 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     expect(serviceMock.getLegalEntityById).toHaveBeenCalledWith(memberId);
   });
 
+  it('P1-CC-BE-FE-MEMBER-LEGAL-BROWSER-SAVE-01: group CEO GET member entity with xe-du-lich headers', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const memberId = '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8';
+    const result = await controller.getLegalEntity(memberId, 'xe-du-lich', 'main', `Bearer ${token}`, 'test-key');
+    expect(result.code).toBe('XBOS-ORG-200');
+    expect(serviceMock.getLegalEntityById).toHaveBeenCalledWith(memberId);
+  });
+
+  it('P1-CC-BE-FE-MEMBER-LEGAL-BROWSER-SAVE-01: browser-shaped PUT with root code/name returns 201 envelope', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const browserBody = {
+      code: 'QA L25 browser save 20260604',
+      name: 'QA L25 browser save 20260604',
+      entityType: 'subsidiary',
+      charterCapital: 1_000_000_000,
+      taxCode: '1000000000',
+      payload: {
+        companyForm: {
+          shortName: 'QA L25 browser save 20260604',
+          nameVi: 'QA L25 browser save 20260604',
+          enterpriseCode: '0312345678',
+          entityLevel: 'subsidiary',
+          parentEntityId: 'xbos-group-holding-root',
+        },
+      },
+    };
+    const result = await controller.upsertLegalEntity(
+      '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      browserBody,
+      'xe-du-lich',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.code).toBe('XBOS-ORG-201');
+    expect(serviceMock.upsertLegalEntity).toHaveBeenCalledWith(
+      'xe-du-lich',
+      'main',
+      '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      expect.objectContaining({ code: browserBody.code, name: browserBody.name }),
+    );
+  });
+
   it('UC-CC-P0-01: loads legal entities for member tenant with main scope', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',

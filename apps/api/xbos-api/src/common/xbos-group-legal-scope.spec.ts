@@ -37,6 +37,20 @@ describe('resolveXbosGroupLegalReadScopeContext (ADR C2)', () => {
     expect(scope.companyId).toBe(XBOS_GROUP_LEGAL_HOLDING);
   });
 
+  it('allows group CEO JWT main to read member registry tenant xe-du-lich (edit preload)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveXbosGroupLegalReadScopeContext(`Bearer ${token}`, {
+      tenantId: 'xe-du-lich',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+    });
+    expect(scope).toEqual({ tenantId: 'xe-du-lich', companyId: XBOS_GROUP_OPERATING_MAIN });
+  });
+
   it('does not alias member CEO on main', () => {
     const token = signServiceJwt({
       sub: 'du-lich.ceo@xe.vn',

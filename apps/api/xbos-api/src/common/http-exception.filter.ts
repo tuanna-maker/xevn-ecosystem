@@ -27,8 +27,8 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         | { code?: string; message?: string | string[]; details?: unknown; error?: string };
       if (typeof payload === 'string') {
         message = payload;
-      } else {
-        if (payload.code) code = payload.code;
+      } else if (payload && typeof payload === 'object') {
+        if ('code' in payload && payload.code) code = String(payload.code);
         if (payload.message) {
           message = Array.isArray(payload.message) ? payload.message.join('; ') : payload.message;
         } else if (payload.error) {
@@ -36,7 +36,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         }
         details = payload.details;
       }
-      if (!('code' in (payload as object))) {
+      if (!payload || typeof payload !== 'object' || !('code' in payload)) {
         if (status === HttpStatus.BAD_REQUEST) code = 'XBOS-VAL-001';
         if (status === HttpStatus.UNAUTHORIZED) code = 'XBOS-AUTH-001';
         if (status === HttpStatus.NOT_FOUND) code = 'XBOS-CFG-001';

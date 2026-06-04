@@ -14,6 +14,7 @@ import {
   xbosMetricsOnFinish,
   xbosRateLimitMiddleware,
 } from './platform/platform-runtime';
+import { legalEntityBodyMiddleware } from './org-foundation/middleware/legal-entity-body.middleware';
 
 async function bootstrap() {
   await startPlatformTracing('xbos-api');
@@ -22,6 +23,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.enableCors(resolveXbosCorsOptions());
   app.setGlobalPrefix('api/xbos');
+  // Enrich legal-entity JSON before global ValidationPipe (interceptor alone is not enough on some Nest orders).
+  app.use(legalEntityBodyMiddleware);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
