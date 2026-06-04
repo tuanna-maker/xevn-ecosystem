@@ -122,6 +122,49 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     );
   });
 
+  it('P1-CC-BE-MEMBER-LEGAL-SAVE-01: group CEO PUT member legal entity with xe-du-lich scope', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const uiBody = {
+      code: 'XE_DU_LICH',
+      name: 'Công ty Du lịch',
+      entityType: 'subsidiary',
+      taxCode: '0123456789',
+      establishedAt: '',
+      charterCapital: 1_000_000_000,
+      address: 'Hà Nội',
+      payload: {
+        companyForm: {
+          shortName: 'XE_DU_LICH',
+          nameVi: 'Công ty Du lịch',
+          entityLevel: 'subsidiary',
+          enterpriseCode: '1001',
+        },
+      },
+    };
+    const result = await controller.upsertLegalEntity(
+      '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      uiBody,
+      'xe-du-lich',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.code).toBe('XBOS-ORG-201');
+    expect(serviceMock.upsertLegalEntity).toHaveBeenCalledWith(
+      'xe-du-lich',
+      'main',
+      '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+      expect.objectContaining({ code: 'XE_DU_LICH', payload: uiBody.payload }),
+    );
+  });
+
   it('P1-CC-BE-MEMBER-LEGAL-SAVE-01: group CEO PUT member legal entity with xe-tmdv scope', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
