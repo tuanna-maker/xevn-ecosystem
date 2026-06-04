@@ -11,15 +11,34 @@ export type XbosRequestInit = Omit<RequestInit, 'headers'> & {
   suppressLogStatuses?: number[];
 };
 
+/** Case-insensitive merge — later layers win (fixes duplicate content-type + Content-Type). */
+export function mergeRequestHeaders(
+  ...layers: Array<Record<string, string> | undefined>
+): Record<string, string> {
+  const byLower = new Map<string, { key: string; value: string }>();
+  for (const layer of layers) {
+    if (!layer) continue;
+    for (const [key, value] of Object.entries(layer)) {
+      byLower.set(key.toLowerCase(), { key, value });
+    }
+  }
+  const out: Record<string, string> = {};
+  for (const { key, value } of byLower.values()) {
+    out[key] = value;
+  }
+  return out;
+}
+
 async function buildHeaders(path: string, init?: XbosRequestInit): Promise<Record<string, string>> {
   const base = buildApiAuthHeaders();
-  if (init?.tenantId) base['x-tenant-id'] = init.tenantId;
+  const scope: Record<string, string> = {};
+  if (init?.tenantId) scope['x-tenant-id'] = init.tenantId;
   const companyId =
     init?.companyId != null && String(init.companyId).trim()
       ? resolveXbosApiCompanyIdForPath(path, init.tenantId, init.companyId)
       : undefined;
-  if (companyId) base['x-company-id'] = companyId;
-  return { ...base, ...(init?.headers ?? {}) };
+  if (companyId) scope['x-company-id'] = companyId;
+  return mergeRequestHeaders(base, scope, init?.headers);
 }
 
 export async function xbosFetch<T>(
