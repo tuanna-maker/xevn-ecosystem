@@ -18,7 +18,14 @@ import {
   SETTINGS_SECTION_STACK,
 } from './settings-form-pattern';
 import { fetchHrmEffectiveCatalogStats, type HrmCatalogEffectiveStats } from '../../integrations/hrmCatalogStats';
-import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
+import { MutationButton } from '../../components/common/MutationButton';
+import { useConfirmDialog } from '../../components/common/useConfirmDialog';
+import {
+  resolveCatalogKeyDisplayLabel,
+  resolveHatKeyDisplayLabel,
+  shortenUuidForDisplay,
+} from '../../utils/catalogDisplayLabels';
+import { shouldShowWorkflowDevSeedControls } from '../../utils/workflowDisplayLabels';
 
 const RAIL_STROKE = 1.5;
 const REVIEWER = import.meta.env.VITE_DEV_USER_ID?.trim() || 'ceo@xe.vn';
@@ -29,13 +36,16 @@ export type CatalogGovernancePanelProps = {
 
 export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ onStatusMessage }) => {
   const { isMasterContext } = useTenantScope();
+  const { requestConfirm, confirmDialog, confirming } = useConfirmDialog();
   const [tasks, setTasks] = useState<CatalogApprovalTask[]>([]);
   const [selected, setSelected] = useState<CatalogApprovalTask | null>(null);
   const [detail, setDetail] = useState<Awaited<ReturnType<typeof fetchCatalogApprovalDetail>> | null>(null);
   const [note, setNote] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [inboxLoading, setInboxLoading] = useState(false);
+  const [decisionPending, setDecisionPending] = useState(false);
   const [localMsg, setLocalMsg] = useState<string | null>(null);
   const [catalogStats, setCatalogStats] = useState<HrmCatalogEffectiveStats | null>(null);
+  const mutationBusy = decisionPending || confirming;
 
   const notify = useCallback(
     (message: string | null) => {
@@ -46,7 +56,7 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
   );
 
   const loadInbox = useCallback(async () => {
-    setLoading(true);
+    setInboxLoading(true);
     notify(null);
     try {
       const rows = await fetchCatalogApprovalInbox(REVIEWER);
@@ -58,7 +68,7 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
     } catch (e) {
       notify(e instanceof Error ? e.message : 'Không tải được hộp thư duyệt');
     } finally {
-      setLoading(false);
+      setInboxLoading(false);
     }
   }, [notify]);
 
@@ -84,9 +94,9 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
       .catch(() => setDetail(null));
   }, [selected?.instance_id]);
 
-  const act = async (decision: 'approve' | 'reject') => {
+  const executeDecision = async (decision: 'approve' | 'reject') => {
     if (!selected) return;
-    setLoading(true);
+    setDecisionPending(true);
     try {
       if (decision === 'approve') {
         await approveCatalogTask(selected.id, REVIEWER, note);
@@ -103,8 +113,34 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
     } catch (e) {
       notify(e instanceof Error ? e.message : 'Thao tác thất bại');
     } finally {
-      setLoading(false);
+      setDecisionPending(false);
     }
+  };
+
+  const promptApprove = () => {
+    if (!selected || mutationBusy) return;
+    const itemCount = detail?.batchDetail?.items?.length ?? 0;
+    requestConfirm({
+      title: 'Phê duyệt yêu cầu danh mục',
+      description:
+        itemCount > 0
+          ? `Xác nhận phê duyệt ${itemCount} mục danh mục từ công ty thành viên? Danh mục sẽ được ghi vào HRM sau khi duyệt.`
+          : 'Xác nhận phê duyệt yêu cầu bổ sung danh mục? Danh mục sẽ được ghi vào HRM sau khi duyệt.',
+      confirmLabel: 'Phê duyệt',
+      onConfirm: () => executeDecision('approve'),
+    });
+  };
+
+  const promptReject = () => {
+    if (!selected || mutationBusy) return;
+    requestConfirm({
+      title: 'Từ chối yêu cầu danh mục',
+      description:
+        'Xác nhận từ chối yêu cầu bổ sung danh mục này? Hành động không thể hoàn tác.',
+      confirmLabel: 'Từ chối',
+      destructive: true,
+      onConfirm: () => executeDecision('reject'),
+    });
   };
 
   if (!isMasterContext) {
@@ -121,26 +157,28 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          disabled={loading}
+          disabled={inboxLoading || mutationBusy}
           onClick={() => void loadInbox()}
           className={`inline-flex items-center gap-2 rounded-input border border-xevn-border bg-white px-3 py-2 font-medium text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 disabled:opacity-50 ${SETTINGS_CONTROL_TEXT}`}
         >
           <RefreshCw className="h-4 w-4" strokeWidth={RAIL_STROKE} aria-hidden />
           Làm mới
         </button>
-        <button
-          type="button"
-          onClick={() => {
-            void seedXeDuLichCatalogWorkflow()
-              .then(() => notify('Đã seed quy trình wf_hrm_catalog_extension_xe_du_lich.'))
-              .catch((e) => notify(e instanceof Error ? e.message : 'Seed quy trình thất bại'));
-          }}
-          className={`inline-flex items-center gap-2 rounded-input border border-xevn-border bg-white px-3 py-2 font-medium text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
-        >
-          Seed quy trình (dev)
-        </button>
+        {shouldShowWorkflowDevSeedControls() ? (
+          <button
+            type="button"
+            onClick={() => {
+              void seedXeDuLichCatalogWorkflow()
+                .then(() => notify('Đã seed quy trình phê duyệt danh mục (dev).'))
+                .catch((e) => notify(e instanceof Error ? e.message : 'Seed quy trình thất bại'));
+            }}
+            className={`inline-flex items-center gap-2 rounded-input border border-xevn-border bg-white px-3 py-2 font-medium text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
+          >
+            Seed quy trình (dev)
+          </button>
+        ) : null}
         <span className={`ml-auto text-sm text-xevn-textSecondary ${SETTINGS_CONTROL_TEXT}`}>
-          Quy trình: CT Du lịch → Tập đoàn · <span className="font-mono text-xs">wf_hrm_catalog_extension_xe_du_lich</span>
+          Quy trình: Phê duyệt bổ sung danh mục — CT Du lịch → Tập đoàn
           {catalogStats ? (
             <>
               {' '}
@@ -184,9 +222,14 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
                 }`}
               >
                 <p className={`font-medium text-xevn-text ${SETTINGS_CONTROL_TEXT}`}>{t.workflow_name}</p>
-                <p className="mt-1 font-mono text-xs text-xevn-textSecondary">Batch: {t.business_id}</p>
+                <p
+                  className="mt-1 text-xs text-slate-400"
+                  title={t.business_id}
+                >
+                  Mã lô: {shortenUuidForDisplay(t.business_id)}
+                </p>
                 <span className="mt-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                  {t.hat_key}
+                  {resolveHatKeyDisplayLabel(t.hat_key)}
                 </span>
               </button>
             ))
@@ -221,7 +264,9 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
                   <tbody>
                     {(detail?.batchDetail?.items ?? []).map((row) => (
                       <tr key={String(row.id)} className="border-t border-xevn-border">
-                        <td className="px-3 py-2 font-mono text-xs">{String(row.catalog_key)}</td>
+                        <td className="px-3 py-2 text-sm">
+                          {resolveCatalogKeyDisplayLabel(String(row.catalog_key ?? ''))}
+                        </td>
                         <td className="px-3 py-2 font-mono text-xs">{String(row.code)}</td>
                         <td className="px-3 py-2">{String(row.label)}</td>
                       </tr>
@@ -240,30 +285,30 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
                 />
               </label>
               <div className="mt-4 flex flex-wrap gap-3">
-                <CapabilityActionButton
-                  capabilityCode="BTN-A2-CATALOG-GOV-APPROVE"
-                  runtime={{ busy: loading, blocked: !selected }}
-                  className={`inline-flex items-center gap-2 rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 disabled:opacity-50 ${SETTINGS_CONTROL_TEXT}`}
-                  onClick={() => void act('approve')}
+                <MutationButton
+                  pending={mutationBusy}
+                  disabled={!selected || inboxLoading}
+                  onClick={promptApprove}
+                  className={`inline-flex items-center gap-2 rounded-input border-0 bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
                 >
                   <Check className="h-4 w-4" strokeWidth={RAIL_STROKE} aria-hidden />
                   Phê duyệt
-                </CapabilityActionButton>
-                <CapabilityActionButton
-                  capabilityCode="BTN-A2-CATALOG-GOV-REJECT"
-                  variant="secondary"
-                  runtime={{ busy: loading, blocked: !selected }}
-                  className={`inline-flex items-center gap-2 rounded-input border border-xevn-border bg-white px-4 py-2 font-semibold text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 disabled:opacity-50 ${SETTINGS_CONTROL_TEXT}`}
-                  onClick={() => void act('reject')}
+                </MutationButton>
+                <MutationButton
+                  pending={mutationBusy}
+                  disabled={!selected || inboxLoading}
+                  onClick={promptReject}
+                  className={`inline-flex items-center gap-2 rounded-input border border-xevn-border bg-white px-4 py-2 font-semibold text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
                 >
                   <X className="h-4 w-4" strokeWidth={RAIL_STROKE} aria-hidden />
                   Từ chối
-                </CapabilityActionButton>
+                </MutationButton>
               </div>
             </>
           )}
         </div>
       </div>
+      {confirmDialog}
     </div>
   );
 };

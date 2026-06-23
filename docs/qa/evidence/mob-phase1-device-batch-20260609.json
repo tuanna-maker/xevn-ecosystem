@@ -1,0 +1,212 @@
+{
+  "work_item_id": "MOB-PHASE1-DEVICE-BATCH",
+  "ack_status": "FAIL",
+  "apk": {
+    "sha": "C152EDD6B093871CCA59EE8AF60C65B3C1B615A53C82675DE1E078E240B412BE",
+    "bytes": 69132861
+  },
+  "results": [
+    {
+      "slice": "GATE",
+      "journey": "GATE",
+      "check": "nip.io API login nv0001/nv0002",
+      "pass": true,
+      "note": "uuid=6efaa5d6…",
+      "shot": ""
+    },
+    {
+      "slice": "GATE",
+      "journey": "GATE",
+      "check": "company_uuid ≠ main",
+      "pass": true,
+      "note": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+      "shot": ""
+    },
+    {
+      "slice": "GATE",
+      "journey": "GATE",
+      "check": "No x-company-id:main in logcat",
+      "pass": true,
+      "note": "main=false",
+      "shot": ""
+    },
+    {
+      "slice": "MOB-UX-13e",
+      "journey": "J-MOB-36",
+      "check": "EMP no manager/leader hero",
+      "pass": true,
+      "note": "mgr=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13e-jmob36-emp-home.png"
+    },
+    {
+      "slice": "MOB-UX-13e",
+      "journey": "J-MOB-36",
+      "check": "Việc cần làm section present",
+      "pass": false,
+      "note": "tasks=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13e-jmob36-emp-home.png"
+    },
+    {
+      "slice": "MOB-UX-13e",
+      "journey": "J-MOB-36",
+      "check": "Tasks before action grid",
+      "pass": false,
+      "note": "order tasks@-1 grid@9887",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13e-jmob36-emp-home.png"
+    },
+    {
+      "slice": "MOB-UX-13e",
+      "journey": "J-MOB-37",
+      "check": "MGR inbox hero or pending strip",
+      "pass": false,
+      "note": "hero=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13e-jmob37-mgr-home.png"
+    },
+    {
+      "slice": "MOB-UX-13e",
+      "journey": "J-MOB-37",
+      "check": "Approve tile Duyệt/Phê duyệt",
+      "pass": true,
+      "note": "duyet=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13e-jmob37-mgr-home.png"
+    },
+    {
+      "slice": "MOB-UX-13e",
+      "journey": "J-MOB-38",
+      "check": "LDR ceo@xe.vn mobile login",
+      "pass": false,
+      "note": "HRM-AUTH-401 — R-13E-01 BLOCKED-EXTERNAL",
+      "shot": ""
+    },
+    {
+      "slice": "MOB-UX-13f",
+      "journey": "J-MOB-23",
+      "check": "Manager approvals inbox loads",
+      "pass": true,
+      "note": "pending=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13f-jmob23-approvals.png"
+    },
+    {
+      "slice": "MOB-UX-13f",
+      "journey": "J-MOB-24",
+      "check": "Swipe reveals Duyệt/Từ chối",
+      "pass": false,
+      "note": "swipe=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13f-jmob23-approvals.png"
+    },
+    {
+      "slice": "MOB-UX-13f",
+      "journey": "J-MOB-25",
+      "check": "My Leaves balance/tabs",
+      "pass": true,
+      "note": "tabs=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13f-jmob25-26-leaves.png"
+    },
+    {
+      "slice": "MOB-UX-13f",
+      "journey": "J-MOB-26",
+      "check": "Swipe leave row actions",
+      "pass": false,
+      "note": "swipe=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13f-jmob25-26-leaves.png"
+    },
+    {
+      "slice": "MOB-UX-13g",
+      "journey": "J-MOB-culture",
+      "check": "Culture strip on Home",
+      "pass": false,
+      "note": "culture=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13g-culture-journey.png"
+    },
+    {
+      "slice": "MOB-UX-13g",
+      "journey": "J-MOB-journey",
+      "check": "Journey timeline card (no stub)",
+      "pass": true,
+      "note": "card=true stub=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13g-culture-journey.png"
+    },
+    {
+      "slice": "MOB-UX-13g",
+      "journey": "J-MOB-journey",
+      "check": "JourneyScreen navigation",
+      "pass": true,
+      "note": "screen=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/13g-culture-journey.png"
+    },
+    {
+      "slice": "MOB-UX-14-R5",
+      "journey": "J-MOB-11",
+      "check": "home-actions-carousel above fold",
+      "pass": true,
+      "note": "carousel=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/14-r5-home-412.png"
+    },
+    {
+      "slice": "MOB-UX-14-R5",
+      "journey": "J-MOB-11",
+      "check": "4-col grid tiles visible",
+      "pass": true,
+      "note": "checkin=true approve=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/14-r5-home-412.png"
+    },
+    {
+      "slice": "MOB-UX-14-R5",
+      "journey": "J-MOB-19",
+      "check": "ESS stat rows hydrate",
+      "pass": true,
+      "note": "stats=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/14-r5-home-412.png"
+    },
+    {
+      "slice": "MOB-UX-14-R5",
+      "journey": "J-MOB-14e",
+      "check": "Vietnamese display name",
+      "pass": true,
+      "note": "name=Nguyễn Văn An",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/14-r5-home-412.png"
+    },
+    {
+      "slice": "MOB-UX-14-R5",
+      "journey": "J-MOB-14e",
+      "check": "No raw holding/main slug",
+      "pass": true,
+      "note": "slug=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/14-r5-home-412.png"
+    },
+    {
+      "slice": "MOB-UX-15a",
+      "journey": "J-MOB-13-ext",
+      "check": "Stack title Thông báo only",
+      "pass": true,
+      "note": "uc=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/15a-notifications.png"
+    },
+    {
+      "slice": "MOB-UX-15a",
+      "journey": "J-MOB-13-ext",
+      "check": "No raw event_type / ISO / Socket debug",
+      "pass": true,
+      "note": "raw=false iso=false",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/15a-notifications.png"
+    },
+    {
+      "slice": "MOB-UX-15a",
+      "journey": "J-MOB-13-ext",
+      "check": "Chưa đọc badge + Vietnamese rows",
+      "pass": true,
+      "note": "badge=true vi=true",
+      "shot": "docs/qa/evidence/mob-phase1-device-batch-screens/15a-notifications.png"
+    },
+    {
+      "slice": "MOB-UX-14d",
+      "journey": "J-MOB-14d",
+      "check": "Responsive matrix all widths",
+      "pass": false,
+      "note": "iphone-se:true, iphone-14-pro-max:false, pixel-4a:false, pixel-7:true, ipad-mini:false",
+      "shot": "docs/qa/evidence/mob-ux-14d-matrix-20260609.md"
+    }
+  ],
+  "pass": 17,
+  "fail": 8
+}

@@ -17,7 +17,10 @@ import type { Response } from 'express';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
-import { resolveScopeContext } from '../common/scope-context';
+import {
+  resolveXbosGroupLegalMutationScopeContext,
+  resolveXbosGroupLegalReadScopeContext,
+} from '../common/xbos-group-legal-scope';
 import { LegalEntityProfileService } from './legal-entity-profile.service';
 
 type UploadedFilePayload = {
@@ -36,8 +39,15 @@ export class LegalEntityProfileController {
     }
   }
 
-  private scope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
-    return resolveScopeContext(headers.authorization, {
+  private readScope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
+    return resolveXbosGroupLegalReadScopeContext(headers.authorization, {
+      tenantId: headers.tenantId,
+      companyId: headers.companyId,
+    });
+  }
+
+  private mutationScope(headers: { tenantId?: string; companyId?: string; authorization?: string }) {
+    return resolveXbosGroupLegalMutationScopeContext(headers.authorization, {
       tenantId: headers.tenantId,
       companyId: headers.companyId,
     });
@@ -52,7 +62,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const items = await this.service.listShareholders(scope.tenantId, scope.companyId, entityId);
     return ok({ items }, 'XBOS-SHR-200', 'Shareholders loaded');
   }
@@ -67,7 +77,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.createShareholder(scope.tenantId, scope.companyId, entityId, body as never),
       'XBOS-SHR-201',
@@ -86,7 +96,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.updateShareholder(scope.tenantId, scope.companyId, entityId, shareholderId, body as never),
       'XBOS-SHR-201',
@@ -104,7 +114,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.deleteShareholder(scope.tenantId, scope.companyId, entityId, shareholderId),
       'XBOS-SHR-204',
@@ -121,7 +131,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.readScope({ tenantId, companyId, authorization });
     const items = await this.service.listDocuments(scope.tenantId, scope.companyId, entityId);
     return ok({ items }, 'XBOS-DOC-200', 'Documents loaded');
   }
@@ -136,7 +146,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.createDocument(scope.tenantId, scope.companyId, entityId, body as never),
       'XBOS-DOC-201',
@@ -155,7 +165,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.updateDocument(scope.tenantId, scope.companyId, entityId, documentId, body as never),
       'XBOS-DOC-201',
@@ -173,7 +183,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.deleteDocument(scope.tenantId, scope.companyId, entityId, documentId),
       'XBOS-DOC-204',
@@ -193,7 +203,7 @@ export class LegalEntityProfileController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    const scope = this.scope({ tenantId, companyId, authorization });
+    const scope = this.mutationScope({ tenantId, companyId, authorization });
     return ok(
       await this.service.uploadDocumentFile(scope.tenantId, scope.companyId, entityId, documentId, file),
       'XBOS-DOC-201',

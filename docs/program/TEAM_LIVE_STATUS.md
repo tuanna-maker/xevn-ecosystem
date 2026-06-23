@@ -1,87 +1,53 @@
 # TEAM LIVE STATUS
 
-Last updated: 2026-05-25T02:00 ICT · **OVERNIGHT RUN** · W1 BE-A2+FE-A2 **READY_FOR_QA** · **4 lanes** QA+FE-W1B+BE-W1B+BE-C1 · target user return ~**180–200/245** (honest); full **245** → W2–W4
+**Last updated:** 2026-06-08 · **W7 hub API GWC** · **Phase 1: OPEN** · **PROD: BLOCKED**
 
-**Plan:** `PHASE1_TODAY_EXECUTION_PLAN.md`
+## W7 mobile hub (active)
 
-## Where to track team work
+| Lane | Status |
+|------|--------|
+| J-MOB-06/08/09 API @ nip.io | **CLOSED** — QC GWC [`pcomp-w7-qc-hub-04b-r3-20260607.md`](../qa/evidence/pcomp-w7-qc-hub-04b-r3-20260607.md) |
+| C-W7QC-DEVICE-01 | **OPEN** — APK native rebuild in flight (`PCOMP-W7-MOB-APK-04b-R3-R1`) |
+| J-AVT-01 web display | **CLOSED** — QC GO scoped [`pcomp-w4-qc-avatar-display-r4-20260607.md`](../qa/evidence/pcomp-w4-qc-avatar-display-r4-20260607.md) |
+| C-W7QC-DEVICE-01 | **OPEN** — hub04b boot OK; login blocked (Dev sign-in → launcher) → `PCOMP-W7-MOB-DEVICE-LOGIN-01` |
+| L0 pilot | **PASS** — `qc:fe-be-health:pilot` 13/13 (2026-06-08 pulse) |
 
-- **Báo cáo user:** `PROJECT_STATUS_REPORT.md` · `USER_SERVICE_STATUS.md` · `EVIDENCE_INDEX.md`
-- **WBS / playbook:** `PHASE1_PMP_PROJECT_PLAN.md` · `PM_ORCHESTRATION_PLAYBOOK.md`
-- Command stream and handoffs: `docs/program/AGENT_MESSAGE_BUS.md`
-- Current PM dispatch and deadlines: `docs/PM_EXECUTION_DISPATCH_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_CYCLE_P0_CLOSURE_V1.md`
-- PM release order (next 24h): `docs/PM_RELEASE_EXECUTION_ORDER_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_24H_V1.md`
-- MVP1 coding baseline: `docs/CODING_PLAN_MVP1_XEVN_MULTI_COMPANY_V1.md`, `docs/SRS_XEVN_MULTI_COMPANY_MVP1_V1.md`, `docs/TECHSPEC_XEVN_MULTI_COMPANY_MVP1_V1.md`
-- MVP1 final QC gate: `docs/QC_GATE_DECISION_XEVN_MULTI_COMPANY_MVP1_M6_V1.md`
-- QA gate state: `docs/QA_RETEST_REPORT_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_CYCLE_M4_V1.md`
-- QC final gate state: `docs/QC_GATE_DECISION_XEVN_MULTI_COMPANY_GOVERNANCE_NEXT_CYCLE_M7_V1.md`
-- Technical baseline: `docs/TM_TECHNICAL_SPEC_PACKAGE_XEVN_MULTI_COMPANY_GOVERNANCE_V1.md`
+## S5 ceremony closed
 
-## Phase 1 Scrum — Sprint S1 (ACTIVE)
+| Artifact | Verdict |
+|----------|---------|
+| QC `P1-S5-QC-01` | **GO WITH CONDITIONS** |
+| Evidence | `docs/qa/evidence/p1-s5-qc-01-20260605.md` |
+| Retro | `docs/program/sprints/S5_RETRO.md` |
 
-| Role | work_item_id | Status |
-|------|--------------|--------|
-| PM | P1-S1-PM-01 | IN_PROGRESS (`pnpm sprint:pulse S1`) |
-| SA | P1-S1-SA-01 | **DONE** (OpenAPI M01) |
-| Dev-FE | S1-FE-DEBT | **DONE** (QA PASS 2026-05-23) |
-| Dev-FE | P1-S1-FE-01, FE-02 | **READY_FOR_QA** |
-| Dev-FE | P1-S1-FE-03 | **IN_PROGRESS** |
-| Dev-BE | P1-S1-BE-01 | **DONE** (QA PASS) |
-| Dev-BE | P1-S1-BE-02..05 | **READY_FOR_QA** → QA batch |
-| Overlay | HRM-REALISTIC-DATA-RESET | **DONE** (7/7 + 4/4 gates) |
-| QA | P1-S1-QA-BATCH | **IN_PROGRESS** |
-| BA-Process | P1-S1-BA-P-01 | **DISPATCHED** |
-| BA-Data | P1-S1-BA-D-01 | **DISPATCHED** |
-| QA | S1-FE-DEBT | **DONE** |
-| DevOps | P1-S1-DO-01 | **DONE** (pulse 0 fails 2026-05-23) |
-| Technical Manager | P1-S1-TM-01 | WAIT |
-| QC | — | WAIT S1 gate |
+**Sponsor line:** Matrix 245/245 tracking ≠ Phase 1 DONE. UAT nip.io slice usable; PROD not ready.
 
-S0 **done**. Board: `PHASE1_SCRUM_BOARD.md` · Pulse: `SPRINT_PULSE_LOG.md` · Hook: **STOP**
+## Post-S5 execution (PM dispatch)
 
----
+| work_item_id | Role | Target |
+|--------------|------|--------|
+| P1-PHASE1-BE-SCOPE-P0-S5-01 | dev-be | **DONE** — TM-S5-P0 QA PASS |
+| P1-S5-DO-G5-01 | devops | **DONE** — G5 MET |
+| P1-S5-QC-G5-01 | qc | **DONE** — GWC |
+| P1-PHASE1-BE-JXBOS-02-PULL-01 | dev-be | **DONE** — scope fix; jest 15/15 |
+| P1-PHASE1-DO-JXBOS-02-DEPLOY-01 | devops | **DONE** — pull **201**, list **200** |
+| P1-S5-QA-JXBOS-02-RETEST-01 | qa | **DONE** — J-XBOS-02 ✅ |
+| P1-S5-QC-G5-JXBOS-02-01 | qc | **DONE** — J-XBOS-02-GWC **CLOSED** |
+| P1-S5-QC-SCOPE-P0-02 | qc | **DONE** — GWC; git parity open |
 
-## Current cycle snapshot
+## W6 wave (in flight)
 
-- Overall gate: `GO` (MVP1 gate passed; runtime controls active in hypercare window).
-- **Phase 1 program:** Sprint **S1** active (XBOS khối A `planned`→`be`); S0 closed; pulse **0 fails** 2026-05-23.
-- Role sequence active:
-  - `MVP1 coding execution cycle` -> completed (`Dev-BE + Dev-FE delivered`)
-  - `MVP1 M3 QA` -> completed (`PASS_TO_BA`)
-  - `MVP1 M4 BA` -> completed (`PASS_TO_SA`)
-  - `MVP1 M5 SA` -> completed (`PASS_TO_QC`)
-  - `MVP1 M6 QC` -> completed (`GO WITH CONDITIONS`)
-  - `MVP1 release controls (monitoring)` -> active (`T+0 smoke PASS`, waiting T+2h)
-  - `M2 Dev-BE P0 closure` -> completed and handed off
-  - `M3 Dev-FE P0 closure` -> completed and handed off
-  - `M4 QA retest` -> completed (`PASS_TO_BA`)
-  - `M5 BA traceability closure` -> completed (`PASS_TO_SA`)
-  - `M6 SA conformance` -> completed (`PASS_TO_QC`)
-  - `M7 QC re-gate` -> completed (`GO WITH CONDITIONS`)
-  - `Release execution (T+24h controls)` -> active (`RC-02 technical gate re-verified at 02:35`)
-  - `Post-MVP1 P0 FE bundle hardening` -> completed (`QA PASS_TO_PM`)
-  - `Post-MVP1 P1 sync path hardening` -> completed (`QA PASS_TO_PM` for `POST-MVP1-P1-SYNC-PATH-HARDENING-20260502`)
-  - `Post-MVP1 P0 BE CI perf budget` -> completed (`QA PASS_TO_PM` for `PM-POST-P1-NEXT-P0-BE-CI-PERF-20260502`; hrm 71/71 + perf 3/3, xbos 29/29 + perf 2/2, builds green; see bus for Windows `pnpm run test -- --runInBand` quirk)
-  - `Post-MVP1 P1 FE deterministic error UX suite` -> completed (`QA PASS_TO_PM` for `POST-MVP1-P1-FE-DETERMINISTIC-ERROR-UX-SUITE-20260502`; web-portal `pnpm lint` + `pnpm build` + `pnpm test` green — 19 tests / 4 files; see bus for Windows shell + Vitest stderr notes)
-  - `Post-MVP1 P2 security hardening` -> **B1 M1 done** + **M2 BE+FE QA `PASS_TO_PM`** (`POST-MVP1-P2-DEPENDENCY-SECURITY-HARDENING-20260503`). **M2** `POST-MVP1-P2-XLSX-SERVER-M2-20260524`: API **88/88** tests + **FE** lint/build green + employee import server path; **follow-on:** department/insurance import + giảm bundle `xlsx` còn lại; **M3** **2026-06-07** — bus
-  - `BA reusable BRD/SRS prompt asset pack` -> completed (`PASS_TO_PM` for `BA-PROMPT-ASSET-PACK-20260504`; ready for PM save-path standardization + optional QA checklist review)
-  - `XBOS -> HRM catalog sync coverage hardening` -> active (`8557b6f1-4e18-4aff-b066-5e51b72f621d`; QA verdict `PARTIAL`; PM dispatched Dev-BE to add service/controller/seed smoke coverage before next QA retest)
-  - `HRM portal embedded modal viewport (Command Center)` -> **active** (`2e8bea66-623c-4b75-88d8-f8821805b087`; Dev-FE `READY_FOR_QA`; **PM dispatched QA** — smoke: `/command-center/hrm/employees` Add Employee backdrop full window; **chờ QA verdict**; hook dedupe: **state gitignored + fallback quét đuôi `subagent-stop.jsonl`** (bus `HOOK_HARDENED_V2` 2026-05-04) để tránh bắn PM khi thiếu file state)
+| work_item_id | Role | Status |
+|--------------|------|--------|
+| P1-PHASE1-BE-CONTRACTS-RATIO-01 | dev-be | **DONE** — ratio 0.850 |
+| P1-PHASE1-FE-MEMCC-01 | dev-fe | **DONE** — vitest 148/148 |
+| P1-EX-QA-JWT-CLOSE-01 | qa | **DONE** — C-JCC03-01 satisfied |
+| P1-PHASE1-QA-CONTRACTS-RATIO-01 | qa | **DISPATCHED** |
+| P1-W6-QA-MEMCC-01 | qa | **DISPATCHED** |
+| P1-EX-QC-JWT-CLOSE-01 | qc | **DISPATCHED** |
 
-## What means "team is working"
+## Open gates
 
-- There is a new entry in `AGENT_MESSAGE_BUS.md` with:
-  - `work_item_id`
-  - `entry_criteria`
-  - `exit_criteria`
-  - `evidence_path`
-  - `ack_status`
-- A role is considered done only when:
-  - evidence docs/files exist at the declared `evidence_path`
-  - the next role ACK is recorded in message bus
+**G8** (QC W8 pending) · **portal.xe.vn** · C-RBACQC-03-LOCAL · C-S5SCOPEQC-01 git parity · W10 handoff docs
 
-## Fast check routine (for PM/user)
-
-1. Open `docs/program/AGENT_MESSAGE_BUS.md`, scroll to latest blocks, check `ack_status`.
-2. Open PM release order doc and follow the next 24h checkpoint sequence.
-3. Open QA/QC docs to verify control conditions remain green and no downgrade to `NO-GO`.
+SoT: `SPRINT_STATUS_AT_A_GLANCE.md` · `USER_SERVICE_STATUS.md`

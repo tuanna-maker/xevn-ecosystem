@@ -105,7 +105,7 @@ export function useAttendanceRecords(dateFilter?: string) {
         from_date: dateFilter,
         to_date: dateFilter,
         page: 1,
-        page_size: dateFilter ? 200 : 500,
+        page_size: clampHrmPageSize(100),
       });
       setRecords((response.data ?? []).map((row) => toUiRecord(row)));
     } catch (error: any) {

@@ -2,7 +2,9 @@
  * Hợp đồng FE ↔ HRM settings-catalogs cho danh mục hồ sơ nhân sự tập đoàn.
  * @see apps/api/hrm-api/src/settings-catalogs/group-employee-import-catalog.ts
  */
-import { resolveIdentityScope } from './identityScope';
+import { isMasterTenant, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
+import { resolveHrmOperationalCompanyId } from './commandCenterScope';
+import { getJwtTenantId, resolveIdentityScope, type IdentityScopeContext } from './identityScope';
 import { formatHttpError, logApiFailure, logApiStart, logApiSuccess } from '../utils/apiLogger';
 
 export const HRM_EMPLOYEE_CATALOG_KEYS = [
@@ -17,6 +19,29 @@ export const HRM_EMPLOYEE_CATALOG_KEYS = [
 ] as const;
 
 export type HrmEmployeeCatalogKey = (typeof HRM_EMPLOYEE_CATALOG_KEYS)[number];
+
+export type GroupHrSyncProgress = {
+  completed: number;
+  total: number;
+  catalogKey: string;
+};
+
+/**
+ * HRM settings-catalogs scope for Command Center group HR (J-XBOS-02 / ADR §4).
+ * Group CEO JWT on master tenant always uses `xevn` + operational `main`.
+ */
+export function resolveGroupHrHrmCatalogScope(
+  entityTenantId?: string | null,
+): IdentityScopeContext {
+  const claimTenant = getJwtTenantId();
+  const rawTenant = (entityTenantId ?? MASTER_TENANT_ID).trim() || MASTER_TENANT_ID;
+  const tenantId =
+    claimTenant && isMasterTenant(claimTenant) ? MASTER_TENANT_ID : rawTenant;
+  return {
+    tenantId,
+    companyId: resolveHrmOperationalCompanyId(tenantId, MEMBER_DEFAULT_COMPANY_ID),
+  };
+}
 
 export type GroupHrCatalogFieldDto = {
   id: string;
@@ -131,7 +156,10 @@ export async function fetchGroupHrCatalogFieldDefs(
   tenantId?: string | null,
   companyIdHint?: string | null,
 ): Promise<GroupHrCatalogFieldDto[]> {
-  const scope = resolveIdentityScope(tenantId ?? null, companyIdHint ?? null);
+  const scope =
+    companyIdHint != null && companyIdHint.trim()
+      ? resolveIdentityScope(tenantId ?? null, companyIdHint)
+      : resolveGroupHrHrmCatalogScope(tenantId);
   const headers: Record<string, string> = {
     'x-tenant-id': scope.tenantId,
     'x-company-id': scope.companyId,
@@ -176,8 +204,12 @@ export async function syncGroupHrFieldDefsToHrm(
   defs: GroupHrCatalogFieldDto[],
   tenantId?: string | null,
   companyIdHint?: string | null,
+  onProgress?: (progress: GroupHrSyncProgress) => void,
 ): Promise<void> {
-  const scope = resolveIdentityScope(tenantId ?? null, companyIdHint ?? null);
+  const scope =
+    companyIdHint != null && companyIdHint.trim()
+      ? resolveIdentityScope(tenantId ?? null, companyIdHint)
+      : resolveGroupHrHrmCatalogScope(tenantId);
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'x-tenant-id': scope.tenantId,
@@ -214,8 +246,11 @@ export async function syncGroupHrFieldDefsToHrm(
     });
   }
 
-  for (const [catalogKey, items] of Object.entries(buckets)) {
-    if (!items.length) continue;
+  const entries = Object.entries(buckets).filter(([, items]) => items.length > 0);
+  const total = entries.length;
+  let completed = 0;
+
+  const postBucket = async (catalogKey: string, items: Array<{ code: string; label: string; unit: string; status: 'active' }>) => {
     const url = `/api/hrm/settings-catalogs/${encodeURIComponent(catalogKey)}/extension-items`;
     const startedAt = logApiStart('hrm.settings-catalogs', 'POST', url);
     let res: Response;
@@ -234,5 +269,9 @@ export async function syncGroupHrFieldDefsToHrm(
       throw err;
     }
     logApiSuccess('hrm.settings-catalogs', 'POST', url, startedAt, res.status);
-  }
+    completed += 1;
+    onProgress?.({ completed, total, catalogKey });
+  };
+
+  await Promise.all(entries.map(([catalogKey, items]) => postBucket(catalogKey, items)));
 }

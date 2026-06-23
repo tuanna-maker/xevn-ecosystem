@@ -9,7 +9,7 @@ import {
 } from '../../components/common';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockVehicleTypes, VehicleType } from '../../data/mockData';
+import type { VehicleType } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import {
   AssetRegistryApiError,
@@ -23,7 +23,8 @@ import {
 } from '../../integrations/assetRegistryApi';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { resolveIdentityScope, ScopeContextError } from '../../integrations/identityScope';
-import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { resolveVehicleTypesSettingsFailure } from '../../utils/portalStrictMode';
 
 const VEHICLE_REGISTRY_MODULE = 'fleet';
 
@@ -216,10 +217,14 @@ const VehicleTypesSettingsPage: React.FC = () => {
 
   const loadVehicleTypes = async () => {
     if (!registryContext) {
-      setVehicleTypes(allowMockFallback() ? mockVehicleTypes : []);
-      setLoadFailed(!allowMockFallback());
-      setUsingMockFallback(false);
-      setErrorMessage('Thiếu scope identity (tenant/company) khi tải Asset Registry.');
+      const failure = resolveVehicleTypesSettingsFailure();
+      setVehicleTypes(failure.rows);
+      setLoadFailed(failure.loadFailed);
+      setUsingMockFallback(failure.usingMockFallback);
+      if (failure.loadFailed) {
+        setErrorMessage('Thiếu scope identity (tenant/company) khi tải Asset Registry.');
+      }
+      setIsLoading(false);
       return;
     }
     setIsLoading(true);
@@ -231,17 +236,15 @@ const VehicleTypesSettingsPage: React.FC = () => {
       const vehicleAssets = assets.filter((asset) => asset.assetType === 'vehicle_type');
       setVehicleTypes(vehicleAssets.map(mapRegistryAssetToVehicleType));
     } catch (error) {
-      setLoadFailed(true);
-      if (allowMockFallback()) {
-        setVehicleTypes(mockVehicleTypes);
-        setUsingMockFallback(true);
-        setErrorMessage(
-          `${toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry')}. Hiển thị tạm dữ liệu mẫu (VITE_ALLOW_MOCK_FALLBACK).`,
-        );
-      } else {
-        setVehicleTypes([]);
-        setErrorMessage(toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry'));
-      }
+      const failure = resolveVehicleTypesSettingsFailure();
+      setLoadFailed(failure.loadFailed);
+      setUsingMockFallback(failure.usingMockFallback);
+      setVehicleTypes(failure.rows);
+      setErrorMessage(
+        failure.usingMockFallback
+          ? `${toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry')}. Hiển thị tạm dữ liệu mẫu (VITE_ALLOW_MOCK_FALLBACK).`
+          : toUserError(error, 'Không thể đồng bộ danh mục từ Asset Registry'),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -524,7 +527,7 @@ const VehicleTypesSettingsPage: React.FC = () => {
       />
 
       <ApiLoadBanner
-        loadFailed={loadFailed && !allowMockFallback()}
+        loadFailed={loadFailed}
         usingMockFallback={usingMockFallback}
         message={errorMessage ?? API_LOAD_FAILED_MESSAGE}
       />

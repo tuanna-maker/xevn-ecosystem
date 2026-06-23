@@ -1,94 +1,140 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
 import React, { useCallback, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { CheckInHeroCard } from '../../components/attendance/CheckInHeroCard';
+import { ProfileSectionCard } from '../../components/profile/ProfileSectionCard';
+import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { StickyFooter } from '../../components/ui/StickyFooter';
 import { useAuth } from '../../context/AuthContext';
 import { useOfflineWriteGuard } from '../../hooks/useOfflineWriteGuard';
-import { readListRows } from '../../integrations/envelope';
-import { hrmRequest } from '../../integrations/hrmApiClient';
+import { fetchEmployeeById, resolveEmployeeMetaFromMemberships } from '../../integrations/hrmEmployees';
 import { formatHrmError } from '../../integrations/mapApiError';
 import { enqueueOfflineWrite } from '../../integrations/offlineQueue';
 import { useNetwork } from '../../context/NetworkContext';
 import { vi } from '../../i18n/vi';
+import { groupedLayout } from '../../theme/groupedLayout';
+import { colors, layout, typography } from '../../theme/tokens';
+import {
+  buildCheckInSubmitBody,
+  resolveDeviceLocationLabel,
+  type DeviceLocationSnapshot,
+  type DeviceLocationUiState,
+} from '../../utils/checkInLocation';
+import { formatHrmDate } from '../../utils/formatHrm';
+import { OFFLINE_CHECKIN_QUEUED_MESSAGE } from '../../utils/scopeError';
 
-type EmpRow = { id: string; employee_code: string; full_name: string };
+async function captureDeviceLocation(): Promise<DeviceLocationSnapshot> {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      return { granted: false };
+    }
+    const position = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
+    const { latitude, longitude } = position.coords;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return { granted: true };
+    }
+    return { granted: true, latitude, longitude };
+  } catch {
+    return { granted: false };
+  }
+}
 
 export function CheckInScreen() {
   const auth = useAuth();
   const nav = useNavigation();
   const net = useNetwork();
   const blockIfOffline = useOfflineWriteGuard();
-  const [useGps, setUseGps] = useState(false);
-  const [latitude, setLatitude] = useState('21.0285');
-  const [longitude, setLongitude] = useState('105.8542');
-  const [employeeId, setEmployeeId] = useState(auth.employeeId);
-  const [employees, setEmployees] = useState<EmpRow[]>([]);
   const [busy, setBusy] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [fullName, setFullName] = useState('');
+  const [employeeCode, setEmployeeCode] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [locationState, setLocationState] = useState<DeviceLocationUiState>('idle');
+  const [locationSnapshot, setLocationSnapshot] = useState<DeviceLocationSnapshot>({ granted: false });
 
   const cid = auth.getAttendanceCompanyId();
+  const employeeId = auth.employeeId.trim();
 
-  const loadEmployees = useCallback(async () => {
-    if (!cid) {
-      setEmployees([]);
+  const loadProfile = useCallback(async () => {
+    const eid = auth.employeeId.trim();
+    if (!eid) {
+      setFullName('');
+      setEmployeeCode('');
+      setAvatarUrl(null);
+      setProfileLoading(false);
       return;
     }
-    const q = new URLSearchParams({ company_id: cid, page: '1', page_size: '40' });
-    const res = await hrmRequest<unknown>(auth.getHrmAuth(), `/employees?${q.toString()}`, { method: 'GET' });
-    if (res.ok) setEmployees(readListRows<EmpRow>(res.data));
-    else setEmployees([]);
-  }, [auth, cid]);
+    setProfileLoading(true);
+    const fromMembership = resolveEmployeeMetaFromMemberships(auth.memberships, eid);
+    const row = await fetchEmployeeById(auth.getHrmAuth(), eid);
+    setFullName(row?.full_name?.trim() || fromMembership?.employee_name || '');
+    setEmployeeCode(row?.employee_code?.trim() || fromMembership?.employee_code || '');
+    setAvatarUrl(row?.avatar_url ?? null);
+    setProfileLoading(false);
+  }, [auth]);
+
+  const refreshLocation = useCallback(async () => {
+    setLocationState('loading');
+    const snapshot = await captureDeviceLocation();
+    setLocationSnapshot(snapshot);
+    if (!snapshot.granted) {
+      setLocationState('denied');
+      return;
+    }
+    if (Number.isFinite(snapshot.latitude) && Number.isFinite(snapshot.longitude)) {
+      setLocationState('ready');
+      return;
+    }
+    setLocationState('error');
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      void loadEmployees();
-    }, [loadEmployees]),
+      void loadProfile();
+      void refreshLocation();
+    }, [loadProfile, refreshLocation]),
   );
-
-  const pickEmployee = (row: EmpRow) => {
-    setEmployeeId(row.id);
-    auth.updateLocal({ employeeId: row.id });
-  };
 
   const submit = async () => {
     if (!cid) {
-      Alert.alert('Thiếu UUID công ty', 'Nhập UUID công ty (chấm công) trên Phạm vi / Cài đặt.');
+      Alert.alert('Thiếu phạm vi công ty', 'Vào Cài đặt để cấu hình phạm vi chấm công.');
       return;
     }
-    if (!employeeId.trim()) {
-      Alert.alert(vi.error, 'Cần employeeId (UUID) — chọn từ danh sách hoặc nhập.');
+    if (!employeeId) {
+      Alert.alert(vi.error, 'Không xác định được nhân viên. Đăng nhập lại hoặc vào Cài đặt.');
       return;
     }
-    const today = new Date().toISOString().slice(0, 10);
-    const body: Record<string, unknown> = {
-      company_id: cid,
-      employee_id: employeeId.trim(),
-      attendance_date: today,
-      check_in_at: new Date().toISOString(),
-      status: 'present',
-      note: 'XeVN HRM Mobile UC-HRM-MOB-04',
-    };
-    if (useGps) {
-      const lat = Number(latitude);
-      const lng = Number(longitude);
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-        Alert.alert(vi.error, 'Tọa độ GPS không hợp lệ.');
-        return;
-      }
-      body.latitude = lat;
-      body.longitude = lng;
-    }
+
     setBusy(true);
     try {
+      let location = locationSnapshot;
+      if (locationState !== 'ready') {
+        setLocationState('loading');
+        location = await captureDeviceLocation();
+        setLocationSnapshot(location);
+        if (!location.granted) {
+          setLocationState('denied');
+        } else if (Number.isFinite(location.latitude) && Number.isFinite(location.longitude)) {
+          setLocationState('ready');
+        } else {
+          setLocationState('error');
+        }
+      }
+
+      const body = buildCheckInSubmitBody({
+        companyId: cid,
+        employeeId,
+        location,
+      });
+
       if (net.offline) {
         await enqueueOfflineWrite('/attendance/records', 'POST', body);
-        Alert.alert('Đã xếp hàng', 'Chấm công sẽ gửi khi có mạng (MOB-401).');
+        Alert.alert('Đã xếp hàng', OFFLINE_CHECKIN_QUEUED_MESSAGE);
         return;
       }
       const off = blockIfOffline();
@@ -96,7 +142,7 @@ export function CheckInScreen() {
         Alert.alert(vi.error, off);
         return;
       }
-      const res = await hrmRequest<unknown>(auth.getHrmAuth(), '/attendance/records', {
+      const res = await auth.requestHrm<unknown>('/attendance/records', {
         method: 'POST',
         body: JSON.stringify(body),
       });
@@ -107,92 +153,88 @@ export function CheckInScreen() {
     }
   };
 
+  const locationLabel = resolveDeviceLocationLabel(locationState);
+
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
-      <Text style={styles.title}>UC-HRM-MOB-04 — Ghi nhận điểm danh</Text>
-      {!cid ? <Text style={styles.warn}>Chưa có UUID công ty hợp lệ cho attendance.</Text> : null}
-      <Text style={styles.label}>Chọn nhân viên (GET /employees)</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
-        {employees.map((e) => (
-          <Pressable
-            key={e.id}
-            style={[styles.chip, employeeId === e.id && styles.chipOn]}
-            onPress={() => pickEmployee(e)}
-          >
-            <Text style={[styles.chipText, employeeId === e.id && styles.chipTextOn]} numberOfLines={1}>
-              {e.employee_code} · {e.full_name}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-      <Text style={styles.label}>employee_id (UUID)</Text>
-      <TextInput
-        style={styles.input}
-        value={employeeId}
-        onChangeText={setEmployeeId}
-        onBlur={() => auth.updateLocal({ employeeId: employeeId.trim() })}
-        autoCapitalize="none"
-        placeholderTextColor="#64748b"
-      />
-      <Pressable style={styles.gpsToggle} onPress={() => setUseGps((v) => !v)}>
-        <Text style={styles.gpsToggleText}>{useGps ? '✓ Gửi kèm GPS (MOB-402)' : 'Bật GPS / geofence'}</Text>
-      </Pressable>
-      {useGps ? (
-        <View style={styles.gpsRow}>
-          <TextInput style={[styles.input, styles.gpsInput]} value={latitude} onChangeText={setLatitude} placeholder="lat" placeholderTextColor="#64748b" />
-          <TextInput style={[styles.input, styles.gpsInput]} value={longitude} onChangeText={setLongitude} placeholder="lng" placeholderTextColor="#64748b" />
+    <AppScreenLayout
+      subtitle={`Hôm nay · ${formatHrmDate(new Date().toISOString())}`}
+      stackHeaderPresent
+      scroll
+      grouped
+      keyboardShouldPersistTaps="handled"
+      footerBottomExtra={groupedLayout.belowSubtitle}
+      footer={
+        <StickyFooter thumbZone testID="check-in-sticky-footer">
+          <PrimaryButton
+            label={busy ? vi.loading : 'Chấm công vào'}
+            onPress={() => void submit()}
+            disabled={busy || profileLoading}
+            loading={busy}
+            testID="check-in-submit"
+          />
+          <PrimaryButton
+            label="Lịch sử chấm công"
+            onPress={() => nav.navigate('AttendanceHistory' as never)}
+            variant="ghost"
+            testID="check-in-history"
+          />
+        </StickyFooter>
+      }
+    >
+      {!cid ? (
+        <View style={styles.warnBanner}>
+          <Text style={styles.warnText}>Chưa cấu hình phạm vi công ty. Vào Cài đặt để cập nhật.</Text>
         </View>
       ) : null}
-      <Pressable style={styles.btn} onPress={() => void submit()} disabled={busy}>
-        <Text style={styles.btnText}>{busy ? vi.loading : 'Ghi nhận check-in'}</Text>
-      </Pressable>
-      <Pressable style={styles.link} onPress={() => nav.navigate('AttendanceHistory' as never)}>
-        <Text style={styles.linkText}>{vi.history} →</Text>
-      </Pressable>
-    </ScrollView>
+
+      <CheckInHeroCard
+        fullName={fullName}
+        employeeCode={employeeCode}
+        avatarUrl={avatarUrl}
+        baseUrl={auth.baseUrl}
+        loading={profileLoading}
+      />
+
+      <ProfileSectionCard title="Vị trí thiết bị" icon="navigate-outline" testID="check-in-location-section">
+        <Text style={styles.locationStatus} testID="check-in-location-label">
+          {locationLabel}
+        </Text>
+        {locationState === 'ready' &&
+        Number.isFinite(locationSnapshot.latitude) &&
+        Number.isFinite(locationSnapshot.longitude) ? (
+          <Text style={styles.locationCoords} testID="check-in-location-coords">
+            {locationSnapshot.latitude!.toFixed(5)}, {locationSnapshot.longitude!.toFixed(5)}
+          </Text>
+        ) : null}
+      </ProfileSectionCard>
+    </AppScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a' },
-  pad: { padding: 16, gap: 10, paddingBottom: 32 },
-  title: { color: '#f8fafc', fontSize: 18, fontWeight: '700' },
-  warn: { color: '#fbbf24' },
-  label: { color: '#94a3b8', fontSize: 12 },
-  chipsScroll: { maxHeight: 44, marginBottom: 4 },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#1e293b',
+  warnBanner: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: layout.itemGap,
     borderWidth: 1,
-    borderColor: '#334155',
-    marginRight: 8,
-    maxWidth: 220,
+    borderColor: '#FCD34D',
+    padding: layout.itemGap,
+    marginBottom: layout.itemGap,
   },
-  chipOn: { borderColor: '#38bdf8', backgroundColor: '#0c4a6e' },
-  chipText: { color: '#94a3b8', fontSize: 12 },
-  chipTextOn: { color: '#e0f2fe', fontWeight: '600' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    padding: 12,
-    color: '#f8fafc',
-    backgroundColor: '#1e293b',
+  warnText: {
+    color: '#92400E',
+    fontSize: typography.fontSize.callout,
+    lineHeight: typography.lineHeight.callout,
   },
-  btn: {
-    marginTop: 8,
-    backgroundColor: '#0ea5e9',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
+  locationStatus: {
+    color: colors.text,
+    fontSize: typography.fontSize.body,
+    lineHeight: typography.lineHeight.body,
   },
-  btnText: { color: '#0f172a', fontWeight: '700' },
-  link: { marginTop: 16 },
-  linkText: { color: '#38bdf8' },
-  gpsToggle: { marginTop: 8 },
-  gpsToggleText: { color: '#a7f3d0', fontSize: 13 },
-  gpsRow: { flexDirection: 'row', gap: 8 },
-  gpsInput: { flex: 1 },
+  locationCoords: {
+    marginTop: layout.inlineGap,
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.footnote,
+    lineHeight: typography.lineHeight.footnote,
+    fontVariant: ['tabular-nums'],
+  },
 });

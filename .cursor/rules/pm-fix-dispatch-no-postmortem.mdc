@@ -1,0 +1,17 @@
+# PM — Fix + dispatch, no postmortem (U45)
+
+## Cấm với sponsor
+
+- Giải thích lại root-cause đã biết (handoff, CDP, stack down, …).
+- «Quay lại X phút», «PM sẽ dispatch», «optional follow-up».
+- Bảng postmortem dài trước khi có **Task** trong cùng lượt.
+
+## Bắt buộc
+
+Nhận blocker / treo / INVALID-HANDOFF:
+
+1. **1 dòng** hành động (fix gì, ai làm).
+2. **Task** subagent **cùng lượt** (U43).
+3. Ghi bus `DISPATCHED` + cập nhật `TEAM_WORKING_NOW.md` nếu đổi wave.
+
+Postmortem chỉ trên bus nội bộ / governance retro — **không** lặp với user.

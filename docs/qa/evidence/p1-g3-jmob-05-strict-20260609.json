@@ -1,0 +1,26 @@
+{
+  "work_item_id": "P1-G3-JMOB-05-STRICT",
+  "ack_status": "FAIL_TO_PM",
+  "pass": false,
+  "apkMeta": {
+    "sha": "ADD233085F57CE8DBD87F29E3D63CA6408E0D8E35F55671B4640763CD4FA3B02",
+    "bytes": 69147817
+  },
+  "pending": {
+    "leaveTotal": 1,
+    "updTotal": 1,
+    "leaveStatus": 200,
+    "updStatus": 200
+  },
+  "checks": [
+    { "id": "GATE-APK-SHA", "pass": true },
+    { "id": "GATE-LOGIN", "pass": true },
+    { "id": "GATE-PENDING", "pass": true },
+    { "id": "J-MOB-05-NAV", "pass": false, "note": "blank 2822B after approve tile tap" },
+    { "id": "J-MOB-05-INBOX", "pass": false },
+    { "id": "J-MOB-05-DUYET", "pass": false, "note": "blocked" },
+    { "id": "GATE-SCOPE-LOG", "pass": true }
+  ],
+  "blocker": "R-JMOB05-NAV-BLANK-01",
+  "evidence_path": "docs/qa/evidence/p1-g3-jmob-05-strict-20260609.md"
+}

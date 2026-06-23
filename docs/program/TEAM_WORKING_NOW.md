@@ -1,40 +1,31 @@
-# Team — Current lanes and blockers
+# Team đang làm — pulse PM
 
-**Cập nhật:** 2026-06-01T10:20+07:00
+**Cập nhật:** 2026-06-09T11:51:42.998Z · **auto-generated** bởi `pnpm run pm:scan:backlog`
 
-## Đã đóng
+## Đang chạy (in-flight)
 
-| Wave | Verdict | Evidence |
-|---|---|---|
-| W12 QC FINAL | **GO WITH CONDITIONS** | `docs/qa/evidence/p1-p100-w12-qc-final-20260531.md` |
-| W13 QA (partner prep) | **PASS_TO_PM** | `docs/qa/evidence/p1-p100-w13-qa-01-20260531.md` |
-| W13 QA metrics | **PASS_TO_PM** (`C-W12QC-08` closure recommendation) | `docs/qa/evidence/p1-p100-w13-qa-metrics-01-20260601.md` |
-| W14 QC prod gate (interim host) | **GO WITH CONDITIONS** | `docs/qa/evidence/p1-p100-w14-qc-prod-20260601.md` |
+| Work item | Role | Dispatched |
+|-----------|------|------------|
+| `P1-DEPLOY-NIPIO-R3` | devops | 2026-06-09T12:31:00+07:00 |
+| `PCOMP-W7-BE-LEAVE-DOC` | dev-be | 2026-06-09T12:30:00+07:00 |
+| `PCOMP-W7-MOB-BATCH-QA` | qa-device | 2026-06-09T12:30:00+07:00 |
+| `PCOMP-W7-MOB-BATCH` | dev-mobile | 2026-06-09T12:02:00+07:00 |
+| `P1-L0-W6-UAT-PACK` | devops | 2026-06-09T12:01:00+07:00 |
+| `P1-G3-G6-ECOSYSTEM-R2` | qa | 2026-06-09T12:01:00+07:00 |
+| `MOB-UX-17-QA` | qa-device | 2026-06-09T11:06:00+07:00 |
+| `MOB-UX-16-QA-R2` | qa-device | 2026-06-09T10:36:00+07:00 |
+| `MOB-UX-14-UNIFIED-QA-R6` | qa-device | 2026-06-09T10:03:00+07:00 |
+| `MOB-UX-16ABC` | dev-mobile | 2026-06-09T10:01:00+07:00 |
 
-## Đang chạy
+## Cần dispatch ngay
 
-| Lane | work_item_id | Owner | Current status |
-|---|---|---|---|
-| Corp domain unblock | `P1-P100-W14-DO-DOMAIN-01` | PM + DevOps | **BLOCKED** (DNS/TLS prerequisite for `portal.xe.vn`) |
-| Mobile residual closure | `C-W12QC-01` / `P1-P100-W10-DEVICE-04` | dev-mobile + dev-be + qa-device | Open |
-| Contracts density closure | `C-W12QC-02` | dev-be + devops seed + qa | Open |
-| PM documentation closure | `P1-P100-W12-PM-CLOSE-R1` | pm | In progress (this update) |
+*(queue trống — fidelity waves closed hoặc đang in-flight)*
 
-## Remaining blockers
+## Defer (không auto-dispatch)
 
-1. `portal.xe.vn` currently NXDOMAIN, so corp-domain PROD-LIVE cannot be declared.
-2. Mobile P5 JWT attendance residual is still open (`C-W12QC-01`).
-3. Contracts ratio residual is still open (`C-W12QC-02`).
+- **C-HRMQC-01** — VPS :8088 retest — U32 local first; chỉ khi user yêu cầu deploy
+- **C-MOB-H9-DEVICE-01** — adb device UI smoke — optional GWC
 
-## P0 INCIDENT (user screenshot 2026-06-01)
+Fidelity closed: AC-FID-03, AC-FID-04, AC-FID-05, AC-FID-06, AC-FID-07, AC-FID-08, AC-FID-09, AC-FID-10, AC-FID-11, AC-FID-12, AC-FID-13, AC-FID-14, AC-FID-15, AC-FID-16 · Next: **DONE**
 
-| ID | Issue | Owner |
-|----|-------|-------|
-| **P1-INC-P0-HRM-DASH-01** | P0 **CLOSED** nip.io (QC-02 GWC) — crash/1970 fixed; open: FE merge main, iframe P2 | dev-fe P1 |
-
-**QA/QC lesson:** API probe PASS ≠ runtime UI PASS. Bắt buộc console check trên route user thật.
-
-## PM next dispatch focus
-
-- Close P0 dashboard crash trước khi nói PROD/UAT PASS.
-- Corp domain `portal.xe.vn` vẫn BLOCKED (DNS).
+SoT: `docs/program/PM_OPEN_BACKLOG.json`

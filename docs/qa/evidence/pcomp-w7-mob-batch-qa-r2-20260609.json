@@ -1,0 +1,59 @@
+{
+  "work_item_id": "PCOMP-W7-MOB-BATCH-QA-R2",
+  "carry_work_item_id": "P1-G4-CARRY-BUNDLE-QA",
+  "at": "2026-06-09T12:03:28.136Z",
+  "device": "emulator-5554",
+  "api_base": "https://14-225-217-232.nip.io",
+  "account": "uat.nv0001@xe.vn",
+  "apk": {
+    "path": "C:\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk",
+    "sha256": "ADD233085F57CE8DBD87F29E3D63CA6408E0D8E35F55671B4640763CD4FA3B02",
+    "bytes": 69147817
+  },
+  "api": {
+    "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+    "leave_balance": {
+      "status": 200,
+      "available": 8,
+      "used": 3
+    }
+  },
+  "homeOk": true,
+  "tests": {
+    "leave_nav_not_blank": {
+      "pass": false,
+      "leaveBlank": false,
+      "leaveListScreen": false,
+      "xmlBytes": 12631
+    },
+    "j_mob_25_balance": {
+      "pass": false,
+      "balanceHeader": false,
+      "numericBalance": true,
+      "api": {
+        "status": 200,
+        "available": 8,
+        "used": 3
+      }
+    },
+    "j_mob_11_attachment": {
+      "pass": false,
+      "picker": false,
+      "sick": false,
+      "createCta": false
+    },
+    "checkin_fab_hidden": {
+      "pass": true,
+      "fabHidden": true,
+      "stickyPresent": true,
+      "ilaScore": 16
+    },
+    "mob_ux_15d": {
+      "pass": false,
+      "rawToken": false,
+      "viLabel": false,
+      "screen": ""
+    }
+  },
+  "verdict": "FAIL_TO_PM"
+}

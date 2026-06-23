@@ -1,7 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
-import { OperationsService } from './operations.service';
+import { mapServiceRequestRow, OperationsService } from './operations.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
@@ -102,6 +102,84 @@ describe('OperationsService', () => {
     const listSql = captured.find((s) => s.includes('FROM public.hrm_tasks') && s.includes('LIMIT')) ?? '';
     expect(listSql).toContain('company_id = ANY');
     expect(listSql).toContain('::uuid[]');
+  });
+
+  it('MP-14: listServiceRequests rows include request_type alias of service_type', async () => {
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('FROM public.service_requests')) {
+        return Promise.resolve({
+          rows: [
+            {
+              id: 'sr-1',
+              company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+              service_type: 'meal',
+              employee_id: null,
+              employee_name: 'Nguyen Van A',
+              employee_code: 'NV0001',
+              department: 'Ops',
+              request_date: '2026-06-09',
+              status: 'pending',
+              notes: null,
+              meal_type: 'lunch',
+              meal_date: '2026-06-09',
+              meal_quantity: 1,
+              vehicle_purpose: null,
+              vehicle_destination: null,
+              vehicle_date: null,
+              vehicle_time_start: null,
+              vehicle_time_end: null,
+              vehicle_passengers: null,
+              supply_items: null,
+              supply_urgency: null,
+              approved_by: null,
+              approved_at: null,
+              rejected_reason: null,
+              created_at: '2026-06-09T00:00:00.000Z',
+              updated_at: '2026-06-09T00:00:00.000Z',
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+
+    const rows = await service.listServiceRequests({
+      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    });
+    expect(rows[0]).toMatchObject({ service_type: 'meal', request_type: 'meal', status: 'pending' });
+  });
+
+  it('MP-14: mapServiceRequestRow mirrors service_type into request_type', () => {
+    const row = mapServiceRequestRow({
+      id: 'sr-1',
+      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      service_type: 'vehicle',
+      employee_id: null,
+      employee_name: 'Test',
+      employee_code: null,
+      department: null,
+      request_date: '2026-06-09',
+      status: 'pending',
+      notes: null,
+      meal_type: null,
+      meal_date: null,
+      meal_quantity: null,
+      vehicle_purpose: null,
+      vehicle_destination: null,
+      vehicle_date: null,
+      vehicle_time_start: null,
+      vehicle_time_end: null,
+      vehicle_passengers: null,
+      supply_items: null,
+      supply_urgency: null,
+      approved_by: null,
+      approved_at: null,
+      rejected_reason: null,
+      created_at: '2026-06-09T00:00:00.000Z',
+      updated_at: '2026-06-09T00:00:00.000Z',
+    });
+    expect(row.request_type).toBe('vehicle');
+    expect(row.service_type).toBe('vehicle');
   });
 
   it('listServiceRequests rolls up company_id=main for internal key + tenant xevn', async () => {

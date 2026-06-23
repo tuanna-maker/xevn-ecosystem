@@ -8,7 +8,8 @@ import { loadDeployEnv, xbosBase, xbosHeaders } from './seed-env-loader.mjs';
 loadDeployEnv();
 
 const TENANT = process.env.MASTER_TENANT_ID ?? 'xevn';
-const ASSIGNEE = process.env.SEED_USER_ID ?? 'admin@xe.vn';
+/** Pilot matrix Group CEO — must match assignee on pending step tasks for approve smoke. */
+const ASSIGNEE = process.env.SEED_USER_ID ?? 'ceo@xe.vn';
 
 const MINIMAL_GRAPH = {
   applyingEntityId: TENANT,

@@ -83,6 +83,22 @@ describe('InfrastructureController (UC-XBOS-INF)', () => {
     );
   });
 
+  it('UC-XBOS-INF-02b: upserts foundationCategories and sites arrays (FE save flow)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'holding',
+    });
+    const body = {
+      foundationCategories: [{ id: 'fcat-1', code: 'HT-01', nameVi: 'Cat', appliesToCompanyIds: ['holding'] }],
+      sites: [{ id: 'inf-1', siteCode: 'KHO-01', name: 'Site', operatingEntityId: 'holding' }],
+    };
+    const result = await controller.upsertSettings(body, 'xevn', 'holding', `Bearer ${token}`, undefined);
+    expect(result.code).toBe('XBOS-INFRA-201');
+    expect(serviceMock.upsertSettings).toHaveBeenCalledWith('xevn', 'holding', body);
+  });
+
   it('UC-XBOS-INF-03: returns infrastructure summary with health fields', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',

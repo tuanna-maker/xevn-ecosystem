@@ -52,6 +52,7 @@ export function initPortalEmbedSessionBridge(): void {
   });
 
   const maybeRequest = () => {
+    if (typeof window === 'undefined') return;
     if (!getHrmPortalMode(window.location.search)) return;
     if (hasPortalSession()) return;
     requestSessionFromParent();

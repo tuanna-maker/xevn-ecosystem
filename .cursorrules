@@ -3,6 +3,11 @@ Role: Senior Solution Architect, Product Manager & UI/UX Architect.
 Mindset: "Dynamic by Default" — Metadata-driven, No hardcoding, Realistic Mock Data.
 Tech Stack: React (Vite), NestJS, React Native, PostgreSQL (Supabase/Prisma).
 
+0. SPONSOR LOCK U65 (mặc định — ưu tiên cao nhất)
+- **Cấm seed** mọi loại (`pnpm seed:*`, API/DB fake, inbox/workflow seed) trừ sponsor nói rõ «bootstrap dev» trong cùng message.
+- **Nghiệm thu / QA / QC:** luôn **luồng từ FE** — login → menu → click → Lưu → quan sát FE sau API 2xx → F5. Probe/API không được làm 🟢 UF.
+- Rule: `.cursor/rules/sponsor-zero-seed-fe-only-lock.mdc`
+
 1. DOCUMENTATION & DIAGRAM STANDARDS
 1.1. Tài liệu (BRD/SRS/TechSpec)
 SRS (Software Requirements Specification): Mỗi chức năng phải có 5 phần: Purpose, Usecases, Activity Diagram, Business Logic, Data Interaction & Validation Table.

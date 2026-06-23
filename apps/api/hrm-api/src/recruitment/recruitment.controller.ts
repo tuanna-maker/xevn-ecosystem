@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest, resolveAuthorizationHeader } from '../common/internal-auth';
@@ -10,10 +10,12 @@ import { CreateJobRequisitionDto } from './dto/create-job-requisition.dto';
 import { ListCandidatesTableQueryDto } from './dto/list-candidates-table.query.dto';
 import { ListCandidatesQueryDto } from './dto/list-candidates.query.dto';
 import { ListJobPostingsQueryDto } from './dto/list-job-postings.query.dto';
+import { GetJobRequisitionQueryDto } from './dto/get-job-requisition.query.dto';
 import { ListJobRequisitionsQueryDto } from './dto/list-job-requisitions.query.dto';
 import { ScheduleInterviewDto } from './dto/schedule-interview.dto';
 import { UpdateCandidatePoolDto } from './dto/update-candidate-pool.dto';
 import { UpdateInterviewStatusDto } from './dto/update-interview-status.dto';
+import { UpdateJobRequisitionDto } from './dto/update-job-requisition.dto';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
 import { RecruitmentService } from './recruitment.service';
 
@@ -395,6 +397,89 @@ export class RecruitmentController {
     return this.recruitmentService
       .createJobRequisition(body, authorization)
       .then((data) => ok(data, 'HRM-REC-201', 'Job requisition created'));
+  }
+
+  @Patch('requisitions/:requisitionId')
+  updateJobRequisition(
+    @Param('requisitionId', new ParseUUIDPipe()) requisitionId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetJobRequisitionQueryDto,
+    @Body() body: UpdateJobRequisitionDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    return this.patchJobRequisitionInternal(
+      requisitionId,
+      authorization,
+      internalApiKey,
+      tenantId,
+      headerCompanyId,
+      query,
+      body,
+      headers,
+    );
+  }
+
+  /** PUT alias for proxies that block PATCH (UF-HRM-12). */
+  @Put('requisitions/:requisitionId')
+  putJobRequisition(
+    @Param('requisitionId', new ParseUUIDPipe()) requisitionId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetJobRequisitionQueryDto,
+    @Body() body: UpdateJobRequisitionDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    return this.patchJobRequisitionInternal(
+      requisitionId,
+      authorization,
+      internalApiKey,
+      tenantId,
+      headerCompanyId,
+      query,
+      body,
+      headers,
+    );
+  }
+
+  private patchJobRequisitionInternal(
+    requisitionId: string,
+    authorization: string | undefined,
+    internalApiKey: string | undefined,
+    tenantId: string | undefined,
+    headerCompanyId: string | undefined,
+    query: GetJobRequisitionQueryDto,
+    body: UpdateJobRequisitionDto,
+    headers: Record<string, unknown>,
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.recruitmentService
+      .updateJobRequisition(requisitionId, body, query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-REC-200', 'Job requisition updated'));
+  }
+
+  @Get('requisitions/:requisitionId')
+  getJobRequisition(
+    @Param('requisitionId', new ParseUUIDPipe()) requisitionId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetJobRequisitionQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.recruitmentService
+      .getJobRequisitionById(requisitionId, query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-REC-200', 'Job requisition loaded'));
   }
 
   @Get('requisitions')

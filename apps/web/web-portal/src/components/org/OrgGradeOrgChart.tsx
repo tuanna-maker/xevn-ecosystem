@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ORG_GRADE_LEVELS, type OrgGradeBand } from '../../data/org-grade-reference';
+import { buildLayoutForEnabledLevels, type GradeTitleLayout } from '../../utils/orgGradeLayout';
 
 const BAND_SURFACE: Record<OrgGradeBand, string> = {
   yellow: 'border-amber-200/90 bg-amber-50/95',
@@ -9,10 +10,36 @@ const BAND_SURFACE: Record<OrgGradeBand, string> = {
   white: 'border-xevn-border bg-white',
 };
 
+export type OrgGradeOrgChartProps = {
+  /** When set with titleLayout, renders a saved template instead of static master. */
+  enabledLevels?: number[];
+  titleLayout?: GradeTitleLayout;
+  heading?: string;
+  subtitle?: string;
+  footerNote?: string;
+};
+
 /**
  * Sơ đồ tổ chức tham chiếu ORG GRADE — 9 cấp xếp chồng, read-only.
+ * Pass enabledLevels + titleLayout to preview a saved dept-system template.
  */
-export const OrgGradeOrgChart: React.FC = () => {
+export const OrgGradeOrgChart: React.FC<OrgGradeOrgChartProps> = ({
+  enabledLevels,
+  titleLayout,
+  heading = 'Sơ đồ tổ chức (ORG GRADE)',
+  subtitle = 'Chín tầng từ lãnh đạo tới vận hành — chức danh tham chiếu theo từng cấp',
+  footerNote = 'Dữ liệu read-only — dùng làm chuẩn khi cấu hình khung phòng/ban và gán chức danh cho từng pháp nhân.',
+}) => {
+  const rows = useMemo(() => {
+    if (enabledLevels?.length) {
+      const layout = buildLayoutForEnabledLevels(enabledLevels, titleLayout ?? {});
+      return ORG_GRADE_LEVELS.filter((r) => enabledLevels.includes(r.level))
+        .sort((a, b) => a.level - b.level)
+        .map((r) => ({ ...r, titles: layout[r.level] ?? [] }));
+    }
+    return ORG_GRADE_LEVELS;
+  }, [enabledLevels, titleLayout]);
+
   return (
     <div
       className="relative overflow-hidden rounded-xl border border-xevn-border bg-slate-50/90 bg-workflow-canvas-dots shadow-inner"
@@ -22,14 +49,12 @@ export const OrgGradeOrgChart: React.FC = () => {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/70 to-transparent" />
       <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 py-8 md:px-8">
         <div className="mb-6 text-center">
-          <h3 className="text-base font-semibold text-xevn-text md:text-lg">Sơ đồ tổ chức (ORG GRADE)</h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Chín tầng từ lãnh đạo tới vận hành — chức danh tham chiếu theo từng cấp
-          </p>
+          <h3 className="text-base font-semibold text-xevn-text md:text-lg">{heading}</h3>
+          <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
         </div>
 
         <div className="flex w-full flex-col items-center">
-          {ORG_GRADE_LEVELS.map((row, index) => (
+          {rows.map((row, index) => (
             <React.Fragment key={row.level}>
               {index > 0 ? (
                 <div className="flex flex-col items-center py-1" aria-hidden>
@@ -89,9 +114,7 @@ export const OrgGradeOrgChart: React.FC = () => {
           ))}
         </div>
 
-        <p className="mt-6 max-w-xl text-center text-xs text-slate-500">
-          Dữ liệu read-only — dùng làm chuẩn khi cấu hình khung phòng/ban và gán chức danh cho từng pháp nhân.
-        </p>
+        <p className="mt-6 max-w-xl text-center text-xs text-slate-500">{footerNote}</p>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
   HrmListScopeContext,
+  normalizePayrollListCompanyId,
   pushCompanyIdFilter,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
@@ -154,19 +155,43 @@ export class PayrollService {
     };
   }
 
-  private async getPeriodById(periodId: string) {
+  private async queryPeriodInScope(
+    periodId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ): Promise<PayrollPeriodRow | undefined> {
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const filters: string[] = ['id = $1::uuid'];
+    const values: unknown[] = [periodId];
+    pushCompanyIdFilter(filters, values, scope.companyIds);
     const res = await this.db.query<PayrollPeriodRow>(
       `
         SELECT
           id, company_id, period_label, start_date, end_date, status, created_by,
           processed_at, closed_at, created_at, updated_at
         FROM public.payroll_periods
-        WHERE id = $1::uuid
+        WHERE ${filters.join(' AND ')}
         LIMIT 1;
       `,
-      [periodId],
+      values,
     );
     return res.rows[0];
+  }
+
+  async getPeriodById(periodId: string, requestedCompanyId: string, authorization?: string) {
+    await this.ensureSchema();
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const row = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    if (!row) {
+      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+    }
+    assertResourceInHrmScope(row, scope, {
+      notFoundCode: 'HRM-PAY-404',
+      mismatchCode: 'HRM-PAY-409',
+    });
+    return this.mapPeriod(row);
   }
 
   async createPayrollPeriod(payload: CreatePayrollPeriodDto) {
@@ -212,7 +237,8 @@ export class PayrollService {
 
   async listPayrollPeriods(query: ListPayrollPeriodsQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, scope.companyIds);
@@ -236,8 +262,9 @@ export class PayrollService {
 
   async processPayrollPeriod(periodId: string, requestedCompanyId: string, authorization?: string) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId);
-    const current = await this.getPeriodById(periodId);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
     if (!current) {
       throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
     }
@@ -265,8 +292,9 @@ export class PayrollService {
 
   async closePayrollPeriod(periodId: string, requestedCompanyId: string, authorization?: string) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId);
-    const current = await this.getPeriodById(periodId);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
     if (!current) {
       throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
     }
@@ -350,7 +378,8 @@ export class PayrollService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
     const filters: string[] = [];
     const values: unknown[] = [];
     if (scope.masterTenantPartition || scope.memberTenantId) {

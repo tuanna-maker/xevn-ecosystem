@@ -1,142 +1,514 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+import { ConfirmActionModal } from '../../components/ui/ConfirmActionModal';
+import { LeaveAttachmentPicker } from '../../components/ui/LeaveAttachmentPicker';
+import { DetailMetricGrid } from '../../components/ui/DetailMetricGrid';
+import { FormField } from '../../components/ui/FormField';
+import { HrmDateRangeField } from '../../components/ui/HrmDateRangeField';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { StickyFooter } from '../../components/ui/StickyFooter';
+import { SurfaceCard } from '../../components/ui/SurfaceCard';
 import { useAuth } from '../../context/AuthContext';
 import { useOfflineWriteGuard } from '../../hooks/useOfflineWriteGuard';
-import { fetchEmployeeById } from '../../integrations/hrmEmployees';
-import { hrmRequest } from '../../integrations/hrmApiClient';
+import {
+  hydrateEmployeeMetaForRequest,
+  resolveEmployeeMetaFromMemberships,
+} from '../../integrations/hrmEmployees';
+import {
+  resolveAvatarUploadCompanyId,
+  uploadLeaveAttachmentFile,
+} from '../../integrations/hrmFileUpload';
+import { fetchLeaveBalance, formatLeaveBalanceDays } from '../../integrations/hrmLeaveBalance';
 import { formatHrmError } from '../../integrations/mapApiError';
+import { resolveLeaveTypeLabel } from '../../i18n/leaveTypes';
 import { vi } from '../../i18n/vi';
+import { userFacingScopeError } from '../../utils/scopeError';
+import type { RequestsStackParamList } from '../../navigation/types';
+import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { formatHrmDate, formatHrmDateRange } from '../../utils/formatHrm';
+import {
+  leaveAttachmentSubmitBlocked,
+  leaveTypeRequiresAttachment,
+  resolveLeaveAttachmentUrlForSubmit,
+  type LeaveAttachmentDraft,
+} from '../../utils/leaveAttachment';
+import {
+  computeLeaveTotalDays,
+  leaveTypeOptions,
+  toIsoDateOnly,
+  type LeaveTypeOption,
+} from '../../utils/leaveRequest';
+
+const STEPS = ['Chọn ngày', 'Loại nghỉ', 'Xác nhận', 'Gửi đơn'] as const;
+type StepIndex = 0 | 1 | 2 | 3;
 
 export function CreateLeaveRequestScreen() {
   const auth = useAuth();
+  const nav = useNavigation<NativeStackNavigationProp<RequestsStackParamList>>();
+  const route = useRoute<RouteProp<RequestsStackParamList, 'CreateLeaveRequest'>>();
   const blockIfOffline = useOfflineWriteGuard();
-  const [leaveType, setLeaveType] = useState('annual');
-  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [endDate, setEndDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [totalDays, setTotalDays] = useState('1');
-  const [reason, setReason] = useState('Xin nghỉ từ mobile');
+  const isEdit = Boolean(route.params?.editId);
+  const prefill = route.params?.prefill;
+
+  const [step, setStep] = useState<StepIndex>(0);
+  const [leaveType, setLeaveType] = useState<LeaveTypeOption>('annual');
+  const [startDate, setStartDate] = useState(() => toIsoDateOnly(new Date()));
+  const [endDate, setEndDate] = useState(() => toIsoDateOnly(new Date()));
+  const [title, setTitle] = useState('Xin nghỉ từ mobile');
+  const [reason, setReason] = useState('');
   const [employeeCode, setEmployeeCode] = useState('');
   const [employeeName, setEmployeeName] = useState('');
   const [department, setDepartment] = useState('');
   const [position, setPosition] = useState('');
-  const [handoverTo, setHandoverTo] = useState('');
+  const [contact, setContact] = useState('');
   const [handoverTasks, setHandoverTasks] = useState('');
   const [busy, setBusy] = useState(false);
+  const [balanceLeft, setBalanceLeft] = useState<string | null>(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [confirmSubmitOpen, setConfirmSubmitOpen] = useState(false);
+  const [attachments, setAttachments] = useState<LeaveAttachmentDraft[]>([]);
 
   const cid = auth.getAttendanceCompanyId();
+  const balanceQueryCid = auth.getLeaveBalanceQueryCompanyId();
   const eid = auth.employeeId.trim();
+  const totalDays = useMemo(() => computeLeaveTotalDays(startDate, endDate), [startDate, endDate]);
 
   useEffect(() => {
+    if (prefill) {
+      if (prefill.leaveType && leaveTypeOptions.includes(prefill.leaveType as LeaveTypeOption)) {
+        setLeaveType(prefill.leaveType as LeaveTypeOption);
+      }
+      if (prefill.startDate) setStartDate(prefill.startDate);
+      if (prefill.endDate) setEndDate(prefill.endDate);
+      if (prefill.reason != null) {
+        setTitle(prefill.reason);
+        setReason(prefill.reason);
+      }
+      if (prefill.handoverTo != null) setContact(prefill.handoverTo);
+      if (prefill.handoverTasks != null) setHandoverTasks(prefill.handoverTasks);
+    }
+  }, [prefill]);
+
+  useEffect(() => {
+    if (!eid) return;
+    const fromMembership = resolveEmployeeMetaFromMemberships(auth.memberships, eid);
+    if (fromMembership) {
+      setEmployeeCode(fromMembership.employee_code);
+      setEmployeeName(fromMembership.employee_name);
+    }
+    let cancelled = false;
     void (async () => {
-      if (!eid) return;
-      const row = await fetchEmployeeById(auth.getHrmAuth(), eid);
-      if (row) {
-        setEmployeeCode(row.employee_code);
-        setEmployeeName(row.full_name);
-        setDepartment(row.job_title_key ?? '');
+      try {
+        const meta = await hydrateEmployeeMetaForRequest(auth.getHrmAuth(), auth.memberships, eid);
+        if (cancelled || !meta) return;
+        setEmployeeCode(meta.employee_code);
+        setEmployeeName(meta.employee_name);
+        if (meta.department) setDepartment(meta.department);
+      } catch {
+        /* employee meta hydrate is best-effort — never surface as unhandled rejection */
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [auth, eid]);
 
+  useEffect(() => {
+    if (endDate < startDate) setEndDate(startDate);
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    if (!balanceQueryCid || !eid || step < 1) return;
+    let cancelled = false;
+    setBalanceLoading(true);
+    void (async () => {
+      try {
+        const res = await fetchLeaveBalance(auth.getHrmAuth(), {
+          employeeId: eid,
+          leaveType,
+        });
+        if (cancelled) return;
+        setBalanceLoading(false);
+        if (res.ok) {
+          setBalanceLeft(
+            formatLeaveBalanceDays(
+              res.data.available_days > 0 ? res.data.available_days : res.data.remaining_days,
+            ),
+          );
+        } else {
+          setBalanceLeft(null);
+        }
+      } catch {
+        if (!cancelled) {
+          setBalanceLoading(false);
+          setBalanceLeft(null);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [auth, balanceQueryCid, eid, leaveType, step]);
+
+  const goNext = () => {
+    if (step === 0 && totalDays < 0.5) {
+      Alert.alert(vi.error, 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.');
+      return;
+    }
+    if (step < 3) setStep((s) => (s + 1) as StepIndex);
+  };
+
+  const goBack = () => {
+    if (step > 0) setStep((s) => (s - 1) as StepIndex);
+    else nav.goBack();
+  };
+
   const submit = async () => {
+    setConfirmSubmitOpen(false);
     const off = blockIfOffline();
     if (off) {
       Alert.alert(vi.error, `${off}: không gửi đơn khi ngoại tuyến.`);
       return;
     }
     if (!cid || !eid) {
-      Alert.alert(vi.error, 'Cần UUID công ty + employeeId.');
+      Alert.alert(vi.error, userFacingScopeError('companyAndEmployee'));
       return;
     }
     if (!employeeCode.trim() || !employeeName.trim()) {
       Alert.alert(vi.error, 'Thiếu mã/tên nhân viên.');
       return;
     }
-    const days = Number(totalDays.replace(',', '.'));
-    if (!Number.isFinite(days) || days < 0.5) {
-      Alert.alert(vi.error, 'total_days tối thiểu 0.5');
+    if (totalDays < 0.5) {
+      Alert.alert(vi.error, 'Số ngày nghỉ tối thiểu 0.5.');
+      return;
+    }
+    const attachmentBlock = leaveAttachmentSubmitBlocked(leaveType, attachments);
+    if (attachmentBlock) {
+      Alert.alert(vi.error, attachmentBlock);
       return;
     }
     setBusy(true);
     try {
-      const res = await hrmRequest<unknown>(auth.getHrmAuth(), '/attendance/leave-requests', {
+      const reasonText = [title.trim(), reason.trim()].filter(Boolean).join(' — ') || undefined;
+      const attachmentUrl = resolveLeaveAttachmentUrlForSubmit(attachments);
+      const body: Record<string, unknown> = {
+        company_id: cid,
+        employee_id: eid,
+        employee_code: employeeCode.trim(),
+        employee_name: employeeName.trim(),
+        department: department.trim() || undefined,
+        position: position.trim() || undefined,
+        leave_type: leaveType,
+        start_date: startDate,
+        end_date: endDate,
+        total_days: totalDays,
+        reason: reasonText,
+        handover_to: contact.trim() || undefined,
+        handover_tasks: handoverTasks.trim() || undefined,
+      };
+      if (attachmentUrl) {
+        body.attachment_url = attachmentUrl;
+      }
+      const res = await auth.requestHrm<unknown>('/attendance/leave-requests', {
         method: 'POST',
-        body: JSON.stringify({
-          company_id: cid,
-          employee_id: eid,
-          employee_code: employeeCode.trim(),
-          employee_name: employeeName.trim(),
-          department: department.trim() || undefined,
-          position: position.trim() || undefined,
-          leave_type: leaveType.trim(),
-          start_date: startDate.trim(),
-          end_date: endDate.trim(),
-          total_days: days,
-          reason: reason.trim() || undefined,
-          handover_to: handoverTo.trim() || undefined,
-          handover_tasks: handoverTasks.trim() || undefined,
-        }),
+        body: JSON.stringify(body),
       });
-      if (res.ok) Alert.alert('Thành công', res.code);
-      else Alert.alert(vi.error, formatHrmError(res));
+      if (res.ok) {
+        Alert.alert(
+          'Đã gửi đơn',
+          isEdit
+            ? 'Đơn mới đã được tạo. Đơn cũ vẫn chờ duyệt cho đến khi quản lý xử lý.'
+            : 'Đơn nghỉ phép đã được gửi thành công.',
+          [{ text: 'OK', onPress: () => nav.navigate('LeaveRequestsList') }],
+        );
+      } else {
+        Alert.alert(vi.error, formatHrmError(res));
+      }
+    } catch (e) {
+      Alert.alert(vi.error, e instanceof Error ? e.message : 'Không gửi được đơn nghỉ phép');
     } finally {
       setBusy(false);
     }
   };
 
+  const uploadLeaveAttachment = async (draft: LeaveAttachmentDraft): Promise<LeaveAttachmentDraft | null> => {
+    const cfg = auth.getHrmAuth();
+    const companyId = resolveAvatarUploadCompanyId(cfg);
+    const upload = await uploadLeaveAttachmentFile(cfg, draft, companyId);
+    if (!upload.ok) {
+      Alert.alert(vi.error, upload.message ?? 'Không tải được giấy tờ.');
+      return null;
+    }
+    return { ...draft, uploadedUrl: upload.data.url };
+  };
+
+  const stepContent = () => {
+    switch (step) {
+      case 0:
+        return (
+          <SurfaceCard title="Bước 1 · Chọn ngày">
+            <Text style={styles.hint}>Chọn khoảng thời gian nghỉ trên lịch.</Text>
+            <HrmDateRangeField
+              label="Khoảng ngày nghỉ"
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(start, end) => {
+                setStartDate(start);
+                setEndDate(end);
+              }}
+            />
+            <Text style={styles.meta}>Tổng: {totalDays} ngày · {formatHrmDateRange(startDate, endDate)}</Text>
+          </SurfaceCard>
+        );
+      case 1:
+        return (
+          <SurfaceCard title="Bước 2 · Loại nghỉ">
+            <Text style={styles.hint}>Chọn loại nghỉ — số dư cập nhật theo loại đã chọn.</Text>
+            <View style={styles.typeGrid}>
+              {leaveTypeOptions.map((code) => {
+                const on = leaveType === code;
+                return (
+                  <Pressable
+                    key={code}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: on }}
+                    onPress={() => setLeaveType(code)}
+                    style={[styles.typeChip, on && styles.typeChipOn]}
+                  >
+                    <Text style={[styles.typeChipText, on && styles.typeChipTextOn]}>
+                      {resolveLeaveTypeLabel(code)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <View style={styles.balanceBox}>
+              <Text style={styles.balanceLabel}>Còn lại</Text>
+              <Text style={styles.balanceValue}>
+                {balanceLoading ? 'Đang tải…' : balanceLeft != null ? `${balanceLeft} ngày` : 'Liên hệ HR để tra cứu số dư'}
+              </Text>
+            </View>
+            {leaveTypeRequiresAttachment(leaveType) ? (
+              <LeaveAttachmentPicker
+                attachments={attachments}
+                onChange={setAttachments}
+                onUpload={uploadLeaveAttachment}
+                disabled={busy}
+              />
+            ) : null}
+          </SurfaceCard>
+        );
+      case 2:
+        return (
+          <>
+            <SurfaceCard title="Bước 3 · Xác nhận">
+              <DetailMetricGrid
+                metrics={[
+                  { label: 'Loại nghỉ', value: '', leaveTypeCode: leaveType },
+                  { label: 'Số ngày', value: `${totalDays} ngày` },
+                  { label: 'Từ ngày', value: formatHrmDate(startDate) },
+                  { label: 'Đến ngày', value: formatHrmDate(endDate) },
+                ]}
+              />
+              {totalDays > 5 ? (
+                <Text style={styles.warn}>Cảnh báo: đơn nghỉ dài — vui lòng xác nhận số ngày với quản lý.</Text>
+              ) : null}
+            </SurfaceCard>
+            <SurfaceCard title="Chi tiết bổ sung">
+              <FormField label="Tiêu đề" value={title} onChangeText={setTitle} />
+              <FormField label="Liên hệ" value={contact} onChangeText={setContact} placeholder="SĐT hoặc người liên hệ" />
+              <FormField label="Mô tả" value={reason} onChangeText={setReason} multiline />
+              <FormField
+                label="Công việc bàn giao (tuỳ chọn)"
+                value={handoverTasks}
+                onChangeText={setHandoverTasks}
+                multiline
+              />
+            </SurfaceCard>
+          </>
+        );
+      case 3:
+      default:
+        return (
+          <SurfaceCard title="Bước 4 · Gửi đơn">
+            <Text style={styles.hint}>Kiểm tra lại trước khi gửi. Đơn sẽ ở trạng thái «Chờ duyệt».</Text>
+            <DetailMetricGrid
+              metrics={[
+                { label: 'Nhân viên', value: employeeName || '—' },
+                { label: 'Mã NV', value: employeeCode || '—' },
+                { label: 'Loại nghỉ', value: '', leaveTypeCode: leaveType },
+                { label: 'Thời gian', value: formatHrmDateRange(startDate, endDate) },
+              ]}
+            />
+            {title.trim() ? <Text style={styles.reviewReason}>Tiêu đề: {title.trim()}</Text> : null}
+            {reason.trim() ? <Text style={styles.reviewReason}>Mô tả: {reason.trim()}</Text> : null}
+            {attachments.some((a) => a.uploadedUrl) ? (
+              <Text style={styles.reviewReason}>
+                Đính kèm: {attachments.filter((a) => a.uploadedUrl).map((a) => a.fileName).join(', ')}
+              </Text>
+            ) : null}
+          </SurfaceCard>
+        );
+    }
+  };
+
+  const footer = (
+    <StickyFooter>
+      {step < 3 ? (
+        <View style={styles.navRow}>
+          <PrimaryButton label={step === 0 ? 'Huỷ' : 'Quay lại'} variant="secondary" onPress={goBack} style={styles.navBtn} />
+          <PrimaryButton label="Tiếp tục" onPress={goNext} style={styles.navBtn} />
+        </View>
+      ) : (
+        <>
+          <PrimaryButton
+            label={busy ? vi.loading : 'Gửi đơn nghỉ'}
+            onPress={() => setConfirmSubmitOpen(true)}
+            disabled={busy}
+            loading={busy}
+          />
+          <PrimaryButton label="Quay lại" variant="ghost" onPress={goBack} />
+        </>
+      )}
+    </StickyFooter>
+  );
+
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
-      <Text style={styles.title}>Đơn nghỉ phép (HRM API)</Text>
-      <Text style={styles.hint}>Gửi lên Postgres; quản lý xem inbox + duyệt trên web hoặc màn Phê duyệt.</Text>
-      <Text style={styles.label}>employee_code</Text>
-      <TextInput
-        style={styles.input}
-        value={employeeCode}
-        onChangeText={setEmployeeCode}
-        placeholderTextColor="#64748b"
-        autoCapitalize="none"
+    <>
+      <AppScreenLayout
+        title={isEdit ? 'Chỉnh sửa đơn' : 'Tạo đơn nghỉ'}
+        subtitle="4 bước — ngày → loại → xác nhận → gửi"
+        scroll
+        grouped
+        keyboardShouldPersistTaps="handled"
+        footer={footer}
+      >
+        <View style={styles.stepper}>
+          {STEPS.map((label, i) => {
+            const active = i === step;
+            const done = i < step;
+            return (
+              <View key={label} style={styles.stepItem}>
+                <View style={[styles.stepDot, (active || done) && styles.stepDotOn]}>
+                  <Text style={[styles.stepNum, (active || done) && styles.stepNumOn]}>{i + 1}</Text>
+                </View>
+                <Text style={[styles.stepLabel, active && styles.stepLabelOn]} numberOfLines={1}>
+                  {label}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {isEdit ? (
+          <Text style={styles.editNote}>
+            Chỉnh sửa tạo đơn mới thay thế — API cập nhật đơn cũ chưa có; đơn cũ vẫn chờ duyệt.
+          </Text>
+        ) : null}
+
+        {stepContent()}
+      </AppScreenLayout>
+
+      <ConfirmActionModal
+        visible={confirmSubmitOpen}
+        kind="submit"
+        title="Gửi đơn nghỉ phép?"
+        message={`Xác nhận gửi đơn ${resolveLeaveTypeLabel(leaveType)} (${totalDays} ngày) cho quản lý duyệt.`}
+        confirmLabel="Gửi đơn"
+        onConfirm={() => void submit()}
+        onCancel={() => setConfirmSubmitOpen(false)}
       />
-      <Text style={styles.label}>employee_name</Text>
-      <TextInput style={styles.input} value={employeeName} onChangeText={setEmployeeName} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>department (tuỳ chọn)</Text>
-      <TextInput style={styles.input} value={department} onChangeText={setDepartment} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>position (tuỳ chọn)</Text>
-      <TextInput style={styles.input} value={position} onChangeText={setPosition} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>leave_type</Text>
-      <TextInput style={styles.input} value={leaveType} onChangeText={setLeaveType} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>start_date (YYYY-MM-DD)</Text>
-      <TextInput style={styles.input} value={startDate} onChangeText={setStartDate} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>end_date</Text>
-      <TextInput style={styles.input} value={endDate} onChangeText={setEndDate} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>total_days</Text>
-      <TextInput style={styles.input} value={totalDays} onChangeText={setTotalDays} keyboardType="decimal-pad" placeholderTextColor="#64748b" />
-      <Text style={styles.label}>reason</Text>
-      <TextInput style={styles.input} value={reason} onChangeText={setReason} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>handover_to (tuỳ chọn)</Text>
-      <TextInput style={styles.input} value={handoverTo} onChangeText={setHandoverTo} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>handover_tasks (tuỳ chọn)</Text>
-      <TextInput style={styles.input} value={handoverTasks} onChangeText={setHandoverTasks} placeholderTextColor="#64748b" />
-      <Pressable style={styles.btn} onPress={() => void submit()} disabled={busy}>
-        <Text style={styles.btnText}>{busy ? vi.loading : 'Gửi đơn nghỉ'}</Text>
-      </Pressable>
-    </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a' },
-  pad: { padding: 16, paddingBottom: 32, gap: 8 },
-  title: { color: '#f8fafc', fontSize: 18, fontWeight: '700' },
-  hint: { color: '#64748b', fontSize: 12, marginBottom: 8 },
-  label: { color: '#94a3b8', fontSize: 12, marginTop: 4 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    padding: 12,
-    color: '#f8fafc',
-    backgroundColor: '#1e293b',
+  stepper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
   },
-  btn: { marginTop: 16, backgroundColor: '#0ea5e9', padding: 14, borderRadius: 10, alignItems: 'center' },
-  btnText: { color: '#0f172a', fontWeight: '800' },
+  stepItem: { flex: 1, alignItems: 'center', gap: 4 },
+  stepDot: {
+    width: 28,
+    height: 28,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepDotOn: { borderColor: colors.primary, backgroundColor: colors.primaryMuted },
+  stepNum: { fontSize: typography.fontSize.xs, color: colors.textSecondary, fontWeight: typography.fontWeight.semibold },
+  stepNumOn: { color: colors.primary },
+  stepLabel: { fontSize: 10, color: colors.textSecondary, textAlign: 'center' },
+  stepLabelOn: { color: colors.primary, fontWeight: typography.fontWeight.semibold },
+  editNote: {
+    fontSize: typography.fontSize.xs,
+    color: colors.warning,
+    backgroundColor: '#FFFBEB',
+    padding: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  hint: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
+  },
+  meta: {
+    fontSize: typography.fontSize.sm,
+    color: colors.text,
+    fontWeight: typography.fontWeight.medium,
+  },
+  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  typeChip: {
+    paddingHorizontal: spacing.md - 4,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  typeChipOn: { borderColor: colors.primary, backgroundColor: colors.primaryMuted },
+  typeChipText: { fontSize: typography.fontSize.sm, color: colors.textSecondary },
+  typeChipTextOn: { color: colors.primary, fontWeight: typography.fontWeight.semibold },
+  balanceBox: {
+    marginTop: spacing.sm,
+    padding: spacing.md - 4,
+    backgroundColor: colors.background,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: 4,
+  },
+  balanceLabel: {
+    fontSize: typography.fontSize.footnote,
+    color: colors.textSecondary,
+    fontWeight: typography.fontWeight.medium,
+  },
+  balanceValue: { fontSize: typography.fontSize.sm, color: colors.text, fontWeight: typography.fontWeight.semibold },
+  warn: {
+    fontSize: typography.fontSize.sm,
+    color: '#92400E',
+    backgroundColor: '#FEF3C7',
+    padding: spacing.sm,
+    borderRadius: radius.md,
+  },
+  reviewReason: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+  },
+  navRow: { flexDirection: 'row', gap: spacing.sm },
+  navBtn: { flex: 1 },
 });

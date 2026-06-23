@@ -47,4 +47,9 @@ export class CreateLeaveRequestDto {
   @IsOptional()
   @IsString()
   handover_tasks?: string;
+
+  /** W7-3 — relative `/api/hrm/files/{scope}/...` from leave_attachment upload */
+  @IsOptional()
+  @IsString()
+  attachment_url?: string;
 }

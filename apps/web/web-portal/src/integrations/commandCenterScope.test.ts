@@ -6,6 +6,7 @@ import {
   isGroupLeadershipRole,
   resolveHrmOperationalCompanyId,
   resolveXbosApiCompanyIdForPath,
+  resolveXbosCommandCenterCatalogCompanyId,
   resolveXbosKpiRollupCompanyId,
   resolveXbosStrictCompanyId,
   XBOS_GROUP_HOLDING_COMPANY_ID,
@@ -92,6 +93,18 @@ describe('commandCenterScope (ADR C2)', () => {
     );
     vi.stubEnv('VITE_KPI_ROLLUP_USE_HOLDING', 'true');
     expect(resolveXbosApiCompanyIdForPath('/kpi-engine/rollup', 'xevn', MEMBER_DEFAULT_COMPANY_ID)).toBe(
+      XBOS_GROUP_HOLDING_COMPANY_ID,
+    );
+  });
+
+  it('maps command_center_catalogs to holding partition for group CEO (UF-XBOS-14)', () => {
+    const jwt = minimalScopeJwt('xevn', 'main');
+    const payload = JSON.stringify({ tenantId: 'xevn', companyId: 'main', roleCode: 'group_ceo' });
+    const token = `h.${Buffer.from(payload, 'utf8').toString('base64url')}.s`;
+    sessionStorage.setItem('xevn.portal.accessToken', token);
+    vi.stubEnv('VITE_SERVICE_JWT_TOKEN', jwt);
+
+    expect(resolveXbosCommandCenterCatalogCompanyId('xevn', MEMBER_DEFAULT_COMPANY_ID)).toBe(
       XBOS_GROUP_HOLDING_COMPANY_ID,
     );
   });

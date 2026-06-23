@@ -92,7 +92,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
           {!opts?.iconOnly ? (
             <>
               <span
-                className={`min-w-0 flex-1 truncate ${
+                className={`min-w-0 flex-1 text-[13px] leading-snug ${
                   isActive ? NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS : NAV_SUBSIDEBAR_ITEM_IDLE_CLASS
                 }`}
               >

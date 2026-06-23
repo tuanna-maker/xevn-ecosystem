@@ -1,5 +1,10 @@
 import type { HrmSpreadsheetScope } from '@/integrations/hrmApi';
-import { coerceHrmListCompanyId, HRM_GROUP_LIST_ALIASES } from '@/lib/hrmListScope';
+import {
+  coerceHrmListCompanyId,
+  HRM_GROUP_LIST_ALIASES,
+  HRM_LIST_DEFAULT_COMPANY_ID,
+  HRM_MASTER_TENANT_ID,
+} from '@/lib/hrmListScope';
 import { getPortalAccessToken, hasPortalSession } from '@/lib/portalAuthBridge';
 
 function readBase64Url(input: string): string {
@@ -33,6 +38,7 @@ export function getPortalJwtCompanyId(): string | null {
   const claims = parseJwtClaims(getPortalAccessToken() ?? undefined);
   const company = pickClaim(claims, ['companyId', 'company_id', 'activeCompanyId', 'active_company_id']);
   if (!company || HRM_GROUP_LIST_ALIASES.has(company)) return null;
+  if (company === HRM_LIST_DEFAULT_COMPANY_ID || company === 'holding') return null;
   return company;
 }
 
@@ -55,6 +61,14 @@ export function resolveHrmSpreadsheetScope(
   const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
   const jwtCompany = getPortalJwtCompanyId();
   const jwtTenant = getPortalJwtTenantId();
+
+  // Catalog/settings on group embed always anchor to JWT rollup `main` (U39 — not operating-unit filter).
+  if (hasPortalSession() && jwtTenant === HRM_MASTER_TENANT_ID) {
+    return {
+      tenantId: jwtTenant,
+      companyId: HRM_LIST_DEFAULT_COMPANY_ID,
+    };
+  }
 
   const storedCompany =
     (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_company_id') : null) ||

@@ -6,8 +6,10 @@ import {
   listEmployees,
   listExpiringContracts,
   listLeaveRequests,
+  listPayrollPayslips,
   listRecruitmentCandidates,
 } from '@/integrations/hrmApi';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import {
   buildContractReportFromApi,
@@ -37,6 +39,8 @@ export function useReportsData(year: number) {
   const [leave, setLeave] = useState<LeaveReport | null>(null);
   const [turnover, setTurnover] = useState<TurnoverReport | null>(null);
   const [operationsSummary, setOperationsSummary] = useState<OperationsSummaryReport | null>(null);
+  const [employeeTotal, setEmployeeTotal] = useState<number | null>(null);
+  const [payrollNetTotal, setPayrollNetTotal] = useState<number | null>(null);
   const { currentCompanyId } = useAuth();
 
   const fetchAll = useCallback(async () => {
@@ -44,24 +48,32 @@ export function useReportsData(year: number) {
       setIsLoading(false);
       return;
     }
+    const companyId = coerceHrmListCompanyId(currentCompanyId);
     setIsLoading(true);
 
     try {
-      const [opsSummary, recruitmentRes, expiringRes, contractRes, leaveRes, employeeRes] =
+      const [opsSummary, recruitmentRes, expiringRes, contractRes, leaveRes, employeeRes, payslipRes] =
         await Promise.all([
-          getOperationsSummary(currentCompanyId),
+          getOperationsSummary(companyId),
           listRecruitmentCandidates({
-            company_id: currentCompanyId,
+            company_id: companyId,
             page: 1,
             page_size: HRM_API_MAX_PAGE_SIZE,
           }),
-          listExpiringContracts({ company_id: currentCompanyId, days: 30 }),
-          listEmployeeContracts({ company_id: currentCompanyId, page_size: HRM_API_MAX_PAGE_SIZE }),
-          listLeaveRequests({ company_id: currentCompanyId }),
-          listEmployees({ company_id: currentCompanyId, page_size: HRM_API_MAX_PAGE_SIZE }),
+          listExpiringContracts({ company_id: companyId, days: 30 }),
+          listEmployeeContracts({ company_id: companyId, page_size: HRM_API_MAX_PAGE_SIZE }),
+          listLeaveRequests({ company_id: companyId }),
+          listEmployees({ company_id: companyId, page_size: HRM_API_MAX_PAGE_SIZE }),
+          listPayrollPayslips({ company_id: companyId }),
         ]);
 
       setOperationsSummary(mapOperationsSummaryReport(opsSummary));
+      setEmployeeTotal(employeeRes.total ?? employeeRes.data?.length ?? 0);
+      const netSum = (payslipRes.data ?? []).reduce((sum, row) => {
+        const n = Number.parseFloat(String(row.net_amount ?? 0));
+        return sum + (Number.isFinite(n) ? n : 0);
+      }, 0);
+      setPayrollNetTotal(netSum);
       setRecruitment(buildRecruitmentReportFromApi(recruitmentRes.data ?? [], year));
       setContracts(
         buildContractReportFromApi(
@@ -75,6 +87,8 @@ export function useReportsData(year: number) {
     } catch (error) {
       console.error('Reports API fetch failed:', error);
       setOperationsSummary(null);
+      setEmployeeTotal(null);
+      setPayrollNetTotal(null);
       setRecruitment(null);
       setContracts(null);
       setLeave(null);
@@ -95,6 +109,8 @@ export function useReportsData(year: number) {
     leave,
     turnover,
     operationsSummary,
+    employeeTotal,
+    payrollNetTotal,
     refetch: fetchAll,
   };
 }

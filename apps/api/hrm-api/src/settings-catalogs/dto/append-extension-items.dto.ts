@@ -1,5 +1,16 @@
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsArray, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+  ValidateNested,
+} from 'class-validator';
 
 export class CatalogExtensionItemDto {
   @IsString()
@@ -24,6 +35,11 @@ export class CatalogExtensionItemDto {
 }
 
 export class AppendExtensionItemsDto {
+  /** U64 — only explicit bulk sync bypasses governance inbox spawn. */
+  @IsOptional()
+  @IsBoolean()
+  bulkSync?: boolean;
+
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })

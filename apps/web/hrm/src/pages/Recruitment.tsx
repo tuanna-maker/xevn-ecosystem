@@ -81,7 +81,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 // Job postings are managed by JobPostingsTab component with real DB data
-import { useKanbanCandidates, KanbanCandidate } from '@/hooks/useKanbanCandidates';
+import { KanbanCandidate } from '@/hooks/useKanbanCandidates';
+import { useRecruitmentDashboard } from '@/hooks/useRecruitmentDashboard';
+import { formatRecruitmentCostVnd } from '@/lib/recruitmentDashboardAggregator';
 import { useRecruitmentPlans, RecruitmentPlan } from '@/hooks/useRecruitmentPlans';
 import { useCandidateEvaluations, CandidateEvaluation } from '@/hooks/useCandidateEvaluations';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -97,6 +99,7 @@ import { CandidateComparisonDialog } from '@/components/recruitment/CandidateCom
 import { CandidateDetailView } from '@/components/recruitment/CandidateDetailView';
 import { HeadcountProposalTab } from '@/components/recruitment/HeadcountProposalTab';
 import { JobPostingsTab } from '@/components/recruitment/JobPostingsTab';
+import { JobRequisitionsTab } from '@/components/recruitment/JobRequisitionsTab';
 import { CandidateSourceStats } from '@/components/recruitment/CandidateSourceStats';
 import { CandidatesTab } from '@/components/recruitment/CandidatesTab';
 import { InterviewsTab } from '@/components/recruitment/InterviewsTab';
@@ -147,6 +150,7 @@ type JobPostingFormValues = z.infer<typeof jobPostingSchema>;
 // Top navigation tabs with colored icons - now using translation function
 const getTopNavTabs = (t: any) => [
   { id: 'dashboard', label: t('recruitment.tabs.dashboard'), icon: LayoutDashboard, color: 'bg-blue-500' },
+  { id: 'requisitions', label: 'Yêu cầu tuyển dụng', icon: Briefcase, color: 'bg-violet-500' },
   { id: 'jobs', label: t('recruitment.tabs.jobs'), icon: Briefcase, color: 'bg-orange-500', hasDropdown: true },
   { id: 'candidates', label: t('recruitment.tabs.candidates'), icon: Users, color: 'bg-green-500', hasDropdown: true },
   { id: 'proposals', label: t('recruitment.tabs.proposals'), icon: FileText, color: 'bg-purple-500' },
@@ -363,13 +367,18 @@ export default function Recruitment() {
     },
   ]);
 
-  // Fetch candidates from Supabase for Dashboard Kanban
-  const { 
-    candidates, 
-    loading: candidatesLoading, 
+  const dashboardEnabled = activeTab === 'dashboard';
+  const {
+    candidates,
+    candidatesLoading,
     updateCandidateStage,
-    stats: candidateStats 
-  } = useKanbanCandidates();
+    stats: candidateStats,
+    departmentChartData,
+    monthlyChartData,
+    costSummary,
+    targetHeadcount,
+    loading: dashboardLoading,
+  } = useRecruitmentDashboard(dashboardEnabled);
 
   // Fetch recruitment plans from Supabase
   const {
@@ -836,7 +845,7 @@ export default function Recruitment() {
                         [
                           {
                             label: t('recruitment.target'),
-                            value: '86',
+                            value: targetHeadcount > 0 ? String(targetHeadcount) : t('common.noData'),
                             bar: 'bg-blue-500',
                             tint: 'bg-blue-500/[0.06]',
                             valueClass: 'text-blue-600',
@@ -886,52 +895,67 @@ export default function Recruitment() {
                   </CardContent>
                 </Card>
 
-                <Card className="shadow-sm">
-                  <CardContent className="p-0">
-                    <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-                      <div className="flex gap-3 px-4 py-3 bg-purple-500/[0.05]">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-500/15">
-                          <DollarSign className="h-4 w-4 text-purple-600" />
+                {costSummary.hasData ? (
+                  <Card className="shadow-sm">
+                    <CardContent className="p-0">
+                      <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
+                        <div className="flex gap-3 px-4 py-3 bg-purple-500/[0.05]">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-500/15">
+                            <DollarSign className="h-4 w-4 text-purple-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium leading-snug text-muted-foreground">
+                              {t('recruitment.avgCostPerCandidate')}
+                            </p>
+                            <p className="text-base font-bold tabular-nums text-purple-600 sm:text-lg">
+                              {formatRecruitmentCostVnd(costSummary.avgCostPerCandidate) ?? t('common.noData')}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium leading-snug text-muted-foreground">
-                            {t('recruitment.avgCostPerCandidate')}
-                          </p>
-                          <p className="text-base font-bold tabular-nums text-purple-600 sm:text-lg">990.000 đ</p>
+                        <div className="flex gap-3 px-4 py-3 bg-orange-500/[0.05]">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500/15">
+                            <DollarSign className="h-4 w-4 text-orange-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium leading-snug text-muted-foreground">
+                              {t('recruitment.costTopCV')}
+                            </p>
+                            <p className="text-base font-bold tabular-nums text-orange-600 sm:text-lg">
+                              {formatRecruitmentCostVnd(costSummary.costTopCV) ?? t('common.noData')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 px-4 py-3 bg-cyan-500/[0.05]">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15">
+                            <DollarSign className="h-4 w-4 text-cyan-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium leading-snug text-muted-foreground">
+                              {t('recruitment.cost24h')}
+                            </p>
+                            <p className="text-base font-bold tabular-nums text-cyan-600 sm:text-lg">
+                              {formatRecruitmentCostVnd(costSummary.cost24h) ?? t('common.noData')}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex gap-3 px-4 py-3 bg-orange-500/[0.05]">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500/15">
-                          <DollarSign className="h-4 w-4 text-orange-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium leading-snug text-muted-foreground">
-                            {t('recruitment.costTopCV')}
-                          </p>
-                          <p className="text-base font-bold tabular-nums text-orange-600 sm:text-lg">13.395.000 đ</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-3 px-4 py-3 bg-cyan-500/[0.05]">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15">
-                          <DollarSign className="h-4 w-4 text-cyan-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium leading-snug text-muted-foreground">
-                            {t('recruitment.cost24h')}
-                          </p>
-                          <p className="text-base font-bold tabular-nums text-cyan-600 sm:text-lg">2.756.804 đ</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card className="shadow-sm">
+                    <CardContent className="flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground">
+                      <DollarSign className="h-4 w-4 shrink-0" />
+                      <span>{t('common.noData')}</span>
+                    </CardContent>
+                  </Card>
+                )}
 
                 <Card className="shadow-sm">
                   <CardHeader className="space-y-0 px-4 py-2 pb-0">
                     <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChart')}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-3 pb-3 pt-1 sm:px-4">
-                    <RecruitmentLineChart />
+                    <RecruitmentLineChart data={monthlyChartData} loading={dashboardLoading} />
                   </CardContent>
                 </Card>
 
@@ -977,7 +1001,7 @@ export default function Recruitment() {
                     <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChartByDept')}</CardTitle>
                   </CardHeader>
                   <CardContent className="min-w-0 px-2 pb-3 pt-1 sm:px-4">
-                    <RecruitmentBarChart />
+                    <RecruitmentBarChart data={departmentChartData} loading={dashboardLoading} />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -1058,6 +1082,8 @@ export default function Recruitment() {
             </Tabs>
           </div>
         )}
+
+        {activeTab === 'requisitions' && <JobRequisitionsTab />}
 
         {/* Jobs Tab */}
         {activeTab === 'jobs' && (

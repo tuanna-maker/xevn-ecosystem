@@ -19,6 +19,8 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
   const serviceMock = {
     createJobRequisition: jest.fn().mockResolvedValue({ id: 'req-1' }),
     listJobRequisitions: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'req-1' }] }),
+    getJobRequisitionById: jest.fn().mockResolvedValue({ id: 'req-1', company_id: 'holding' }),
+    updateJobRequisition: jest.fn().mockResolvedValue({ id: 'req-1', company_id: 'holding', status: 'on_hold' }),
     createCandidate: jest.fn().mockResolvedValue({ id: 'cand-1' }),
     listCandidates: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'cand-1' }] }),
     scheduleInterview: jest.fn().mockResolvedValue({ id: 'int-1' }),
@@ -203,6 +205,79 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     expect(deleted.code).toBe('HRM-REC-CP-200');
     expect(catalogMock.updateCandidatePool).toHaveBeenCalled();
     expect(catalogMock.deleteCandidatePool).toHaveBeenCalled();
+  });
+
+  it('loads job requisition by id with scope context (J-HRM-05)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const requisitionId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const res = await controller.getJobRequisition(
+      requisitionId,
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+    );
+    expect(res.code).toBe('HRM-REC-200');
+    expect(serviceMock.getJobRequisitionById).toHaveBeenCalledWith(
+      requisitionId,
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+  });
+
+  it('updates job requisition status with scope context (AC-CRUD-HRM-REC-G-U-01)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const requisitionId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const res = await controller.updateJobRequisition(
+      requisitionId,
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+      { status: 'on_hold' },
+    );
+    expect(res.code).toBe('HRM-REC-200');
+    expect(serviceMock.updateJobRequisition).toHaveBeenCalledWith(
+      requisitionId,
+      { status: 'on_hold' },
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+  });
+
+  it('UF-HRM-12: PUT requisitions alias delegates to updateJobRequisition (PATCH proxy fallback)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    const requisitionId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const res = await controller.putJobRequisition(
+      requisitionId,
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      undefined,
+      { company_id: 'main' },
+      { status: 'on_hold' },
+    );
+    expect(res.code).toBe('HRM-REC-200');
+    expect(serviceMock.updateJobRequisition).toHaveBeenCalledTimes(1);
   });
 
   it('lists job requisitions when company_id is slug main (portal pilot)', async () => {

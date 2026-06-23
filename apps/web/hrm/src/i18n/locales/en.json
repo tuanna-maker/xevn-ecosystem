@@ -1917,9 +1917,9 @@
       "originHrm": "HRM",
       "addTitle": "Add catalog row (HRM)",
       "addDesc": "Append to an existing catalog key. Duplicate codes are upserted.",
-      "catalogKeyField": "Catalog key",
-      "catalogKeyPlaceholder": "e.g. positions, job_levels",
-      "catalogKeyHint": "Pick a synced suggestion or enter a new key for an HRM-only catalog.",
+      "catalogKeyField": "Catalog",
+      "catalogKeyPlaceholder": "Select a catalog",
+      "catalogKeyHint": "Choose a catalog synced from XBOS or already available in HRM.",
       "addButton": "Add / update row",
       "savedExtensions": "HRM extension saved"
     },

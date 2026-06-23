@@ -2,17 +2,15 @@ import React, { createContext, useContext, useEffect, useMemo, useState, ReactNo
 import { Company } from '../data/mockData';
 import { isMasterTenant, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import { setActiveTenantScope } from '../integrations/activeTenantScope';
-import { getJwtCompanyId, isGroupCompanyId } from '../integrations/identityScope';
+import { getJwtCompanyId, getJwtTenantId, isGroupCompanyId } from '../integrations/identityScope';
 import { AccessibleTenant, fetchAccessibleTenants } from '../integrations/tenantScopeApi';
 import { useAuth } from './AuthContext';
-import {
-  allowMockFallback,
-  TENANT_SCOPE_FAILED_MESSAGE,
-} from '../utils/mockPolicy';
+import { resolveTenantScopeAccessibleFailure } from '../utils/tenantScopeStrictMode';
 import { logApiFailure, logApiStart } from '../utils/apiLogger';
 
 export type TenantOption = Company & {
   tenantId: string;
+  companyId: string;
   tenantKind: 'master' | 'member';
   roleCode: string;
   isMaster: boolean;
@@ -44,6 +42,7 @@ function mapTenantToOption(t: AccessibleTenant, index: number): TenantOption {
   return {
     id: t.tenantId,
     tenantId: t.tenantId,
+    companyId: t.companyId?.trim() || MEMBER_DEFAULT_COMPANY_ID,
     code: t.tenantId.toUpperCase(),
     name: t.name,
     shortName: t.shortName,
@@ -57,9 +56,50 @@ function mapTenantToOption(t: AccessibleTenant, index: number): TenantOption {
   };
 }
 
+function pickPreferredTenant(mapped: TenantOption[]): TenantOption {
+  const jwtTenant = getJwtTenantId()?.trim().toLowerCase();
+  const jwtIsMember = Boolean(jwtTenant && !isMasterTenant(jwtTenant));
+
+  if (jwtTenant) {
+    const jwtMatch = mapped.find((t) => t.tenantId.toLowerCase() === jwtTenant);
+    if (jwtMatch) return jwtMatch;
+  }
+
+  if (!jwtIsMember) {
+    const envDefault = (import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID).trim().toLowerCase();
+    const envMatch = mapped.find((t) => t.tenantId.toLowerCase() === envDefault);
+    if (envMatch) return envMatch;
+    const masterMatch = mapped.find((t) => t.isMaster);
+    if (masterMatch) return masterMatch;
+  }
+
+  const memberOnly = mapped.find((t) => !t.isMaster);
+  if (memberOnly) return memberOnly;
+
+  return mapped[0];
+}
+
+function resolveTenantCompanyId(tenant: TenantOption): string {
+  const fromMembership = tenant.companyId?.trim();
+  if (fromMembership && !isGroupCompanyId(fromMembership)) {
+    return fromMembership;
+  }
+  const jwtCompany = getJwtCompanyId();
+  const jwtTenant = getJwtTenantId()?.trim().toLowerCase();
+  if (
+    jwtCompany &&
+    !isGroupCompanyId(jwtCompany) &&
+    (!jwtTenant || jwtTenant === tenant.tenantId.toLowerCase())
+  ) {
+    return jwtCompany;
+  }
+  return MEMBER_DEFAULT_COMPANY_ID;
+}
+
 const PLACEHOLDER_TENANT: TenantOption = {
   id: '__loading__',
   tenantId: MASTER_TENANT_ID,
+  companyId: MEMBER_DEFAULT_COMPANY_ID,
   code: '…',
   name: 'Đang tải phạm vi tenant…',
   shortName: 'Đang tải…',
@@ -72,20 +112,23 @@ const PLACEHOLDER_TENANT: TenantOption = {
   isMaster: true,
 };
 
-const fallbackMaster: TenantOption = {
-  id: MASTER_TENANT_ID,
-  tenantId: MASTER_TENANT_ID,
-  code: 'XEVN',
-  name: 'Tập đoàn XeVN (mock fallback)',
-  shortName: 'Tập đoàn',
-  industry: 'Tập đoàn (X-BOS)',
-  status: 'active',
-  employeeCount: 0,
-  color: '#1E40AF',
-  tenantKind: 'master',
-  roleCode: 'group_ceo',
-  isMaster: true,
-};
+function buildMockFallbackMasterTenant(): TenantOption {
+  return {
+    id: MASTER_TENANT_ID,
+    tenantId: MASTER_TENANT_ID,
+    companyId: MEMBER_DEFAULT_COMPANY_ID,
+    code: 'XEVN',
+    name: 'Tập đoàn XeVN (mock fallback)',
+    shortName: 'Tập đoàn',
+    industry: 'Tập đoàn (X-BOS)',
+    status: 'active',
+    employeeCount: 0,
+    color: '#1E40AF',
+    tenantKind: 'master',
+    roleCode: 'group_ceo',
+    isMaster: true,
+  };
+}
 
 export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { memberships, isAuthenticated } = useAuth();
@@ -102,11 +145,7 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
       setTenantScopeStatus('ready');
       setTenantScopeError(null);
       setUsingMockTenantFallback(false);
-      const preferred =
-        mapped.find((t) => t.tenantId === (import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID)) ??
-        mapped.find((t) => t.isMaster) ??
-        mapped[0];
-      setSelectedTenant(preferred);
+      setSelectedTenant(pickPreferredTenant(mapped));
       return;
     }
 
@@ -126,11 +165,7 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
         const mapped = rows.map(mapTenantToOption);
         setTenants(mapped);
-        const preferred =
-          mapped.find((t) => t.tenantId === (import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID)) ??
-          mapped.find((t) => t.isMaster) ??
-          mapped[0];
-        setSelectedTenant(preferred);
+        setSelectedTenant(pickPreferredTenant(mapped));
         setTenantScopeStatus('ready');
       })
       .catch((error) => {
@@ -141,19 +176,15 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
           startedAt,
           error,
         );
-        if (allowMockFallback()) {
-          setTenants([fallbackMaster]);
-          setSelectedTenant(fallbackMaster);
-          setUsingMockTenantFallback(true);
-          setTenantScopeStatus('ready');
-          setTenantScopeError(null);
-        } else {
-          setTenants([]);
-          setSelectedTenant(PLACEHOLDER_TENANT);
-          setTenantScopeStatus('error');
-          setTenantScopeError(TENANT_SCOPE_FAILED_MESSAGE);
-          setUsingMockTenantFallback(false);
-        }
+        const failure = resolveTenantScopeAccessibleFailure(
+          buildMockFallbackMasterTenant,
+          PLACEHOLDER_TENANT,
+        );
+        setTenants(failure.tenants);
+        setSelectedTenant(failure.selectedTenant);
+        setUsingMockTenantFallback(failure.usingMockTenantFallback);
+        setTenantScopeStatus(failure.tenantScopeStatus);
+        setTenantScopeError(failure.tenantScopeError);
       });
   }, [isAuthenticated, memberships]);
 
@@ -167,14 +198,17 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   useEffect(() => {
     if (tenantScopeStatus !== 'ready' || safeSelected.id === '__loading__') return;
-    const jwtCompany = getJwtCompanyId();
-    const masterCompanyId =
-      jwtCompany && !isGroupCompanyId(jwtCompany) ? jwtCompany : MEMBER_DEFAULT_COMPANY_ID;
     setActiveTenantScope({
       tenantId: safeSelected.tenantId,
-      companyId: safeSelected.isMaster ? masterCompanyId : MEMBER_DEFAULT_COMPANY_ID,
+      companyId: resolveTenantCompanyId(safeSelected),
     });
-  }, [safeSelected.tenantId, safeSelected.isMaster, safeSelected.id, tenantScopeStatus]);
+  }, [
+    safeSelected.tenantId,
+    safeSelected.companyId,
+    safeSelected.isMaster,
+    safeSelected.id,
+    tenantScopeStatus,
+  ]);
 
   const companiesCompat = tenants;
   const selectedCompanyCompat: Company = safeSelected;
@@ -214,16 +248,13 @@ export const useGlobalFilter = (): GlobalFilterContextType => {
 export const useTenantScope = () => {
   const { selectedTenant, tenants, canAccessMaster, isMasterContext, tenantScopeStatus, tenantScopeError } =
     useGlobalFilter();
-  const jwtCompany = getJwtCompanyId();
-  const masterCompanyId =
-    jwtCompany && !isGroupCompanyId(jwtCompany) ? jwtCompany : MEMBER_DEFAULT_COMPANY_ID;
   return {
     selectedTenant,
     tenants,
     canAccessMaster,
     isMasterContext,
     tenantId: selectedTenant.tenantId,
-    companyId: selectedTenant.isMaster ? masterCompanyId : MEMBER_DEFAULT_COMPANY_ID,
+    companyId: resolveTenantCompanyId(selectedTenant),
     tenantScopeStatus,
     tenantScopeError,
   };

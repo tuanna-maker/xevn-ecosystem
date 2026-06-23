@@ -248,11 +248,38 @@ describe('AttendanceService', () => {
       'xe-du-lich',
     );
     const [sql, params] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
-    expect(String(sql)).toContain('aur.company_id = $1::text');
+    expect(String(sql)).toContain('aur.company_id::text = $1');
     expect(String(sql)).not.toMatch(/aur\.company_id = \$\d+::uuid/);
     expect(String(sql)).toContain('e.manager_id');
     expect(params?.[0]).toBe(companyUuid);
     expect(out.total).toBe(0);
+  });
+
+  it('listUpdateRequests matches pending row when query uses holding slug but row stores uuid TEXT (J-MOB-05)', async () => {
+    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const managerId = 'c4d59b81-b7ce-4e75-8c6d-856d5acfd02c';
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('SELECT aur.*')) {
+        return Promise.resolve({ rows: [{ id: 'ur-mob-05' }] } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    const out = await service.listUpdateRequests(
+      { company_id: 'holding', status: 'pending', manager_employee_id: managerId },
+      `Bearer ${token}`,
+      'xevn',
+    );
+    const [sql, params] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    expect(String(sql)).toContain('aur.company_id::text = ANY');
+    expect(params?.[0]).toEqual(expect.arrayContaining(['holding', holdingUuid]));
+    expect(out.total).toBe(1);
   });
 
   it('listRecords uses workforce scope for group CEO on company_id=main (P1-R1-BE-01)', async () => {
@@ -280,6 +307,104 @@ describe('AttendanceService', () => {
       )?.[0] ?? '';
     expect(String(listSql)).toContain('employee_id IN');
     expect(String(listSql)).not.toContain('company_id = $1::uuid');
+  });
+
+  it('listRecords maps mobile company_uuid query to holding slug workforce scope (D-MOB-UX-10d)', async () => {
+    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('SELECT COUNT(*)::text AS total FROM public.attendance_records')) {
+        return Promise.resolve({ rows: [{ total: '3' }] } as never);
+      }
+      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT')) {
+        return Promise.resolve({
+          rows: [
+            {
+              id: 'r-present',
+              company_id: holdingUuid,
+              employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+              attendance_date: '2026-06-06',
+              check_in_at: '2026-06-06T01:00:00.000Z',
+              check_out_at: '2026-06-06T10:00:00.000Z',
+              status: 'present',
+              note: null,
+              created_by: 'seed',
+              created_at: '2026-06-06T00:00:00.000Z',
+              updated_at: '2026-06-06T00:00:00.000Z',
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    const result = await service.listRecords(
+      { company_id: holdingUuid, page: 1, page_size: 20 },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+    const listCall = db.query.mock.calls.find(
+      (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT'),
+    );
+    const [listSql, listParams] = listCall ?? [];
+    expect(String(listSql)).toContain('employee_id IN');
+    expect(String(listSql)).toContain('company_id = $1::text');
+    expect(listParams?.[0]).toBe('holding');
+    expect(result.total).toBe(3);
+    expect(result.data[0]).toMatchObject({ id: 'r-present', status: 'present' });
+  });
+
+  it('getRecordById maps mobile company_uuid query to holding slug workforce scope (D-MOB-UX-10d)', async () => {
+    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const recordId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT 1')) {
+        return Promise.resolve({
+          rows: [
+            {
+              id: recordId,
+              company_id: holdingUuid,
+              employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+              attendance_date: '2026-06-02',
+              check_in_at: null,
+              check_out_at: null,
+              status: 'absent',
+              note: null,
+              created_by: 'seed',
+              created_at: '2026-06-02T00:00:00.000Z',
+              updated_at: '2026-06-02T00:00:00.000Z',
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    const result = await service.getRecordById(
+      recordId,
+      { company_id: holdingUuid },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+    const getCall = db.query.mock.calls.find(
+      (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT 1'),
+    );
+    const [getSql, getParams] = getCall ?? [];
+    expect(String(getSql)).toContain('employee_id IN');
+    expect(String(getSql)).toContain('company_id = $2::text');
+    expect(getParams?.[1]).toBe('holding');
+    expect(result).toMatchObject({ id: recordId, status: 'absent' });
   });
 
   it('rejects updateStatus when row company_id is outside rollup scope (P1-R1-BE-02)', async () => {

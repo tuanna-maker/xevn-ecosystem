@@ -110,10 +110,8 @@ export default function Login() {
         <div className="relative z-10 flex flex-col justify-between p-10 xl:p-14 w-full">
           {/* Top — Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/></svg>
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight">UniHRM</span>
+            <img src="/xevn-logo.png" alt="XeVN" className="w-12 h-12 object-contain" />
+            <span className="text-xl font-bold text-white tracking-tight">XeVN HRM</span>
           </div>
 
           {/* Center — Hero content */}
@@ -160,7 +158,7 @@ export default function Login() {
           </div>
 
           {/* Bottom */}
-          <p className="text-white/40 text-xs">© 2025 UniHRM. All rights reserved.</p>
+          <p className="text-white/40 text-xs">© 2026 XeVN. All rights reserved.</p>
         </div>
       </div>
 
@@ -170,10 +168,8 @@ export default function Login() {
           <HrmApiSyncBanner />
           {/* Mobile logo */}
           <div className="flex items-center justify-center gap-2 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/></svg>
-            </div>
-            <span className="text-xl font-bold">UniHRM</span>
+            <img src="/xevn-logo.png" alt="XeVN" className="w-12 h-12 object-contain" />
+            <span className="text-xl font-bold">XeVN HRM</span>
           </div>
 
           <div className="mb-8">

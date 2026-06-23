@@ -1,13 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { CatalogSyncService, resolveXbosApiBaseUrl } from '../catalog-sync/catalog-sync.service';
+import { MASTER_TENANT_ID } from '../common/hrm-list-scope';
 import { TOURISM_COMPANY_ID, TOURISM_TENANT_ID } from './tourism-fleet-catalog';
+
+const GROUP_HOLDING_COMPANY_ID = 'holding';
+const GROUP_OPERATING_MAIN = 'main';
 
 @Injectable()
 export class XbosCatalogWorkflowBridge {
   private readonly logger = new Logger(XbosCatalogWorkflowBridge.name);
 
+  constructor(private readonly catalogSync: CatalogSyncService) {}
+
   private xbosBaseUrl(): string {
-    const port = process.env.XBOS_BE_PORT ?? '28002';
-    return (process.env.XBOS_API_URL ?? `http://127.0.0.1:${port}`).replace(/\/$/, '');
+    return resolveXbosApiBaseUrl();
+  }
+
+  /** UF-XBOS-09/15 — group CEO (xevn) and member tourism (xe-du-lich) extension paths. */
+  shouldStartCatalogWorkflow(tenantId: string, companyId: string): boolean {
+    const t = tenantId.trim().toLowerCase();
+    const c = companyId.trim().toLowerCase();
+    if (t === TOURISM_TENANT_ID) return true;
+    if (t === MASTER_TENANT_ID && (c === GROUP_HOLDING_COMPANY_ID || c === GROUP_OPERATING_MAIN)) {
+      return true;
+    }
+    return false;
   }
 
   async startCatalogWorkflowIfConfigured(
@@ -16,27 +33,40 @@ export class XbosCatalogWorkflowBridge {
     companyId: string,
     requesterUserId?: string,
   ): Promise<{ workflowInstanceId?: string } | null> {
-    if (tenantId !== TOURISM_TENANT_ID) {
+    if (!this.shouldStartCatalogWorkflow(tenantId, companyId)) {
       return null;
     }
-    const key = process.env.INTERNAL_API_KEY ?? 'xevn-dev-internal-key';
+    const memberTenantId = tenantId.trim().toLowerCase();
+    const memberCompanyId = companyId.trim().toLowerCase() || TOURISM_COMPANY_ID;
+    // UF-XBOS-09/15 S2S: production xbos-be rejects static key alone (NODE_ENV=production) — mint service JWT.
+    const upstreamHeaders = this.catalogSync.buildXbosUpstreamHeaders(undefined, {
+      tenantId: memberTenantId,
+      companyId: memberCompanyId,
+    });
     try {
       const res = await fetch(`${this.xbosBaseUrl()}/api/xbos/catalog-governance/workflows/start`, {
         method: 'POST',
         headers: {
-          'x-internal-api-key': key,
+          ...upstreamHeaders,
           'content-type': 'application/json',
         },
         body: JSON.stringify({
           batchId,
-          memberTenantId: tenantId,
-          memberCompanyId: companyId || TOURISM_COMPANY_ID,
+          memberTenantId,
+          memberCompanyId,
           requesterUserId: requesterUserId ?? null,
         }),
       });
-      const json = (await res.json()) as { success?: boolean; data?: { workflowInstanceId?: string } };
+      const json = (await res.json()) as {
+        success?: boolean;
+        code?: string;
+        message?: string;
+        data?: { workflowInstanceId?: string };
+      };
       if (!res.ok || !json.success) {
-        this.logger.warn(`XBOS workflow start failed: ${res.status}`);
+        this.logger.warn(
+          `XBOS workflow start failed: ${res.status} code=${json.code ?? 'unknown'} msg=${json.message ?? ''}`,
+        );
         return null;
       }
       return json.data ?? null;

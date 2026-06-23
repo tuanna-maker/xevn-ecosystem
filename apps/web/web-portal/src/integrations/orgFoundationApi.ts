@@ -11,7 +11,7 @@ import {
 } from './legalEntityIdResolver';
 import { normalizeLegalEntityPutBody } from './legalEntityPutBody';
 import { xbosFetch, xbosGetData } from './xbosHttp';
-import { fetchGroupOrgOverview } from './tenantScopeApi';
+import { fetchGroupOrgOverview, GROUP_HOLDING_ROOT_ID } from './tenantScopeApi';
 
 export { resolveLegalEntityApiIdFromList, type LegalEntityIdHints };
 
@@ -64,30 +64,164 @@ export async function fetchOrgTree(tenantId: string): Promise<OrgTreeNode[]> {
   if (isMasterTenant(tenantId)) {
     return [];
   }
-  const { tenantId: tid, companyId } = scopeHeaders(tenantId, MEMBER_DEFAULT_COMPANY_ID);
-  const data = await xbosGetData<{ tree?: OrgTreeNode[] }>('/org-foundation/org-units/tree', {
-    scope: 'org-foundation.org-tree',
-    tenantId: tid,
-    companyId,
-  });
-  return data?.tree ?? [];
+  return fetchOrgTreeForScope(tenantId, MEMBER_DEFAULT_COMPANY_ID);
 }
 
-/** UC-CC-01 — load department rows for a legal entity (group overview when master tenant). */
+export async function fetchOrgTreeForScope(
+  tenantId: string,
+  companyId: string,
+): Promise<OrgTreeNode[]> {
+  const { tenantId: tid, companyId: cid } = scopeHeaders(tenantId, companyId);
+  const data = await xbosGetData<{
+    tree?: OrgTreeNode[] | Array<{ tenantId?: string; tree?: OrgTreeNode[] }>;
+    mode?: string;
+  }>('/org-foundation/org-units/tree', {
+    scope: 'org-foundation.org-tree',
+    tenantId: tid,
+    companyId: cid,
+  });
+  const tree = data?.tree;
+  if (!Array.isArray(tree) || tree.length === 0) {
+    return [];
+  }
+  const first = tree[0];
+  if (first && typeof first === 'object' && 'tenantId' in first && 'tree' in first) {
+    return [];
+  }
+  return tree as OrgTreeNode[];
+}
+
+/** UF-XBOS-12 — scoped tree reload after org-unit save (legal_entity_id query). */
+export async function fetchOrgTreeForLegalEntity(
+  legalEntityId: string,
+  tenantId?: string,
+  companyId?: string,
+): Promise<OrgTreeNode[]> {
+  const trimmed = legalEntityId.trim();
+  if (!trimmed) return [];
+  const { tenantId: tid, companyId: cid } = scopeHeaders(tenantId, companyId);
+  const search = new URLSearchParams({ legal_entity_id: trimmed });
+  const data = await xbosGetData<{ tree?: OrgTreeNode[] }>(
+    `/org-foundation/org-units/tree?${search.toString()}`,
+    {
+      scope: 'org-foundation.org-tree-legal-entity',
+      tenantId: tid,
+      companyId: cid,
+    },
+  );
+  return Array.isArray(data?.tree) ? data.tree : [];
+}
+
+export type LegalEntityDepartmentTreeHints = LegalEntityIdHints & {
+  entityLevel?: string | null;
+};
+
+export function isHoldingDepartmentScope(
+  hints: Pick<LegalEntityDepartmentTreeHints, 'id' | 'entityLevel'>,
+): boolean {
+  return hints.id === GROUP_HOLDING_ROOT_ID || hints.entityLevel === 'parent';
+}
+
+/** Resolve persisted legal-entity UUID + XBOS company partition for org-unit writes. */
+export async function resolveDepartmentSaveContext(
+  hints: LegalEntityDepartmentTreeHints,
+): Promise<{ tenantId: string; companyId: string; legalEntityId: string | null }> {
+  const scopeTenantId = hints.tenantId?.trim() || MASTER_TENANT_ID;
+  const holding = isHoldingDepartmentScope(hints);
+  const companyId = holding ? GROUP_HOLDING_COMPANY_ID : MEMBER_DEFAULT_COMPANY_ID;
+  const saveTenantId = holding ? MASTER_TENANT_ID : scopeTenantId;
+
+  if (holding) {
+    const items = await fetchHoldingLegalEntities(scopeTenantId);
+    return {
+      tenantId: saveTenantId,
+      companyId,
+      legalEntityId: resolveLegalEntityApiIdFromList(hints, items),
+    };
+  }
+
+  const listTenantId = isMasterTenant(scopeTenantId) ? MASTER_TENANT_ID : scopeTenantId;
+  const items = await fetchLegalEntities(listTenantId, MEMBER_DEFAULT_COMPANY_ID);
+  const legalEntityId =
+    resolveLegalEntityApiIdFromList(hints, items) ??
+    (hints.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(hints.id)
+      ? hints.id
+      : null);
+
+  return { tenantId: saveTenantId, companyId, legalEntityId };
+}
+
+/** UC-CC-01 / J-XBOS-07 — department tree keyed by UI legal-entity id (holding root or member UUID). */
 export async function loadLegalEntityDepartmentTree(
   tenantId: string,
-  legalEntityId?: string | null,
+  legalEntityUiId?: string | null,
+  hints?: LegalEntityDepartmentTreeHints,
 ): Promise<OrgTreeNode[]> {
-  if (isMasterTenant(tenantId)) {
+  const uiId = (legalEntityUiId ?? hints?.id ?? '').trim();
+  const scopeHints: LegalEntityDepartmentTreeHints = {
+    id: uiId,
+    tenantId: hints?.tenantId?.trim() || tenantId,
+    code: hints?.code,
+    entityLevel: hints?.entityLevel,
+  };
+  const holding = isHoldingDepartmentScope(scopeHints);
+
+  try {
     const overview = await fetchGroupOrgOverview();
     const trees = overview?.trees ?? [];
-    if (legalEntityId) {
-      const match = trees.find((t) => t.tenantId === legalEntityId);
-      if (match?.tree?.length) return match.tree;
+    if (uiId) {
+      const match = trees.find((t) => t.tenantId === uiId);
+      if (match?.tree?.length) {
+        return match.tree;
+      }
     }
-    return trees.flatMap((t) => t.tree ?? []);
+    if (holding) {
+      const holdingMatch = trees.find((t) => t.tenantId === GROUP_HOLDING_ROOT_ID);
+      if (holdingMatch?.tree?.length) {
+        return holdingMatch.tree;
+      }
+    }
+  } catch {
+    /* direct tree fallback below */
   }
-  return fetchOrgTree(tenantId);
+
+  try {
+    const ctx = await resolveDepartmentSaveContext(scopeHints);
+    if (ctx.legalEntityId) {
+      const scopedTree = await fetchOrgTreeForLegalEntity(
+        ctx.legalEntityId,
+        ctx.tenantId,
+        ctx.companyId,
+      );
+      if (scopedTree.length > 0) {
+        return scopedTree;
+      }
+    }
+  } catch {
+    /* legacy fallbacks below */
+  }
+
+  if (holding) {
+    try {
+      const tree = await fetchOrgTreeForScope(MASTER_TENANT_ID, GROUP_HOLDING_COMPANY_ID);
+      if (tree.length > 0) {
+        return tree;
+      }
+    } catch {
+      return [];
+    }
+  }
+
+  const memberTenantId = scopeHints.tenantId?.trim() || tenantId;
+  if (!isMasterTenant(memberTenantId)) {
+    try {
+      return await fetchOrgTreeForScope(memberTenantId, MEMBER_DEFAULT_COMPANY_ID);
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
 }
 
 /** UC-CC-03 — pháp nhân holding (tenant master, company holding). */
@@ -187,7 +321,49 @@ export type OrgUnitInputPayload = {
   payload?: Record<string, unknown>;
 };
 
-export async function saveOrgUnit(
+/** Flatten org tree and match department/unit by code (case-insensitive). */
+export function findOrgUnitInTreeByCode(nodes: OrgTreeNode[], code: string): OrgTreeNode | null {
+  const normalized = code.trim().toLowerCase();
+  if (!normalized) return null;
+  for (const node of nodes) {
+    if ((node.code ?? '').trim().toLowerCase() === normalized) {
+      return node;
+    }
+    if (node.children?.length) {
+      const nested = findOrgUnitInTreeByCode(node.children, code);
+      if (nested) return nested;
+    }
+  }
+  return null;
+}
+
+export function isOrgUnitDuplicateKeyError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  return (
+    msg.includes('duplicate key') ||
+    msg.includes('unique constraint') ||
+    msg.includes('already exists')
+  );
+}
+
+async function resolveExistingOrgUnitIdByCode(
+  tenantId: string,
+  companyId: string,
+  code: string,
+): Promise<string | null> {
+  const trimmed = code.trim();
+  if (!trimmed) return null;
+  try {
+    const tree = await fetchOrgTreeForScope(tenantId, companyId);
+    const existing = findOrgUnitInTreeByCode(tree, trimmed);
+    return existing?.id ? String(existing.id) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function performOrgUnitSave(
   tenantId: string,
   companyId: string,
   body: OrgUnitInputPayload,
@@ -207,6 +383,33 @@ export async function saveOrgUnit(
   });
   if (!envelope?.data) throw new Error('org unit save returned empty payload');
   return envelope.data;
+}
+
+/** D-W4-DEPT-DUP-SAVE-01 — upsert by code when client row id is not yet persisted. */
+export async function saveOrgUnit(
+  tenantId: string,
+  companyId: string,
+  body: OrgUnitInputPayload,
+  unitId?: string,
+): Promise<Record<string, unknown>> {
+  const { tenantId: tid, companyId: cid } = scopeHeaders(tenantId, companyId);
+  let resolvedUnitId = unitId;
+
+  if (!resolvedUnitId && body.code?.trim()) {
+    resolvedUnitId = (await resolveExistingOrgUnitIdByCode(tid, cid, body.code)) ?? undefined;
+  }
+
+  try {
+    return await performOrgUnitSave(tid, cid, body, resolvedUnitId);
+  } catch (error) {
+    if (!unitId && isOrgUnitDuplicateKeyError(error)) {
+      const existingId = await resolveExistingOrgUnitIdByCode(tid, cid, body.code);
+      if (existingId) {
+        return performOrgUnitSave(tid, cid, body, existingId);
+      }
+    }
+    throw error;
+  }
 }
 
 export async function deleteOrgUnit(

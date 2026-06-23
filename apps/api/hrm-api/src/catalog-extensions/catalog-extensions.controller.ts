@@ -10,9 +10,12 @@ import {
   Patch,
   Post,
   Query,
+  Res,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
 import { ApiException } from '../common/api.exception';
@@ -331,6 +334,21 @@ export class CatalogExtensionsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.service.deleteGuideContent(body).then((data) => ok(data, 'HRM-GUIDE-200', 'Guide content deleted'));
+  }
+
+  @Get('files/:companyId/:filename')
+  async getUploadedFile(
+    @Param('companyId') companyId: string,
+    @Param('filename') filename: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    const file = await this.service.readUploadedFile(companyId, filename, authorization);
+    res.set('Cache-Control', 'public, max-age=3600');
+    return new StreamableFile(file.buffer, {
+      type: file.mimetype,
+      disposition: `inline; filename="${file.filename}"`,
+    });
   }
 
   @Post('files/upload')

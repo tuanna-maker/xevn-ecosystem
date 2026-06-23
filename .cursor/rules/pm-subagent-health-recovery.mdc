@@ -1,0 +1,37 @@
+# PM — Subagent health & recovery (warming / CDN / CDP hang)
+
+## Mỗi lượt PM trước khi chờ subagent hoặc trả lời sponsor
+
+```bash
+pnpm run pm:subagent:status    # báo cáo human
+pnpm run pm:subagent:recover   # exit 2 → PM_SUBAGENT_RECOVERY.json + dispatch
+```
+
+Hoặc gộp: `pnpm run pm:idle:check` (đã gộp recovery).
+
+## Triệu chứng → hành động PM
+
+| Triệu chứng | Detector | PM làm gì |
+|-------------|----------|-----------|
+| «Warming up» > 90s, transcript ≤3 dòng | `warming_up_stuck` | **Task MỚI** cùng role/work_item — `run_in_background=false`; **không** resume agent cũ |
+| CDN / timeout / connection trong transcript | `transcript_error_pattern` | Spawn fresh; **shell/API only** — cấm browser_cdp |
+| Treo `browser_cdp` / MCP browser > 3 phút | `browser_tool_hang` | Interrupt; Task qa **API smoke** (`qc:dev-stack`, curl) |
+| `subagentStop` status=error | `subagent_error_stop` | Retry + `pm-task-quota-fallback` model chain |
+| In-flight > 7 phút không stop | `stale_in_flight` | Spawn fresh; ghi bus `RE-DISPATCHED` |
+
+## Cấm
+
+- PM im lặng chờ subagent > 2 phút khi `pm:subagent:recover` exit **2**
+- Lặp **cùng** task_id khi transcript `warming_up_stuck` / `browser_tool_hang`
+- QA browser khi recovery plan ghi `shell-first`
+
+## Artifact
+
+- `docs/program/PM_SUBAGENT_RECOVERY.json` — `recoveryRequired[].pm_dispatch_prompt` copy-ready cho Task
+- Inbox: `.cursor/team/inbox/subagent-start.jsonl` + `subagent-stop.jsonl`
+
+## Env tuning
+
+- `PM_SUBAGENT_WARMUP_MS=90000` (mặc định 90s)
+- `PM_BROWSER_HANG_MS=180000` (3 phút)
+- `PM_SUBAGENT_STALE_MS=420000` (7 phút)

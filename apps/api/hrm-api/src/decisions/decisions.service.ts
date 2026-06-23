@@ -229,10 +229,15 @@ export class DecisionsService {
 
   async getDecisionById(decisionId: string, companyId: string, authorization?: string) {
     await this.ensureSchema();
+    const scope = resolveHrmListScope(authorization, companyId);
     const row = await this.getDecisionScoped(decisionId, companyId, authorization);
     if (!row) {
       throw new ApiException('HRM-DEC-404', 'Decision not found', HttpStatus.NOT_FOUND);
     }
+    assertResourceInHrmScope(row, scope, {
+      notFoundCode: 'HRM-DEC-404',
+      mismatchCode: 'HRM-DEC-409',
+    });
     return row;
   }
 

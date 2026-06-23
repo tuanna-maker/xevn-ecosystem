@@ -1,4 +1,7 @@
 import { MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
+import { INITIAL_DEPT_SYSTEM_TEMPLATES } from '../data/dept-system-foundation-catalog';
+import { normalizeGradeTitleLayout } from '../utils/orgGradeLayout';
+import { allowMockFallback } from '../utils/mockPolicy';
 import {
   deleteBusinessMasterItem,
   listBusinessMasterItems,
@@ -12,6 +15,7 @@ export type DeptSystemTemplateRow = {
   description?: string;
   appliesToCompanyIds: string[];
   enabledOrgGradeLevels: number[];
+  gradeTitleLayout?: Partial<Record<number, string[]>>;
 };
 
 type StoredPayload = Omit<DeptSystemTemplateRow, 'id'>;
@@ -29,6 +33,7 @@ export function mapDeptSystemTemplateRow(row: RawMasterRow): DeptSystemTemplateR
     enabledOrgGradeLevels: Array.isArray(row.enabledOrgGradeLevels)
       ? [...row.enabledOrgGradeLevels].sort((a, b) => a - b)
       : [],
+    gradeTitleLayout: normalizeGradeTitleLayout(row.gradeTitleLayout),
   };
 }
 
@@ -73,6 +78,24 @@ export function resolveDeptSystemTemplatesLoad(
     };
   }
   return { templates: [], source: 'empty', loadFailed: apiFailed };
+}
+
+function devDeptSystemTemplateRows(): DeptSystemTemplateRow[] {
+  if (!allowMockFallback()) return [];
+  return INITIAL_DEPT_SYSTEM_TEMPLATES.map((r) => mapDeptSystemTemplateRow(r));
+}
+
+/** M-CC-03 — hook-friendly loader; mock seed stays in API layer (REC-EXEC-GREP-W2-02). */
+export function loadDeptSystemTemplatesFromApi(
+  apiRows: DeptSystemTemplateRow[],
+  apiFailed = false,
+): { templates: DeptSystemTemplateRow[]; source: DeptSystemTemplatesLoadSource; loadFailed: boolean } {
+  return resolveDeptSystemTemplatesLoad(
+    apiRows,
+    allowMockFallback(),
+    devDeptSystemTemplateRows(),
+    apiFailed,
+  );
 }
 
 export async function listDeptSystemTemplates(

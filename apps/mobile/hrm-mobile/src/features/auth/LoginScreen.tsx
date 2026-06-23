@@ -1,434 +1,332 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-
 import {
-
   Alert,
-
   KeyboardAvoidingView,
-
   Platform,
-
   Pressable,
-
-  ScrollView,
-
   StyleSheet,
-
   Text,
-
   TextInput,
-
   View,
-
 } from 'react-native';
-
+import { BrandedLoginCard } from '../../components/auth/BrandedLoginCard';
+import { XevnLogo } from '../../components/brand/XevnLogo';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { isQaDevLoginEnabled } from '../../config/qaLogin';
 import { useAuth, type MobileLoginResult, type SignInPayload } from '../../context/AuthContext';
-
 import { getDefaultBaseUrl, hrmRequest } from '../../integrations/hrmApiClient';
-
+import { parseJwtClaims } from '../../integrations/jwtClaims';
 import { formatHrmError } from '../../integrations/mapApiError';
-
 import { vi } from '../../i18n/vi';
+import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
 
-
+function enrichDevPayloadFromJwt(payload: SignInPayload): SignInPayload {
+  const claims = parseJwtClaims(payload.accessToken);
+  if (!claims) return payload;
+  return {
+    ...payload,
+    tenantId: payload.tenantId.trim() || claims.tenantId?.trim() || payload.tenantId,
+    companyId: payload.companyId.trim() || claims.companyId?.trim() || payload.companyId,
+    companyUuid: payload.companyUuid.trim() || claims.company_uuid?.trim() || payload.companyUuid,
+    employeeId: payload.employeeId.trim() || claims.employee_id?.trim() || payload.employeeId,
+    roles: payload.roles.length ? payload.roles : claims.roles ?? [],
+  };
+}
 
 export function LoginScreen() {
-
   const { signIn, signInWithMobileLogin } = useAuth();
-
+  const qaDevLogin = isQaDevLoginEnabled();
+  const nativeDev = typeof __DEV__ !== 'undefined' && __DEV__;
   const [baseUrl, setBaseUrl] = useState(getDefaultBaseUrl());
-
   const [email, setEmail] = useState('');
-
   const [password, setPassword] = useState('');
-
-  const [showDev, setShowDev] = useState(typeof __DEV__ !== 'undefined' && __DEV__);
-
+  const [showDev, setShowDev] = useState(nativeDev);
   const [tenantId, setTenantId] = useState('');
-
   const [companyId, setCompanyId] = useState('holding');
-
   const [companyUuid, setCompanyUuid] = useState('');
-
   const [employeeId, setEmployeeId] = useState('');
-
   const [accessToken, setAccessToken] = useState('');
-
   const [internalKey, setInternalKey] = useState('');
-
   const [busy, setBusy] = useState(false);
 
-
-
   const onMobileLogin = async () => {
-
     if (!email.trim() || !password.trim()) {
-
       Alert.alert(vi.error, 'Nhập email và mật khẩu.');
-
       return;
-
     }
-
     setBusy(true);
-
     try {
-
       const authCfg = { baseUrl: baseUrl.trim() || getDefaultBaseUrl() };
-
       const res = await hrmRequest<MobileLoginResult>(authCfg, '/auth/mobile/login', {
-
         method: 'POST',
-
         body: JSON.stringify({ email: email.trim(), password }),
-
       });
-
       if (!res.ok) {
-
         Alert.alert(vi.error, formatHrmError(res));
-
         return;
-
       }
-
       const active = res.data.active_membership;
-
       if (res.data.memberships && res.data.memberships.length > 1) {
-
         Alert.alert(
-
           'Nhiều phạm vi',
-
           `Bạn có ${res.data.memberships.length} công ty. Đang dùng: ${active?.company_display ?? active?.tenant_id ?? 'mặc định'}. Đổi phạm vi tại Cài đặt → Phạm vi.`,
-
         );
-
       }
-
       await signInWithMobileLogin({
-
         baseUrl: authCfg.baseUrl,
-
         tenantId: active?.tenant_id ?? res.data.default_tenant_id ?? '',
-
         companyId: active?.company_id ?? res.data.default_company_id ?? '',
-
         companyUuid: active?.company_uuid ?? res.data.company_uuid ?? '',
-
         employeeId: active?.employee_id ?? res.data.employee.id,
-
         accessToken: res.data.access_token,
-
         refreshToken: res.data.refresh_token,
-
         internalApiKey: '',
-
         roles: res.data.roles,
-
         memberships: res.data.memberships ?? [],
-
         login: res.data,
-
       });
-
     } finally {
-
       setBusy(false);
-
     }
-
   };
-
-
 
   const onDevSubmit = async () => {
-
     if (!tenantId.trim() || !companyId.trim()) {
-
       Alert.alert(vi.error, 'Dev: nhập tenantId và companyId (header).');
-
       return;
-
     }
-
     if (!accessToken.trim() && !internalKey.trim()) {
-
       Alert.alert(vi.error, 'Cần Bearer JWT hoặc khóa nội bộ (dev).');
-
       return;
-
     }
-
     setBusy(true);
-
     try {
-
-      const payload: SignInPayload = {
-
+      let payload: SignInPayload = {
         baseUrl: baseUrl.trim() || getDefaultBaseUrl(),
-
         tenantId: tenantId.trim(),
-
         companyId: companyId.trim(),
-
         companyUuid: companyUuid.trim(),
-
         employeeId: employeeId.trim(),
-
         accessToken: accessToken.trim(),
-
         refreshToken: '',
-
         internalApiKey: internalKey.trim(),
-
         roles: [],
-
         memberships: [],
-
+        tokenExpiresAt: 0,
       };
-
-      const probe = await hrmRequest<{ service?: string }>(
-
-        {
-
-          baseUrl: payload.baseUrl,
-
-          tenantId: payload.tenantId,
-
-          companyId: payload.companyId,
-
-          accessToken: payload.accessToken || undefined,
-
-          internalApiKey: payload.internalApiKey || undefined,
-
-        },
-
-        '/',
-
-        { method: 'GET' },
-
-      );
-
-      if (!probe.ok) {
-
-        Alert.alert(vi.error, formatHrmError(probe));
-
+      payload = enrichDevPayloadFromJwt(payload);
+      if (!payload.tenantId.trim() || !payload.companyId.trim()) {
+        Alert.alert(vi.error, 'Dev: thiếu tenantId hoặc companyId (header).');
         return;
-
       }
-
+      const probe = await hrmRequest<{ service?: string }>(
+        {
+          baseUrl: payload.baseUrl,
+          tenantId: payload.tenantId,
+          companyId: payload.companyId,
+          accessToken: payload.accessToken || undefined,
+          internalApiKey: payload.internalApiKey || undefined,
+        },
+        '/',
+        { method: 'GET' },
+      );
+      if (!probe.ok) {
+        Alert.alert(vi.error, formatHrmError(probe));
+        return;
+      }
       await signIn(payload);
-
     } finally {
-
       setBusy(false);
-
     }
-
   };
 
-
-
   return (
-
     <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={styles.flex}>
+        <LinearGradient
+          colors={[colors.homeHeroGradientStart, colors.homeHeroGradientEnd]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroGradient}
+        />
+        <View style={styles.scrollWrap}>
+          <View style={styles.heroContent}>
+            <XevnLogo size={88} testID="login-xevn-logo" />
+            <Text style={styles.heroTitle}>{vi.appName}</Text>
+            <Text style={styles.heroHint}>
+              Đăng nhập bằng email và mật khẩu. Hệ thống tự xác định công ty từ hồ sơ nhân viên.
+            </Text>
+          </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+          <BrandedLoginCard>
+            <FormField
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              placeholder="name@company.com"
+              testID="login-email"
+            />
+            <FormField
+              label="Mật khẩu"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              placeholder="••••••••"
+              testID="login-password"
+            />
+            <PrimaryButton
+              label={busy ? vi.loading : vi.login}
+              onPress={() => void onMobileLogin()}
+              disabled={busy}
+              loading={busy}
+              style={styles.loginBtn}
+              testID="login-submit"
+            />
+          </BrandedLoginCard>
 
-        <Text style={styles.title}>{vi.appName}</Text>
-
-        <Text style={styles.hint}>
-
-          Đăng nhập email + mật khẩu. Hệ thống tự xác định tenant/công ty từ hồ sơ nhân viên (giống portal).
-
-        </Text>
-
-        <L label="HRM_API_BASE_URL" value={baseUrl} onChangeText={setBaseUrl} autoCapitalize="none" />
-
-        <L label="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-
-        <L label="Mật khẩu" value={password} onChangeText={setPassword} secureTextEntry />
-
-        <Pressable style={[styles.btn, busy && styles.btnDisabled]} onPress={() => void onMobileLogin()} disabled={busy}>
-
-          <Text style={styles.btnText}>{busy ? vi.loading : vi.login}</Text>
-
-        </Pressable>
-
-        {typeof __DEV__ !== 'undefined' && __DEV__ ? (
-
-          <>
-
-            <Pressable onPress={() => setShowDev((v) => !v)}>
-
-              <Text style={styles.devToggle}>{showDev ? 'Ẩn đăng nhập dev' : 'Đăng nhập dev (JWT / internal key)'}</Text>
-
-            </Pressable>
-
-            {showDev ? (
-
-              <View style={styles.devBox}>
-
-                <L label="tenantId" value={tenantId} onChangeText={setTenantId} autoCapitalize="none" />
-
-                <L label="companyId (header)" value={companyId} onChangeText={setCompanyId} autoCapitalize="none" />
-
-                <L label="UUID công ty" value={companyUuid} onChangeText={setCompanyUuid} autoCapitalize="none" />
-
-                <L label="employeeId (UUID)" value={employeeId} onChangeText={setEmployeeId} autoCapitalize="none" />
-
-                <L label="Bearer token" value={accessToken} onChangeText={setAccessToken} multiline autoCapitalize="none" />
-
-                <L label="x-internal-api-key" value={internalKey} onChangeText={setInternalKey} autoCapitalize="none" />
-
-                <Pressable style={[styles.btnSecondary, busy && styles.btnDisabled]} onPress={() => void onDevSubmit()} disabled={busy}>
-
-                  <Text style={styles.btnTextSecondary}>Dev sign-in</Text>
-
-                </Pressable>
-
-              </View>
-
-            ) : null}
-
-          </>
-
-        ) : null}
-
-      </ScrollView>
-
+          {qaDevLogin ? (
+            <View style={styles.devSection}>
+              <Pressable onPress={() => setShowDev((v) => !v)}>
+                <Text style={styles.devToggle}>
+                  {showDev ? 'Ẩn đăng nhập dev' : 'Đăng nhập dev (JWT / internal key)'}
+                </Text>
+              </Pressable>
+              {showDev ? (
+                <View style={styles.devBox}>
+                  <FormField
+                    label="URL máy chủ"
+                    value={baseUrl}
+                    onChangeText={setBaseUrl}
+                    autoCapitalize="none"
+                  />
+                  <FormField label="tenantId" value={tenantId} onChangeText={setTenantId} autoCapitalize="none" />
+                  <FormField label="companyId (header)" value={companyId} onChangeText={setCompanyId} autoCapitalize="none" />
+                  <FormField label="Công ty (phạm vi)" value={companyUuid} onChangeText={setCompanyUuid} autoCapitalize="none" />
+                  <FormField label="Mã nhân viên" value={employeeId} onChangeText={setEmployeeId} autoCapitalize="none" />
+                  <FormField label="Bearer token" value={accessToken} onChangeText={setAccessToken} multiline autoCapitalize="none" />
+                  <FormField label="x-internal-api-key" value={internalKey} onChangeText={setInternalKey} autoCapitalize="none" />
+                  <PrimaryButton
+                    label="Dev sign-in"
+                    onPress={() => void onDevSubmit()}
+                    disabled={busy}
+                    loading={busy}
+                    variant="secondary"
+                    testID="login-dev-submit"
+                  />
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+        </View>
+      </View>
     </KeyboardAvoidingView>
-
   );
-
 }
 
-
-
-function L(props: {
-
+function FormField(props: {
   label: string;
-
   value: string;
-
   onChangeText: (t: string) => void;
-
   multiline?: boolean;
-
   autoCapitalize?: 'none' | 'sentences';
-
   secureTextEntry?: boolean;
-
   keyboardType?: 'default' | 'email-address';
-
+  placeholder?: string;
+  testID?: string;
 }) {
-
   return (
-
     <View style={styles.field}>
-
       <Text style={styles.label}>{props.label}</Text>
-
       <TextInput
-
+        testID={props.testID}
         style={[styles.input, props.multiline && styles.inputMulti]}
-
         value={props.value}
-
         onChangeText={props.onChangeText}
-
         multiline={props.multiline}
-
         secureTextEntry={props.secureTextEntry}
-
         autoCapitalize={props.autoCapitalize ?? 'sentences'}
-
         keyboardType={props.keyboardType}
-
-        placeholderTextColor="#64748b"
-
+        placeholder={props.placeholder}
+        placeholderTextColor={colors.textSecondary}
       />
-
     </View>
-
   );
-
 }
-
-
 
 const styles = StyleSheet.create({
-
-  root: { flex: 1, backgroundColor: '#0f172a' },
-
-  scroll: { padding: 20, paddingTop: 48, gap: 12 },
-
-  title: { fontSize: 24, fontWeight: '700', color: '#f8fafc' },
-
-  hint: { color: '#94a3b8', fontSize: 13, marginBottom: 8 },
-
+  root: { flex: 1, backgroundColor: colors.background },
+  flex: { flex: 1 },
+  heroGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '52%',
+  },
+  scrollWrap: {
+    flex: 1,
+    paddingTop: spacing['3xl'],
+    paddingBottom: layout.screenPaddingBottom,
+  },
+  heroContent: {
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: layout.screenPaddingH,
+    paddingBottom: spacing['2xl'] + spacing.lg,
+  },
+  heroTitle: {
+    fontSize: typography.fontSize.title1,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.surface,
+    lineHeight: typography.lineHeight.title1,
+  },
+  heroHint: {
+    color: 'rgba(255,255,255,0.92)',
+    fontSize: typography.fontSize.body,
+    textAlign: 'center',
+    lineHeight: typography.lineHeight.body,
+    paddingHorizontal: spacing.md,
+  },
+  loginBtn: { marginTop: spacing.xs },
   field: { gap: 4 },
-
-  label: { color: '#cbd5e1', fontSize: 12 },
-
+  label: {
+    color: colors.text,
+    fontSize: typography.fontSize.footnote,
+    fontWeight: typography.fontWeight.medium,
+    lineHeight: typography.lineHeight.footnote,
+  },
   input: {
-
     borderWidth: 1,
-
-    borderColor: '#334155',
-
-    borderRadius: 8,
-
-    paddingHorizontal: 12,
-
-    paddingVertical: 10,
-
-    color: '#f8fafc',
-
-    backgroundColor: '#1e293b',
-
+    borderColor: colors.border,
+    borderRadius: radius.input,
+    paddingHorizontal: spacing.md - 4,
+    paddingVertical: spacing.sm + 2,
+    color: colors.text,
+    backgroundColor: colors.surface,
+    fontSize: typography.fontSize.body,
+    lineHeight: typography.lineHeight.body,
   },
-
   inputMulti: { minHeight: 80, textAlignVertical: 'top' },
-
-  btn: {
-
-    marginTop: 8,
-
-    backgroundColor: '#0ea5e9',
-
-    paddingVertical: 14,
-
-    borderRadius: 10,
-
-    alignItems: 'center',
-
+  devSection: {
+    marginTop: spacing.lg,
+    paddingHorizontal: layout.screenPaddingH,
   },
-
-  btnSecondary: {
-
-    marginTop: 8,
-
-    backgroundColor: '#334155',
-
-    paddingVertical: 12,
-
-    borderRadius: 10,
-
-    alignItems: 'center',
-
+  devToggle: {
+    color: colors.primary,
+    fontSize: typography.fontSize.subhead,
+    textAlign: 'center',
+    lineHeight: typography.lineHeight.subhead,
   },
-
-  btnDisabled: { opacity: 0.6 },
-
-  btnText: { color: '#0f172a', fontWeight: '700', fontSize: 16 },
-
-  btnTextSecondary: { color: '#e2e8f0', fontWeight: '600' },
-
-  devToggle: { color: '#38bdf8', marginTop: 12, fontSize: 13 },
-
-  devBox: { marginTop: 8, gap: 8, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#334155' },
-
+  devBox: {
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: radius.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
 });
-

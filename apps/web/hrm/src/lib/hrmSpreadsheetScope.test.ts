@@ -19,9 +19,9 @@ describe('hrmSpreadsheetScope', () => {
     expect(scope?.tenantId).toBe('xevn');
   });
 
-  it('reads companyId from portal JWT', () => {
+  it('reads companyId from portal JWT — main/holding return null (rollup sentinel)', () => {
     sessionStorage.setItem(STORAGE_TOKEN, JWT_MAIN);
-    expect(getPortalJwtCompanyId()).toBe('main');
+    expect(getPortalJwtCompanyId()).toBeNull();
   });
 
   it('maps iframe companyId=holding to main for Nest scope headers', () => {

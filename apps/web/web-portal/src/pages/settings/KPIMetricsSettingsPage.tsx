@@ -6,19 +6,24 @@ import {
   Badge,
   Button,
   Column,
+  MutationButton,
+  useConfirmDialog,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockKPIMetrics, KPIMetric } from '../../data/mockData';
+import { KPIMetric } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { resolveKpiMetricsSettingsFailure } from '../../utils/portalStrictMode';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const KPIMetricsSettingsPage: React.FC = () => {
   const { companies: globalCompanies } = useGlobalFilter();
   const { companies } = useCompanyFilterOptions();
   const { tenantId, companyId } = useTenantScope();
+  const { requestConfirm, confirmDialog, confirming } = useConfirmDialog();
+  const [deletePendingId, setDeletePendingId] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<KPIMetric[]>([]);
   const [loadFailed, setLoadFailed] = useState(false);
   const [usingMockFallback, setUsingMockFallback] = useState(false);
@@ -47,13 +52,10 @@ const KPIMetricsSettingsPage: React.FC = () => {
         setMetrics(rows);
       })
       .catch(() => {
-        setLoadFailed(true);
-        if (allowMockFallback()) {
-          setMetrics(mockKPIMetrics);
-          setUsingMockFallback(true);
-        } else {
-          setMetrics([]);
-        }
+        const failure = resolveKpiMetricsSettingsFailure();
+        setLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setMetrics(failure.rows);
       });
   }, [tenantId, companyId]);
 
@@ -132,11 +134,22 @@ const KPIMetricsSettingsPage: React.FC = () => {
     resetForm();
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa metric KPI này? Điều này có thể ảnh hưởng đến các báo cáo đang sử dụng.')) {
-      await deleteBusinessMasterItem('kpi_metrics', id, tenantId, companyId);
-      setMetrics((prev) => prev.filter((m) => m.id !== id));
-    }
+  const handleDelete = (metric: KPIMetric) => {
+    requestConfirm({
+      title: 'Xóa metric KPI',
+      description: `Bạn có chắc chắn muốn xóa metric «${metric.name}»? Điều này có thể ảnh hưởng đến các báo cáo đang sử dụng.`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: async () => {
+        setDeletePendingId(metric.id);
+        try {
+          await deleteBusinessMasterItem('kpi_metrics', metric.id, tenantId, companyId);
+          setMetrics((prev) => prev.filter((m) => m.id !== metric.id));
+        } finally {
+          setDeletePendingId(null);
+        }
+      },
+    });
   };
 
   const getCompanyName = (companyId: string) => {
@@ -264,12 +277,16 @@ const KPIMetricsSettingsPage: React.FC = () => {
           >
             <Edit2 size={16} />
           </button>
-          <button
-            onClick={() => handleDelete(item.id)}
-            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+          <MutationButton
+            pending={deletePendingId === item.id || confirming}
+            variant="danger"
+            iconOnly
+            onClick={() => handleDelete(item)}
+            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors border-0 bg-transparent"
+            aria-label="Xóa metric KPI"
           >
             <Trash2 size={16} />
-          </button>
+          </MutationButton>
         </div>
       ),
     },
@@ -289,7 +306,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
         }
       />
       <ApiLoadBanner
-        loadFailed={loadFailed && !allowMockFallback()}
+        loadFailed={loadFailed}
         usingMockFallback={usingMockFallback}
         message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />
@@ -546,6 +563,7 @@ const KPIMetricsSettingsPage: React.FC = () => {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 };

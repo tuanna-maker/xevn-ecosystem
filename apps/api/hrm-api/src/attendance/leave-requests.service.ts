@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  normalizePayrollListCompanyId,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
 } from '../common/hrm-list-scope';
@@ -34,7 +35,25 @@ type LeaveRow = {
   handover_tasks: string | null;
   approver_employee_id: string | null;
   rejected_reason: string | null;
+  attachment_url: string | null;
 };
+
+const LEAVE_ATTACHMENT_URL_PATTERN = /^\/api\/hrm\/files\/[a-zA-Z0-9_-]+\/.+$/;
+
+function assertValidLeaveAttachmentUrl(url: string | undefined): string | null {
+  const trimmed = url?.trim();
+  if (!trimmed) {
+    return null;
+  }
+  if (!LEAVE_ATTACHMENT_URL_PATTERN.test(trimmed)) {
+    throw new ApiException(
+      'HRM-LEAVE-VAL-ATT',
+      'attachment_url must be a relative path under /api/hrm/files/{company_scope}/',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  return trimmed;
+}
 
 @Injectable()
 export class LeaveRequestsService {
@@ -42,6 +61,13 @@ export class LeaveRequestsService {
     private readonly db: HrmDbService,
     private readonly fanout: AttendanceEventFanoutService,
   ) {}
+
+  private async ensureSchema() {
+    await this.db.query(`
+      ALTER TABLE public.leave_requests
+      ADD COLUMN IF NOT EXISTS attachment_url TEXT NULL;
+    `);
+  }
 
   private toPayload(row: LeaveRow): LeaveRequestRealtimePayload {
     return {
@@ -64,6 +90,7 @@ export class LeaveRequestsService {
   }
 
   async createLeaveRequest(body: CreateLeaveRequestDto) {
+    await this.ensureSchema();
     if (body.start_date > body.end_date) {
       throw new ApiException(
         'HRM-LEAVE-VAL-DATES',
@@ -71,16 +98,17 @@ export class LeaveRequestsService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    const attachmentUrl = assertValidLeaveAttachmentUrl(body.attachment_url);
     const id = randomUUID();
     const res = await this.db.query<LeaveRow>(
       `
         INSERT INTO public.leave_requests (
           id, company_id, employee_id, leave_type, start_date, end_date, reason, status,
           employee_code, employee_name, department, position, total_days, handover_to, handover_tasks,
-          requested_at
+          attachment_url, requested_at
         ) VALUES (
           $1::uuid, $2::uuid, $3::uuid, $4, $5::date, $6::date, $7, 'pending',
-          $8, $9, $10, $11, $12, $13, $14, NOW()
+          $8, $9, $10, $11, $12, $13, $14, $15, NOW()
         )
         RETURNING *;
       `,
@@ -99,6 +127,7 @@ export class LeaveRequestsService {
         body.total_days,
         body.handover_to?.trim() ?? null,
         body.handover_tasks?.trim() ?? null,
+        attachmentUrl,
       ],
     );
     const row = res.rows[0];
@@ -115,15 +144,12 @@ export class LeaveRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    await this.ensureSchema();
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
     const params: unknown[] = [];
     const filters: string[] = [];
-    if (scope.masterTenantPartition || scope.memberTenantId) {
-      pushWorkforceEmployeeScopeFilter(filters, params, scope, 'lr.employee_id');
-    } else {
-      params.push(query.company_id);
-      filters.push(`lr.company_id = $${params.length}::uuid`);
-    }
+    pushWorkforceEmployeeScopeFilter(filters, params, scope, 'lr.employee_id');
     let sql = `SELECT lr.* FROM public.leave_requests lr WHERE ${filters.join(' AND ')}`;
     if (query.status?.trim()) {
       params.push(query.status.trim());

@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Building2, GitBranch, LayoutGrid, Network, ReceiptText, Target } from 'lucide-react';
+import { Building2, LayoutGrid, Network, ReceiptText, Target } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 export function Sidebar() {
@@ -11,9 +11,7 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 z-30 flex h-dvh w-64 flex-col border-r border-black/[0.06] bg-white/72 backdrop-blur-nav shadow-glass">
       <div className="flex items-center gap-3 border-b border-black/[0.06] px-5 py-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-xevn-primary to-blue-600 text-white shadow-md">
-          <GitBranch className="h-5 w-5" />
-        </div>
+        <img src="/xevn-logo.png" alt="XeVN" className="h-10 w-10 object-contain" />
         <div>
           <div className="text-sm font-semibold tracking-tight text-xevn-text">X-BOS</div>
           <div className="text-xs text-xevn-muted">Dynamic DNA Engine</div>

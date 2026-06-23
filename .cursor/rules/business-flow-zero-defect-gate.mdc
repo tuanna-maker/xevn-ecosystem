@@ -39,8 +39,8 @@ Mục tiêu: **không** báo «xong» khi user vào màn nghiệp vụ vẫn th�
 | Luồng | Account |
 |-------|---------|
 | Tập đoàn / Command Center / member units | `ceo@xe.vn` / `Xevn@2026` |
-| Mobile UAT 1000 | `uat.nv####@xe.vn` / `xevn-uat-2026` |
-| Công ty con only | `du-lich.ceo@xe.vn` (expect 403 trên tập đoàn) |
+| CEO công ty thành viên (portal) | `du-lich.ceo@xe.vn` / `Xevn@2026` (expect 403/409 rollup tập đoàn) |
+| Mobile UAT 1000 | `uat.nv####@xe.vn` / `xevn-uat-2026` (mobile only) |
 
 ## Tham chiếu
 

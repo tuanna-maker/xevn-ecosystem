@@ -12,4 +12,5 @@ Khi user yêu cầu PM tự điều phối team (hoặc mặc định trong repo
 
 Cấm: kết thúc chỉ «PM sẽ…»; lặp gate đã PASS; đuổi catalog thay Q1–Q7; **hỏi sponsor chọn ưu tiên** (device/PROD/docs) — PM tự xếp hạng theo charter § Thứ tự ưu tiên mặc định.
 
-Charter: `docs/program/PM_AUTONOMOUS_CHARTER.md`
+Charter: `docs/program/PM_AUTONOMOUS_CHARTER.md`  
+SoT hành vi + quét phạm vi: `.cursor/rules/pm-self-directed-scope-orchestration.mdc` (U30)

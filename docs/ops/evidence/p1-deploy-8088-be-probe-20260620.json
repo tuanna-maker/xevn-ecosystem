@@ -1,0 +1,37 @@
+{
+  "work_item_id": "P1-WEB-ACCEPTANCE-FIX-WAVE-01-DEPLOY",
+  "portal": "http://14.225.217.232:8088",
+  "executed_at": "2026-06-20T01:29:40.093Z",
+  "stamp": 1781918975074,
+  "rows": [
+    {
+      "uf_id": "UF-XBOS-12",
+      "pass": true,
+      "http": 201,
+      "code": "XBOS-ORG-201",
+      "network": "POST 201 → PUT 200 → GET tree?legal_entity_id= found=true nodes=26",
+      "dev8088": "🟢"
+    },
+    {
+      "uf_id": "UF-XBOS-15",
+      "pass": true,
+      "http": 201,
+      "code": "HRM-SET-209",
+      "network": "POST extension-items 201 → GET catalogs found=true",
+      "dev8088": "🟢"
+    },
+    {
+      "uf_id": "UF-HRM-12",
+      "pass": true,
+      "http": 201,
+      "code": "HRM-REC-201",
+      "network": "POST 201 → PATCH/PUT 200 (HRM-REC-200) → GET status=on_hold",
+      "dev8088": "🟢"
+    }
+  ],
+  "summary": {
+    "tested": 3,
+    "pass": 3,
+    "fail": 0
+  }
+}

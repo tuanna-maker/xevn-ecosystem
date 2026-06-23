@@ -18,16 +18,15 @@ import {
   Bell,
 } from 'lucide-react';
 import { Container } from '@xevn/ui';
-import {
-  mockExecutiveDashboardStats,
-  mockModuleCards,
-  mockAlerts,
-  type AlertItem,
-} from '../../data/mockExecutiveDashboardData';
+import { mockModuleCards, type AlertItem } from '../../data/mockExecutiveDashboardData';
+import { getPortalMockExecutiveDashboardStats } from '../../data/portal-dev-seed';
 import { PORTAL_UNLOCK_STORAGE_KEY } from '../../constants/portal-flow';
 import { listWorkflowInstances, listReportingRoutes, listWorkflowTasks } from '../../integrations/workflowEngineApi';
 import { fetchPortalAlerts } from '../../integrations/portalAlertsApi';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import {
+  isExecutiveDashboardDemoLayoutEnabled,
+  resolveExecutiveDashboardAlertsOnEmpty,
+} from '../../utils/portalStrictMode';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import { useKpiDashboardSnapshot } from '../../hooks/useKpiDashboardSnapshot';
 import { useCommandCenterKpiRail } from '../../hooks/useCommandCenterKpiRail';
@@ -63,7 +62,7 @@ const ExecutiveDashboardPage: React.FC = () => {
   const { tenantId, companyId } = useTenantScope();
   const [rollupCount, setRollupCount] = useState<number | null>(null);
   const [pendingTasks, setPendingTasks] = useState<number | null>(null);
-  const [cockpitAlerts, setCockpitAlerts] = useState<AlertItem[]>(mockAlerts);
+  const [cockpitAlerts, setCockpitAlerts] = useState<AlertItem[]>([]);
   const [alertsFromApi, setAlertsFromApi] = useState(false);
   const {
     rows: kpiRows,
@@ -72,7 +71,8 @@ const ExecutiveDashboardPage: React.FC = () => {
     isLoading: kpiLoading,
   } = useKpiDashboardSnapshot(tenantId, companyId, 'all');
   const executiveKpiRail = useCommandCenterKpiRail('bod', tenantId, companyId);
-  const showDemoCockpitLayout = allowMockFallback();
+  const showDemoCockpitLayout = isExecutiveDashboardDemoLayoutEnabled();
+  const demoStats = getPortalMockExecutiveDashboardStats();
 
   const kpiCompliancePercent = useMemo(() => {
     if (!kpiRows.length) return null;
@@ -102,8 +102,8 @@ const ExecutiveDashboardPage: React.FC = () => {
             })),
           );
           setAlertsFromApi(true);
-        } else if (!allowMockFallback()) {
-          setCockpitAlerts([]);
+        } else {
+          setCockpitAlerts(resolveExecutiveDashboardAlertsOnEmpty());
           setAlertsFromApi(true);
         }
       })
@@ -214,7 +214,7 @@ const ExecutiveDashboardPage: React.FC = () => {
         </div>
         {/* ROW 2: Top Metrics */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          {showDemoCockpitLayout ? (
+          {showDemoCockpitLayout && demoStats ? (
           <>
           {/* Tổng doanh thu */}
           <div className="relative overflow-hidden rounded-2xl shadow-xl transform hover:-translate-y-1 transition-transform duration-300">
@@ -226,13 +226,13 @@ const ExecutiveDashboardPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
                   <TrendingUp className="w-4 h-4" />
-                  <span>{mockExecutiveDashboardStats.revenueTrend}%</span>
+                  <span>{demoStats.revenueTrend}%</span>
                 </div>
               </div>
               <p className="text-[10px] uppercase tracking-wide text-white/60 mb-1">Demo layout</p>
               <h3 className="text-sm font-semibold text-white/80 mb-2">Tổng doanh thu</h3>
               <p className="text-3xl font-black text-white mb-2">
-                {(mockExecutiveDashboardStats.totalRevenue / 1e12).toFixed(1)} <span className="text-lg">Tỷ VND</span>
+                {(demoStats.totalRevenue / 1e12).toFixed(1)} <span className="text-lg">Tỷ VND</span>
               </p>
               <div className="mt-2">
                 <Sparkline
@@ -256,12 +256,12 @@ const ExecutiveDashboardPage: React.FC = () => {
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
-                  <span>{mockExecutiveDashboardStats.grossMargin}%</span>
+                  <span>{demoStats.grossMargin}%</span>
                 </div>
               </div>
               <h3 className="text-sm font-semibold text-white/80 mb-2">Lợi nhuận gộp</h3>
               <p className="text-3xl font-black text-white mb-2">
-                {(mockExecutiveDashboardStats.grossProfit / 1e12).toFixed(1)} <span className="text-lg">Tỷ VND</span>
+                {(demoStats.grossProfit / 1e12).toFixed(1)} <span className="text-lg">Tỷ VND</span>
               </p>
               <div className="mt-2">
                 <Sparkline data={[70, 75, 72, 78, 80, 82, 85]} color="#ffffff" />
@@ -278,15 +278,15 @@ const ExecutiveDashboardPage: React.FC = () => {
                   <Truck className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
-                  <span>{mockExecutiveDashboardStats.fleetHealth}%</span>
+                  <span>{demoStats.fleetHealth}%</span>
                 </div>
               </div>
               <h3 className="text-sm font-semibold text-white/80 mb-2">Xe khả dụng</h3>
               <p className="text-3xl font-black text-white mb-2">
-                {mockExecutiveDashboardStats.availableVehicles} <span className="text-lg">chiếc</span>
+                {demoStats.availableVehicles} <span className="text-lg">chiếc</span>
               </p>
               <div className="w-full bg-white/20 rounded-full h-2 mt-4">
-                <div className="bg-white h-2 rounded-full" style={{ width: `${mockExecutiveDashboardStats.fleetHealth}%` }}></div>
+                <div className="bg-white h-2 rounded-full" style={{ width: `${demoStats.fleetHealth}%` }}></div>
               </div>
             </div>
           </div>
@@ -300,21 +300,21 @@ const ExecutiveDashboardPage: React.FC = () => {
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
-                  <span>{kpiCompliancePercent ?? mockExecutiveDashboardStats.policyCompliance}%</span>
+                  <span>{kpiCompliancePercent ?? demoStats.policyCompliance}%</span>
                 </div>
               </div>
               <h3 className="text-sm font-semibold text-white/80 mb-2">
                 {kpiCompliancePercent != null ? 'Đạt KPI trung bình' : 'Tuân thủ quy trình'}
               </h3>
               <p className="text-3xl font-black text-white mb-2">
-                {kpiCompliancePercent ?? mockExecutiveDashboardStats.policyCompliance}{' '}
+                {kpiCompliancePercent ?? demoStats.policyCompliance}{' '}
                 <span className="text-lg">%</span>
               </p>
               <div className="w-full bg-white/20 rounded-full h-2 mt-4">
                 <div
                   className="bg-white h-2 rounded-full"
                   style={{
-                    width: `${kpiCompliancePercent ?? mockExecutiveDashboardStats.policyCompliance}%`,
+                    width: `${kpiCompliancePercent ?? demoStats.policyCompliance}%`,
                   }}
                 />
               </div>
@@ -331,12 +331,12 @@ const ExecutiveDashboardPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
                   <TrendingUp className="w-4 h-4" />
-                  <span>{mockExecutiveDashboardStats.employeeChange}%</span>
+                  <span>{demoStats.employeeChange}%</span>
                 </div>
               </div>
               <h3 className="text-sm font-semibold text-white/80 mb-2">Tổng nhân sự</h3>
               <p className="text-3xl font-black text-white mb-2">
-                {mockExecutiveDashboardStats.totalEmployees} <span className="text-lg">người</span>
+                {demoStats.totalEmployees} <span className="text-lg">người</span>
               </p>
               <div className="mt-2">
                 <Sparkline data={[1200, 1210, 1220, 1215, 1230, 1240, 1250]} color="#ffffff" />

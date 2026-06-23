@@ -1,0 +1,16 @@
+{
+  "work_item_id": "PCOMP-W8-MOB-ESS-LEAVE-01",
+  "date": "2026-06-08",
+  "app_api": "http://10.0.2.2:28001",
+  "host_api": "http://127.0.0.1:28001",
+  "journeys": {
+    "J-MOB-06-home": false,
+    "J-MOB-23": false,
+    "J-MOB-24": false
+  },
+  "xml_snippets": {
+    "home": ""
+  },
+  "pass": false,
+  "pass_count": 0
+}

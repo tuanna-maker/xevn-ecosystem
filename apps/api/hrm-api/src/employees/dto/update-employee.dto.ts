@@ -22,4 +22,9 @@ export class UpdateEmployeeDto {
   @IsOptional()
   @IsObject()
   custom_fields?: Record<string, string>;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  avatar_url?: string | null;
 }

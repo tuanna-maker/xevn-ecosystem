@@ -3,8 +3,8 @@
 | Thuộc tính | Giá trị |
 |------------|---------|
 | **Mã tài liệu** | HDSD-XEVN-PILOT-01 |
-| **Phiên bản** | 1.1 |
-| **Ngày** | 22/05/2026 |
+| **Phiên bản** | 1.3 |
+| **Ngày** | 05/06/2026 |
 | **Trạng thái** | Bản pilot — vận hành & nghiệm thử |
 | **Đối tượng** | Ban TGĐ, phòng Nhân sự, IT vận hành pilot |
 | **Tác giả** | UNICOM — AI Software Factory |
@@ -25,6 +25,7 @@
 6. [Phân quyền và phạm vi công ty](#6-phân-quyền-và-phạm-vi-công-ty)
 7. [Mã lỗi thường gặp và xử lý](#7-mã-lỗi-thường-gặp-và-xử-lý)
 8. [Phụ lục](#8-phụ-lục)
+9. [Giới hạn bản UAT](#9-giới-hạn-bản-uat)
 
 ---
 
@@ -88,6 +89,22 @@ flowchart LR
 ```
 
 **Luồng dữ liệu tóm tắt:** người dùng đăng nhập → hệ thống cấp phiên (token) gắn **công ty được phép** → mọi thao tác đọc/ghi chỉ trong phạm vi đó. Mobile **không** yêu cầu nhập mã công ty thủ công; cổng web có thể yêu cầu **chọn tenant** sau đăng nhập nếu một tài khoản thuộc nhiều công ty.
+
+### 2.2 Môi trường pilot HTTPS (đã triển khai)
+
+Ban TGĐ và phòng Nhân sự có thể **chạy thử trực tiếp** trên máy chủ pilot — không bắt buộc cài đặt local nếu chỉ nghiệm thu nghiệp vụ:
+
+| Mục | Giá trị |
+|-----|---------|
+| **URL cổng Web** | `https://14-225-217-232.nip.io` |
+| **Đăng nhập cổng** | `ceo@xe.vn` / `Xevn@2026` |
+| **CEO công ty thành viên (phạm vi)** | `du-lich.ceo@xe.vn` / `Xevn@2026` |
+| **HRM Mobile (API pilot)** | `EXPO_PUBLIC_HRM_API_BASE_URL=https://14-225-217-232.nip.io` |
+| **Mobile UAT 1.000** | `uat.nv####@xe.vn` / `xevn-uat-2026` |
+
+**Đạt:** mở Command Center, vào tab nhúng Nhân sự, đăng nhập mobile — không lỗi 500/409 phạm vi trên luồng chính.
+
+**Chưa sẵn sàng:** tên miền production `portal.xe.vn` — xem mục **9. Giới hạn bản UAT**.
 
 ---
 
@@ -290,9 +307,9 @@ Mở trình duyệt theo URL dev server in ra (thường `http://127.0.0.1:5175`
 
 | Loại tài khoản | Mật khẩu | Khi nào dùng |
 |----------------|----------|--------------|
-| Nhân sự UAT 1.000 (`uat.nv####@xe.vn`) | `xevn-uat-2026` | Sau seed mục 4.1; đăng nhập mobile và UAT tự động |
-| Pilot Du lịch — mobile (`du-lich.*@xe.vn`) | `xevn-pilot` | Bộ tài khoản Du lịch; **không** dùng cho email `uat.nv*` |
-| Cổng Web / CEO pilot (`ceo@xe.vn`, …) | `Xevn@2026` | Đăng nhập Command Center (mục 4.7, 5.5) |
+| Nhân sự UAT 1.000 (`uat.nv####@xe.vn`) | `xevn-uat-2026` | **Chỉ HRM Mobile** sau seed mục 4.1; UAT tự động — **không** dùng trên cổng web |
+| Cổng Web — tập đoàn & CEO thành viên (`ceo@xe.vn`, `du-lich.ceo@xe.vn`, `du-lich.hr@xe.vn`, …) | `Xevn@2026` | Đăng nhập Command Center (mục 4.7, 5.5); `du-lich.ceo` **không** dùng `xevn-uat-2026` |
+| Pilot Du lịch — mobile (`du-lich.*@xe.vn`, trừ `uat.nv*`) | `xevn-pilot` | HRM Mobile Du lịch; khác mật khẩu cổng web |
 
 ### 4.6 Đăng nhập HRM Mobile (tài khoản UAT — không phải production)
 
@@ -471,12 +488,30 @@ Phụ lục này dành cho **IT** khi làm việc trong repository; không in ri
 
 ---
 
+## 9. Giới hạn bản UAT
+
+Tài liệu này mô tả bản **sẵn sàng chạy thử** Giai đoạn 1 — **không** đồng nghĩa production hoàn tất hoặc đóng 100% chương trình Excellence.
+
+| # | Giới hạn | Ý nghĩa với người dùng |
+|---|----------|------------------------|
+| G-01 | **Production** `portal.xe.vn` chưa mở | Chỉ truy cập qua `https://14-225-217-232.nip.io` cho đến khi cutover DNS/TLS |
+| G-02 | **Đồng bộ mã nguồn** (git parity) | Bản vá trên pilot có thể chưa có trên nhánh phát hành chính — IT cần đối chiếu trước khi tái triển khai |
+| G-03 | Tiêu chí **T5** (benchmark mật độ menu HRM) **hoãn** | UAT slice không bị chặn bởi T5; lên lịch wave Excellence sau production |
+| G-04 | SRS **373** FR vs Giai đoạn 1 **245** UC | Đặc tả đầy đủ toàn hệ; go-live Giai đoạn 1 chỉ đối chiếu ma trận Phase 1 |
+| G-05 | Logistic nghiệp vụ (đơn/chuyến/app lái xe) | Thuộc Giai đoạn 2 — ngoài phạm vi chạy thử hiện tại |
+
+**Kết luận:** Command Center + nhúng HRM + HRM Mobile **đủ điều kiện chạy thử có kiểm chứng** trên pilot HTTPS. Production và Excellence T5 là các mốc kế tiếp.
+
+---
+
 ## Kiểm soát thay đổi
 
 | Phiên bản | Ngày | Mô tả |
 |-----------|------|--------|
 | 1.0 | 22/05/2026 | Phát hành pilot — DOC-HDSD-PILOT-01 |
 | 1.1 | 22/05/2026 | Rà soát BA — DOC-HDSD-PILOT-01-REV (migrate, mật khẩu, khách hóa narrative) |
+| 1.2 | 04/06/2026 | C-MEMPWD-01 — tách mật khẩu cổng web (`Xevn@2026`, gồm `du-lich.ceo`) vs mobile UAT (`xevn-uat-2026` chỉ `uat.nv####`) |
+| 1.3 | 05/06/2026 | P1-HANDOFF-BA-01 — URL pilot `nip.io`, giới hạn UAT (production, git parity, T5 hoãn) |
 
 ---
 

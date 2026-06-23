@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AssetRequestModule } from './asset-request/asset-request.module';
 import { AssetsController } from './assets/assets.controller';
@@ -24,6 +25,7 @@ import { RaciGovernanceModule } from './raci-governance/raci-governance.module';
 import { AuthModule } from './auth/auth.module';
 import { LegalEntityProfileModule } from './legal-entity-profile/legal-entity-profile.module';
 import { CommandCenterModule } from './command-center/command-center.module';
+import { XbosDbWriteAuditInterceptor } from './platform/xbos-db-write-audit.interceptor';
 
 @Module({
   imports: [
@@ -56,6 +58,10 @@ import { CommandCenterModule } from './command-center/command-center.module';
     BusinessMasterService,
     KpiEngineService,
     AlertsService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: XbosDbWriteAuditInterceptor,
+    },
   ],
 })
 export class AppModule {}

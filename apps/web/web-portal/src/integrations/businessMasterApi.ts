@@ -1,14 +1,23 @@
 import { resolveIdentityScope } from './identityScope';
-import { resolveXbosApiCompanyIdForPath } from './commandCenterScope';
+import {
+  resolveXbosApiCompanyIdForPath,
+  resolveXbosCommandCenterCatalogCompanyId,
+} from './commandCenterScope';
 import { xbosFetch, xbosGetData } from './xbosHttp';
+
+const COMMAND_CENTER_CATALOGS_DOMAIN = 'command_center_catalogs';
 
 function scopeHeaders(
   apiPath: string,
   tenantIdHint?: string | null,
   companyHint?: string | null,
+  domain?: string,
 ) {
   const scope = resolveIdentityScope(tenantIdHint ?? null, companyHint ?? null);
-  const companyId = resolveXbosApiCompanyIdForPath(apiPath, scope.tenantId, companyHint ?? scope.companyId);
+  const companyId =
+    domain === COMMAND_CENTER_CATALOGS_DOMAIN
+      ? resolveXbosCommandCenterCatalogCompanyId(scope.tenantId, companyHint ?? scope.companyId)
+      : resolveXbosApiCompanyIdForPath(apiPath, scope.tenantId, companyHint ?? scope.companyId);
   return { tenantId: scope.tenantId, companyId };
 }
 
@@ -18,7 +27,7 @@ export async function listBusinessMasterItems<T>(
   companyHint?: string | null,
 ): Promise<T[]> {
   const path = `/business-master/${encodeURIComponent(domain)}/items`;
-  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint);
+  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint, domain);
   const search = new URLSearchParams({ tenantId, companyId });
   try {
     const data = await xbosGetData<{ items?: T[] } | T[]>(
@@ -44,7 +53,7 @@ export async function upsertBusinessMasterItem(
   companyHint?: string | null,
 ) {
   const path = `/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`;
-  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint);
+  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint, domain);
   try {
     return await xbosFetch(path, {
       method: 'PUT',
@@ -66,7 +75,7 @@ export async function deleteBusinessMasterItem(
   companyHint?: string | null,
 ) {
   const path = `/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`;
-  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint);
+  const { tenantId, companyId } = scopeHeaders(path, tenantIdHint, companyHint, domain);
   try {
     return await xbosFetch(path, {
       method: 'DELETE',

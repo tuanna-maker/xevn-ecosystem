@@ -1,0 +1,30 @@
+{
+  "work_item_id": "PCOMP-W8-MOB-HOME-PORTAL-QA-02",
+  "date": "2026-06-08",
+  "device": "emulator-5554",
+  "apk": "vn.xevn.hrm.mobile (existing portal-w8 install)",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "login": {
+    "pass": true,
+    "raw": "{\n  \"work_item_id\": \"PCOMP-W7-MOB-DEVICE-LOGIN-01\",\n  \"login_method\": \"xevn_qa_login_deep_link\",\n  \"email\": \"uat.nv0001@xe.vn\",\n  \"api_base\": \"https://14-225-217-232.nip.io\",\n  \"home_reached\": true,\n  \"fatal_logcat\": false,\n  \"pass\": true\n}\n",
+    "err": ""
+  },
+  "j_mob_14": {
+    "feed_visible": true,
+    "cta_found": true,
+    "cta_coords": {
+      "x": 540,
+      "y": 2117
+    },
+    "detail_pass": true,
+    "note": "tap (540,2117) on CTA → PayslipDetail; markers=true"
+  },
+  "c_w8_device_02": "CLOSED",
+  "c_w8_device_04": "qa-mobile-login-intent.mjs dismissPostNotifications",
+  "x_company_id_main": false,
+  "fatal_logcat": false,
+  "pass": true,
+  "ack_status": "PASS_TO_PM",
+  "screens_dir": "docs/qa/evidence/pcomp-w8-mob-portal-jmob14-screens/"
+}

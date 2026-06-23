@@ -24,9 +24,24 @@ export function logApiStart(scope: string, method: string, url: string): number 
   return performance.now();
 }
 
-export function logApiSuccess(scope: string, method: string, url: string, startedAt: number, status: number) {
+export function logApiSuccess(
+  scope: string,
+  method: string,
+  url: string,
+  startedAt: number,
+  status: number,
+  responseCode?: string,
+) {
   if (import.meta.env.DEV) {
     const durationMs = Math.round(performance.now() - startedAt);
+    const mutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase());
+    if (mutating) {
+      const codePart = responseCode?.trim() ? ` code=${responseCode.trim()}` : '';
+      console.info(
+        `${prefix(scope)} [DB-WRITE OK] ${method} ${url}${codePart} (HTTP ${status}, ${durationMs}ms)`,
+      );
+      return;
+    }
     console.info(`${prefix(scope)} ✓ ${method} ${url} (${status}, ${durationMs}ms)`);
   }
 }

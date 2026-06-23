@@ -1,0 +1,87 @@
+{
+  "work_item_id": "PCOMP-W8-MOB-U57-LOGO-01-QA",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 71784199,
+  "apk_sha256": "913478ADC0B27FE686E8FFB5465B9ECEE02A2E52F9C5C3431B09EFA90522B8AB",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "results": [
+    {
+      "id": "L0-SHA",
+      "pass": true,
+      "note": "SHA OK 71784199 B"
+    },
+    {
+      "id": "L0-INSTALL",
+      "pass": true,
+      "note": "install Success"
+    },
+    {
+      "id": "U57-INTRO",
+      "pass": true,
+      "note": "intro XeVN=true fatal=false frames=4"
+    },
+    {
+      "id": "U57-LOGIN-LOGO",
+      "pass": true,
+      "note": "login-xevn-logo=true loginForm=true"
+    },
+    {
+      "id": "LOGIN",
+      "pass": true,
+      "note": "home reached",
+      "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": true,
+      "note": "whos-out section present (no tap target)"
+    },
+    {
+      "id": "MOB-UX-08-SCROLL",
+      "pass": true,
+      "note": "portal→hub→ESS yPortal=948 yHub=1417 yEss=1591"
+    },
+    {
+      "jId": "J-MOB-25",
+      "pass": true,
+      "note": "8=true 3=true no404=true"
+    },
+    {
+      "id": "SCOPE-AUDIT",
+      "pass": true,
+      "note": "x-company-id main=false"
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "Get-FileHash hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell pm clear vn.xevn.hrm.mobile",
+      "exit": 0
+    },
+    {
+      "cmd": "adb install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "cold boot am start + intro frames",
+      "exit": 0
+    },
+    {
+      "cmd": "xevn://qa-login deep link",
+      "exit": 0
+    }
+  ],
+  "logcat_audit": {
+    "hasMainHeader": false,
+    "fatal_boot": false
+  },
+  "pass": true,
+  "ack_status": "PASS_TO_PM"
+}

@@ -92,7 +92,7 @@ A= accountable, R= responsible, C= consulted, I= informed
 ## 6. Điều kiện tiên quyết UAT
 
 1. `deploy/xevn-ecosystem/.env` — DB credentials đúng
-2. `pnpm run qc:dev-stack` → HRM + XBOS + portal 200
+2. `pnpm run qc:dev-stack` → HRM + XBOS + portal 200 (local startup: `docs/ops/LOCAL_DEV_STACK_L0.md`)
 3. Seed: `seed:hrm:1000-uat` + `seed:hrm:fidelity` (DB trống)
 4. `pnpm run verify:hrm:menu-density` → 7/7
 5. Account: `docs/hrm/HUONG_DAN_DANG_NHAP_PILOT.md`

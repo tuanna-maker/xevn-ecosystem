@@ -16,6 +16,9 @@ srs:
   uc_catalog: docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md
   uc_count: 373
   output_html: docs/client-delivery/02_SRS_XeVN_OS.html
+  srs_version: "2.2"
+  brd_version: "1.1"
+  handoff_evidence: docs/client/PHASE1_UAT_DELIVERABLE_HANDOFF_20260605.md
   standards: docs/standards/BRD_SRS_WRITING_STANDARDS.md
   overrides_dir: docs/srs-overrides/
   override_template: docs/srs-overrides/_TEMPLATE_FR.md

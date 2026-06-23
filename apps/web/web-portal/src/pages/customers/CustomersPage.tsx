@@ -11,10 +11,10 @@ import {
   type Column,
 } from '@xevn/ui';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { mockCustomers, type Customer } from '../../data/mock-data';
+import { type Customer } from '../../data/mock-data';
 import { listBusinessMasterItems } from '../../integrations/businessMasterApi';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import { resolveCustomersPageFailure } from '../../utils/portalStrictMode';
 
 const CustomersPage: React.FC = () => {
   const { tenantId, companyId, isMasterContext } = useTenantScope();
@@ -30,13 +30,10 @@ const CustomersPage: React.FC = () => {
         setCustomers(rows);
       })
       .catch(() => {
-        setLoadFailed(true);
-        if (allowMockFallback()) {
-          setCustomers(mockCustomers);
-          setUsingMockFallback(true);
-        } else {
-          setCustomers([]);
-        }
+        const failure = resolveCustomersPageFailure();
+        setLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setCustomers(failure.rows);
       });
   }, [tenantId, companyId]);
 

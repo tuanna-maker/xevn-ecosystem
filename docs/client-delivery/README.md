@@ -14,6 +14,7 @@
 | `03_Thuong_mai_XeVN_OS.pptx` | PowerPoint | Deck thương mại (~26 slide, theo BRD) |
 | `03_DAN_Y_THUONG_MAI_XeVN_OS.md` | Markdown | Dàn ý slide + hướng dẫn tùy chỉnh |
 | `03_HUONG_DAN_SU_DUNG_VA_CHAY_THU_XEVN.md` | Markdown | **HDSD pilot** — chuẩn bị môi trường, chạy thử, luồng nghiệp vụ, xử lý sự cố |
+| `../client/PHASE1_UAT_DELIVERABLE_HANDOFF_20260605.md` | Markdown | **Bàn giao UAT GĐ1** — evidence paths, giới hạn trung thực (05/06/2026) |
 
 **TechSpec nội bộ (sau SRS):** [`docs/ecosystem/TECHSPEC_HE_SINH_THAI_XEVN.md`](../ecosystem/TECHSPEC_HE_SINH_THAI_XEVN.md) — thiết kế kỹ thuật chi tiết toàn hệ.
 

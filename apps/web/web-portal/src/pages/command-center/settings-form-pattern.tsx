@@ -129,9 +129,12 @@ export const NAV_RAIL_MODULE_CAPTION_ACTIVE_CLASS =
 export const NAV_RAIL_MODULE_CAPTION_DISABLED_CLASS =
   'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-slate-400 break-words hyphens-auto';
 
-/** Chiều ngang cột Sub-sidebar — rem để theo VITE_UI_DENSITY */
+/** Chiều ngang cột Sub-sidebar (Cài đặt + HRM con) — đủ nhãn dài tiếng Việt */
 export const NAV_SUBSIDEBAR_WIDTH_CLASS =
-  'lg:w-[17.5rem] lg:min-w-[17.5rem] lg:max-w-[17.5rem] max-[1199px]:lg:w-[13.75rem] max-[1199px]:lg:min-w-[13.75rem] max-[1199px]:lg:max-w-[13.75rem]';
+  'lg:w-[18rem] lg:min-w-[18rem] lg:max-w-[18rem] max-[1199px]:lg:w-[15rem] max-[1199px]:lg:min-w-[15rem] max-[1199px]:lg:max-w-[15rem]';
+
+/** Sub-sidebar thu icon (HRM toggle) */
+export const NAV_SUBSIDEBAR_WIDTH_COLLAPSED_CLASS = 'w-12 min-w-12 max-w-12';
 
 /** Rail: nhãn nhóm trên cùng ("Phân hệ") */
 export const NAV_RAIL_GROUP_LABEL_CLASS =

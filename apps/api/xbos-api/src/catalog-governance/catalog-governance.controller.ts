@@ -26,7 +26,7 @@ export class CatalogGovernanceController {
     }
   }
 
-  /** Group CEO reads — JWT `main` maps to legal partition `holding` (ADR C2). */
+  /** Group CEO reads and catalog approval acts — JWT `main` maps to legal partition `holding` (ADR C2). */
   private resolveGroupReadScope(
     authorization: string | undefined,
     tenantId?: string,
@@ -149,7 +149,7 @@ export class CatalogGovernanceController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    this.resolveGroupWriteScope(authorization, tenantId, companyId);
+    this.resolveGroupReadScope(authorization, tenantId, companyId);
     const reviewer = reviewerUserId?.trim() || 'ceo@xe.vn';
     const data = await this.governance.actOnTask(taskId, 'approve', reviewer, body?.review_note);
     return ok(data, 'XBOS-CAT-201', 'Catalog extension approved via workflow');
@@ -166,7 +166,7 @@ export class CatalogGovernanceController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    this.resolveGroupWriteScope(authorization, tenantId, companyId);
+    this.resolveGroupReadScope(authorization, tenantId, companyId);
     const reviewer = reviewerUserId?.trim() || 'ceo@xe.vn';
     const data = await this.governance.actOnTask(taskId, 'reject', reviewer, body?.review_note);
     return ok(data, 'XBOS-CAT-202', 'Catalog extension rejected via workflow');

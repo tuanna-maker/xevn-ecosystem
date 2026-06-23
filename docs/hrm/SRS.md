@@ -11,6 +11,14 @@
 
 ### 1.1 Tham chiếu bắt buộc — phạm vi dữ liệu toàn hệ
 
+| Khái niệm | Quy tắc | Tài liệu |
+|-----------|---------|----------|
+| **Thang phạm vi (scope ladder)** | Rung 1 group CEO → rollup; Rung 2 member CEO → một công ty; Rung 3 manager → thu hẹp hàng (Target) | `docs/decisions/ADR-HRM-RBAC-SCOPE-LADDER.md` |
+| **JWT vận hành HRM** | Mọi CEO (tập đoàn và thành viên) dùng **`companyId=main`** trên REST HRM; **không** dùng `holding` trên embed | ADR §3.1 · `ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md` |
+| **Phân vùng dữ liệu** | Master: `employees.company_id` ∈ `holding`,`trsport`,`logistics`,`finance`,`services`; Member: `company_id=main` + `custom_fields.tenant_id=<member>` | `docs/hrm/HRM_SEED_CARDINALITY_RULES.md` §2–§4 |
+| **Đa công ty U39** | UC-HRM-SCOPE-01..03, liên kết chéo UC-HRM-INT-01..04, BR-INT-01..05 | **SRS §15** (2026-06-07) |
+| **Cardinality** | CARD-* per slug; rollup group CEO = tổng trên mọi slug thành viên | `HRM_SEED_CARDINALITY_RULES.md` §3 |
+
 ### 1.0 Quy tắc giao hàng (bắt buộc)
 
 SRS là **nguồn đặc tả** cho kiểm thử và triển khai: mọi thay đổi hành vi API/UI phải **cập nhật SRS (và BRD/TechSpec liên quan) trước hoặc cùng commit** với code; không code “trước rồi mới bổ sung tài liệu sau” ngoại trừ hotfix có ghi rõ trong PR.
@@ -363,3 +371,67 @@ sequenceDiagram
 ### UC-HRM-31 / UC-HRM-32
 
 Tương tự UC-HRM-24/23 nhưng đủ CRUD trên app HRM; tham chiếu SRS UC-HRM-09..12 cho attendance notifications.
+
+## 15. Đa công ty và liên kết chéo module (U39 — 2026-06-07)
+
+**work_item_id:** `P1-PROD-INT-BA-P-01` · **program:** `HRM-XBOS-INTEGRITY`  
+**Governance delta:** `docs/program/governance/p1-prod-int-ba-p-01-20260607.md`
+
+### 15.1 Phạm vi theo persona (UC-HRM-SCOPE-01..02)
+
+#### UC-HRM-SCOPE-01 — Group CEO: xem rollup tập đoàn
+
+- **Actor:** Chủ tịch / `group_ceo` (`ceo@xe.vn`, `tenantId=xevn`, JWT `companyId=main`).
+- If JWT hợp lệ master tenant + query `company_id=main` (hoặc sentinel `all` được FE map về rollup):
+  - Else if BE list/get resolver → **200** với rows trên **mọi** slug `GROUP_MEMBER_SLUGS` (`holding`, `trsport`, `logistics`, `finance`, `services`).
+  - Else if get-by-id nằm ngoài rollup partition → **404** `HRM-ERR-NOT-FOUND` (không leak member tenant khác).
+- Else if query `company_id=xevn` (nhầm tenant slug làm company) → **409** `SCOPE_CONTEXT_MISMATCH`.
+- **Acceptance:** AC-INT-SCOPE-G-01 (count ≥ 1000 UAT); AC-INT-SCOPE-G-02 (list→detail parity).
+
+#### UC-HRM-SCOPE-02 — Member CEO: chỉ công ty mình
+
+- **Actor:** CEO công ty thành viên (`du-lich.ceo@xe.vn`, `tenantId=xe-du-lich`, JWT `companyId=main`).
+- If JWT member tenant:
+  - Else if list/get filter `custom_fields.tenant_id = JWT.tenantId` AND `company_id=main` → **200** scoped.
+  - Else if gọi API nhóm XBOS (`group-member-units`, KPI rollup tập đoàn) → **403** `XBOS-TENANT-403`.
+- Else if truy cập UUID nhân viên thuộc master partition → **404** / **403** (không rollup).
+- **Acceptance:** AC-INT-SCOPE-M-01, AC-INT-SCOPE-M-02.
+
+### 15.2 Bộ lọc đơn vị trên embed (UC-HRM-SCOPE-03)
+
+- **Actor:** Group CEO trên Command Center HRM embed (`HrmWorkspacePanel` + iframe).
+- If user chọn slug ĐVTV **S** trên company switcher:
+  - FE gửi `company_id=S` (hoặc slug tương đương theo contract module) trên API module đang mở;
+  - JWT **giữ** `companyId=main` — **không** đổi membership token chỉ vì filter UI.
+  - BE trả subset rows có `company_id=S`.
+- Else if user chọn «Tất cả» → hành vi UC-HRM-SCOPE-01 (rollup).
+- Else if member CEO mở embed → switcher **ẩn** hoặc một lựa chọn `main` (AC-INT-SW-03).
+- Else if đổi filter mà không refetch → **FAIL** QA (stale data).
+- **Acceptance:** AC-INT-SW-01..03; journey **J-HRM-INT-05**.
+
+### 15.3 Liên kết chéo module (UC-HRM-INT-01..04)
+
+| UC | Chuỗi nghiệp vụ | Ràng buộc FK / scope |
+|----|-----------------|----------------------|
+| UC-HRM-INT-01 | Tuyển dụng → tuyển dụng thành công | Requisition `filled` ⇒ `employee_id` NOT NULL; `requisition.company_id` = slug partition |
+| UC-HRM-INT-02 | Nhân viên → Hợp đồng | `employee_contracts.employee_id` → `employees.id`; cùng `company_id` slug |
+| UC-HRM-INT-03 | Nhân viên → Phiếu lương | `payroll_payslips.employee_id`; `payroll_periods.company_id` slug khớp NV |
+| UC-HRM-INT-04 | End-to-end tuyển → NV → HĐ → lương | Một `employee_id` xuyên suốt; list→detail **cùng** scope resolver (BR-INT-04) |
+
+**Journey QA (L2.5):** J-HRM-INT-01..05 — `docs/program/PROGRAM_JOURNEY_MAP.md` (cập nhật trạng thái sau QA W4).
+
+### 15.4 Ma trận quy tắc nghiệp vụ tích hợp (BR-INT-01..05)
+
+| Mã | Điều kiện | Hành động | Kết quả |
+|----|-----------|-----------|---------|
+| BR-INT-01 | Group CEO + `company_id=main` query | Rollup `GROUP_MEMBER_SLUGS` | List/get parity |
+| BR-INT-02 | Member CEO JWT | Filter `tenant_id` + `company_id=main` | Không thấy dữ liệu tập đoàn |
+| BR-INT-03 | Switcher chọn slug S | Query API với S; JWT không đổi | Lọc đúng ĐVTV |
+| BR-INT-04 | List→detail / cross-tab | Cùng scope resolver + `employee_id` | 200 hoặc 404 trong scope |
+| BR-INT-05 | Reconciliation XBOS↔HRM | Số ĐVTV vận hành = số slug workforce | Script PASS hoặc gap có owner |
+
+### 15.5 Cardinality (cardinality rule U39)
+
+- Số đơn vị thành viên có vai trò vận hành trên XBOS (`group-member-units` + legal entities) **phải map 1:1** với các slug `employees.company_id` trong master partition (BR-INT-05).
+- Mỗi slug **C** ∈ `GROUP_MEMBER_SLUGS` thỏa CARD-* tại `HRM_SEED_CARDINALITY_RULES.md` §3.2 (N nhân viên → hợp đồng, BH, chấm công, lương, tuyển dụng liên kết FK).
+- Group CEO rollup: tổng visible ≥ tổng CARD-* trên mọi slug (AC-INT-CARD-01).

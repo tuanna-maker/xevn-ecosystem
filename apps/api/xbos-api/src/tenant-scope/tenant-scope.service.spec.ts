@@ -6,7 +6,7 @@ import { TenantScopeService } from './tenant-scope.service';
 
 describe('TenantScopeService (ADR group vs member)', () => {
   const dbMock = { query: jest.fn() };
-  const orgMock = { listOrgTree: jest.fn(), listGroupMemberUnits: jest.fn() };
+  const orgMock = { listOrgTree: jest.fn(), listGroupMemberUnits: jest.fn(), listGroupOrgTreesForUser: jest.fn() };
   let service: TenantScopeService;
 
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe('TenantScopeService (ADR group vs member)', () => {
     expect(orgMock.listOrgTree).not.toHaveBeenCalled();
   });
 
-  it('groupOrgOverview loads member trees when master membership exists', async () => {
+  it('groupOrgOverview loads holding + member trees when master membership exists', async () => {
     dbMock.query.mockResolvedValueOnce({
       rows: [
         {
@@ -44,21 +44,24 @@ describe('TenantScopeService (ADR group vs member)', () => {
           tenant_kind: 'master',
           default_company_id: 'main',
         },
-        {
-          tenant_id: 'xe-du-lich',
-          role_code: 'ceo',
-          name: 'Du lịch',
-          short_name: 'DL',
-          tenant_kind: 'member',
-          default_company_id: 'main',
-        },
       ],
     });
-    orgMock.listOrgTree.mockResolvedValue([{ id: 'root' }]);
+    orgMock.listGroupOrgTreesForUser.mockResolvedValue([
+      { tenantId: 'xbos-group-holding-root', name: 'Tập đoàn XeVN', tree: [{ id: 'ou-holding' }] },
+      {
+        tenantId: '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8',
+        name: 'Du lịch',
+        memberTenantId: 'xe-du-lich',
+        tree: [{ id: 'ou-dl' }],
+      },
+    ]);
     const result = await service.groupOrgOverview('ceo@xe.vn');
     expect(result.masterTenantId).toBe('xevn');
-    expect(result.trees).toHaveLength(1);
-    expect(orgMock.listOrgTree).toHaveBeenCalledWith('xe-du-lich', 'main');
+    expect(result.trees).toHaveLength(2);
+    expect(result.trees[0]?.tenantId).toBe('xbos-group-holding-root');
+    expect(result.trees[1]?.tenantId).toBe('11d2bb7b-6190-4cb4-b0fe-03d43b5596b8');
+    expect(orgMock.listGroupOrgTreesForUser).toHaveBeenCalledWith('ceo@xe.vn');
+    expect(orgMock.listOrgTree).not.toHaveBeenCalled();
   });
 
   it('UC-ECO-MASTER-02: listAccessible query is membership-scoped (no cross-tenant fan-out)', async () => {
@@ -80,5 +83,75 @@ describe('TenantScopeService (ADR group vs member)', () => {
       expect((error as ApiException).code).toBe('XBOS-TENANT-403');
       expect((error as ApiException).getStatus()).toBe(HttpStatus.FORBIDDEN);
     }
+  });
+
+  it('groupMemberUnits allows group CEO JWT when master membership row missing (P1-UIUX-FE-FOUNDATION-01-BE-403)', async () => {
+    dbMock.query
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [{ '1': 1 }] })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            tenant_id: 'xevn',
+            role_code: 'group_ceo',
+            name: 'XeVN',
+            short_name: 'XeVN',
+            tenant_kind: 'master',
+            default_company_id: 'main',
+          },
+        ],
+      });
+    orgMock.listGroupMemberUnits.mockResolvedValue({ holding: {}, members: [] });
+
+    const result = await service.groupMemberUnits('ceo@xe.vn', {
+      tenantId: 'xevn',
+      roleCode: 'group_ceo',
+    });
+
+    expect(result).toEqual({ holding: {}, members: [] });
+    expect(orgMock.listGroupMemberUnits).toHaveBeenCalled();
+  });
+
+  it('groupMemberUnits rejects member CEO without master membership or group JWT', async () => {
+    dbMock.query.mockResolvedValueOnce({
+      rows: [
+        {
+          tenant_id: 'xe-du-lich',
+          role_code: 'subsidiary_ceo',
+          name: 'Du lịch',
+          short_name: 'DL',
+          tenant_kind: 'member',
+          default_company_id: 'main',
+        },
+      ],
+    });
+
+    await expect(
+      service.groupMemberUnits('du-lich.ceo@xe.vn', {
+        tenantId: 'xe-du-lich',
+        roleCode: 'subsidiary_ceo',
+      }),
+    ).rejects.toMatchObject<ApiException>({ code: 'XBOS-TENANT-403' });
+    expect(orgMock.listGroupMemberUnits).not.toHaveBeenCalled();
+  });
+
+  it('groupMemberUnits loads units when master membership exists', async () => {
+    dbMock.query.mockResolvedValueOnce({
+      rows: [
+        {
+          tenant_id: 'xevn',
+          role_code: 'group_ceo',
+          name: 'XeVN',
+          short_name: 'XeVN',
+          tenant_kind: 'master',
+          default_company_id: 'main',
+        },
+      ],
+    });
+    orgMock.listGroupMemberUnits.mockResolvedValue({ members: [{ tenantId: 'xe-du-lich' }] });
+
+    const result = await service.groupMemberUnits('ceo@xe.vn');
+    expect(result).toEqual({ members: [{ tenantId: 'xe-du-lich' }] });
   });
 });

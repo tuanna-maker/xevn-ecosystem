@@ -1,34 +1,29 @@
-const HRM_SIDEBAR_COLLAPSED_KEY = 'cc-hrm-embed-sidebar-collapsed-v2';
-const HRM_MODULE_RAIL_COLLAPSED_KEY = 'cc-hrm-embed-module-rail-collapsed-v2';
+import {
+  readPortalRailCollapsed,
+  writePortalRailCollapsed,
+} from '../../pages/command-center/workspace-rail-context';
 
-/** Mặc định thu gọn để ưu tiên iframe nội dung chính. */
+const HRM_SIDEBAR_COLLAPSED_KEY = 'cc-hrm-embed-sidebar-collapsed-v3';
+
+/** Mặc định mở rộng menu HRM con để hiện đủ nhãn (rail ngoài thu icon). */
 export function readHrmSidebarCollapsed(): boolean {
   try {
     const v = localStorage.getItem(HRM_SIDEBAR_COLLAPSED_KEY);
-    if (v === null) return true;
+    if (v === null) return false;
     return v === '1';
   } catch {
-    return true;
+    return false;
   }
 }
 
-/** Rail phân hệ (HRM/Tài chính…): mặc định thu icon khi đang ở module HRM. */
+/** @deprecated — dùng readPortalRailCollapsed từ workspace-rail-context */
 export function readHrmModuleRailCollapsed(): boolean {
-  try {
-    const v = localStorage.getItem(HRM_MODULE_RAIL_COLLAPSED_KEY);
-    if (v === null) return true;
-    return v === '1';
-  } catch {
-    return true;
-  }
+  return readPortalRailCollapsed();
 }
 
+/** @deprecated */
 export function writeHrmModuleRailCollapsed(collapsed: boolean): void {
-  try {
-    localStorage.setItem(HRM_MODULE_RAIL_COLLAPSED_KEY, collapsed ? '1' : '0');
-  } catch {
-    /* ignore */
-  }
+  writePortalRailCollapsed(collapsed);
 }
 
 export function writeHrmSidebarCollapsed(collapsed: boolean): void {

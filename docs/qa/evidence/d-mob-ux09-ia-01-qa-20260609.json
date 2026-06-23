@@ -1,0 +1,86 @@
+{
+  "work_item_id": "D-MOB-UX09-IA-01-QA",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 68863977,
+  "apk_sha256": "76AB68BF32E8B2EED1C904E802072475D289554F1AEEFE93BD25C058B5484CEA",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "login_method": "xevn_qa_login_deep_link",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "results": [
+    {
+      "id": "L0-SHA",
+      "pass": true,
+      "note": "SHA OK 68863977 B"
+    },
+    {
+      "id": "L0-INSTALL",
+      "pass": true,
+      "note": "install Success"
+    },
+    {
+      "jId": "J-MOB-01",
+      "pass": true,
+      "note": "deep link home",
+      "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+    },
+    {
+      "id": "TAB-IA",
+      "pass": true,
+      "note": "expected=Trang chủ|Đội nhóm|Phiếu lương|Hồ sơ legacy=none count=4"
+    },
+    {
+      "id": "TAB-LEGACY",
+      "pass": true,
+      "note": "no legacy tabs"
+    },
+    {
+      "jId": "J-MOB-04",
+      "pass": true,
+      "note": "hero=true net=true history=true heroNav=true rowNav=true"
+    },
+    {
+      "jId": "J-MOB-17",
+      "pass": true,
+      "note": "tabs=true work=true doc=true"
+    },
+    {
+      "jId": "J-MOB-30",
+      "pass": true,
+      "note": "screen=true list=true detail=true"
+    },
+    {
+      "jId": "J-MOB-33",
+      "pass": true,
+      "note": "sheet=true checkInNav=true"
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "Get-FileHash hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell pm clear vn.xevn.hrm.mobile",
+      "exit": 0
+    },
+    {
+      "cmd": "adb install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "deep-link login uat.nv0001@xe.vn",
+      "exit": 0
+    }
+  ],
+  "logcat_audit": {
+    "hasMainHeader": false
+  },
+  "pass": true,
+  "ack_status": "PASS_TO_PM",
+  "completion_report": "D-MOB-UX09-IA-01-QA PASS on emulator-5554 @ uat.nv0001@xe.vn: 4-tab IA Trang chủ|Đội nhóm|Phiếu lương|Hồ sơ verified; no legacy Đơn công/Thêm; J-MOB-04/17/30/33 regression PASS; APK SHA 76AB68BF32E8…; no x-company-id main in logcat.",
+  "next_owner": "qc",
+  "next_dispatch_prompt": "PM → QC: work_item_id D-MOB-UX09-IA-01-QA device PASS; gate J-MOB-04/17/30/33 tab IA on docs/qa/evidence/d-mob-ux09-ia-01-qa-20260609.md; update PROGRAM_JOURNEY_MAP D-MOB-UX09-IA-01 ✅."
+}

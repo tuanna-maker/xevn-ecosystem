@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-06-07T01:45:32.095Z",
+  "portal": "http://127.0.0.1:5173",
+  "failed": 0,
+  "results": [
+    {
+      "id": "LOGIN-GROUP",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "XBOS-AUTH-200",
+      "detail": "tenant=xevn company=main"
+    },
+    {
+      "id": "LOGIN-MEMBER",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "XBOS-AUTH-200",
+      "detail": "tenant=xe-du-lich company=main"
+    },
+    {
+      "id": "P0-4-SUBMIT-HOLDING",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "HRM-SET-209",
+      "detail": "batchId=4a76ac1b-cf57-4c2b-8eca-f590703f73ce"
+    },
+    {
+      "id": "P0-4-GET-IN-SCOPE",
+      "verdict": "PASS",
+      "http": 200,
+      "code": "HRM-SET-220",
+      "detail": "group CEO main→holding batch"
+    },
+    {
+      "id": "P0-4-GET-MISSING",
+      "verdict": "PASS",
+      "http": 404,
+      "code": "HRM-SET-404",
+      "detail": "unknown batch UUID"
+    },
+    {
+      "id": "P0-4-MEMBER-BLOCK-HOLDING",
+      "verdict": "PASS",
+      "http": 409,
+      "code": "HRM-SET-409",
+      "detail": "du-lich.ceo cannot read holding batch"
+    },
+    {
+      "id": "P0-4-SUBMIT-MEMBER",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "HRM-SET-209",
+      "detail": "batchId=85e4a353-9475-4d90-a366-114e75af4d4b"
+    },
+    {
+      "id": "P0-4-GROUP-BLOCK-MEMBER-BATCH",
+      "verdict": "PASS",
+      "http": 409,
+      "code": "HRM-SET-409",
+      "detail": "group CEO cannot read xe-du-lich partition batch"
+    },
+    {
+      "id": "P0-1-GROUP-LEGAL-GET",
+      "verdict": "PASS",
+      "http": 200,
+      "code": "XBOS-ORG-200",
+      "detail": "entity=11d2bb7b…"
+    },
+    {
+      "id": "P0-1-MEMBER-LEGAL-BLOCK",
+      "verdict": "PASS",
+      "http": 409,
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "detail": "member CEO blocked on xevn/main rollup legal GET"
+    },
+    {
+      "id": "P0-3-CATALOG-PARTITION",
+      "verdict": "PASS",
+      "http": 200,
+      "code": "HRM-SET-200",
+      "detail": "settings-catalogs ok; catalog-sync HTTP 200 items=74",
+      "settingsCount": 76,
+      "syncCount": 74,
+      "syncCode": "HRM-SYNC-202"
+    },
+    {
+      "id": "P0-3-CATALOG-SYNC-KEY",
+      "verdict": "PASS",
+      "http": 200,
+      "code": "HRM-SYNC-201",
+      "detail": "key=activity_capability_map"
+    },
+    {
+      "id": "P0-2-ARCHIVE",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "HRM-EMP-203",
+      "detail": "employee=5059e5c0…"
+    },
+    {
+      "id": "P0-2-RESTORE-GROUP",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "HRM-EMP-204",
+      "detail": "group CEO restore in-scope"
+    },
+    {
+      "id": "P0-2-MEMBER-RESTORE-BLOCK",
+      "verdict": "PASS",
+      "http": 404,
+      "code": "HRM-EMP-404",
+      "detail": "member CEO blocked cross-partition restore"
+    }
+  ]
+}

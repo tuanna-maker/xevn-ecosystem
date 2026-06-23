@@ -1,5 +1,6 @@
 import type { PortalAlert } from '../data/command-center-mock';
 import { MASTER_TENANT_ID } from '../constants/tenant';
+import { resolveWorkflowBusinessTypeLabel } from '../utils/workflowDisplayLabels';
 
 export type CatalogInboxItem = {
   id: string;
@@ -27,7 +28,7 @@ export function mapWorkflowTaskToPortalAlert(row: {
     orgUnitId: MASTER_TENANT_ID,
     level: 'warn',
     title: row.workflow_name ?? row.step_key ?? 'Nhiệm vụ phê duyệt',
-    detail: `Workflow · ${businessType}${row.due_at ? ` · hạn ${row.due_at}` : ''}`,
+    detail: `Quy trình · ${resolveWorkflowBusinessTypeLabel(businessType)}${row.due_at ? ` · hạn ${row.due_at}` : ''}`,
     sourceSystem: 'xbos-workflow',
   };
 }

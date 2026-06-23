@@ -1,0 +1,88 @@
+{
+  "work_item_id": "MOB-UX-12d-QA",
+  "device": "emulator-5554",
+  "apk_sha256": "B8F738596F9D11AFFFE9BD3AE1F92A6E759BE844717B5D617D026DB5D297F3EA",
+  "apk_bytes": 68938359,
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "results": [
+    {
+      "id": "L0-SHA-FREEZE",
+      "pass": true,
+      "note": "frozen SHA OK"
+    },
+    {
+      "jId": "J-MOB-01",
+      "pass": true,
+      "note": "deep link"
+    },
+    {
+      "jId": "J-MOB-23",
+      "pass": true,
+      "note": "empty=true chips=true"
+    },
+    {
+      "id": "AC-G4-MGR",
+      "pass": true,
+      "note": "elevated + Lottie empty or cards"
+    },
+    {
+      "jId": "J-MOB-24",
+      "pass": true,
+      "note": "modal=true"
+    },
+    {
+      "jId": "J-MOB-25",
+      "pass": true,
+      "note": "balance=true"
+    },
+    {
+      "jId": "J-MOB-26",
+      "pass": true,
+      "note": "tabs=true"
+    },
+    {
+      "id": "AC-G4-LEAVE",
+      "pass": true,
+      "note": "rich rows + tabs"
+    },
+    {
+      "jId": "J-MOB-27",
+      "pass": true,
+      "note": "cta=true"
+    },
+    {
+      "jId": "J-MOB-28",
+      "pass": true,
+      "gwc": false,
+      "note": "createChip=true"
+    },
+    {
+      "id": "AC-G4-CONTRACTS",
+      "pass": false,
+      "note": "screen=false"
+    },
+    {
+      "jId": "J-MOB-17",
+      "pass": false,
+      "note": "Chính sách/settings → Contracts"
+    },
+    {
+      "id": "AC-G4-OPS",
+      "pass": false,
+      "note": "ops=false"
+    },
+    {
+      "id": "AC-SET-G-4",
+      "pass": false,
+      "note": "no raw enums on exercised screens"
+    }
+  ],
+  "pass": false,
+  "ack_status": "FAIL_TO_PM",
+  "executive_verdict": "**FAIL_TO_PM** — gaps: AC-G4-CONTRACTS, J-MOB-17, AC-G4-OPS, AC-SET-G-4",
+  "completion_report": "MOB-UX-12d-QA FAIL — see evidence",
+  "next_owner": "dev-mobile",
+  "next_dispatch_prompt": "PM → dev-mobile: MOB-UX-12d-QA device FAIL — inspect mob-ux-12d-qa-screens/; READY_FOR_QA"
+}

@@ -1,0 +1,109 @@
+{
+  "work_item_id": "PCOMP-W7-QA-HUB-R3-05",
+  "from_role": "qa-device",
+  "to_role": "pm",
+  "date": "2026-06-09",
+  "ack_status": "FAIL_TO_PM",
+  "pm_dispatch_hint": "dev-mobile — PCOMP-W8-MOB-HOME-PORTAL-APK-02: Gradle hrm-mobile-qa-device.apk cold boot shows App entry not found (main not registered); fix index.ts preloadVectorIconFonts/registerRootComponent ordering; verify emulator-5554 boot before qa-device R3-05 rerun",
+  "device": "emulator-5554",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 69933877,
+  "apk_sha256": "23FBBE9E4333E8F6B9459D8909DA80168B33BE768C2DFE11D10FCE8126AB285C",
+  "upstream_build": "docs/qa/evidence/pcomp-w8-mob-home-portal-apk-01-20260609.md",
+  "seed": {
+    "command": "node scripts/seed-hrm-uat-mob-hub-qual.mjs",
+    "exit": 0,
+    "whos_out_count": 1,
+    "dob_today_count": 3,
+    "today_hcm": "2026-06-08"
+  },
+  "api_probe": {
+    "login": true,
+    "home_code": "HRM-HOME-200",
+    "tasks": 10,
+    "mgr": 2,
+    "cel": 3,
+    "who": 1
+  },
+  "results": [
+    {
+      "id": "SEED",
+      "pass": true,
+      "note": "whos_out_count=1 dob_today_count=3"
+    },
+    {
+      "id": "ADB-CLEAR",
+      "pass": true,
+      "note": "pm clear vn.xevn.hrm.mobile exit 0"
+    },
+    {
+      "id": "ADB-INSTALL",
+      "pass": true,
+      "note": "install -r hrm-mobile-qa-device.apk 69933877B SHA256 match exit 0"
+    },
+    {
+      "id": "BOOT-GRADLE-APK",
+      "pass": false,
+      "note": "Cold start after pm clear: UI text App entry not found; logcat Entry not found; ReactNativeJS Running main then crash screen — blocks all J-MOB"
+    },
+    {
+      "id": "QA-LOGIN-INTENT",
+      "pass": false,
+      "note": "node scripts/qa-mobile-login-intent.mjs exit 1 home_reached=false fatal_logcat=false — app on error screen not Home"
+    },
+    {
+      "id": "HUB-R3-04-AUTOMATION",
+      "pass": false,
+      "note": "tmp-pcomp-w7-qa-hub-r3-04-device.mjs exit 1 J-MOB-01 deeplink timeout — login form never reached"
+    },
+    {
+      "jId": "J-MOB-01",
+      "pass": false,
+      "note": "Blocked — boot error screen"
+    },
+    {
+      "jId": "J-MOB-06",
+      "pass": false,
+      "note": "NOT RUN — boot blocked"
+    },
+    {
+      "jId": "J-MOB-07",
+      "pass": false,
+      "note": "NOT RUN — boot blocked"
+    },
+    {
+      "jId": "J-MOB-08",
+      "pass": false,
+      "note": "NOT RUN — boot blocked"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": false,
+      "note": "NOT RUN — boot blocked; API who=1 ready for retest after boot fix"
+    },
+    {
+      "id": "D-W8-ESS-PROMISE-01",
+      "pass": false,
+      "note": "NOT RUN — boot blocked; WHOS-OUT-02 + promise fix untestable on device"
+    },
+    {
+      "jId": "J-MOB-11..15",
+      "pass": false,
+      "note": "NOT RUN — boot blocked"
+    }
+  ],
+  "logcat_audit": {
+    "app_entry_not_found_ui": true,
+    "log_entry_not_found": true,
+    "rngesture_crash": false,
+    "fatal_exception": false,
+    "react_native_js_main": true
+  },
+  "screenshots": [
+    "docs/qa/evidence/pcomp-w7-qa-hub-r3-05-screens/r3-05-boot-fail.png",
+    "docs/qa/evidence/pcomp-w7-qa-hub-r3-05-screens/r3-05-boot-ui.xml"
+  ],
+  "pass": false
+}

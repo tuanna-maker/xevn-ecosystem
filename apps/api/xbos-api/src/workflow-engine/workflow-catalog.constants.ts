@@ -1,6 +1,8 @@
 /** Quy trình phê duyệt bổ sung danh mục HRM — CT Du lịch X.E */
 export const WF_HRM_CATALOG_XE_DU_LICH_CODE = 'wf_hrm_catalog_extension_xe_du_lich';
 export const WF_BUSINESS_TYPE_HRM_CATALOG = 'hrm_catalog_extension';
+/** UF-XBOS-08 — pending inbox after canvas definition save (U64 no seed). */
+export const WF_BUSINESS_TYPE_DEFINITION_REVIEW = 'workflow_definition_review';
 export const MEMBER_TENANT_XE_DU_LICH = 'xe-du-lich';
 export const MEMBER_COMPANY_MAIN = 'main';
 export const MASTER_TENANT_XEVN = 'xevn';

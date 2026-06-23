@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { basename, join, sep } from 'node:path';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
@@ -856,6 +856,76 @@ export class CatalogExtensionsService {
       filename: storedName,
       mimetype: file.mimetype,
       company_id: scopedCompanyId,
+    };
+  }
+
+  private resolveFileUploadBaseDir(): string {
+    return process.env.HRM_FILE_UPLOAD_DIR?.trim() || join(process.cwd(), 'uploads', 'hrm-files');
+  }
+
+  private guessUploadedFileMime(filename: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const map: Record<string, string> = {
+      png: 'image/png',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      gif: 'image/gif',
+      webp: 'image/webp',
+      pdf: 'application/pdf',
+    };
+    return (ext && map[ext]) || 'application/octet-stream';
+  }
+
+  /** Static serve for pilot opaque URLs — optional JWT scope when Authorization present. */
+  async readUploadedFile(
+    companyId: string,
+    filename: string,
+    authorization: string | undefined,
+  ): Promise<{ buffer: Buffer; mimetype: string; filename: string }> {
+    const safeFilename = basename(filename.trim());
+    if (!safeFilename || safeFilename !== filename.trim() || filename.includes('..')) {
+      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+    }
+
+    let scopedCompanyId = companyId.trim();
+    if (!scopedCompanyId) {
+      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+    }
+
+    const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+    if (jwtPayload) {
+      scopedCompanyId = resolveHrmPersistCompanyIdText(authorization, companyId);
+      const claimCompany =
+        (typeof jwtPayload.companyId === 'string' && jwtPayload.companyId.trim()) ||
+        (typeof jwtPayload.company_id === 'string' && jwtPayload.company_id.trim()) ||
+        companyId;
+      const tokenScope = resolveHrmListScope(authorization, claimCompany);
+      assertResourceInHrmScope(
+        { company_id: scopedCompanyId },
+        tokenScope,
+        { notFoundCode: 'HRM-FILE-404', mismatchCode: 'HRM-FILE-409' },
+      );
+    }
+
+    const baseDir = this.resolveFileUploadBaseDir();
+    const companyDir = join(baseDir, scopedCompanyId);
+    const absolutePath = join(companyDir, safeFilename);
+    const companyDirWithSep = companyDir.endsWith(sep) ? companyDir : `${companyDir}${sep}`;
+    if (!absolutePath.startsWith(companyDirWithSep)) {
+      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+    }
+
+    try {
+      await access(absolutePath);
+    } catch {
+      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+    }
+
+    const buffer = await readFile(absolutePath);
+    return {
+      buffer,
+      mimetype: this.guessUploadedFileMime(safeFilename),
+      filename: safeFilename,
     };
   }
 }

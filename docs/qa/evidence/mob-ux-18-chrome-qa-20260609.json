@@ -1,0 +1,32 @@
+{
+  "work_item_id": "MOB-UX-18-QA",
+  "date": "2026-06-09",
+  "environment": "https://14-225-217-232.nip.io · uat.nv0001@xe.vn · emulator-5554",
+  "apk": {
+    "path": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+    "sha256": "8CFFD70940BBDB651AEEA7025E76C9227AAFFE173ECDE2BF57F7C78B1E47544B",
+    "bytes": 69153697
+  },
+  "ila05_leave_empty": {
+    "pass": true,
+    "empty_tab": "Từ chối",
+    "dang_ky_nghi_text_count": 1,
+    "sticky_footer_suspect": false,
+    "screen_mounted": true
+  },
+  "ila05_payslip": {
+    "pass": true,
+    "on_payslip_screen": true,
+    "phieu_luong_text_count": 2,
+    "body_phieu_luong_h1_count": 0,
+    "has_body_subtitle": true,
+    "duplicate_h1": false
+  },
+  "scope": {
+    "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+    "has_main_header_logcat": false
+  },
+  "fatal_logcat": false,
+  "pass": true,
+  "ack_status": "PASS_TO_PM"
+}

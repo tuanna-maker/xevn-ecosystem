@@ -18,7 +18,9 @@ describe('EmployeesController', () => {
   const serviceMock = {
     createEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
     listEmployees: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listEmployeeDirectory: jest.fn().mockResolvedValue({ total: 1, page: 1, page_size: 30, data: [] }),
     getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
+    getEmployeeDirectoryById: jest.fn().mockResolvedValue({ id: 'e1', full_name: 'Directory User' }),
     updateEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
     archiveEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
     restoreEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
@@ -56,6 +58,11 @@ describe('EmployeesController', () => {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
     expect(created.code).toBe('HRM-EMP-201');
+    expect(serviceMock.createEmployee).toHaveBeenCalledWith(
+      expect.objectContaining({ company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037' }),
+      undefined,
+      { tenantId: 'xevn' },
+    );
     expect(listed.code).toBe('HRM-EMP-200');
   });
 
@@ -129,6 +136,46 @@ describe('EmployeesController', () => {
     expect(updated.code).toBe('HRM-EMP-202');
     expect(archived.code).toBe('HRM-EMP-203');
     expect(restored.code).toBe('HRM-EMP-204');
+    expect(serviceMock.restoreEmployee).toHaveBeenCalledWith(
+      '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      undefined,
+      { tenantId: 'xevn' },
+    );
+  });
+
+  it('MOB-W7-5: list view=directory returns HRM-EMP-DIR-200', async () => {
+    const listed = await controller.listEmployees(undefined, 'test-key', 'xevn', undefined, {
+      company_id: 'holding',
+      view: 'directory',
+      q: 'nguyen',
+    });
+    expect(listed.code).toBe('HRM-EMP-DIR-200');
+    expect(serviceMock.listEmployeeDirectory).toHaveBeenCalledWith(
+      expect.objectContaining({ company_id: 'holding', view: 'directory', q: 'nguyen' }),
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.listEmployees).not.toHaveBeenCalled();
+  });
+
+  it('MOB-W7-5: get-by-id view=directory uses directory service', async () => {
+    const got = await controller.getEmployeeById(
+      '11111111-1111-4111-8111-111111111111',
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      { company_id: 'holding', view: 'directory' },
+    );
+    expect(got.code).toBe('HRM-EMP-200');
+    expect(serviceMock.getEmployeeDirectoryById).toHaveBeenCalledWith(
+      '11111111-1111-4111-8111-111111111111',
+      { company_id: 'holding', view: 'directory' },
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.getEmployeeById).not.toHaveBeenCalled();
   });
 
   it('blocks unauthorized access', async () => {

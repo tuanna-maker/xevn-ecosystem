@@ -54,6 +54,8 @@ import { toast } from 'sonner';
 import { useEmployees, Employee, EmployeeFormData } from '@/hooks/useEmployees';
 import { useCanAddEmployee } from '@/hooks/useCompanySubscription';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
+import { resolveOperatingUnitDisplayName } from '@/lib/hrmOperatingUnits';
 import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 
@@ -61,11 +63,9 @@ export default function Employees() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { currentCompanyId, memberships } = useAuth();
-  
-  const [companyFilter, setCompanyFilter] = useState<string>('all');
+  const { selectedSlug, operatingUnitLabelMap } = useHrmOperatingUnitFilter();
 
-  // Determine which company to fetch: 'all' = null (all companies), else specific
-  const companyIdForHook = companyFilter === 'all' ? null : companyFilter;
+  const companyIdForHook = selectedSlug === 'all' ? null : selectedSlug;
 
   const {
     employees,
@@ -83,7 +83,11 @@ export default function Employees() {
     .map(m => ({ id: m.company_id, name: m.company!.name }));
 
   const getCompanyName = (companyId: string) => {
-    return userCompanies.find(c => c.id === companyId)?.name || '—';
+    return (
+      resolveOperatingUnitDisplayName(companyId, operatingUnitLabelMap) ??
+      userCompanies.find((c) => c.id === companyId)?.name ??
+      '—'
+    );
   };
 
   const { data: employeeLimit } = useCanAddEmployee();
@@ -103,9 +107,9 @@ export default function Employees() {
   // Fetch departments for all relevant companies
   useEffect(() => {
     const fetchDepartments = async () => {
-      const companyIds = companyFilter === 'all'
+      const companyIds = selectedSlug === 'all'
         ? memberships.map(m => m.company_id)
-        : [companyFilter];
+        : [selectedSlug];
       
       if (companyIds.length === 0) return;
 
@@ -114,14 +118,14 @@ export default function Employees() {
     };
     
     fetchDepartments();
-  }, [companyFilter, memberships]);
+  }, [selectedSlug, memberships]);
 
   const importSpreadsheetScope =
     (() => {
       const companyId =
-        companyFilter === 'all'
+        selectedSlug === 'all'
           ? currentCompanyId ?? memberships[0]?.company_id ?? null
-          : companyFilter;
+          : selectedSlug;
       if (!companyId) return null;
       const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
       return {
@@ -353,21 +357,6 @@ export default function Employees() {
                 ))}
               </SelectContent>
             </Select>
-            {userCompanies.length > 1 && (
-              <Select value={companyFilter} onValueChange={setCompanyFilter}>
-                <SelectTrigger className="w-[140px] md:w-[200px]">
-                  <SelectValue placeholder={t('company.title')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('employeesPage.allCompanies')}</SelectItem>
-                  {userCompanies.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[120px] md:w-[180px]">
                 <SelectValue placeholder={t('common.status.label')} />

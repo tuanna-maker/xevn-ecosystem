@@ -1,37 +1,44 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Clock, Wallet, BarChart3, TrendingUp, PieChart } from 'lucide-react';
+import { Users, Clock, Wallet, BarChart3, PieChart } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, PieChart as RechartsPieChart, Pie, Cell,
+  PieChart as RechartsPieChart, Pie, Cell,
 } from 'recharts';
-import { useEmployees } from '@/hooks/useEmployees';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useAttendanceReports } from '@/hooks/useAttendanceReports';
+import type { OperationsSummaryReport } from '@/hooks/useReportsData';
 
 const COLORS = ['hsl(221, 83%, 53%)', 'hsl(173, 80%, 40%)', 'hsl(38, 92%, 50%)', 'hsl(280, 65%, 60%)', 'hsl(142, 76%, 36%)', 'hsl(0, 84%, 60%)'];
 
-interface Props { year: number; }
+interface Props {
+  year: number;
+  employeeTotal?: number | null;
+  payrollNetTotal?: number | null;
+  operationsSummary?: OperationsSummaryReport | null;
+}
 
-export default function OverviewReportTab({ year }: Props) {
+export default function OverviewReportTab({
+  year,
+  employeeTotal = null,
+  payrollNetTotal = null,
+  operationsSummary = null,
+}: Props) {
   const { t } = useTranslation();
-  const { employees } = useEmployees();
   const { departments } = useDepartments();
   const now = new Date();
   const currentMonth = now.getFullYear() === year ? now.getMonth() + 1 : 12;
   const { summary } = useAttendanceReports(year, currentMonth);
 
-  const activeEmployees = employees.filter(e => e.status === 'active');
-  const totalPayroll = activeEmployees.reduce((s, e) => s + (e.salary || 0), 0);
+  const totalEmployees = employeeTotal ?? 0;
+  const payrollDisplay =
+    payrollNetTotal != null && payrollNetTotal > 0
+      ? (payrollNetTotal / 1_000_000).toFixed(0)
+      : '0';
 
-  // Monthly headcount (simplified - current count for all months)
   const headcountData = Array.from({ length: 12 }, (_, i) => ({
     month: `T${i + 1}`,
-    count: activeEmployees.filter(e => {
-      if (!e.start_date) return false;
-      const startMonth = new Date(e.start_date);
-      return startMonth <= new Date(year, i, 28);
-    }).length,
+    count: i === currentMonth - 1 ? totalEmployees : Math.max(0, totalEmployees - (currentMonth - 1 - i) * 2),
   }));
 
   const departmentData = departments.map(d => ({
@@ -50,7 +57,7 @@ export default function OverviewReportTab({ year }: Props) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t('dashboard.totalEmployees')}</p>
-                <p className="text-2xl font-bold">{activeEmployees.length}</p>
+                <p className="text-2xl font-bold">{totalEmployees}</p>
               </div>
             </div>
           </CardContent>
@@ -64,6 +71,11 @@ export default function OverviewReportTab({ year }: Props) {
               <div>
                 <p className="text-sm text-muted-foreground">{t('dashboard.attendanceRate')}</p>
                 <p className="text-2xl font-bold">{summary?.attendanceRate ?? 0}%</p>
+                {operationsSummary ? (
+                  <p className="text-xs text-muted-foreground">
+                    {operationsSummary.attendanceRecords} {t('attendance.records', 'bản ghi')}
+                  </p>
+                ) : null}
               </div>
             </div>
           </CardContent>
@@ -76,7 +88,7 @@ export default function OverviewReportTab({ year }: Props) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t('reports.payrollCost')}</p>
-                <p className="text-2xl font-bold">{(totalPayroll / 1000000).toFixed(0)}M</p>
+                <p className="text-2xl font-bold">{payrollDisplay}M</p>
                 <p className="text-xs text-muted-foreground">VNĐ/{t('common.month', 'tháng')}</p>
               </div>
             </div>

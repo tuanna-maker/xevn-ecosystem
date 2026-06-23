@@ -3,8 +3,10 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  expandHrmTextCompanyIds,
   HrmListScopeContext,
-  pushCompanyIdFilter,
+  normalizePayrollListCompanyId,
+  pushCompanyIdTextColumnFilter,
   resolveHrmOperationsPersistCompanyId,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
@@ -14,6 +16,7 @@ import { AttendanceEventFanoutService } from '../notifications/attendance-event-
 import { CreateAttendanceUpdateRequestDto } from './dto/create-attendance-update-request.dto';
 import { DecideAttendanceUpdateRequestDto } from './dto/decide-attendance-update-request.dto';
 import { CreateAttendanceRecordDto } from './dto/create-attendance-record.dto';
+import { GetAttendanceRecordQueryDto } from './dto/get-attendance-record.query.dto';
 import { ListAttendanceRecordsQueryDto } from './dto/list-attendance-records.query.dto';
 import { ListAttendanceUpdateRequestsQueryDto } from './dto/list-attendance-update-requests.query.dto';
 import { UpdateAttendanceUpdateRequestDto } from './dto/update-attendance-update-request.dto';
@@ -414,7 +417,8 @@ export class AttendanceService {
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size ?? query.pageSize, 20);
     const offset = (page - 1) * pageSize;
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
     const filters: string[] = [];
     const values: unknown[] = [];
     pushWorkforceEmployeeScopeFilter(filters, values, scope);
@@ -465,6 +469,35 @@ export class AttendanceService {
       page_size: pageSize,
       data: dataRes.rows.map((row) => this.mapRecord(row)),
     };
+  }
+
+  async getRecordById(
+    recordId: string,
+    query: GetAttendanceRecordQueryDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    await this.ensureSchema();
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
+    const filters: string[] = ['id = $1::uuid'];
+    const values: unknown[] = [recordId];
+    pushWorkforceEmployeeScopeFilter(filters, values, scope);
+    const res = await this.db.query<AttendanceRecordRow>(
+      `
+        SELECT
+          id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
+          status, note, created_by, created_at, updated_at
+        FROM public.attendance_records
+        WHERE ${filters.join(' AND ')}
+        LIMIT 1;
+      `,
+      values,
+    );
+    if (!res.rows[0]) {
+      throw new ApiException('HRM-ATT-404', 'Attendance record not found', HttpStatus.NOT_FOUND);
+    }
+    return this.mapRecord(res.rows[0]);
   }
 
   async updateStatus(
@@ -569,10 +602,10 @@ export class AttendanceService {
     if (scope.masterTenantPartition || scope.memberTenantId) {
       pushWorkforceEmployeeScopeFilter(clauses, values, scope, 'aur.employee_id');
     } else {
-      // attendance_update_requests.company_id is TEXT (ensureSchema migration) — never ::uuid compare.
-      pushCompanyIdFilter(clauses, values, scope.companyIds);
+      const companyIds = expandHrmTextCompanyIds(scope, authorization, query.company_id);
+      pushCompanyIdTextColumnFilter(clauses, values, companyIds);
       const companyFilterIdx = clauses.length - 1;
-      clauses[companyFilterIdx] = clauses[companyFilterIdx].replace(/^company_id/, 'aur.company_id');
+      clauses[companyFilterIdx] = clauses[companyFilterIdx].replace(/^company_id::text/, 'aur.company_id::text');
     }
     if (query.status) {
       values.push(query.status);

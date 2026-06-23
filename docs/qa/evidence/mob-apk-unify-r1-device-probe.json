@@ -1,0 +1,52 @@
+{
+  "work_item_id": "MOB-APK-UNIFY-R1-QA",
+  "date": "2026-06-09",
+  "api_base": "https://14-225-217-232.nip.io",
+  "device": "emulator-5554",
+  "apk_sha256": "8063446E2E51528A273C79D92C6D40594DABD22126D586680194052148993BED",
+  "package": "vn.xevn.hrm.mobile",
+  "nv0001_api": {
+    "status": 200,
+    "mgr_total": 1,
+    "leave_count": 0,
+    "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+  },
+  "nv0001": {
+    "home_ok": true,
+    "D_W8_ESS_PROMISE_01": true,
+    "promise_home": false,
+    "promise_after_scroll": false,
+    "J_MOB_23": true,
+    "J_MOB_24": true,
+    "undo_snackbar": false,
+    "approve_note": "approve tap on attendance-update pending (no Từ chối in seed)",
+    "fatal_logcat": false,
+    "x_company_id_not_main": true,
+    "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+    "login_fatal": false,
+    "pass": true
+  },
+  "nv0001_logcat": {
+    "fatal": false,
+    "hasMainScope": false,
+    "logcat_tail": "t_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0"
+  },
+  "nv0002": {
+    "home_reached": true,
+    "list_screen": true,
+    "detail_pass": true,
+    "back_search_preserved": true,
+    "back_chips_preserved": true,
+    "R_DIR_DETAIL_01": true,
+    "login_fatal": false,
+    "fatal_logcat": false,
+    "pass": true
+  },
+  "nv0002_logcat": {
+    "fatal": false,
+    "hasMainScope": false,
+    "logcat_tail": "t_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0"
+  },
+  "ack_status": "PASS_TO_PM",
+  "pass": true
+}

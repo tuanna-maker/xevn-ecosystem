@@ -14,10 +14,15 @@ import {
   resolveMasterTenant,
 } from './lib/uat-workforce.mjs';
 import {
+  buildPerCompanyContractCohort,
+  PER_COMPANY_CONTRACT_RATIO,
+} from './lib/hrm-contract-cohort.mjs';
+import {
   contractDatesForType,
   pickContractType,
   pickInsuranceProvider,
 } from './lib/vietnamese-workforce-data.mjs';
+import { HRM_CANDIDATE_SOURCE_CODES, HRM_LEAVE_TYPE_CODES } from './lib/hrm-catalog-lineage.mjs';
 
 loadDeployEnv();
 
@@ -196,11 +201,15 @@ async function loadActiveEmployees(client) {
 async function seedContractsAndInsurance(client, employees, kinds) {
   let contracts = 0;
   const batch = [];
+  const contractCohort = buildPerCompanyContractCohort(employees, (companyId) =>
+    slugFromCompanyId(companyId),
+  );
 
   for (const emp of employees) {
-    if (!inCohort('contract', emp.employee_code)) continue;
+    if (!contractCohort.has(emp.id)) continue;
     const slug = slugFromCompanyId(emp.company_id);
-    const contractCompany = cidForSlug(slug, kinds.employee_contracts);
+    const contractCompany =
+      kinds.employee_contracts === 'uuid' ? cidForSlug(slug, kinds.employee_contracts) : emp.company_id;
     const contractId = fidelityId('contract', emp.id);
     batch.push({ contractId, contractCompany, emp });
     if (batch.length >= 200) {
@@ -238,7 +247,7 @@ async function flushContractBatch(client, batch, kinds) {
         contractId,
         contractCompany,
         emp.id,
-        contractDef.label,
+        contractDef.key,
         dates.start,
         dates.end,
       ],
@@ -246,7 +255,10 @@ async function flushContractBatch(client, batch, kinds) {
     await trackMeta(client, 'employee_contracts', contractId);
 
     const insId = fidelityId('insurance', emp.id);
-    const insCompany = cidForSlug(slugFromCompanyId(emp.company_id), kinds.employee_insurance_records);
+    const insCompany =
+      kinds.employee_insurance_records === 'uuid'
+        ? cidForSlug(slugFromCompanyId(emp.company_id), kinds.employee_insurance_records)
+        : emp.company_id;
     const provider = pickInsuranceProvider(seqNum);
     const expiry = dates.end > '2026-01-01' ? dates.end : '2027-12-31';
     await client.query(
@@ -402,14 +414,15 @@ async function seedRecruitment(client, kinds) {
         await client.query(
           `INSERT INTO public.recruitment_candidates
              (id, company_id, requisition_id, full_name, email, source, status)
-           VALUES ($1::uuid, $2, $3::uuid, $4, $5, 'referral', 'interview')
-           ON CONFLICT (id) DO UPDATE SET status = EXCLUDED.status, updated_at = NOW()`,
+           VALUES ($1::uuid, $2, $3::uuid, $4, $5, $6, 'interview')
+           ON CONFLICT (id) DO UPDATE SET source = EXCLUDED.source, status = EXCLUDED.status, updated_at = NOW()`,
           [
             candId,
             reqCompany,
             reqId,
             `UV Fidelity ${slug} ${i}-${c}`,
             `fidelity.${slug}.${i}.${c}@mail.xe.vn`,
+            HRM_CANDIDATE_SOURCE_CODES[(i + c) % HRM_CANDIDATE_SOURCE_CODES.length],
           ],
         );
         await trackMeta(client, 'recruitment_candidates', candId);
@@ -441,14 +454,15 @@ async function seedLeave(client, employees, tenantId) {
          id, company_id, employee_id, leave_type, start_date, end_date, reason, status,
          employee_code, employee_name, total_days, requested_at
        ) VALUES (
-         $1::uuid, $2::uuid, $3::uuid, 'annual', $4::date, $5::date, $6, $7,
+         $1::uuid, $2::uuid, $3::uuid, $4, $5::date, $6::date, $7, $8,
          $8, $9, 3, NOW()
        )
-       ON CONFLICT (id) DO UPDATE SET status = EXCLUDED.status, reason = EXCLUDED.reason`,
+       ON CONFLICT (id) DO UPDATE SET leave_type = EXCLUDED.leave_type, status = EXCLUDED.status, reason = EXCLUDED.reason`,
       [
         leaveId,
         companyUuid,
         emp.id,
+        HRM_LEAVE_TYPE_CODES[0],
         start.toISOString().slice(0, 10),
         end.toISOString().slice(0, 10),
         LEAVE_REASON_TAG,
@@ -523,6 +537,7 @@ async function main() {
       seed_tag: FIDELITY_SEED_TAG,
       seeded_this_run: { contracts, insurance, attendance, payroll, recruitment, leave },
       company_id_kinds: kinds,
+      per_company_contract_ratio: PER_COMPANY_CONTRACT_RATIO,
       rules_doc: 'docs/hrm/HRM_SEED_CARDINALITY_RULES.md',
     };
 

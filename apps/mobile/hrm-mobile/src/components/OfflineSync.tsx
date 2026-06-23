@@ -19,7 +19,7 @@ export function OfflineSync() {
     if (!wasOffline.current) return;
     wasOffline.current = false;
     void (async () => {
-      const result = await flushOfflineQueue(auth.getHrmAuth());
+      const result = await flushOfflineQueue((path, init) => auth.requestHrm<unknown>(path, init));
       if (result.synced > 0) {
         Alert.alert('Đồng bộ', `Đã gửi ${result.synced} thao tác đang chờ.`);
       }

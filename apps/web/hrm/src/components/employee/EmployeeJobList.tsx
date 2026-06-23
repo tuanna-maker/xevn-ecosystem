@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +25,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { EmployeeJobProgressChart } from './EmployeeJobProgressChart';
+import { safeRandomUuid } from '@/lib/safeRandomUuid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -76,6 +77,9 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { useTasks, type Task } from '@/hooks/useTasks';
+import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
+import { Loader2 } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -91,86 +95,38 @@ interface Job {
   description?: string;
 }
 
-const initialMockJobs: Job[] = [
-  {
-    id: '1',
-    title: 'Báo cáo doanh số tháng 12',
-    project: 'Dự án ABC',
-    department: 'Kinh doanh',
-    priority: 'high',
-    status: 'in_progress',
-    startDate: '01/12/2024',
-    dueDate: '15/12/2024',
-    progress: 60,
-    assignedBy: 'Nguyễn Văn A',
-    description: 'Tổng hợp và báo cáo doanh số bán hàng tháng 12',
-  },
-  {
-    id: '2',
-    title: 'Phân tích đối thủ cạnh tranh',
-    project: 'Nghiên cứu thị trường',
-    department: 'Marketing',
-    priority: 'medium',
-    status: 'completed',
-    startDate: '15/11/2024',
-    dueDate: '30/11/2024',
-    progress: 100,
-    assignedBy: 'Trần Thị B',
-    description: 'Phân tích và đánh giá các đối thủ cạnh tranh trên thị trường',
-  },
-  {
-    id: '3',
-    title: 'Đào tạo nhân viên mới',
-    project: 'Onboarding Q4',
-    department: 'Nhân sự',
-    priority: 'low',
-    status: 'pending',
-    startDate: '20/12/2024',
-    dueDate: '25/12/2024',
-    progress: 0,
-    assignedBy: 'Lê Văn C',
-    description: 'Đào tạo và hướng dẫn nhân viên mới về quy trình công việc',
-  },
-  {
-    id: '4',
-    title: 'Hoàn thiện hồ sơ dự án',
-    project: 'Dự án XYZ',
-    department: 'Kinh doanh',
-    priority: 'high',
-    status: 'overdue',
-    startDate: '01/11/2024',
-    dueDate: '10/11/2024',
-    progress: 45,
-    assignedBy: 'Phạm Văn D',
-    description: 'Hoàn thiện và nộp hồ sơ dự án cho khách hàng',
-  },
-  {
-    id: '5',
-    title: 'Họp review sprint',
-    project: 'Phát triển sản phẩm',
-    department: 'Công nghệ',
-    priority: 'medium',
-    status: 'completed',
-    startDate: '05/12/2024',
-    dueDate: '05/12/2024',
-    progress: 100,
-    assignedBy: 'Hoàng Thị E',
-    description: 'Tổ chức họp review sprint và đánh giá tiến độ',
-  },
-  {
-    id: '6',
-    title: 'Cập nhật tài liệu kỹ thuật',
-    project: 'Documentation',
-    department: 'Công nghệ',
-    priority: 'low',
-    status: 'in_progress',
-    startDate: '10/12/2024',
-    dueDate: '20/12/2024',
-    progress: 30,
-    assignedBy: 'Vũ Văn F',
-    description: 'Cập nhật và hoàn thiện tài liệu kỹ thuật cho dự án',
-  },
-];
+function mapTaskStatus(status: string): Job['status'] {
+  if (status === 'completed') return 'completed';
+  if (status === 'in_progress') return 'in_progress';
+  if (status === 'cancelled' || status === 'on_hold') return 'overdue';
+  return 'pending';
+}
+
+function mapTaskPriority(priority: string): Job['priority'] {
+  if (priority === 'urgent' || priority === 'high') return 'high';
+  if (priority === 'low') return 'low';
+  return 'medium';
+}
+
+function mapOperationsTaskToJob(task: Task): Job {
+  return {
+    id: task.id,
+    title: task.title,
+    project: task.department || '—',
+    department: task.department || '—',
+    priority: mapTaskPriority(task.priority),
+    status: mapTaskStatus(task.status),
+    startDate: task.start_date ? format(new Date(task.start_date), 'dd/MM/yyyy') : '—',
+    dueDate: task.due_date ? format(new Date(task.due_date), 'dd/MM/yyyy') : '—',
+    progress: task.progress ?? 0,
+    assignedBy: task.reporter_name || '—',
+    description: task.description || undefined,
+  };
+}
+
+interface EmployeeJobListProps {
+  employeeId?: string;
+}
 
 const priorityConfig = {
   high: { label: 'Cao', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
@@ -200,9 +156,17 @@ const jobFormSchema = z.object({
 
 type JobFormValues = z.infer<typeof jobFormSchema>;
 
-export function EmployeeJobList() {
+export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
   const { t } = useTranslation();
-  const [jobs, setJobs] = useState<Job[]>(initialMockJobs);
+  const { tasks, isLoading, createTask } = useTasks();
+  const apiJobs = useMemo(() => {
+    const scoped = employeeId
+      ? tasks.filter((task) => task.assignee_id === employeeId)
+      : tasks;
+    return scoped.map(mapOperationsTaskToJob);
+  }, [tasks, employeeId]);
+  const [localJobs, setLocalJobs] = useState<Job[]>([]);
+  const jobs = useMemo(() => [...apiJobs, ...localJobs], [apiJobs, localJobs]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -280,7 +244,7 @@ export function EmployeeJobList() {
   };
 
   const handleDeleteJob = (jobId: string) => {
-    setJobs(jobs.filter((j) => j.id !== jobId));
+    setLocalJobs(localJobs.filter((j) => j.id !== jobId));
     toast({
       title: t('employeeProfile.jobs.deleteSuccess'),
       description: t('employeeProfile.jobs.deleteSuccessDesc'),
@@ -289,7 +253,7 @@ export function EmployeeJobList() {
 
   const onSubmit = (values: JobFormValues) => {
     const formattedJob: Job = {
-      id: editingJob ? editingJob.id : crypto.randomUUID(),
+      id: editingJob ? editingJob.id : safeRandomUuid(),
       title: values.title,
       project: values.project,
       department: values.department,
@@ -303,13 +267,23 @@ export function EmployeeJobList() {
     };
 
     if (editingJob) {
-      setJobs(jobs.map((j) => (j.id === editingJob.id ? formattedJob : j)));
+      setLocalJobs(localJobs.map((j) => (j.id === editingJob.id ? formattedJob : j)));
       toast({
         title: t('employeeProfile.jobs.updateSuccess'),
         description: t('employeeProfile.jobs.updateSuccessDesc'),
       });
     } else {
-      setJobs([formattedJob, ...jobs]);
+      void createTask.mutateAsync({
+        title: values.title,
+        description: values.description,
+        status: values.status === 'completed' ? 'completed' : values.status === 'in_progress' ? 'in_progress' : 'todo',
+        priority: values.priority,
+        progress: values.progress,
+        department: values.department,
+        due_date: format(values.dueDate, 'yyyy-MM-dd'),
+      }).catch(() => {
+        setLocalJobs([formattedJob, ...localJobs]);
+      });
       toast({
         title: t('employeeProfile.jobs.addSuccess'),
         description: t('employeeProfile.jobs.addSuccessDesc'),
@@ -466,6 +440,20 @@ export function EmployeeJobList() {
 
   return (
     <div className="space-y-6">
+      {isLoading ? (
+        <Card>
+          <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            {t('common.loading', 'Đang tải…')}
+          </CardContent>
+        </Card>
+      ) : jobs.length === 0 ? (
+        <EmbedApiEmptyState
+          title={t('employeeProfile.jobs.emptyTitle', 'Chưa có công việc')}
+          body={t('employeeProfile.jobs.emptyBody', 'Danh sách công việc từ operations/tasks API sẽ hiển thị tại đây.')}
+        />
+      ) : (
+        <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
@@ -1029,6 +1017,8 @@ export function EmployeeJobList() {
           )}
         </DialogContent>
       </Dialog>
+        </>
+      )}
     </div>
   );
 }

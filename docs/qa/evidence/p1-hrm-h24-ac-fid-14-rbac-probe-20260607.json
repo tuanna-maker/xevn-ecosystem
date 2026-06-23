@@ -1,0 +1,200 @@
+{
+  "generatedAt": "2026-06-07T01:00:31.065Z",
+  "results": [
+    {
+      "label": "group-ceo",
+      "email": "ceo@xe.vn",
+      "tenant": "xevn",
+      "company": "main",
+      "role": "group_ceo",
+      "modules": {
+        "employees": {
+          "http": 200,
+          "total": 1107,
+          "analysis": {
+            "companies": [
+              "trsport",
+              "logistics",
+              "holding",
+              "finance",
+              "services"
+            ],
+            "tenants": [
+              "xevn"
+            ],
+            "crossCompany": 0,
+            "crossTenant": 0
+          }
+        },
+        "contracts": {
+          "http": 200,
+          "code": "HRM-CON-200",
+          "total": 1091,
+          "analysis": {
+            "crossEmployee": 5
+          }
+        },
+        "attendance": {
+          "http": 200,
+          "code": "HRM-ATT-200",
+          "total": 13095,
+          "analysis": {
+            "crossEmployee": 2
+          }
+        },
+        "leave": {
+          "http": 400,
+          "code": "HRM-VAL-001",
+          "total": 0,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        }
+      },
+      "distinctGroupSlugs": 5,
+      "checks": {
+        "employeesHttp200": true,
+        "no409": true,
+        "crossCompanyZero": true,
+        "crossEmployeeZero": false,
+        "crossTenantZero": true,
+        "rollupMultiSlug": true,
+        "minEmployees": true,
+        "maxEmployees": true,
+        "tenantMatch": true,
+        "memberNoGroupTenants": true,
+        "rollupGtMember": true
+      },
+      "pass": false,
+      "failReasons": [
+        "contracts crossEmployee=5",
+        "attendance crossEmployee=2"
+      ]
+    },
+    {
+      "label": "member-ceo",
+      "email": "du-lich.ceo@xe.vn",
+      "tenant": "xe-du-lich",
+      "company": "main",
+      "role": "subsidiary_ceo",
+      "modules": {
+        "employees": {
+          "http": 200,
+          "total": 18,
+          "analysis": {
+            "companies": [
+              "main"
+            ],
+            "tenants": [
+              "xe-du-lich"
+            ],
+            "crossCompany": 0,
+            "crossTenant": 0
+          }
+        },
+        "contracts": {
+          "http": 200,
+          "code": "HRM-CON-200",
+          "total": 13,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        },
+        "attendance": {
+          "http": 200,
+          "code": "HRM-ATT-200",
+          "total": 50,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        },
+        "leave": {
+          "http": 400,
+          "code": "HRM-VAL-001",
+          "total": 0,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        }
+      },
+      "distinctGroupSlugs": 0,
+      "checks": {
+        "employeesHttp200": true,
+        "no409": true,
+        "crossCompanyZero": true,
+        "crossEmployeeZero": true,
+        "crossTenantZero": true,
+        "rollupMultiSlug": true,
+        "minEmployees": true,
+        "maxEmployees": true,
+        "tenantMatch": true,
+        "memberNoGroupTenants": true
+      },
+      "pass": true,
+      "failReasons": []
+    },
+    {
+      "label": "hrbp",
+      "email": "du-lich.hr@xe.vn",
+      "tenant": "xe-du-lich",
+      "company": "main",
+      "role": "HRBP_MANAGER",
+      "modules": {
+        "employees": {
+          "http": 200,
+          "total": 18,
+          "analysis": {
+            "companies": [
+              "main"
+            ],
+            "tenants": [
+              "xe-du-lich"
+            ],
+            "crossCompany": 0,
+            "crossTenant": 0
+          }
+        },
+        "contracts": {
+          "http": 200,
+          "code": "HRM-CON-200",
+          "total": 13,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        },
+        "attendance": {
+          "http": 200,
+          "code": "HRM-ATT-200",
+          "total": 50,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        },
+        "leave": {
+          "http": 400,
+          "code": "HRM-VAL-001",
+          "total": 0,
+          "analysis": {
+            "crossEmployee": 0
+          }
+        }
+      },
+      "distinctGroupSlugs": 0,
+      "checks": {
+        "employeesHttp200": true,
+        "no409": true,
+        "crossCompanyZero": true,
+        "crossEmployeeZero": true,
+        "crossTenantZero": true,
+        "rollupMultiSlug": true,
+        "minEmployees": true,
+        "maxEmployees": true,
+        "tenantMatch": true,
+        "memberNoGroupTenants": true,
+        "hrbpDeptNotWiderThanMemberCeo": true
+      },
+      "pass": true,
+      "failReasons": []
+    }
+  ]
+}

@@ -1,8 +1,68 @@
 import { isUuid } from '../utils/uuid';
 import { parseJwtClaims } from './jwtClaims';
 
+function pickActiveMembership(input: WireScopeInput): WireMembership | undefined {
+  const memberships = input.memberships ?? [];
+  if (!memberships.length) return undefined;
+
+  const employeeId = input.employeeId?.trim() ?? '';
+  const tenantId = input.tenantId?.trim() ?? '';
+  return (
+    memberships.find(
+      (m) =>
+        m.employee_id === employeeId &&
+        (!tenantId || m.tenant_id === tenantId),
+    ) ??
+    memberships.find((m) => m.employee_id === employeeId) ??
+    memberships[0]
+  );
+}
+
+/** Workforce / member operating slug from active membership (any non-blocked TEXT slug). */
+function resolveMembershipScopeSlug(input: WireScopeInput): string {
+  const active = pickActiveMembership(input);
+  const slug = active?.company_id?.trim().toLowerCase() ?? '';
+  if (slug && !isUuid(slug) && !isHrmWireBlockedSlug(slug)) return slug;
+
+  const wireUuid =
+    (input.companyUuid?.trim() && isUuid(input.companyUuid.trim())
+      ? input.companyUuid.trim()
+      : '') ||
+    (input.companyId?.trim() && isUuid(input.companyId.trim()) ? input.companyId.trim() : '');
+  if (!wireUuid) return '';
+
+  const memberships = input.memberships ?? [];
+  const employeeId = input.employeeId?.trim() ?? '';
+  const tenantId = input.tenantId?.trim() ?? '';
+  const byUuid =
+    memberships.find(
+      (m) =>
+        m.company_uuid?.trim() === wireUuid &&
+        m.employee_id === employeeId &&
+        (!tenantId || m.tenant_id === tenantId),
+    ) ?? memberships.find((m) => m.company_uuid?.trim() === wireUuid);
+  const recovered = byUuid?.company_id?.trim().toLowerCase() ?? '';
+  if (recovered && !isUuid(recovered) && !isHrmWireBlockedSlug(recovered)) return recovered;
+
+  return '';
+}
+
+function rollupSlugFromMemberships(input: WireScopeInput): string {
+  const slug = pickActiveMembership(input)?.company_id?.trim().toLowerCase() ?? '';
+  return slug && HOME_SUMMARY_QUERY_SCOPE_SLUGS.has(slug) ? slug : '';
+}
+
 /** Never send these scope slugs on HRM REST when legal UUID should be used (`du-lich.ceo` → `main`). */
 export const HRM_WIRE_BLOCKED_SLUGS = new Set(['main']);
+
+/** Payroll DB rows use TEXT company slugs; query must send rollup slug, not legal UUID alone. */
+export const PAYROLL_QUERY_SCOPE_SLUGS = new Set(['main', 'holding']);
+
+/** Home summary workforce blocks (celebrations, whos_out) use the same rollup slug as payroll. */
+export const HOME_SUMMARY_QUERY_SCOPE_SLUGS = PAYROLL_QUERY_SCOPE_SLUGS;
+
+/** Leave balance reads `employee_leave_balances` under TEXT company slugs (`holding`, …). */
+export const LEAVE_BALANCE_QUERY_SCOPE_SLUGS = PAYROLL_QUERY_SCOPE_SLUGS;
 
 export function isHrmWireBlockedSlug(value: string | undefined | null): boolean {
   if (!value?.trim()) return false;
@@ -13,6 +73,8 @@ export type WireMembership = {
   tenant_id: string;
   company_uuid: string;
   employee_id: string;
+  /** Membership scope slug (holding, main, …) — used to recover rollup query when companyId is legal UUID. */
+  company_id?: string;
 };
 
 export type WireScopeInput = {
@@ -67,8 +129,67 @@ export function resolveWireCompanyId(input: WireScopeInput): string {
  */
 export function resolvePayrollQueryCompanyId(input: WireScopeInput): string {
   const scopeSlug = input.companyId?.trim().toLowerCase() ?? '';
-  if (scopeSlug === 'main') return 'main';
+  if (scopeSlug && PAYROLL_QUERY_SCOPE_SLUGS.has(scopeSlug)) return scopeSlug;
   const wire = resolveWireCompanyId(input);
   if (wire) return wire;
   return scopeSlug;
+}
+
+/**
+ * `company_id` query param for GET `/home/summary` (celebrations + whos_out workforce rollup).
+ * D-W7-HOME-WHOS-SLUG-01: slug `holding` scopes whos_out via workforce IN — legal UUID alone returns empty items.
+ */
+export function resolveHomeSummaryQueryCompanyId(input: WireScopeInput): string {
+  const scopeSlug = input.companyId?.trim().toLowerCase() ?? '';
+  if (scopeSlug && HOME_SUMMARY_QUERY_SCOPE_SLUGS.has(scopeSlug)) return scopeSlug;
+
+  const fromMembership = rollupSlugFromMemberships(input);
+  if (fromMembership) return fromMembership;
+
+  const token = input.accessToken?.trim() ?? '';
+  if (token) {
+    const jwtSlug = parseJwtClaims(token)?.companyId?.trim().toLowerCase() ?? '';
+    if (jwtSlug && HOME_SUMMARY_QUERY_SCOPE_SLUGS.has(jwtSlug)) return jwtSlug;
+  }
+
+  const wire = resolveWireCompanyId(input);
+  if (wire) return wire;
+  return scopeSlug;
+}
+
+/**
+ * `company_id` query param for `POST /files/upload` (employee-avatar).
+ * ADR-HRM-RBAC-SCOPE-LADDER: rollup slug (`holding`/`main`) on query; legal UUID on `x-company-id` header.
+ * Same recovery as {@link resolveHomeSummaryQueryCompanyId} (PCOMP-W7-MOB-WHOS-OUT-02).
+ */
+export function resolveAvatarUploadQueryCompanyId(input: WireScopeInput): string {
+  return resolveHomeSummaryQueryCompanyId(input);
+}
+
+/**
+ * `company_id` query param for GET `/attendance/leave-balance`.
+ * D-W8-MOB-BAL-UI-01 / P1-LEAVE-BALANCE-DEVICE-01: TEXT slug only (`holding`, `trsport`, …) — never legal UUID.
+ */
+export function resolveLeaveBalanceQueryCompanyId(input: WireScopeInput): string {
+  const scopeSlug = input.companyId?.trim().toLowerCase() ?? '';
+
+  if (scopeSlug && !isUuid(scopeSlug) && !isHrmWireBlockedSlug(scopeSlug)) {
+    return scopeSlug;
+  }
+
+  const fromMembership = resolveMembershipScopeSlug(input);
+  if (fromMembership) return fromMembership;
+
+  const token = input.accessToken?.trim() ?? '';
+  if (token) {
+    const jwtSlug = parseJwtClaims(token)?.companyId?.trim().toLowerCase() ?? '';
+    if (jwtSlug && !isHrmWireBlockedSlug(jwtSlug) && !isUuid(jwtSlug)) return jwtSlug;
+  }
+
+  const rollupMembership = rollupSlugFromMemberships(input);
+  if (rollupMembership) return rollupMembership;
+
+  if (scopeSlug && LEAVE_BALANCE_QUERY_SCOPE_SLUGS.has(scopeSlug)) return scopeSlug;
+
+  return 'holding';
 }

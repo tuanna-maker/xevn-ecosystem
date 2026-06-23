@@ -15,6 +15,14 @@ export class GetEmployeeQueryDto {
   company_id!: string;
 
   @IsOptional()
+  @IsString()
+  view?: string;
+
+  @IsOptional()
   @Transform(({ value }) => toOptionalBool(value))
   include_archived?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => toOptionalBool(value))
+  include_attendance_today?: boolean;
 }

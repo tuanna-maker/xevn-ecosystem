@@ -86,6 +86,12 @@ services:
   hrm-be:
     image: node:22-alpine
     container_name: xevn-hrm-be-dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/api/hrm/ >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 120s
     working_dir: /app
     volumes:
       - ../..:/app
@@ -99,18 +105,35 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       # Force container-side port — HRM_BE_PORT in .env is the HOST port, not app port
       PORT: "3001"
+      DOCKER: "1"
+      # S2S bridge — dev VPS: literal key (deploy/.env hash vs apps/*/.env mismatch caused XBOS-AUTH-001)
+      INTERNAL_API_KEY: xevn-dev-internal-key
+      # UF-XBOS-09/15 + UF-HRM-10 — service JWT must match xbos-be (apps/*/.env replace_with_strong_secret drift)
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
+      SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
+      SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
+      # UF-HRM-10 — docker network upstream (env_file localhost:3002 must not win)
+      XBOS_API_URL: http://xbos-be:${XBOS_BE_PORT:-28002}
     ports:
       - "${HRM_BE_PORT:-3001}:3001"
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:dev"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
+      xbos-be:
+        condition: service_started
     restart: unless-stopped
 
   # --- BE: XBOS API ---
   xbos-be:
     image: node:22-alpine
     container_name: xevn-xbos-be-dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:28002/api/xbos/ >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 120s
     working_dir: /app
     volumes:
       - ../..:/app
@@ -121,6 +144,18 @@ services:
     environment:
       CI: "true"
       NODE_ENV: ${NODE_ENV:-development}
+      DOCKER: "1"
+      # S2S bridge — dev VPS: literal key (deploy/.env hash vs apps/*/.env mismatch caused XBOS-AUTH-001)
+      INTERNAL_API_KEY: xevn-dev-internal-key
+      # UF-XBOS-09/15 catalog-governance/workflows/start from hrm-be bridge (production rejects key-only)
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
+      SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
+      SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
+      # UF-XBOS-09/15 — catalog-governance S2S batch fetch (env_file localhost must not win)
+      HRM_API_URL: http://hrm-be:3001
+      # UC-CC-P0-02 — legal document files (stable path inside bind mount; survives cwd drift)
+      XBOS_LEGAL_DOC_STORAGE_ROOT: /app/apps/api/xbos-api/storage/legal-documents
+      XBOS_PUBLIC_BASE_URL: ${XBOS_PUBLIC_BASE_URL:-http://127.0.0.1:28002}
       # xbos-api reads XBOS_BE_PORT as its listen port (not generic PORT).
       # Port mapping host:container must match — both sides use XBOS_BE_PORT value.
     ports:

@@ -1,7 +1,56 @@
-import { MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
+import {
+  GROUP_HOLDING_COMPANY_ID,
+  MASTER_TENANT_ID,
+  MEMBER_DEFAULT_COMPANY_ID,
+} from '../constants/tenant';
+import { resolveLegalEntityApiIdFromList } from './legalEntityIdResolver';
+import { fetchHoldingLegalEntities } from './orgFoundationApi';
+import { GROUP_HOLDING_ROOT_ID } from './tenantScopeApi';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 
-/** `entityId` must be `xbos_legal_entity.id` — use `resolveLegalEntityApiIdForCompany` when UI row id may be tenant_id. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isPersistedShareholderId(id: string): boolean {
+  return UUID_RE.test(id);
+}
+
+/** Resolve UI holding root / holding UUID → persisted UUID + holding partition (UF-XBOS-05). */
+export async function resolveShareholderEntityScope(
+  entityId: string,
+  tenantId: string,
+): Promise<{ entityId: string; tenantId: string; companyId: string }> {
+  if (entityId === GROUP_HOLDING_ROOT_ID) {
+    const holdingRows = await fetchHoldingLegalEntities(tenantId);
+    const resolved = resolveLegalEntityApiIdFromList(
+      { id: GROUP_HOLDING_ROOT_ID, tenantId },
+      holdingRows,
+    );
+    if (!resolved) {
+      throw new Error('Chưa có hồ sơ tập đoàn — lưu pháp nhân trước khi ghi cổ đông.');
+    }
+    return {
+      entityId: resolved,
+      tenantId: MASTER_TENANT_ID,
+      companyId: GROUP_HOLDING_COMPANY_ID,
+    };
+  }
+
+  if (isPersistedShareholderId(entityId)) {
+    const holdingRows = (await fetchHoldingLegalEntities(tenantId)) ?? [];
+    const holdingMatch = holdingRows.find(
+      (row) => String(row.id) === entityId && row.entity_type === 'holding',
+    );
+    if (holdingMatch) {
+      return {
+        entityId,
+        tenantId: MASTER_TENANT_ID,
+        companyId: GROUP_HOLDING_COMPANY_ID,
+      };
+    }
+  }
+
+  return { entityId, tenantId, companyId: MEMBER_DEFAULT_COMPANY_ID };
+}
 
 function scopeInit(tenantId: string, companyId = MEMBER_DEFAULT_COMPANY_ID, withBody = false) {
   return {
@@ -31,9 +80,10 @@ export type LegalDocumentApiRow = {
 };
 
 export async function listShareholders(entityId: string, tenantId: string): Promise<ShareholderApiRow[]> {
+  const scope = await resolveShareholderEntityScope(entityId, tenantId);
   const data = await xbosGetData<{ items?: ShareholderApiRow[] }>(
-    `/org-foundation/legal-entities/${encodeURIComponent(entityId)}/shareholders`,
-    { scope: 'legal-entity.shareholders.list', ...scopeInit(tenantId) },
+    `/org-foundation/legal-entities/${encodeURIComponent(scope.entityId)}/shareholders`,
+    { scope: 'legal-entity.shareholders.list', ...scopeInit(scope.tenantId, scope.companyId) },
   );
   return data?.items ?? [];
 }
@@ -44,13 +94,14 @@ export async function saveShareholder(
   body: { holderName: string; identityCode?: string; ratioPercent?: number; contributedValue?: number },
   shareholderId?: string,
 ): Promise<ShareholderApiRow> {
+  const scope = await resolveShareholderEntityScope(entityId, tenantId);
   const path = shareholderId
-    ? `/org-foundation/legal-entities/${encodeURIComponent(entityId)}/shareholders/${encodeURIComponent(shareholderId)}`
-    : `/org-foundation/legal-entities/${encodeURIComponent(entityId)}/shareholders`;
+    ? `/org-foundation/legal-entities/${encodeURIComponent(scope.entityId)}/shareholders/${encodeURIComponent(shareholderId)}`
+    : `/org-foundation/legal-entities/${encodeURIComponent(scope.entityId)}/shareholders`;
   const envelope = await xbosFetch<{ data?: ShareholderApiRow }>(path, {
     method: shareholderId ? 'PUT' : 'POST',
     scope: shareholderId ? 'legal-entity.shareholders.update' : 'legal-entity.shareholders.create',
-    ...scopeInit(tenantId, MEMBER_DEFAULT_COMPANY_ID, true),
+    ...scopeInit(scope.tenantId, scope.companyId, true),
     body: JSON.stringify(body),
   });
   if (!envelope?.data) throw new Error('shareholder save returned empty payload');
@@ -62,14 +113,48 @@ export async function deleteShareholderApi(
   tenantId: string,
   shareholderId: string,
 ): Promise<void> {
+  const scope = await resolveShareholderEntityScope(entityId, tenantId);
   await xbosFetch(
-    `/org-foundation/legal-entities/${encodeURIComponent(entityId)}/shareholders/${encodeURIComponent(shareholderId)}`,
+    `/org-foundation/legal-entities/${encodeURIComponent(scope.entityId)}/shareholders/${encodeURIComponent(shareholderId)}`,
     {
       method: 'DELETE',
       scope: 'legal-entity.shareholders.delete',
-      ...scopeInit(tenantId),
+      ...scopeInit(scope.tenantId, scope.companyId),
     },
   );
+}
+
+export type ShareholderFormRow = {
+  id: string;
+  holderName: string;
+  identityCode?: string;
+  ratioPercent?: number;
+  contributedValue?: number;
+};
+
+/** Persist all non-empty shareholder rows (POST new / PUT existing) — used on legal entity save. */
+export async function syncShareholders(
+  entityId: string,
+  tenantId: string,
+  rows: ShareholderFormRow[],
+): Promise<ShareholderApiRow[]> {
+  const toSave = rows.filter((r) => String(r.holderName ?? '').trim());
+  const results: ShareholderApiRow[] = [];
+  for (const row of toSave) {
+    const saved = await saveShareholder(
+      entityId,
+      tenantId,
+      {
+        holderName: row.holderName.trim(),
+        identityCode: row.identityCode?.trim() || undefined,
+        ratioPercent: row.ratioPercent,
+        contributedValue: row.contributedValue,
+      },
+      isPersistedShareholderId(row.id) ? row.id : undefined,
+    );
+    results.push(saved);
+  }
+  return results;
 }
 
 export async function listLegalDocuments(entityId: string, tenantId: string): Promise<LegalDocumentApiRow[]> {

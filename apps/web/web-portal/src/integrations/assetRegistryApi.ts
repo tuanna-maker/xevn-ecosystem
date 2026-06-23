@@ -1,3 +1,5 @@
+import { safeRandomUuid } from '../lib/safeRandomUuid';
+
 const XBOS_API_ORIGIN = import.meta.env.VITE_XBOS_API_ORIGIN ?? 'http://localhost:3002';
 const SERVICE_JWT_TOKEN = import.meta.env.VITE_SERVICE_JWT_TOKEN;
 const INTERNAL_API_KEY = import.meta.env.DEV
@@ -86,7 +88,7 @@ export class AssetRegistryApiError extends Error {
 function headers() {
   const baseHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
-    'x-request-id': crypto.randomUUID(),
+    'x-request-id': safeRandomUuid(),
   };
   if (SERVICE_JWT_TOKEN) {
     baseHeaders.Authorization = `Bearer ${SERVICE_JWT_TOKEN}`;

@@ -1,0 +1,34 @@
+{
+  "work_item_id": "PCOMP-W4-PROFILE-AVATAR-MOB-JAVT-02-QA",
+  "date": "2026-06-09",
+  "device": "emulator-5554",
+  "api_base": "https://14-225-217-232.nip.io",
+  "account": "uat.nv0001@xe.vn",
+  "apk_sha256": "77E6CE34D2A234F8D871A4735E6E6C0329F93F3D407F15DB5193DC7E859A0A2E",
+  "apk_bytes": 71782374,
+  "steps": {
+    "install": "PASS",
+    "login": "PASS",
+    "more_profile_link": "PASS",
+    "avatar_control": "PASS",
+    "picker_open": "PASS",
+    "api_avatar_changed": "GWC",
+    "profile_display": "GWC",
+    "home_greeting": "FAIL",
+    "home_avatar": "GWC"
+  },
+  "journeys": {
+    "J-AVT-02": "FAIL"
+  },
+  "apk_sha256_actual": "77E6CE34D2A234F8D871A4735E6E6C0329F93F3D407F15DB5193DC7E859A0A2E",
+  "avatar_before": null,
+  "avatar_after": null,
+  "logcat_audit": {
+    "hasMainHeader": false,
+    "uploadError": false,
+    "fatalApp": false,
+    "pickerCrash": false
+  },
+  "pass": false,
+  "ack_status": "FAIL_TO_PM"
+}

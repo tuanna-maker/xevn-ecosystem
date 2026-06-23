@@ -42,7 +42,8 @@ alwaysApply: true
 12. **Nghiệp vụ thiếu:** PM dispatch BA tự phân tích; lane kỹ thuật tự sửa docs + code + evidence — không chờ user nhắc từng menu.
 13. **Terminal pulse:** trước mỗi wave — `pnpm sprint:pulse S{n}`; log `docs/qa/evidence/sprint-pulse-*.md` + `SPRINT_PULSE_LOG.md`.
 14. **FE↔BE live health:** `pnpm run qc:fe-be-health` (hoặc `:pilot`) — **bắt buộc** khi user báo 500/console; HRM `:28001` phải chạy; fix + regression jest, không sửa một chỗ hỏng chỗ khác (`.cursor/rules/pm-fe-be-live-health-gate.mdc`).
-14. **Phase 1 DONE** chỉ khi G1–G9 trong `PHASE1_COMPLETION_PLAN.md` + HRM fidelity G-FID closed.
+16. **U40 full-scope PM:** Bao quát khối lượng tổng thể, vẽ lộ trình wave, giao việc chi tiết sub-agent, chịu trách nhiệm QA/QC; đọc BRD/SRS/TechSpec trước dispatch — user chỉ đưa yêu cầu sản phẩm (`.cursor/rules/pm-full-scope-roadmap-accountability.mdc`).
+17. **U43 LOCK — Task cùng lượt:** Không kết thúc bằng «PM đã dispatch»; mọi báo cáo còn việc phải kèm `Task` ngay trong message (`.cursor/rules/pm-lock-task-same-turn-u43.mdc`).
 15. **U16:** Chỉ **Dev+QA** execution; **PM/SA/BA/TA** governance + cập nhật Cursor sau thảo luận — `.cursor/rules/team-execution-vs-governance.mdc`.
 
 ## Hành vi PM mỗi phiên

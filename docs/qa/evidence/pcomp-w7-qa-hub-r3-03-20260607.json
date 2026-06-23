@@ -1,0 +1,49 @@
+{
+  "work_item_id": "PCOMP-W7-QA-HUB-R3-03",
+  "date": "2026-06-07",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-release-fullstack.apk",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "login_method": "adbkeyboard_email_testid",
+  "results": [
+    {
+      "id": "MOB-UX-SAFE-01",
+      "pass": false,
+      "note": "{\"greetingY1\":null,\"tabHomeY2\":2337,\"pass\":false,\"tabClearNav\":false,\"noRedScreen\":true}"
+    },
+    {
+      "jId": "J-MOB-06",
+      "pass": false,
+      "note": "missing"
+    },
+    {
+      "jId": "J-MOB-07",
+      "pass": false,
+      "note": "card missing"
+    },
+    {
+      "jId": "J-MOB-08",
+      "pass": false,
+      "note": "section=false noYear=true"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": false,
+      "note": "section missing",
+      "whosOut": false
+    },
+    {
+      "jId": "J-AVT-02",
+      "pass": false,
+      "note": "avatar tap target missing"
+    }
+  ],
+  "logcat_audit": {
+    "hasMain": false,
+    "hasPickerCrash": false
+  },
+  "pass": false,
+  "layer": "L2.5",
+  "ack_status": "FAIL"
+}

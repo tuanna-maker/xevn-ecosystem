@@ -4,7 +4,12 @@ import {
   XBOS_GROUP_LEGAL_HOLDING,
   XBOS_GROUP_OPERATING_MAIN,
 } from '../common/xbos-group-legal-scope';
-import { isMasterTenant, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../common/tenant.constants';
+import {
+  GROUP_HOLDING_ROOT_ID,
+  isMasterTenant,
+  MASTER_TENANT_ID,
+  MEMBER_DEFAULT_COMPANY_ID,
+} from '../common/tenant.constants';
 import { XbosDbService } from '../db/xbos-db.service';
 
 export type LegalEntityPartition = { tenantId: string; companyId: string };
@@ -31,6 +36,14 @@ export interface OrgUnitInput {
   sortOrder?: number;
   payload?: Record<string, unknown>;
 }
+
+export type GroupOrgTreeEntry = {
+  tenantId: string;
+  name: string;
+  tree: unknown[];
+  /** Registry tenant slug when tree is keyed by legal-entity UUID (group overview role mapping). */
+  memberTenantId?: string;
+};
 
 @Injectable()
 export class OrgFoundationService {
@@ -237,39 +250,123 @@ export class OrgFoundationService {
   }
 
   /** Aggregated org trees for group CEO on master tenant (same data plane as tenant-scope/group-org-overview). */
-  async listGroupOrgTreesForUser(userId: string) {
-    const { rows } = await this.db.query<{
-      tenant_id: string;
+  async listGroupOrgTreesForUser(_userId: string): Promise<GroupOrgTreeEntry[]> {
+    const trees: GroupOrgTreeEntry[] = [];
+
+    const { rows: holdingLegalRows } = await this.db.query<{
+      id: string;
       name: string;
-      default_company_id: string;
     }>(
-      `SELECT t.tenant_id, t.name, t.default_company_id
-       FROM public.xbos_user_tenant_membership m
-       JOIN public.xbos_tenant_registry t ON t.tenant_id = m.tenant_id
-       WHERE m.user_id = $1 AND m.status = 'active' AND t.status = 'active' AND t.tenant_kind = 'member'
-       ORDER BY t.name`,
-      [userId],
+      `SELECT le.id::text AS id, le.name
+       FROM public.xbos_legal_entity le
+       WHERE le.tenant_id = $1
+         AND le.company_id = $2
+         AND le.status IS DISTINCT FROM 'deleted'
+       ORDER BY CASE WHEN le.entity_type = 'holding' THEN 0 ELSE 1 END, le.name`,
+      [MASTER_TENANT_ID, XBOS_GROUP_LEGAL_HOLDING],
     );
-    const trees: Array<{ tenantId: string; name: string; tree: unknown[] }> = [];
-    for (const row of rows) {
-      const memberTenantId = String(row.tenant_id);
-      const memberCompanyId = String(row.default_company_id || MEMBER_DEFAULT_COMPANY_ID);
+    if (holdingLegalRows.length > 0) {
+      const { rows: tenantRows } = await this.db.query<{ name: string }>(
+        `SELECT name FROM public.xbos_tenant_registry
+         WHERE tenant_id = $1 AND status = 'active' LIMIT 1`,
+        [MASTER_TENANT_ID],
+      );
+      const holdingDisplayName =
+        holdingLegalRows.find((row) => row.name?.trim())?.name ??
+        tenantRows[0]?.name ??
+        'Tập đoàn XeVN';
+      const holdingLegalIds = holdingLegalRows.map((row) => String(row.id));
       trees.push({
-        tenantId: memberTenantId,
-        name: String(row.name),
-        tree: await this.listMemberOrgTree(memberTenantId, memberCompanyId),
+        tenantId: GROUP_HOLDING_ROOT_ID,
+        name: String(holdingDisplayName),
+        tree: await this.listMemberOrgTree(
+          MASTER_TENANT_ID,
+          XBOS_GROUP_LEGAL_HOLDING,
+          holdingLegalIds,
+          true,
+        ),
       });
     }
+
+    const { rows: members } = await this.db.query<{
+      tenant_id: string;
+      tenant_name: string;
+      id: string;
+      name: string;
+    }>(
+      `SELECT t.tenant_id,
+              t.name AS tenant_name,
+              le.id::text AS id,
+              le.name
+       FROM public.xbos_tenant_registry t
+       JOIN public.xbos_legal_entity le ON (
+         (le.tenant_id = t.tenant_id AND le.company_id = t.default_company_id)
+         OR (le.tenant_id = $1 AND le.company_id = t.tenant_id)
+       )
+       WHERE t.tenant_kind = 'member' AND t.status = 'active'
+         AND le.status IS DISTINCT FROM 'deleted'
+         AND le.entity_type IS DISTINCT FROM 'holding'
+       ORDER BY t.name`,
+      [MASTER_TENANT_ID],
+    );
+
+    for (const member of members) {
+      const memberTenantId = String(member.tenant_id);
+      trees.push({
+        tenantId: String(member.id),
+        name: String(member.name),
+        memberTenantId,
+        tree: await this.listMemberOrgTree(memberTenantId, memberTenantId, String(member.id)),
+      });
+    }
+
     return trees;
   }
 
-  private async listMemberOrgTree(tenantId: string, companyId: string) {
-    const scopedCompany = companyId === 'all' || companyId === 'holding' ? MEMBER_DEFAULT_COMPANY_ID : companyId;
+  private resolveOrgUnitCompanyPartitions(tenantId: string, companyId: string): string[] {
+    const normalized = companyId.trim().toLowerCase();
+    if (isMasterTenant(tenantId)) {
+      if (
+        normalized === 'all' ||
+        normalized === XBOS_GROUP_LEGAL_HOLDING ||
+        normalized === XBOS_GROUP_OPERATING_MAIN ||
+        normalized === MASTER_TENANT_ID
+      ) {
+        return [XBOS_GROUP_LEGAL_HOLDING, XBOS_GROUP_OPERATING_MAIN];
+      }
+      return [companyId];
+    }
+    if (normalized === 'all' || normalized === XBOS_GROUP_LEGAL_HOLDING) {
+      return [MEMBER_DEFAULT_COMPANY_ID];
+    }
+    return [companyId];
+  }
+
+  private async listMemberOrgTree(
+    tenantId: string,
+    companyId: string,
+    legalEntityIds?: string | string[] | null,
+    includeUnlinkedMasterUnits = false,
+  ) {
+    const resolvedLegalEntityIds = this.normalizeLegalEntityIds(legalEntityIds);
+    if (resolvedLegalEntityIds.length > 0) {
+      return this.listOrgTreeByLegalEntity(
+        tenantId,
+        companyId,
+        resolvedLegalEntityIds,
+        includeUnlinkedMasterUnits,
+      );
+    }
+
+    const companyIds = this.resolveOrgUnitCompanyPartitions(tenantId, companyId);
     const { rows } = await this.db.query(
       `WITH RECURSIVE tree AS (
         SELECT o.*, 0 AS depth, ARRAY[o.id] AS path
         FROM public.xbos_org_unit o
-        WHERE o.tenant_id = $1 AND o.company_id = $2 AND o.parent_id IS NULL AND o.status <> 'deleted'
+        WHERE o.tenant_id = $1
+          AND o.company_id = ANY($2::text[])
+          AND o.parent_id IS NULL
+          AND o.status <> 'deleted'
         UNION ALL
         SELECT c.*, t.depth + 1, t.path || c.id
         FROM public.xbos_org_unit c
@@ -277,7 +374,81 @@ export class OrgFoundationService {
         WHERE c.status <> 'deleted'
       )
       SELECT * FROM tree ORDER BY path, sort_order, name`,
-      [tenantId, scopedCompany],
+      [tenantId, companyIds],
+    );
+    return this.buildTree(rows as Array<Record<string, unknown>>);
+  }
+
+  private normalizeLegalEntityIds(legalEntityIds?: string | string[] | null): string[] {
+    if (Array.isArray(legalEntityIds)) {
+      return [...new Set(legalEntityIds.map((id) => id.trim()).filter(Boolean))];
+    }
+    const single = legalEntityIds?.trim();
+    return single ? [single] : [];
+  }
+
+  /** Org units for one or more legal entities — main/holding partitions on master + legacy member slug + member tenant. */
+  private async listOrgTreeByLegalEntity(
+    tenantId: string,
+    companyId: string,
+    legalEntityIds: string[],
+    includeUnlinkedMasterUnits = false,
+  ) {
+    const legacyMasterCompanyId = isMasterTenant(tenantId) ? companyId : tenantId;
+    const masterCompanyIds = [XBOS_GROUP_OPERATING_MAIN, XBOS_GROUP_LEGAL_HOLDING];
+    if (
+      !masterCompanyIds.includes(legacyMasterCompanyId) &&
+      isMasterTenant(MASTER_TENANT_ID) &&
+      legacyMasterCompanyId !== MASTER_TENANT_ID
+    ) {
+      masterCompanyIds.push(legacyMasterCompanyId);
+    }
+
+    const unlinkedClause = includeUnlinkedMasterUnits
+      ? `OR (
+              o.legal_entity_id IS NULL
+              AND o.tenant_id = $2
+              AND o.company_id = ANY($3::text[])
+            )`
+      : '';
+
+    const { rows } = await this.db.query(
+      `WITH RECURSIVE roots AS (
+        SELECT o.id
+        FROM public.xbos_org_unit o
+        WHERE o.status <> 'deleted'
+          AND o.parent_id IS NULL
+          AND (
+            (
+              o.legal_entity_id = ANY($1::uuid[])
+              AND (
+                (o.tenant_id = $2 AND o.company_id = ANY($3::text[]))
+                OR (o.tenant_id = $4 AND o.company_id = $5)
+                OR (o.tenant_id = $2 AND o.company_id = $6)
+              )
+            )
+            ${unlinkedClause}
+          )
+      ),
+      tree AS (
+        SELECT o.*, 0 AS depth, ARRAY[o.id] AS path
+        FROM public.xbos_org_unit o
+        JOIN roots r ON r.id = o.id
+        UNION ALL
+        SELECT c.*, t.depth + 1, t.path || c.id
+        FROM public.xbos_org_unit c
+        JOIN tree t ON c.parent_id = t.id
+        WHERE c.status <> 'deleted'
+      )
+      SELECT * FROM tree ORDER BY path, sort_order, name`,
+      [
+        legalEntityIds,
+        MASTER_TENANT_ID,
+        masterCompanyIds,
+        tenantId,
+        MEMBER_DEFAULT_COMPANY_ID,
+        legacyMasterCompanyId,
+      ],
     );
     return this.buildTree(rows as Array<Record<string, unknown>>);
   }
@@ -300,11 +471,65 @@ export class OrgFoundationService {
     return roots;
   }
 
+  /**
+   * Org units for a legal entity persist under that entity's tenant partition so list/get tree parity holds
+   * (UF-XBOS-12 — group CEO POST with legalEntityId must appear on GET tree for member entity).
+   */
+  async resolveOrgUnitPersistScope(
+    tenantId: string,
+    companyId: string,
+    legalEntityId?: string | null,
+  ): Promise<{ tenantId: string; companyId: string }> {
+    const entityId = legalEntityId?.trim();
+    if (!entityId) {
+      return { tenantId, companyId };
+    }
+    const partition = await this.resolveLegalEntityPartition(entityId);
+    if (!partition) {
+      return { tenantId, companyId };
+    }
+    if (isMasterTenant(partition.tenantId)) {
+      const normalizedCompany = partition.companyId.trim().toLowerCase();
+      return {
+        tenantId: partition.tenantId,
+        companyId:
+          normalizedCompany === XBOS_GROUP_OPERATING_MAIN
+            ? XBOS_GROUP_LEGAL_HOLDING
+            : partition.companyId,
+      };
+    }
+    return {
+      tenantId: partition.tenantId,
+      companyId: MEMBER_DEFAULT_COMPANY_ID,
+    };
+  }
+
+  /** Flat org tree scoped to one legal entity (F5 reload after member org-unit mutate). */
+  async listOrgTreeForLegalEntity(legalEntityId: string) {
+    const partition = await this.resolveLegalEntityPartition(legalEntityId);
+    if (!partition) {
+      throw new ApiException('XBOS-ORG-404', 'Legal entity not found', HttpStatus.NOT_FOUND);
+    }
+    return this.listMemberOrgTree(partition.tenantId, partition.companyId, legalEntityId.trim());
+  }
+
   async upsertOrgUnit(tenantId: string, companyId: string, unitId: string | null, body: OrgUnitInput) {
     if (!body.code?.trim() || !body.name?.trim() || !body.orgType?.trim()) {
       throw new ApiException('XBOS-ORG-400', 'code, name, orgType are required', HttpStatus.BAD_REQUEST);
     }
+    const persistScope = await this.resolveOrgUnitPersistScope(tenantId, companyId, body.legalEntityId);
+    let persistTenantId = persistScope.tenantId;
+    let persistCompanyId = persistScope.companyId;
     if (unitId) {
+      const existing = await this.db.query<{ tenant_id: string; company_id: string }>(
+        `SELECT tenant_id, company_id FROM public.xbos_org_unit
+         WHERE id = $1::uuid AND status <> 'deleted' LIMIT 1`,
+        [unitId],
+      );
+      if (existing.rows[0]) {
+        persistTenantId = String(existing.rows[0].tenant_id);
+        persistCompanyId = String(existing.rows[0].company_id);
+      }
       const { rows } = await this.db.query(
         `UPDATE public.xbos_org_unit SET
           code = $4, name = $5, org_type = $6, parent_id = $7::uuid,
@@ -314,8 +539,8 @@ export class OrgFoundationService {
          RETURNING *`,
         [
           unitId,
-          tenantId,
-          companyId,
+          persistTenantId,
+          persistCompanyId,
           body.code.trim(),
           body.name.trim(),
           body.orgType.trim(),
@@ -334,8 +559,8 @@ export class OrgFoundationService {
       ) VALUES ($1,$2,$3,$4,$5,$6::uuid,$7::uuid,$8,$9::jsonb)
       RETURNING *`,
       [
-        tenantId,
-        companyId,
+        persistTenantId,
+        persistCompanyId,
         body.code.trim(),
         body.name.trim(),
         body.orgType.trim(),
@@ -349,11 +574,19 @@ export class OrgFoundationService {
   }
 
   async deleteOrgUnit(tenantId: string, companyId: string, unitId: string) {
+    const existing = await this.db.query<{ tenant_id: string; company_id: string }>(
+      `SELECT tenant_id, company_id FROM public.xbos_org_unit
+       WHERE id = $1::uuid AND status <> 'deleted' LIMIT 1`,
+      [unitId],
+    );
+    const row = existing.rows[0];
+    const deleteTenantId = row ? String(row.tenant_id) : tenantId;
+    const deleteCompanyId = row ? String(row.company_id) : companyId;
     const { rows } = await this.db.query(
       `UPDATE public.xbos_org_unit SET status = 'deleted', updated_at = NOW()
        WHERE id = $1::uuid AND tenant_id = $2 AND company_id = $3 AND status <> 'deleted'
        RETURNING id`,
-      [unitId, tenantId, companyId],
+      [unitId, deleteTenantId, deleteCompanyId],
     );
     if (!rows[0]) {
       throw new ApiException('XBOS-ORG-404', 'Org unit not found', HttpStatus.NOT_FOUND);

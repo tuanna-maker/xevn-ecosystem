@@ -1,10 +1,10 @@
-import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import { Controller, Get, Headers, Param, Post, Query } from '@nestjs/common';
 import { CatalogSyncService } from './catalog-sync.service';
 import { ok } from '../common/api-response';
 import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
-import { resolveScopeContext } from '../common/scope-context';
+import { resolveHrmCatalogSyncScope } from '../common/hrm-catalog-sync-scope';
 
 @Controller('catalog-sync')
 export class CatalogSyncController {
@@ -25,13 +25,18 @@ export class CatalogSyncController {
     @Param('catalogKey') catalogKey: string,
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
+    @Query('tenantId') queryTenantId?: string,
+    @Query('companyId') queryCompanyId?: string,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertSyncAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveHrmCatalogSyncScope(authorization, {
+      tenantId: tenantId ?? queryTenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
     return this.catalogSyncService
-      .pullCatalogFromXbos(catalogKey, scope.tenantId, scope.companyId)
+      .pullCatalogFromXbos(catalogKey, scope.tenantId, scope.catalogCompanyId, authorization)
       .then((data) => ok(data, 'HRM-SYNC-200', 'Catalog pulled from XBOS'));
   }
 
@@ -39,12 +44,20 @@ export class CatalogSyncController {
   async getCatalogSyncStatus(
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
+    @Query('tenantId') queryTenantId?: string,
+    @Query('companyId') queryCompanyId?: string,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertSyncAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
-    const data = await this.catalogSyncService.getCatalogSyncStatus(scope.tenantId, scope.companyId);
+    const scope = resolveHrmCatalogSyncScope(authorization, {
+      tenantId: tenantId ?? queryTenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
+    const data = await this.catalogSyncService.getCatalogSyncStatus(
+      scope.tenantId,
+      scope.catalogCompanyId,
+    );
     return ok(data, 'HRM-SYNC-203', 'Catalog sync status fetched');
   }
 
@@ -53,12 +66,21 @@ export class CatalogSyncController {
     @Param('catalogKey') catalogKey: string,
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
+    @Query('tenantId') queryTenantId?: string,
+    @Query('companyId') queryCompanyId?: string,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertSyncAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
-    const data = await this.catalogSyncService.getSyncedCatalog(catalogKey, scope.tenantId, scope.companyId);
+    const scope = resolveHrmCatalogSyncScope(authorization, {
+      tenantId: tenantId ?? queryTenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
+    const data = await this.catalogSyncService.getSyncedCatalog(
+      catalogKey,
+      scope.tenantId,
+      scope.catalogCompanyId,
+    );
     return ok(data, 'HRM-SYNC-201', 'Synced catalog fetched');
   }
 
@@ -66,12 +88,20 @@ export class CatalogSyncController {
   async listLocalCatalogs(
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
+    @Query('tenantId') queryTenantId?: string,
+    @Query('companyId') queryCompanyId?: string,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertSyncAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
-    const data = await this.catalogSyncService.listSyncedCatalogs(scope.tenantId, scope.companyId);
+    const scope = resolveHrmCatalogSyncScope(authorization, {
+      tenantId: tenantId ?? queryTenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
+    const data = await this.catalogSyncService.listSyncedCatalogs(
+      scope.tenantId,
+      scope.catalogCompanyId,
+    );
     return ok(data, 'HRM-SYNC-202', 'Synced catalogs listed');
   }
 }

@@ -1,0 +1,47 @@
+---
+description: SPONSOR LOCK U65 — Mặc định cấm seed mọi loại; mọi kiểm thử/nghiệm thu phải chạy đúng luồng từ FE (browser). Ưu tiên đọc rule này trước mọi dispatch QA/DevOps/Dev.
+alwaysApply: true
+---
+
+# Sponsor lock U65 — Zero seed · FE-only flow (mặc định)
+
+**Sponsor (2026-06-20):** *«Không bao giờ được seed bất cứ cái gì; chạy hết đúng luồng từ FE vào.»*
+
+Rule này **ưu tiên** U63/U64 và mọi rule khác khi xung đột về cách kiểm thử hoặc chuẩn bị dữ liệu.
+
+## Mặc định (không cần nhắc lại)
+
+| Bắt buộc | Cấm tuyệt đối (trừ sponsor nói rõ trong **cùng** message) |
+|----------|-----------------------------------------------------------|
+| Login → menu SRS → click → nhập → **Lưu/Gửi/Duyệt** trên UI | `pnpm seed:*`, `seed:workflow:*`, seed density, seed inbox, seed catalog để «có data test» |
+| Quan sát **FE sau API 2xx** + **F5** / navigate lại | POST/PUT API trực tiếp rồi claim PASS |
+| Toàn chuỗi nguồn từ màn hình user (vd. Tạo WF → Lưu → Inbox → Duyệt) | Ghi DB / Supabase update giả sự kiện partner hoặc nghiệp vụ |
+| Probe/API chỉ **L0/L1 phụ** — **không** làm 🟢 UF | Dùng seed để pass QA/QC/nghiệm thu `:8088` |
+| Inbox/trống = 🟡 BLOCKED + dispatch **Dev/FE fix** | Chạy seed để «có task» rồi bấm Duyệt |
+
+## Ai áp dụng
+
+| Role | Hành vi |
+|------|---------|
+| **PM** | **Không** dispatch DevOps/QA «seed rồi retest»; dispatch fix product hoặc browser E2E từ FE |
+| **QA/QC** | Chỉ 🟢 khi evidence browser đủ chuỗi FE; từ chối mọi handoff có seed trong bước nghiệm thu |
+| **Dev/DevOps** | Không dùng seed làm workaround cho UF 🟡; seed chỉ khi sponsor **explicit** «bootstrap môi trường dev» — **không** gắn evidence UAT |
+| **BA** | AC mutate phải mô tả bước FE đầu → cuối, không giả định «đã có seed» |
+
+## Ngoại lệ duy nhất
+
+Chỉ khi sponsor **trong cùng tin nhắn** yêu cầu rõ: *«chạy seed môi trường dev / reset DB pilot»* — và **không** dùng kết quả đó làm bằng chứng UF 🟢.
+
+## PM dispatch (copy-ready)
+
+```text
+entry_criteria: browser-only; U65 zero-seed
+exit_criteria: UF có click path FE đầy đủ; FE sau 2xx + F5; cấm seed trong evidence
+cấm: pnpm seed:* · API inbox seed · DB fake state
+```
+
+## Liên kết
+
+- U63, U64 · `docs/program/TEAM_USER_REQUIREMENTS.md`
+- `qa-fe-outside-browser-gate.mdc` · `e2e-no-fake-db-production-guard.mdc`
+- `docs/qa/P1_BROWSER_E2E_XBOS_HRM_WAVE.md` · `USER_FLOW_OPERABILITY_MATRIX.md`

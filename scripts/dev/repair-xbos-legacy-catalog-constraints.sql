@@ -1,5 +1,7 @@
--- Repair legacy XBOS catalog constraints for multi-tenant scope.
--- Safe to rerun in local/dev environments.
+-- MANUAL-ONLY (REPO-HYGIENE-01-W4 TM): legacy catalog repair for DBs predating migrations/xbos/0002_catalog_scope.sql.
+-- NOT applied by migrate-apply.mjs. Do NOT promote to migrations/xbos/ without dev-be review (contains DELETE dedup).
+-- Overlap: partial with 0002_catalog_scope.sql; superset includes config_catalog_items scope + row deduplication.
+-- Safe to rerun in local/dev when catalog unique-key 409 errors occur. Requires DBA sign-off on production.
 
 BEGIN;
 

@@ -11,11 +11,17 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
-import { listEmployees } from '@/integrations/hrmApi';
+import { listAllEmployees } from '@/integrations/hrmApi';
 import {
   createInsurancePolicyParticipant,
   updateInsurancePolicyParticipant,
 } from '@/integrations/hrmApi';
+import {
+  ACT_HRM_INS_LINK_CAPABILITY,
+  buildInsuranceParticipantApiPayload,
+  resolveInsuranceParticipantMutateTarget,
+  type InsuranceParticipantFormPayload,
+} from '@/lib/insuranceParticipantLink';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +55,8 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface Insurance {
   id: string;
+  participant_id?: string;
+  employee_id?: string;
   employee_code: string;
   employee_name: string;
   employee_avatar: string | null;
@@ -80,6 +88,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
   const isEditing = !!editingInsurance;
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | undefined>();
 
   const getCalendarLocale = () => {
     switch (i18n.language) {
@@ -113,7 +122,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     queryKey: ['employees-list', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const res = await listEmployees({ company_id: currentCompanyId, page_size: 200 });
+      const res = await listAllEmployees({ company_id: currentCompanyId });
       return res.data ?? [];
     },
     enabled: !!currentCompanyId && open,
@@ -139,6 +148,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
 
   useEffect(() => {
     if (open) {
+      setSelectedEmployeeId(editingInsurance?.employee_id);
       if (editingInsurance) {
         form.reset({
           employee_code: editingInsurance.employee_code,
@@ -157,6 +167,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
           notes: editingInsurance.notes || '',
         });
       } else {
+        setSelectedEmployeeId(undefined);
         form.reset({
           employee_code: '',
           employee_name: '',
@@ -175,42 +186,17 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     }
   }, [open, editingInsurance, form]);
 
-  const createMutation = useMutation({
+  const invalidateInsuranceQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ['insurance'] });
+    queryClient.invalidateQueries({ queryKey: ['insurance-policy-participants'] });
+  };
+
+  const saveMutation = useMutation({
     mutationFn: async (data: FormData) => {
       if (!currentCompanyId) throw new Error('No company selected');
-      return createInsurancePolicyParticipant({
-        company_id: currentCompanyId,
-        employee_code: data.employee_code,
-        employee_name: data.employee_name,
-        department: data.department,
-        social_insurance_number: data.social_insurance_number,
-        health_insurance_number: data.health_insurance_number,
-        unemployment_insurance_number: data.unemployment_insurance_number,
-        social_insurance_rate: data.social_insurance_rate,
-        health_insurance_rate: data.health_insurance_rate,
-        unemployment_insurance_rate: data.unemployment_insurance_rate,
-        base_salary: data.base_salary ?? 0,
-        effective_date: data.effective_date?.toISOString().slice(0, 10),
-        expiry_date: data.expiry_date?.toISOString().slice(0, 10),
-        status: data.status as 'active' | 'inactive' | 'expired',
-        notes: data.notes,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance'] });
-      toast.success(d('addSuccess'));
-      form.reset();
-      onOpenChange(false);
-    },
-    onError: (error: unknown) => {
-      toast.error(`${d('addError')}: ${toErrorMessage(error)}`);
-    },
-  });
 
-  const updateMutation = useMutation({
-    mutationFn: async (data: FormData) => {
-      if (!editingInsurance || !currentCompanyId) throw new Error('No insurance to update');
-      return updateInsurancePolicyParticipant(editingInsurance.id, currentCompanyId, {
+      const payload = buildInsuranceParticipantApiPayload(currentCompanyId, {
+        employee_id: selectedEmployeeId ?? editingInsurance?.employee_id,
         employee_code: data.employee_code,
         employee_name: data.employee_name,
         department: data.department,
@@ -223,30 +209,35 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
         base_salary: data.base_salary ?? 0,
         effective_date: data.effective_date?.toISOString().slice(0, 10),
         expiry_date: data.expiry_date?.toISOString().slice(0, 10),
-        status: data.status as 'active' | 'inactive' | 'expired',
+        status: data.status as InsuranceParticipantFormPayload['status'],
         notes: data.notes,
       });
+
+      const target = resolveInsuranceParticipantMutateTarget(editingInsurance, new Map());
+      if (target.mode === 'update' && target.participantId) {
+        return updateInsurancePolicyParticipant(target.participantId, currentCompanyId, payload);
+      }
+      return createInsurancePolicyParticipant(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance'] });
-      toast.success(d('updateSuccess'));
+      invalidateInsuranceQueries();
+      toast.success(isEditing ? d('updateSuccess') : d('addSuccess'));
       form.reset();
       onOpenChange(false);
     },
     onError: (error: unknown) => {
-      toast.error(`${d('updateError')}: ${toErrorMessage(error)}`);
+      toast.error(
+        `${isEditing ? d('updateError') : d('addError')}: ${toErrorMessage(error)}`,
+      );
     },
   });
 
   const onSubmit = (data: FormData) => {
-    if (isEditing) {
-      updateMutation.mutate(data);
-    } else {
-      createMutation.mutate(data);
-    }
+    saveMutation.mutate(data);
   };
 
   const handleEmployeeSelect = (employeeId: string) => {
+    setSelectedEmployeeId(employeeId);
     const employee = employees.find((e) => e.id === employeeId);
     if (employee) {
       form.setValue('employee_code', employee.employee_code);
@@ -255,7 +246,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     }
   };
 
-  const isPending = createMutation.isPending || updateMutation.isPending;
+  const isPending = saveMutation.isPending;
 
   const baseSalary = form.watch('base_salary') || 0;
   const bhxhRate = form.watch('social_insurance_rate') || 0;
@@ -600,7 +591,11 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {d('cancel')}
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending}
+                data-capability={ACT_HRM_INS_LINK_CAPABILITY}
+              >
                 {isPending ? d('saving') : isEditing ? d('update') : d('save')}
               </Button>
             </div>

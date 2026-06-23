@@ -11,10 +11,10 @@ import {
   type Column,
 } from '@xevn/ui';
 import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
-import { mockPartners, type Partner } from '../../data/mock-data';
+import { type Partner } from '../../data/mock-data';
 import { listBusinessMasterItems } from '../../integrations/businessMasterApi';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
-import { allowMockFallback } from '../../utils/mockPolicy';
+import { resolvePartnersPageFailure } from '../../utils/portalStrictMode';
 
 const PartnersPage: React.FC = () => {
   const { companies } = useGlobalFilter();
@@ -31,13 +31,10 @@ const PartnersPage: React.FC = () => {
         setPartners(rows);
       })
       .catch(() => {
-        setLoadFailed(true);
-        if (allowMockFallback()) {
-          setPartners(mockPartners);
-          setUsingMockFallback(true);
-        } else {
-          setPartners([]);
-        }
+        const failure = resolvePartnersPageFailure();
+        setLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setPartners(failure.rows);
       });
   }, [tenantId, companyId]);
 

@@ -8,11 +8,12 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockExpenseCategories, ExpenseCategory } from '../../data/mockData';
+import { ExpenseCategory } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { resolveExpenseCategoriesSettingsFailure } from '../../utils/portalStrictMode';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const ExpenseCategoriesSettingsPage: React.FC = () => {
@@ -29,13 +30,10 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
         setExpenseCategories(rows);
       })
       .catch(() => {
-        setLoadFailed(true);
-        if (allowMockFallback()) {
-          setExpenseCategories(mockExpenseCategories);
-          setUsingMockFallback(true);
-        } else {
-          setExpenseCategories([]);
-        }
+        const failure = resolveExpenseCategoriesSettingsFailure();
+        setLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setExpenseCategories(failure.rows);
       });
   }, [tenantId, companyId]);
 
@@ -323,7 +321,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
         }
       />
       <ApiLoadBanner
-        loadFailed={loadFailed && !allowMockFallback()}
+        loadFailed={loadFailed}
         usingMockFallback={usingMockFallback}
         message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />

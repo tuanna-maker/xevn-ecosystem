@@ -230,16 +230,96 @@
 
 | Journey / P-CC | UX AC (measurable) | Priority |
 |----------------|-------------------|----------|
-| J-HRM-01..02 | List→profile: no «Không tìm thấy» when list row exists under `main` | P0 regression guard (BR-EMP-LIST-01) |
+| J-HRM-01 | List→profile: no «Không tìm thấy» when list row exists under `main` | P0 regression guard (BR-EMP-LIST-01) · **PASS** W5B |
+| J-HRM-02 | P-CC-03 employees list → row → profile (`GET …/employees/:id?company_id=main`) | **PASS** API scope parity nip.io 2026-06-05 · browser embed click **GWC** (**C-EMPGRPQC-01**) · [`p1-phase1-qc-hrm-emp-group-crud-20260604.md`](evidence/p1-phase1-qc-hrm-emp-group-crud-20260604.md) |
 | J-HRM-04 / P-CC-05 | Surface A «Bảo hiểm» shows BHXH columns from `GET .../insurance`, not contract-shaped proxy | **P0** BR-INS-01 |
 | J-HRM-06 / P-CC-07 | No date cell `01/01/1970` when `attendance_date` invalid | **P0** BR-ATT-DATE-01 |
 | J-HRM-01..02 | Profile satellite tab in embed: no `:54321`; `EmbedGuardedTab` or Nest data | **P1** BR-360-SOURCE-01 |
-| J-CC-02 / CC-ORG | Member unit opens legal profile **200** or governed disable — no 404 loop | **P0** BR-ORG-LINK-01 |
+| J-CC-02 / CC-ORG | Member unit opens legal profile **200** or governed disable — no 404 loop | **P0** BR-ORG-LINK-01 · **PASS** nip.io read detail 2026-06-04 (`p1-phase1-qa-crud-matrix-20260604.md`) |
 | J-XBOS-01 / CC-INBOX | `VITE_ALLOW_MOCK_FALLBACK=false` → zero mock tasks when API empty | **P0** BR-INBOX-01 |
+| J-XBOS-01 / CC-WF | CEO: pending list → instance detail → `POST …/complete` (`XBOS-WF-200`) → list count decreases | **PASS** API L2.5 2026-06-04 · [`p1-phase1-qa-wf-inbox-20260604.md`](evidence/p1-phase1-qa-wf-inbox-20260604.md); **GWC** strict browser drawer click |
 
 L2 **PASS** on a row does **not** satisfy UX AC above — QA must cite benchmark screen ID in evidence.
 
-## 11. Assumptions
+## 12. Cross-module integration journeys (U39 — `P1-PROD-INT-BA-P-01`)
+
+**Source:** [`p1-prod-int-ba-p-01-20260607.md`](../program/governance/p1-prod-int-ba-p-01-20260607.md) · SRS §15 · BR-INT-01..05
+
+| Journey | Path | Pass (fail if) | Persona | Status |
+|---------|------|----------------|---------|--------|
+| **J-HRM-INT-01** | P-CC-06 requisition → detail → candidate; `filled` ⇒ `employee_id` | Same `company_id` slug; hire link NOT NULL | Group CEO + member CEO | ⏳ QA W4 |
+| **J-HRM-INT-02** | P-CC-03 employee → P-CC-04 contract same NV | ≥1 contract; slug match (extends J-HRM-01) | Both | ⏳ |
+| **J-HRM-INT-03** | P-CC-03 employee → P-CC-08 payslip same NV | `employee_id` + period slug match (extends J-HRM-07) | Both | ⏳ |
+| **J-HRM-INT-04** | P-CC-06 hire → P-CC-03 new employee row | Visible without tenant switch; slug = requisition | Both | ⏳ |
+| **J-HRM-INT-05** | Switcher slug **holding** → tabs 03/04/06/08 | All APIs same selected slug; **0× 409** | Group CEO only | ⏳ |
+
+**Scope overlay:** UC-HRM-SCOPE-01 (rollup) · UC-HRM-SCOPE-02 (member) · UC-HRM-SCOPE-03 (switcher) — AC-INT-SCOPE-* / AC-INT-SW-* in governance doc §7.
+
+## 11. Mobile Home Portal — J-MOB-11..15 (U53)
+
+**Source:** `docs/program/MOBILE_HOME_PORTAL_AC_DELTA.md` · **Account:** `uat.nv0001@xe.vn` / `xevn-uat-2026` · **Surface:** `TabDashboard` only (4-tab unchanged).
+
+| Journey | Click path | Pass (L2.5) |
+|---------|------------|-------------|
+| **J-MOB-11** | Login → Trang chủ → tap bell | `InAppNotifications`; header `#1E40AF`; search stub không crash |
+| **J-MOB-12** | Swipe carousel | ≥1 slide + dots khi ≥2 slides; work anniversary / birthday BR-BDAY/BR-ANNIV |
+| **J-MOB-13** | Tap icon «Chấm công» / «Bảng lương» | → `CheckIn` / `PayrollSummary`; 8 icon 2×4 |
+| **J-MOB-14** | Tap feed «Xem chi tiết» | → `PayslipDetail` (extends J-MOB-04) |
+| **J-MOB-15** | Full scroll | Portal layers **trên** Smart Hub; **J-MOB-06..09** không regress |
+
+**W7 ID renumber:** draft J-MOB-11..13 (leave doc / ESS / push) → **J-MOB-16..18** — see portal delta §3.
+
+**U54 note:** U53 covers **subset SET A only** (portal shell). Full sponsor ESS mockup SET A–E → `MOBILE_HRM_ESS_UX_BENCHMARK.md`.
+
+## 12. Mobile ESS UX — J-MOB-19..30 (U54)
+
+**Source:** `docs/program/MOBILE_HRM_ESS_UX_BENCHMARK.md` · **Account:** `uat.nv0001@xe.vn` (NV) · manager account for SET B · **Regression:** J-MOB-11..15 + J-MOB-06..09 mandatory on Dashboard changes.
+
+| Journey | Click path | Pass (L2.5) |
+|---------|------------|-------------|
+| **J-MOB-19** | Dashboard → header role+chat stub+bell | Avatar+name+role; chat stub; bell → inbox |
+| **J-MOB-20** | Dashboard → date picker → stats row | Work/Late/Absence updates for selected date |
+| **J-MOB-21** | Dashboard → 4 stat cards tap | Active Team / Off / Leave Requests / My Leaves navigate |
+| **J-MOB-22** | Dashboard → announcements → tap row | List loads; tap → detail/inbox |
+| **J-MOB-23** | Manager → leave cards inline Accept/Decline | Card+online dot; not select-then-footer only |
+| **J-MOB-24** | Manager → confirm modal → snackbar Undo | Icon modal; snackbar affordance |
+| **J-MOB-25** | My Leaves → balance cards | Available + Used + period header |
+| **J-MOB-26** | My Leaves → Review\|Approved\|Rejected tabs | Date-grouped sections |
+| **J-MOB-27** | My Leaves empty → Apply CTA | Illustration + → CreateLeaveRequest |
+| **J-MOB-28** | Leave form → type + balance chip | Balance per leave type or HR fallback |
+| **J-MOB-29** | Leave form → date modal → submit confirm | Modal range; confirm before POST |
+| **J-MOB-30** | Team tab → search+filter+check-in badge | Directory list; status matches API |
+
+**Waves:** MOB-UX-06 (19–22) · MOB-UX-07 (23–29) · MOB-UX-08 (30) · MOB-UX-09 (tab IA + payslip/profile ext).
+
+## 13. Mobile ZenHR ESS polish — J-MOB-31..35 (U55)
+
+**Source:** `docs/program/MOBILE_HRM_ESS_UX_BENCHMARK.md` §13 · **Account:** `uat.nv0001@xe.vn` (NV) · manager for pending/approve · **Regression:** J-MOB-19..30 + J-MOB-11..15 + J-MOB-06..09 + **4-tab count = 4**.
+
+| Journey | Click path | Pass (L2.5) |
+|---------|------------|-------------|
+| **J-MOB-31** | Dashboard → **My Pending Actions** strip → tap row | Opens leave/detail/inbox; strip hidden when count=0 |
+| **J-MOB-32** | Dashboard → **My Actions** grid (Time Off / Expenses / Letters) | Time Off → leave flow; Expenses/Letters → Phase 2 stub |
+| **J-MOB-33** | Any tab → **center FAB (+)** → CheckIn | FAB visible; tab bar still 4 tabs; optional map/clock |
+| **J-MOB-34** | Payslip tab → **net salary hero** → history row → detail | Green hero + latest net; list below; tap → PayslipDetail |
+| **J-MOB-35** | Chấm công → Lịch sử → timeline badge | On Time / Late / Absent badge per row matches API |
+
+**Waves:** MOB-UX-10 (31–35) · after MOB-UX-06..09 baseline · FAB Option B per benchmark §13.4.
+
+## 15. Mobile persona UX — J-MOB-36..38 (MOB-UX-13)
+
+**Source:** `docs/program/MOBILE_PERSONA_UX_MATRIX.md` · **Accounts:** `uat.nv0001@xe.vn` (EMP) · `uat.nv0002@xe.vn` (MGR) · `ceo@xe.vn` (LDR slice) · **Regression:** J-MOB-01..35 + **AC-PERS-LOC-01** (no GPS/geofence/UUID on check-in).
+
+| Journey | Click path | Pass (L2.5) |
+|---------|------------|-------------|
+| **J-MOB-36** | EMP login → Trang chủ → «Việc cần làm» before grid → tile Nghỉ → detail | No «Cần duyệt» hero when `is_manager=false`; ≥ 9 VI tiles |
+| **J-MOB-37** | MGR login → «Cần duyệt (n)» or pending strip → Duyệt → snackbar VI | Tile «Duyệt»; FAB duyệt row |
+| **J-MOB-38** | LDR login → Pulse/báo cáo section → Đội nhóm rollup | FAB no check-in; leader copy VI |
+| **J-MOB-02** (regress) | Check-in → «Vị trí thiết bị» auto capture | **Fail** if GPS/geofence/UUID field |
+
+**Waves:** MOB-UX-13a..g per `MOBILE_APPLE_HIG_ESS_PROGRAM.md` §5.
+
+## 14. Assumptions
 
 - Pilot stack `:5175` / HRM `:28001` / XBOS `:28002`.
 - CEO token `companyId=main`; query `company_id=main` (payroll slug; attendance UUID resolved by scope).

@@ -44,6 +44,7 @@ import {
   seedStaffs,
   seedTenants,
 } from './seed';
+import { safeRandomUuid } from '../lib/safeRandomUuid';
 
 const STORAGE_KEY = 'x-bos-kpi-waterfall-v1';
 
@@ -165,7 +166,7 @@ function nowIso() {
 }
 
 function genId() {
-  return crypto.randomUUID();
+  return safeRandomUuid();
 }
 
 const initialState = {

@@ -87,7 +87,10 @@ describe('TenantScopeController (membership / group overview)', () => {
     });
     const result = await controller.groupMemberUnits(undefined, undefined, `Bearer ${token}`, 'test-key');
     expect(result.code).toBe('XBOS-TENANT-200');
-    expect(serviceMock.groupMemberUnits).toHaveBeenCalledWith('ceo@xe.vn');
+    expect(serviceMock.groupMemberUnits).toHaveBeenCalledWith('ceo@xe.vn', {
+      tenantId: 'xevn',
+      roleCode: 'group_ceo',
+    });
   });
 
   it('propagates XBOS-TENANT-403 from service on group-member-units', async () => {

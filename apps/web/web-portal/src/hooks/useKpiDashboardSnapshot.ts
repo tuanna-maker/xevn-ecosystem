@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { KPIDashboardData, KPIMetric } from '../data/mockData';
-import { mockKPIDashboardData } from '../data/mockData';
 import { listBusinessMasterItems } from '../integrations/businessMasterApi';
 import { evaluateKpiBatch } from '../integrations/kpiEngineApi';
-import { allowMockFallback } from '../utils/mockPolicy';
+import { resolveKpiDashboardSnapshotFailure } from '../utils/portalStrictMode';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -112,18 +111,10 @@ export function useKpiDashboardSnapshot(tenantId: string, companyId: string, sco
         }
       } catch {
         if (cancelled) return;
-        if (allowMockFallback()) {
-          const filtered =
-            scopeCompanyId === 'all'
-              ? mockKPIDashboardData.filter((k) => k.companyId === 'all')
-              : mockKPIDashboardData.filter((k) => k.companyId === scopeCompanyId);
-          setRows(filtered);
-          setUsingMockFallback(true);
-          setSourceNote(null);
-        } else {
-          setRows([]);
-          setUsingMockFallback(false);
-        }
+        const failure = resolveKpiDashboardSnapshotFailure(scopeCompanyId);
+        setRows(failure.rows);
+        setUsingMockFallback(failure.usingMockFallback);
+        setSourceNote(null);
         setLoadState('error');
       }
     };

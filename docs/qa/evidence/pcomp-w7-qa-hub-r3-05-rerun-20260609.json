@@ -1,0 +1,47 @@
+{
+  "work_item_id": "PCOMP-W7-QA-HUB-R3-05-RERUN",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 71778157,
+  "apk_sha256": "96301F435481095523F338C5A4EABA09237A3C1ADE67F66F89665C3E710FB1CF",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "seed": { "whos_out_count": 1, "dob_today_count": 3 },
+  "boot": { "pass": true, "app_entry_not_found": false },
+  "login": { "deep_link_pass": true, "home_reached": true, "adbkeyboard_pass": true },
+  "api_probe": {
+    "http": 200,
+    "code": "HRM-HOME-200",
+    "tasks_total": 10,
+    "mgr_total": 2,
+    "cel_total": 3,
+    "who_total": 1
+  },
+  "results": [
+    { "id": "INSTALL", "pass": true },
+    { "id": "API-PROBE", "pass": true },
+    { "jId": "J-MOB-01", "pass": true },
+    { "id": "D-W8-ESS-PROMISE-01", "pass": true },
+    { "jId": "J-MOB-06", "pass": true, "note": "aggregate scroll: Việc cần làm + 10 việc" },
+    { "jId": "J-MOB-07", "pass": true, "note": "Cần duyệt (2) = api mgr=2" },
+    { "jId": "J-MOB-08", "pass": true },
+    {
+      "jId": "J-MOB-09",
+      "pass": false,
+      "section_pass": true,
+      "ess_parity_pass": true,
+      "detail_pass": false,
+      "note": "Ai nghỉ hôm nay (1) visible; detail Không tìm thấy đơn"
+    },
+    { "jId": "J-MOB-11", "pass": true },
+    { "jId": "J-MOB-12", "pass": true },
+    { "jId": "J-MOB-13", "pass": true },
+    { "jId": "J-MOB-14", "pass": true },
+    { "jId": "J-MOB-15", "pass": true }
+  ],
+  "logcat_audit": { "hasMainScope": false, "promiseInLogcat": false },
+  "pass": false,
+  "ack_status": "FAIL_TO_PM",
+  "pm_dispatch_hint": "dev-mobile — PCOMP-W7-MOB-WHOS-DETAIL-01 J-MOB-09 detail empty"
+}

@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   clearAuthSession,
+  getStoredAccessToken,
   getValidAccessToken,
+  handleUnauthorizedResponse,
   isStoredSessionExpired,
   persistAuthSession,
+  peekLoginRedirect,
+  stashLoginRedirect,
   type LoginResult,
 } from './authSession';
 
@@ -56,6 +60,16 @@ describe('authSession expiry', () => {
     expect(isStoredSessionExpired()).toBe(false);
     expect(getValidAccessToken()).toBe('test-jwt');
   });
+
+  it('re-hydrates CC shell sessionStorage from localStorage mirror (C-MEMCC-01)', () => {
+    localStorage.setItem('xevn.portal.accessToken', 'mirror-jwt');
+    localStorage.setItem('xevn.portal.user', JSON.stringify({ userId: 'du-lich.ceo@xe.vn', displayName: 'CEO DL' }));
+    localStorage.setItem('xevn.portal.tokenExpiresAt', String(Date.now() + 3600_000));
+
+    expect(getStoredAccessToken()).toBe('mirror-jwt');
+    expect(sessionStorage.getItem('xevn.portal.accessToken')).toBe('mirror-jwt');
+    expect(getValidAccessToken()).toBe('mirror-jwt');
+  });
 });
 
 /** UC-ECO-FE-01 — portal session backs HRM embed API token (no mock-only auth). */
@@ -93,5 +107,36 @@ describe('UC-ECO-FE-01 portal API session bridge', () => {
     });
     expect(getValidAccessToken()).toBe('portal-api-jwt');
     expect(localStorage.getItem('xevn.portal.accessToken')).toBe('portal-api-jwt');
+  });
+});
+
+/** P1-HRM-MEMBER-SESSION-403 — 403 is business-scope denial, not auth expiry. */
+describe('handleUnauthorizedResponse (401-only logout)', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+    persistAuthSession({ ...baseLogin, expiresInSec: 3600 });
+  });
+
+  afterEach(() => {
+    clearAuthSession();
+  });
+
+  it('clears session on 401 and stashes current path for post-login redirect', () => {
+    vi.stubGlobal('location', {
+      ...window.location,
+      pathname: '/command-center/hrm/employees',
+      search: '',
+    });
+    handleUnauthorizedResponse(401);
+    expect(getStoredAccessToken()).toBeNull();
+    expect(peekLoginRedirect()).toBe('/command-center/hrm/employees');
+    vi.unstubAllGlobals();
+  });
+
+  it('does not clear session on 403 (group-member-units member persona)', () => {
+    handleUnauthorizedResponse(403);
+    expect(getValidAccessToken()).toBe('test-jwt');
+    expect(sessionStorage.getItem('xevn.portal.accessToken')).toBe('test-jwt');
   });
 });

@@ -1,0 +1,71 @@
+{
+  "work_item_id": "P1-G3-JMOB-05-STRICT-R4",
+  "pass": true,
+  "checks": [
+    {
+      "id": "GATE-LOGIN",
+      "pass": true,
+      "note": "HRM-AUTH-200 uuid=32a3cdcb…",
+      "shot": ""
+    },
+    {
+      "id": "GATE-UUID",
+      "pass": true,
+      "note": "company_uuid=32a3cdcb-c534-4e47-80f9-d2f156e65094",
+      "shot": ""
+    },
+    {
+      "id": "GATE-PENDING",
+      "pass": true,
+      "note": "leave=2 update=1",
+      "shot": ""
+    },
+    {
+      "id": "J-MOB-01",
+      "pass": true,
+      "note": "deep-link login nv0002",
+      "shot": "docs/qa/evidence/p1-g3-jmob-05-strict-r2-screens/jmob05-strict-login.png"
+    },
+    {
+      "id": "J-MOB-05-NAV",
+      "pass": true,
+      "note": "ManagerApprovals mounted",
+      "shot": ""
+    },
+    {
+      "id": "J-MOB-05-INBOX",
+      "pass": true,
+      "note": "ManagerApprovals Phê duyệt",
+      "shot": "docs/qa/evidence/p1-g3-jmob-05-strict-r2-screens/jmob05-strict-inbox.png"
+    },
+    {
+      "id": "J-MOB-05-DUYET",
+      "pass": true,
+      "note": "Thành công — Vietnamese, no 409/203",
+      "shot": "docs/qa/evidence/p1-g3-jmob-05-strict-r2-screens/jmob05-strict-after.png"
+    },
+    {
+      "id": "GATE-SCOPE-LOG",
+      "pass": true,
+      "note": "main=false 409=false",
+      "shot": ""
+    }
+  ],
+  "apkMeta": {
+    "sha": "4954062EBF6319451C58825EA0213F87620CD28C63DF5C0B851786D6B8B3FE62",
+    "bytes": 69154211
+  },
+  "pending": {
+    "leaveTotal": 2,
+    "updTotal": 1,
+    "leaveStatus": 200,
+    "updStatus": 200
+  },
+  "logcat": {
+    "has409": false,
+    "hasMain": false,
+    "post201": false,
+    "snippet": "ve_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 \r\n06-09 21:15:21.204  1235 27437 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.ipa.base.IpaGcmTaskService started execution. cause:9 exec_start_elapsed_seconds: 8118 [CONTEXT service_id=218 ]\r\n06-09 21:15:21.211  1235 27186 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.ipa.base.IpaGcmTaskService finished executing. cause:9 result: 1 elapsed_millis: 24 uptime_millis: 24 exec_start_elapsed_seconds: 8118 [CONTEXT service_id=218 ]\r\n06-09 21:15:21.461  1467  1980 I MediaProvider: Begin Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaService }\r\n06-09 21:15:21.486  1467  1980 I MediaProvider: End Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaService }\r\n06-09 21:15:21.489  1467  1482 W FuseDaemon: Reducing the number of considered missed Gc histogram windows from 193 to 100\r\n06-09 21:15:21.552  1235 27490 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.ipa.base.IpaGcmTaskService started execution. cause:9 exec_start_elapsed_seconds: 8118 [CONTEXT service_id=218 ]\r\n06-09 21:15:21.560  1235 27437 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.ipa.base.IpaGcmTaskService finished executing. cause:9 result: 1 elapsed_millis: 37 uptime_millis: 37 exec_start_elapsed_seconds: 8118 [CONTEXT service_id=218 ]\r\n06-09 21:15:21.606   708   708 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS"
+  },
+  "ack_status": "PASS_TO_PM"
+}

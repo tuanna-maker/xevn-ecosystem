@@ -198,6 +198,30 @@ describe('OperationsController', () => {
     );
   });
 
+  it('MP-14: list service requests exposes request_type alias in API envelope', async () => {
+    serviceMock.listServiceRequests.mockResolvedValueOnce([
+      {
+        id: 'sr-1',
+        service_type: 'meal',
+        request_type: 'meal',
+        status: 'pending',
+      },
+    ]);
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013',
+      roleCode: 'employee',
+    });
+    const res = await controller.listServiceRequests(`Bearer ${token}`, 'test-key', 'xevn', undefined, {
+      company_id: '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013',
+    });
+    expect(res.code).toBe('HRM-SVC-200');
+    expect(Array.isArray(res.data)).toBe(true);
+    expect(res.data[0]).toMatchObject({ service_type: 'meal', request_type: 'meal', status: 'pending' });
+  });
+
   it('HRM-SV-02 accepts page_size on service request list (P1-CLOSE-BE-W5)', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',

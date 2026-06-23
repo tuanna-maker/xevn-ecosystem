@@ -12,7 +12,15 @@
 
 ---
 
-## PM — thực thi ngay trong **cùng lượt** (≤3 tool call đầu: đọc bus hoặc dispatch)
+## PM — thực thi ngay trong **cùng lượt** (≤3 tool call đầu: idle-check hoặc dispatch)
+
+### 0) Idle check (U58 — tool call #1)
+
+```bash
+pnpm run pm:idle:check
+```
+
+Exit **2** → **Task** top item **trước** đọc bus dài. Exit **0** vẫn đọc bus tail nếu user hỏi «lại dừng?».
 
 ### 1) Đọc trạng thái (không đoán)
 

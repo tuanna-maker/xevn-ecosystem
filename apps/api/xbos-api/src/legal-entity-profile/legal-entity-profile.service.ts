@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { createReadStream, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, extname, join } from 'node:path';
+import { dirname, extname, join, posix } from 'node:path';
 import { ApiException } from '../common/api.exception';
 import { XbosDbService } from '../db/xbos-db.service';
 import { OrgFoundationService } from '../org-foundation/org-foundation.service';
@@ -8,11 +8,41 @@ import { OrgFoundationService } from '../org-foundation/org-foundation.service';
 const ALLOWED_EXT = new Set(['.pdf', '.doc', '.docx', '.xls', '.xlsx']);
 const MAX_BYTES = Number(process.env.XBOS_LEGAL_DOC_MAX_BYTES ?? 25 * 1024 * 1024);
 
-function storageRoot(): string {
-  return (
-    process.env.XBOS_LEGAL_DOC_STORAGE_ROOT?.trim() ||
-    join(process.cwd(), 'storage', 'legal-documents')
-  );
+/** Stable package root — avoids process.cwd() drift (monorepo root vs apps/api/xbos-api vs Docker /app). */
+export function storageRoot(): string {
+  const fromEnv = process.env.XBOS_LEGAL_DOC_STORAGE_ROOT?.trim();
+  if (fromEnv) return fromEnv;
+  return join(__dirname, '..', '..', 'storage', 'legal-documents');
+}
+
+export function relativeStorageKey(
+  tenantId: string,
+  entityId: string,
+  documentId: string,
+  ext: string,
+): string {
+  return posix.join(tenantId, entityId, `${documentId}${ext}`);
+}
+
+/** Resolve DB storage_path (relative key or legacy absolute) to an on-disk file. */
+export function resolveStoredFilePath(storagePath: string | null | undefined): string | null {
+  const raw = storagePath?.trim();
+  if (!raw) return null;
+
+  const looksAbsolute =
+    raw.startsWith('/') || raw.startsWith('\\\\') || /^[a-zA-Z]:[/\\]/.test(raw);
+  if (looksAbsolute) {
+    if (existsSync(raw)) return raw;
+    const legacyTail = raw.split(/[/\\]legal-documents[/\\]/);
+    if (legacyTail.length === 2 && legacyTail[1]) {
+      const candidate = join(storageRoot(), legacyTail[1]);
+      if (existsSync(candidate)) return candidate;
+    }
+    return null;
+  }
+
+  const candidate = join(storageRoot(), raw);
+  return existsSync(candidate) ? candidate : null;
 }
 
 function publicBaseUrl(): string {
@@ -258,8 +288,8 @@ export class LegalEntityProfileService {
       throw new ApiException('XBOS-DOC-404', 'Document not found', HttpStatus.NOT_FOUND);
     }
 
-    const relDir = join(tenantId, entityId);
-    const absPath = join(storageRoot(), relDir, `${documentId}${ext}`);
+    const storageKey = relativeStorageKey(tenantId, entityId, documentId, ext);
+    const absPath = join(storageRoot(), tenantId, entityId, `${documentId}${ext}`);
     mkdirSync(dirname(absPath), { recursive: true });
     writeFileSync(absPath, file.buffer);
 
@@ -268,7 +298,7 @@ export class LegalEntityProfileService {
       `UPDATE public.xbos_legal_entity_document SET
         storage_path = $2, file_url = $3, mime_type = $4, file_size = $5, updated_at = NOW()
        WHERE id = $1::uuid RETURNING *`,
-      [documentId, absPath, fileUrl, mimeForExt(ext), file.size],
+      [documentId, storageKey, fileUrl, mimeForExt(ext), file.size],
     );
     return rows[0];
   }
@@ -280,13 +310,14 @@ export class LegalEntityProfileService {
       [documentId],
     );
     const row = rows[0] as { storage_path?: string; mime_type?: string; document_name?: string } | undefined;
-    if (!row?.storage_path || !existsSync(row.storage_path)) {
+    const resolvedPath = resolveStoredFilePath(row?.storage_path);
+    if (!resolvedPath) {
       throw new ApiException('XBOS-DOC-404', 'File not found', HttpStatus.NOT_FOUND);
     }
     return {
-      stream: createReadStream(row.storage_path),
-      mimeType: row.mime_type || 'application/octet-stream',
-      fileName: row.document_name || 'document',
+      stream: createReadStream(resolvedPath),
+      mimeType: row?.mime_type || 'application/octet-stream',
+      fileName: row?.document_name || 'document',
     };
   }
 }

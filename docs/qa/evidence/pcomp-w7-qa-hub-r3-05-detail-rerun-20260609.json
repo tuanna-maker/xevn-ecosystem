@@ -1,0 +1,73 @@
+{
+  "work_item_id": "PCOMP-W7-QA-HUB-R3-05-RERUN-DETAIL",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 71779426,
+  "apk_sha256": "C2F76C2C1AE973894BF8101E44FC60B2C2195C8344E5D916E3F2C9031BD56FBA",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "login_method": "xevn_qa_login_deep_link",
+  "results": [
+    {
+      "id": "API-PROBE",
+      "pass": true,
+      "note": "tasks=10 mgr=2 cel=3 who=1",
+      "hubApi": {
+        "http": 200,
+        "code": "HRM-HOME-200",
+        "tasks_total": 10,
+        "mgr_total": 2,
+        "cel_total": 3,
+        "who_total": 1
+      }
+    },
+    {
+      "id": "COLD-BOOT",
+      "pass": true,
+      "note": "no App entry not found on cold boot"
+    },
+    {
+      "id": "D-W8-ESS-PROMISE-01",
+      "pass": true,
+      "note": "no promise snackbar on Home top or after scroll"
+    },
+    {
+      "jId": "J-MOB-06",
+      "pass": true,
+      "note": "«Việc cần làm» in aggregate scroll dumps"
+    },
+    {
+      "jId": "J-MOB-07",
+      "pass": true,
+      "note": "device=2 api=2 card=true"
+    },
+    {
+      "jId": "J-MOB-08",
+      "pass": true,
+      "note": "section=true api_cel=3 noYear=true"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": true,
+      "note": "Huỳnh whos-out tap → Chi tiết nghỉ Từ ngày + Đã duyệt (no Không tìm thấy đơn)",
+      "section_pass": true,
+      "detail_pass": true,
+      "leave_id": "6c887177-2930-47a2-8d1f-4eba305556f8",
+      "api_who_total": 1
+    }
+  ],
+  "logcat_audit": {
+    "hasMainScope": false,
+    "promiseInLogcat": false
+  },
+  "screens": {
+    "boot": "pcomp-w7-qa-hub-r3-05-detail-rerun-screens/r3-05-detail-boot.png",
+    "whos_scroll": "pcomp-w7-qa-hub-r3-05-detail-rerun-screens/whos-scroll.xml",
+    "whos_detail": "pcomp-w7-qa-hub-r3-05-detail-rerun-screens/whos-detail.xml",
+    "whos_detail_png": "pcomp-w7-qa-hub-r3-05-detail-rerun-screens/whos-detail.png"
+  },
+  "pass": true,
+  "ack_status": "PASS_TO_PM",
+  "pm_dispatch_hint": "qc — promote J-MOB-09; close C-W7QC-DEVICE-01 J-MOB-09 slice"
+}

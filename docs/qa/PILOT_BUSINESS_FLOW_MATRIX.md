@@ -2,7 +2,20 @@
 
 **Owner:** QA (execute) · QC (audit) · PM (dispatch)  
 **Account mặc định:** `ceo@xe.vn` / `Xevn@2026`  
-**Base URL:** `http://localhost:5175` (portal proxy → HRM `28001`, XBOS `28002`)  
+**Base URL:** `http://localhost:5175` (portal proxy → HRM `28001`, XBOS `28002`)
+
+### Tài khoản pilot — mật khẩu theo kênh (C-MEMPWD-01)
+
+| Persona | Email | Mật khẩu | Kênh | Ghi chú |
+|---------|-------|----------|------|---------|
+| Tập đoàn / Command Center | `ceo@xe.vn` | `Xevn@2026` | Cổng Web (XBOS portal login) | JWT `tenant=xevn`, `company_id=main` |
+| CEO công ty thành viên | `du-lich.ceo@xe.vn` | `Xevn@2026` | Cổng Web | **Không** dùng `xevn-uat-2026` trên portal (401). Scope member `xe-du-lich`; **403/409** trên rollup tập đoàn = PASS negative |
+| HRBP member (khi seed) | `du-lich.hr@xe.vn` | `Xevn@2026` | Cổng Web | Cùng họ mật khẩu portal dev/pilot |
+| Nhân viên UAT 1.000 | `uat.nv####@xe.vn` | `xevn-uat-2026` | **HRM Mobile only** | Sau `seed:hrm:1000-uat`; **không** áp dụng cho `du-lich.*` hay `ceo@xe.vn` |
+| Du lịch — mobile (tùy seed) | `du-lich.*@xe.vn` | `xevn-pilot` | HRM Mobile | Khác họ mật khẩu portal; xem HDSD §4.5 bảng pilot |
+
+SoT chi tiết: `docs/client-delivery/03_HUONG_DAN_SU_DUNG_VA_CHAY_THU_XEVN.md` · `docs/qa/SYSTEM_INTEGRATION_UAT_SCENARIO.md` (portal `PORTAL_DEV_PASSWORD` / mobile `UAT_PASSWORD`).  
+**HTTPS pilot (VPS dev):** `https://14-225-217-232.nip.io` — L2 **P-CC-01..09** + L2.5 **J-*** API **PASS** (QC GWC 2026-06-04, probe exit 0, evidence `p1-ex-qc-https-post-deploy-20260603.md`; browser iframe P2 deferred)
 **BA trace (UC, branches, QA script):** [`PILOT_BUSINESS_FLOW_BA_TRACE.md`](PILOT_BUSINESS_FLOW_BA_TRACE.md) · `work_item_id: PILOT-ZERO-DEFECT-01`
 
 ## Cách chạy (agent — user không chạy)

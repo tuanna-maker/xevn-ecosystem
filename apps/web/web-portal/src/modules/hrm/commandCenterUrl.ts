@@ -56,6 +56,13 @@ export type CommandCenterSettingsDeepLinkOpts = {
  * Build Command Center settings deep link (EX-SA01-P1-04).
  * Scope stays on JWT (`main`); do not put company partition in query string.
  */
+/** J-XBOS-01 — inbox drawer deep link on CC home (no settings rail). */
+export function commandCenterInboxInstanceDeepLink(workflowInstanceId: string): string {
+  const params = new URLSearchParams();
+  params.set('wfInstanceId', workflowInstanceId.trim());
+  return `/command-center?${params.toString()}`;
+}
+
 export function commandCenterSettingsDeepLink(opts: CommandCenterSettingsDeepLinkOpts): string {
   const params = new URLSearchParams();
   params.set('settings', opts.settingsMenu);

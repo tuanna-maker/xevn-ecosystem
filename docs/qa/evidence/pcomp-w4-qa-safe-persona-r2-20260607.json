@@ -1,0 +1,23 @@
+{
+  "work_item_id": "PCOMP-W4-QA-SAFE-PERSONA-R2",
+  "date": "2026-06-07",
+  "device": "emulator-5554",
+  "api_base": "https://14-225-217-232.nip.io",
+  "apk_installed": "apps/mobile/hrm-mobile/dist/hrm-mobile-release-safe-r2.apk",
+  "mob_ux_safe_merged": true,
+  "bundle_inject": true,
+  "login_method": "dev_jwt_api_probe",
+  "results": [
+    {
+      "id": "J-MOB-01-login",
+      "jId": "J-MOB-01",
+      "pass": false,
+      "note": "dev JWT login failed"
+    }
+  ],
+  "gaps": [
+    "J-MOB-01: login FAIL"
+  ],
+  "pass": false,
+  "ack_status": "PASS_TO_PM"
+}

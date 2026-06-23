@@ -1,0 +1,69 @@
+{
+  "work_item_id": "P1-DEPLOY-NIPIO-R3",
+  "generatedAt": "2026-06-09T09:10:06.317Z",
+  "pilot": "https://14-225-217-232.nip.io",
+  "vps_head": "68ec457+pscp",
+  "l0": {
+    "hrm_metrics_http": 200,
+    "hrm_metrics_https": 200
+  },
+  "leave_balance": [
+    {
+      "label": "slug_holding",
+      "http": 200,
+      "code": "HRM-LEAVE-BAL-200",
+      "pass": true,
+      "available": 8,
+      "used": 3
+    },
+    {
+      "label": "uuid_company_id",
+      "http": 200,
+      "code": "HRM-LEAVE-BAL-200",
+      "pass": true,
+      "available": 8,
+      "used": 3
+    }
+  ],
+  "mob_parity": [
+    {
+      "id": "MP-01",
+      "http": 200,
+      "code": "HRM-EMP-DIR-200",
+      "pass": true,
+      "sample": {
+        "full_name": "Bùi Quốc An",
+        "job_title": "DRIVER",
+        "job_title_key": "DRIVER"
+      }
+    },
+    {
+      "id": "MP-08",
+      "http": 200,
+      "code": "HRM-LEAVE-200",
+      "total": 3,
+      "pass": true
+    },
+    {
+      "id": "MP-14",
+      "http": 200,
+      "code": "HRM-SVC-200",
+      "total": 15,
+      "pass": true,
+      "sample": {
+        "request_type": "vehicle",
+        "service_type": "vehicle",
+        "status": "rejected"
+      }
+    },
+    {
+      "id": "MP-19",
+      "http": 200,
+      "code": "HRM-NOTIF-200",
+      "total": 5,
+      "pass": true,
+      "note": "API uses limit= not page_size= (P1-G6-PROBE-01)"
+    }
+  ],
+  "verdict": "PASS"
+}

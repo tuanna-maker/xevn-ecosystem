@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { HrmAuthConfig } from './types';
-import { hrmRequest } from './hrmApiClient';
+import type { HrmRequestResult } from './hrmApiClient';
 
 const QUEUE_KEY = 'hrm_mobile_offline_write_queue_v1';
 
@@ -43,14 +42,16 @@ export async function enqueueOfflineWrite(
   await writeQueue(jobs);
 }
 
-export async function flushOfflineQueue(auth: HrmAuthConfig): Promise<{ synced: number; failed: number }> {
+export async function flushOfflineQueue(
+  request: (path: string, init?: RequestInit) => Promise<HrmRequestResult<unknown>>,
+): Promise<{ synced: number; failed: number }> {
   const jobs = await readQueue();
   if (!jobs.length) return { synced: 0, failed: 0 };
   const remaining: OfflineWriteJob[] = [];
   let synced = 0;
   let failed = 0;
   for (const job of jobs) {
-    const res = await hrmRequest<unknown>(auth, job.path, {
+    const res = await request(job.path, {
       method: job.method,
       body: job.body,
     });

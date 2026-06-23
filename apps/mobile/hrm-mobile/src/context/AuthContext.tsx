@@ -1,16 +1,27 @@
 import * as SecureStore from 'expo-secure-store';
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { HrmAuthConfig } from '../integrations/types';
 
-import { getDefaultBaseUrl, hrmRequest } from '../integrations/hrmApiClient';
+import { getDefaultBaseUrl, hrmRequest, type HrmRequestResult } from '../integrations/hrmApiClient';
 
-import { resolvePayrollQueryCompanyId, resolveWireCompanyId } from '../integrations/companyWireScope';
+import { computeTokenExpiresAt, isMobileTokenExpired } from '../integrations/mobileAuthSession';
+
+import {
+  resolveHomeSummaryQueryCompanyId,
+  resolveLeaveBalanceQueryCompanyId,
+  resolvePayrollQueryCompanyId,
+  resolveWireCompanyId,
+} from '../integrations/companyWireScope';
+import {
+  resolveHrmOperatingUnitQueryCompanyId,
+  type HrmOperatingUnitSlug,
+} from '../integrations/hrmListScope';
 
 import { isManagerRole, parseJwtClaims } from '../integrations/jwtClaims';
 
-import { registerHrmPushToken } from '../integrations/pushRegistration';
+import { tryRegisterExpoPushToken } from '../integrations/pushRegistration';
 
 import { STORAGE } from '../storage/keys';
 
@@ -66,11 +77,27 @@ export type AuthState = {
 
   memberships: MobileMembership[];
 
+  /** Epoch ms — refreshed from login/refresh `expires_in_sec` (portal 86400 parity). */
+  tokenExpiresAt: number;
+
+  /** Cached from GET /employees/:id — MOB-UX-13e persona resolve. */
+  jobTitleKey: string;
+
+  /** GET /home/summary viewer.is_manager — null until first Home load. */
+  summaryIsManager: boolean | null;
+
 };
 
 
 
-export type SignInPayload = Omit<AuthState, 'hydrated' | 'signedIn'>;
+export type SignInPayload = Omit<
+  AuthState,
+  'hydrated' | 'signedIn' | 'tokenExpiresAt' | 'jobTitleKey' | 'summaryIsManager'
+> & {
+  tokenExpiresAt?: number;
+  jobTitleKey?: string;
+  summaryIsManager?: boolean | null;
+};
 
 
 
@@ -93,6 +120,8 @@ export type MobileLoginResult = {
   default_company_id?: string;
 
   company_uuid?: string;
+
+  expires_in_sec?: number;
 
 };
 
@@ -124,6 +153,12 @@ const defaultState: AuthState = {
 
   memberships: [],
 
+  tokenExpiresAt: 0,
+
+  jobTitleKey: '',
+
+  summaryIsManager: null,
+
 };
 
 
@@ -136,6 +171,9 @@ type AuthContextValue = AuthState & {
 
   selectMembership: (employeeId: string) => Promise<boolean>;
 
+  /** U39 — narrow list API scope; JWT unchanged (group CEO operating-unit filter). */
+  selectOperatingUnitFilter: (selection: 'all' | HrmOperatingUnitSlug) => Promise<void>;
+
   refreshAccessToken: () => Promise<boolean>;
 
   signOut: () => Promise<void>;
@@ -147,6 +185,16 @@ type AuthContextValue = AuthState & {
   getAttendanceCompanyId: () => string;
 
   getPayrollQueryCompanyId: () => string;
+
+  getHomeSummaryQueryCompanyId: () => string;
+
+  getLeaveBalanceQueryCompanyId: () => string;
+
+  /** Ensures JWT is fresh (refresh when near expiry) then calls HRM API. */
+  requestHrm: <T>(
+    path: string,
+    init?: RequestInit & { timeoutMs?: number },
+  ) => Promise<HrmRequestResult<T>>;
 
   isManager: boolean;
 
@@ -173,8 +221,10 @@ function buildHrmAuthConfig(state: AuthState): HrmAuthConfig {
     accessToken: state.accessToken.trim() || undefined,
     internalApiKey: state.internalApiKey.trim() || undefined,
     tenantId: state.tenantId.trim(),
-    companyId: wireCompanyId || state.companyId.trim(),
+    companyId: state.companyId.trim(),
     companyUuid: wireCompanyId || state.companyUuid.trim(),
+    employeeId: state.employeeId.trim() || undefined,
+    memberships: state.memberships,
   };
 }
 
@@ -187,10 +237,25 @@ function enrichLoadedScope(loaded: Partial<AuthState>): Partial<AuthState> {
     employeeId: loaded.employeeId,
     tenantId: loaded.tenantId,
   });
-  if (!wireCompanyId) return loaded;
+  let companyId = loaded.companyId ?? 'holding';
+  if (isUuid(companyId.trim())) {
+    const recoveredSlug = resolveLeaveBalanceQueryCompanyId({
+      companyUuid: wireCompanyId || loaded.companyUuid,
+      companyId,
+      accessToken: loaded.accessToken,
+      memberships: loaded.memberships,
+      employeeId: loaded.employeeId,
+      tenantId: loaded.tenantId,
+    });
+    if (recoveredSlug && !isUuid(recoveredSlug)) companyId = recoveredSlug;
+  }
+  if (!wireCompanyId) {
+    return { ...loaded, companyId };
+  }
   return {
     ...loaded,
     companyUuid: wireCompanyId,
+    companyId,
   };
 }
 
@@ -218,6 +283,8 @@ async function readAll(): Promise<Partial<AuthState>> {
 
     membershipsJson,
 
+    tokenExpiresRaw,
+
   ] = await Promise.all([
 
     SecureStore.getItemAsync(STORAGE.BASE_URL),
@@ -239,6 +306,8 @@ async function readAll(): Promise<Partial<AuthState>> {
     SecureStore.getItemAsync(STORAGE.ROLES_JSON),
 
     SecureStore.getItemAsync(STORAGE.MEMBERSHIPS_JSON),
+
+    SecureStore.getItemAsync(STORAGE.TOKEN_EXPIRES_AT),
 
   ]);
 
@@ -284,6 +353,9 @@ async function readAll(): Promise<Partial<AuthState>> {
 
   }
 
+  let tokenExpiresAt = Number(tokenExpiresRaw ?? 0);
+  if (!Number.isFinite(tokenExpiresAt) || tokenExpiresAt <= 0) tokenExpiresAt = 0;
+
   return enrichLoadedScope({
 
     baseUrl: baseUrl ?? '',
@@ -305,6 +377,8 @@ async function readAll(): Promise<Partial<AuthState>> {
     roles,
 
     memberships,
+
+    tokenExpiresAt,
 
   });
 
@@ -333,6 +407,8 @@ async function persistAuth(next: AuthState) {
   await SecureStore.setItemAsync(STORAGE.ROLES_JSON, JSON.stringify(next.roles));
 
   await SecureStore.setItemAsync(STORAGE.MEMBERSHIPS_JSON, JSON.stringify(next.memberships));
+
+  await SecureStore.setItemAsync(STORAGE.TOKEN_EXPIRES_AT, String(next.tokenExpiresAt || 0));
 
 }
 
@@ -378,6 +454,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [state, setState] = useState<AuthState>(defaultState);
 
+  const stateRef = useRef(state);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
 
   useEffect(() => {
@@ -468,6 +549,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       memberships: payload.memberships ?? [],
 
+      tokenExpiresAt: payload.tokenExpiresAt || 0,
+
+      jobTitleKey: payload.jobTitleKey?.trim() ?? '',
+
+      summaryIsManager: payload.summaryIsManager ?? null,
+
     };
 
     setState(next);
@@ -477,9 +564,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const cid = next.companyUuid && isUuid(next.companyUuid) ? next.companyUuid : '';
 
     if (cid && next.employeeId) {
-
-      void registerHrmPushToken(buildHrmAuthConfig(next), cid, next.employeeId);
-
+      void tryRegisterExpoPushToken(buildHrmAuthConfig(next), cid, next.employeeId).catch(
+        () => undefined,
+      );
     }
 
   }, []);
@@ -512,6 +599,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         memberships: scope.memberships,
 
+        tokenExpiresAt: computeTokenExpiresAt(payload.login.expires_in_sec),
+
       });
 
     },
@@ -521,6 +610,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
 
+
+  const selectOperatingUnitFilter = useCallback(
+    async (selection: 'all' | HrmOperatingUnitSlug): Promise<void> => {
+      const listCompanyId = resolveHrmOperatingUnitQueryCompanyId(selection);
+      const next: AuthState = {
+        ...state,
+        companyId: listCompanyId,
+      };
+      setState(next);
+      await SecureStore.setItemAsync(STORAGE.COMPANY_ID, listCompanyId);
+    },
+    [state],
+  );
 
   const selectMembership = useCallback(
 
@@ -564,6 +666,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         memberships: scope.memberships,
 
+        tokenExpiresAt: computeTokenExpiresAt(res.data.expires_in_sec),
+
+        jobTitleKey: '',
+
+        summaryIsManager: null,
+
       };
 
       setState(next);
@@ -592,6 +700,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       refresh_token: string;
 
+      expires_in_sec?: number;
+
     }>(buildHrmAuthConfig(state), '/auth/mobile/refresh', {
       method: 'POST',
       body: JSON.stringify({ refresh_token: rt }),
@@ -616,6 +726,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           employeeId: state.employeeId,
           tenantId: state.tenantId,
         }) || state.companyUuid,
+
+      tokenExpiresAt: computeTokenExpiresAt(res.data.expires_in_sec),
 
     };
 
@@ -651,6 +763,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       SecureStore.deleteItemAsync(STORAGE.MEMBERSHIPS_JSON).catch(() => undefined),
 
+      SecureStore.deleteItemAsync(STORAGE.TOKEN_EXPIRES_AT).catch(() => undefined),
+
     ]);
 
     setState((s) => ({
@@ -679,6 +793,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getHrmAuth = useCallback((): HrmAuthConfig => buildHrmAuthConfig(state), [state]);
 
+  const requestHrm = useCallback(
+    async <T,>(
+      path: string,
+      init: RequestInit & { timeoutMs?: number } = {},
+    ): Promise<HrmRequestResult<T>> => {
+      let current = stateRef.current;
+      if (isMobileTokenExpired(current.tokenExpiresAt) && current.refreshToken.trim()) {
+        const refreshed = await refreshAccessToken();
+        if (!refreshed) {
+          return {
+            ok: false,
+            code: 'HRM-AUTH-401',
+            message: 'Phiên đăng nhập hết hạn — vui lòng đăng nhập lại',
+            requestId: 'mob-auth-expired',
+            httpStatus: 401,
+          };
+        }
+        current = stateRef.current;
+      }
+      return hrmRequest<T>(buildHrmAuthConfig(current), path, init);
+    },
+    [refreshAccessToken],
+  );
+
   const getAttendanceCompanyId = useCallback((): string => {
     return resolveWireCompanyId({
       companyUuid: state.companyUuid,
@@ -692,6 +830,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const getPayrollQueryCompanyId = useCallback((): string => {
     return resolvePayrollQueryCompanyId({
+      companyUuid: state.companyUuid,
+      companyId: state.companyId,
+      accessToken: state.accessToken,
+      memberships: state.memberships,
+      employeeId: state.employeeId,
+      tenantId: state.tenantId,
+    });
+  }, [state]);
+
+  const getHomeSummaryQueryCompanyId = useCallback((): string => {
+    return resolveHomeSummaryQueryCompanyId({
+      companyUuid: state.companyUuid,
+      companyId: state.companyId,
+      accessToken: state.accessToken,
+      memberships: state.memberships,
+      employeeId: state.employeeId,
+      tenantId: state.tenantId,
+    });
+  }, [state]);
+
+  const getLeaveBalanceQueryCompanyId = useCallback((): string => {
+    return resolveLeaveBalanceQueryCompanyId({
       companyUuid: state.companyUuid,
       companyId: state.companyId,
       accessToken: state.accessToken,
@@ -717,6 +877,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       selectMembership,
 
+      selectOperatingUnitFilter,
+
       refreshAccessToken,
 
       signOut,
@@ -725,9 +887,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       getHrmAuth,
 
+      requestHrm,
+
       getAttendanceCompanyId,
 
       getPayrollQueryCompanyId,
+
+      getHomeSummaryQueryCompanyId,
+
+      getLeaveBalanceQueryCompanyId,
 
       isManager,
 
@@ -738,12 +906,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signInWithMobileLogin,
       selectMembership,
+      selectOperatingUnitFilter,
       refreshAccessToken,
       signOut,
       updateLocal,
       getHrmAuth,
+      requestHrm,
       getAttendanceCompanyId,
       getPayrollQueryCompanyId,
+      getHomeSummaryQueryCompanyId,
+      getLeaveBalanceQueryCompanyId,
       isManager,
     ],
 

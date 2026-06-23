@@ -1,10 +1,30 @@
 import { createContext, useContext } from 'react';
 
-/** Màn rộng (2xl+): rail luôn đủ chỗ; dưới 2xl (md+): cho phép thu gọn + hover. */
+/** Màn rộng (2xl+): trước đây rail luôn mở; U35 portal shell — vẫn cho thu gọn. */
 export const WORKSPACE_RAIL_WIDE_MEDIA = '(min-width: 1536px)';
 export const WORKSPACE_RAIL_MD_MEDIA = '(min-width: 768px)';
 
 export const WORKSPACE_RAIL_PINNED_STORAGE_KEY = 'xevn-command-center-rail-pinned';
+/** Rail phân hệ ngoài cùng — mặc định thu icon (toàn Command Center). */
+export const WORKSPACE_RAIL_COLLAPSED_STORAGE_KEY = 'xevn-portal-rail-collapsed-v1';
+
+export function readPortalRailCollapsed(): boolean {
+  try {
+    const v = localStorage.getItem(WORKSPACE_RAIL_COLLAPSED_STORAGE_KEY);
+    if (v === null) return true;
+    return v === '1';
+  } catch {
+    return true;
+  }
+}
+
+export function writePortalRailCollapsed(collapsed: boolean): void {
+  try {
+    localStorage.setItem(WORKSPACE_RAIL_COLLAPSED_STORAGE_KEY, collapsed ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
+}
 
 export type WorkspaceRailContextValue = {
   /** Đủ chỗ hiển thị nhãn + icon (không ở chế độ chỉ icon). */

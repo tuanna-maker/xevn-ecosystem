@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { NavTransitionShell } from '../../components/common/NavTransitionShell';
 import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
 import type { UnifiedTask } from '../../data/command-center-mock';
 import type { WorkflowInstanceDetailPayload } from '../../integrations/workflowInstanceMapper';
@@ -13,7 +14,9 @@ type WorkflowTaskDetailDrawerProps = {
   busy: boolean;
   inboxFromApi: boolean;
   onClose: () => void;
-  onComplete: (outcome: 'approved' | 'rejected') => void;
+  onApprove: () => void;
+  /** Parent shows AlertDialog (ACT-CC-WF-REJECT) before POST reject. */
+  onRejectRequest: () => void;
 };
 
 function stepLabel(row: Record<string, unknown>, index: number): string {
@@ -31,7 +34,8 @@ export function WorkflowTaskDetailDrawer({
   busy,
   inboxFromApi,
   onClose,
-  onComplete,
+  onApprove,
+  onRejectRequest,
 }: WorkflowTaskDetailDrawerProps) {
   if (!open || !task) return null;
 
@@ -68,15 +72,17 @@ export function WorkflowTaskDetailDrawer({
             <X className="h-5 w-5" />
           </button>
         </header>
-        <div className="flex-1 overflow-y-auto px-5 py-4 text-sm text-slate-700">
+        <div className="relative flex-1 overflow-y-auto text-sm text-slate-700">
           {loading ? (
-            <p className="text-slate-500">Đang tải chi tiết workflow…</p>
+            <NavTransitionShell variant="drawer" className="min-h-full" label="Đang tải chi tiết workflow…" />
           ) : detailLoadFailed ? (
-            <p className="text-rose-700" role="alert">
-              Không tải được chi tiết từ{' '}
-              <code className="rounded bg-slate-100 px-1 text-xs">GET …/instances/:id/detail</code>. Kiểm tra
-              xbos-api và instance id.
-            </p>
+            <div className="px-5 py-4">
+              <p className="text-rose-700" role="alert">
+                Không tải được chi tiết từ{' '}
+                <code className="rounded bg-slate-100 px-1 text-xs">GET …/instances/:id/detail</code>. Kiểm tra
+                xbos-api và instance id.
+              </p>
+            </div>
           ) : (
             <>
               <p>
@@ -118,11 +124,11 @@ export function WorkflowTaskDetailDrawer({
         </div>
         <footer className="flex gap-2 border-t border-slate-100 px-5 py-4">
           <CapabilityActionButton
-            capabilityCode="BTN-A1-INBOX-QUICK"
+            capabilityCode="ACT-CC-WF-REJECT"
             variant="secondary"
             runtime={completeRuntime}
             className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-            onClick={() => onComplete('rejected')}
+            onClick={onRejectRequest}
           >
             Từ chối
           </CapabilityActionButton>
@@ -130,7 +136,7 @@ export function WorkflowTaskDetailDrawer({
             capabilityCode="BTN-A1-INBOX-QUICK"
             runtime={completeRuntime}
             className="flex-1 rounded-lg bg-[#1E40AF] px-3 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:opacity-50"
-            onClick={() => onComplete('approved')}
+            onClick={onApprove}
           >
             Hoàn thành
           </CapabilityActionButton>

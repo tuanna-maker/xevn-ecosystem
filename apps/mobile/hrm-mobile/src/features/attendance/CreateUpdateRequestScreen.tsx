@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert } from 'react-native';
+import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+import { FormField } from '../../components/ui/FormField';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { StickyFooter } from '../../components/ui/StickyFooter';
+import { SurfaceCard } from '../../components/ui/SurfaceCard';
 import { useAuth } from '../../context/AuthContext';
 import { useOfflineWriteGuard } from '../../hooks/useOfflineWriteGuard';
-import { fetchEmployeeById } from '../../integrations/hrmEmployees';
-import { hrmRequest } from '../../integrations/hrmApiClient';
+import {
+  hydrateEmployeeMetaForRequest,
+  resolveEmployeeMetaFromMemberships,
+} from '../../integrations/hrmEmployees';
 import { formatHrmError } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
+import {
+  MISSING_EMPLOYEE_META_MESSAGE,
+  userFacingScopeError,
+} from '../../utils/scopeError';
 
 export function CreateUpdateRequestScreen() {
   const auth = useAuth();
@@ -21,15 +32,23 @@ export function CreateUpdateRequestScreen() {
   const eid = auth.employeeId.trim();
 
   useEffect(() => {
+    if (!eid) return;
+    const fromMembership = resolveEmployeeMetaFromMemberships(auth.memberships, eid);
+    if (fromMembership) {
+      setEmployeeCode(fromMembership.employee_code);
+      setEmployeeName(fromMembership.employee_name);
+    }
+    let cancelled = false;
     void (async () => {
-      if (!eid) return;
-      const row = await fetchEmployeeById(auth.getHrmAuth(), eid);
-      if (row) {
-        setEmployeeCode(row.employee_code);
-        setEmployeeName(row.full_name);
-        setDepartment(row.job_title_key ?? '');
-      }
+      const meta = await hydrateEmployeeMetaForRequest(auth.getHrmAuth(), auth.memberships, eid);
+      if (cancelled || !meta) return;
+      setEmployeeCode(meta.employee_code);
+      setEmployeeName(meta.employee_name);
+      if (meta.department) setDepartment(meta.department);
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [auth, eid]);
 
   const submit = async () => {
@@ -39,19 +58,16 @@ export function CreateUpdateRequestScreen() {
       return;
     }
     if (!cid || !eid) {
-      Alert.alert(vi.error, 'Cần UUID công ty + employeeId.');
+      Alert.alert(vi.error, userFacingScopeError('companyAndEmployee'));
       return;
     }
     if (!employeeCode.trim() || !employeeName.trim()) {
-      Alert.alert(
-        vi.error,
-        'Thiếu mã/tên nhân viên. Điền employeeId UUID trùng bản ghi GET /employees hoặc nhập tay.',
-      );
+      Alert.alert(vi.error, MISSING_EMPLOYEE_META_MESSAGE);
       return;
     }
     setBusy(true);
     try {
-      const res = await hrmRequest<unknown>(auth.getHrmAuth(), '/attendance/update-requests', {
+      const res = await auth.requestHrm<unknown>('/attendance/update-requests', {
         method: 'POST',
         body: JSON.stringify({
           company_id: cid,
@@ -73,54 +89,33 @@ export function CreateUpdateRequestScreen() {
   };
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
-      <Text style={styles.title}>UC-HRM-MOB-06</Text>
-      <Text style={styles.hint}>
-        Dữ liệu nhân viên lấy từ GET /employees khi đã cấu hình employeeId + companyId header khớp bản ghi.
-      </Text>
-      <Text style={styles.label}>employee_code</Text>
-      <TextInput
-        style={styles.input}
-        value={employeeCode}
-        onChangeText={setEmployeeCode}
-        placeholderTextColor="#64748b"
-        autoCapitalize="none"
-      />
-      <Text style={styles.label}>employee_name</Text>
-      <TextInput style={styles.input} value={employeeName} onChangeText={setEmployeeName} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>department (tuỳ chọn)</Text>
-      <TextInput style={styles.input} value={department} onChangeText={setDepartment} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>update_type</Text>
-      <TextInput style={styles.input} value={updateType} onChangeText={setUpdateType} placeholderTextColor="#64748b" />
-      <Text style={styles.label}>reason</Text>
-      <TextInput style={styles.input} value={reason} onChangeText={setReason} placeholderTextColor="#64748b" />
-      <Pressable style={styles.btn} onPress={() => void submit()} disabled={busy}>
-        <Text style={styles.btnText}>{busy ? vi.loading : 'Gửi đơn'}</Text>
-      </Pressable>
-    </ScrollView>
+    <AppScreenLayout
+      title="Đơn công"
+      subtitle="Yêu cầu điều chỉnh chấm công — dữ liệu nhân viên từ GET /employees"
+      scroll
+      keyboardShouldPersistTaps="handled"
+      footer={
+        <StickyFooter>
+          <PrimaryButton
+            label={busy ? vi.loading : 'Gửi đơn'}
+            onPress={() => void submit()}
+            disabled={busy}
+            loading={busy}
+          />
+        </StickyFooter>
+      }
+    >
+      <SurfaceCard title="Thông tin nhân viên">
+        <FormField label="Mã nhân viên" value={employeeCode} onChangeText={setEmployeeCode} autoCapitalize="none" />
+        <FormField label="Họ tên" value={employeeName} onChangeText={setEmployeeName} />
+        <FormField label="Phòng ban (tuỳ chọn)" value={department} onChangeText={setDepartment} />
+      </SurfaceCard>
+
+      <SurfaceCard title="Nội dung đơn">
+        <FormField label="Loại điều chỉnh" value={updateType} onChangeText={setUpdateType} />
+        <FormField label="Lý do" value={reason} onChangeText={setReason} multiline />
+      </SurfaceCard>
+
+    </AppScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a' },
-  pad: { padding: 16, gap: 10, paddingBottom: 40 },
-  title: { color: '#f8fafc', fontSize: 18, fontWeight: '700' },
-  hint: { color: '#64748b', fontSize: 12 },
-  label: { color: '#94a3b8', fontSize: 12 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    padding: 12,
-    color: '#f8fafc',
-    backgroundColor: '#1e293b',
-  },
-  btn: {
-    marginTop: 12,
-    backgroundColor: '#0ea5e9',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  btnText: { color: '#0f172a', fontWeight: '700' },
-});

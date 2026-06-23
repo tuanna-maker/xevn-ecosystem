@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-06-08T13:34:10.728Z",
+  "probes": {
+    "xbosGroupMemberUnits": {
+      "http": 200,
+      "count": 4,
+      "tenantIds": [
+        "xe-tmdv",
+        "visun",
+        "xe-du-lich",
+        "xe-vietnam"
+      ]
+    },
+    "hrmGroupRollup": {
+      "http": 200,
+      "total": 1107,
+      "distinctSlugs": [
+        "finance",
+        "holding",
+        "logistics",
+        "services",
+        "trsport"
+      ],
+      "slugCount": 5
+    },
+    "memberIsolation": {
+      "employeesTotal": 18,
+      "slugs": [
+        "main"
+      ],
+      "hasGroupSlug": false,
+      "groupMemberUnitsHttp": 403,
+      "pass": true
+    },
+    "jHrm01": {
+      "pass": true,
+      "http": 200,
+      "employeeId": "77873727-336d-4c79-8569-ced82d23b25e",
+      "detailCompanyId": "holding"
+    },
+    "jHrm02": {
+      "pass": true,
+      "http": 200,
+      "employeeId": "221f23fe-aa70-429e-8006-50918284689e",
+      "listCompanyId": "holding",
+      "detailCompanyId": "holding"
+    }
+  },
+  "summary": {
+    "fail": 0,
+    "pass": true
+  }
+}

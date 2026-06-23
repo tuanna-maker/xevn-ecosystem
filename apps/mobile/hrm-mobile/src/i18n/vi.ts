@@ -8,6 +8,8 @@ export const vi = {
   error: 'Lỗi',
   dashboard: 'Trang chủ',
   attendance: 'Chấm công',
+  teamDirectory: 'Đội nhóm',
+  colleagueDetail: 'Thông tin nhân viên',
   requests: 'Đơn công',
   more: 'Thêm',
   history: 'Lịch sử',
@@ -26,4 +28,5 @@ export const vi = {
   notifications: 'Thông báo',
   settings: 'Cài đặt',
   scope: 'Phạm vi công ty',
+  journey: 'Hành trình',
 };

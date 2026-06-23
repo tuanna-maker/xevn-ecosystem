@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-06-07T08:47:00.375Z",
+  "probes": {
+    "operatingUnits": {
+      "pass": true,
+      "status": 200,
+      "code": "HRM-OPU-200",
+      "count": 5,
+      "labels": {
+        "holding": {
+          "label": "Tập đoàn XeVN",
+          "expected": "Tập đoàn XeVN",
+          "pass": true
+        },
+        "trsport": {
+          "label": "Khối Vận tải X.E",
+          "expected": "Khối Vận tải X.E",
+          "pass": true
+        },
+        "logistics": {
+          "label": "Khối Logistics X.E",
+          "expected": "Khối Logistics X.E",
+          "pass": true
+        },
+        "finance": {
+          "label": "Khối Tài chính X.E",
+          "expected": "Khối Tài chính X.E",
+          "pass": true
+        },
+        "services": {
+          "label": "Khối Dịch vụ X.E",
+          "expected": "Khối Dịch vụ X.E",
+          "pass": true
+        }
+      }
+    },
+    "jHrmInt03": {
+      "pass": true,
+      "requisitionId": "c0410818-79b4-4efb-8dc5-60a64c1b1cbe",
+      "requisitionCompanyId": "holding",
+      "candidateId": "e8b87456-372e-4a5f-8dac-c86fdb8eb170",
+      "candidateCompanyId": "holding",
+      "candidateStatus": "interview",
+      "employeesInSlug": 5,
+      "sampleEmployeeId": "8ac84520-0d6b-4737-8341-2f9a929b5f81",
+      "hireLinkNote": "Cross-module scope: requisition slug partition has workforce rows; formal hired→employee_id FK pending seed with status=hired"
+    },
+    "jHrmInt04": {
+      "pass": true,
+      "contractId": "98e394ca-c0c1-4dc0-8947-5a04732e6ee7",
+      "employeeId": "ecd90d32-9f78-4ed0-8b40-23d82c2dab03",
+      "contractCompanyId": "logistics",
+      "employeeCompanyId": "logistics",
+      "contractsFilterHttp": 200,
+      "contractsFilterCode": "HRM-CON-200",
+      "filteredCount": 1,
+      "slugParity": true
+    }
+  },
+  "summary": {
+    "fail": 0,
+    "pass": true
+  }
+}

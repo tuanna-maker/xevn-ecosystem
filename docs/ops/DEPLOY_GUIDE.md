@@ -77,14 +77,34 @@ Script deploy (`deploy/xevn-ecosystem/deploy.sh`) thực hiện:
 
 ### Bước 3 — Kiểm tra sau deploy
 
+`deploy.sh` chờ HRM health + XBOS login **201** (tối đa 120s) trước khi báo Done — giảm 502 khi QA chạy ngay sau deploy.
+
 ```bash
 # Trên VPS hoặc từ máy ngoài:
 curl http://14.225.217.232:8088/command-center   # → 200
 curl http://14.225.217.232:3001/api/hrm/metrics  # → 200
 curl http://14.225.217.232:28002/api/xbos/metrics # → 200
+# HTTPS login (không 502):
+curl -sk -o /dev/null -w "%{http_code}\n" -X POST https://14-225-217-232.nip.io/api/xbos/auth/login \
+  -H "Content-Type: application/json" -d '{"email":"ceo@xe.vn","password":"Xevn@2026"}'
 ```
 
+Workstation: `pnpm run probe:stack-stability` (20× login, fail nếu có 502).
+
+**QA local L0/L1:** `docs/ops/LOCAL_DEV_STACK_L0.md`
+
 **HRM fidelity data (pilot):** sau deploy DB, chạy chuỗi seed theo `docs/ops/HRM_FIDELITY_SEED_RUNBOOK.md` (`1000-uat` → `seed:hrm:fidelity` → `verify:hrm:menu-density`).
+
+**Mobile UAT0001 pending queue (J-MOB-05 / QC C-MOBJOB-01):** sau khi `hrm-be` healthy, `deploy.sh` tự chạy `scripts/vps-post-hrm-be-mob-pilot-qual.sh` (idempotent `seed:hrm:uat-mob-pilot-qual` + `tmp-p1-resid-c03-probe.mjs`). Khi chỉ recreate `hrm-be`:
+
+```bash
+cd /opt/xevn-ecosystem/deploy/xevn-ecosystem
+docker compose --env-file .env up -d --build --force-recreate hrm-be
+# chờ metrics 200, rồi:
+bash /opt/xevn-ecosystem/scripts/vps-post-hrm-be-mob-pilot-qual.sh
+```
+
+Bỏ qua hook (debug): `XEVN_SKIP_MOB_PILOT_QUAL=1 bash deploy/xevn-ecosystem/deploy.sh`. Evidence: `docs/ops/evidence/p1-phase1-do-mob-pending-parity-20260604.md`.
 
 ---
 

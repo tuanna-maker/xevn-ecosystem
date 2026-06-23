@@ -75,12 +75,13 @@ import {
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import { ContractImportDialog } from '@/components/contract/ContractImportDialog';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
   getSettingsCatalogsOverview,
-  listEmployees,
+  listAllEmployees,
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
@@ -222,7 +223,7 @@ export default function Contracts() {
     queryKey: ['employees-list', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const res = await listEmployees({ company_id: currentCompanyId, page: 1, page_size: 500 });
+      const res = await listAllEmployees({ company_id: currentCompanyId, page: 1 });
       return res.data ?? [];
     },
     enabled: !!currentCompanyId,
@@ -876,17 +877,28 @@ export default function Contracts() {
                 <TableRow 
                   key={contract.id}
                   className={cn(
-                    selectedContracts.includes(contract.id) && 'bg-primary/5'
+                    selectedContracts.includes(contract.id) && 'bg-primary/5',
+                    'cursor-pointer',
                   )}
+                  onClick={() => handleOpenView(contract)}
                 >
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       checked={selectedContracts.includes(contract.id)}
                       onCheckedChange={() => toggleSelectContract(contract.id)}
                     />
                   </TableCell>
                   <TableCell className="font-medium text-primary">
-                    {contract.contract_code}
+                    <button
+                      type="button"
+                      className="hover:underline text-left"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenView(contract);
+                      }}
+                    >
+                      {contract.contract_code}
+                    </button>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -896,10 +908,11 @@ export default function Contracts() {
                           {getInitials(contract.employee_name)}
                         </AvatarFallback>
                       </Avatar>
-                      {contract.source === 'employee_contracts' && contract.employee_id ? (
+                      {contract.employee_id ? (
                         <Link 
-                          to={`/employees/${contract.employee_id}`}
+                          to={hrmPathWithEmbedSearch(`/employees/${contract.employee_id}`)}
                           className="font-medium text-primary hover:underline"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {contract.employee_name}
                         </Link>
@@ -925,13 +938,14 @@ export default function Contracts() {
                       : '-'}
                   </TableCell>
                   <TableCell>{getStatusBadge(contract.status, t)}</TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => handleOpenView(contract)}
+                        aria-label={t('contracts.viewTitle')}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>

@@ -4,8 +4,12 @@ import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { XbosDbService } from '../db/xbos-db.service';
 import { TenantScopeService } from '../tenant-scope/tenant-scope.service';
-
-const DEV_PASSWORD = 'Xevn@2026';
+import { ensureAllPilotMemberships, ensurePilotMembershipForUser } from './pilot-membership.bootstrap';
+import {
+  PILOT_PORTAL_DEV_PASSWORD,
+  PILOT_PORTAL_USERS,
+  PILOT_SUPER_DEV_PORTAL_USER,
+} from './pilot-portal-users.constants';
 /** Portal web login access token lifetime (24h) — probe P-CC-01-jwt expects 86400. */
 export const PORTAL_LOGIN_JWT_TTL_DEFAULT_SEC = 24 * 60 * 60;
 
@@ -40,7 +44,8 @@ export class AuthService implements OnModuleInit {
 
   async onModuleInit() {
     await this.ensureSchema();
-    await this.ensureDevUsers();
+    await this.ensurePilotPortalUsers();
+    await this.ensurePilotMemberships();
   }
 
   private hashPassword(userId: string, password: string): string {
@@ -62,20 +67,14 @@ export class AuthService implements OnModuleInit {
     `);
   }
 
-  private async ensureDevUsers() {
-    if (process.env.NODE_ENV === 'production' && process.env.SEED_PORTAL_USERS !== 'true') {
-      return;
-    }
-    const users: Array<{ userId: string; displayName: string }> = [
-      { userId: 'admin@xe.vn', displayName: 'Admin Dev (đa tenant)' },
-      { userId: 'ceo@xe.vn', displayName: 'CEO Tập đoàn' },
-      { userId: 'du-lich.ceo@xe.vn', displayName: 'CEO Du lịch XeVN' },
-      { userId: 'du-lich.hr@xe.vn', displayName: 'HR Du lịch XeVN (HRBP)' },
-      { userId: 'vietnam.ceo@xe.vn', displayName: 'CEO X.E Việt Nam' },
-      { userId: 'tmdv.ceo@xe.vn', displayName: 'CEO TM-DV' },
-      { userId: 'visun.ceo@xe.vn', displayName: 'CEO Visun' },
+  /** Idempotent pilot portal credentials — runs in production (VPS :8088 UAT personas). */
+  private async ensurePilotPortalUsers() {
+    const portalRows = [
+      ...PILOT_PORTAL_USERS.map((u) => ({ userId: u.userId, displayName: u.displayName })),
+      PILOT_SUPER_DEV_PORTAL_USER,
     ];
-    for (const u of users) {
+    for (const u of portalRows) {
+      const userId = u.userId.trim().toLowerCase();
       await this.db.query(
         `INSERT INTO public.xbos_portal_user (user_id, display_name, password_hash, status)
          VALUES ($1, $2, $3, 'active')
@@ -84,9 +83,14 @@ export class AuthService implements OnModuleInit {
            password_hash = EXCLUDED.password_hash,
            status = 'active',
            updated_at = NOW()`,
-        [u.userId, u.displayName, this.hashPassword(u.userId, DEV_PASSWORD)],
+        [userId, u.displayName, this.hashPassword(userId, PILOT_PORTAL_DEV_PASSWORD)],
       );
     }
+  }
+
+  /** Tenant memberships required for login (XBOS-AUTH-403 when missing). */
+  private async ensurePilotMemberships() {
+    await ensureAllPilotMemberships(this.db);
   }
 
   async login(email: string, password: string) {
@@ -106,6 +110,7 @@ export class AuthService implements OnModuleInit {
       throw new ApiException('XBOS-AUTH-401', 'Email hoặc mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
     }
 
+    await ensurePilotMembershipForUser(this.db, userId);
     const memberships = await this.tenantScope.listAccessible(userId);
     if (!memberships.length) {
       throw new ApiException('XBOS-AUTH-403', 'Tài khoản chưa được gán tenant', HttpStatus.FORBIDDEN);

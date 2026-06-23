@@ -36,6 +36,17 @@ describe('hrmProxyPath (Command Center embed)', () => {
     );
   });
 
+  it('appends cache-bust query on embed navigation (G-INT-08)', () => {
+    const url = hrmProxyPathFromSuffix('employees', {
+      portal: true,
+      tenantId: 'xevn',
+      companyId: 'main',
+      cacheBust: 1717756800000,
+    });
+    expect(url).toContain('_v=1717756800000');
+    expect(url).toContain('companyId=main');
+  });
+
   it('maps holding embed hint to main in iframe query (EX-SA01-P1-03)', () => {
     expect(hrmProxyPath('employees', { portal: true, tenantId: 'xevn', companyId: 'holding' })).toBe(
       '/hr/employees?portal=1&tenantId=xevn&companyId=main',
@@ -71,6 +82,28 @@ describe('hrmProxyPath (Command Center embed)', () => {
     expect(
       hrmProxyPathFromSuffix('dashboard', { portal: true, tenantId: 'xevn', companyId: 'main' }),
     ).toBe('/hr/?portal=1&tenantId=xevn&companyId=main');
+  });
+
+  it('member CEO iframe carries xe-du-lich tenant + main company (C-MEMCC-01)', () => {
+    expect(
+      hrmProxyPathFromSuffix('employees', {
+        portal: true,
+        tenantId: 'xe-du-lich',
+        companyId: 'main',
+      }),
+    ).toBe('/hr/employees?portal=1&tenantId=xe-du-lich&companyId=main');
+    expect(
+      hrmProxyPath('dashboard', { portal: true, tenantId: 'xe-du-lich', companyId: 'main' }),
+    ).toBe('/hr/?portal=1&tenantId=xe-du-lich&companyId=main');
+  });
+
+  it('maps internal_services portal suffix to hyphenated iframe path (D-HRM-INTSVC-404-01)', () => {
+    expect(
+      hrmProxyPathFromSuffix('internal_services', { portal: true, companyId: 'main' }),
+    ).toBe('/hr/internal-services?portal=1&companyId=main');
+    expect(
+      hrmProxyPathFromSuffix('tools_equipment', { portal: true, companyId: 'main' }),
+    ).toBe('/hr/tools-equipment?portal=1&companyId=main');
   });
 
   it('supports deep link employees/:id via suffix', () => {

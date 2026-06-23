@@ -73,6 +73,58 @@ function usePortalIdentityDefaults(): boolean {
   return import.meta.env.DEV || import.meta.env.VITE_DEV_SYSTEM_ADMIN === 'true';
 }
 
+function pickOperationalCompanyId(
+  tenantId: string,
+  claimCompanyId: string | null,
+  companyIdHint: string | null | undefined,
+  runtimeCompanyId: string | null | undefined,
+): string {
+  const masterTenantSlugAsCompany = (id: string | null | undefined): boolean =>
+    typeof id === 'string' && id.trim().toLowerCase() === tenantId.trim().toLowerCase();
+
+  if (isMasterTenant(tenantId)) {
+    const pickOperational = (id: string | null | undefined): string | null => {
+      if (!id || isGroupCompanyId(id) || masterTenantSlugAsCompany(id)) return null;
+      return id;
+    };
+    return (
+      pickOperational(claimCompanyId) ??
+      pickOperational(companyIdHint) ??
+      pickOperational(runtimeCompanyId) ??
+      MEMBER_DEFAULT_COMPANY_ID
+    );
+  }
+
+  const pickMember = (id: string | null | undefined): string | null => {
+    if (!id || isGroupCompanyId(id)) return null;
+    return id;
+  };
+  return (
+    pickMember(claimCompanyId) ??
+    pickMember(companyIdHint) ??
+    pickMember(runtimeCompanyId) ??
+    MEMBER_DEFAULT_COMPANY_ID
+  );
+}
+
+/**
+ * Member CEO JWT (`xe-du-lich`, …) must win over master placeholder / env default hints.
+ * Group CEO on `xevn` is unchanged — claim tenant is master and hint is respected.
+ */
+function alignTenantIdWithJwt(
+  tenantId: string | null | undefined,
+  claimTenantId: string | null,
+  tenantIdHint: string | null | undefined,
+): string | null | undefined {
+  if (!claimTenantId || isMasterTenant(claimTenantId)) return tenantId;
+  const hintLooksLikeMasterDefault =
+    !tenantIdHint || isMasterTenant(tenantIdHint) || tenantIdHint === '__loading__';
+  if (hintLooksLikeMasterDefault || tenantId !== claimTenantId) {
+    return claimTenantId;
+  }
+  return tenantId;
+}
+
 /**
  * Phạm vi runtime: mỗi tenant thành viên dùng company_id = main.
  * Tenant master (xevn): ưu tiên companyId từ portal JWT (vd. main cho ceo@xe.vn), không dùng tenant id làm company.
@@ -83,37 +135,30 @@ export function resolveIdentityScope(
 ): IdentityScopeContext {
   const claims = parseJwtClaims(getIdentityJwtToken());
   const runtime = getActiveTenantScope();
-  let tenantId =
-    tenantIdHint ?? runtime?.tenantId ?? pickClaim(claims, ['tenantId', 'tenant_id', 'tid']);
+  const claimTenantId = pickClaim(claims, ['tenantId', 'tenant_id', 'tid']);
   const claimCompanyId = pickClaim(claims, ['companyId', 'company_id', 'activeCompanyId', 'active_company_id']);
 
   const defaultTenant = import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID;
+
+  let tenantId =
+    tenantIdHint ?? runtime?.tenantId ?? claimTenantId;
 
   if (usePortalIdentityDefaults()) {
     if (!tenantId) tenantId = defaultTenant;
   }
 
+  tenantId = alignTenantIdWithJwt(tenantId, claimTenantId, tenantIdHint) ?? tenantId;
+
   if (!tenantId) {
     throw new ScopeContextError('Thiếu tenantId trong identity context', 'SCOPE_TENANT_REQUIRED');
   }
 
-  const masterTenantSlugAsCompany = (id: string | null | undefined): boolean =>
-    typeof id === 'string' && id.trim().toLowerCase() === tenantId.trim().toLowerCase();
-
-  let companyId: string;
-  if (isMasterTenant(tenantId)) {
-    const pickOperational = (id: string | null | undefined): string | null => {
-      if (!id || isGroupCompanyId(id) || masterTenantSlugAsCompany(id)) return null;
-      return id;
-    };
-    companyId =
-      pickOperational(claimCompanyId) ??
-      pickOperational(companyIdHint) ??
-      pickOperational(runtime?.companyId) ??
-      MEMBER_DEFAULT_COMPANY_ID;
-  } else {
-    companyId = MEMBER_DEFAULT_COMPANY_ID;
-  }
+  const companyId = pickOperationalCompanyId(
+    tenantId,
+    claimCompanyId,
+    companyIdHint,
+    runtime?.companyId,
+  );
 
   return { tenantId, companyId };
 }

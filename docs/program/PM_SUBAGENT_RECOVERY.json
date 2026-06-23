@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-06-21T01:21:09.616Z",
+  "healthy": false,
+  "staleThresholdMin": 7,
+  "inFlightCount": 22,
+  "issuesCount": 30,
+  "recoveryRequired": [
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P0",
+      "role": "qa",
+      "workItemId": "PM-RECOVER-stale_in_flight",
+      "taskId": "tool_f6b427bf-26a1-49be-a2df-87fd899819c",
+      "reason": "stale_in_flight",
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (979m) task_id tool_f6b427bf-26a1-49be-a2df-87fd899819c. Assume zombie — spawn NEW qa for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P0",
+      "role": "dev-fe",
+      "workItemId": "PM-RECOVER-stale_in_flight",
+      "taskId": "tool_5fa70cb5-7ad4-4d79-953e-ce32a6c73eb",
+      "reason": "stale_in_flight",
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (935m) task_id tool_5fa70cb5-7ad4-4d79-953e-ce32a6c73eb. Assume zombie — spawn NEW dev-fe for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P0",
+      "role": "dev-be",
+      "workItemId": "PM-RECOVER-stale_in_flight",
+      "taskId": "tool_4d1385b6-846e-4136-9dd7-918d4e744d3",
+      "reason": "stale_in_flight",
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (924m) task_id tool_4d1385b6-846e-4136-9dd7-918d4e744d3. Assume zombie — spawn NEW dev-be for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P0",
+      "role": "qc",
+      "workItemId": "PM-RECOVER-stale_in_flight",
+      "taskId": "tool_98a4cb29-7348-46e1-b080-21b6dc4890e",
+      "reason": "stale_in_flight",
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (916m) task_id tool_98a4cb29-7348-46e1-b080-21b6dc4890e. Assume zombie — spawn NEW qc for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P1",
+      "role": "qa",
+      "workItemId": "P1-BROWSER-E2E-RACI-07-01",
+      "taskId": "",
+      "reason": "PM DISPATCHED trên bus nhưng chưa có verdict PASS_TO_PM",
+      "pm_dispatch_prompt": "RECOVERY: issue type bus_dispatch_stale for P1-BROWSER-E2E-RACI-07-01. PM inspect pm:subagent:status and re-dispatch qa."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P1",
+      "role": "devops",
+      "workItemId": "P1-HRM-EMBED-PSCP-SETTINGS-CATALOG-8088",
+      "taskId": "",
+      "reason": "PM DISPATCHED trên bus nhưng chưa có verdict PASS_TO_PM",
+      "pm_dispatch_prompt": "RECOVERY: issue type bus_dispatch_stale for P1-HRM-EMBED-PSCP-SETTINGS-CATALOG-8088. PM inspect pm:subagent:status and re-dispatch devops."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P1",
+      "role": "qc",
+      "workItemId": "P1-INFRA-FCAT-WIZARD-QA-20260620",
+      "taskId": "",
+      "reason": "PM DISPATCHED trên bus nhưng chưa có verdict PASS_TO_PM",
+      "pm_dispatch_prompt": "RECOVERY: issue type bus_dispatch_stale for P1-INFRA-FCAT-WIZARD-QA-20260620. PM inspect pm:subagent:status and re-dispatch qc."
+    },
+    {
+      "action": "spawn_fresh_task",
+      "priority": "P1",
+      "role": "qc",
+      "workItemId": "P1-SCREEN-ACTION-MAP-QA-20260620",
+      "taskId": "",
+      "reason": "PM DISPATCHED trên bus nhưng chưa có verdict PASS_TO_PM",
+      "pm_dispatch_prompt": "RECOVERY: issue type bus_dispatch_stale for P1-SCREEN-ACTION-MAP-QA-20260620. PM inspect pm:subagent:status and re-dispatch qc."
+    }
+  ],
+  "scanSummary": {
+    "healthy": false,
+    "latestStop": {
+      "hook": "subagentStop",
+      "at": "2026-06-20T18:09:49.709Z",
+      "subagent_type": "dev-fe",
+      "task_id": "tool_f5373581-da31-43ab-ae29-bdf74dfe839",
+      "status": "completed",
+      "title": "FE fcat consumer field bind",
+      "model": "default",
+      "member_completed_count_24h": 22,
+      "webhook": {
+        "skipped": true,
+        "reason": "dedupe_window"
+      },
+      "followup_suppressed": true
+    },
+    "riskyTranscripts": []
+  },
+  "pmPlaybook": [
+    "1. pnpm run pm:subagent:status — human report",
+    "2. pnpm run pm:subagent:recover — actions JSON + exit 2",
+    "3. PM: Task(recoveryRequired[0].role) with pm_dispatch_prompt; run_in_background=false for stuck agents",
+    "4. If warming/CDP: spawn NEW subagent — do not wait same task_id",
+    "5. Ghi bus PM -> role | RE-DISPATCHED recovery"
+  ],
+  "outputPath": "docs/program/PM_SUBAGENT_RECOVERY.json"
+}

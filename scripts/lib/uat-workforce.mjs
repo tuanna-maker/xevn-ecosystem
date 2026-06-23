@@ -3,7 +3,6 @@ import { stableUuid } from './stable-uuid.mjs';
 import {
   ROLE_LABELS_VI,
   buildVietnameseFullName,
-  buildWorkEmail,
   companyCodePrefix,
   nationalIdForSeq,
   placeOfIssue,
@@ -60,6 +59,11 @@ export function pad(n, width = 4) {
   return String(n).padStart(width, '0');
 }
 
+/** Doc SoT mobile login: `uat.nv0001@xe.vn` … `uat.nv1000@xe.vn` (PROGRAM_JOURNEY_MAP, HDSD §4.5). */
+export function buildUatMobileEmail(seq) {
+  return `uat.nv${pad(seq)}@xe.vn`;
+}
+
 export function passwordHash(email, password) {
   return createHash('sha256').update(`${email.trim().toLowerCase()}:${password}`).digest('hex');
 }
@@ -87,7 +91,7 @@ export function buildUatEmployee(i, password) {
   const dept = UAT_DEPARTMENTS[i % UAT_DEPARTMENTS.length];
   const tenantId = resolveMasterTenant();
   const fullName = buildVietnameseFullName(i);
-  const email = buildWorkEmail(fullName, seq, pad);
+  const email = buildUatMobileEmail(seq);
   const prefix = companyCodePrefix(companyId);
   const hiredAt = new Date(Date.UTC(2022 + (i % 4), (i * 3) % 12, ((i * 7) % 27) + 1))
     .toISOString()

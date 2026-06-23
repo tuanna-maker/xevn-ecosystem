@@ -67,7 +67,10 @@ import { ExpiringContractsAlert } from '@/components/dashboard/ExpiringContracts
 import { HrmApiReminders } from '@/components/dashboard/HrmApiReminders';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
-import { listAttendanceRecords, listExpiringContracts } from '@/integrations/hrmApi';
+import { listAllEmployeeContracts, listAttendanceRecords } from '@/integrations/hrmApi';
+import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import { filterUpcomingExpiringContracts } from '@/lib/formatHrmDate';
 
 // Hook to get expiring contracts count
 function useExpiringContractsCount() {
@@ -76,8 +79,8 @@ function useExpiringContractsCount() {
     queryKey: ['expiring-contracts-count', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return 0;
-      const res = await listExpiringContracts({ company_id: currentCompanyId, days: 30 });
-      return res.data?.length ?? 0;
+      const res = await listAllEmployeeContracts({ company_id: currentCompanyId, status: 'active' });
+      return filterUpcomingExpiringContracts(res.data ?? [], 30).length;
     },
     enabled: !!currentCompanyId,
   });
@@ -95,10 +98,10 @@ function useAttendanceDashboard() {
       const toDate = new Date().toISOString().slice(0, 10);
       const fromDate = thirtyDaysAgo.toISOString().slice(0, 10);
       const res = await listAttendanceRecords({
-        company_id: currentCompanyId,
+        company_id: coerceHrmListCompanyId(currentCompanyId),
         from_date: fromDate,
         to_date: toDate,
-        page_size: 200,
+        page_size: HRM_API_MAX_PAGE_SIZE,
       });
       return res.data ?? [];
     },

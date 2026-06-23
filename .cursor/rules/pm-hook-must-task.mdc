@@ -10,9 +10,12 @@
 
 Khi nhận **bất kỳ** thông báo subagent xong (notification, hook followup, user paste):
 
-1. **Tool đầu tiên** = `Task` (hoặc `Task` + ghi bus trong cùng lượt).
+1. **Tool đầu tiên** = `pnpm run pm:idle:check` **hoặc** `Task` dispatch (U58).
 2. **Cấm** kết thúc lượt chỉ bằng xác nhận ngắn khi còn `READY_FOR_QA` / `FAIL_TO_PM` / QC GWC có condition chưa dispatch.
-3. Wave đóng hết → ghi `PM -> ALL` idle + cập nhật `TEAM_WORKING_NOW.md`; nếu còn residual trong QC evidence → **Task dev-be/dev-fe** ngay.
+3. **Cấm** «kế tiếp pipeline / sẽ Task tiếp» ở cuối message — class B (U58).
+4. Wave đóng hết → ghi `PM -> ALL` idle + cập nhật `TEAM_WORKING_NOW.md`; nếu còn residual trong QC evidence → **Task dev-be/dev-fe** ngay.
+
+Chi tiết class A–J: `.cursor/rules/pm-idle-detection-and-recovery.mdc`
 
 ## User
 

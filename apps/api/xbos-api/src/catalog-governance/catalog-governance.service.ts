@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
+import { resolveHrmApiBaseUrl } from '../common/resolve-hrm-api-base-url';
 import {
+  GROUP_APPROVER_USER,
   MASTER_COMPANY_HOLDING,
   MASTER_TENANT_XEVN,
   WF_BUSINESS_TYPE_HRM_CATALOG,
@@ -8,28 +10,64 @@ import {
 } from '../workflow-engine/workflow-catalog.constants';
 import { WorkflowEngineService } from '../workflow-engine/workflow-engine.service';
 
+type HrmUpstreamScope = { tenantId?: string; companyId?: string };
+
+type HrmFetchInit = RequestInit & HrmUpstreamScope & { reviewerUserId?: string };
+
+function parseWorkflowGraphSteps(raw: unknown): Array<Record<string, unknown>> {
+  if (Array.isArray(raw)) return raw as Array<Record<string, unknown>>;
+  if (raw && typeof raw === 'object') {
+    const graph = raw as Record<string, unknown>;
+    const steps = graph.steps ?? graph.nodes;
+    if (Array.isArray(steps)) return steps as Array<Record<string, unknown>>;
+  }
+  if (typeof raw === 'string') {
+    try {
+      return parseWorkflowGraphSteps(JSON.parse(raw) as unknown);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function catalogApprovalStepAssignee(steps: Array<Record<string, unknown>>): string | null {
+  const approval = steps.find((s) => String(s.stepKey ?? s.step_key ?? '') === 'group_catalog_approval');
+  if (!approval) return null;
+  const assignee = approval.assigneeUserId ?? approval.assignee_user_id;
+  return typeof assignee === 'string' ? assignee.trim().toLowerCase() : null;
+}
+
 @Injectable()
 export class CatalogGovernanceService {
   constructor(private readonly workflow: WorkflowEngineService) {}
-
-  private hrmBaseUrl(): string {
-    const port = process.env.HRM_BE_PORT ?? '28001';
-    return (process.env.HRM_API_URL ?? `http://127.0.0.1:${port}`).replace(/\/$/, '');
-  }
 
   private internalKey(): string {
     return process.env.INTERNAL_API_KEY ?? 'xevn-dev-internal-key';
   }
 
-  private async hrmFetch(path: string, init: RequestInit & { reviewerUserId?: string } = {}) {
+  private resolveMemberScopeFromContext(context: unknown): HrmUpstreamScope {
+    if (!context || typeof context !== 'object') {
+      return {};
+    }
+    const ctx = context as Record<string, unknown>;
+    const tenantId = typeof ctx.memberTenantId === 'string' ? ctx.memberTenantId.trim() : undefined;
+    const companyId = typeof ctx.memberCompanyId === 'string' ? ctx.memberCompanyId.trim() : undefined;
+    return { tenantId, companyId };
+  }
+
+  private async hrmFetch(path: string, init: HrmFetchInit = {}) {
+    const { reviewerUserId, tenantId, companyId, ...fetchInit } = init;
     const headers: Record<string, string> = {
       'x-internal-api-key': this.internalKey(),
       'content-type': 'application/json',
-      ...(init.reviewerUserId ? { 'x-user-id': init.reviewerUserId } : {}),
+      ...(reviewerUserId ? { 'x-user-id': reviewerUserId } : {}),
+      ...(tenantId ? { 'x-tenant-id': tenantId } : {}),
+      ...(companyId ? { 'x-company-id': companyId } : {}),
     };
-    const res = await fetch(`${this.hrmBaseUrl()}${path}`, {
-      ...init,
-      headers: { ...headers, ...(init.headers as Record<string, string> | undefined) },
+    const res = await fetch(`${resolveHrmApiBaseUrl()}${path}`, {
+      ...fetchInit,
+      headers: { ...headers, ...(fetchInit.headers as Record<string, string> | undefined) },
     });
     const text = await res.text();
     let json: { success?: boolean; message?: string; data?: unknown };
@@ -55,7 +93,23 @@ export class CatalogGovernanceService {
   async ensureXeDuLichCatalogWorkflow() {
     const body = buildXeDuLichCatalogWorkflowDefinition();
     const existing = await this.workflow.findActiveDefinitionByCode(MASTER_TENANT_XEVN, body.workflowCode);
-    if (existing) return existing;
+    if (existing) {
+      const existingSteps = parseWorkflowGraphSteps((existing as { graph?: unknown }).graph);
+      const canonicalAssignee = GROUP_APPROVER_USER.toLowerCase();
+      const currentAssignee = catalogApprovalStepAssignee(existingSteps);
+      if (currentAssignee !== canonicalAssignee) {
+        return this.workflow.upsertDefinition(
+          MASTER_TENANT_XEVN,
+          MASTER_COMPANY_HOLDING,
+          String((existing as { id: string }).id),
+          {
+            ...body,
+            name: String((existing as { name?: string }).name ?? body.name),
+          },
+        );
+      }
+      return existing;
+    }
     return this.workflow.upsertDefinition(MASTER_TENANT_XEVN, MASTER_COMPANY_HOLDING, null, body);
   }
 
@@ -69,7 +123,11 @@ export class CatalogGovernanceService {
     const def = definition as { id: string; graph?: { steps?: Array<Record<string, unknown>> } };
     const batchDetail = (await this.hrmFetch(
       `/api/hrm/settings-catalogs/batches/${encodeURIComponent(payload.batchId)}`,
-      { method: 'GET' },
+      {
+        method: 'GET',
+        tenantId: payload.memberTenantId,
+        companyId: payload.memberCompanyId,
+      },
     )) as { batchId: string; items: Array<Record<string, unknown>> };
 
     const approvalStep = def.graph?.steps?.find((s) => s.stepKey === 'group_catalog_approval');
@@ -90,7 +148,7 @@ export class CatalogGovernanceService {
             {
               stepKey: approvalStep.stepKey,
               hatKey: approvalStep.hatKey ?? 'group_ceo',
-              assigneeUserId: approvalStep.assigneeUserId ?? 'ceo@xe.vn',
+              assigneeUserId: GROUP_APPROVER_USER,
             },
           ]
         : [],
@@ -99,6 +157,8 @@ export class CatalogGovernanceService {
     const inst = instance as { id: string };
     await this.hrmFetch(`/api/hrm/settings-catalogs/batches/${encodeURIComponent(payload.batchId)}/workflow`, {
       method: 'POST',
+      tenantId: payload.memberTenantId,
+      companyId: payload.memberCompanyId,
       body: JSON.stringify({ workflowInstanceId: inst.id }),
     });
 
@@ -117,10 +177,15 @@ export class CatalogGovernanceService {
 
   async getApprovalDetail(instanceId: string) {
     const detail = await this.workflow.getInstanceWithTasks(instanceId);
-    const inst = detail.instance as { business_id: string };
+    const inst = detail.instance as { business_id: string; context?: unknown };
+    const memberScope = this.resolveMemberScopeFromContext(inst.context);
     const batchDetail = await this.hrmFetch(
       `/api/hrm/settings-catalogs/batches/${encodeURIComponent(String(inst.business_id))}`,
-      { method: 'GET' },
+      {
+        method: 'GET',
+        tenantId: memberScope.tenantId,
+        companyId: memberScope.companyId,
+      },
     );
     return { ...detail, batchDetail };
   }
@@ -136,8 +201,10 @@ export class CatalogGovernanceService {
       instance_id: string;
       business_id: string;
       hat_key: string;
+      context?: unknown;
     };
     const batchId = String(task.business_id);
+    const memberScope = this.resolveMemberScopeFromContext(task.context);
 
     if (decision === 'reject') {
       await this.workflow.rejectStepTask(taskId, { userId: reviewerUserId, reviewNote });
@@ -146,6 +213,8 @@ export class CatalogGovernanceService {
         {
           method: 'POST',
           reviewerUserId,
+          tenantId: memberScope.tenantId,
+          companyId: memberScope.companyId,
           body: JSON.stringify({ decision: 'rejected', review_note: reviewNote ?? null }),
         },
       );
@@ -163,6 +232,8 @@ export class CatalogGovernanceService {
         {
           method: 'POST',
           reviewerUserId,
+          tenantId: memberScope.tenantId,
+          companyId: memberScope.companyId,
           body: JSON.stringify({ decision: 'approved', review_note: reviewNote ?? null }),
         },
       );

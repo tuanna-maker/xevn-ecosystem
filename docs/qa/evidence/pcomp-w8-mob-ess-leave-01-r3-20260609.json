@@ -1,0 +1,45 @@
+{
+  "work_item_id": "PCOMP-W8-MOB-ESS-LEAVE-01-R3",
+  "date": "2026-06-09",
+  "ack_status": "PASS_TO_PM",
+  "api_base": "https://14-225-217-232.nip.io",
+  "apk_sha256": "C2F76C2C1AE973894BF8101E44FC60B2C2195C8344E5D916E3F2C9031BD56FBA",
+  "apk_bytes": 71779426,
+  "account": "uat.nv0001@xe.vn",
+  "manager_account": "uat.nv0001@xe.vn",
+  "cold_boot": true,
+  "deep_link_login": {
+    "home_reached": true,
+    "fatal_logcat": false
+  },
+  "api_probe": {
+    "leave_balance": {
+      "status": 200,
+      "code": "HRM-LEAVE-BAL-200",
+      "available": 8,
+      "used": 3
+    },
+    "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+  },
+  "journeys": {
+    "J-MOB-06": "PASS",
+    "J-MOB-07": "PASS",
+    "J-MOB-08": "PASS",
+    "J-MOB-09": "PASS",
+    "J-MOB-23": "PASS",
+    "J-MOB-24": "PASS",
+    "J-MOB-25": "PASS",
+    "J-MOB-26": "PASS",
+    "J-MOB-27": "PASS",
+    "J-MOB-28": "PASS",
+    "J-MOB-29": "PASS",
+    "J-AVT-02": "PASS"
+  },
+  "screens_dir": "docs/qa/evidence/pcomp-w8-mob-ess-leave-01-r3-screens",
+  "scripts": [
+    "scripts/qa-mobile-login-intent.mjs",
+    "scripts/tmp-pcomp-w8-mob-ess-leave-01-r3-device.mjs",
+    "scripts/tmp-pcomp-w8-mob-ess-leave-01-r3-supplement.mjs"
+  ],
+  "pass": true
+}

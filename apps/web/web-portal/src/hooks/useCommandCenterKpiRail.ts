@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { KpiSparkPoint, PersonaRole } from '../data/command-center-mock';
-import { getKpiSeriesForPersona } from '../data/command-center-mock';
+import type { KpiSparkPoint, PersonaRole } from '../data/command-center-types';
 import { rollupToSparkline } from '../integrations/commandCenterKpi';
 import { fetchKpiRollup } from '../integrations/kpiEngineApi';
 import { listBusinessMasterItems } from '../integrations/businessMasterApi';
 import { resolveIdentityScope } from '../integrations/identityScope';
-import { allowMockFallback } from '../utils/mockPolicy';
+import {
+  isCommandCenterKpiDevFallbackEnabled,
+  resolveCommandCenterKpiDevSeries,
+  shouldSkipCommandCenterKpiSnapshotOnEmptyRollup,
+} from '../utils/commandCenterStrictMode';
 
 type SparklinePayload = { points?: KpiSparkPoint[] };
 
@@ -22,7 +25,7 @@ export type CommandCenterKpiRailState = {
 
 /**
  * Command Center KPI rail — `kpi-engine/rollup` first (BE contract), optional business-master
- * snapshot, mock only when `VITE_ALLOW_MOCK_FALLBACK=true`.
+ * snapshot. Mock persona series only when `VITE_ALLOW_MOCK_FALLBACK=true` (M-CC-06 strict default).
  */
 export function useCommandCenterKpiRail(
   persona: PersonaRole,
@@ -43,20 +46,23 @@ export function useCommandCenterKpiRail(
       setApiSeries([]);
 
       const rollup = await fetchKpiRollup(tenantIdHint, companyIdHint);
-      const fromRollup = rollupToSparkline(rollup);
-      if (fromRollup.length && !cancelled) {
-        setApiSeries(fromRollup);
-        setSource('rollup');
-        return;
-      }
 
-      if (!allowMockFallback()) {
-        if (!cancelled) {
-          setApiSeries([]);
-          setSource('empty');
-          setLoadFailed(true);
+      if (rollup !== null) {
+        const fromRollup = rollupToSparkline(rollup);
+        if (fromRollup.length && !cancelled) {
+          setApiSeries(fromRollup);
+          setSource('rollup');
+          return;
         }
-        return;
+        // HTTP 200 with empty series — empty state, not error banner (D-8088-KPI-01)
+        if (shouldSkipCommandCenterKpiSnapshotOnEmptyRollup()) {
+          if (!cancelled) {
+            setApiSeries([]);
+            setSource('empty');
+            setLoadFailed(false);
+          }
+          return;
+        }
       }
 
       try {
@@ -78,7 +84,7 @@ export function useCommandCenterKpiRail(
       if (!cancelled) {
         setApiSeries([]);
         setSource('empty');
-        setLoadFailed(true);
+        setLoadFailed(rollup === null);
       }
     })();
 
@@ -88,8 +94,7 @@ export function useCommandCenterKpiRail(
   }, [tenantIdHint, companyIdHint]);
 
   return useMemo(() => {
-    const mockAllowed = allowMockFallback();
-    const mockSeries = mockAllowed ? getKpiSeriesForPersona(persona) : [];
+    const devFallbackEnabled = isCommandCenterKpiDevFallbackEnabled();
 
     if (source === 'loading') {
       return {
@@ -114,16 +119,19 @@ export function useCommandCenterKpiRail(
       };
     }
 
-    if (mockAllowed && mockSeries.length) {
-      const last = mockSeries[mockSeries.length - 1]?.value;
-      return {
-        series: mockSeries,
-        headlinePercent: Number.isFinite(last) ? last : null,
-        source: 'mock',
-        usingMockFallback: true,
-        loadFailed: false,
-        isLoading: false,
-      };
+    if (devFallbackEnabled) {
+      const mockSeries = resolveCommandCenterKpiDevSeries(persona);
+      if (mockSeries.length) {
+        const last = mockSeries[mockSeries.length - 1]?.value;
+        return {
+          series: mockSeries,
+          headlinePercent: Number.isFinite(last) ? last : null,
+          source: 'mock',
+          usingMockFallback: true,
+          loadFailed: false,
+          isLoading: false,
+        };
+      }
     }
 
     return {

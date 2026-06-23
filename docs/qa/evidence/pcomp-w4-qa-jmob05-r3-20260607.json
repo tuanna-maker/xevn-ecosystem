@@ -1,0 +1,55 @@
+{
+  "work_item_id": "PCOMP-W4-QA-JMOB05-R3",
+  "jId": "J-MOB-05",
+  "date": "2026-06-07",
+  "account": "uat.nv0001@xe.vn",
+  "api_base": "https://14-225-217-232.nip.io",
+  "apk_target": "apps/mobile/hrm-mobile/dist/hrm-mobile-release-jmob05-r3.apk",
+  "apk_note": "jar-inject from hub04a base + fresh bundle — launch FAIL ExponentImagePicker",
+  "ack_status": "FAIL",
+  "pass": false,
+  "checks": [
+    {
+      "id": "SEED-PENDING",
+      "pass": true,
+      "note": "pnpm run seed:hrm:uat-mob-pilot-qual → pending_update_requests=1"
+    },
+    {
+      "id": "BUNDLE-HEADER-03b",
+      "pass": true,
+      "note": "index.android.bundle contains resolveHrmWriteHeaderId + useBottomTabBarHeight (8259157 B)"
+    },
+    {
+      "id": "APK-FULL-STACK-LAUNCH",
+      "pass": false,
+      "note": "Injected full-stack bundle → App entry not found / ExponentImagePicker native missing on inject-base APKs"
+    },
+    {
+      "id": "GRADLE-RELEASE",
+      "pass": false,
+      "note": "assembleRelease blocked (notification_icon fixed in repo; Gradle wrapper/module path failures on re-run)"
+    },
+    {
+      "id": "API-HEADER-PROBE",
+      "pass": true,
+      "note": "POST approve/reject UUID → 201; holding → 409 (5/5 probes)"
+    },
+    {
+      "id": "J-MOB-05-DEVICE-DUYET",
+      "pass": false,
+      "note": "No launchable full-stack APK on emulator — device write path not executed"
+    }
+  ],
+  "api_header_probe": {
+    "work_item_id": "PCOMP-W4-QA-HEADER-03b",
+    "pass": true,
+    "probes": [
+      { "call": "GET pending inbox", "x_company_id": "holding", "status": 200, "pass": true },
+      { "call": "POST approve (negative)", "x_company_id": "holding", "status": 409, "pass": true },
+      { "call": "POST approve (UUID)", "x_company_id": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013", "status": 201, "pass": true },
+      { "call": "POST reject (negative)", "x_company_id": "holding", "status": 409, "pass": true },
+      { "call": "POST reject (UUID)", "x_company_id": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013", "status": 201, "pass": true }
+    ]
+  },
+  "evidence_dir": "docs/qa/evidence/pcomp-w4-qa-jmob05-r3-screens"
+}

@@ -1,21 +1,27 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ListShimmerPlaceholder } from '../../components/primitives/ListShimmerPlaceholder';
+import { ElevatedCard } from '../../components/ui/ElevatedCard';
+import { EmptyStateIllustration } from '../../components/ui/EmptyStateIllustration';
+import { EssRichListRow } from '../../components/ui/EssRichListRow';
+import { FormField } from '../../components/ui/FormField';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { SegmentedTabBar } from '../../components/ui/SegmentedTabBar';
 import { useAuth } from '../../context/AuthContext';
 import { useOfflineWriteGuard } from '../../hooks/useOfflineWriteGuard';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
+import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { formatHrmDate } from '../../utils/formatHrm';
+import { userFacingScopeError } from '../../utils/scopeError';
+import {
+  resolveOpsPriorityLabel,
+  resolveServiceTypeLabel,
+  resolveTaskStatusLabel,
+} from '../../utils/operationsLabels';
 
 type Task = {
   id: string;
@@ -43,6 +49,7 @@ export function OperationsScreen() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [services, setServices] = useState<Svc[]>([]);
   const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [newTitle, setNewTitle] = useState('Việc từ mobile');
   const [busy, setBusy] = useState(false);
@@ -51,7 +58,7 @@ export function OperationsScreen() {
 
   const load = useCallback(async () => {
     if (!cid) {
-      setErr('Cần UUID công ty (operations).');
+      setErr(userFacingScopeError('company'));
       setTasks([]);
       setServices([]);
       return;
@@ -79,20 +86,22 @@ export function OperationsScreen() {
     setErr(parts.join('\n'));
   }, [auth, cid]);
 
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-
-  const onRefresh = useCallback(async () => {
+  const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await load();
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   }, [load]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      void refresh();
+    }, [refresh]),
+  );
 
   const createTask = async () => {
     const off = blockIfOffline();
@@ -156,131 +165,180 @@ export function OperationsScreen() {
     else Alert.alert(vi.error, formatHrmError(res));
   };
 
-  return (
-    <View style={styles.wrap}>
-      <Text style={styles.title}>UC-HRM-MOB-11 — {vi.operations}</Text>
-      {err ? <Text style={styles.err}>{err}</Text> : null}
-      <View style={styles.tabs}>
-        <Pressable style={[styles.tab, tab === 'tasks' && styles.tabOn]} onPress={() => setTab('tasks')}>
-          <Text style={[styles.tabText, tab === 'tasks' && styles.tabTextOn]}>Việc</Text>
-        </Pressable>
-        <Pressable style={[styles.tab, tab === 'services' && styles.tabOn]} onPress={() => setTab('services')}>
-          <Text style={[styles.tabText, tab === 'services' && styles.tabTextOn]}>Yêu cầu DV</Text>
-        </Pressable>
-      </View>
+  const listHeader = (
+    <View style={styles.headerBlock}>
+      <Text style={styles.headerTitle}>{vi.operations}</Text>
+      <Text style={styles.headerSub}>Quản lý việc và yêu cầu dịch vụ</Text>
+
+      {err ? (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>{err}</Text>
+        </View>
+      ) : null}
+
+      <SegmentedTabBar
+        value={tab}
+        options={[
+          { key: 'tasks', label: 'Việc' },
+          { key: 'services', label: 'Yêu cầu DV' },
+        ]}
+        onChange={setTab}
+      />
 
       {tab === 'tasks' ? (
-        <>
-          <Text style={styles.label}>Tạo việc nhanh</Text>
-          <TextInput style={styles.input} value={newTitle} onChangeText={setNewTitle} placeholderTextColor="#64748b" />
-          <Pressable style={styles.btn} onPress={() => void createTask()} disabled={busy}>
-            <Text style={styles.btnText}>{busy ? vi.loading : 'Thêm task'}</Text>
-          </Pressable>
-          <FlatList
-            style={{ flex: 1 }}
-            data={tasks}
-            keyExtractor={(item) => item.id}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
-            renderItem={({ item }) => (
-              <View style={styles.row}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.main}>{item.title}</Text>
-                  <Text style={styles.sub}>
-                    {item.status} · {item.priority}
-                    {item.due_date ? ` · hạn ${item.due_date}` : ''}
-                  </Text>
-                </View>
-                {item.status !== 'done' ? (
-                  <Pressable style={styles.smallBtn} onPress={() => void patchTaskDone(item.id)}>
-                    <Text style={styles.smallBtnText}>Xong</Text>
-                  </Pressable>
-                ) : null}
-              </View>
-            )}
-            ListEmptyComponent={<Text style={styles.empty}>Không có task</Text>}
+        <ElevatedCard style={styles.createBox}>
+          <FormField label="Tạo việc nhanh" value={newTitle} onChangeText={setNewTitle} />
+          <PrimaryButton
+            label={busy ? vi.loading : 'Thêm task'}
+            onPress={() => void createTask()}
+            disabled={busy}
+            loading={busy}
+            size="sm"
           />
-        </>
-      ) : (
+        </ElevatedCard>
+      ) : null}
+    </View>
+  );
+
+  if (loading && tasks.length === 0 && services.length === 0 && !err) {
+    return (
+      <View style={styles.root}>
+        {listHeader}
+        <ListShimmerPlaceholder testID="operations-list-shimmer" />
+      </View>
+    );
+  }
+
+  if (tab === 'tasks') {
+    return (
+      <View style={styles.root}>
         <FlatList
-          style={{ flex: 1 }}
-          data={services}
+          data={tasks}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
+          contentContainerStyle={styles.list}
+          refreshing={refreshing}
+          onRefresh={() => void refresh()}
+          ListHeaderComponent={listHeader}
           renderItem={({ item }) => (
-            <View style={styles.row}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.main}>{item.service_type}</Text>
-                <Text style={styles.sub}>
-                  {item.employee_name} · {item.request_date} · {item.status}
-                </Text>
-              </View>
-              {item.status === 'pending' ? (
-                <View style={{ gap: 6 }}>
-                  <Pressable style={styles.approve} onPress={() => void decideService(item.id, 'approve')}>
-                    <Text style={styles.approveTx}>OK</Text>
-                  </Pressable>
-                  <Pressable style={styles.reject} onPress={() => void decideService(item.id, 'reject')}>
-                    <Text style={styles.rejectTx}>No</Text>
-                  </Pressable>
-                </View>
-              ) : null}
-            </View>
+            <ElevatedCard style={styles.rowCard}>
+              <EssRichListRow
+                icon="checkbox-outline"
+                iconTone={item.status === 'done' ? 'success' : 'primary'}
+                title={item.title}
+                subtitle={`${resolveTaskStatusLabel(item.status)} · ${resolveOpsPriorityLabel(item.priority)}${
+                  item.due_date ? ` · hạn ${formatHrmDate(item.due_date)}` : ''
+                }`}
+                status={item.status}
+                statusLabel={resolveTaskStatusLabel(item.status)}
+                actions={
+                  item.status !== 'done' ? (
+                    <PrimaryButton
+                      label="Xong"
+                      onPress={() => void patchTaskDone(item.id)}
+                      size="sm"
+                      variant="secondary"
+                    />
+                  ) : undefined
+                }
+              />
+            </ElevatedCard>
           )}
-          ListEmptyComponent={<Text style={styles.empty}>Không có yêu cầu</Text>}
+          ListEmptyComponent={
+            !err ? (
+              <EmptyStateIllustration
+                testID="operations-tasks-empty"
+                title="Không có task"
+                hint="Tạo việc mới hoặc kéo xuống để làm mới."
+                icon="list-outline"
+              />
+            ) : null
+          }
         />
-      )}
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.root}>
+      <FlatList
+        data={services}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+        refreshing={refreshing}
+        onRefresh={() => void refresh()}
+        ListHeaderComponent={listHeader}
+        renderItem={({ item }) => (
+          <ElevatedCard style={styles.rowCard}>
+            <EssRichListRow
+              icon="construct"
+              iconTone={item.status === 'approved' ? 'success' : item.status === 'rejected' ? 'warning' : 'accent'}
+              title={resolveServiceTypeLabel(item.service_type)}
+              subtitle={`${item.employee_name} · ${formatHrmDate(item.request_date)}`}
+              status={item.status}
+              actions={
+                item.status === 'pending' ? (
+                  <View style={styles.actionRow}>
+                    <PrimaryButton
+                      label="Duyệt"
+                      onPress={() => void decideService(item.id, 'approve')}
+                      size="sm"
+                    />
+                    <PrimaryButton
+                      label="Từ chối"
+                      onPress={() => void decideService(item.id, 'reject')}
+                      size="sm"
+                      variant="danger"
+                    />
+                  </View>
+                ) : undefined
+              }
+            />
+          </ElevatedCard>
+        )}
+        ListEmptyComponent={
+          !err ? (
+            <EmptyStateIllustration
+              testID="operations-services-empty"
+              title="Không có yêu cầu"
+              hint="Kéo xuống để làm mới."
+              icon="construct-outline"
+            />
+          ) : null
+        }
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: '#0f172a', padding: 16 },
-  title: { color: '#f8fafc', fontSize: 18, fontWeight: '700', marginBottom: 8 },
-  err: { color: '#f87171', marginBottom: 8, fontSize: 13 },
-  tabs: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  tab: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#1e293b',
+  root: { flex: 1, backgroundColor: colors.iosGroupedBackground },
+  headerBlock: { gap: spacing.sm, marginBottom: spacing.sm },
+  headerTitle: {
+    fontSize: typography.fontSize['2xl'],
+    fontWeight: typography.fontWeight.bold,
+    color: colors.text,
+  },
+  headerSub: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+  },
+  errorBanner: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#FCA5A5',
+    padding: spacing.md,
   },
-  tabOn: { borderColor: '#38bdf8', backgroundColor: '#0c4a6e' },
-  tabText: { color: '#94a3b8', fontWeight: '600' },
-  tabTextOn: { color: '#e0f2fe' },
-  label: { color: '#94a3b8', fontSize: 12, marginBottom: 4 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    padding: 10,
-    color: '#f8fafc',
-    marginBottom: 8,
+  errorText: {
+    color: '#991B1B',
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
   },
-  btn: {
-    backgroundColor: '#0ea5e9',
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 12,
+  createBox: {
+    padding: spacing.md,
+    gap: spacing.sm,
   },
-  btnText: { color: '#0f172a', fontWeight: '700' },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-    gap: 8,
-  },
-  main: { color: '#e2e8f0', fontSize: 15 },
-  sub: { color: '#94a3b8', fontSize: 12, marginTop: 2 },
-  empty: { color: '#64748b', marginTop: 16 },
-  smallBtn: { backgroundColor: '#334155', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 },
-  smallBtnText: { color: '#e2e8f0', fontSize: 12, fontWeight: '700' },
-  approve: { backgroundColor: '#059669', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  approveTx: { color: '#ecfdf5', fontSize: 11, fontWeight: '700' },
-  reject: { backgroundColor: '#7f1d1d', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  rejectTx: { color: '#fecaca', fontSize: 11, fontWeight: '700' },
+  list: { padding: spacing.md, paddingBottom: spacing.xl },
+  rowCard: { marginBottom: spacing.sm },
+  actionRow: { flexDirection: 'row', gap: spacing.sm, flex: 1 },
 });

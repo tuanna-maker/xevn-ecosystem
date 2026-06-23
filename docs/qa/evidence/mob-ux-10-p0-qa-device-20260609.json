@@ -1,0 +1,142 @@
+{
+  "work_item_id": "MOB-UX-10-P0-QA",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 71800926,
+  "apk_sha256": "9091AB195E85C08EBB0EBCAA03AB5EBB86877F454AC77C9400A0001C654DC6E8",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "login_method": "xevn_qa_login_deep_link",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "pending_api": 0,
+  "results": [
+    {
+      "id": "L0-SHA",
+      "pass": true,
+      "note": "SHA OK 71800926 B"
+    },
+    {
+      "id": "L0-INSTALL",
+      "pass": true,
+      "note": "install Success"
+    },
+    {
+      "jId": "J-MOB-01",
+      "pass": true,
+      "note": "deep link home",
+      "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+    },
+    {
+      "id": "MOB-UX-08-REGRESSION",
+      "pass": true,
+      "note": "scrollOrder=true stripBeforeCarousel=true"
+    },
+    {
+      "jId": "J-MOB-06",
+      "pass": true,
+      "note": "Việc hôm nay"
+    },
+    {
+      "jId": "J-MOB-07",
+      "pass": true,
+      "note": "Cần duyệt card/strip"
+    },
+    {
+      "jId": "J-MOB-08",
+      "pass": true,
+      "note": "birthday"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": true,
+      "note": "whos-out"
+    },
+    {
+      "jId": "J-MOB-11",
+      "pass": true,
+      "note": "bell"
+    },
+    {
+      "jId": "J-MOB-12",
+      "pass": true,
+      "note": "carousel"
+    },
+    {
+      "jId": "J-MOB-13",
+      "pass": true,
+      "note": "quick grid"
+    },
+    {
+      "jId": "J-MOB-14",
+      "pass": true,
+      "note": "payslip feed"
+    },
+    {
+      "jId": "J-MOB-15",
+      "pass": true,
+      "note": "scroll composite"
+    },
+    {
+      "jId": "J-MOB-31",
+      "pass": true,
+      "note": "pending=0 visible=true testId=true tapNav=true xemTatCa=true choDuyet=true",
+      "pending_api": 0
+    },
+    {
+      "jId": "J-MOB-33",
+      "pass": true,
+      "note": "homeFab=true reqFab=true actions=title=true checkIn=true createLeave=true mgr=true navCheckIn=true navLeave=true tabs=4"
+    },
+    {
+      "jId": "J-MOB-25",
+      "pass": true,
+      "note": "8=true 3=true tabs=true conLai=true"
+    },
+    {
+      "jId": "J-MOB-28",
+      "pass": true,
+      "note": "leave tabs/balance chip"
+    },
+    {
+      "jId": "J-MOB-23",
+      "pass": true,
+      "note": "leave list tabs + balance"
+    },
+    {
+      "jId": "J-AVT-02",
+      "pass": true,
+      "note": "Photos picker"
+    },
+    {
+      "id": "4-TAB-LOCK",
+      "pass": true,
+      "note": "tabCount=4"
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "Get-FileHash hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell pm clear vn.xevn.hrm.mobile",
+      "exit": 0
+    },
+    {
+      "cmd": "adb install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "deep-link login uat.nv0001@xe.vn",
+      "exit": 0
+    }
+  ],
+  "logcat_audit": {
+    "hasMainHeader": false
+  },
+  "primaryPass": true,
+  "regPass": true,
+  "pass": true,
+  "ack_status": "PASS_TO_PM"
+}

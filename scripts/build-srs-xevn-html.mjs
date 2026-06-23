@@ -31,7 +31,7 @@ const UC_MD = path.join(ROOT, 'docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md');
 const BRD_MD = path.join(ROOT, 'docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md');
 
 const DOC_CODE = 'UNICOM/SRS-XEVN-OS-001';
-const VERSION_LINE = 'Phiên bản 2.1 &nbsp;·&nbsp; Tháng 5/2026';
+const VERSION_LINE = 'Phiên bản 2.2 &nbsp;·&nbsp; Tháng 6/2026 &nbsp;·&nbsp; Giai đoạn 1 UAT';
 const FOOTER_PAGE = 'XeVN ECOSYSTEM OS — SRS';
 
 function buildBodyMarkdown() {
@@ -92,7 +92,7 @@ function main() {
     !html.includes('CHI TIẾT USE CASE') &&
     !html.includes('## 0. THÔNG TIN TÀI LIỆU') &&
     !html.includes('REQ-SRS-') &&
-    html.includes('Phiên bản 2.1') &&
+    html.includes('Phiên bản 2.2') &&
     html.includes('**Diễn biến nghiệp vụ (theo sơ đồ):**') &&
     frCount === 373;
   console.log(`Wrote ${OUT} (${kb} KB) fr_blocks=${frCount} ok=${ok}`);

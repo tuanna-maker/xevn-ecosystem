@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HRM_GROUP_MEMBER_COMPANY_SLUGS } from '../common/hrm-list-scope';
@@ -8,6 +8,8 @@ import { HrmDbService } from '../db/hrm-db.service';
 jest.mock('node:fs/promises', () => ({
   mkdir: jest.fn().mockResolvedValue(undefined),
   writeFile: jest.fn().mockResolvedValue(undefined),
+  access: jest.fn().mockResolvedValue(undefined),
+  readFile: jest.fn().mockResolvedValue(Buffer.from('png-bytes')),
 }));
 
 const GROUP_CEO_TOKEN = () =>
@@ -27,6 +29,10 @@ describe('CatalogExtensionsService', () => {
     query.mockResolvedValue({ rows: [] });
     jest.mocked(mkdir).mockClear();
     jest.mocked(writeFile).mockClear();
+    jest.mocked(access).mockClear();
+    jest.mocked(readFile).mockClear();
+    jest.mocked(access).mockResolvedValue(undefined);
+    jest.mocked(readFile).mockResolvedValue(Buffer.from('png-bytes'));
   });
 
   it('lists sales data with company filter', async () => {
@@ -206,6 +212,30 @@ describe('CatalogExtensionsService', () => {
       }),
     ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-FILE-409' }));
     expect(jest.mocked(writeFile)).not.toHaveBeenCalled();
+  });
+
+  it('readUploadedFile serves scoped path without auth (P1-RESID-C01 / GWC-AVT-01)', async () => {
+    const out = await service.readUploadedFile('holding', 'employee-avatar-1-test.png', undefined);
+    expect(out.buffer.toString()).toBe('png-bytes');
+    expect(out.mimetype).toBe('image/png');
+    expect(jest.mocked(readFile)).toHaveBeenCalledWith(
+      expect.stringMatching(/hrm-files[\\/]holding[\\/]employee-avatar-1-test\.png$/),
+    );
+  });
+
+  it('readUploadedFile rejects path traversal (GWC-AVT-01)', async () => {
+    await expect(service.readUploadedFile('holding', '../secret.png', undefined)).rejects.toThrow(
+      expect.objectContaining<ApiException>({ code: 'HRM-FILE-404' }),
+    );
+    expect(jest.mocked(readFile)).not.toHaveBeenCalled();
+  });
+
+  it('readUploadedFile applies scope when JWT present (P1-RESID-C01)', async () => {
+    const token = GROUP_CEO_TOKEN();
+    await service.readUploadedFile('main', 'employee-avatar-2-test.png', `Bearer ${token}`);
+    expect(jest.mocked(readFile)).toHaveBeenCalledWith(
+      expect.stringMatching(/hrm-files[\\/]holding[\\/]employee-avatar-2-test\.png$/),
+    );
   });
 
   it('returns trial subscription when missing', async () => {

@@ -1,40 +1,36 @@
 # Sprint status at a glance
 
-**Updated:** 2026-05-24T24:45Z · **Program:** Phase 1 IN_PROGRESS
+**Updated:** 2026-06-05 · **Program:** Phase 1 IN_PROGRESS · **Active sprint:** **S5** (gate ceremony)
 
-| Sprint | Status | Progress | Next milestone |
-|--------|--------|----------|----------------|
-| **S0** | Done | 13/13 | — |
-| **S1** | **Done** (TM GWC) | 16/16 | `S1_RETRO.md` |
-| **S2** | **ACTIVE** | 0/8 | `P1-S2-PM-01` planning ✓ → W1 dispatch |
-| S3 | Locked | — | After `P1-S2-PM-02` |
-| S4 | Locked | — | |
-| S5 | Locked | — | Phase 1 QC GO |
+| Sprint | Status | Progress | Package |
+|--------|--------|----------|---------|
+| **S0** | **Done** | 12/13 | `S0` retro lessons in KB |
+| **S1** | **Done** (GWC) | 16/16 | `S1_RETRO.md` |
+| **S2** | **Done** (GWC) | 8/8 | QC `p1-s2-qc-01-20260524.md` |
+| **S3** | **Done** (GWC) | 14/14 | QC `p1-s3-qc-01-20260524.md` |
+| **S4** | **Carry-over in S5** | G5 **MET** pilot | G4 DM-LOG |
+| **S5** | **Done (GWC)** | Ceremony closed | [`S5_RETRO.md`](./sprints/S5_RETRO.md) · QC `p1-s5-qc-01-20260605.md` |
 
-## Active sprint — S2 plan
+## Post-S5 — program close wave (Phase 1 still OPEN)
 
-**Doc:** [`sprints/S2_SPRINT_BACKLOG.md`](./sprints/S2_SPRINT_BACKLOG.md)
+| Priority | work_item_id | Role | Status |
+|----------|--------------|------|--------|
+| P0 | P1-PHASE1-BE-SCOPE-P0-S5-01 | Dev-BE | **DISPATCHED** — TM-S5-P0-01/02 |
+| P0 | P1-PHASE1-BE-JXBOS-02-PULL-01 | Dev-BE | **DISPATCHED** — pull 409 fix |
+| P1 | P1-S5-DO-LOCAL-L0-01 | DevOps | queued — C-RBACQC-03-LOCAL |
+| P2 | P1-S5-FE-MEMCC-01 | Dev-FE | queued — C-MEMCC-01 |
 
-| Priority | work_item_id | Role | Mode | Status |
-|----------|--------------|------|------|--------|
-| P0 | P1-S2-SA-01 | SA | gov | **in flight** — ADR C2 only |
-| — | P1-S2-BA-P-01 | BA | — | **DEFER** (matrix SoT; on `spec_gap` only) |
-| P0 | P1-S2-FE-01 | Dev-FE | build | **next dispatch** |
-| P0 | P1-S2-BE-WAVE-01 | Dev-BE | build | queued |
-| P1 | P1-S2-QA-01 | QA | verify | after W1 dev |
-| P1 | P1-S2-TM-01 | TM | gov | W2 |
-| P2 | P1-S2-QC-01 | QC | gate | W3 |
+## Program gates (honest — 2026-06-05)
 
-**Model:** `TEAM_OPERATING_MODEL.md` — BA/SA ~5–10% sprint, Dev+QA ~75–85%.
+| Gate | Status | Note |
+|------|--------|------|
+| G1 245 UC e2e | 🔴 | impl_status backlog — QA-02 refresh |
+| G2 XBOS 104 | 🟡 GWC | capability strict nip.io PASS |
+| G3 HRM 119 | 🟢 GWC | L2.5 7/7 + persona slices |
+| G4 DM-LOG 22 | 🔴 | S4 carry-over |
+| G5 DM 183 | 🟢 **MET** (pilot) | QC `p1-s5-qc-g5-01` — J-XBOS-02 pull GWC |
+| G7 phase1:gate strict | 🟢 nip.io | C-RBACQC-03 CLOSED |
+| UAT HTTPS slice | 🟢 GWC | nip.io group + member + mobile |
+| **PROD** | 🔴 BLOCKED | DNS `portal.xe.vn` |
 
-## Program gates (honest)
-
-| Gate | Status |
-|------|--------|
-| G1 245 UC e2e | 🔴 15/245 |
-| G2 XBOS 104 e2e | 🔴 ~15/104 |
-| G7 phase1:gate | 🟡 non-strict |
-| View completeness | 🟢 10/10 |
-| UAT L1 | 🟢 37/37 |
-
-**User report:** [`PROJECT_STATUS_REPORT.md`](./PROJECT_STATUS_REPORT.md)
+**User report:** [`PROJECT_STATUS_REPORT.md`](./PROJECT_STATUS_REPORT.md) · **Excellence:** [`PHASE1_PRODUCT_EXCELLENCE_ORCHESTRATION.md`](./PHASE1_PRODUCT_EXCELLENCE_ORCHESTRATION.md)

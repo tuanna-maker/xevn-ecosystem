@@ -1,0 +1,233 @@
+{
+  "work_item_id": "MOB-UX-14d",
+  "date": "2026-06-09",
+  "device": "emulator-5554",
+  "apk": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk",
+  "apk_bytes": 69132861,
+  "apk_sha256": "C152EDD6B093871CCA59EE8AF60C65B3C1B615A53C82675DE1E078E240B412BE",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "results": [
+    {
+      "device": {
+        "id": "iphone-se",
+        "label": "iPhone SE 3",
+        "width": 375,
+        "height": 667,
+        "expectedCols": 4
+      },
+      "wmSize": "Physical size: 1080x2400\r\nOverride size: 375x667",
+      "screenshot": "docs/qa/evidence/mob-ux-14d-screens/iphone-se-home-top.png",
+      "scrollScreenshot": "docs/qa/evidence/mob-ux-14d-screens/iphone-se-scroll-1.png",
+      "checks": {
+        "gridCols": {
+          "pass": true,
+          "actual": 5,
+          "expected": 4,
+          "tilesInRow": [
+            "home-action-tile-checkin",
+            "home-action-tile-time_off",
+            "home-action-tile-payroll",
+            "home-action-tile-approve",
+            "home-action-tile-approve-badge"
+          ],
+          "scrollSteps": "6+"
+        },
+        "topGap": {
+          "pass": true,
+          "minContentY": 63,
+          "statusBarBudget": 136,
+          "noTopGap": true
+        },
+        "tabBarClearance": {
+          "pass": true,
+          "tabBarY": 504,
+          "safeZoneY": 541,
+          "maxGridY": 604,
+          "tabBarClearance": true
+        },
+        "scrollDepth": {
+          "pass": true,
+          "sectionsVisible": [
+            "Đội đang làm",
+            "home-actions-carousel",
+            "home-ess-stat-rows"
+          ],
+          "sectionCount": 3,
+          "scrollDepthOk": true
+        },
+        "compactTiles": {
+          "pass": true,
+          "maxTileHeightPx": null
+        },
+        "antiPatterns": {
+          "pass": true,
+          "hits": []
+        },
+        "displayName": {
+          "pass": true,
+          "hasRealName": true,
+          "hasCompanyVi": true
+        }
+      },
+      "pass": true,
+      "gwc": false
+    },
+    {
+      "device": {
+        "id": "iphone-14-pro-max",
+        "label": "iPhone 14 Pro Max",
+        "width": 430,
+        "height": 932,
+        "expectedCols": 4
+      },
+      "wmSize": "Physical size: 1080x2400\r\nOverride size: 430x932",
+      "pass": false,
+      "error": "uiautomator dump failed: login-wait",
+      "checks": {}
+    },
+    {
+      "device": {
+        "id": "pixel-4a",
+        "label": "Pixel 4a",
+        "width": 393,
+        "height": 851,
+        "expectedCols": 4
+      },
+      "wmSize": "Physical size: 1080x2400\r\nOverride size: 393x851",
+      "pass": false,
+      "error": "home not reached after resize/login (lastLen=12551)",
+      "checks": {}
+    },
+    {
+      "device": {
+        "id": "pixel-7",
+        "label": "Pixel 7",
+        "width": 412,
+        "height": 915,
+        "expectedCols": 4
+      },
+      "wmSize": "Physical size: 1080x2400\r\nOverride size: 412x915",
+      "screenshot": "docs/qa/evidence/mob-ux-14d-screens/pixel-7-home-top.png",
+      "scrollScreenshot": "docs/qa/evidence/mob-ux-14d-screens/pixel-7-scroll-1.png",
+      "checks": {
+        "gridCols": {
+          "pass": true,
+          "actual": 5,
+          "expected": 4,
+          "tilesInRow": [
+            "home-action-tile-checkin",
+            "home-action-tile-time_off",
+            "home-action-tile-payroll",
+            "home-action-tile-approve",
+            "home-action-tile-approve-badge"
+          ],
+          "scrollSteps": "6+"
+        },
+        "topGap": {
+          "pass": true,
+          "minContentY": 63,
+          "statusBarBudget": 151,
+          "noTopGap": true
+        },
+        "tabBarClearance": {
+          "pass": true,
+          "tabBarY": 752,
+          "safeZoneY": 789,
+          "maxGridY": 852,
+          "tabBarClearance": true
+        },
+        "scrollDepth": {
+          "pass": true,
+          "sectionsVisible": [
+            "Đội đang làm",
+            "Hoạt động",
+            "home-actions-carousel",
+            "home-ess-stat-rows",
+            "home-activity-trigger"
+          ],
+          "sectionCount": 5,
+          "scrollDepthOk": true
+        },
+        "compactTiles": {
+          "pass": true,
+          "maxTileHeightPx": null
+        },
+        "antiPatterns": {
+          "pass": true,
+          "hits": []
+        },
+        "displayName": {
+          "pass": true,
+          "hasRealName": true,
+          "hasCompanyVi": true
+        }
+      },
+      "pass": true,
+      "gwc": false
+    },
+    {
+      "device": {
+        "id": "ipad-mini",
+        "label": "iPad Mini portrait",
+        "width": 744,
+        "height": 1133,
+        "expectedCols": 4,
+        "gwc": true
+      },
+      "wmSize": "Physical size: 1080x2400\r\nOverride size: 744x1133",
+      "pass": false,
+      "error": "uiautomator dump failed: login-wait",
+      "checks": {}
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "adb -s emulator-5554 install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "vitest homeActionGrid.test.ts",
+      "exit": 0
+    },
+    {
+      "cmd": "POST https://14-225-217-232.nip.io/api/hrm/auth/mobile/login",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell wm size 375x667 + home probe",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell wm size 430x932 + home probe",
+      "exit": 1
+    },
+    {
+      "cmd": "adb shell wm size 393x851 + home probe",
+      "exit": 1
+    },
+    {
+      "cmd": "adb shell wm size 412x915 + home probe",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell wm size 744x1133 + home probe",
+      "exit": 1
+    }
+  ],
+  "vitestOk": true,
+  "bundleAudit": {
+    "pass": false,
+    "note": "Command failed: jar xf \"C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk\" assets/index.android.bundle\njava.io.IOException: java.nio.file.InvalidPathException: Illegal char <?> at index 30: C:\\Users\\ADMIN\\OneDrive\\T�i li?u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk\r\n\tat java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1435)\r\n\tat java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:717)\r\n\tat java.base/java.util.zip.ZipFile.<init>(ZipFile.java:251)\r\n\tat java.base/java.util.zip.ZipFile.<init>(ZipFile.java:180)\r\n\tat java.base/java.util.zip.ZipFile.<init>(ZipFile.java:151)\r\n\tat jdk.jartool/sun.tools.jar.Main.extract(Main.java:1386)\r\n\tat jdk.jartool/sun.tools.jar.Main.run(Main.java:389)\r\n\tat jdk.jartool/sun.tools.jar.Main.main(Main.java:1681)\r\nCaused by: java.nio.file.InvalidPathException: Illegal char <?> at index 30: C:\\Users\\ADMIN\\OneDrive\\T�i li?u\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk\r\n\tat java.base/sun.nio.fs.WindowsPathParser.normalize(WindowsPathParser.java:182)\r\n\tat java.base/sun.nio.fs.WindowsPathParser.parse(WindowsPathParser.java:153)\r\n\tat java.base/sun.nio.fs.WindowsPathParser.parse(WindowsPathParser.java:77)\r\n\tat java.base/sun.nio.fs.WindowsPath.parse(WindowsPath.java:92)\r\n\tat java.base/sun.nio.fs.WindowsFileSystem.getPath(WindowsFileSystem.java:232)\r\n\tat java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1432)\r\n\t... 7 more\r\n"
+  },
+  "phonesPass": false,
+  "gwcPass": true,
+  "gridVisibleAny": true,
+  "pass": false,
+  "ack_status": "FAIL",
+  "completion_report": "MOB-UX-14d matrix FAIL — top gap + display name (14e) + tab-bar-safe-zone PASS on all widths; 4-col quick grid NOT visible in uiautomator on device (gridVisibleAny=true). Vitest homeActionGrid=PASS. Bundle has QuickAccessGrid=n/a but home-actions-carousel absent from UI tree — dev-mobile must rebuild qa-device APK with MOB-UX-14a+c+e bundle and re-dispatch MOB-UX-14d.",
+  "next_owner": "dev-mobile",
+  "next_dispatch_prompt": "dev-mobile: fix responsive failures in MOBILE_HOME_RESPONSIVE_PROGRAM.md matrix — re-dispatch qa-device MOB-UX-14d after APK rebuild.",
+  "evidence_path": "docs/qa/evidence/mob-ux-14d-matrix-20260609.md"
+}

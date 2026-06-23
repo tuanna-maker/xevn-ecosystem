@@ -21,16 +21,32 @@ function randomRequestId(): string {
 }
 
 /**
- * Value for `x-company-id` on every HRM REST call.
- * Prefer active membership `company_uuid`; never send scope slug (e.g. `main`) when UUID exists.
+ * Value for `x-company-id` on HRM **read** calls (GET).
+ * Portal/UAT parity: membership scope slug (`holding`, …) when valid; legal UUID when slug is blocked (`main`).
  */
 export function resolveHrmCompanyHeaderId(companyUuid?: string, companySlugOrId?: string): string {
+  const slug = companySlugOrId?.trim() ?? '';
+  if (slug && !isHrmWireBlockedSlug(slug) && !isUuid(slug)) return slug;
   const uuid = companyUuid?.trim() ?? '';
   if (uuid && isUuid(uuid)) return uuid;
-  const fallback = companySlugOrId?.trim() ?? '';
-  if (fallback && isUuid(fallback)) return fallback;
-  if (fallback && isHrmWireBlockedSlug(fallback)) return '';
-  return fallback;
+  if (slug && isUuid(slug)) return slug;
+  if (slug && isHrmWireBlockedSlug(slug)) return '';
+  return slug;
+}
+
+/**
+ * Value for `x-company-id` on HRM **write** calls (POST/PATCH/PUT/DELETE).
+ * BE scope guards require legal-entity UUID — never send rollup slug `holding` on mutate paths.
+ */
+export function resolveHrmWriteHeaderId(companyUuid?: string, companySlugOrId?: string): string {
+  const uuid = companyUuid?.trim() ?? '';
+  if (uuid && isUuid(uuid)) return uuid;
+  return resolveHrmCompanyHeaderId(companyUuid, companySlugOrId);
+}
+
+export function isHrmWriteMethod(method?: string): boolean {
+  const m = (method ?? 'GET').toUpperCase();
+  return m === 'POST' || m === 'PATCH' || m === 'PUT' || m === 'DELETE';
 }
 
 export function getDefaultBaseUrl(): string {
@@ -59,7 +75,10 @@ export async function hrmRequest<T>(
     ...(fetchInit.headers as Record<string, string> | undefined),
   };
   if (auth.tenantId?.trim()) headers['x-tenant-id'] = auth.tenantId.trim();
-  const companyHeader = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
+  const method = fetchInit.method ?? 'GET';
+  const companyHeader = isHrmWriteMethod(method)
+    ? resolveHrmWriteHeaderId(auth.companyUuid, auth.companyId)
+    : resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
   if (companyHeader) headers['x-company-id'] = companyHeader;
 
   if (auth.accessToken) {

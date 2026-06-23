@@ -40,3 +40,39 @@ Việc cần làm trong Task: QA smoke sau deploy trên pilot HTTPS...
 Tắt auto: `PM_ORCHESTRATION_MODE=STOP`
 
 **RUN does not run Task for you** — true execution = PM agent calls **Task** + **Shell** in the same chat turn.
+
+## U31 — Kiểm tra subagent có treo không
+
+Cursor **không** có API «subagent đang chạy» trực tiếp. Repo dùng **3 lớp tín hiệu**:
+
+| Lớp | Nguồn | Phát hiện |
+|-----|--------|-----------|
+| **In-flight** | Hook `subagentStart` → `.cursor/team/inbox/subagent-start.jsonl` đối chiếu `subagent-stop.jsonl` | Start > 7 phút, chưa có stop cùng `task_id` → **stale_in_flight** |
+| **Bus stale** | `docs/program/AGENT_MESSAGE_BUS.md` | `PM -> qa DISPATCHED` > 7 phút, chưa `PASS_TO_PM` → **bus_dispatch_stale** |
+| **Zombie** | `subagentStop` = completed + thiếu file evidence | **zombie_completed** (INVALID-HANDOFF — đúng case M-CC-11/12) |
+| **Transcript** | `~/.cursor/projects/.../agent-transcripts/**/subagents/*.jsonl` | ≤2 dòng + không cập nhật 5 phút → **stuck_at_start**; `lastTool=browser_cdp` → **possible_cdp_hang** |
+
+### Lệnh (agent hoặc bạn gõ một dòng)
+
+```bash
+pnpm run pm:subagent:status
+pnpm run pm:subagent:status -- --json
+pnpm run pm:subagent:status -- --watch 30
+```
+
+- Exit **0** = không phát hiện treo/zombie.
+- Exit **2** = có issue — PM re-dispatch hoặc interrupt + retry.
+- Ngưỡng mặc định **7 phút** (`PM_SUBAGENT_STALE_MS`, `PM_WATCHDOG_STALE_MS` trên hook `stop`).
+
+Hook mới: `.cursor/hooks/subagent-start.mjs` (đã thêm vào `.cursor/hooks.json`). **Chỉ ghi từ lần Task kế** — trước đó vẫn dùng transcript + bus.
+
+## U30 — PM tự quét phạm vi (không chờ user)
+
+| Thành phần | Path |
+|------------|------|
+| Rule cố định (always apply) | `.cursor/rules/pm-self-directed-scope-orchestration.mdc` |
+| Charter ưu tiên / run-until-done | `docs/program/PM_AUTONOMOUS_CHARTER.md` |
+| User lock | `docs/program/TEAM_USER_REQUIREMENTS.md` **U30** |
+| Trạng thái 1 trang | `docs/program/TEAM_WORKING_NOW.md` |
+
+PM **không** cần câu «điều phối team đi» nếu `PM_ORCHESTRATION_MODE=RUN` và subagent vừa xong — vẫn **bắt buộc** gọi **Task** trong lượt Composer (hook chỉ nhắc).

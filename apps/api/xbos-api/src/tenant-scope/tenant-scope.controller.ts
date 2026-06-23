@@ -61,8 +61,17 @@ export class TenantScopeController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
+    const jwt = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
     const userId = this.resolveUserId(authorization, headerUserId, queryUserId);
-    const data = await this.service.groupMemberUnits(userId);
+    const tenantId =
+      (typeof jwt?.tenantId === 'string' && jwt.tenantId.trim()) ||
+      (typeof jwt?.tenant_id === 'string' && jwt.tenant_id.trim()) ||
+      undefined;
+    const roleCode =
+      (typeof jwt?.roleCode === 'string' && jwt.roleCode.trim()) ||
+      (typeof jwt?.role_code === 'string' && jwt.role_code.trim()) ||
+      undefined;
+    const data = await this.service.groupMemberUnits(userId, { tenantId, roleCode });
     return ok(data, 'XBOS-TENANT-200', 'Group member units loaded');
   }
 }

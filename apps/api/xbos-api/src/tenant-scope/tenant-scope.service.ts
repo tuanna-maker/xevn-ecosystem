@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { ensurePilotMembershipForUser } from '../auth/pilot-membership.bootstrap';
 import { ApiException } from '../common/api.exception';
-import { isMasterTenant, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../common/tenant.constants';
+import { isGroupCeoOnMasterTenant } from '../common/xbos-group-legal-scope';
+import { isMasterTenant, GROUP_HOLDING_ROOT_ID, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../common/tenant.constants';
 import { XbosDbService } from '../db/xbos-db.service';
 import { OrgFoundationService } from '../org-foundation/org-foundation.service';
 
@@ -58,34 +60,47 @@ export class TenantScopeService {
     });
   }
 
-  /** Tenant master: tổng hợp org các tenant thành viên user được phép. */
+  /** Tenant master: tổng hợp org holding + pháp nhân thành viên (J-XBOS-07 / group-org-overview). */
   async groupOrgOverview(userId: string) {
     const accessible = await this.listAccessible(userId);
     const master = accessible.find((t) => t.isMaster);
     if (!master) {
       throw new ApiException('XBOS-TENANT-403', 'Group overview requires master tenant membership', HttpStatus.FORBIDDEN);
     }
-    const members = accessible.filter((t) => !t.isMaster);
-    const trees: Array<{ tenantId: string; name: string; roleCode: string; tree: unknown[] }> = [];
-    for (const m of members) {
-      trees.push({
-        tenantId: m.tenantId,
-        name: m.name,
-        roleCode: m.roleCode,
-        tree: await this.org.listOrgTree(m.tenantId, m.companyId),
-      });
-    }
+    const roleByTenantId = new Map(accessible.map((t) => [t.tenantId, t.roleCode]));
+    const rawTrees = await this.org.listGroupOrgTreesForUser(userId);
+    const trees = rawTrees.map((entry) => ({
+      tenantId: entry.tenantId,
+      name: entry.name,
+      roleCode:
+        entry.tenantId === GROUP_HOLDING_ROOT_ID
+          ? master.roleCode
+          : roleByTenantId.get(entry.memberTenantId ?? '') ?? 'member',
+      tree: entry.tree,
+    }));
     return { masterTenantId: MASTER_TENANT_ID, memberships: accessible, trees };
   }
 
   /**
    * Pháp nhân tập đoàn + từng tenant thành viên (seed từ JSON/Excel MTCV).
-   * Chỉ user có membership tenant master mới xem được (cùng quy tắc group-org-overview).
+   * Group CEO: master tenant membership OR verified JWT on xevn with group_* role (ADR scope).
    */
-  async groupMemberUnits(userId: string) {
-    const accessible = await this.listAccessible(userId);
-    const masterMembership = accessible.find((t) => t.isMaster);
-    if (!masterMembership) {
+  async groupMemberUnits(
+    userId: string,
+    jwtContext?: { tenantId?: string; roleCode?: string },
+  ) {
+    let accessible = await this.listAccessible(userId);
+    let masterMembership = accessible.find((t) => t.isMaster);
+    const roleCode = (jwtContext?.roleCode ?? '').trim().toLowerCase();
+    const jwtGroupCeo = isGroupCeoOnMasterTenant(jwtContext?.tenantId, roleCode);
+
+    if (!masterMembership && jwtGroupCeo) {
+      await ensurePilotMembershipForUser(this.db, userId);
+      accessible = await this.listAccessible(userId);
+      masterMembership = accessible.find((t) => t.isMaster);
+    }
+
+    if (!masterMembership && !jwtGroupCeo) {
       throw new ApiException(
         'XBOS-TENANT-403',
         'Group member units require master tenant membership',

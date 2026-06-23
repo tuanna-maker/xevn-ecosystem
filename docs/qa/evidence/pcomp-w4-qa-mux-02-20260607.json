@@ -1,0 +1,80 @@
+{
+  "work_item_id": "PCOMP-W4-QA-MUX-02",
+  "date": "2026-06-07",
+  "email": "uat.nv0001@xe.vn",
+  "api_base": "https://14-225-217-232.nip.io",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-release.apk",
+  "checks": [
+    {
+      "id": "J-MOB-01",
+      "label": "login uat.nv0001",
+      "pass": true,
+      "note": "home loaded"
+    },
+    {
+      "id": "AC-MUX-GROUP",
+      "label": "grouped list sections",
+      "pass": true,
+      "note": "iOS section headers present"
+    },
+    {
+      "id": "AC-MUX-LABEL",
+      "label": "list Vi leave labels (no LVT_*)",
+      "pass": true,
+      "note": "no raw LVT_* in list"
+    },
+    {
+      "id": "J-MOB-03",
+      "label": "leave list→detail row tap",
+      "pass": true,
+      "note": "row tapped"
+    },
+    {
+      "id": "AC-MUX-04",
+      "label": "detail ≥2 sections (hero + grid)",
+      "pass": true,
+      "note": "hero=true grid=true noLVT=true emp=true"
+    },
+    {
+      "id": "MUX-CREATE-0",
+      "label": "step 1 Chọn ngày + HrmDateField",
+      "pass": true,
+      "note": "calendar fields visible"
+    },
+    {
+      "id": "MUX-CALENDAR",
+      "label": "HrmDateField calendar sheet",
+      "pass": true,
+      "note": "picker opened"
+    },
+    {
+      "id": "MUX-CREATE-1",
+      "label": "step 2 Loại nghỉ Vi chips",
+      "pass": true,
+      "note": "Vi leave type chips"
+    },
+    {
+      "id": "MUX-CREATE-2",
+      "label": "step 3 Xác nhận",
+      "pass": true,
+      "note": "confirm grid visible"
+    },
+    {
+      "id": "MUX-CREATE-3",
+      "label": "step 4 Gửi đơn",
+      "pass": true,
+      "note": "submit step visible"
+    },
+    {
+      "id": "J-MOB-04-CREATE",
+      "label": "4-step create wizard",
+      "pass": true,
+      "note": "all 4 steps PASS"
+    }
+  ],
+  "logcat": {
+    "uuids": [],
+    "hasMain": false
+  },
+  "pass": true
+}

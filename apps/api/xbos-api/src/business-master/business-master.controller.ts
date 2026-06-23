@@ -3,7 +3,10 @@ import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
-import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
+import {
+  resolveXbosGroupLegalMutationScopeContext,
+  resolveXbosGroupLegalReadScopeContext,
+} from '../common/xbos-group-legal-scope';
 import { BusinessMasterService } from './business-master.service';
 
 @Controller('business-master')
@@ -27,11 +30,10 @@ export class BusinessMasterController {
     @Headers('x-company-id') headerCompanyId?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    const resolved = resolveScopeContext(authorization, {
+    const scope = resolveXbosGroupLegalReadScopeContext(authorization, {
       tenantId: tenantId ?? headerTenantId,
       companyId: companyId ?? headerCompanyId,
     });
-    const scope = resolveXbosGroupLegalReadScopeContext(authorization, resolved);
     const domains = this.service.listDomainCatalog();
     return ok(
       {
@@ -102,14 +104,27 @@ export class BusinessMasterController {
     internalApiKey?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    const resolved = resolveScopeContext(authorization, { tenantId, companyId });
-    const scope = resolveXbosGroupLegalReadScopeContext(authorization, resolved);
+    const scope = resolveXbosGroupLegalReadScopeContext(authorization, { tenantId, companyId });
     const data = await this.service.list(scope.tenantId, scope.companyId, domain);
     return ok(
       { items: data, data, tenantId: scope.tenantId, companyId: scope.companyId },
       'XBOS-MASTER-200',
       'Business master items loaded',
     );
+  }
+
+  private resolveWriteScope(
+    authorization: string | undefined,
+    tenantId: string | undefined,
+    companyId: string | undefined,
+    domain: string,
+  ) {
+    if (domain === 'dept_system_templates' || domain === 'command_center_catalogs') {
+      const resolved = resolveScopeContext(authorization, { tenantId, companyId });
+      return resolveXbosGroupLegalMutationScopeContext(authorization, resolved);
+    }
+    // Scope parity (ADR-GROUP-CEO-MAIN-HOLDING-SCOPE): list reads holding; writes must match.
+    return resolveXbosGroupLegalReadScopeContext(authorization, { tenantId, companyId });
   }
 
   @Put(':domain/items/:itemId')
@@ -123,7 +138,7 @@ export class BusinessMasterController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = this.resolveWriteScope(authorization, tenantId, companyId, domain);
     const data = await this.service.upsert(scope.tenantId, scope.companyId, domain, itemId, body);
     return ok(data, 'XBOS-MASTER-201', 'Business master item saved');
   }
@@ -138,7 +153,7 @@ export class BusinessMasterController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternalAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = this.resolveWriteScope(authorization, tenantId, companyId, domain);
     const data = await this.service.remove(scope.tenantId, scope.companyId, domain, itemId);
     return ok(data, 'XBOS-MASTER-204', 'Business master item deleted');
   }

@@ -1,6 +1,7 @@
 import { MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import type { InfrastructureFoundationCategory } from '../data/infrastructure-foundation-catalog';
 import { INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES } from '../data/infrastructure-foundation-catalog';
+import { allowMockFallback } from '../utils/mockPolicy';
 import { xbosGetData, xbosFetch } from './xbosHttp';
 
 export type InfrastructureSettingsPayload = {
@@ -46,6 +47,23 @@ export function resolveInfrastructureFoundationLoad(
     };
   }
   return { categories: [], source: 'empty', loadFailed: apiFailed };
+}
+
+/** M-CC-04 — CC page loader; dev seed internal (REC-EXEC-GREP-W2-03). */
+export function loadInfrastructureFoundationFromApi(
+  apiRows: InfrastructureFoundationCategory[],
+  apiFailed = false,
+): {
+  categories: InfrastructureFoundationCategory[];
+  source: InfrastructureCatalogLoadSource;
+  loadFailed: boolean;
+} {
+  return resolveInfrastructureFoundationLoad(
+    apiRows,
+    allowMockFallback(),
+    INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES,
+    apiFailed,
+  );
 }
 
 export const INFRASTRUCTURE_CATALOG_SEED_CMD = 'pnpm seed:infrastructure:settings';
@@ -101,5 +119,3 @@ export async function fetchInfrastructureSummary(
   );
 }
 
-export const INFRASTRUCTURE_MOCK_SEED: InfrastructureFoundationCategory[] =
-  INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES;

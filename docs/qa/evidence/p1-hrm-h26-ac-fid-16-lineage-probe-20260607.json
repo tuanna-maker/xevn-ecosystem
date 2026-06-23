@@ -1,0 +1,748 @@
+{
+  "work_item_id": "P1-HRM-H26-AC-FID-16-LINEAGE",
+  "executed_at": "2026-06-06T18:08:46.735Z",
+  "tenant_id": "xevn",
+  "slugs": [
+    "holding",
+    "trsport",
+    "logistics",
+    "finance",
+    "services"
+  ],
+  "probes": [
+    {
+      "id": "employees.job_title_key",
+      "catalog_key": "job_titles"
+    },
+    {
+      "id": "contracts.contract_type",
+      "catalog_key": "contract_types"
+    },
+    {
+      "id": "contracts.employee_job_title",
+      "catalog_key": "job_titles"
+    },
+    {
+      "id": "insurance.employee_job_title",
+      "catalog_key": "job_titles"
+    },
+    {
+      "id": "attendance.leave_type",
+      "catalog_key": "leave_types"
+    },
+    {
+      "id": "attendance.employee_job_title",
+      "catalog_key": "job_titles"
+    },
+    {
+      "id": "recruitment.candidate_source",
+      "catalog_key": "candidate_sources"
+    },
+    {
+      "id": "operations.service_type",
+      "catalog_key": "operations_request_types"
+    }
+  ],
+  "results": [
+    {
+      "company_id": "holding",
+      "probes": [
+        {
+          "probe_id": "employees.job_title_key",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CEO",
+            "DISPATCH_SUPERVISOR",
+            "DRIVER",
+            "HRBP_MANAGER",
+            "LEGAL_SPECIALIST"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.contract_type",
+          "catalog_key": "contract_types",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 304,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "HDHV",
+            "HDLD_XDHN_36",
+            "HDLD_KTH",
+            "HDLD_XDHN_12",
+            "HDTV_60"
+          ],
+          "catalog_code_count": 5,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 304,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CEO",
+            "DISPATCH_SUPERVISOR",
+            "DRIVER",
+            "HRBP_MANAGER",
+            "LEGAL_SPECIALIST"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "insurance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 525,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CEO",
+            "DISPATCH_SUPERVISOR",
+            "DRIVER",
+            "HRBP_MANAGER",
+            "LEGAL_SPECIALIST"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.leave_type",
+          "catalog_key": "leave_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 39,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "LVT_02",
+            "LVT_01",
+            "LVT_03"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 2866,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CEO",
+            "DISPATCH_SUPERVISOR",
+            "DRIVER",
+            "HRBP_MANAGER",
+            "LEGAL_SPECIALIST"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "recruitment.candidate_source",
+          "catalog_key": "candidate_sources",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CSO_03",
+            "CSO_01",
+            "CSO_02"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "operations.service_type",
+          "catalog_key": "operations_request_types",
+          "snapshot_present": true,
+          "distinct_codes": 0,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [],
+          "catalog_code_count": 3,
+          "pass": true
+        }
+      ],
+      "fail_count": 0,
+      "pass": true
+    },
+    {
+      "company_id": "trsport",
+      "probes": [
+        {
+          "probe_id": "employees.job_title_key",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "ACCOUNTANT",
+            "COO",
+            "FLEET_SUPERVISOR",
+            "HR_SPECIALIST",
+            "SAFETY_OFFICER"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.contract_type",
+          "catalog_key": "contract_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 244,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "HDLD_XDHN_36",
+            "HDLD_XDHN_12",
+            "HDLD_KTH"
+          ],
+          "catalog_code_count": 5,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 244,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "ACCOUNTANT",
+            "COO",
+            "FLEET_SUPERVISOR",
+            "HR_SPECIALIST",
+            "SAFETY_OFFICER"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "insurance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 421,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "ACCOUNTANT",
+            "COO",
+            "FLEET_SUPERVISOR",
+            "HR_SPECIALIST",
+            "SAFETY_OFFICER"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.leave_type",
+          "catalog_key": "leave_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 15,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "LVT_03",
+            "LVT_02",
+            "LVT_01"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 2577,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "ACCOUNTANT",
+            "COO",
+            "FLEET_SUPERVISOR",
+            "HR_SPECIALIST",
+            "SAFETY_OFFICER"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "recruitment.candidate_source",
+          "catalog_key": "candidate_sources",
+          "snapshot_present": true,
+          "distinct_codes": 2,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CSO_02",
+            "CSO_03"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "operations.service_type",
+          "catalog_key": "operations_request_types",
+          "snapshot_present": true,
+          "distinct_codes": 0,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [],
+          "catalog_code_count": 3,
+          "pass": true
+        }
+      ],
+      "fail_count": 0,
+      "pass": true
+    },
+    {
+      "company_id": "logistics",
+      "probes": [
+        {
+          "probe_id": "employees.job_title_key",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CFO",
+            "FINANCE_ANALYST",
+            "IT_ADMIN",
+            "PAYROLL_SPECIALIST",
+            "WAREHOUSE_SUP"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.contract_type",
+          "catalog_key": "contract_types",
+          "snapshot_present": true,
+          "distinct_codes": 4,
+          "transactional_rows": 233,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "HDLD_XDHN_36",
+            "HDTV_60",
+            "HDLD_XDHN_12",
+            "HDLD_KTH"
+          ],
+          "catalog_code_count": 5,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 233,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CFO",
+            "FINANCE_ANALYST",
+            "IT_ADMIN",
+            "PAYROLL_SPECIALIST",
+            "WAREHOUSE_SUP"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "insurance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 393,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CFO",
+            "FINANCE_ANALYST",
+            "IT_ADMIN",
+            "PAYROLL_SPECIALIST",
+            "WAREHOUSE_SUP"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.leave_type",
+          "catalog_key": "leave_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 15,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "LVT_01",
+            "LVT_02",
+            "LVT_03"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 2594,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CFO",
+            "FINANCE_ANALYST",
+            "IT_ADMIN",
+            "PAYROLL_SPECIALIST",
+            "WAREHOUSE_SUP"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "recruitment.candidate_source",
+          "catalog_key": "candidate_sources",
+          "snapshot_present": true,
+          "distinct_codes": 2,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CSO_03",
+            "CSO_02"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "operations.service_type",
+          "catalog_key": "operations_request_types",
+          "snapshot_present": true,
+          "distinct_codes": 0,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [],
+          "catalog_code_count": 3,
+          "pass": true
+        }
+      ],
+      "fail_count": 0,
+      "pass": true
+    },
+    {
+      "company_id": "finance",
+      "probes": [
+        {
+          "probe_id": "employees.job_title_key",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CHRO",
+            "DATA_ANALYST",
+            "RECRUITER",
+            "SALES_MANAGER",
+            "WAREHOUSE_STAFF"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.contract_type",
+          "catalog_key": "contract_types",
+          "snapshot_present": true,
+          "distinct_codes": 4,
+          "transactional_rows": 241,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "HDLD_XDHN_12",
+            "HDLD_KTH",
+            "HDHV",
+            "HDLD_XDHN_36"
+          ],
+          "catalog_code_count": 5,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 241,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CHRO",
+            "DATA_ANALYST",
+            "RECRUITER",
+            "SALES_MANAGER",
+            "WAREHOUSE_STAFF"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "insurance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 401,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CHRO",
+            "DATA_ANALYST",
+            "RECRUITER",
+            "SALES_MANAGER",
+            "WAREHOUSE_STAFF"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.leave_type",
+          "catalog_key": "leave_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 15,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "LVT_03",
+            "LVT_02",
+            "LVT_01"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 2583,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CHRO",
+            "DATA_ANALYST",
+            "RECRUITER",
+            "SALES_MANAGER",
+            "WAREHOUSE_STAFF"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "recruitment.candidate_source",
+          "catalog_key": "candidate_sources",
+          "snapshot_present": true,
+          "distinct_codes": 2,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CSO_02",
+            "CSO_03"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "operations.service_type",
+          "catalog_key": "operations_request_types",
+          "snapshot_present": true,
+          "distinct_codes": 0,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [],
+          "catalog_code_count": 3,
+          "pass": true
+        }
+      ],
+      "fail_count": 0,
+      "pass": true
+    },
+    {
+      "company_id": "services",
+      "probes": [
+        {
+          "probe_id": "employees.job_title_key",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CTO",
+            "CUSTOMER_SUCCESS",
+            "DRIVER_LEAD",
+            "OPS_MANAGER",
+            "SALES_EXECUTIVE"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.contract_type",
+          "catalog_key": "contract_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 234,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "HDLD_XDHN_36",
+            "HDLD_KTH",
+            "HDLD_XDHN_12"
+          ],
+          "catalog_code_count": 5,
+          "pass": true
+        },
+        {
+          "probe_id": "contracts.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 234,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CTO",
+            "CUSTOMER_SUCCESS",
+            "DRIVER_LEAD",
+            "OPS_MANAGER",
+            "SALES_EXECUTIVE"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "insurance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 404,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CTO",
+            "CUSTOMER_SUCCESS",
+            "DRIVER_LEAD",
+            "OPS_MANAGER",
+            "SALES_EXECUTIVE"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.leave_type",
+          "catalog_key": "leave_types",
+          "snapshot_present": true,
+          "distinct_codes": 3,
+          "transactional_rows": 15,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "LVT_02",
+            "LVT_03",
+            "LVT_01"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "attendance.employee_job_title",
+          "catalog_key": "job_titles",
+          "snapshot_present": true,
+          "distinct_codes": 5,
+          "transactional_rows": 2593,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CTO",
+            "CUSTOMER_SUCCESS",
+            "DRIVER_LEAD",
+            "OPS_MANAGER",
+            "SALES_EXECUTIVE"
+          ],
+          "catalog_code_count": 25,
+          "pass": true
+        },
+        {
+          "probe_id": "recruitment.candidate_source",
+          "catalog_key": "candidate_sources",
+          "snapshot_present": true,
+          "distinct_codes": 2,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [
+            "CSO_02",
+            "CSO_03"
+          ],
+          "catalog_code_count": 4,
+          "pass": true
+        },
+        {
+          "probe_id": "operations.service_type",
+          "catalog_key": "operations_request_types",
+          "snapshot_present": true,
+          "distinct_codes": 0,
+          "transactional_rows": null,
+          "missing_codes": [],
+          "missing_count": 0,
+          "sample_codes": [],
+          "catalog_code_count": 3,
+          "pass": true
+        }
+      ],
+      "fail_count": 0,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "pass": true,
+    "fail_slugs": 0,
+    "fail_probes": 0
+  }
+}

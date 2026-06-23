@@ -56,4 +56,5 @@ describe('HRM query validation regression (HTTPS R5/R6)', () => {
     const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
     expect(errors).toHaveLength(0);
   });
+
 });

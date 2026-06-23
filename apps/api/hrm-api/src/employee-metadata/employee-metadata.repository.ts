@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { pushCompanyIdUuidFilter, pushCompanyIdTextColumnFilter, resolveHrmListScope } from '../common/hrm-list-scope';
+import { pushCompanyIdUuidFilter, resolveHrmListScope } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 
 export type EmployeeMetadataChangeStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
@@ -214,7 +214,7 @@ export class EmployeeMetadataRepository {
     const scope = resolveHrmListScope(authorization, requestedCompanyId);
     const clauses: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdTextColumnFilter(clauses, values, scope.companyIds);
+    pushCompanyIdUuidFilter(clauses, values, scope.companyIds);
     let idx = values.length + 1;
 
     if (filters.employee_id) {

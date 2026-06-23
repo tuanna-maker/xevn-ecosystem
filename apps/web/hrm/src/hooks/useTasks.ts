@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { createOperationsTask, listOperationsTasks, updateOperationsTaskStatus } from '@/integrations/hrmApi';
+import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
+
+export function buildOperationsTasksQuery(companyId: string) {
+  return {
+    company_id: companyId,
+    page: 1,
+    page_size: HRM_API_MAX_PAGE_SIZE,
+  };
+}
 
 export interface Task {
   id: string;
@@ -101,7 +111,7 @@ export const MEETING_PLATFORMS = [
 ];
 
 export function useTasks() {
-  const { currentCompanyId } = useAuth();
+  const { currentCompanyId, loading: authLoading } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
@@ -109,9 +119,9 @@ export function useTasks() {
     queryKey: ['tasks', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      try {
-        const res = await listOperationsTasks({ company_id: currentCompanyId, page: 1, page_size: 300 });
-        return res.data.map((task) => ({
+      const companyId = coerceHrmListCompanyId(currentCompanyId);
+      const res = await listOperationsTasks(buildOperationsTasksQuery(companyId));
+      return res.data.map((task) => ({
           id: task.id,
           company_id: task.company_id,
           title: task.title,
@@ -135,12 +145,9 @@ export function useTasks() {
           created_by: null,
           created_at: task.created_at,
           updated_at: task.updated_at,
-        })) as Task[];
-      } catch {
-        return [];
-      }
+      })) as Task[];
     },
-    enabled: !!currentCompanyId,
+    enabled: !!currentCompanyId && !authLoading,
   });
 
   const createTask = useMutation({
@@ -148,7 +155,7 @@ export function useTasks() {
       if (!currentCompanyId) throw new Error('No company');
       try {
         return await createOperationsTask({
-          company_id: currentCompanyId,
+          company_id: coerceHrmListCompanyId(currentCompanyId),
           title: formData.title,
           description: formData.description,
           due_date: formData.due_date,

@@ -1,24 +1,23 @@
-import { IsObject, IsOptional } from 'class-validator';
+import { IsArray, IsObject, IsOptional } from 'class-validator';
 
 export class UpsertInfrastructureSettingsDto {
   @IsOptional()
-  @IsObject()
-  foundationCategories?: unknown;
+  @IsArray()
+  foundationCategories?: unknown[];
+
+  @IsOptional()
+  @IsArray()
+  sites?: unknown[];
 
   @IsOptional()
   @IsObject()
-  sites?: unknown;
+  blockTitleOverridesByEntity?: Record<string, unknown>;
 
   @IsOptional()
   @IsObject()
-  blockTitleOverridesByEntity?: unknown;
+  customBlocksByEntity?: Record<string, unknown>;
 
   @IsOptional()
   @IsObject()
-  customBlocksByEntity?: unknown;
-
-  @IsOptional()
-  @IsObject()
-  customFieldDefsByEntity?: unknown;
+  customFieldDefsByEntity?: Record<string, unknown>;
 }
-

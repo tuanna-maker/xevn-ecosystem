@@ -1,0 +1,27 @@
+{
+  "terminalAllowlist": [
+    "ssh",
+    "scp",
+    "pscp",
+    "plink",
+    "pwsh",
+    "powershell",
+    "docker",
+    "docker compose",
+    "pnpm run deploy",
+    "pnpm run qc:dev-stack",
+    "pnpm run qc:fe-be-health",
+    "bash",
+    "node ./scripts/dev-server-factory.mjs",
+    "node ./scripts/qc-dev-stack.mjs"
+  ],
+  "autoRun": {
+    "allow_instructions": [
+      "Deploy, pscp, plink, ssh, and docker compose to VPS 14.225.217.232 for xevn-ecosystem UAT :8088 are pre-approved when user or PM devops lane requested deploy.",
+      "Read-only smoke curls and qc:dev-stack against localhost or 14.225.217.232:8088 are approved."
+    ],
+    "block_instructions": [
+      "Do not run rm -rf, force-push, or deploy to hosts other than 14.225.217.232 without explicit user message naming the host."
+    ]
+  }
+}

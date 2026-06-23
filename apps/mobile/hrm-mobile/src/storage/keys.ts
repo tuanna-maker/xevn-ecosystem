@@ -7,6 +7,7 @@ export const STORAGE = {
   COMPANY_UUID: 'hrm_mobile_company_uuid',
   EMPLOYEE_ID: 'hrm_mobile_employee_id',
   REFRESH_TOKEN: 'hrm_mobile_refresh_token',
+  TOKEN_EXPIRES_AT: 'hrm_mobile_token_expires_at',
   ROLES_JSON: 'hrm_mobile_roles_json',
   MEMBERSHIPS_JSON: 'hrm_mobile_memberships_json',
 } as const;

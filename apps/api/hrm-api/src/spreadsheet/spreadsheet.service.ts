@@ -71,7 +71,13 @@ export class SpreadsheetService {
 
   async commitEmployeeImport(
     buffer: Buffer,
-    opts: { mimetype?: string; originalname?: string; companyId: string },
+    opts: {
+      mimetype?: string;
+      originalname?: string;
+      companyId: string;
+      authorization?: string;
+      tenantId?: string;
+    },
   ): Promise<{ importedCount: number; ids: string[]; errors: import('./spreadsheet-ingest.service').SheetRowError[] }> {
     const startedAt = Date.now();
     const grid = await this.ingest.parseEmployeeImportFile(buffer, { ...opts, startedAt });
@@ -97,7 +103,9 @@ export class SpreadsheetService {
         hired_at: c.hired_at || undefined,
       };
       try {
-        const created = await this.employees.createEmployee(dto);
+        const created = await this.employees.createEmployee(dto, opts.authorization, {
+          tenantId: opts.tenantId,
+        });
         ids.push(created.id);
       } catch (e) {
         const msg = e instanceof ApiException ? e.message : 'Create failed';

@@ -5,14 +5,29 @@ import { DecideEmployeeMetadataChangeDto } from './dto/decide-employee-metadata-
 import { ListEmployeeMetadataChangeRequestsQueryDto } from './dto/list-employee-metadata-change-requests.query.dto';
 import { SubmitEmployeeMetadataChangeDto } from './dto/submit-employee-metadata-change.dto';
 import { EmployeeMetadataRepository } from './employee-metadata.repository';
+import { resolveHrmCompanyUuidForSlug } from '../common/hrm-list-scope';
 
 @Injectable()
 export class EmployeeMetadataService {
   constructor(private readonly repository: EmployeeMetadataRepository) {}
 
+  private resolveMetadataCompanyUuid(rawCompanyId: string): string {
+    const resolved = resolveHrmCompanyUuidForSlug(rawCompanyId);
+    if (!resolved) {
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id must be a UUID or known operating slug (holding, finance, …)',
+        HttpStatus.BAD_REQUEST,
+        { company_id: rawCompanyId },
+      );
+    }
+    return resolved;
+  }
+
   async submitChangeRequest(payload: SubmitEmployeeMetadataChangeDto) {
+    const companyId = this.resolveMetadataCompanyUuid(payload.company_id);
     return this.repository.submitChange({
-      company_id: payload.company_id,
+      company_id: companyId,
       employee_id: payload.employee_id,
       legal_entity_id: payload.legal_entity_id,
       field_key: payload.field_key.trim(),

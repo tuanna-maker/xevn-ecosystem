@@ -1,6 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { XbosDbService } from '../db/xbos-db.service';
+import { MEMBER_DEFAULT_COMPANY_ID } from '../common/tenant.constants';
+
+/** Legacy partitions before group-CEO holding alignment (P4 seed + early saves). */
+const DEPT_SYSTEM_TEMPLATE_LEGACY_COMPANY_IDS = [
+  MEMBER_DEFAULT_COMPANY_ID,
+  'xevn',
+] as const;
 
 type MasterEntryRow = {
   tenant_id: string;
@@ -38,6 +45,10 @@ const allowedDomains = new Set<string>(BUSINESS_MASTER_ALLOWED_DOMAINS);
 const domainAliases: Record<string, string> = {
   departments: 'department_catalog',
 };
+
+/** Command Center catalog partitions — portal stores `{ rows: [...] }` per kind. */
+export const COMMAND_CENTER_CATALOG_KINDS = ['regulations', 'measurements', 'pricing'] as const;
+export type CommandCenterCatalogKind = (typeof COMMAND_CENTER_CATALOG_KINDS)[number];
 
 @Injectable()
 export class BusinessMasterService {
@@ -118,9 +129,71 @@ export class BusinessMasterService {
     }));
   }
 
+  /** UF-XBOS-14 — portal/probe GET list must surface row.code at top level (partition + flat rows). */
+  private flattenCommandCenterCatalogList(
+    partitions: ReturnType<BusinessMasterService['mapRow']>[],
+  ): Array<ReturnType<BusinessMasterService['mapRow']> & Record<string, unknown>> {
+    const flattened: Array<ReturnType<BusinessMasterService['mapRow']> & Record<string, unknown>> = [];
+    for (const partition of partitions) {
+      flattened.push(partition);
+      for (const row of this.readCcCatalogRows(partition)) {
+        const code = String(row.code ?? row.key ?? row.priceCode ?? '').trim();
+        if (!code) continue;
+        flattened.push({
+          ...partition,
+          id: code,
+          ...row,
+          code,
+          category: partition.id,
+          status: String(row.status ?? 'active'),
+        });
+      }
+    }
+    return flattened;
+  }
+
   async list(tenantId: string, companyId: string, domainRaw: string) {
     await this.ensureSchema();
     const domain = this.assertDomain(domainRaw);
+    const primary = await this.listRows(tenantId, companyId, domain);
+    if (domain === 'companies' && primary.length === 0) {
+      return this.defaultCompanies(tenantId, companyId);
+    }
+    if (domain === 'command_center_catalogs') {
+      return this.flattenCommandCenterCatalogList(primary);
+    }
+    if (domain !== 'dept_system_templates') {
+      return primary;
+    }
+    const merged = new Map<string, ReturnType<BusinessMasterService['mapRow']>>();
+    for (const item of primary) {
+      merged.set(item.id, item);
+    }
+    for (const legacyCompanyId of DEPT_SYSTEM_TEMPLATE_LEGACY_COMPANY_IDS) {
+      if (legacyCompanyId === companyId) continue;
+      const legacyRows = await this.listRows(tenantId, legacyCompanyId, domain);
+      for (const item of legacyRows) {
+        if (!merged.has(item.id)) merged.set(item.id, item);
+      }
+    }
+    return Array.from(merged.values()).sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+  }
+
+  private mapRow(row: MasterEntryRow) {
+    return {
+      id: row.item_id,
+      ...(typeof row.payload === 'object' && row.payload ? (row.payload as Record<string, unknown>) : {}),
+      status: row.status,
+      tenantId: row.tenant_id,
+      companyId: row.company_id,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
+  private async listRows(tenantId: string, companyId: string, domain: string) {
     const res = await this.db.query<MasterEntryRow>(
       `
       SELECT tenant_id, company_id, domain, item_id, payload, status, created_at, updated_at
@@ -130,27 +203,74 @@ export class BusinessMasterService {
       `,
       [tenantId, companyId, domain],
     );
-    if (res.rows.length === 0 && domain === 'companies') {
-      return this.defaultCompanies(tenantId, companyId);
-    }
-    return res.rows.map((row) => ({
-      id: row.item_id,
-      ...(typeof row.payload === 'object' && row.payload ? (row.payload as Record<string, unknown>) : {}),
-      status: row.status,
-      tenantId: row.tenant_id,
-      companyId: row.company_id,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    }));
+    return res.rows.map((row) => this.mapRow(row));
   }
 
-  async upsert(tenantId: string, companyId: string, domainRaw: string, itemId: string, payload: unknown) {
-    await this.ensureSchema();
-    const domain = this.assertDomain(domainRaw);
-    const normalizedItemId = (itemId || '').trim();
-    if (!normalizedItemId) {
-      throw new ApiException('XBOS-MASTER-422', 'itemId is required', HttpStatus.BAD_REQUEST);
+  private isCommandCenterCatalogKind(value: string): value is CommandCenterCatalogKind {
+    return (COMMAND_CENTER_CATALOG_KINDS as readonly string[]).includes(value.trim().toLowerCase());
+  }
+
+  private readCcCatalogRows(payload: unknown): Array<Record<string, unknown>> {
+    if (!payload || typeof payload !== 'object') {
+      return [];
     }
+    const rows = (payload as { rows?: unknown }).rows;
+    return Array.isArray(rows)
+      ? rows.filter((row): row is Record<string, unknown> => !!row && typeof row === 'object')
+      : [];
+  }
+
+  /** UF-XBOS-14 — autosave row merges into category partition (regulations/measurements/pricing). */
+  private async upsertCommandCenterCatalogRow(
+    tenantId: string,
+    companyId: string,
+    itemId: string,
+    payload: unknown,
+  ): Promise<MasterEntryRow> {
+    const body =
+      payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : ({} as Record<string, unknown>);
+    const categoryRaw = String(body.category ?? body.kind ?? 'regulations').trim().toLowerCase();
+    if (!this.isCommandCenterCatalogKind(categoryRaw)) {
+      throw new ApiException(
+        'XBOS-MASTER-400',
+        'command_center_catalogs row upsert requires category regulations|measurements|pricing',
+        HttpStatus.BAD_REQUEST,
+        { category: categoryRaw },
+      );
+    }
+    const rowCode = String(body.code ?? itemId).trim();
+    if (!rowCode) {
+      throw new ApiException('XBOS-MASTER-422', 'code is required', HttpStatus.BAD_REQUEST);
+    }
+    const existingRows = await this.listRows(tenantId, companyId, 'command_center_catalogs');
+    const partition = existingRows.find((entry) => entry.id === categoryRaw);
+    const mergedRows = [...this.readCcCatalogRows(partition)];
+    const nextRow: Record<string, unknown> = {
+      ...body,
+      code: rowCode,
+      title: body.title ?? body.label ?? body.name ?? rowCode,
+      status: body.status ?? 'active',
+    };
+    const rowIndex = mergedRows.findIndex(
+      (row) => String(row.code ?? row.key ?? row.priceCode ?? '').trim().toLowerCase() === rowCode.toLowerCase(),
+    );
+    if (rowIndex >= 0) {
+      mergedRows[rowIndex] = { ...mergedRows[rowIndex], ...nextRow };
+    } else {
+      mergedRows.push(nextRow);
+    }
+    return this.persistMasterEntry(tenantId, companyId, 'command_center_catalogs', categoryRaw, {
+      rows: mergedRows,
+    });
+  }
+
+  private async persistMasterEntry(
+    tenantId: string,
+    companyId: string,
+    domain: string,
+    itemId: string,
+    payload: unknown,
+  ): Promise<MasterEntryRow> {
     const res = await this.db.query<MasterEntryRow>(
       `
       INSERT INTO public.xbos_business_master_entries (
@@ -164,9 +284,28 @@ export class BusinessMasterService {
         updated_at = NOW()
       RETURNING tenant_id, company_id, domain, item_id, payload, status, created_at, updated_at
       `,
-      [tenantId, companyId, domain, normalizedItemId, JSON.stringify(payload ?? {})],
+      [tenantId, companyId, domain, itemId, JSON.stringify(payload ?? {})],
     );
     return res.rows[0];
+  }
+
+  async upsert(tenantId: string, companyId: string, domainRaw: string, itemId: string, payload: unknown) {
+    await this.ensureSchema();
+    const domain = this.assertDomain(domainRaw);
+    const normalizedItemId = (itemId || '').trim();
+    if (!normalizedItemId) {
+      throw new ApiException('XBOS-MASTER-422', 'itemId is required', HttpStatus.BAD_REQUEST);
+    }
+    if (domain === 'command_center_catalogs') {
+      const body =
+        payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : ({} as Record<string, unknown>);
+      const hasPartitionRows = Array.isArray(body.rows);
+      if (this.isCommandCenterCatalogKind(normalizedItemId) || hasPartitionRows) {
+        return this.persistMasterEntry(tenantId, companyId, domain, normalizedItemId, payload);
+      }
+      return this.upsertCommandCenterCatalogRow(tenantId, companyId, normalizedItemId, payload);
+    }
+    return this.persistMasterEntry(tenantId, companyId, domain, normalizedItemId, payload);
   }
 
   async remove(tenantId: string, companyId: string, domainRaw: string, itemId: string) {

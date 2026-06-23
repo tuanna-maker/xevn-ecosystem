@@ -76,6 +76,75 @@ describe('DecisionsService', () => {
     );
   });
 
+  it('getDecisionById keeps list/detail scope parity for company_id=main (G-INT-04)', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const decisionId = 'dec-holding-1';
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+        return {
+          rows: [
+            {
+              id: decisionId,
+              company_id: 'holding',
+              decision_code: 'QD-1',
+              decision_type: 'appointment',
+              title: 't',
+              content: null,
+              employee_id: null,
+              employee_name: 'n',
+              employee_code: null,
+              department: null,
+              position: null,
+              effective_date: null,
+              expiry_date: null,
+              signer_name: null,
+              signer_position: null,
+              signing_date: null,
+              file_url: null,
+              status: 'draft',
+              notes: null,
+              created_at: '2026-01-01',
+              updated_at: '2026-01-01',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    const result = await service.getDecisionById(decisionId, 'main', `Bearer ${token}`);
+
+    expect(result.id).toBe(decisionId);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('company_id = ANY'),
+      expect.arrayContaining([decisionId, expect.any(Array)]),
+    );
+  });
+
+  it('getDecisionById returns 404 when decision is outside member CEO scope (G-INT-04)', async () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+        return { rows: [] } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    await expect(
+      service.getDecisionById('dec-holding-1', 'main', `Bearer ${token}`),
+    ).rejects.toMatchObject({ code: 'HRM-DEC-404' });
+  });
+
   it('updateDecision asserts resource company_id before patch (P1-02)', async () => {
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',

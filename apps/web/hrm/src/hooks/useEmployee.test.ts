@@ -12,7 +12,7 @@ vi.mock('@/lib/hrmDataMode', () => ({
   HRM_API_MAX_PAGE_SIZE: 100,
 }));
 
-import { loadEmployee, mapHrmEmployeeRecord, resolveEmployeeFetchCompanyIds } from './useEmployee';
+import { loadEmployee, mapHrmEmployeeRecord, mergeEmployeeAvatarWriteFields, resolveEmployeeAvatarUrl, resolveEmployeeFetchCompanyIds } from './useEmployee';
 import type { HrmEmployeeRecord } from '@/integrations/hrmApi';
 
 const sampleRow: HrmEmployeeRecord = {
@@ -35,6 +35,38 @@ describe('mapHrmEmployeeRecord', () => {
     const mapped = mapHrmEmployeeRecord(sampleRow);
     expect(mapped.id).toBe('emp-uuid-1');
     expect(mapped.full_name).toBe('Nguyen Van A');
+    expect(mapped.avatar_url).toBeNull();
+  });
+
+  it('reads avatar_url from API field or custom_fields fallback', () => {
+    expect(
+      resolveEmployeeAvatarUrl({ ...sampleRow, avatar_url: 'https://cdn.example/a.jpg' }),
+    ).toBe('https://cdn.example/a.jpg');
+    expect(
+      resolveEmployeeAvatarUrl({
+        ...sampleRow,
+        custom_fields: { avatar_url: 'https://cdn.example/b.jpg' },
+      }),
+    ).toBe('https://cdn.example/b.jpg');
+    expect(mapHrmEmployeeRecord({
+      ...sampleRow,
+      custom_fields: { avatar_url: 'https://cdn.example/c.jpg' },
+    }).avatar_url).toBe('https://cdn.example/c.jpg');
+  });
+});
+
+describe('mergeEmployeeAvatarWriteFields', () => {
+  it('writes avatar_url to payload and custom_fields for interim BE', () => {
+    expect(
+      mergeEmployeeAvatarWriteFields('https://cdn.example/new.jpg', { dept: 'HR' }),
+    ).toEqual({
+      avatar_url: 'https://cdn.example/new.jpg',
+      custom_fields: { dept: 'HR', avatar_url: 'https://cdn.example/new.jpg' },
+    });
+    expect(mergeEmployeeAvatarWriteFields(null, { avatar_url: 'old', dept: 'HR' })).toEqual({
+      avatar_url: null,
+      custom_fields: { dept: 'HR' },
+    });
   });
 });
 
@@ -48,8 +80,8 @@ describe('loadEmployee', () => {
     getEmployeeById.mockResolvedValue(sampleRow);
 
     const result = await loadEmployee('emp-uuid-1', {
-      memberships: [{ company_id: 'holding' }],
-      currentCompanyId: 'holding',
+      memberships: [{ company_id: 'main' }],
+      currentCompanyId: 'main',
       search: '?portal=1',
     });
 

@@ -9,24 +9,35 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-
-const data = [
-  { name: 'CÔNG TY CỔ PHẦN 1OFFICE', value: 280, color: '#f59e0b' },
-  { name: 'Chi nhánh HCM - Echard Phong...', value: 240, color: '#22c55e' },
-  { name: 'Chi nhánh HCM - Phòng kế toán', value: 200, color: '#8b5cf6' },
-  { name: 'CÔNG TY CỔ PHẦN 1OFFICE - Chi nhanh...', value: 180, color: '#06b6d4' },
-  { name: 'Chi nhánh Hà Nội - Kinh doanh Hà Nội', value: 160, color: '#f59e0b' },
-  { name: 'Chi nhánh Hà Nội - Triển khai Hà Nội', value: 140, color: '#22c55e' },
-  { name: 'CÔNG TY CỔ PHẦN 1OFFICE - Ban thu...', value: 120, color: '#8b5cf6' },
-  { name: 'Chi nhánh Hà Nội - Phòng kế toán', value: 100, color: '#06b6d4' },
-];
+import type { RecruitmentBarChartRow } from '@/lib/recruitmentDashboardAggregator';
 
 const ROW_HEIGHT = 34;
 const CHART_PAD = 72;
 
-export function RecruitmentBarChart() {
+interface RecruitmentBarChartProps {
+  data: RecruitmentBarChartRow[];
+  loading?: boolean;
+}
+
+export function RecruitmentBarChart({ data, loading = false }: RecruitmentBarChartProps) {
   const { t } = useTranslation();
   const chartHeight = Math.min(480, Math.max(260, data.length * ROW_HEIGHT + CHART_PAD));
+
+  if (loading) {
+    return (
+      <div className="flex h-[260px] items-center justify-center text-sm text-muted-foreground">
+        {t('common.loading')}
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className="flex h-[260px] items-center justify-center text-sm text-muted-foreground">
+        {t('recruitment.noCandidateData')}
+      </div>
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>

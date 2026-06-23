@@ -27,3 +27,26 @@ coverage
 
 # Cursor PM hook — local dedupe cursor (machine-specific)
 .cursor/team/inbox/subagent-stop-dedupe-state.json
+
+# QA evidence — local adb dumps (never commit)
+docs/qa/evidence/**/*.xml
+docs/qa/evidence/**/ui-dump/
+
+# Mobile build artifacts (regenerate — do not commit)
+*.apk
+*.aab
+*.zip
+apps/mobile/**/dist/
+android/.gradle/
+android/app/build/
+android/build/
+
+# Subagent hook transcripts (local only — truncate periodically)
+.cursor/team/inbox/*.jsonl
+.cursor/team/archive/
+
+# PM scratch / one-off
+tmp/
+
+# One-off tmp scripts (promoted to scripts/qa|ops — see scripts/README.md)
+scripts/tmp-*

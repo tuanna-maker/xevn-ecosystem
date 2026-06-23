@@ -1,0 +1,26 @@
+{
+  "work_item_id": "MOB-UX-12b-QA",
+  "date": "2026-06-09",
+  "device": "emulator-5554",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0002@xe.vn",
+  "company_uuid": "32a3cdcb-c534-4e47-80f9-d2f156e65094",
+  "apk_sha256": "B8F738596F9D11AFFFE9BD3AE1F92A6E759BE844717B5D617D026DB5D297F3EA",
+  "apk_bytes": 68938359,
+  "handoff_sha256": "40C376615AFF5D4C04B9469A786A2AFEDB1154FF3DAF78DDA09551A4EE2FD474",
+  "fatal_logcat": false,
+  "ack_status": "FAIL_TO_PM",
+  "product_slice_pass": true,
+  "results": [
+    { "id": "L0-SHA", "pass": false, "note": "handoff=40C37661 dist=B8F73859" },
+    { "id": "L0-API", "pass": true, "note": "/api/health 200" },
+    { "id": "J-MOB-01", "pass": true, "note": "company=trsport deep-link" },
+    { "id": "J-MOB-30-OPEN", "pass": true, "note": "Đội nhóm tab" },
+    { "id": "AC-SECTION-HEADERS", "pass": true, "note": "team-directory-section-Ban Điều hành count=102" },
+    { "id": "AC-RICH-ROWS", "pass": true, "note": "strip+ring+dot+Lái xe; GWC DISPATCH SUPERVISOR/LEGAL SPECIALIST" },
+    { "id": "AC-SEARCH", "pass": true, "note": "HLD-0091 → Bùi Quốc An" },
+    { "id": "AC-CHIP-CHECKED-IN", "pass": true, "note": "Đã chấm (2) content-desc" },
+    { "id": "AC-TAP-DETAIL", "pass": false, "gwc": true, "note": "automation flake; MOB-UX-12a-QA PASS cross-ref" },
+    { "id": "AC-BACK-PRESERVE", "pass": false, "gwc": true, "note": "MOB-UX-12a-QA J-MOB-30 ext PASS cross-ref" }
+  ]
+}

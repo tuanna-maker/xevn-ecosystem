@@ -1,0 +1,54 @@
+{
+  "work_item_id": "P1-G4-CARRY-REGRESS",
+  "batch_work_item_id": "PCOMP-W7-MOB-BATCH-QA-R3",
+  "at": "2026-06-09T12:44:25.305Z",
+  "device": "emulator-5554",
+  "account": "uat.nv0001@xe.vn",
+  "apk": {
+    "path": "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk",
+    "sha256": "EA9BD74F3DA158F6E36391FF4EC148391BD1BA10EF7907D798D4843F38C291F5",
+    "bytes": 69148549
+  },
+  "tests": {
+    "leave_nav": {
+      "pass": true,
+      "leaveBlank": false,
+      "leaveListScreen": true,
+      "balanceHeader": true,
+      "numericBalance": true,
+      "xmlBytes": 34610
+    },
+    "j_mob_25_balance": {
+      "pass": true,
+      "balanceHeader": true,
+      "numericBalance": true
+    },
+    "j_mob_11_attachment": {
+      "pass": false,
+      "reachable": true,
+      "picker": false,
+      "sick": false
+    },
+    "checkin_fab_hidden": {
+      "pass": false,
+      "fabHidden": false,
+      "stickyPresent": false,
+      "ilaScore": 0
+    },
+    "mob_ux_15d": {
+      "pass": false,
+      "rawToken": false,
+      "viLabel": false,
+      "screen": "notifications",
+      "xmlBytes": 21763
+    },
+    "j_mob_16_directory": {
+      "pass": true,
+      "rows": true,
+      "xmlBytes": 36447
+    }
+  },
+  "verdict": "FAIL_TO_PM",
+  "g4_carry_pass": false,
+  "batch_pass": false
+}

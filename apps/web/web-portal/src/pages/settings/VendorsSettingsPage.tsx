@@ -6,18 +6,23 @@ import {
   Badge,
   Button,
   Column,
+  MutationButton,
+  useConfirmDialog,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockVendors, Vendor } from '../../data/mockData';
+import { Vendor } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { resolveVendorsSettingsFailure } from '../../utils/portalStrictMode';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const VendorsSettingsPage: React.FC = () => {
   const { companies } = useCompanyFilterOptions();
   const { tenantId, companyId } = useTenantScope();
+  const { requestConfirm, confirmDialog, confirming } = useConfirmDialog();
+  const [deletePendingId, setDeletePendingId] = useState<string | null>(null);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loadFailed, setLoadFailed] = useState(false);
   const [usingMockFallback, setUsingMockFallback] = useState(false);
@@ -29,13 +34,10 @@ const VendorsSettingsPage: React.FC = () => {
         setVendors(rows);
       })
       .catch(() => {
-        setLoadFailed(true);
-        if (allowMockFallback()) {
-          setVendors(mockVendors);
-          setUsingMockFallback(true);
-        } else {
-          setVendors([]);
-        }
+        const failure = resolveVendorsSettingsFailure();
+        setLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setVendors(failure.rows);
       });
   }, [tenantId, companyId]);
 
@@ -166,11 +168,22 @@ const VendorsSettingsPage: React.FC = () => {
     resetForm();
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Bạn có chắc chắn muốn xóa đối tác này?')) {
-      await deleteBusinessMasterItem('vendors', id, tenantId, companyId);
-      setVendors((prev) => prev.filter((v) => v.id !== id));
-    }
+  const handleDelete = (vendor: Vendor) => {
+    requestConfirm({
+      title: 'Xóa đối tác',
+      description: `Bạn có chắc chắn muốn xóa đối tác «${vendor.shortName || vendor.name}»?`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: async () => {
+        setDeletePendingId(vendor.id);
+        try {
+          await deleteBusinessMasterItem('vendors', vendor.id, tenantId, companyId);
+          setVendors((prev) => prev.filter((v) => v.id !== vendor.id));
+        } finally {
+          setDeletePendingId(null);
+        }
+      },
+    });
   };
 
   const filteredVendors = filterCategory === 'all' 
@@ -284,12 +297,16 @@ const VendorsSettingsPage: React.FC = () => {
           >
             <Edit2 size={15} />
           </button>
-          <button
-            onClick={() => handleDelete(item.id)}
-            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+          <MutationButton
+            pending={deletePendingId === item.id || confirming}
+            variant="danger"
+            iconOnly
+            onClick={() => handleDelete(item)}
+            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors border-0 bg-transparent"
+            aria-label="Xóa đối tác"
           >
             <Trash2 size={15} />
-          </button>
+          </MutationButton>
         </div>
       ),
     },
@@ -320,7 +337,7 @@ const VendorsSettingsPage: React.FC = () => {
         }
       />
       <ApiLoadBanner
-        loadFailed={loadFailed && !allowMockFallback()}
+        loadFailed={loadFailed}
         usingMockFallback={usingMockFallback}
         message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />
@@ -689,6 +706,7 @@ const VendorsSettingsPage: React.FC = () => {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 };

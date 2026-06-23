@@ -1,87 +1,489 @@
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import type { RouteProp } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import React, { useCallback, useEffect, useState } from 'react';
+
+import { Alert, Linking, StyleSheet, Text, View } from 'react-native';
+
+import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+
+import { DetailMetricGrid } from '../../components/ui/DetailMetricGrid';
+
+import { DetailNoteBlock } from '../../components/ui/DetailNoteBlock';
+
+import { LeaveHeroCard } from '../../components/ui/LeaveHeroCard';
+
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+
+import { SurfaceCard } from '../../components/ui/SurfaceCard';
+
 import { useAuth } from '../../context/AuthContext';
+
 import { readListRows } from '../../integrations/envelope';
-import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
+
+import { tryCancelLeaveRequest } from '../../integrations/leaveRequests';
+
+import { fetchEmployeeById } from '../../integrations/hrmEmployees';
+
+import { getDefaultBaseUrl, hrmRequest } from '../../integrations/hrmApiClient';
+
+import { resolveLeaveTypeLabel } from '../../i18n/leaveTypes';
+
+import { formatHrmError } from '../../integrations/mapApiError';
+
 import type { RequestsStackParamList } from '../../navigation/types';
 
+import { spacing, typography, colors, layout } from '../../theme/tokens';
+
+import { formatHrmDate, formatHrmDateTime, sanitizeSeedDisplay } from '../../utils/formatHrm';
+import { resolveHrmAvatarUrl } from '../../utils/resolveHrmAvatarUrl';
+
+import {
+  buildLeaveDetailListQuery,
+  resolveLeaveDetailEmployeeFilter,
+} from '../../utils/leaveDetailLoad';
+import { userFacingScopeError } from '../../utils/scopeError';
+
+
+
 type LeaveRow = {
+
   id: string;
+
+  employee_id?: string;
+
   leave_type: string;
+
   start_date: string;
+
   end_date: string;
+
   status: string;
+
   reason: string | null;
+
   rejected_reason: string | null;
+
   requested_at: string;
+
   reviewed_at: string | null;
+
+  employee_code: string | null;
+
+  employee_name: string | null;
+
+  department: string | null;
+
+  total_days: string | number | null;
+
+  handover_to: string | null;
+
+  handover_tasks: string | null;
+
+  attachment_url?: string | null;
+
 };
 
+
+
 export function LeaveRequestDetailScreen() {
+
   const auth = useAuth();
+
+  const nav = useNavigation<NativeStackNavigationProp<RequestsStackParamList>>();
+
   const route = useRoute<RouteProp<RequestsStackParamList, 'LeaveRequestDetail'>>();
+
   const [row, setRow] = useState<LeaveRow | null>(null);
+
   const [err, setErr] = useState('');
 
+  const [loading, setLoading] = useState(true);
+
+  const [cancelling, setCancelling] = useState(false);
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+
+
+  const load = useCallback(async () => {
+
+    setLoading(true);
+
+    const cid = auth.getAttendanceCompanyId();
+
+    const leaveId = route.params.id.trim();
+
+    if (!cid || !leaveId) {
+
+      setErr(!cid ? userFacingScopeError('company') : userFacingScopeError('leaveId'));
+
+      setLoading(false);
+
+      return;
+
+    }
+
+    const cfg = auth.getHrmAuth();
+
+    const scopedEmployeeId = resolveLeaveDetailEmployeeFilter({
+
+      routeEmployeeId: route.params.employeeId,
+
+      viewerEmployeeId: auth.employeeId,
+
+    });
+
+    const fetchScopedLeaves = async (employeeId?: string) => {
+
+      const q = buildLeaveDetailListQuery(cid, employeeId);
+
+      return hrmRequest<unknown>(cfg, `/attendance/leave-requests?${q.toString()}`, { method: 'GET' });
+
+    };
+
+    let res = await fetchScopedLeaves(scopedEmployeeId || undefined);
+
+    if (!res.ok) {
+
+      setErr(formatHrmError(res));
+
+      setLoading(false);
+
+      return;
+
+    }
+
+    let found = readListRows<LeaveRow>(res.data).find((x) => x.id === leaveId) ?? null;
+
+    if (!found && scopedEmployeeId) {
+
+      const fallbackRes = await fetchScopedLeaves();
+
+      if (fallbackRes.ok) {
+
+        found = readListRows<LeaveRow>(fallbackRes.data).find((x) => x.id === leaveId) ?? null;
+
+      }
+
+    }
+
+    const avatarEmployeeId =
+
+      found?.employee_id?.trim() || route.params.employeeId?.trim() || auth.employeeId.trim();
+
+    const emp = avatarEmployeeId ? await fetchEmployeeById(cfg, avatarEmployeeId) : null;
+
+    setAvatarUrl(emp?.avatar_url ?? null);
+
+    setRow(found);
+
+    if (!found) setErr('Không tìm thấy đơn.');
+
+    setLoading(false);
+
+  }, [auth, route.params.id, route.params.employeeId]);
+
+
+
   useEffect(() => {
-    void (async () => {
-      const cid = auth.getAttendanceCompanyId();
-      const eid = auth.employeeId.trim();
-      if (!cid) {
-        setErr('Thiếu UUID công ty.');
-        return;
-      }
-      const q = new URLSearchParams({ company_id: cid });
-      if (eid) q.set('employee_id', eid);
-      const res = await hrmRequest<unknown>(auth.getHrmAuth(), `/attendance/leave-requests?${q.toString()}`, {
-        method: 'GET',
-      });
-      if (!res.ok) {
-        setErr(formatHrmError(res));
-        return;
-      }
-      const found = readListRows<LeaveRow>(res.data).find((x) => x.id === route.params.id) ?? null;
-      setRow(found);
-      if (!found) setErr('Không tìm thấy đơn.');
-    })();
-  }, [auth, route.params.id]);
 
-  if (err) return <Text style={styles.err}>{err}</Text>;
-  if (!row) return <Text style={styles.muted}>Đang tải…</Text>;
+    void load();
+
+  }, [load]);
+
+
+
+  const onEdit = () => {
+
+    if (!row) return;
+
+    nav.navigate('CreateLeaveRequest', {
+
+      editId: row.id,
+
+      prefill: {
+
+        leaveType: row.leave_type,
+
+        startDate: row.start_date,
+
+        endDate: row.end_date,
+
+        reason: row.reason ?? '',
+
+        handoverTo: row.handover_to ?? '',
+
+        handoverTasks: row.handover_tasks ?? '',
+
+      },
+
+    });
+
+  };
+
+
+
+  const onCancel = () => {
+
+    if (!row) return;
+
+    Alert.alert('Hủy đơn nghỉ', 'Bạn có chắc muốn hủy đơn đang chờ duyệt?', [
+
+      { text: 'Không', style: 'cancel' },
+
+      {
+
+        text: 'Hủy đơn',
+
+        style: 'destructive',
+
+        onPress: () => {
+
+          void (async () => {
+
+            setCancelling(true);
+
+            try {
+
+              const result = await tryCancelLeaveRequest(auth.getHrmAuth(), row.id);
+
+              Alert.alert('Chưa khả dụng', result.message);
+
+            } finally {
+
+              setCancelling(false);
+
+            }
+
+          })();
+
+        },
+
+      },
+
+    ]);
+
+  };
+
+
+
+  const totalDays = row?.total_days != null ? String(row.total_days) : '—';
+
+  const reasonText = row ? sanitizeSeedDisplay(row.reason) : '—';
+
+  const rejectText = row?.rejected_reason ? sanitizeSeedDisplay(row.rejected_reason) : null;
+
+  const apiBaseUrl = auth.getHrmAuth().baseUrl || getDefaultBaseUrl();
+
+
 
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
-      <Text style={styles.title}>{row.leave_type}</Text>
-      <Row label="Trạng thái" value={statusLabel(row.status)} />
-      <Row label="Từ ngày" value={row.start_date} />
-      <Row label="Đến ngày" value={row.end_date} />
-      <Row label="Lý do" value={row.reason ?? '—'} />
-      <Row label="Gửi lúc" value={row.requested_at} />
-      {row.reviewed_at ? <Row label="Duyệt lúc" value={row.reviewed_at} /> : null}
-      {row.rejected_reason ? <Row label="Lý do từ chối" value={row.rejected_reason} /> : null}
-    </ScrollView>
+
+    <AppScreenLayout
+
+      title={row ? resolveLeaveTypeLabel(row.leave_type) : 'Đơn nghỉ phép'}
+
+      grouped
+
+      loading={loading && !row && !err}
+
+      error={err || undefined}
+
+      empty={!loading && !row && !err}
+
+      emptyMessage="Không tìm thấy đơn nghỉ"
+
+      scroll
+
+    >
+
+      {row ? (
+
+        <>
+
+          <LeaveHeroCard
+
+            employeeName={row.employee_name?.trim() || '—'}
+
+            employeeCode={row.employee_code?.trim() || '—'}
+
+            department={row.department}
+
+            status={row.status}
+
+            avatarUrl={avatarUrl}
+
+            baseUrl={apiBaseUrl}
+
+          />
+
+
+
+          <SurfaceCard title="Thông tin nghỉ">
+
+            <DetailMetricGrid
+
+              metrics={[
+
+                { label: 'Loại nghỉ', value: '', leaveTypeCode: row.leave_type },
+
+                { label: 'Số ngày', value: `${totalDays} ngày` },
+
+                { label: 'Từ ngày', value: formatHrmDate(row.start_date) },
+
+                { label: 'Đến ngày', value: formatHrmDate(row.end_date) },
+
+              ]}
+
+            />
+
+          </SurfaceCard>
+
+
+
+          {(reasonText !== '—' || row.handover_to) && (
+
+            <SurfaceCard title="Nội dung">
+
+              {reasonText !== '—' ? <DetailNoteBlock label="Lý do" text={reasonText} /> : null}
+
+              {row.handover_to ? (
+
+                <DetailNoteBlock
+
+                  label="Bàn giao"
+
+                  text={[row.handover_to, row.handover_tasks].filter(Boolean).join(' — ')}
+
+                />
+
+              ) : null}
+
+            </SurfaceCard>
+
+          )}
+
+
+
+          {rejectText ? (
+
+            <SurfaceCard title="Phản hồi">
+
+              <DetailNoteBlock label="Lý do từ chối" text={rejectText} variant="danger" />
+
+            </SurfaceCard>
+
+          ) : null}
+
+          {row.attachment_url?.trim() ? (
+            <SurfaceCard title="Giấy tờ đính kèm">
+              <PrimaryButton
+                label="Xem / tải giấy tờ"
+                variant="secondary"
+                testID="leave-attachment-open"
+                onPress={() => {
+                  const href =
+                    resolveHrmAvatarUrl(apiBaseUrl, row.attachment_url!.trim()) ??
+                    row.attachment_url!.trim();
+                  void Linking.openURL(href).catch(() => {
+                    Alert.alert('Lỗi', 'Không mở được tệp đính kèm.');
+                  });
+                }}
+              />
+            </SurfaceCard>
+          ) : null}
+
+          <View style={styles.timestamps}>
+
+            <Text style={styles.timestampText}>Gửi: {formatHrmDateTime(row.requested_at)}</Text>
+
+            {row.reviewed_at ? (
+
+              <Text style={styles.timestampText}>Duyệt: {formatHrmDateTime(row.reviewed_at)}</Text>
+
+            ) : null}
+
+          </View>
+
+
+
+          {row.status === 'pending' ? (
+
+            <View style={styles.actionBar}>
+
+              <PrimaryButton label="Sửa đơn" variant="secondary" onPress={onEdit} style={styles.actionBtn} />
+
+              <PrimaryButton
+
+                label={cancelling ? 'Đang xử lý…' : 'Hủy đơn'}
+
+                variant="danger"
+
+                onPress={onCancel}
+
+                disabled={cancelling}
+
+                loading={cancelling}
+
+                style={styles.actionBtn}
+
+              />
+
+            </View>
+
+          ) : null}
+
+        </>
+
+      ) : null}
+
+    </AppScreenLayout>
+
   );
+
 }
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
-    </View>
-  );
-}
+
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a' },
-  pad: { padding: 16, gap: 12 },
-  title: { color: '#f8fafc', fontSize: 20, fontWeight: '700' },
-  row: { gap: 4 },
-  label: { color: '#94a3b8', fontSize: 12 },
-  value: { color: '#e2e8f0', fontSize: 15 },
-  err: { color: '#f87171', padding: 16 },
-  muted: { color: '#64748b', padding: 16 },
+
+  timestamps: {
+
+    gap: spacing.xs,
+
+    paddingTop: spacing.sm,
+
+    borderTopWidth: 1,
+
+    borderTopColor: colors.border,
+
+  },
+
+  timestampText: {
+
+    fontSize: typography.fontSize.footnote,
+
+    lineHeight: typography.lineHeight.footnote,
+
+    color: colors.textSecondary,
+
+  },
+
+  actionBar: {
+
+    flexDirection: 'row',
+
+    gap: spacing.sm,
+
+    marginTop: layout.sectionGap - layout.itemGap,
+
+  },
+
+  actionBtn: { flex: 1 },
+
 });
+

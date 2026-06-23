@@ -1,0 +1,66 @@
+{
+  "work_item_id": "PCOMP-W7-QA-HUB-04b",
+  "date": "2026-06-07",
+  "base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+  "headerCompany": "holding",
+  "pass": true,
+  "apiOk": true,
+  "privacyOk": true,
+  "seedOk": true,
+  "viewer_is_birthday_today": true,
+  "celebrations_total": 5,
+  "celebrations_items": [
+    {
+      "employee_id": "c673ee43-bee8-46d9-8035-7d1e7fef6d5e",
+      "display_name": "Bùi Văn An",
+      "month_day": "06-07",
+      "display_date": "07/06",
+      "avatar_url": null,
+      "avatar_initials": "BA"
+    },
+    {
+      "employee_id": "8ac84520-0d6b-4737-8341-2f9a929b5f81",
+      "display_name": "Huỳnh Văn An",
+      "month_day": "06-07",
+      "display_date": "07/06",
+      "avatar_url": "/api/hrm/files/holding/employee-avatar-1780832507918-do-smoke-1780832507144.png",
+      "avatar_initials": "HA"
+    },
+    {
+      "employee_id": "19b88fe9-1819-4a45-8362-2c44a6a1e468",
+      "display_name": "Huỳnh Văn Hùng",
+      "month_day": "06-07",
+      "display_date": "07/06",
+      "avatar_url": null,
+      "avatar_initials": "HH"
+    },
+    {
+      "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+      "display_name": "Nguyễn Văn An",
+      "month_day": "06-07",
+      "display_date": "07/06",
+      "avatar_url": null,
+      "avatar_initials": "NA"
+    },
+    {
+      "employee_id": "900ea5e6-d4f9-499e-88cf-0192388d92b2",
+      "display_name": "Nguyễn Văn Hùng",
+      "month_day": "06-07",
+      "display_date": "07/06",
+      "avatar_url": null,
+      "avatar_initials": "NH"
+    }
+  ],
+  "whos_out_count": 1,
+  "whos_out_items": [
+    {
+      "employee_id": "8ac84520-0d6b-4737-8341-2f9a929b5f81",
+      "display_name": "Huỳnh Văn An",
+      "leave_type": "annual",
+      "leave_request_id": "c9afd4cf-05b0-4e89-84c9-3322b5a7ac79",
+      "avatar_url": "/api/hrm/files/holding/employee-avatar-1780832507918-do-smoke-1780832507144.png"
+    }
+  ]
+}

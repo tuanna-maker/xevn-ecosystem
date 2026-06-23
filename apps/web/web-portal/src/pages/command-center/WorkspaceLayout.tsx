@@ -4,7 +4,6 @@ import {
   WorkspaceRailContext,
   WORKSPACE_RAIL_MD_MEDIA,
   WORKSPACE_RAIL_PINNED_STORAGE_KEY,
-  WORKSPACE_RAIL_WIDE_MEDIA,
 } from './workspace-rail-context';
 
 /** Khoảng cách đồng nhất giữa Rail → Sidebar phụ → Workspace (24px) */
@@ -23,10 +22,9 @@ function useMediaQuery(query: string): boolean {
 }
 
 /**
- * Layout Command Center:
- * - Mobile: rail full width xếp dọc (không thu gọn cạnh).
- * - md–2xl: rail ~100px hoặc thu ~44px; hover cột rail = mở (đẩy sidebar phụ + nội dung, không đè).
- * - ≥2xl: rail luôn mở.
+ * Layout Command Center (toàn portal — mọi phân hệ):
+ * - md+: rail ngoài mặc định thu icon (~44px); mở khi ghim hoặc toggle (không hover).
+ * - Sub-sidebar (Cài đặt / HRM): token NAV_SUBSIDEBAR_WIDTH_*; content flex thu theo.
  */
 export const WorkspaceLayout: React.FC<{
   rail: React.ReactNode;
@@ -34,10 +32,10 @@ export const WorkspaceLayout: React.FC<{
   children: React.ReactNode;
   mainClassName?: string;
   className?: string;
-  /** HRM iframe: ưu tiên vùng nội dung, sidebar hẹp, xếp dọc trên màn nhỏ */
+  /** HRM iframe: padding/gap nhỏ hơn; rail dùng chung logic thu gọn. */
   layoutMode?: 'default' | 'hrm-embed';
-  /** Khi HRM: rail phân hệ mặc định thu icon (đọc từ storage). */
-  hrmModuleRailCollapsed?: boolean;
+  /** Rail phân hệ ngoài: true = thu icon (mặc định portal). */
+  portalRailCollapsed?: boolean;
 }> = ({
   rail,
   secondarySidebar,
@@ -45,26 +43,19 @@ export const WorkspaceLayout: React.FC<{
   mainClassName,
   className,
   layoutMode = 'default',
-  hrmModuleRailCollapsed = true,
+  portalRailCollapsed = true,
 }) => {
   const hrmEmbed = layoutMode === 'hrm-embed';
-  const isWideLayout = useMediaQuery(WORKSPACE_RAIL_WIDE_MEDIA);
   const isMdUp = useMediaQuery(WORKSPACE_RAIL_MD_MEDIA);
   const [pinned, setPinnedState] = useState(false);
-  const [hoverOpen, setHoverOpen] = useState(false);
 
   useEffect(() => {
     try {
-      if (hrmEmbed) {
-        setPinnedState(false);
-        setHoverOpen(false);
-        return;
-      }
       setPinnedState(localStorage.getItem(WORKSPACE_RAIL_PINNED_STORAGE_KEY) === '1');
     } catch {
       /* ignore */
     }
-  }, [hrmEmbed]);
+  }, []);
 
   const setPinned = useCallback((next: boolean) => {
     setPinnedState(next);
@@ -89,22 +80,20 @@ export const WorkspaceLayout: React.FC<{
     });
   }, []);
 
-  /** HRM: luôn cho phép thu rail (kể cả màn ≥2xl) để iframe chiếm phần lớn chiều ngang. */
-  const collapseEnabled = isMdUp && (!isWideLayout || hrmEmbed);
-  const contentExpanded = hrmEmbed
-    ? pinned || hoverOpen || !hrmModuleRailCollapsed
-    : !collapseEnabled || pinned || hoverOpen;
+  /** Mọi breakpoint md+ — rail có thể thu (kể cả ≥2xl). */
+  const collapseEnabled = isMdUp;
+  const contentExpanded = pinned || !portalRailCollapsed;
 
   const railContext = useMemo(
     () => ({
       contentExpanded,
-      isWideLayout,
+      isWideLayout: false,
       collapseEnabled,
       pinned,
       setPinned,
       togglePinned,
     }),
-    [collapseEnabled, contentExpanded, isWideLayout, pinned, setPinned, togglePinned],
+    [collapseEnabled, contentExpanded, pinned, setPinned, togglePinned],
   );
 
   const railColumnClass =
@@ -126,17 +115,7 @@ export const WorkspaceLayout: React.FC<{
               hrmEmbed ? 'gap-2' : WORKSPACE_COLUMN_GAP
             }`}
           >
-            <div
-              className={railColumnClass}
-              onMouseEnter={() => {
-                if (collapseEnabled && !pinned) setHoverOpen(true);
-              }}
-              onMouseLeave={() => {
-                if (collapseEnabled && !pinned) setHoverOpen(false);
-              }}
-              role="navigation"
-              aria-label="Phân hệ Command Center"
-            >
+            <div className={railColumnClass} role="navigation" aria-label="Phân hệ Command Center">
               {rail}
             </div>
             {secondarySidebar ? (

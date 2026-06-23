@@ -61,13 +61,76 @@ export class MobileAuthService {
   deriveRoles(jobTitleKey: string | null): string[] {
     const key = (jobTitleKey ?? '').toUpperCase();
     const roles = ['employee'];
-    if (key.includes('MANAGER') || key.includes('CHRO') || key === 'CEO' || key.includes('OPS_MANAGER')) {
+    if (
+      key.includes('MANAGER') ||
+      key.includes('SUPERVISOR') ||
+      key.includes('CHRO') ||
+      key === 'CEO' ||
+      key === 'COO' ||
+      key === 'CFO' ||
+      key === 'CTO' ||
+      key === 'DIRECTOR' ||
+      key.includes('OPS_MANAGER')
+    ) {
       roles.push('manager');
     }
     if (key.includes('CHRO') || key === 'CEO') {
       roles.push('hr_manager');
     }
     return [...new Set(roles)];
+  }
+
+  /** MOBILE_PERSONA_UX_MATRIX §2.1 — optional seed override (`mgr` / `emp`). */
+  applyMobilePersonaRoleOverride(
+    roles: string[],
+    customFields: Record<string, string> | null | undefined,
+  ): string[] {
+    const persona = customFields?.mobile_persona?.trim().toLowerCase();
+    if (
+      persona === 'mgr' ||
+      persona === 'manager' ||
+      customFields?.is_manager === 'true'
+    ) {
+      return [...new Set([...roles, 'manager'])];
+    }
+    if (persona === 'emp' || persona === 'employee') {
+      return roles.filter((r) => r !== 'manager' && r !== 'hr_manager');
+    }
+    return roles;
+  }
+
+  withManagerRole(roles: string[]): string[] {
+    return [...new Set([...roles, 'manager'])];
+  }
+
+  isManagerRoles(roles: string[]): boolean {
+    return roles.includes('manager') || roles.includes('hr_manager');
+  }
+
+  private async countDirectReports(employeeId: string): Promise<number> {
+    const res = await this.db.query<{ count: number }>(
+      `
+        SELECT COUNT(*)::int AS count
+        FROM public.employees
+        WHERE manager_id = $1::uuid AND archived_at IS NULL AND status = 'active';
+      `,
+      [employeeId],
+    );
+    return res.rows[0]?.count ?? 0;
+  }
+
+  async resolveRolesForEmployee(row: EmployeeAuthRow): Promise<string[]> {
+    let roles = this.deriveRoles(row.job_title_key);
+    roles = this.applyMobilePersonaRoleOverride(roles, row.custom_fields);
+    const persona = row.custom_fields?.mobile_persona?.trim().toLowerCase();
+    const personaLocksEmployee = persona === 'emp' || persona === 'employee';
+    if (!personaLocksEmployee && !this.isManagerRoles(roles)) {
+      const directReports = await this.countDirectReports(row.id);
+      if (directReports > 0) {
+        roles = this.withManagerRole(roles);
+      }
+    }
+    return roles;
   }
 
   resolveTenantId(row: EmployeeAuthRow): string {
@@ -141,10 +204,10 @@ export class MobileAuthService {
     return memberships.find((m) => m.is_primary) ?? memberships[0];
   }
 
-  private buildLoginResponse(email: string, row: EmployeeAuthRow, allRows: EmployeeAuthRow[]) {
+  private async buildLoginResponse(email: string, row: EmployeeAuthRow, allRows: EmployeeAuthRow[]) {
     const memberships = allRows.map((r) => this.rowToMembership(r));
     const active = this.rowToMembership(row);
-    const roles = this.deriveRoles(row.job_title_key);
+    const roles = await this.resolveRolesForEmployee(row);
     const tokens = this.issueTokens({
       tenantId: active.tenant_id,
       companyId: active.company_id,
@@ -164,6 +227,7 @@ export class MobileAuthService {
         job_title_key: row.job_title_key,
       },
       roles,
+      is_manager: this.isManagerRoles(roles),
       memberships,
       active_membership: active,
       default_tenant_id: active.tenant_id,
@@ -209,7 +273,7 @@ export class MobileAuthService {
       }) ?? verified[0];
     }
 
-    return this.buildLoginResponse(email, selected, verified);
+    return await this.buildLoginResponse(email, selected, verified);
   }
 
   async selectMembership(email: string, employeeId: string) {
@@ -234,7 +298,7 @@ export class MobileAuthService {
       `,
       [email.trim().toLowerCase()],
     );
-    return this.buildLoginResponse(email, row, allRes.rows);
+    return await this.buildLoginResponse(email, row, allRes.rows);
   }
 
   async refresh(body: MobileRefreshDto) {
@@ -246,12 +310,25 @@ export class MobileAuthService {
     const companyId = String(payload.companyId ?? payload.company_id ?? '');
     const employeeId = String(payload.employee_id ?? '');
     const companyUuid = String(payload.company_uuid ?? '');
-    const email = String(payload.sub ?? '');
-    const roles = Array.isArray(payload.roles)
-      ? payload.roles.filter((r): r is string => typeof r === 'string')
-      : ['employee'];
+    const email = String(payload.sub ?? '').trim().toLowerCase();
     if (!tenantId || !companyId || !employeeId) {
       throw new ApiException('HRM-AUTH-401', 'Refresh token thiếu phạm vi', HttpStatus.UNAUTHORIZED);
+    }
+    let roles = Array.isArray(payload.roles)
+      ? payload.roles.filter((r): r is string => typeof r === 'string')
+      : ['employee'];
+    const rowRes = await this.db.query<EmployeeAuthRow>(
+      `
+        SELECT id, company_id, email, full_name, employee_code, job_title_key, custom_fields
+        FROM public.employees
+        WHERE id = $1::uuid AND archived_at IS NULL AND status = 'active'
+        LIMIT 1;
+      `,
+      [employeeId],
+    );
+    const row = rowRes.rows[0];
+    if (row) {
+      roles = await this.resolveRolesForEmployee(row);
     }
     return this.issueTokens({ tenantId, companyId, employeeId, email, roles, companyUuid });
   }

@@ -42,6 +42,38 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
     }
   });
 
+  it('accepts group CEO operating slug filter when JWT companyId is main (AC-INT-SW-02)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    for (const slug of ['holding', 'trsport', 'logistics', 'finance', 'services'] as const) {
+      const scope = resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: slug,
+      });
+      expect(scope).toEqual({ tenantId: 'xevn', companyId: 'main' });
+    }
+  });
+
+  it('rejects member CEO operating slug outside main bucket (ADR §5)', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xe-du-lich', companyId: 'holding' }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+      }),
+    );
+  });
+
   it('accepts UUID request company_id when token has slug + matching company_uuid (mobile attendance)', () => {
     const companyUuid = '85945933-632a-4bca-8fe9-3bbe8bc9294b';
     const token = signServiceJwt({
@@ -104,5 +136,20 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );
+  });
+
+  it('accepts group CEO pilot company_uuid on metadata submit (UF-HRM-11)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: holdingUuid,
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'main' });
   });
 });

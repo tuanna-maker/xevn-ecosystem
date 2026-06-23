@@ -62,6 +62,13 @@ type ServiceRequestRow = {
   updated_at: string;
 };
 
+/** MP-14 mobile parity — `request_type` mirrors canonical `service_type`. */
+export type ServiceRequestResponse = ServiceRequestRow & { request_type: string };
+
+export function mapServiceRequestRow(row: ServiceRequestRow): ServiceRequestResponse {
+  return { ...row, request_type: row.service_type };
+}
+
 @Injectable()
 export class OperationsService {
   constructor(
@@ -281,7 +288,7 @@ export class OperationsService {
       throw new ApiException('HRM-OPS-500', 'Failed to create service request', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     await this.fanout.onServiceRequestCreated(this.toServiceRequestRealtimePayload(row));
-    return row;
+    return mapServiceRequestRow(row);
   }
 
   async listServiceRequests(query: ListServiceRequestsQueryDto, authorization?: string, tenantId?: string) {
@@ -303,7 +310,7 @@ export class OperationsService {
       `,
       values,
     );
-    return res.rows;
+    return res.rows.map(mapServiceRequestRow);
   }
 
   async updateServiceRequest(
@@ -360,7 +367,7 @@ export class OperationsService {
     if (!res.rows[0]) {
       throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
     }
-    return res.rows[0];
+    return mapServiceRequestRow(res.rows[0]);
   }
 
   async deleteServiceRequest(
@@ -416,7 +423,7 @@ export class OperationsService {
     }
     const row = res.rows[0];
     await this.fanout.onServiceRequestDecided('approved', this.toServiceRequestRealtimePayload(row));
-    return row;
+    return mapServiceRequestRow(row);
   }
 
   async rejectServiceRequest(
@@ -450,7 +457,7 @@ export class OperationsService {
     }
     const row = res.rows[0];
     await this.fanout.onServiceRequestDecided('rejected', this.toServiceRequestRealtimePayload(row));
-    return row;
+    return mapServiceRequestRow(row);
   }
 
   private async countByScope(

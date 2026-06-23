@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-06-09T11:51:42.998Z",
+  "busPath": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\program\\AGENT_MESSAGE_BUS.md",
+  "closedAcFid": [
+    "AC-FID-03",
+    "AC-FID-04",
+    "AC-FID-05",
+    "AC-FID-06",
+    "AC-FID-07",
+    "AC-FID-08",
+    "AC-FID-09",
+    "AC-FID-10",
+    "AC-FID-11",
+    "AC-FID-12",
+    "AC-FID-13",
+    "AC-FID-14",
+    "AC-FID-15",
+    "AC-FID-16"
+  ],
+  "nextFidelityWave": null,
+  "dispatchRequired": [],
+  "inFlight": [
+    {
+      "workItemId": "P1-DEPLOY-NIPIO-R3",
+      "role": "devops",
+      "dispatchedAt": "2026-06-09T12:31:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "PCOMP-W7-BE-LEAVE-DOC",
+      "role": "dev-be",
+      "dispatchedAt": "2026-06-09T12:30:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "PCOMP-W7-MOB-BATCH-QA",
+      "role": "qa-device",
+      "dispatchedAt": "2026-06-09T12:30:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "PCOMP-W7-MOB-BATCH",
+      "role": "dev-mobile",
+      "dispatchedAt": "2026-06-09T12:02:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "P1-L0-W6-UAT-PACK",
+      "role": "devops",
+      "dispatchedAt": "2026-06-09T12:01:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "P1-G3-G6-ECOSYSTEM-R2",
+      "role": "qa",
+      "dispatchedAt": "2026-06-09T12:01:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "MOB-UX-17-QA",
+      "role": "qa-device",
+      "dispatchedAt": "2026-06-09T11:06:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "MOB-UX-16-QA-R2",
+      "role": "qa-device",
+      "dispatchedAt": "2026-06-09T10:36:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "MOB-UX-14-UNIFIED-QA-R6",
+      "role": "qa-device",
+      "dispatchedAt": "2026-06-09T10:03:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "MOB-UX-16ABC",
+      "role": "dev-mobile",
+      "dispatchedAt": "2026-06-09T10:01:00+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    }
+  ],
+  "defer": [
+    {
+      "id": "C-HRMQC-01",
+      "reason": "VPS :8088 retest — U32 local first; chỉ khi user yêu cầu deploy",
+      "owner": "devops",
+      "trigger": "user-request-deploy"
+    },
+    {
+      "id": "C-MOB-H9-DEVICE-01",
+      "reason": "adb device UI smoke — optional GWC",
+      "owner": "qa-device",
+      "trigger": "adb-available"
+    }
+  ],
+  "policy": "U37/U58 — PM chạy pm:idle:check (hoặc pm:scan:backlog) trước mỗi lượt; dispatchRequired>0 → Task ngay; exit 0 ≠ idle hợp lệ nếu bus INTAKE chưa DISPATCHED"
+}

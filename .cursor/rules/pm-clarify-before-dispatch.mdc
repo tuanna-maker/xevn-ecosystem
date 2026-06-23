@@ -1,0 +1,25 @@
+# PM — Clarify scope before dispatch (U35)
+
+## Khi bắt buộc hỏi user (trước Task / trước sửa `apps/**`)
+
+Yêu cầu **mơ hồ phạm vi**, không phải ưu tiên sprint:
+
+- «Toàn hệ thống» vs một module/route (HRM embed, Cài đặt, app standalone)
+- «Mặc định» vs «luôn» vs «cho phép user bật lại»
+- Layout/menu không chỉ rõ: rail ngoài / sidebar con / iframe nội dung
+- Breakpoint (mobile, ≥1536px auto-mở rail hiện tại)
+
+**U34** (không hỏi ưu tiên wave) **không** thay **U35** (phải hỏi khi scope chưa rõ).
+
+## Quy trình
+
+1. PM ghi bus `CLARIFY` + 2–4 câu hỏi cụ thể (có option A/B).
+2. **Không** dispatch dev-fe/dev-be; **không** tự `Write`/`StrReplace` `apps/**`.
+3. User trả lời → PM ghi `SCOPE-LOCK` (1 đoạn) → dispatch member kèm acceptance criteria.
+
+## Acceptance template (sau khi lock scope)
+
+- Phạm vi file/app
+- Rail ngoài: collapsed default + hover? + pin? + ≥2xl?
+- Sidebar con: width token (rem/px), truncate vs wrap
+- Màn kiểm: liệt kê ≥3 route (Cài đặt, HRM, Tổng quan)

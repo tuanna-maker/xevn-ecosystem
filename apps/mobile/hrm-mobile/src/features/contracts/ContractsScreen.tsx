@@ -1,11 +1,19 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
-import { RefreshControl, SectionList, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ProfileSectionCard } from '../../components/profile/ProfileSectionCard';
+import { ListShimmerPlaceholder } from '../../components/primitives/ListShimmerPlaceholder';
+import { ElevatedCard } from '../../components/ui/ElevatedCard';
+import { EmptyStateIllustration } from '../../components/ui/EmptyStateIllustration';
+import { EssRichListRow } from '../../components/ui/EssRichListRow';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError } from '../../integrations/mapApiError';
-import { vi } from '../../i18n/vi';
+import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { formatHrmDate } from '../../utils/formatHrm';
+import { resolveContractTypeLabel } from '../../utils/profileTabs';
+import { userFacingScopeError } from '../../utils/scopeError';
 
 type Contract = {
   id: string;
@@ -23,19 +31,20 @@ type Insurance = {
   status: string;
 };
 
-type Row = { id: string; title: string; subtitle: string };
-
 export function ContractsScreen() {
   const auth = useAuth();
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [insurance, setInsurance] = useState<Insurance[]>([]);
   const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     const companyId = auth.getAttendanceCompanyId();
     if (!companyId) {
-      setErr('Thiếu UUID công ty (membership company_uuid).');
+      setErr(userFacingScopeError('company'));
+      setContracts([]);
+      setInsurance([]);
       return;
     }
     const q = new URLSearchParams({ company_id: companyId });
@@ -65,78 +74,120 @@ export function ContractsScreen() {
     setErr(parts.join('\n'));
   }, [auth]);
 
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-
-  const onRefresh = useCallback(async () => {
+  const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await load();
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   }, [load]);
 
-  const sections = useMemo(
-    () =>
-      [
-        {
-          title: 'Hợp đồng',
-          data: contracts.map((item) => ({
-            id: item.id,
-            title: item.contract_type,
-            subtitle: `${item.start_date} → ${item.end_date} · ${item.status}`,
-          })),
-        },
-        {
-          title: 'Bảo hiểm sắp hết hạn (90 ngày)',
-          data: insurance.map((item) => ({
-            id: item.id,
-            title: item.provider,
-            subtitle: `${item.policy_number} · hết hạn ${item.expiry_date} · ${item.status}`,
-          })),
-        },
-      ] as { title: string; data: Row[] }[],
-    [contracts, insurance],
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      void refresh();
+    }, [refresh]),
   );
 
-  return (
-    <View style={styles.wrap}>
-      <Text style={styles.pageTitle}>UC-HRM-MOB-10 — {vi.contracts}</Text>
-      {err ? <Text style={styles.err}>{err}</Text> : null}
-      <SectionList
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 32 }}
-        sections={sections}
-        keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
-        renderSectionHeader={({ section: { title } }) => <Text style={styles.section}>{title}</Text>}
-        renderItem={({ item }) => (
-          <View style={styles.row}>
-            <Text style={styles.main}>{item.title}</Text>
-            <Text style={styles.sub}>{item.subtitle}</Text>
-          </View>
-        )}
-        ListEmptyComponent={<Text style={styles.empty}>Không có dữ liệu</Text>}
-      />
+  const isEmpty = contracts.length === 0 && insurance.length === 0;
+
+  const listHeader = (
+    <View style={styles.header}>
+      <Text style={styles.headerSub}>Hợp đồng lao động và bảo hiểm</Text>
     </View>
+  );
+
+  if (loading && isEmpty && !err) {
+    return (
+      <View style={styles.root}>
+        {listHeader}
+        <ListShimmerPlaceholder testID="contracts-list-shimmer" />
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView
+      style={styles.root}
+      contentContainerStyle={styles.list}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={() => void refresh()} tintColor={colors.primary} />
+      }
+    >
+      {listHeader}
+
+      {err ? (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>{err}</Text>
+        </View>
+      ) : null}
+
+      {isEmpty && !err ? (
+        <EmptyStateIllustration
+          testID="contracts-empty"
+          title="Chưa có dữ liệu hợp đồng"
+          hint="Hợp đồng và bảo hiểm sẽ hiển thị khi HR cập nhật."
+          icon="document-text-outline"
+        />
+      ) : null}
+
+      {contracts.length > 0 ? (
+        <ProfileSectionCard title="Hợp đồng" icon="document-text-outline" testID="contracts-section-contracts">
+          {contracts.map((item) => (
+            <ElevatedCard key={item.id} style={styles.rowCard}>
+              <EssRichListRow
+                icon="document-text"
+                iconTone="primary"
+                title={resolveContractTypeLabel(item.contract_type)}
+                subtitle={`${formatHrmDate(item.start_date)} → ${formatHrmDate(item.end_date)}`}
+                status={item.status}
+              />
+            </ElevatedCard>
+          ))}
+        </ProfileSectionCard>
+      ) : null}
+
+      {insurance.length > 0 ? (
+        <ProfileSectionCard title="Bảo hiểm sắp hết hạn (90 ngày)" icon="shield-checkmark-outline" testID="contracts-section-insurance">
+          {insurance.map((item) => (
+            <ElevatedCard key={item.id} style={styles.rowCard}>
+              <EssRichListRow
+                icon="shield-checkmark"
+                iconTone="accent"
+                title={item.provider}
+                subtitle={`${item.policy_number} · hết hạn ${formatHrmDate(item.expiry_date)}`}
+                status={item.status}
+              />
+            </ElevatedCard>
+          ))}
+        </ProfileSectionCard>
+      ) : null}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: '#0f172a', padding: 16 },
-  pageTitle: { color: '#f8fafc', fontSize: 18, fontWeight: '700', marginBottom: 8 },
-  err: { color: '#f87171', marginBottom: 8, fontSize: 13 },
-  section: { color: '#94a3b8', fontSize: 13, marginTop: 12, marginBottom: 6 },
-  row: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
+  root: { flex: 1, backgroundColor: colors.iosGroupedBackground },
+  header: { gap: 4, marginBottom: spacing.sm },
+  headerSub: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
   },
-  main: { color: '#e2e8f0', fontSize: 15 },
-  sub: { color: '#94a3b8', fontSize: 12, marginTop: 2 },
-  empty: { color: '#64748b', marginTop: 24 },
+  errorBanner: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: radius.card,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    padding: spacing.md,
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    color: '#991B1B',
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  list: { padding: spacing.md, paddingBottom: spacing.xl },
+  rowCard: { marginBottom: spacing.sm },
 });

@@ -2,7 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
 import { HrmSidebar } from './HrmSidebar';
 import { readHrmSidebarCollapsed, writeHrmSidebarCollapsed } from './hrmEmbedNavStorage';
-import { SETTINGS_RADIUS_CARD } from '../../pages/command-center/settings-form-pattern';
+import {
+  NAV_SUBSIDEBAR_WIDTH_CLASS,
+  NAV_SUBSIDEBAR_WIDTH_COLLAPSED_CLASS,
+  SETTINGS_RADIUS_CARD,
+} from '../../pages/command-center/settings-form-pattern';
 
 function useMaxMd(): boolean {
   const [maxMd, setMaxMd] = useState(() =>
@@ -75,7 +79,7 @@ export const HrmCollapsibleSidebar: React.FC = () => {
   return (
     <div
       className={`relative hidden h-full min-h-0 shrink-0 flex-col transition-[width] duration-200 ease-out md:flex ${
-        collapsed ? 'w-12 min-w-12 max-w-12' : 'w-44 min-w-44 max-w-44 lg:w-48 lg:min-w-48 lg:max-w-48'
+        collapsed ? NAV_SUBSIDEBAR_WIDTH_COLLAPSED_CLASS : NAV_SUBSIDEBAR_WIDTH_CLASS
       }`}
     >
       <button

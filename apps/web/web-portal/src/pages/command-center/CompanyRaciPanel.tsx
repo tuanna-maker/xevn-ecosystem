@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 import { MASTER_TENANT_ID } from '../../constants/tenant';
@@ -28,6 +28,13 @@ import {
   readRaciColumnBindings,
   writeRaciColumnBinding,
 } from '../../integrations/raciGovernanceHelpers';
+import {
+  buildPersistedMatrixSnapshot,
+  RACI_MATRIX_CELL_SAVE_DEBOUNCE_MS,
+  raciMatrixCellKey,
+  sanitizeRaciMatrixCellInput,
+  shouldPersistRaciMatrixCell,
+} from '../../integrations/raciMatrixCellPersist';
 import {
   SETTINGS_CONTROL_TEXT,
   SETTINGS_LABEL_CLASS,
@@ -72,6 +79,9 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
   const [loadFailed, setLoadFailed] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [savingCellKey, setSavingCellKey] = useState<string | null>(null);
+  const persistedCellsRef = useRef<Map<string, string>>(new Map());
+  const saveTimersRef = useRef<Map<string, number>>(new Map());
 
   const catalogSeedHint = useMemo(
     () => raciCatalogSeedHint(catalogTotal, catalogActivities),
@@ -100,9 +110,11 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
           companyIdHint,
         );
         setMatrixRows(matrix.rows);
+        persistedCellsRef.current = buildPersistedMatrixSnapshot(matrix.rows);
       } catch (e) {
         setMessage(e instanceof Error ? e.message : 'Không tải được ma trận RACI');
         setMatrixRows([]);
+        persistedCellsRef.current = new Map();
       } finally {
         setMatrixLoading(false);
       }
@@ -143,6 +155,16 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
     void loadMatrixForDomain(domainFilter);
   }, [domainFilter, loadMatrixForDomain, loading]);
 
+  useEffect(
+    () => () => {
+      for (const timer of saveTimersRef.current.values()) {
+        window.clearTimeout(timer);
+      }
+      saveTimersRef.current.clear();
+    },
+    [],
+  );
+
   useEffect(() => {
     if (subView !== 'bindings') return;
     let cancelled = false;
@@ -176,22 +198,75 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
     );
   }, [catalogActivities, domainFilter, search]);
 
-  const onCellBlur = async (row: RaciMatrixRow, colId: string, value: string) => {
-    const body = buildRaciMatrixCellBody(row.activity_id, colId, value);
-    const prev = row.matrix[colId] ?? '';
-    if (prev === body.raci_letters) return;
-    try {
-      await saveRaciMatrixCell(companyId, body, tenantIdHint, companyIdHint);
-      setMatrixRows((rows) =>
-        rows.map((r) =>
-          r.activity_id === row.activity_id
-            ? { ...r, matrix: { ...r.matrix, [colId]: body.raci_letters }, has_override: true }
-            : r,
-        ),
+  const persistMatrixCell = useCallback(
+    async (activityId: string, colId: string, rawValue: string) => {
+      const cellKey = raciMatrixCellKey(activityId, colId);
+      const persisted = persistedCellsRef.current.get(cellKey) ?? '';
+      if (!shouldPersistRaciMatrixCell(persisted, rawValue)) {
+        setSavingCellKey((current) => (current === cellKey ? null : current));
+        return;
+      }
+      const body = buildRaciMatrixCellBody(activityId, colId, rawValue);
+      setSavingCellKey(cellKey);
+      try {
+        await saveRaciMatrixCell(companyId, body, tenantIdHint, companyIdHint);
+        persistedCellsRef.current.set(cellKey, body.raci_letters);
+        setMatrixRows((rows) =>
+          rows.map((r) =>
+            r.activity_id === activityId
+              ? { ...r, matrix: { ...r.matrix, [colId]: body.raci_letters }, has_override: true }
+              : r,
+          ),
+        );
+        setMessage(null);
+      } catch (e) {
+        setMessage(e instanceof Error ? e.message : 'Lưu ô ma trận thất bại');
+      } finally {
+        setSavingCellKey((current) => (current === cellKey ? null : current));
+      }
+    },
+    [companyId, companyIdHint, tenantIdHint],
+  );
+
+  const scheduleMatrixCellSave = useCallback(
+    (activityId: string, colId: string, rawValue: string) => {
+      const cellKey = raciMatrixCellKey(activityId, colId);
+      const pending = saveTimersRef.current.get(cellKey);
+      if (pending) window.clearTimeout(pending);
+      saveTimersRef.current.set(
+        cellKey,
+        window.setTimeout(() => {
+          saveTimersRef.current.delete(cellKey);
+          void persistMatrixCell(activityId, colId, rawValue);
+        }, RACI_MATRIX_CELL_SAVE_DEBOUNCE_MS),
       );
-    } catch (e) {
-      setMessage(e instanceof Error ? e.message : 'Lưu ô ma trận thất bại');
-    }
+    },
+    [persistMatrixCell],
+  );
+
+  const flushMatrixCellSave = useCallback(
+    (activityId: string, colId: string, rawValue: string) => {
+      const cellKey = raciMatrixCellKey(activityId, colId);
+      const pending = saveTimersRef.current.get(cellKey);
+      if (pending) {
+        window.clearTimeout(pending);
+        saveTimersRef.current.delete(cellKey);
+      }
+      void persistMatrixCell(activityId, colId, rawValue);
+    },
+    [persistMatrixCell],
+  );
+
+  const onCellChange = (activityId: string, colId: string, rawValue: string) => {
+    const sanitized = sanitizeRaciMatrixCellInput(rawValue);
+    setMatrixRows((rows) =>
+      rows.map((r) =>
+        r.activity_id === activityId
+          ? { ...r, matrix: { ...r.matrix, [colId]: sanitized } }
+          : r,
+      ),
+    );
+    scheduleMatrixCellSave(activityId, colId, sanitized);
   };
 
   const onBindingChange = (colId: string, templateId: string) => {
@@ -360,19 +435,24 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
                       <span className="font-mono text-xs text-slate-500">{row.activity_code}</span>
                       <div className="text-[13px] leading-snug text-xevn-text">{row.name}</div>
                     </td>
-                    {RACI_ORG_COLUMNS.map((c) => (
-                      <td key={c.id} className="px-0.5 py-0.5 text-center">
-                        <input
-                          key={`${row.activity_id}-${c.id}-${row.matrix[c.id] ?? ''}`}
-                          defaultValue={row.matrix[c.id] ?? ''}
-                          onBlur={(e) => void onCellBlur(row, c.id, e.target.value)}
-                          maxLength={4}
-                          disabled={matrixLoading}
-                          className="w-11 rounded border border-xevn-border px-0.5 py-1 text-center text-xs uppercase disabled:opacity-50"
-                          aria-label={`${row.activity_code} ${c.orgUnit}`}
-                        />
-                      </td>
-                    ))}
+                    {RACI_ORG_COLUMNS.map((c) => {
+                      const cellKey = raciMatrixCellKey(row.activity_id, c.id);
+                      const cellValue = row.matrix[c.id] ?? '';
+                      return (
+                        <td key={c.id} className="px-0.5 py-0.5 text-center">
+                          <input
+                            value={cellValue}
+                            onChange={(e) => onCellChange(row.activity_id, c.id, e.target.value)}
+                            onBlur={(e) => flushMatrixCellSave(row.activity_id, c.id, e.target.value)}
+                            maxLength={4}
+                            disabled={matrixLoading}
+                            aria-busy={savingCellKey === cellKey}
+                            className="w-11 rounded border border-xevn-border px-0.5 py-1 text-center text-xs uppercase disabled:opacity-50 aria-busy:border-xevn-primary aria-busy:ring-1 aria-busy:ring-xevn-primary/40"
+                            aria-label={`${row.activity_code} ${c.orgUnit}`}
+                          />
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

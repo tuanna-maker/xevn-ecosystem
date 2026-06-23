@@ -22,6 +22,7 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     seedGroupEmployeeImportCatalog: jest.fn().mockResolvedValue({ seeded: true }),
     seedEmployeeProfileTemplate: jest.fn().mockResolvedValue({ seeded: true }),
     listExtensionRequests: jest.fn().mockResolvedValue([]),
+    getExtensionBatchDetail: jest.fn().mockResolvedValue({ batchId: 'batch-1', items: [] }),
     attachWorkflowToBatch: jest.fn().mockResolvedValue(undefined),
     upsertCatalogItem: jest.fn().mockResolvedValue({ upserted: 1 }),
     deleteCatalogItem: jest.fn().mockResolvedValue({ item_key: 'IT-1' }),
@@ -66,7 +67,7 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     expect(serviceMock.getOverview).toHaveBeenCalledWith('xevn', 'holding');
   });
 
-  it('D16 policy boundary: JWT main with explicit holding query is rejected', async () => {
+  it('D16 policy boundary: group CEO JWT main may narrow overview to holding partition (ADR §4)', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
       aud: 'xevn-api',
@@ -74,22 +75,118 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    expect(() =>
-      controller.overview(`Bearer ${token}`, 'test-key', 'xevn', undefined, 'holding'),
-    ).toThrow('companyId mismatches token scope');
-    expect(serviceMock.getOverview).not.toHaveBeenCalledWith('xevn', 'holding');
+    const res = await controller.overview(`Bearer ${token}`, 'test-key', 'xevn', undefined, 'holding');
+    expect(res.code).toBe('HRM-SET-200');
+    expect(serviceMock.getOverview).toHaveBeenCalledWith('xevn', 'holding');
   });
 
   it('XBOS-DM-HRM-10 / HRM-SC-02: sync-from-xbos returns HRM-SET-201', async () => {
     const res = await controller.syncFromXbos(undefined, 'test-key', 'xevn', 'holding');
     expect(res.code).toBe('HRM-SET-201');
-    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding');
+    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding', undefined);
   });
 
   it('EX-SA01-P0-01: sync-from-xbos maps group CEO main to holding partition', async () => {
     const res = await controller.syncFromXbos(undefined, 'test-key', 'xevn', 'main');
     expect(res.code).toBe('HRM-SET-201');
-    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding');
+    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding', undefined);
+  });
+
+  it('P1-WEB-ACCEPTANCE-BE-SYNC-401: sync-from-xbos passes Authorization to service layer', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    });
+    const res = await controller.syncFromXbos(`Bearer ${token}`, 'test-key', 'xevn', 'main');
+    expect(res.code).toBe('HRM-SET-201');
+    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding', `Bearer ${token}`);
+  });
+
+  it('D-W5-HRM-CAT-SYNC-01: appendExtension immediate without bulkSync uses approval path (U64 UF-09)', async () => {
+    const items = [{ code: 'qa_w5_direct', label: 'QA W5 direct' }];
+    const res = await controller.appendExtension(
+      'hrm_employee_personal_fields',
+      { items },
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+      'immediate',
+    );
+    expect(res.code).toBe('HRM-SET-209');
+    expect(serviceMock.submitExtensionItemsForApproval).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'hrm_employee_personal_fields',
+      items,
+      expect.objectContaining({ userId: undefined, email: undefined }),
+    );
+    expect(serviceMock.appendExtensionItems).not.toHaveBeenCalled();
+  });
+
+  it('D-W5-HRM-CAT-SYNC-01: appendExtension immediate+bulkSync writes directly', async () => {
+    const items = [{ code: 'qa_w5_bulk', label: 'QA W5 bulk' }];
+    const res = await controller.appendExtension(
+      'hrm_employee_personal_fields',
+      { items, bulkSync: true },
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+      'immediate',
+    );
+    expect(res.code).toBe('HRM-SET-202');
+    expect(serviceMock.appendExtensionItems).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'hrm_employee_personal_fields',
+      items,
+    );
+    expect(serviceMock.submitExtensionItemsForApproval).not.toHaveBeenCalled();
+  });
+
+  it('D-W5-HRM-CAT-SYNC-01: appendExtension approval path maps group CEO main to holding partition', async () => {
+    const items = [{ code: 'qa_w5_approval', label: 'QA W5 approval' }];
+    const res = await controller.appendExtension(
+      'hrm_employee_personal_fields',
+      { items },
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+    );
+    expect(res.code).toBe('HRM-SET-209');
+    expect(serviceMock.submitExtensionItemsForApproval).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'hrm_employee_personal_fields',
+      items,
+      expect.objectContaining({ userId: undefined, email: undefined }),
+    );
+    expect(serviceMock.appendExtensionItems).not.toHaveBeenCalled();
+  });
+
+  it('D-W5-HRM-CAT-SYNC-01: removal request maps group CEO main to holding partition', async () => {
+    const body = { code: 'legacy_field', reason: 'unused' };
+    const res = await controller.requestFieldRemoval(
+      'hrm_employee_personal_fields',
+      body,
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+    );
+    expect(res.code).toBe('HRM-SET-203');
+    expect(serviceMock.requestFieldRemoval).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'hrm_employee_personal_fields',
+      body,
+    );
   });
 
   it('HRM-SC-03 / XBOS-DM-HRM-03: append extension items returns HRM-SET-209', async () => {
@@ -124,10 +221,21 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
       { decision: 'approved', review_note: 'ok' },
       undefined,
       'test-key',
+      'xevn',
+      'holding',
+      undefined,
       'reviewer-1',
     );
     expect(res.code).toBe('HRM-SET-222');
-    expect(serviceMock.reviewExtensionBatch).toHaveBeenCalled();
+    expect(serviceMock.reviewExtensionBatch).toHaveBeenCalledWith(
+      'batch-1',
+      'approved',
+      'reviewer-1',
+      'ok',
+      'xevn',
+      'holding',
+      undefined,
+    );
   });
 
   it('HRM-SC-06 reject extension returns HRM-SET-212', async () => {
@@ -250,8 +358,56 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
       { workflowInstanceId: 'wf-1' },
       undefined,
       'test-key',
+      'xevn',
+      'holding',
     );
     expect(res.code).toBe('HRM-SET-221');
+    expect(serviceMock.attachWorkflowToBatch).toHaveBeenCalledWith(
+      'batch-1',
+      'wf-1',
+      'xevn',
+      'holding',
+      undefined,
+    );
+  });
+
+  it('PCOMP-W3-BE-05 / P0-4: batch GET maps group CEO main to holding catalog partition', async () => {
+    serviceMock.getExtensionBatchDetail.mockResolvedValueOnce({
+      batchId: 'batch-holding-1',
+      items: [{ company_id: 'holding', tenant_id: 'xevn' }],
+    });
+    const res = await controller.getBatch(
+      'batch-holding-1',
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+    );
+    expect(res.code).toBe('HRM-SET-220');
+    expect(serviceMock.getExtensionBatchDetail).toHaveBeenCalledWith(
+      'batch-holding-1',
+      'xevn',
+      'holding',
+      undefined,
+    );
+  });
+
+  it('PCOMP-W3-BE-05 / P0-4: batch GET propagates catalog scope headers for member partition', async () => {
+    const res = await controller.getBatch(
+      'batch-member-1',
+      undefined,
+      'test-key',
+      'xe-du-lich',
+      'main',
+      undefined,
+    );
+    expect(res.code).toBe('HRM-SET-220');
+    expect(serviceMock.getExtensionBatchDetail).toHaveBeenCalledWith(
+      'batch-member-1',
+      'xe-du-lich',
+      'main',
+      undefined,
+    );
   });
 
   it('blocks unauthorized settings-catalog access', () => {

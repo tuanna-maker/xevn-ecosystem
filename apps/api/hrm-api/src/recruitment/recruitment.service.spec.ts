@@ -79,6 +79,69 @@ describe('RecruitmentService', () => {
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-409' });
   });
 
+  it('updates holding requisition status when group CEO uses company_id=main', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
+        return { rows: [{ company_id: 'holding' }] } as never;
+      }
+      if (sql.includes('UPDATE public.job_requisitions')) {
+        return {
+          rows: [
+            {
+              id: requisitionId,
+              company_id: 'holding',
+              title: 'Backend Engineer',
+              department: 'Engineering',
+              employment_type: 'full_time',
+              status: 'on_hold',
+              created_at: '2026-04-23T00:00:00.000Z',
+              updated_at: '2026-06-07T00:00:00.000Z',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    const result = await service.updateJobRequisition(
+      requisitionId,
+      { status: 'on_hold' },
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
+
+    expect(result.status).toBe('on_hold');
+    expect(result.company_id).toBe('holding');
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('company_id = ANY'),
+      expect.arrayContaining(['on_hold', requisitionId, expect.any(Array)]),
+    );
+  });
+
+  it('throws deterministic error when requisition does not exist for status update', async () => {
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
+        return { rows: [] } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    await expect(
+      service.updateJobRequisition(
+        '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+        { status: 'closed' },
+        { company_id: 'main' },
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+  });
+
   it('returns paginated candidates with optional requisition filter', async () => {
     db.query
       .mockResolvedValueOnce({ rows: [] } as never)

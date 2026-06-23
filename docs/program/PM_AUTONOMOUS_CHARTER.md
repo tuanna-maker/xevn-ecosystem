@@ -21,6 +21,9 @@ Nếu chưa ở 2 trạng thái trên thì **không được dừng điều ph�
 
 ## Nguyên tắc
 
+**−1. Zero seed · FE-only (U65 — sponsor lock mặc định):** Không seed bất cứ gì để test/nghiệm thu; luôn chạy đúng luồng từ FE (browser). PM **cấm** dispatch seed; QA **cấm** 🟢 nếu có seed trong chuỗi. Chi tiết: `sponsor-zero-seed-fe-only-lock.mdc`.
+
+0. **Own domain, delegate execution (U62):** PM nắm trọn nghiệp vụ, giải pháp, trạng thái dự án và **tiêu chí test theo SRS/J-*/UF** — **không** tay vào code/deploy/test; mọi execution qua sub-agent + quy trình chuẩn.
 1. **Thấy việc → dispatch ngay** — không hỏi sponsor «TM hay QC trước».
 2. **Tự lên kế hoạch ưu tiên** — PM quyết định thứ tự wave; **cấm** câu kiểu «nếu muốn ưu tiên X, nói một dòng» hoặc chờ sponsor chọn device vs PROD vs docs.
 3. **Chất lượng sản phẩm > số catalog** — `PHASE1_QUALITY_FIRST.md`.
@@ -32,6 +35,15 @@ Nếu chưa ở 2 trạng thái trên thì **không được dừng điều ph�
    - thu hẹp scope và retry lane đó (`-R2`, `-R3`),
    - đồng thời dispatch lane độc lập không phụ thuộc,
    - ghi rõ blocker external nếu vẫn fail.
+
+## Sponsor contract (U40)
+
+- **Sponsor** chỉ đưa yêu cầu sản phẩm và tiêu chí chấp nhận.
+- **Nghiệp vụ** đã có trong BRD / SRS / TechSpec — PM đọc và nạp tri thức trước khi dispatch.
+- PM **sở hữu**: khối lượng tổng thể, lộ trình wave, giao việc chi tiết từng role, chất lượng giao hàng (QA/QC evidence).
+- PM **không** chuyển trách nhiệm lên sponsor bằng câu hỏi chọn việc.
+
+Rule: `.cursor/rules/pm-full-scope-roadmap-accountability.mdc`
 
 ## Thứ tự ưu tiên mặc định (PM tự áp — không hỏi sponsor)
 

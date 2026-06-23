@@ -14,6 +14,13 @@ export type ApiEnvelopeError = {
   timestamp?: string;
 };
 
+export type HrmAuthMembership = {
+  tenant_id: string;
+  company_id: string;
+  company_uuid: string;
+  employee_id: string;
+};
+
 export type HrmAuthConfig = {
   baseUrl: string;
   accessToken?: string;
@@ -24,4 +31,7 @@ export type HrmAuthConfig = {
   companyId?: string;
   /** Active membership legal-entity UUID — preferred for x-company-id. */
   companyUuid?: string;
+  /** Active viewer — used by home/summary rollup scope helpers. */
+  employeeId?: string;
+  memberships?: HrmAuthMembership[];
 };

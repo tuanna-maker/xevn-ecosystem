@@ -1,0 +1,99 @@
+{
+  "work_item_id": "PCOMP-W8-MOB-ESS-DASH-01-R3",
+  "date": "2026-06-08",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk (existing install — new APK sig corrupt)",
+  "apk_bytes": 67101921,
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "login": {
+    "work_item_id": "PCOMP-W7-MOB-DEVICE-LOGIN-01",
+    "login_method": "xevn_qa_login_deep_link",
+    "email": "uat.nv0001@xe.vn",
+    "api_base": "https://14-225-217-232.nip.io",
+    "home_reached": true,
+    "fatal_logcat": false,
+    "pass": true
+  },
+  "results": [
+    {
+      "jId": "J-MOB-19",
+      "pass": false,
+      "note": "header role+bell+greeting"
+    },
+    {
+      "jId": "J-MOB-20",
+      "pass": true,
+      "note": "date pill + stats; api502=false"
+    },
+    {
+      "jId": "J-MOB-21",
+      "pass": true,
+      "note": "4 stat cards or NV quick grid fallback"
+    },
+    {
+      "jId": "J-MOB-22",
+      "pass": true,
+      "note": "announcements; api502=false"
+    },
+    {
+      "id": "AC-ESS-19-02",
+      "pass": true,
+      "note": "chat stub"
+    },
+    {
+      "jId": "J-MOB-11",
+      "pass": false,
+      "note": "header bell (980,249) → inbox/notifications; Phê duyệt=false"
+    },
+    {
+      "jId": "J-MOB-06",
+      "pass": true,
+      "note": "Smart Hub tasks after scroll"
+    },
+    {
+      "jId": "J-MOB-07",
+      "pass": true,
+      "note": "mgr card present"
+    },
+    {
+      "jId": "J-MOB-08",
+      "pass": true,
+      "note": "birthday carousel"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": false,
+      "note": "whos_out section after scroll"
+    },
+    {
+      "jId": "J-MOB-12",
+      "pass": true,
+      "note": "carousel/portal banner"
+    },
+    {
+      "jId": "J-MOB-13",
+      "pass": true,
+      "note": "quick grid 2x4"
+    },
+    {
+      "jId": "J-MOB-14",
+      "pass": true,
+      "note": "tap (540,632) → detail; detail=true"
+    },
+    {
+      "jId": "J-MOB-15",
+      "pass": true,
+      "note": "composite ESS+portal+hub scroll"
+    }
+  ],
+  "essPass": false,
+  "essPassNote": "J-MOB-19 GWC PASS on qa-login-check.xml; J-MOB-20..22 PASS",
+  "hubPass": false,
+  "hubPassNote": "J-MOB-06 PASS; J-MOB-09 FAIL whos_out empty hidden",
+  "portalPass": false,
+  "portalPassNote": "J-MOB-11 FAIL bell→Settings; J-MOB-12..15 PASS",
+  "env502": false,
+  "pass": false,
+  "ack_status": "FAIL",
+  "pm_dispatch_hint": "dev-mobile: bell goNotifications→InAppNotifications (not Settings); whos_out seed≥1; rebuild signed qa-device APK"
+}

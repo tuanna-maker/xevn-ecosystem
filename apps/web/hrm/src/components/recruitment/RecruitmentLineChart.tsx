@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   AreaChart,
   Area,
@@ -7,23 +8,32 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import type { RecruitmentLineChartRow } from '@/lib/recruitmentDashboardAggregator';
 
-const data = [
-  { month: '01/2023', value: 15 },
-  { month: '02/2023', value: 22 },
-  { month: '03/2023', value: 28 },
-  { month: '04/2023', value: 45 },
-  { month: '05/2023', value: 58 },
-  { month: '06/2023', value: 42 },
-  { month: '07/2023', value: 35 },
-  { month: '08/2023', value: 50 },
-  { month: '09/2023', value: 38 },
-  { month: '10/2023', value: 32 },
-  { month: '11/2023', value: 25 },
-  { month: '12/2023', value: 30 },
-];
+interface RecruitmentLineChartProps {
+  data: RecruitmentLineChartRow[];
+  loading?: boolean;
+}
 
-export function RecruitmentLineChart() {
+export function RecruitmentLineChart({ data, loading = false }: RecruitmentLineChartProps) {
+  const { t } = useTranslation();
+
+  if (loading) {
+    return (
+      <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+        {t('common.loading')}
+      </div>
+    );
+  }
+
+  if (data.length === 0 || data.every((row) => row.value === 0)) {
+    return (
+      <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+        {t('recruitment.noCandidateData')}
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={200}>
       <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -34,14 +44,15 @@ export function RecruitmentLineChart() {
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-        <XAxis 
-          dataKey="month" 
-          tick={{ fontSize: 10 }} 
+        <XAxis
+          dataKey="month"
+          tick={{ fontSize: 10 }}
           className="text-muted-foreground"
         />
-        <YAxis 
-          tick={{ fontSize: 10 }} 
+        <YAxis
+          tick={{ fontSize: 10 }}
           className="text-muted-foreground"
+          allowDecimals={false}
         />
         <Tooltip
           contentStyle={{
@@ -50,6 +61,7 @@ export function RecruitmentLineChart() {
             borderRadius: '8px',
           }}
           labelStyle={{ color: 'hsl(var(--foreground))' }}
+          formatter={(value: number) => [`${value} ${t('recruitment.candidateUnit')}`, t('common.quantity')]}
         />
         <Area
           type="monotone"

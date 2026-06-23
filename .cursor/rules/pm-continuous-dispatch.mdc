@@ -1,0 +1,42 @@
+---
+description: PM quét backlog máy đọc được và dispatch bắt buộc — U37/U38
+alwaysApply: true
+---
+
+# PM continuous dispatch (U37/U38)
+
+## Vấn đề đã fix
+
+PM **không được** liệt kê «đang mở» rồi idle. Phải có **SoT máy** + **lệnh quét** trước mỗi lượt.
+
+## Bắt buộc mỗi lượt PM (tool call #1)
+
+```bash
+pnpm run pm:idle:check
+```
+
+(Hoặc `pnpm run pm:scan:backlog` — **không đủ một mình**; xem U58 `pm-idle-detection-and-recovery.mdc`.)
+
+- **exit 0** — sau khi idle-check đã quét bus INTAKE + subagentStop + MOB-* handoffs → có thể báo cáo ngắn.
+- **exit 2** — `dispatchRequired.length > 0` → **Task dispatch top 1–3 items** trong **cùng lượt** trước khi trả lời user.
+- Cập nhật tự động: `docs/program/PM_OPEN_BACKLOG.json` + `docs/program/TEAM_WORKING_NOW.md`
+
+## Cấm
+
+- Trả lời user «đang mở» / «kế tiếp» **không** kèm bus `DISPATCHED` hoặc `Task` cùng lượt.
+- Kết thúc bằng «nói một dòng nếu muốn…» (U37).
+- Tin `TEAM_WORKING_NOW.md` cũ hơn `PM_OPEN_BACKLOG.json` `generatedAt`.
+
+## Hook / auto-followup
+
+- `PM_ORCHESTRATION_MODE=STOP` mặc định (tránh loop billing).
+- Hook `pm-dispatch-hint.mjs` đọc `PM_OPEN_BACKLOG.json` item đầu khi inject followup.
+- User muốn vòng tự chạy: bật `RUN` + Composer vẫn phải gọi `Task` (hook chỉ inject text).
+
+## PM đọc thêm khi scan exit 2
+
+1. `PM_OPEN_BACKLOG.json` → `dispatchRequired[]`
+2. Ghi bus `pm -> {role} | DISPATCHED {work_item_id}`
+3. `Task` với entry/exit criteria từ `reason` + fidelity wave
+
+Charter: `docs/program/PM_AUTONOMOUS_CHARTER.md` · U38: `TEAM_USER_REQUIREMENTS.md`

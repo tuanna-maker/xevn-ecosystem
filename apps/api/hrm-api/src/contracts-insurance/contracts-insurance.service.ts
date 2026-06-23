@@ -3,8 +3,10 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  expandHrmTextCompanyIds,
   HrmListScope,
   HrmListScopeContext,
+  normalizePayrollListCompanyId,
   pushCompanyIdFilter,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
@@ -26,6 +28,7 @@ type ContractRow = {
   start_date: string;
   end_date: string;
   status: string;
+  notes?: string | null;
   created_at: string;
   updated_at: string;
   employee_name?: string | null;
@@ -76,6 +79,18 @@ export class ContractsInsuranceService {
     return Math.min(100, Math.trunc(parsed));
   }
 
+  /** Mobile sends legal company_uuid; map to JWT slug + expand slug/uuid TEXT for list filters. */
+  private resolveContractsListScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    scopeContext?: HrmListScopeContext,
+  ): { scope: HrmListScope; expandedCompanyIds: string[] } {
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
+    const expandedCompanyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    return { scope, expandedCompanyIds };
+  }
+
   /** J-HRM-01/04: list rows only when employee_id resolves like GET /employees/{id}. */
   private pushResolvableEmployeeScope(
     filters: string[],
@@ -83,23 +98,28 @@ export class ContractsInsuranceService {
     scope: HrmListScope,
     employeeIdColumn: string,
   ): void {
-    if (scope.masterTenantPartition || scope.memberTenantId) {
-      pushWorkforceEmployeeScopeFilter(filters, values, scope, employeeIdColumn);
-    }
+    pushWorkforceEmployeeScopeFilter(filters, values, scope, employeeIdColumn);
   }
 
   private qualifyContractInsuranceFilters(
     filters: string[],
     tableAlias: 'ec' | 'ir',
   ): string[] {
+    const unqualifiedColumn = (column: string) =>
+      new RegExp(`(?<!${tableAlias}\\.)\\b${column}\\b`, 'g');
+
     return filters.map((clause) => {
       if (clause.includes('FROM public.employees')) {
-        return clause;
+        // Workforce scope IN-subquery — qualify only the outer employee_id predicate.
+        return clause.replace(
+          new RegExp(`^(\\s*)(?<!${tableAlias}\\.)employee_id\\b`),
+          `$1${tableAlias}.employee_id`,
+        );
       }
       return clause
-        .replace(/\bcompany_id\b/g, `${tableAlias}.company_id`)
-        .replace(/\bemployee_id\b/g, `${tableAlias}.employee_id`)
-        .replace(/\bstatus\b/g, `${tableAlias}.status`);
+        .replace(unqualifiedColumn('company_id'), `${tableAlias}.company_id`)
+        .replace(unqualifiedColumn('employee_id'), `${tableAlias}.employee_id`)
+        .replace(unqualifiedColumn('status'), `${tableAlias}.status`);
     });
   }
 
@@ -145,6 +165,10 @@ export class ContractsInsuranceService {
     await this.db.query(`
       ALTER TABLE public.employee_contracts
       ADD COLUMN IF NOT EXISTS contract_code TEXT NULL;
+    `);
+    await this.db.query(`
+      ALTER TABLE public.employee_contracts
+      ADD COLUMN IF NOT EXISTS notes TEXT NULL;
     `);
     await this.db.query(`
       ALTER TABLE public.employee_contracts
@@ -198,9 +222,9 @@ export class ContractsInsuranceService {
     const employeeId = payload.employee_id ?? (await this.resolveEmployeeId(payload.employee_name, authorization, companyId));
     const res = await this.db.query<ContractRow>(
       `INSERT INTO public.employee_contracts
-        (id, company_id, employee_id, contract_code, contract_type, start_date, end_date, status)
-       VALUES ($1, $2, $3::uuid, $4, $5, $6::date, $7::date, 'active')
-       RETURNING id, company_id, employee_id, contract_code, contract_type, start_date, end_date, status, created_at, updated_at;`,
+        (id, company_id, employee_id, contract_code, contract_type, start_date, end_date, status, notes)
+       VALUES ($1, $2, $3::uuid, $4, $5, $6::date, $7::date, 'active', $8)
+       RETURNING id, company_id, employee_id, contract_code, contract_type, start_date, end_date, status, notes, created_at, updated_at;`,
       [
         randomUUID(),
         companyId,
@@ -209,6 +233,7 @@ export class ContractsInsuranceService {
         payload.contract_type.trim(),
         payload.start_date,
         payload.end_date,
+        payload.notes?.trim() ?? null,
       ],
     );
     return res.rows[0];
@@ -278,15 +303,19 @@ export class ContractsInsuranceService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const { scope, expandedCompanyIds } = this.resolveContractsListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const days = query.days ?? 30;
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, expandedCompanyIds);
     this.pushResolvableEmployeeScope(filters, values, scope, 'employee_id');
     values.push(days);
     const res = await this.db.query<ContractRow>(
-      `SELECT id, company_id, employee_id, contract_type, start_date, end_date, status, created_at, updated_at
+      `SELECT id, company_id, employee_id, contract_type, start_date, end_date, status, notes, created_at, updated_at
        FROM public.employee_contracts
        WHERE ${filters.join(' AND ')}
          AND end_date <= (CURRENT_DATE + ($${values.length}::text || ' days')::interval)::date
@@ -302,20 +331,24 @@ export class ContractsInsuranceService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const { scope, expandedCompanyIds } = this.resolveContractsListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size, 20);
     const offset = (page - 1) * pageSize;
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
-    this.pushResolvableEmployeeScope(filters, values, scope, 'ec.employee_id');
+    pushCompanyIdFilter(filters, values, expandedCompanyIds);
+    this.pushResolvableEmployeeScope(filters, values, scope, 'employee_id');
     if (query.employee_id) {
-      filters.push(`ec.employee_id = $${values.length + 1}::uuid`);
+      filters.push(`employee_id = $${values.length + 1}::uuid`);
       values.push(query.employee_id);
     }
     if (query.status) {
-      filters.push(`ec.status = $${values.length + 1}`);
+      filters.push(`status = $${values.length + 1}`);
       values.push(query.status);
     }
     const ecFilters = this.qualifyContractInsuranceFilters(filters, 'ec');
@@ -330,6 +363,7 @@ export class ContractsInsuranceService {
           ec.start_date,
           ec.end_date,
           ec.status,
+          ec.notes,
           ec.created_at,
           ec.updated_at,
           e.full_name AS employee_name,
@@ -356,11 +390,15 @@ export class ContractsInsuranceService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, scopeContext);
+    const { scope, expandedCompanyIds } = this.resolveContractsListScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
     const filters: string[] = ['ec.id = $1::uuid'];
     const values: unknown[] = [contractId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
-    this.pushResolvableEmployeeScope(filters, values, scope, 'ec.employee_id');
+    pushCompanyIdFilter(filters, values, expandedCompanyIds);
+    this.pushResolvableEmployeeScope(filters, values, scope, 'employee_id');
     const ecFilters = this.qualifyContractInsuranceFilters(filters, 'ec');
     const res = await this.db.query<ContractRow>(
       `
@@ -373,6 +411,7 @@ export class ContractsInsuranceService {
           ec.start_date,
           ec.end_date,
           ec.status,
+          ec.notes,
           ec.created_at,
           ec.updated_at,
           e.full_name AS employee_name,
@@ -416,21 +455,25 @@ export class ContractsInsuranceService {
     ) {
       throw new ApiException('HRM-CON-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
     }
-    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const existing = await this.loadContractScopeRow(contractId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-CON-404',
       mismatchCode: 'HRM-CON-409',
     });
-    const filters: string[] = ['id = $5::uuid'];
+    const notesProvided = payload.notes !== undefined;
+    const filters: string[] = ['id = $7::uuid'];
     const values: unknown[] = [
       payload.contract_type?.trim() ?? null,
       payload.start_date ?? null,
       payload.end_date ?? null,
       payload.status ?? null,
+      notesProvided ? (payload.notes?.trim() ?? null) : null,
+      notesProvided,
       contractId,
     ];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, expandHrmTextCompanyIds(scope, authorization, requestedCompanyId));
     const res = await this.db.query<ContractRow>(
       `
         UPDATE public.employee_contracts
@@ -438,9 +481,10 @@ export class ContractsInsuranceService {
             start_date = COALESCE($2::date, start_date),
             end_date = COALESCE($3::date, end_date),
             status = COALESCE($4, status),
+            notes = CASE WHEN $6::boolean THEN $5 ELSE notes END,
             updated_at = NOW()
         WHERE ${filters.join(' AND ')}
-        RETURNING id, company_id, employee_id, contract_type, start_date, end_date, status, created_at, updated_at;
+        RETURNING id, company_id, employee_id, contract_code, contract_type, start_date, end_date, status, notes, created_at, updated_at;
       `,
       values,
     );
@@ -452,7 +496,8 @@ export class ContractsInsuranceService {
 
   async deleteContract(contractId: string, requestedCompanyId: string, authorization?: string) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const existing = await this.loadContractScopeRow(contractId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-CON-404',
@@ -460,7 +505,7 @@ export class ContractsInsuranceService {
     });
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [contractId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, expandHrmTextCompanyIds(scope, authorization, requestedCompanyId));
     const res = await this.db.query<{ id: string }>(
       `DELETE FROM public.employee_contracts WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
@@ -473,11 +518,11 @@ export class ContractsInsuranceService {
 
   async listExpiringInsurance(query: ListExpiringQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id);
+    const { scope, expandedCompanyIds } = this.resolveContractsListScope(authorization, query.company_id);
     const days = query.days ?? 30;
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, expandedCompanyIds);
     this.pushResolvableEmployeeScope(filters, values, scope, 'employee_id');
     values.push(days);
     const res = await this.db.query<InsuranceRow>(
@@ -541,20 +586,24 @@ export class ContractsInsuranceService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const { scope, expandedCompanyIds } = this.resolveContractsListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size, 20);
     const offset = (page - 1) * pageSize;
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
-    this.pushResolvableEmployeeScope(filters, values, scope, 'ir.employee_id');
+    pushCompanyIdFilter(filters, values, expandedCompanyIds);
+    this.pushResolvableEmployeeScope(filters, values, scope, 'employee_id');
     if (query.employee_id) {
-      filters.push(`ir.employee_id = $${values.length + 1}::uuid`);
+      filters.push(`employee_id = $${values.length + 1}::uuid`);
       values.push(query.employee_id);
     }
     if (query.status) {
-      filters.push(`ir.status = $${values.length + 1}`);
+      filters.push(`status = $${values.length + 1}`);
       values.push(query.status);
     }
     const irFilters = this.qualifyContractInsuranceFilters(filters, 'ir');

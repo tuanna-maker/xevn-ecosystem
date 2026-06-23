@@ -1,12 +1,18 @@
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+import { DetailRow } from '../../components/ui/DetailRow';
+import { StatusBadge } from '../../components/ui/StatusBadge';
+import { SurfaceCard } from '../../components/ui/SurfaceCard';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
+import { formatHrmError } from '../../integrations/mapApiError';
 import type { RequestsStackParamList } from '../../navigation/types';
+import { resolveAttendanceChangeTypeVi } from '../../utils/attendanceUpdateTypes';
+import { formatHrmDate, sanitizeSeedDisplay } from '../../utils/formatHrm';
+import { userFacingScopeError } from '../../utils/scopeError';
 
 type Req = {
   id: string;
@@ -24,12 +30,15 @@ export function UpdateRequestDetailScreen() {
   const route = useRoute<RouteProp<RequestsStackParamList, 'UpdateRequestDetail'>>();
   const [row, setRow] = useState<Req | null>(null);
   const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     void (async () => {
+      setLoading(true);
       const cid = auth.getAttendanceCompanyId();
       if (!cid) {
-        setErr('Thiếu UUID công ty.');
+        setErr(userFacingScopeError('company'));
+        setLoading(false);
         return;
       }
       const q = new URLSearchParams({ company_id: cid });
@@ -40,46 +49,42 @@ export function UpdateRequestDetailScreen() {
       });
       if (!res.ok) {
         setErr(formatHrmError(res));
+        setLoading(false);
         return;
       }
       const found = readListRows<Req>(res.data).find((x) => x.id === route.params.id) ?? null;
       setRow(found);
       if (!found) setErr('Không tìm thấy đơn công.');
+      setLoading(false);
     })();
   }, [auth, route.params.id]);
 
-  if (err) return <Text style={styles.err}>{err}</Text>;
-  if (!row) return <Text style={styles.muted}>Đang tải…</Text>;
-
   return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
-      <Text style={styles.title}>{row.update_type}</Text>
-      <Row label="Nhân viên" value={row.employee_name} />
-      <Row label="Ngày công" value={row.attendance_date} />
-      <Row label="Trạng thái" value={statusLabel(row.status)} />
-      <Row label="Lý do" value={row.reason} />
-      {row.approver_name ? <Row label="Người duyệt" value={row.approver_name} /> : null}
-      {row.rejected_reason ? <Row label="Lý do từ chối" value={row.rejected_reason} /> : null}
-    </ScrollView>
+    <AppScreenLayout
+      title={row ? resolveAttendanceChangeTypeVi(row.update_type) : 'Đơn công'}
+      subtitle={row?.employee_name}
+      loading={loading && !row && !err}
+      error={err || undefined}
+      empty={!loading && !row && !err}
+      emptyMessage="Không tìm thấy đơn công"
+      grouped
+      scroll
+    >
+      {row ? (
+        <>
+          <StatusBadge status={row.status} />
+
+          <SurfaceCard title="Thông tin">
+            <DetailRow label="Nhân viên" value={row.employee_name} />
+            <DetailRow label="Ngày công" value={formatHrmDate(row.attendance_date)} />
+            <DetailRow label="Lý do" value={sanitizeSeedDisplay(row.reason)} />
+            {row.approver_name ? <DetailRow label="Người duyệt" value={row.approver_name} /> : null}
+            {row.rejected_reason ? (
+              <DetailRow label="Lý do từ chối" value={sanitizeSeedDisplay(row.rejected_reason)} />
+            ) : null}
+          </SurfaceCard>
+        </>
+      ) : null}
+    </AppScreenLayout>
   );
 }
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a' },
-  pad: { padding: 16, gap: 12 },
-  title: { color: '#f8fafc', fontSize: 20, fontWeight: '700' },
-  row: { gap: 4 },
-  label: { color: '#94a3b8', fontSize: 12 },
-  value: { color: '#e2e8f0', fontSize: 15 },
-  err: { color: '#f87171', padding: 16 },
-  muted: { color: '#64748b', padding: 16 },
-});

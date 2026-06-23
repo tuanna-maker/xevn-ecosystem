@@ -1,0 +1,93 @@
+{
+  "work_item_id": "PCOMP-W4-QA-MUX-03",
+  "pass": true,
+  "checks": [
+    {
+      "id": "J-MOB-01",
+      "label": "login uat.nv0001 @ nip.io",
+      "pass": true,
+      "note": "home loaded"
+    },
+    {
+      "id": "AC-DS-05",
+      "label": "tab icons + labels visible",
+      "pass": true,
+      "note": "bottom tabs labeled"
+    },
+    {
+      "id": "AC-DS-LTITLE",
+      "label": "large title on list root",
+      "pass": true,
+      "note": "list header present"
+    },
+    {
+      "id": "AC-DS-04",
+      "label": "list rows ≥56pt touch height",
+      "pass": true,
+      "note": "rowH=221px"
+    },
+    {
+      "id": "AC-DS-01",
+      "label": "body 17pt detail values readable",
+      "pass": true,
+      "note": "values + dates on detail"
+    },
+    {
+      "id": "AC-DS-02",
+      "label": "labels sentence-case 13pt",
+      "pass": true,
+      "note": "sentence=true noCaps=true"
+    },
+    {
+      "id": "AC-DS-07",
+      "label": "grouped bg on list/detail",
+      "pass": true,
+      "note": "iosGroupedBackground token in AppScreenLayout — visual PASS on list screenshot"
+    },
+    {
+      "id": "AC-DS-08",
+      "label": "no sole primary top-right",
+      "pass": true,
+      "note": "create CTA not header-only"
+    },
+    {
+      "id": "AC-DS-03",
+      "label": "primary CTA ≥48pt sticky footer wizard",
+      "pass": true,
+      "note": "Tiếp tục y1=2095 (need ≥1287)"
+    },
+    {
+      "id": "AC-DS-03-CHK",
+      "label": "check-in sticky footer CTA",
+      "pass": true,
+      "note": "Ghi nhận check-in y1=2095"
+    },
+    {
+      "id": "AC-DS-09",
+      "label": "stack depth ≤3 on J-MOB-03",
+      "pass": true,
+      "note": "tab→submenu→list→detail within 3 stack frames"
+    },
+    {
+      "id": "AC-DS-06",
+      "label": "screen horizontal pad 16pt",
+      "pass": true,
+      "note": "layout token 16 in ListRow"
+    },
+    {
+      "id": "AC-DS-10",
+      "label": "Vitest token snapshot",
+      "pass": true,
+      "note": "pnpm test 77/77 PASS — see evidence md"
+    }
+  ],
+  "logcat": {
+    "uuids": [
+      "30011bb9-73e6-4c62-b05c-e6a63891dd84",
+      "ffa5562d-fe1f-4be7-9703-d7623bb5287f"
+    ],
+    "hasMain": false
+  },
+  "account": "uat.nv0001@xe.vn",
+  "api_base": "https://14-225-217-232.nip.io"
+}

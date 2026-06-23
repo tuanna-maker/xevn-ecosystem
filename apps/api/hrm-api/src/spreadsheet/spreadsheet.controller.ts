@@ -132,6 +132,8 @@ export class SpreadsheetController {
       mimetype: file.mimetype,
       originalname: file.originalname,
       companyId: scope.companyId,
+      authorization,
+      tenantId: scope.tenantId,
     });
     return ok(result, 'SHEET-201', 'Import committed');
   }

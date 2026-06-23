@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-06-07T08:32:22.059Z",
+  "probes": {
+    "J-HRM-INT-02": {
+      "pass": true,
+      "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+      "status": 200,
+      "code": "HRM-CON-200"
+    },
+    "J-HRM-INT-05": {
+      "pass": true,
+      "slug": "holding",
+      "tabs": {
+        "employees": {
+          "status": 200,
+          "code": "HRM-EMP-200"
+        },
+        "contracts": {
+          "status": 200,
+          "code": "HRM-CON-200"
+        },
+        "insurance": {
+          "status": 200,
+          "code": "HRM-CON-200"
+        },
+        "attendance": {
+          "status": 200,
+          "code": "HRM-ATT-200"
+        }
+      },
+      "count409": 0
+    }
+  },
+  "summary": {
+    "fail": 0,
+    "pass": true
+  }
+}

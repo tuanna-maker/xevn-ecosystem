@@ -12,9 +12,11 @@ import { HrmDbService } from '../db/hrm-db.service';
 import { CreateCandidateDto } from './dto/create-candidate.dto';
 import { CreateJobRequisitionDto } from './dto/create-job-requisition.dto';
 import { ListCandidatesQueryDto } from './dto/list-candidates.query.dto';
+import { GetJobRequisitionQueryDto } from './dto/get-job-requisition.query.dto';
 import { ListJobRequisitionsQueryDto } from './dto/list-job-requisitions.query.dto';
 import { ScheduleInterviewDto } from './dto/schedule-interview.dto';
 import { UpdateInterviewStatusDto } from './dto/update-interview-status.dto';
+import { UpdateJobRequisitionDto } from './dto/update-job-requisition.dto';
 
 type JobRequisitionRow = {
   id: string;
@@ -161,6 +163,63 @@ export class RecruitmentService {
       [...values, pageSize, offset],
     );
     return { total: Number(countRes.rows[0]?.total ?? 0), page, page_size: pageSize, data: res.rows };
+  }
+
+  async getJobRequisitionById(
+    requisitionId: string,
+    query: GetJobRequisitionQueryDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    await this.ensureSchema();
+    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const filters: string[] = ['id = $1::uuid'];
+    const values: unknown[] = [requisitionId];
+    pushCompanyIdFilter(filters, values, scope.companyIds);
+    const res = await this.db.query<JobRequisitionRow>(
+      `SELECT id, company_id, title, department, employment_type, status, created_at, updated_at
+       FROM public.job_requisitions
+       WHERE ${filters.join(' AND ')}
+       LIMIT 1;`,
+      values,
+    );
+    if (!res.rows[0]) {
+      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+    }
+    return res.rows[0];
+  }
+
+  async updateJobRequisition(
+    requisitionId: string,
+    payload: UpdateJobRequisitionDto,
+    query: GetJobRequisitionQueryDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    await this.ensureSchema();
+    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const peek = await this.db.query<{ company_id: string }>(
+      `SELECT company_id::text AS company_id FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1;`,
+      [requisitionId],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-REC-404',
+      mismatchCode: 'HRM-REC-409',
+    });
+    const values: unknown[] = [payload.status, requisitionId];
+    const filters: string[] = ['id = $2::uuid'];
+    pushCompanyIdFilter(filters, values, scope.companyIds);
+    const res = await this.db.query<JobRequisitionRow>(
+      `UPDATE public.job_requisitions
+       SET status = $1, updated_at = NOW()
+       WHERE ${filters.join(' AND ')}
+       RETURNING id, company_id, title, department, employment_type, status, created_at, updated_at;`,
+      values,
+    );
+    if (!res.rows[0]) {
+      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+    }
+    return res.rows[0];
   }
 
   async createCandidate(payload: CreateCandidateDto, authorization?: string) {

@@ -1,0 +1,77 @@
+{
+  "work_item_id": "D-MOB-DEPLOY-PARITY-01",
+  "base": "https://14-225-217-232.nip.io",
+  "generatedAt": "2026-06-09T02:23:54.809Z",
+  "metrics_status": 200,
+  "personas": [
+    {
+      "email": "uat.nv0001@xe.vn",
+      "login_ok": true,
+      "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+      "default_company_id": "holding",
+      "probes": [
+        {
+          "api": "GET /attendance/leave-requests?company_id=holding",
+          "status": 200,
+          "code": "HRM-LEAVE-200",
+          "pass": true
+        },
+        {
+          "api": "GET /attendance/leave-balance?company_id=holding",
+          "status": 200,
+          "code": "HRM-LEAVE-BAL-200",
+          "available_days": 8,
+          "used_days": 3,
+          "pass": true
+        },
+        {
+          "api": "GET /home/summary?company_id=holding&include=tasks,manager_pending",
+          "status": 200,
+          "code": "HRM-HOME-200",
+          "tasks_total": 11,
+          "manager_total": 1,
+          "pass": true
+        }
+      ],
+      "pass": 3,
+      "total": 3,
+      "verdict": "PASS"
+    },
+    {
+      "email": "uat.nv0002@xe.vn",
+      "login_ok": true,
+      "employee_id": "293b5900-8f99-4a97-878b-26270fb01827",
+      "default_company_id": "trsport",
+      "probes": [
+        {
+          "api": "GET /attendance/leave-requests?company_id=holding",
+          "status": 409,
+          "code": "SCOPE_CONTEXT_MISMATCH",
+          "pass": false
+        },
+        {
+          "api": "GET /attendance/leave-balance?company_id=holding",
+          "status": 409,
+          "code": "SCOPE_CONTEXT_MISMATCH",
+          "pass": false
+        },
+        {
+          "api": "GET /home/summary?company_id=holding&include=tasks,manager_pending",
+          "status": 200,
+          "code": "HRM-HOME-200",
+          "tasks_total": 0,
+          "manager_total": 0,
+          "pass": true
+        }
+      ],
+      "pass": 1,
+      "total": 3,
+      "verdict": "FAIL"
+    }
+  ],
+  "summary": {
+    "verdict": "FAIL",
+    "personas_pass": 1,
+    "personas_total": 2
+  }
+}

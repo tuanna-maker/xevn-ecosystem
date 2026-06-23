@@ -45,9 +45,9 @@ interface BrandingConfig {
 const STORAGE_KEY = 'branding_config';
 
 const getDefaultBranding = (): BrandingConfig => ({
-  logoUrl: null,
-  systemName: 'UNICOM HRM',
-  systemNameShort: 'UC',
+  logoUrl: '/xevn-logo.png',
+  systemName: 'XeVN HRM',
+  systemNameShort: 'XeVN',
 });
 
 

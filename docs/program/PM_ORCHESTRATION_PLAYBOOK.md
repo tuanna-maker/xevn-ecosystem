@@ -31,6 +31,20 @@
 - [ ] Ghi bus + gọi Task subagent
 - [ ] Cập nhật `PHASE1_MASTER_TODO.md` khi có PASS_TO_PM / QC GO
 
+### 1.5 PM full-scope roadmap (U40 — sponsor chỉ đưa yêu cầu sản phẩm)
+
+**Rule:** `.cursor/rules/pm-full-scope-roadmap-accountability.mdc`
+
+Trước mỗi chương trình lớn hoặc incident user:
+
+1. **Nạp tri thức** — đọc BRD/SRS/TechSpec + ADR liên quan (không hỏi lại nghiệp vụ đã spec).
+2. **Bao quát** — liệt kê gap classes (data, scope, API, UI mock, journey) trong program doc.
+3. **Lộ trình** — W1 governance (SA/BA) → W2 execution (Dev) → W3 FE/integrate → W4 QA persona/J-* → W5 QC.
+4. **Giao việc** — mỗi wave: bus `DISPATCHED` + `Task` với `work_item_id`, spec_ref, evidence path.
+5. **Chất lượng** — PM chịu trách nhiệm gate; residual → dispatch ngay; báo sponsor **đã làm / đang chạy**, không «bạn muốn…».
+
+Program mẫu: `docs/program/HRM_XBOS_PRODUCT_INTEGRITY_PROGRAM.md`.
+
 ---
 
 ## 2. Checklist — sau mỗi subagent

@@ -3,6 +3,7 @@
  */
 
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from "node:path";
 
 const INBOX_SEG = [".cursor", "team", "inbox", "subagent-stop.jsonl"];
@@ -139,7 +140,32 @@ function deriveP100NextFromBus(busTail) {
 }
 
 /** Trả về { workItemId, role, actionVi, doneWhenVi, fromRole, fromTitle } */
-export function deriveDispatchHint({ busTail, inboxRec }) {
+export function deriveDispatchHint({ busTail, inboxRec, root: rootArg }) {
+  const root = rootArg || process.cwd();
+  let backlog = null;
+  try {
+    const p = path.join(root, "docs", "program", "PM_OPEN_BACKLOG.json");
+    const st = fsSync.statSync(p);
+    if (Date.now() - st.mtimeMs < 30 * 60 * 1000) {
+      backlog = JSON.parse(fsSync.readFileSync(p, "utf8"));
+    }
+  } catch {
+    /* stale or missing */
+  }
+
+  if (backlog?.dispatchRequired?.length) {
+    const top = backlog.dispatchRequired[0];
+    return {
+      workItemId: top.workItemId,
+      role: top.role,
+      actionVi: top.reason,
+      doneWhenVi: "Chạy pm:scan:backlog sau dispatch; Task trước bus DISPATCHED.",
+      fromRole: String(inboxRec?.subagent_type || "pm").toLowerCase(),
+      fromTitle: inboxRec?.title || "",
+      closed: false,
+    };
+  }
+
   const role = String(inboxRec?.subagent_type || "").toLowerCase();
   const title = String(inboxRec?.title || "").toLowerCase();
   const bus = busTail || "";

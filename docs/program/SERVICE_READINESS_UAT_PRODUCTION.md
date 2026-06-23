@@ -1,7 +1,7 @@
 # Sẵn sàng dịch vụ — UAT & Production
 
-**Cập nhật:** 2026-06-01  
-**Mục tiêu sync:** chốt C-W12QC-07 theo W12 QC FINAL + W13 QA PASS, bỏ baseline cũ kiểu "111 planned".
+**Cập nhật:** 2026-06-07 (addendum §7 — product completion W5 QC GWC)  
+**Mục tiêu sync:** Product Completion ~90% localhost GWC (`PCOMP-W5-QC-01`); W6 sponsor UAT pending; **không** promote PROD columns.
 
 ---
 
@@ -56,3 +56,46 @@
 - `docs/ops/evidence/p1-p100-w13-do-prod-r2-20260601.md`
 - `docs/qa/evidence/p1-p100-w14-qc-prod-20260601.md`
 - `docs/ops/evidence/p1-p100-w14-do-domain-01-20260601.md`
+
+---
+
+## 6) Addendum — program gate & journey sync (2026-06-05)
+
+**work_item_id:** `P1-PHASE1-BA-JOURNEY-SYNC-06` · **condition closed:** **C-RBACQC-05**
+
+| Check | Verdict | Notes |
+|-------|---------|-------|
+| **C-RBACQC-03** strict gate on nip.io | **CLOSED** | `phase1:gate --strict` exit **0**; matrix **244/245**; QC [`p1-phase1-qc-program-gate-03-20260605.md`](../qa/evidence/p1-phase1-qc-program-gate-03-20260605.md) |
+| **J-HRM-02** SoT (`PROGRAM_JOURNEY_MAP.md`) | **Concurred** | API PASS + group CEO C/U/D nip.io; browser L2.5 **GWC** (**C-EMPGRPQC-01** optional) |
+| **J-XBOS-01** SoT | **Concurred** | API L2.5 PASS; browser GWC optional |
+| vs [`USER_SERVICE_STATUS.md`](./USER_SERVICE_STATUS.md) | **No contradiction** | Both: UAT HTTPS slice PASS for group CEO; **Production = chưa sẵn sàng / NOT PROD-READY** |
+| Interim nip.io production (§3) | **Unchanged GWC** | Partner interim **YES (GWC)** ≠ corporate **fully live** claim — aligned with user-facing «Chưa sẵn sàng» |
+
+**Open (not blocking this sync):** **C-RBACQC-03-LOCAL** local strict gate; **C-EMPGRPQC-01** browser J-HRM-02; program G4/G5; `portal.xe.vn` DNS/TLS.
+
+---
+
+## 7) Addendum — Product Completion W5 QC GWC (2026-06-07)
+
+**work_item_id:** `PCOMP-W6-PM-01` · **upstream:** `PCOMP-W5-QC-01` **GO WITH CONDITIONS**
+
+| Check | Verdict | Notes |
+|-------|---------|-------|
+| W1–W3 localhost completion | **CLOSED (GWC)** | `verify:product:completion` exit **0**; M-HRM-01..11; M-CC-01..06; integrity R3 |
+| W4 mobile API | **PASS** | `pcomp-w4-qa-01-20260607.md` — ScopeScreen U39; device L2.5 **deferred** |
+| W5 QC product gate | **GO WITH CONDITIONS** | L0 **0**, pilot **13/13**, persona + J-HRM-INT API; TM scope_parity **PASS** |
+| W6 sponsor UAT | **NOT STARTED** | `PCOMP-W6-SP-01` pending after PM doc sync |
+| vs [`USER_SERVICE_STATUS.md`](./USER_SERVICE_STATUS.md) | **Aligned** | Localhost UAT GWC; Production **chưa sẵn sàng** |
+| PROD column promotion | **NO CHANGE** | ~90% product completion **≠** PROD-READY |
+
+### Service readiness — product completion overlay
+
+| ID | Dịch vụ/slice | Localhost UAT (W5) | Production | Evidence |
+|---|---|---|---|---|
+| PCOMP-SVC-01 | Portal + HRM embed (mock-free core) | **GWC PASS** | Not promoted | `pcomp-w5-qc-01-20260607.md` |
+| PCOMP-SVC-02 | Automated completion script | **PASS** | N/A | `pcomp-w5-do-01-20260607.md` |
+| PCOMP-SVC-03 | Mobile scope API | **PASS** | Not promoted | `pcomp-w4-qa-01-20260607.md` |
+| PCOMP-SVC-04 | M-CC-11/12 + J-MOB device | **OPEN** | Not promoted | W5 QC residual register |
+| PCOMP-SVC-05 | Sponsor UAT sign-off | **PENDING** | N/A | W6 blocked |
+
+**Sponsor-safe:** W5 GWC closes localhost automated + QA regression slice only; full program exit requires W6 + residual closure + legacy PROD lane (§3–§4 unchanged).

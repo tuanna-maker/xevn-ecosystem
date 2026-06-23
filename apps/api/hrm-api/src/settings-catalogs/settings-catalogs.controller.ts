@@ -99,7 +99,7 @@ export class SettingsCatalogsController {
       scope.companyId,
     );
     return this.settingsCatalogs
-      .syncAllFromXbos(scope.tenantId, catalogCompanyId)
+      .syncAllFromXbos(scope.tenantId, catalogCompanyId, authorization)
       .then((data) => ok(data, 'HRM-SET-201', 'XBOS catalogs pulled into HRM'));
   }
 
@@ -169,10 +169,19 @@ export class SettingsCatalogsController {
     @Param('batchId') batchId: string,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+    @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
     return this.settingsCatalogs
-      .getExtensionBatchDetail(batchId)
+      .getExtensionBatchDetail(batchId, scope.tenantId, catalogCompanyId, authorization)
       .then((data) => ok(data, 'HRM-SET-220', 'Extension batch detail'));
   }
 
@@ -182,10 +191,25 @@ export class SettingsCatalogsController {
     @Body() body: { workflowInstanceId: string },
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+    @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
     return this.settingsCatalogs
-      .attachWorkflowToBatch(batchId, body.workflowInstanceId)
+      .attachWorkflowToBatch(
+        batchId,
+        body.workflowInstanceId,
+        scope.tenantId,
+        catalogCompanyId,
+        authorization,
+      )
       .then(() => ok({ batchId, workflowInstanceId: body.workflowInstanceId }, 'HRM-SET-221', 'Workflow linked'));
   }
 
@@ -195,12 +219,29 @@ export class SettingsCatalogsController {
     @Body() body: { decision: 'approved' | 'rejected'; review_note?: string },
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+    @Query('company_id') queryCompanyId?: string,
     @Headers('x-user-id') reviewerUserId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
     const reviewer = reviewerUserId?.trim() || 'xbos-admin';
     return this.settingsCatalogs
-      .reviewExtensionBatch(batchId, body.decision, reviewer, body.review_note)
+      .reviewExtensionBatch(
+        batchId,
+        body.decision,
+        reviewer,
+        body.review_note,
+        scope.tenantId,
+        catalogCompanyId,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-SET-222', 'Extension batch reviewed'));
   }
 
@@ -275,14 +316,21 @@ export class SettingsCatalogsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
-    const immediate = catalogWriteMode?.trim().toLowerCase() === 'immediate';
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
+    // U64/U65: portal browser UF-09/15 must use approval path; immediate only for explicit bulk sync.
+    const immediateRequested = catalogWriteMode?.trim().toLowerCase() === 'immediate';
+    const immediate = immediateRequested && body.bulkSync === true;
     if (immediate) {
       return this.settingsCatalogs
-        .appendExtensionItems(scope.tenantId, scope.companyId, catalogKey, body.items)
+        .appendExtensionItems(scope.tenantId, catalogCompanyId, catalogKey, body.items)
         .then((data) => ok(data, 'HRM-SET-202', 'HRM catalog extensions saved'));
     }
     return this.settingsCatalogs
-      .submitExtensionItemsForApproval(scope.tenantId, scope.companyId, catalogKey, body.items, {
+      .submitExtensionItemsForApproval(scope.tenantId, catalogCompanyId, catalogKey, body.items, {
         userId: userId ?? undefined,
         email: userId?.includes('@') ? userId : undefined,
       })
@@ -300,8 +348,13 @@ export class SettingsCatalogsController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
     return this.settingsCatalogs
-      .requestFieldRemoval(scope.tenantId, scope.companyId, catalogKey, body)
+      .requestFieldRemoval(scope.tenantId, catalogCompanyId, catalogKey, body)
       .then((data) => ok(data, 'HRM-SET-203', 'Catalog field removal request submitted'));
   }
 }

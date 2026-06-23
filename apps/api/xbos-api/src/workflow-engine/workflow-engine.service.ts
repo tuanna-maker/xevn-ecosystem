@@ -1,6 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { XbosDbService } from '../db/xbos-db.service';
+import {
+  GROUP_APPROVER_USER,
+  MASTER_COMPANY_HOLDING,
+  WF_BUSINESS_TYPE_DEFINITION_REVIEW,
+} from './workflow-catalog.constants';
+
+type WorkflowGraphStepRow = Record<string, unknown>;
 
 function normalizeJsonbPayload(value: unknown): string {
   if (value === undefined || value === null) {
@@ -19,6 +26,47 @@ function normalizeJsonbPayload(value: unknown): string {
     }
   }
   return JSON.stringify(value);
+}
+
+function parseGraphObject(raw: unknown): Record<string, unknown> {
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      return {};
+    }
+    return {};
+  }
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    return raw as Record<string, unknown>;
+  }
+  return {};
+}
+
+function extractWorkflowGraphSteps(raw: unknown): WorkflowGraphStepRow[] {
+  if (Array.isArray(raw)) return raw as WorkflowGraphStepRow[];
+  const graph = parseGraphObject(raw);
+  const steps = graph.steps ?? graph.nodes;
+  return Array.isArray(steps) ? (steps as WorkflowGraphStepRow[]) : [];
+}
+
+function resolveHandlerInboxTarget(handlerRoleId: string): { hatKey: string; assigneeUserId: string } {
+  const role = handlerRoleId.trim().toLowerCase();
+  if (role === 'bod' || role === 'group_ceo' || role === 'raci_ceo') {
+    return { hatKey: 'group_ceo', assigneeUserId: GROUP_APPROVER_USER };
+  }
+  if (role.startsWith('raci_')) {
+    return { hatKey: role, assigneeUserId: GROUP_APPROVER_USER };
+  }
+  return { hatKey: role || 'default', assigneeUserId: GROUP_APPROVER_USER };
+}
+
+function normalizePersistCompanyId(companyId: string | null): string {
+  const c = (companyId ?? MASTER_COMPANY_HOLDING).trim().toLowerCase();
+  return c === 'main' ? MASTER_COMPANY_HOLDING : c;
 }
 
 @Injectable()
@@ -74,7 +122,97 @@ export class WorkflowEngineService {
       ) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8::jsonb,$9) RETURNING *`,
       [tenantId, code, name, category, scopeLevel, companyId, graphJson, conditionsJson, status ?? 'draft'],
     );
+    await this.maybeSpawnDefinitionInboxTask(tenantId, companyId, rows[0], body);
     return rows[0];
+  }
+
+  private definitionStatusIsActive(
+    saved: Record<string, unknown>,
+    body: Record<string, unknown>,
+  ): boolean {
+    const fromBody = body.status != null ? String(body.status).trim().toLowerCase() : '';
+    const fromSaved = saved.status != null ? String(saved.status).trim().toLowerCase() : '';
+    return fromBody === 'active' || fromSaved === 'active';
+  }
+
+  private async hasPendingTaskForDefinition(definitionId: string): Promise<boolean> {
+    const { rows } = await this.db.query<{ exists: boolean }>(
+      `SELECT EXISTS(
+         SELECT 1
+         FROM public.xbos_workflow_step_task t
+         JOIN public.xbos_workflow_instance i ON i.id = t.instance_id
+         WHERE i.definition_id = $1::uuid
+           AND t.status = 'pending'
+       ) AS exists`,
+      [definitionId],
+    );
+    return Boolean(rows[0]?.exists);
+  }
+
+  private buildDefinitionInboxSteps(graphSteps: WorkflowGraphStepRow[]): Array<Record<string, unknown>> {
+    const sorted = [...graphSteps].sort((a, b) => {
+      const orderA = Number(a.order ?? a.step_order ?? 0);
+      const orderB = Number(b.order ?? b.step_order ?? 0);
+      return orderA - orderB;
+    });
+    const inboxSteps: Array<Record<string, unknown>> = [];
+    for (const step of sorted) {
+      const handlerRoleId = String(
+        step.handlerRoleId ?? step.handler_role_id ?? step.hatKey ?? step.hat_key ?? 'default',
+      );
+      const target = resolveHandlerInboxTarget(handlerRoleId);
+      inboxSteps.push({
+        stepKey: String(step.id ?? step.stepKey ?? step.step_key ?? `step-${inboxSteps.length + 1}`),
+        hatKey: target.hatKey,
+        assigneeUserId: String(step.assigneeUserId ?? step.assignee_user_id ?? target.assigneeUserId),
+        dueAt: step.dueAt ?? step.due_at ?? null,
+      });
+    }
+    if (inboxSteps.length === 0) {
+      inboxSteps.push({
+        stepKey: 'definition_review',
+        hatKey: 'group_ceo',
+        assigneeUserId: GROUP_APPROVER_USER,
+      });
+    }
+    return inboxSteps;
+  }
+
+  /** UF-XBOS-08 / U64 — canvas save spawns CC inbox task without seed script. */
+  async maybeSpawnDefinitionInboxTask(
+    tenantId: string,
+    companyId: string | null,
+    saved: Record<string, unknown>,
+    body: Record<string, unknown>,
+  ): Promise<{ instanceId?: string; spawned: boolean }> {
+    if (!this.definitionStatusIsActive(saved, body)) {
+      return { spawned: false };
+    }
+    const definitionId = String(saved.id ?? '');
+    if (!definitionId) return { spawned: false };
+    if (await this.hasPendingTaskForDefinition(definitionId)) {
+      return { spawned: false };
+    }
+
+    const graphRaw = saved.graph ?? body.graph ?? body.steps ?? body.payload;
+    const graphSteps = extractWorkflowGraphSteps(graphRaw);
+    const steps = this.buildDefinitionInboxSteps(graphSteps);
+    const workflowCode = String(saved.workflow_code ?? body.workflowCode ?? body.code ?? '');
+    const workflowName = String(saved.name ?? body.name ?? workflowCode);
+
+    const instance = await this.startInstance(tenantId, normalizePersistCompanyId(companyId), {
+      definitionId,
+      businessType: WF_BUSINESS_TYPE_DEFINITION_REVIEW,
+      businessId: definitionId,
+      context: {
+        source: 'workflow_definition_save',
+        workflowCode,
+        workflowName,
+        spawnedAt: new Date().toISOString(),
+      },
+      steps,
+    });
+    return { instanceId: String((instance as { id: string }).id), spawned: true };
   }
 
   async startInstance(tenantId: string, companyId: string, body: Record<string, unknown>) {

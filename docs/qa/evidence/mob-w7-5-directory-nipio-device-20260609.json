@@ -1,0 +1,105 @@
+{
+  "work_item_id": "MOB-W7-5-DIRECTORY-QA-DEVICE",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 65980945,
+  "apk_sha256": "A0D5510B29DBF72676B9E05D50AC63B191FF0857671027EA8C71322AE8B0FEC9",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0002@xe.vn",
+  "company_slug": "trsport",
+  "company_uuid": "32a3cdcb-c534-4e47-80f9-d2f156e65094",
+  "expected_total": 207,
+  "total_match": true,
+  "device": "emulator-5554",
+  "api_probe": {
+    "directoryStatus": 200,
+    "directoryCode": "HRM-EMP-DIR-200",
+    "directoryTotal": 207,
+    "sampleCount": 10,
+    "firstAttendance": {
+      "checked_in": false,
+      "check_in_at": null,
+      "status": null
+    },
+    "detailOk": true,
+    "detailCode": "HRM-EMP-200",
+    "xCompanyId": "32a3cdcb-c534-4e47-80f9-d2f156e65094"
+  },
+  "ui": {
+    "rowCount": 14,
+    "badgeCount": 7,
+    "hasChips": true,
+    "hasSearch": true,
+    "hasDateHint": true,
+    "emptyState": false
+  },
+  "results": [
+    {
+      "id": "L0-SHA",
+      "pass": false,
+      "note": "65980945 B SHA=false"
+    },
+    {
+      "id": "L0-INSTALL",
+      "pass": false,
+      "note": "Performing Streamed Install\r\nSuccess"
+    },
+    {
+      "id": "API-PROBE",
+      "pass": true,
+      "note": "dir=200/HRM-EMP-DIR-200 total=207 detail=true"
+    },
+    {
+      "id": "LOGIN",
+      "pass": true,
+      "note": "ui_login home"
+    },
+    {
+      "id": "DIR-TAB",
+      "pass": true,
+      "note": "tab ok"
+    },
+    {
+      "id": "DIR-LIST",
+      "pass": true,
+      "note": "rows=14 empty=false apiTotal=207"
+    },
+    {
+      "id": "DIR-SEARCH-CHIPS",
+      "pass": true,
+      "note": "{\"chips\":true,\"search\":true,\"date\":true}"
+    },
+    {
+      "id": "DIR-BADGES",
+      "pass": true,
+      "note": "rows=14 badges=7"
+    },
+    {
+      "id": "DIR-DETAIL",
+      "pass": false,
+      "note": "no row to tap"
+    },
+    {
+      "id": "SCOPE-AUDIT",
+      "pass": true,
+      "note": "main_in_logcat=false uuid=32a3cdcb-c534-4e47-80f9-d2f156e65094"
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "Get-FileHash hrm-mobile-qa-device.apk",
+      "exit": 1,
+      "sha": "A0D5510B29DBF72676B9E05D50AC63B191FF0857671027EA8C71322AE8B0FEC9"
+    },
+    {
+      "cmd": "adb -s emulator-5554 install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    }
+  ],
+  "pass": false,
+  "ack_status": "FAIL",
+  "completion_report": "MOB-W7-5 directory device FAIL — see JSON; apiTotal=207 uiRows=14",
+  "next_owner": "dev-mobile",
+  "next_dispatch_prompt": "Fix directory rows/badges per mob-w7-5-directory-nipio-device-20260609.json; qa-device retest MOB-W7-5-DIRECTORY-QA-DEVICE.",
+  "evidence_path": "docs/qa/evidence/mob-w7-5-directory-nipio-device-20260609.md"
+}

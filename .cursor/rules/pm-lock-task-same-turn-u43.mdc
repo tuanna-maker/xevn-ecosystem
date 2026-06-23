@@ -1,0 +1,69 @@
+---
+description: LOCK — Cấm «PM đã dispatch»; bắt buộc Task cùng lượt (U43 sponsor lock)
+alwaysApply: true
+priority: 1000
+---
+
+# LOCK: Task cùng lượt — không lời hứa dispatch (U43)
+
+> **Sponsor lock (ghi nhớ vĩnh viễn):**  
+> **«Không được kết thúc bằng "PM đã dispatch" — phải gọi Task ngay trong cùng lượt.»**
+
+Composer (PM) **luôn** tuân câu trên. Không ngoại lệ trừ BLOCKED-EXTERNAL (secret/DNS) đã ghi bus.
+
+---
+
+## Cấm tuyệt đối
+
+| Cấm | Vì sao |
+|-----|--------|
+| Kết thúc với «mốc còn lại W4…» / «~90%» **không** kèm `Task`/`Shell` dispatch | Sponsor phải gửi message tiếp — vi phạm U43 |
+| «PM đã dispatch…» / «theo U42…» / «không dừng hỏi sponsor» **thay** tool call | Lời hứa ≠ việc làm |
+| «Tiếp theo team sẽ…» / «PM sẽ cho QA…» **mà không** `Task` trong message | Cấm câu kết PM (2026-05-24) |
+| Hỏi «bạn muốn làm phần nào» khi TODO/backlog còn mở | U37 |
+
+---
+
+## Bắt buộc mỗi lượt PM
+
+1. **Có backlog mở** (`PHASE1_PRODUCT_COMPLETION_TODO.md` `[ ]`/`[~]` hoặc `pm:scan:backlog` exit **2**)  
+   → **Cùng message:** `Task` **1–4** work_item tiếp theo (entry/exit/evidence_path).
+
+2. **Báo % xong / wave kế**  
+   → Chỉ liệt kê việc **đã gọi Task trong message đó** (role + work_item_id).  
+   → Không liệt kê việc «sẽ dispatch».
+
+3. **Subagent vừa xong** (`PASS_TO_PM` / `READY_FOR_QA`)  
+   → Intake bus + **Task owner kế ngay** — không chờ user «tiếp tục đi».
+
+4. **Message cuối** = trạng thái dispatch **thực** (bảng role + ID đang chạy), không cam kết.
+
+---
+
+## Thứ tự ưu tiên dispatch (program `P1-PRODUCT-COMPLETE`)
+
+```
+TODO mở → Task execution (dev-fe/dev-be/dev-mobile/devops)
+       → Task qa retest
+       → Task qc/tm gate
+       → cập nhật TODO [x]
+```
+
+Milestone dừng orchestration **chỉ khi:** `verify:product:completion` exit **0** + `PCOMP-W5-QC-01` GO + W6 sponsor UAT (U42).
+
+---
+
+## Self-check trước khi gửi message
+
+- [ ] Có câu «PM đã / sẽ dispatch» **không** kèm Task trong message này? → **Sửa: gọi Task trước khi gửi.**
+- [ ] Có «mốc còn lại» **không** kèm Task? → **Sửa.**
+- [ ] Có hỏi sponsor chọn việc? → **Xóa; dispatch theo TODO.**
+
+---
+
+## Liên kết
+
+- `TEAM_USER_REQUIREMENTS.md` **U43**
+- `pm-zero-stop-until-milestone.mdc` (U42)
+- `pm-composer-delegate-only.mdc`
+- SoT: `PHASE1_PRODUCT_COMPLETION_TODO.md`

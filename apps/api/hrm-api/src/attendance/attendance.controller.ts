@@ -11,7 +11,9 @@ import { DecideLeaveRequestDto } from './dto/decide-leave-request.dto';
 import { ListLeaveRequestsQueryDto } from './dto/list-leave-requests.query.dto';
 import { AttendanceRequestsService } from './attendance-requests.service';
 import { LeaveRequestsService } from './leave-requests.service';
+import { LeaveBalanceService } from './leave-balance.service';
 import { AttendanceOverviewService } from './attendance-overview.service';
+import { GetLeaveBalanceQueryDto } from './dto/get-leave-balance.query.dto';
 import { AttendanceOverviewQueryDto } from './dto/attendance-overview.query.dto';
 import { CreateBusinessTripRequestDto } from './dto/create-business-trip-request.dto';
 import { CreateLateEarlyRequestDto } from './dto/create-late-early-request.dto';
@@ -21,6 +23,7 @@ import { ListAttendanceRequestsQueryDto } from './dto/list-attendance-requests.q
 import { CreateAttendanceUpdateRequestDto } from './dto/create-attendance-update-request.dto';
 import { DecideAttendanceUpdateRequestDto } from './dto/decide-attendance-update-request.dto';
 import { CreateAttendanceRecordDto } from './dto/create-attendance-record.dto';
+import { GetAttendanceRecordQueryDto } from './dto/get-attendance-record.query.dto';
 import { ListAttendanceRecordsQueryDto } from './dto/list-attendance-records.query.dto';
 import { ListAttendanceUpdateRequestsQueryDto } from './dto/list-attendance-update-requests.query.dto';
 import { UpdateAttendanceUpdateRequestDto } from './dto/update-attendance-update-request.dto';
@@ -32,6 +35,7 @@ export class AttendanceController {
     private readonly attendanceService: AttendanceService,
     private readonly attendanceCatalog: AttendanceCatalogService,
     private readonly leaveRequestsService: LeaveRequestsService,
+    private readonly leaveBalanceService: LeaveBalanceService,
     private readonly attendanceRequestsService: AttendanceRequestsService,
     private readonly attendanceOverviewService: AttendanceOverviewService,
   ) {}
@@ -72,6 +76,24 @@ export class AttendanceController {
     return this.attendanceService
       .listRecords(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-ATT-200', 'Attendance records listed'));
+  }
+
+  @Get('records/:recordId')
+  getRecord(
+    @Param('recordId') recordId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetAttendanceRecordQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertBusinessAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.attendanceService
+      .getRecordById(recordId, query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-ATT-200', 'Attendance record loaded'));
   }
 
   @Patch('records/:recordId/status')
@@ -208,6 +230,23 @@ export class AttendanceController {
     return this.attendanceOverviewService
       .getOverview(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-OVERVIEW-200', 'Attendance overview'));
+  }
+
+  @Get('leave-balance')
+  getLeaveBalance(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetLeaveBalanceQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertBusinessAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.leaveBalanceService
+      .getLeaveBalance(query, authHeader, tenantId)
+      .then((data) => ok(data, 'HRM-LEAVE-BAL-200', 'Leave balance loaded'));
   }
 
   @Get('leave-requests')

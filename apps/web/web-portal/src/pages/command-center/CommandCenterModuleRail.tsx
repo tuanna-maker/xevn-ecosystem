@@ -10,8 +10,6 @@ import {
   Settings,
   Calculator,
   TrendingUp,
-  Pin,
-  PinOff,
   ChevronRight,
 } from 'lucide-react';
 import type { RailModuleItem } from '../../data/command-center-mock';
@@ -42,23 +40,21 @@ export type CommandCenterModuleRailProps = {
   railItems: RailModuleItem[];
   selectedModule: string;
   setSelectedModule: Dispatch<SetStateAction<string | 'all' | typeof SYSTEM_SETTINGS>>;
-  /** HRM embed: bật/tắt mở rộng rail phân hệ (mặc định thu icon). */
-  hrmModuleRailExpanded?: boolean;
-  onHrmModuleRailToggle?: () => void;
+  /** Rail phân hệ ngoài: bật/tắt mở rộng (mặc định thu icon — toàn portal). */
+  portalRailExpanded?: boolean;
+  onPortalRailToggle?: () => void;
 };
 
 export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = ({
   railItems,
   selectedModule,
   setSelectedModule,
-  hrmModuleRailExpanded,
-  onHrmModuleRailToggle,
+  portalRailExpanded,
+  onPortalRailToggle,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { contentExpanded, collapseEnabled, pinned, togglePinned } = useWorkspaceRail();
-  const onHrmRoute =
-    matchPath({ path: '/command-center/hrm/*', end: false }, location.pathname) != null;
+  const { contentExpanded, collapseEnabled } = useWorkspaceRail();
 
   return (
     <aside className="flex h-full min-h-0 w-full shrink-0 flex-col items-stretch">
@@ -149,56 +145,27 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
           })}
         </div>
 
-        {collapseEnabled ? (
-          <div className="mt-auto w-full shrink-0 space-y-1 border-t border-xevn-border/80 pt-2">
-            {onHrmRoute && onHrmModuleRailToggle ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onHrmModuleRailToggle();
-                }}
-                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                title={hrmModuleRailExpanded ? 'Thu gọn thanh phân hệ' : 'Mở thanh phân hệ'}
-                aria-pressed={hrmModuleRailExpanded}
-              >
-                <ChevronRight
-                  className={`h-3.5 w-3.5 shrink-0 transition ${hrmModuleRailExpanded ? 'rotate-180' : ''}`}
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <span className={contentExpanded ? '' : 'sr-only'}>
-                  {hrmModuleRailExpanded ? 'Thu' : 'Mở'}
-                </span>
-              </button>
-            ) : null}
-            {contentExpanded && !onHrmRoute ? (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  togglePinned();
-                }}
-                className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                title={pinned ? 'Bỏ ghim thanh phân hệ (chỉ mở khi di chuột)' : 'Ghim mở thanh phân hệ'}
-                aria-pressed={pinned}
-              >
-                {pinned ? (
-                  <PinOff className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
-                ) : (
-                  <Pin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
-                )}
-                <span className="hidden md:inline">{pinned ? 'Bỏ ghim' : 'Ghim'}</span>
-              </button>
-            ) : !onHrmRoute ? (
-              <div
-                className="flex justify-center py-1 text-slate-400"
+        {collapseEnabled && onPortalRailToggle ? (
+          <div className="mt-auto w-full shrink-0 border-t border-xevn-border/80 pt-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPortalRailToggle();
+              }}
+              className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+              title={portalRailExpanded ? 'Thu gọn thanh phân hệ' : 'Mở thanh phân hệ'}
+              aria-pressed={portalRailExpanded}
+            >
+              <ChevronRight
+                className={`h-3.5 w-3.5 shrink-0 transition ${portalRailExpanded ? 'rotate-180' : ''}`}
+                strokeWidth={2}
                 aria-hidden
-                title="Di chuột vào cột để mở đầy đủ"
-              >
-                <ChevronRight className="h-4 w-4 -rotate-90 opacity-70" strokeWidth={2} />
-              </div>
-            ) : null}
+              />
+              <span className={contentExpanded ? '' : 'sr-only'}>
+                {portalRailExpanded ? 'Thu' : 'Mở'}
+              </span>
+            </button>
           </div>
         ) : null}
       </div>

@@ -31,8 +31,8 @@ const BRD_MD = path.join(ROOT, 'docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md
 
 const DOC_CODE = 'UNICOM/BRD-XEVN-OS-001';
 const VERSION_LINE =
-  'Phiên bản 1.0 &nbsp;·&nbsp; Tháng 5/2026 &nbsp;·&nbsp; Hệ sinh thái XeVN OS';
-const FOOTER_PAGE = 'XeVN ECOSYSTEM OS — BRD v1.0';
+  'Phiên bản 1.1 &nbsp;·&nbsp; Tháng 6/2026 &nbsp;·&nbsp; Giai đoạn 1 UAT';
+const FOOTER_PAGE = 'XeVN ECOSYSTEM OS — BRD v1.1';
 
 function stripAppendixFromBrd(md) {
   const idx = md.indexOf('\n## Phụ lục A.');

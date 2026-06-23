@@ -5,7 +5,6 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { format } from 'date-fns';
 import {
   ArrowLeft,
-  Camera,
   Edit,
   MoreHorizontal,
   User,
@@ -51,7 +50,10 @@ import {
 import { useEmployee } from '@/hooks/useEmployee';
 import { useEmployees, EmployeeFormData } from '@/hooks/useEmployees';
 import { useDepartments } from '@/hooks/useDepartments';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useAuth } from '@/contexts/AuthContext';
 import { EmployeeFormDialog } from '@/components/employee/EmployeeFormDialog';
+import { EmployeeAvatarUpload } from '@/components/employee/EmployeeAvatarUpload';
 import { EmployeeSkillsRadarChart } from '@/components/employee/EmployeeSkillsRadarChart';
 import { EmployeeWorkTimeline } from '@/components/employee/EmployeeWorkTimeline';
 import { EmployeeStatsCards } from '@/components/employee/EmployeeStatsCards';
@@ -139,11 +141,29 @@ export default function EmployeeProfile() {
   const [activeTab, setActiveTab] = useState('general');
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isEditLoading, setIsEditLoading] = useState(false);
+  const [isAvatarSaving, setIsAvatarSaving] = useState(false);
   
-  // Fetch employee from database
+  const { memberships } = useAuth();
+  const { hasPermission } = usePermissions();
   const { employee, isLoading, error, refetch } = useEmployee(id);
   const { updateEmployee } = useEmployees();
   const { departments } = useDepartments();
+
+  const handleAvatarChange = useCallback(async (url: string | null) => {
+    if (!employee) return;
+    setIsAvatarSaving(true);
+    try {
+      const success = await updateEmployee(employee.id, {
+        avatar_url: url,
+        custom_fields: employee.custom_fields ?? {},
+      });
+      if (success) {
+        await refetch();
+      }
+    } finally {
+      setIsAvatarSaving(false);
+    }
+  }, [employee, updateEmployee, refetch]);
 
   const handleEditSubmit = useCallback(async (data: EmployeeFormData & { company_id?: string }) => {
     if (!employee) return false;
@@ -243,6 +263,12 @@ export default function EmployeeProfile() {
   }
 
   const statusInfo = getStatusInfo(employee.status, t);
+  const isOwnProfile = memberships.some(
+    (membership) =>
+      membership.employee_id &&
+      membership.employee_id.toLowerCase() === employee.id.toLowerCase(),
+  );
+  const canEditAvatar = isOwnProfile || hasPermission('employees', 'edit');
 
   return (
     <div className="animate-fade-in space-y-4">
@@ -410,21 +436,26 @@ export default function EmployeeProfile() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-4">
-                    <Avatar className="w-28 h-28 border-4 border-background shadow-lg">
-                      <AvatarImage src={employee.avatar_url || ''} />
-                      <AvatarFallback className="text-3xl bg-primary/10 text-primary font-semibold">
-                        {employee.full_name.split(' ').pop()?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full shadow-md"
-                    >
-                      <Camera className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  {canEditAvatar ? (
+                    <div className="mb-4">
+                      <EmployeeAvatarUpload
+                        currentAvatarUrl={employee.avatar_url}
+                        employeeCode={employee.employee_code}
+                        fullName={employee.full_name}
+                        onAvatarChange={handleAvatarChange}
+                        disabled={isAvatarSaving}
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative mb-4">
+                      <Avatar className="w-28 h-28 border-4 border-background shadow-lg">
+                        <AvatarImage src={employee.avatar_url || ''} />
+                        <AvatarFallback className="text-3xl bg-primary/10 text-primary font-semibold">
+                          {employee.full_name.split(' ').pop()?.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  )}
                   <h3 className="text-lg font-bold">{employee.full_name}</h3>
                   <p className="text-sm text-muted-foreground mb-1">
                     {employee.position || t('employeeProfile.noPosition')}
@@ -591,7 +622,7 @@ export default function EmployeeProfile() {
       )}
 
       {/* Work/Job List Tab */}
-      {activeTab === 'work' && <EmployeeJobList />}
+      {activeTab === 'work' && <EmployeeJobList employeeId={employee.id} />}
 
       {/* Work History Tab */}
       {activeTab === 'workHistory' && <EmployeeWorkTimeline employeeId={id!} />}

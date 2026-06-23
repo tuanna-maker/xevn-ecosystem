@@ -1,6 +1,17 @@
 import type { UnifiedTask, PortalStatusNormalized } from '../data/command-center-mock';
 import { MASTER_TENANT_ID } from '../constants/tenant';
+import { resolveWorkflowBusinessTypeLabel } from '../utils/workflowDisplayLabels';
+import { getStoredUser } from './authSession';
 import { listWorkflowTasks, type WorkflowStepTaskRow } from './workflowEngineApi';
+
+/** Logged-in portal user id (email) for workflow inbox assignee filter. */
+export function resolveInboxAssigneeUserId(): string | undefined {
+  const fromSession = getStoredUser()?.userId?.trim();
+  if (fromSession) return fromSession;
+  const dev =
+    typeof import.meta.env.VITE_DEV_USER_ID === 'string' ? import.meta.env.VITE_DEV_USER_ID.trim() : '';
+  return dev || undefined;
+}
 
 function mapBusinessTypeToModule(businessType: string): string {
   const key = businessType.toLowerCase();
@@ -29,9 +40,10 @@ export function mapWorkflowTaskToUnifiedTask(row: WorkflowStepTaskRow): UnifiedT
     orgUnitId: String(row.company_id ?? row.tenant_id ?? ''),
     moduleCode: mapBusinessTypeToModule(businessType),
     title: String(row.workflow_name ?? row.step_key ?? 'Nhiệm vụ phê duyệt'),
-    subtitle: businessType,
+    subtitle: resolveWorkflowBusinessTypeLabel(businessType),
     assigneeUserId: String(row.assignee_user_id ?? ''),
     assigneeName: String(row.assignee_user_id ?? 'Chưa gán'),
+    workflowHatKey: row.hat_key ? String(row.hat_key) : undefined,
     dueAt: row.due_at ? String(row.due_at) : undefined,
     priority: 'medium',
   };
@@ -42,9 +54,7 @@ export async function fetchCommandCenterInboxTasks(
   tenantId = MASTER_TENANT_ID,
   assigneeUserId?: string,
 ): Promise<UnifiedTask[]> {
-  const devUser =
-    assigneeUserId ??
-    (typeof import.meta.env.VITE_DEV_USER_ID === 'string' ? import.meta.env.VITE_DEV_USER_ID : undefined);
-  const rows = await listWorkflowTasks(tenantId, 'pending', devUser);
+  const assignee = assigneeUserId ?? resolveInboxAssigneeUserId();
+  const rows = await listWorkflowTasks(tenantId, 'pending', assignee);
   return rows.map(mapWorkflowTaskToUnifiedTask);
 }

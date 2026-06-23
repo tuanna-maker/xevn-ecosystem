@@ -7,10 +7,12 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
+import { HrmOperatingUnitFilterProvider } from "./contexts/HrmOperatingUnitFilterContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { PermissionRoute } from "./components/auth/PermissionRoute";
 import { PlatformAdminRoute } from "./components/auth/PlatformAdminRoute";
 import { getHrmPortalMode } from "./lib/hrmPortalMode";
+import { HrmRouteFallback, HrmProfileRouteFallback } from "./components/common/HrmRouteFallback";
 
 const Index = lazy(() => import("./pages/Index"));
 const Landing = lazy(() => import("./pages/Landing"));
@@ -23,6 +25,8 @@ const Performance = lazy(() => import("./pages/Performance"));
 const Company = lazy(() => import("./pages/Company"));
 const Reports = lazy(() => import("./pages/Reports"));
 const Settings = lazy(() => import("./pages/Settings"));
+const SettingsCatalogsPage = lazy(() => import("./pages/SettingsCatalogsPage"));
+const EmployeeMetadataPage = lazy(() => import("./pages/EmployeeMetadataPage"));
 const Contracts = lazy(() => import("./pages/Contracts"));
 const Insurance = lazy(() => import("./pages/Insurance"));
 const Decisions = lazy(() => import("./pages/Decisions"));
@@ -56,8 +60,11 @@ function OptionalHRMChatWidget() {
   );
 }
 
-function withSuspense(element: React.ReactNode) {
-  return <Suspense fallback={null}>{element}</Suspense>;
+function withSuspense(
+  element: React.ReactNode,
+  fallback: React.ReactNode = <HrmRouteFallback />,
+) {
+  return <Suspense fallback={fallback}>{element}</Suspense>;
 }
 
 // Apply branding color on app load
@@ -101,6 +108,7 @@ const App = () => {
             future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
           >
             <AuthProvider>
+              <HrmOperatingUnitFilterProvider>
               <Routes>
                 {/* Public routes */}
                 <Route path="/landing" element={withSuspense(<Landing />)} />
@@ -128,7 +136,7 @@ const App = () => {
                   <Route path="/" element={withSuspense(<Index />)} />
                   <Route path="/dashboard" element={<PermissionRoute module="dashboard">{withSuspense(<Employees />)}</PermissionRoute>} />
                   <Route path="/employees" element={<PermissionRoute module="employees">{withSuspense(<Employees />)}</PermissionRoute>} />
-                  <Route path="/employees/:id" element={<PermissionRoute module="employees">{withSuspense(<EmployeeProfile />)}</PermissionRoute>} />
+                  <Route path="/employees/:id" element={<PermissionRoute module="employees">{withSuspense(<EmployeeProfile />, <HrmProfileRouteFallback />)}</PermissionRoute>} />
                   <Route path="/recruitment" element={<PermissionRoute module="recruitment">{withSuspense(<Recruitment />)}</PermissionRoute>} />
                   <Route path="/attendance" element={<PermissionRoute module="attendance">{withSuspense(<Attendance />)}</PermissionRoute>} />
                   <Route path="/payroll" element={<PermissionRoute module="payroll">{withSuspense(<Payroll />)}</PermissionRoute>} />
@@ -136,6 +144,8 @@ const App = () => {
                   <Route path="/company" element={<PermissionRoute module="company">{withSuspense(<Company />)}</PermissionRoute>} />
                   <Route path="/reports" element={<PermissionRoute module="reports">{withSuspense(<Reports />)}</PermissionRoute>} />
                   <Route path="/settings" element={<PermissionRoute module="settings">{withSuspense(<Settings />)}</PermissionRoute>} />
+                  <Route path="/settings-catalogs" element={<PermissionRoute module="settings">{withSuspense(<SettingsCatalogsPage />)}</PermissionRoute>} />
+                  <Route path="/employee-metadata" element={<PermissionRoute module="settings">{withSuspense(<EmployeeMetadataPage />)}</PermissionRoute>} />
                   <Route path="/contracts" element={<PermissionRoute module="contracts">{withSuspense(<Contracts />)}</PermissionRoute>} />
                   <Route path="/insurance" element={<PermissionRoute module="insurance">{withSuspense(<Insurance />)}</PermissionRoute>} />
                   <Route path="/decisions" element={<PermissionRoute module="decisions">{withSuspense(<Decisions />)}</PermissionRoute>} />
@@ -149,6 +159,7 @@ const App = () => {
                 <Route path="*" element={withSuspense(<NotFound />)} />
               </Routes>
               <OptionalHRMChatWidget />
+              </HrmOperatingUnitFilterProvider>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

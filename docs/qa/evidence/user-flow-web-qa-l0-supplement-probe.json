@@ -1,0 +1,133 @@
+{
+  "work_item_id": "P1-USER-FLOW-WEB-QA-L0",
+  "portal": "http://14.225.217.232:8088",
+  "executed_at": "2026-06-20T01:30:00.733Z",
+  "rows": [
+    {
+      "uf_id": "UF-XBOS-01",
+      "flag": "🟢",
+      "pass": false,
+      "http": 201,
+      "code": "XBOS-AUTH-200",
+      "detail": "SRS UC-XBOS-AUTH-01 — JWT group CEO",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-XBOS-02",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "XBOS-TENANT-200",
+      "detail": "SRS UC-CC-03 — member list count=4",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-XBOS-07",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "XBOS-RACI-200",
+      "detail": "RACI matrix GET (raci-governance path)",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-XBOS-08",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "XBOS-WF-203",
+      "detail": "WF inbox read — no pending tasks",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-XBOS-10",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "XBOS-KPI-202",
+      "detail": "KPI rollup J-CC-03",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-XBOS-11",
+      "flag": "🟢",
+      "pass": true,
+      "http": 409,
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "detail": "Member CEO negative rollup — blocked expected",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-04",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "HRM-CON-200",
+      "detail": "Insurance contracts list J-HRM-04",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-05",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "HRM-ATT-200",
+      "detail": "Attendance records J-HRM-06",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-06",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "HRM-PAY-200",
+      "detail": "Payroll payslips J-HRM-07",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-03",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "HRM-EMP-202",
+      "detail": "PATCH full_name F5-surrogate emp=HLD-0006",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-02",
+      "flag": "🟢",
+      "pass": true,
+      "http": 201,
+      "code": "HRM-CON-201",
+      "detail": "contract create+list found=true",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-09",
+      "flag": "🟢",
+      "pass": true,
+      "http": 200,
+      "code": "HRM-EMP-200",
+      "detail": "HRBP tenant=xe-du-lich list=200 mutate PATCH=200 emp=MEMEMP440961",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-07",
+      "flag": "⚪",
+      "pass": true,
+      "http": null,
+      "code": "N/A",
+      "detail": "Web-only wave — mobile out of scope",
+      "owner": null
+    },
+    {
+      "uf_id": "UF-HRM-08",
+      "flag": "⚪",
+      "pass": true,
+      "http": null,
+      "code": "N/A",
+      "detail": "Web-only wave — mobile out of scope",
+      "owner": null
+    }
+  ]
+}

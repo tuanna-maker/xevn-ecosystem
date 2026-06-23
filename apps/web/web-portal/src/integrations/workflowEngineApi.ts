@@ -1,3 +1,4 @@
+import { getStoredUser } from './authSession';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 import type { WorkflowDefinitionApiRow } from './workflowMapper';
 import {
@@ -67,6 +68,7 @@ export type WorkflowStepTaskRow = {
   id: string;
   instance_id?: string;
   step_key?: string;
+  hat_key?: string;
   status?: string;
   assignee_user_id?: string | null;
   due_at?: string | null;
@@ -121,6 +123,25 @@ export async function fetchWorkflowInstanceDetail(
   }
 }
 
+export function buildWorkflowTaskActionPayload(
+  input: { workflowHatKey?: string },
+  outcome: 'approved' | 'rejected',
+  userId?: string,
+): Record<string, unknown> {
+  const uid =
+    userId?.trim() ||
+    getStoredUser()?.userId?.trim() ||
+    (typeof import.meta.env.VITE_DEV_USER_ID === 'string' ? import.meta.env.VITE_DEV_USER_ID.trim() : '') ||
+    'ceo@xe.vn';
+  const payload: Record<string, unknown> = {
+    outcome,
+    userId: uid,
+  };
+  if (input.workflowHatKey) payload.hatKey = input.workflowHatKey;
+  if (outcome === 'rejected') payload.reason = 'rejected_from_portal';
+  return payload;
+}
+
 export async function completeWorkflowTask(
   taskId: string,
   payload: Record<string, unknown> = { outcome: 'approved' },
@@ -137,4 +158,36 @@ export async function completeWorkflowTask(
     },
   );
   return envelope?.data;
+}
+
+export async function rejectWorkflowTask(
+  taskId: string,
+  payload: Record<string, unknown> = { reason: 'rejected_from_portal' },
+  tenantIdHint?: string | null,
+): Promise<unknown> {
+  const init = scopeInit(tenantIdHint, null, true);
+  const envelope = await xbosFetch<{ data?: unknown }>(
+    `/workflow-engine/tasks/${encodeURIComponent(taskId)}/reject`,
+    {
+      method: 'POST',
+      scope: 'workflow-engine.tasks.reject',
+      ...init,
+      body: JSON.stringify(payload),
+    },
+  );
+  return envelope?.data;
+}
+
+/** Approve or reject a workflow step task (real API — P0-CRUD-06 / BR-INBOX-01). */
+export async function applyWorkflowInboxTaskDecision(
+  task: { cardId: string; workflowHatKey?: string },
+  outcome: 'approved' | 'rejected',
+  tenantIdHint?: string | null,
+  userId?: string,
+): Promise<unknown> {
+  const payload = buildWorkflowTaskActionPayload(task, outcome, userId);
+  if (outcome === 'rejected') {
+    return rejectWorkflowTask(task.cardId, payload, tenantIdHint);
+  }
+  return completeWorkflowTask(task.cardId, payload, tenantIdHint);
 }

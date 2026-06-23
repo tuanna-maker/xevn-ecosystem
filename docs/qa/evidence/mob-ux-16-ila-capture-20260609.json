@@ -1,0 +1,74 @@
+{
+  "work_item_id": "MOB-UX-16-QA-R2",
+  "date": "2026-06-09",
+  "device": "emulator-5554",
+  "apk": "C:\\xevn-ecosystem\\apps\\mobile\\hrm-mobile\\dist\\hrm-mobile-qa-device.apk",
+  "apk_sha256": "86D57C5EAD7ACE9FA80A6A879DF0C971214560C0A1EBB1D6CA205EC308B6B7EF",
+  "apk_sha_match": true,
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "screens": [
+    {
+      "id": "home",
+      "screenshot": "docs/qa/evidence/mob-ux-16-screens/16-home.png",
+      "markers": {
+        "grid": true,
+        "stats": true,
+        "activity": true,
+        "carousel": true,
+        "welcomeDup": false
+      },
+      "copy": {
+        "pass": true,
+        "hits": []
+      },
+      "titleDup": {
+        "Phê duyệt": 0
+      }
+    },
+    {
+      "id": "notifications",
+      "screenshot": "docs/qa/evidence/mob-ux-16-screens/16-notifications.png",
+      "stackTitle": 1,
+      "copy": {
+        "pass": true,
+        "hits": []
+      },
+      "rowCount": 21
+    },
+    {
+      "id": "team-directory",
+      "screenshot": "docs/qa/evidence/mob-ux-16-screens/16-team.png",
+      "hasSections": true,
+      "copy": {
+        "pass": true,
+        "hits": []
+      },
+      "rowCount": 0
+    },
+    {
+      "id": "profile",
+      "screenshot": "docs/qa/evidence/mob-ux-16-screens/16-profile.png",
+      "hasTabs": true,
+      "copy": {
+        "pass": true,
+        "hits": []
+      }
+    },
+    {
+      "id": "payslip",
+      "screenshot": "docs/qa/evidence/mob-ux-16-screens/16-payslip.png",
+      "copy": {
+        "pass": true,
+        "hits": []
+      },
+      "hasList": true
+    }
+  ],
+  "matrix_summary": {
+    "se_pass": true,
+    "proMax_pass": true,
+    "overall_pass": true
+  }
+}

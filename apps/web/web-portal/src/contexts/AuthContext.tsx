@@ -7,6 +7,7 @@ import {
   getValidAccessToken,
   isStoredSessionExpired,
   loginPortal,
+  peekLoginRedirect,
   persistAuthSession,
   setUnauthorizedHandler,
   type LoginResult,
@@ -45,7 +46,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(null);
       setMemberships([]);
       if (window.location.pathname !== '/login') {
-        window.location.replace('/login');
+        const returnPath = peekLoginRedirect();
+        const loginTarget =
+          returnPath && returnPath.startsWith('/') && !returnPath.startsWith('//')
+            ? `/login?redirect=${encodeURIComponent(returnPath)}`
+            : '/login';
+        window.location.replace(loginTarget);
       }
     });
     return () => setUnauthorizedHandler(null);

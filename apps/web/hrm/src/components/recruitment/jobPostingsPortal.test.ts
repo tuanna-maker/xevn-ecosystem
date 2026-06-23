@@ -1,18 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { HrmJobRequisition } from '@/integrations/hrmApi';
-
-function mapRequisitionStatus(status: HrmJobRequisition['status']): string {
-  if (status === 'open') return 'active';
-  if (status === 'on_hold') return 'paused';
-  return 'closed';
-}
-
-function nestStatusMatchesFilter(
-  nestStatus: HrmJobRequisition['status'],
-  filter: string,
-): boolean {
-  return mapRequisitionStatus(nestStatus) === filter;
-}
+import {
+  mapRequisitionStatus,
+  nestStatusMatchesFilter,
+} from '@/lib/jobRequisitionUi';
 
 describe('JobPostingsTab Nest mapping', () => {
   it('maps open requisition to active UI status', () => {

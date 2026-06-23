@@ -35,16 +35,15 @@ import type { LucideIcon } from 'lucide-react';
 import {
   type PersonaRole,
   type UnifiedTask,
-  mockRailModules,
-  mockUnifiedTasks,
-  mockPortalAlerts,
   type PortalAlert,
   filterTasksByPersona,
   filterAlertsByPersona,
-  filterRailByRole,
   countInProgressByModule,
-  getKpiSeriesForPersona,
 } from '../../data/command-center-mock';
+import {
+  commandCenterRailModules,
+  filterRailByRole,
+} from '../../data/command-center-rail-catalog';
 import {
   ENTITY_LEVEL_LABELS,
   ENTITY_LEVEL_SELECT_ORDER,
@@ -57,7 +56,6 @@ import {
 } from '../../data/mock-effective-config';
 import {
   type InfrastructureFoundationCategory,
-  INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES,
 } from '../../data/infrastructure-foundation-catalog';
 import { ORG_GRADE_LEVELS, type OrgGradeBand } from '../../data/org-grade-reference';
 import {
@@ -84,6 +82,7 @@ import {
 import { RACI_PERMISSION_BOOTSTRAP } from '../../data/raci-permission-seeds';
 import { RACI_LETTER_MEANINGS, RACI_ORG_COLUMNS, RACI_SOURCE_FILE } from '../../data/xevn-raci-catalog';
 import { OrgGradeOrgChart } from '../../components/org/OrgGradeOrgChart';
+import { OrgGradeOrgChartEditor } from '../../components/org/OrgGradeOrgChartEditor';
 import {
   AutoResizeTextarea,
   NAV_SUBSIDEBAR_HELPER_CLASS,
@@ -111,17 +110,29 @@ import {
 } from './settings-form-pattern';
 import { WorkspaceLayout } from './WorkspaceLayout';
 import { CommandCenterModuleRail } from './CommandCenterModuleRail';
+import { applyShareholderRowFieldUpdate } from './shareholderRowUpdate';
+import { formatViGroupedInteger, parseViGroupedInteger } from '../../utils/viNumberFormat';
 import { WorkflowCanvas, formatWorkflowDrawerDetails } from './WorkflowCanvas';
 import { HrmCollapsibleSidebar } from '../../modules/hrm/HrmCollapsibleSidebar';
 import {
-  readHrmModuleRailCollapsed,
-  writeHrmModuleRailCollapsed,
-} from '../../modules/hrm/hrmEmbedNavStorage';
+  readPortalRailCollapsed,
+  writePortalRailCollapsed,
+} from './workspace-rail-context';
 import { HrmApiHealthBanner } from '../../components/common/HrmApiHealthBanner';
 import { hrmPortalPath } from '../../modules/hrm/paths';
-import { parseCommandCenterSettingsDeepLink } from '../../modules/hrm/commandCenterUrl';
+import {
+  commandCenterInboxInstanceDeepLink,
+  parseCommandCenterSettingsDeepLink,
+} from '../../modules/hrm/commandCenterUrl';
 import { TenantConfigScopeBar } from './TenantConfigScopeBar';
 import { CompanyRaciPanel } from './CompanyRaciPanel';
+import { FoundationCategoryWizard } from './FoundationCategoryWizard';
+import {
+  filterDisplayableFoundationCategories,
+  mergeFoundationCategoryIntoList,
+  removeUnsavedFoundationDraft,
+  resolveFoundationFieldsPreviewEntityId,
+} from './foundationCategoryList';
 import {
   GROUP_HOLDING_COMPANY_ID,
   MASTER_TENANT_ID,
@@ -129,27 +140,65 @@ import {
 } from '../../constants/tenant';
 import { ApiHealthBanner } from '../../components/common/ApiHealthBanner';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { MutationButton } from '../../components/common/MutationButton';
+import { NavTransitionShell } from '../../components/common/NavTransitionShell';
+import { useConfirmDialog } from '../../components/common/useConfirmDialog';
+import { useNavTransitionShell } from '../../components/common/useNavTransitionShell';
 import {
   fetchInfrastructureSettings,
   fetchInfrastructureSummary,
-  resolveInfrastructureFoundationLoad,
+  loadInfrastructureFoundationFromApi,
   saveInfrastructureSettings,
   type InfrastructureSettingsPayload,
-  INFRASTRUCTURE_MOCK_SEED,
 } from '../../integrations/infrastructureApi';
 import {
+  isOperatingEntityInFoundationScope,
+} from '../../integrations/infrastructureEntityKeyResolver';
+import {
+  resolveMetadataCustomBlocks,
+  resolveMetadataFieldDefs,
+} from '../../integrations/metadataConsumerResolver';
+import {
+  buildInfraFieldsApplySuccessMessage,
+  infrastructureSiteEntrySettingsUrl,
+  shouldShowInfraConsumerNavHint,
+} from '../../integrations/infrastructureFieldsConfigUx';
+import {
+  buildEffectiveInfraFoundationCategories,
+  countInfraSiteVisibleCustomFields,
+  resolveDefaultInfraSiteOperatingEntityId,
+  resolveInfraSiteConsumerBlockTitleOverrides,
+  resolveInfraSiteConsumerCustomBlocks,
+  resolveInfraSiteConsumerFieldDefs,
+} from '../../integrations/infraSiteConsumerContext';
+import { buildLayoutForEnabledLevels } from '../../utils/orgGradeLayout';
+import {
   deptTemplatesLoadErrorMessage,
+  deleteDeptSystemTemplate,
   upsertDeptSystemTemplate,
 } from '../../integrations/deptSystemTemplatesApi';
-import { loadCcCatalogRows, saveCcCatalogRows } from '../../integrations/commandCenterCatalogApi';
-import { fetchCommandCenterInboxTasks } from '../../integrations/commandCenterInboxApi';
+import {
+  createCcMeasurementRow,
+  createCcPricingRow,
+  createCcRegulationRow,
+  loadCcCatalogRows,
+  saveCcCatalogRows,
+  type CcMeasurementRow,
+  type CcPricingRow,
+  type CcRegulationRow,
+} from '../../integrations/commandCenterCatalogApi';
+import {
+  fetchCommandCenterInboxTasks,
+  resolveInboxAssigneeUserId,
+} from '../../integrations/commandCenterInboxApi';
+import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
 import { fetchPortalAlerts } from '../../integrations/portalAlertsApi';
 import { useCommandCenterKpiRail } from '../../hooks/useCommandCenterKpiRail';
 import { useDeptSystemTemplates } from '../../hooks/useDeptSystemTemplates';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import { describeScopePlaneForUi } from '../../integrations/commandCenterScope';
 import {
-  completeWorkflowTask,
+  applyWorkflowInboxTaskDecision,
   fetchWorkflowInstanceDetail,
   listWorkflowDefinitions,
   saveWorkflowDefinition,
@@ -166,8 +215,14 @@ import {
   listShareholders,
   saveLegalDocument,
   saveShareholder,
+  syncShareholders,
   uploadLegalDocumentFile,
 } from '../../integrations/legalEntityProfileApi';
+import {
+  legalProfileScopePersistMessage,
+  resolveLegalProfileScopeFromState,
+  resolveShareholderApiEntityKey,
+} from '../../integrations/legalEntityProfileScope';
 import { fetchCommandCenterWorkspaceMeta } from '../../integrations/commandCenterWorkspaceApi';
 import {
   fetchPermissionMatrix,
@@ -175,8 +230,14 @@ import {
 } from '../../integrations/positionRbacApi';
 import {
   deleteOrgUnit,
+  loadLegalEntityDepartmentTree,
+  resolveDepartmentSaveContext,
+  resolveLegalEntityApiIdFromList,
   saveOrgUnit,
+  type LegalEntityApiRow,
+  type OrgTreeNode,
 } from '../../integrations/orgFoundationApi';
+import { listHrmEmployees } from '../../modules/hrm/hrmApiClient';
 import { WorkflowTaskDetailDrawer } from './WorkflowTaskDetailDrawer';
 import { CatalogGovernancePanel } from './CatalogGovernancePanel';
 import { AssetRequestPanel } from './AssetRequestPanel';
@@ -190,8 +251,13 @@ import {
   INBOX_STRICT_EMPTY_HINT,
   INBOX_STRICT_LOAD_FAILED,
   resolveAlertsStrictBanner,
+  resolveCommandCenterApiErrorState,
+  resolveCommandCenterEmptyApiSource,
   resolveCommandCenterInboxTasks,
+  resolveCommandCenterPortalAlerts,
   resolveInboxStrictBanner,
+  resolveWorkflowDefinitionsApiErrorState,
+  resolveWorkflowDefinitionsLocalSeed,
   resolveWorkflowDefinitionsStrictBanner,
   WORKFLOW_DEFINITIONS_STRICT_EMPTY_HINT,
   WORKFLOW_DEFINITIONS_STRICT_LOAD_FAILED,
@@ -204,9 +270,11 @@ import {
 import { companyFullName, companyPrimaryLabel } from '../../utils/company-display';
 import {
   fetchGroupHrCatalogFieldDefs,
+  resolveGroupHrHrmCatalogScope,
   resolveHrmCatalogKey,
   syncGroupHrFieldDefsToHrm,
   type GroupHrCatalogFieldDto,
+  type GroupHrSyncProgress,
 } from '../../integrations/groupHrCatalogApi';
 import {
   fetchGroupMemberUnitsForCommandCenter,
@@ -217,12 +285,8 @@ import {
   fetchHoldingLegalEntities,
   fetchLegalEntityForEdit,
   fetchLegalEntities,
-  loadLegalEntityDepartmentTree,
   resolveLegalEntityApiIdForCompany,
-  resolveLegalEntityApiIdFromList,
   updateLegalEntity,
-  type LegalEntityApiRow,
-  type OrgTreeNode,
 } from '../../integrations/orgFoundationApi';
 import { mapLegalEntityRowToCompany } from '../../integrations/legalEntityMapper';
 import {
@@ -761,6 +825,23 @@ function createEmptyWorkflowDefinition(tempId: string): WorkflowDefinition {
   };
 }
 
+/** Minimal inbox card for wfInstanceId deep link before list hydrates (J-XBOS-01). */
+function syntheticInboxTaskFromInstanceId(instanceId: string): UnifiedTask {
+  return {
+    cardId: instanceId,
+    sourceId: instanceId,
+    sourceSystem: 'xbos-workflow',
+    dedupeKey: `wf-inst-${instanceId}`,
+    statusNormalized: 'PENDING_APPROVAL',
+    orgUnitId: MASTER_TENANT_ID,
+    moduleCode: 'business',
+    title: 'Chi tiết quy trình',
+    assigneeUserId: '',
+    assigneeName: '',
+    priority: 'medium',
+  };
+}
+
 function workflowDestinationLabel(form: WorkflowDefinition, nodeId: string): string {
   switch (nodeId) {
     case WF_NODE_START:
@@ -868,15 +949,7 @@ function getParentEntityLabel(parentId: string | null | undefined, list: Company
   return p ? `${p.code} — ${p.name}` : '';
 }
 
-const DEPT_HEAD_OPTIONS: Array<{ id: string; label: string }> = [
-  { id: '', label: '— Chọn trưởng bộ phận —' },
-  { id: 'head-1', label: 'Nguyễn Văn An — TGĐ' },
-  { id: 'head-2', label: 'Trần Thị Bích — Phó TGĐ' },
-  { id: 'head-3', label: 'Lê Văn Cường — GĐ HCNS' },
-  { id: 'head-4', label: 'Phạm Minh Duy — GĐ CN Hà Nội' },
-  { id: 'head-5', label: 'Hoàng Thu E — GĐ CN Đà Nẵng' },
-  { id: 'head-6', label: 'Đỗ Quân F — Trưởng phòng NS' },
-];
+const DEPT_HEAD_EMPTY_OPTION = { id: '', label: '— Chọn trưởng bộ phận —' };
 
 const EMPLOYEE_METADATA_DATA_TYPES: Array<{ value: EmployeeMetadataDataType; label: string }> = [
   { value: 'text', label: 'Text' },
@@ -961,6 +1034,19 @@ function flattenOrgTreeToDeptRows(
     }
   }
   return rows;
+}
+
+function isStaleDepartmentRowCache(rows: LegalDepartmentRow[] | undefined): boolean {
+  if (!rows?.length) return true;
+  if (rows.length !== 1) return false;
+  const row = rows[0];
+  return (
+    !row.code.trim() &&
+    !row.name.trim() &&
+    !row.functionText.trim() &&
+    !row.headId.trim() &&
+    !isPersistedApiId(row.id)
+  );
 }
 
 function createBlankDeptRow(): LegalDepartmentRow {
@@ -1200,13 +1286,18 @@ const CommandCenterPage: React.FC = () => {
   const { tenantId, companyId } = useTenantScope();
   const [persona, setPersona] = useState<PersonaRole>('bod');
   const [selectedModule, setSelectedModule] = useState<string | 'all' | typeof SYSTEM_SETTINGS>('all');
-  const [hrmModuleRailCollapsed, setHrmModuleRailCollapsed] = useState(readHrmModuleRailCollapsed);
+  const [portalRailCollapsed, setPortalRailCollapsed] = useState(readPortalRailCollapsed);
   const [loading, setLoading] = useState(true);
   const [activeSettingsMenu, setActiveSettingsMenu] =
     useState<SettingsMenuKey>('company_member_units');
+  const activeSettingsMenuRef = useRef<SettingsMenuKey>(activeSettingsMenu);
   const [companySetupGroupOpen, setCompanySetupGroupOpen] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    activeSettingsMenuRef.current = activeSettingsMenu;
+  }, [activeSettingsMenu]);
 
   /** Đồng bộ rail với URL HRM — nghiệp vụ HRM mount qua `/command-center/hrm/:view`, không nhúng trong state một chỗ. */
   useEffect(() => {
@@ -1218,6 +1309,7 @@ const CommandCenterPage: React.FC = () => {
   const ccDeepLinkKeyRef = useRef('');
   const ccWorkflowDefinitionDeepLinkRef = useRef<string | null>(null);
   const ccWorkflowInstanceDeepLinkRef = useRef<string | null>(null);
+  const ccInboxHomeDeepLinkRef = useRef<string | null>(null);
 
   useEffect(() => {
     const parsed = parseCommandCenterSettingsDeepLink(location.search);
@@ -1239,6 +1331,7 @@ const CommandCenterPage: React.FC = () => {
 
   const [publishMessage, setPublishMessage] = useState('');
   const [companySaving, setCompanySaving] = useState(false);
+  const [workflowSaving, setWorkflowSaving] = useState(false);
   const [companySaveFeedback, setCompanySaveFeedback] = useState<{
     kind: 'error' | 'success';
     text: string;
@@ -1320,11 +1413,16 @@ const CommandCenterPage: React.FC = () => {
     let cancelled = false;
     void (async () => {
       try {
-        const tree = await loadLegalEntityDepartmentTree(tenantId, entityId);
+        const tree = await loadLegalEntityDepartmentTree(tenantId, entityId, {
+          id: entityId,
+          tenantId,
+          code: settingsScopeEntity.code,
+          entityLevel: settingsScopeEntity.entityLevel,
+        });
         if (cancelled) return;
         const flat = flattenOrgTreeToDeptRows(tree);
         setDepartmentRowsByEntity((prev) => {
-          if (prev[entityId]?.length) return prev;
+          if (!isStaleDepartmentRowCache(prev[entityId])) return prev;
           return {
             ...prev,
             [entityId]: flat.length > 0 ? flat : [createBlankDeptRow()],
@@ -1332,10 +1430,13 @@ const CommandCenterPage: React.FC = () => {
         });
       } catch {
         if (!cancelled) {
-          setDepartmentRowsByEntity((prev) => ({
-            ...prev,
-            [entityId]: prev[entityId]?.length ? prev[entityId]! : [createBlankDeptRow()],
-          }));
+          setDepartmentRowsByEntity((prev) => {
+            if (!isStaleDepartmentRowCache(prev[entityId])) return prev;
+            return {
+              ...prev,
+              [entityId]: [createBlankDeptRow()],
+            };
+          });
         }
       }
     })();
@@ -1344,7 +1445,46 @@ const CommandCenterPage: React.FC = () => {
     };
   }, [activeSettingsMenu, settingsScopeEntity]);
 
+  useEffect(() => {
+    if (activeSettingsMenu !== 'tenant_departments' || !settingsScopeEntity?.tenantId) return;
+    let cancelled = false;
+    setDeptHeadOptionsLoading(true);
+    setDeptHeadOptionsError(null);
+    void (async () => {
+      if (activeSettingsMenuRef.current !== 'tenant_departments') return;
+      try {
+        const scope = resolveGroupHrHrmCatalogScope(settingsScopeEntity.tenantId);
+        const result = await listHrmEmployees(scope);
+        if (cancelled || activeSettingsMenuRef.current !== 'tenant_departments') return;
+        const employees = result.data ?? [];
+        setDeptHeadOptions([
+          DEPT_HEAD_EMPTY_OPTION,
+          ...employees.map((employee) => ({
+            id: employee.id,
+            label: `${employee.full_name}${employee.job_title_key ? ` — ${employee.job_title_key}` : ''} (${employee.employee_code})`,
+          })),
+        ]);
+        setDeptHeadOptionsError(null);
+      } catch (error) {
+        if (cancelled) return;
+        setDeptHeadOptions([DEPT_HEAD_EMPTY_OPTION]);
+        setDeptHeadOptionsError(
+          error instanceof Error
+            ? error.message
+            : 'Không tải được danh sách nhân viên cho Trưởng bộ phận.',
+        );
+      } finally {
+        if (!cancelled) setDeptHeadOptionsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSettingsMenu, settingsScopeEntity]);
+
   const [companySettingsView, setCompanySettingsView] = useState<'list' | 'form'>('list');
+  const settingsNavTransitionKey = `${activeSettingsMenu}:${companySettingsView}`;
+  const { shellVisible: settingsNavShellVisible } = useNavTransitionShell(settingsNavTransitionKey);
   const [companyDetailTab, setCompanyDetailTab] = useState<CompanyDetailTab>('legal');
   const [companyEntityId, setCompanyEntityId] = useState<string | null>(null);
   const [legalEntityApiCache, setLegalEntityApiCache] = useState<LegalEntityApiRow[]>([]);
@@ -1391,6 +1531,7 @@ const CommandCenterPage: React.FC = () => {
       submitted: true,
     },
   ]);
+  const [shareholderSelection, setShareholderSelection] = useState<Set<string>>(() => new Set());
   const [legalDocRows, setLegalDocRows] = useState<LegalDocRow[]>([
     {
       id: 'doc-1',
@@ -1405,6 +1546,11 @@ const CommandCenterPage: React.FC = () => {
   const [departmentRowsByEntity, setDepartmentRowsByEntity] = useState<
     Record<string, LegalDepartmentRow[]>
   >({});
+  const [deptHeadOptions, setDeptHeadOptions] = useState<Array<{ id: string; label: string }>>([
+    DEPT_HEAD_EMPTY_OPTION,
+  ]);
+  const [deptHeadOptionsLoading, setDeptHeadOptionsLoading] = useState(false);
+  const [deptHeadOptionsError, setDeptHeadOptionsError] = useState<string | null>(null);
   const [employeeMetadataByEntity, setEmployeeMetadataByEntity] = useState<
     Record<string, EmployeeMetadataFieldRow[]>
   >({});
@@ -1423,11 +1569,17 @@ const CommandCenterPage: React.FC = () => {
   const [inboxDetailLoadFailed, setInboxDetailLoadFailed] = useState(false);
   const [inboxDrawerBusy, setInboxDrawerBusy] = useState(false);
   const [legalDocUploadTargetId, setLegalDocUploadTargetId] = useState<string | null>(null);
+  const [legalDocUploadingRowId, setLegalDocUploadingRowId] = useState<string | null>(null);
+  const [shareholderSubmitPendingId, setShareholderSubmitPendingId] = useState<string | null>(null);
+  const [legalDocSubmitPendingId, setLegalDocSubmitPendingId] = useState<string | null>(null);
+  const { requestConfirm, confirmDialog } = useConfirmDialog();
+  const legalDocUploadTargetRef = useRef<string | null>(null);
   const legalDocFileInputRef = useRef<HTMLInputElement>(null);
   const permissionMatrixSaveTimerRef = useRef<number | null>(null);
   const [groupHrDetailEntityId, setGroupHrDetailEntityId] = useState<string | null>(null);
   const [groupHrFieldsConfigOpen, setGroupHrFieldsConfigOpen] = useState(false);
   const [groupHrSyncBusy, setGroupHrSyncBusy] = useState(false);
+  const [groupHrSyncProgress, setGroupHrSyncProgress] = useState<GroupHrSyncProgress | null>(null);
   const [groupHrSelectedCustomBlockCode, setGroupHrSelectedCustomBlockCode] = useState<string | null>(
     null,
   );
@@ -1483,11 +1635,17 @@ const CommandCenterPage: React.FC = () => {
     'foundation',
   );
   const [foundationCategories, setFoundationCategories] = useState<InfrastructureFoundationCategory[]>(
-    () => (allowMockFallback() ? [...INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES] : []),
+    () => [],
   );
-  const [foundationCategoryDetailId, setFoundationCategoryDetailId] = useState<string | null>(null);
+  const [foundationWizardOpen, setFoundationWizardOpen] = useState(false);
+  const [foundationWizardMode, setFoundationWizardMode] = useState<'create' | 'edit'>('create');
   const [foundationForm, setFoundationForm] = useState<InfrastructureFoundationCategory | null>(null);
-  const [deptSystemTab, setDeptSystemTab] = useState<'reference' | 'templates'>('reference');
+  const [foundationCategorySaving, setFoundationCategorySaving] = useState(false);
+  const [foundationFieldsPreviewEntityId, setFoundationFieldsPreviewEntityId] = useState<string | null>(
+    null,
+  );
+  const [deptSystemTab, setDeptSystemTab] = useState<'reference' | 'templates'>('templates');
+  const [deptReferenceTemplateId, setDeptReferenceTemplateId] = useState<string | null>(null);
   const [deptSystemDetailId, setDeptSystemDetailId] = useState<string | null>(null);
   const [deptSystemForm, setDeptSystemForm] = useState<DeptSystemFoundationTemplate | null>(null);
   const [infrastructureEditId, setInfrastructureEditId] = useState<string | null>(null);
@@ -1498,6 +1656,16 @@ const CommandCenterPage: React.FC = () => {
   const [infrastructureFieldsConfigEntityId, setInfrastructureFieldsConfigEntityId] = useState<
     string | null
   >(null);
+  const [infrastructureFieldsConfigOpenedFromMenu, setInfrastructureFieldsConfigOpenedFromMenu] =
+    useState<SettingsMenuKey | null>(null);
+  const [infrastructureFieldsApplyBusy, setInfrastructureFieldsApplyBusy] = useState(false);
+  const [infrastructureFieldsConfigFeedback, setInfrastructureFieldsConfigFeedback] = useState<{
+    kind: 'success' | 'error';
+    text: string;
+  } | null>(null);
+  const [infrastructureApplySuccessBanner, setInfrastructureApplySuccessBanner] = useState<string | null>(
+    null,
+  );
   const [infrastructureCustomFieldDefsByEntity, setInfrastructureCustomFieldDefsByEntity] =
     useState<Record<string, InfrastructureCustomFieldDef[]>>(() => ({}));
   const [infrastructureBlockTitleOverridesByEntity, setInfrastructureBlockTitleOverridesByEntity] =
@@ -1602,6 +1770,28 @@ const CommandCenterPage: React.FC = () => {
   const deptSystemTemplates = deptTemplatesHook.templates;
   const setDeptSystemTemplates = deptTemplatesHook.setTemplates;
 
+  const deptReferenceTemplate = useMemo(
+    () =>
+      deptReferenceTemplateId
+        ? deptSystemTemplates.find((t) => t.id === deptReferenceTemplateId) ?? null
+        : null,
+    [deptReferenceTemplateId, deptSystemTemplates],
+  );
+
+  useEffect(() => {
+    if (deptSystemTab !== 'reference') return;
+    if (!deptSystemTemplates.length) {
+      setDeptReferenceTemplateId(null);
+      return;
+    }
+    if (
+      !deptReferenceTemplateId ||
+      !deptSystemTemplates.some((t) => t.id === deptReferenceTemplateId)
+    ) {
+      setDeptReferenceTemplateId(deptSystemTemplates[0].id);
+    }
+  }, [deptSystemTab, deptSystemTemplates, deptReferenceTemplateId]);
+
   const workflowDefinitionsStrict = useMemo(
     () =>
       resolveWorkflowDefinitionsStrictBanner(
@@ -1632,18 +1822,12 @@ const CommandCenterPage: React.FC = () => {
   const [workflowCanvasSelectedStepId, setWorkflowCanvasSelectedStepId] = useState<string | null>(
     null,
   );
-  const [documentRows, setDocumentRows] = useState([
-    { code: 'QĐ-ATLD', title: 'Quy định An toàn lao động', version: 'v3.2', active: true },
-    { code: 'QĐ-DL', title: 'Quy định Điều lệnh vận hành', version: 'v1.9', active: true },
-  ]);
-  const [measurementRows, setMeasurementRows] = useState([
-    { key: 'DISTANCE', unit: 'Km', currency: 'VND', precision: 2 },
-    { key: 'FUEL', unit: 'Lít', currency: 'VND', precision: 3 },
-  ]);
-  const [pricingRows, setPricingRows] = useState([
-    { priceCode: 'PRC-FLEET-A', label: 'Giá chuẩn xe tải hạng A', amount: 14500 },
-    { priceCode: 'PRC-FLEET-B', label: 'Giá chuẩn xe tải hạng B', amount: 13200 },
-  ]);
+  const [documentRows, setDocumentRows] = useState<CcRegulationRow[]>([]);
+  const [measurementRows, setMeasurementRows] = useState<CcMeasurementRow[]>([]);
+  const [pricingRows, setPricingRows] = useState<CcPricingRow[]>([]);
+  const [docCatalogLoading, setDocCatalogLoading] = useState(false);
+  const [measureCatalogLoading, setMeasureCatalogLoading] = useState(false);
+  const [pricingCatalogLoading, setPricingCatalogLoading] = useState(false);
   const [permissionRoles, setPermissionRoles] = useState<PermissionRoleDef[]>(() => [
     ...RACI_PERMISSION_BOOTSTRAP.roles,
   ]);
@@ -1698,6 +1882,7 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     setMenuNotice(null);
     setPublishMessage('');
+    setInfrastructureApplySuccessBanner(null);
   }, [activeSettingsMenu]);
 
   useEffect(() => {
@@ -1721,24 +1906,27 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     if (activeSettingsMenu !== 'document') {
       docCatalogHydratedRef.current = false;
+      setDocCatalogLoading(false);
       return;
     }
     let cancelled = false;
+    setDocCatalogLoading(true);
     void (async () => {
       try {
-        const rows = await loadCcCatalogRows<{ code: string; title: string; version: string; active: boolean }>(
-          'regulations',
-        );
+        const rows = await loadCcCatalogRows<CcRegulationRow>('regulations');
         if (cancelled) return;
-        if (rows.length) setDocumentRows(rows);
+        setDocumentRows(rows);
         docCatalogHydratedRef.current = true;
       } catch (error) {
         if (!cancelled) {
+          setDocumentRows([]);
           setMenuNotice(
             `Không tải danh mục văn bản (${error instanceof Error ? error.message : 'lỗi'}).`,
           );
           docCatalogHydratedRef.current = true;
         }
+      } finally {
+        if (!cancelled) setDocCatalogLoading(false);
       }
     })();
     return () => {
@@ -1749,24 +1937,27 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     if (activeSettingsMenu !== 'measurement') {
       measureCatalogHydratedRef.current = false;
+      setMeasureCatalogLoading(false);
       return;
     }
     let cancelled = false;
+    setMeasureCatalogLoading(true);
     void (async () => {
       try {
-        const rows = await loadCcCatalogRows<{ key: string; unit: string; currency: string; precision: number }>(
-          'measurements',
-        );
+        const rows = await loadCcCatalogRows<CcMeasurementRow>('measurements');
         if (cancelled) return;
-        if (rows.length) setMeasurementRows(rows);
+        setMeasurementRows(rows);
         measureCatalogHydratedRef.current = true;
       } catch (error) {
         if (!cancelled) {
+          setMeasurementRows([]);
           setMenuNotice(
             `Không tải danh mục đo lường (${error instanceof Error ? error.message : 'lỗi'}).`,
           );
           measureCatalogHydratedRef.current = true;
         }
+      } finally {
+        if (!cancelled) setMeasureCatalogLoading(false);
       }
     })();
     return () => {
@@ -1777,22 +1968,27 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     if (activeSettingsMenu !== 'pricing') {
       pricingCatalogHydratedRef.current = false;
+      setPricingCatalogLoading(false);
       return;
     }
     let cancelled = false;
+    setPricingCatalogLoading(true);
     void (async () => {
       try {
-        const rows = await loadCcCatalogRows<{ priceCode: string; label: string; amount: number }>('pricing');
+        const rows = await loadCcCatalogRows<CcPricingRow>('pricing');
         if (cancelled) return;
-        if (rows.length) setPricingRows(rows);
+        setPricingRows(rows);
         pricingCatalogHydratedRef.current = true;
       } catch (error) {
         if (!cancelled) {
+          setPricingRows([]);
           setMenuNotice(
             `Không tải danh mục giá (${error instanceof Error ? error.message : 'lỗi'}).`,
           );
           pricingCatalogHydratedRef.current = true;
         }
+      } finally {
+        if (!cancelled) setPricingCatalogLoading(false);
       }
     })();
     return () => {
@@ -1803,11 +1999,14 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     if (!docCatalogHydratedRef.current || activeSettingsMenu !== 'document') return;
     const timer = window.setTimeout(() => {
-      void saveCcCatalogRows('regulations', documentRows).catch((error) => {
-        setMenuNotice(
-          `Không lưu danh mục văn bản (${error instanceof Error ? error.message : 'lỗi'}).`,
-        );
-      });
+      void saveCcCatalogRows('regulations', documentRows)
+        .then(() => loadCcCatalogRows<CcRegulationRow>('regulations'))
+        .then((rows) => setDocumentRows(rows))
+        .catch((error) => {
+          setMenuNotice(
+            `Không lưu danh mục văn bản (${error instanceof Error ? error.message : 'lỗi'}).`,
+          );
+        });
     }, 800);
     return () => window.clearTimeout(timer);
   }, [documentRows, activeSettingsMenu]);
@@ -1815,11 +2014,14 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     if (!measureCatalogHydratedRef.current || activeSettingsMenu !== 'measurement') return;
     const timer = window.setTimeout(() => {
-      void saveCcCatalogRows('measurements', measurementRows).catch((error) => {
-        setMenuNotice(
-          `Không lưu danh mục đo lường (${error instanceof Error ? error.message : 'lỗi'}).`,
-        );
-      });
+      void saveCcCatalogRows('measurements', measurementRows)
+        .then(() => loadCcCatalogRows<CcMeasurementRow>('measurements'))
+        .then((rows) => setMeasurementRows(rows))
+        .catch((error) => {
+          setMenuNotice(
+            `Không lưu danh mục đo lường (${error instanceof Error ? error.message : 'lỗi'}).`,
+          );
+        });
     }, 800);
     return () => window.clearTimeout(timer);
   }, [measurementRows, activeSettingsMenu]);
@@ -1827,18 +2029,22 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     if (!pricingCatalogHydratedRef.current || activeSettingsMenu !== 'pricing') return;
     const timer = window.setTimeout(() => {
-      void saveCcCatalogRows('pricing', pricingRows).catch((error) => {
-        setMenuNotice(
-          `Không lưu danh mục giá (${error instanceof Error ? error.message : 'lỗi'}).`,
-        );
-      });
+      void saveCcCatalogRows('pricing', pricingRows)
+        .then(() => loadCcCatalogRows<CcPricingRow>('pricing'))
+        .then((rows) => setPricingRows(rows))
+        .catch((error) => {
+          setMenuNotice(
+            `Không lưu danh mục giá (${error instanceof Error ? error.message : 'lỗi'}).`,
+          );
+        });
     }, 800);
     return () => window.clearTimeout(timer);
   }, [pricingRows, activeSettingsMenu]);
 
   useEffect(() => {
+    if (!tenantId || tenantId === '__loading__') return;
     let cancelled = false;
-    void fetchCommandCenterWorkspaceMeta(MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID)
+    void fetchCommandCenterWorkspaceMeta(tenantId, companyId)
       .then((meta) => {
         if (cancelled) return;
         if (meta?.asOf) {
@@ -1858,7 +2064,7 @@ const CommandCenterPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [tenantId, companyId]);
 
   useEffect(() => {
     if (!companyEntityId || companyEntityId === 'new') {
@@ -1876,7 +2082,18 @@ const CommandCenterPage: React.FC = () => {
       return;
     }
     let cancelled = false;
-    void resolveLegalEntityApiIdForCompany(tenantId, hints).then((resolved) => {
+    const resolvePromise =
+      companyEntityId === GROUP_HOLDING_ROOT_ID
+        ? fetchHoldingLegalEntities(tenantId).then((items) => {
+            setLegalEntityApiCache((prev) => {
+              const byId = new Map(prev.map((r) => [String(r.id), r]));
+              for (const r of items) byId.set(String(r.id), r);
+              return [...byId.values()];
+            });
+            return resolveLegalEntityApiIdFromList(hints, items);
+          })
+        : resolveLegalEntityApiIdForCompany(tenantId, hints);
+    void resolvePromise.then((resolved) => {
       if (!cancelled) setResolvedLegalEntityApiId(resolved);
     });
     return () => {
@@ -1885,14 +2102,18 @@ const CommandCenterPage: React.FC = () => {
   }, [companyEntityId, settingsLegalEntities, legalEntityList, legalEntityApiCache]);
 
   useEffect(() => {
-    const { entityId, tenantId: profileTenantId } = resolveLegalProfileScope();
-    if (!entityId || !isPersistedApiId(entityId)) return;
+    const scope = resolveLegalProfileScope();
+    const shareholderApiKey = resolveShareholderApiEntityKey(companyEntityId, scope.entityId);
+    if (!shareholderApiKey) return;
+    if (shareholderApiKey !== GROUP_HOLDING_ROOT_ID && !scope.entityId) return;
+    const profileEntityId = scope.entityId ?? shareholderApiKey;
+    if (shareholderApiKey !== GROUP_HOLDING_ROOT_ID && !isPersistedApiId(profileEntityId)) return;
     let cancelled = false;
     void (async () => {
       try {
         const [shareholders, documents] = await Promise.all([
-          listShareholders(entityId, profileTenantId),
-          listLegalDocuments(entityId, profileTenantId),
+          listShareholders(shareholderApiKey, scope.tenantId),
+          listLegalDocuments(profileEntityId, scope.tenantId),
         ]);
         if (cancelled) return;
         if (shareholders.length) {
@@ -1971,14 +2192,15 @@ const CommandCenterPage: React.FC = () => {
           setInboxTasksSource('api');
         } else {
           setInboxTasks([]);
-          setInboxTasksSource(allowMockFallback() ? 'mock' : 'api');
+          setInboxTasksSource(resolveCommandCenterEmptyApiSource());
         }
       })
       .catch(() => {
         if (!cancelled) {
           setInboxTasks([]);
-          setInboxTasksLoadFailed(!allowMockFallback());
-          setInboxTasksSource(allowMockFallback() ? 'mock' : 'api');
+          const errorState = resolveCommandCenterApiErrorState();
+          setInboxTasksLoadFailed(errorState.loadFailed);
+          setInboxTasksSource(errorState.source);
         }
       });
     return () => {
@@ -1998,14 +2220,15 @@ const CommandCenterPage: React.FC = () => {
           setPortalAlertsSource('api');
         } else {
           setPortalAlerts([]);
-          setPortalAlertsSource(allowMockFallback() ? 'mock' : 'api');
+          setPortalAlertsSource(resolveCommandCenterEmptyApiSource());
         }
       })
       .catch(() => {
         if (!cancelled) {
           setPortalAlerts([]);
-          setPortalAlertsLoadFailed(!allowMockFallback());
-          setPortalAlertsSource(allowMockFallback() ? 'mock' : 'api');
+          const errorState = resolveCommandCenterApiErrorState();
+          setPortalAlertsLoadFailed(errorState.loadFailed);
+          setPortalAlertsSource(errorState.source);
         }
       });
     return () => {
@@ -2021,18 +2244,13 @@ const CommandCenterPage: React.FC = () => {
     if (workflowCatalogHydratedRef.current) return;
     let cancelled = false;
     const seedLocal = () => {
-      if (!allowMockFallback()) {
-        setWorkflows([]);
-        setWorkflowDefinitionsSource('empty');
-        setWorkflowDefinitionsLoadFailed(false);
-        return;
-      }
-      setWorkflows([
+      const seeded = resolveWorkflowDefinitionsLocalSeed([
         ...getInitialWorkflowGraphDefinitions(),
         ...getRaciWorkflowPrototypeDefinitions(),
       ]);
-      setWorkflowDefinitionsSource('mock');
-      setWorkflowDefinitionsLoadFailed(false);
+      setWorkflows(seeded.rows);
+      setWorkflowDefinitionsSource(seeded.source);
+      setWorkflowDefinitionsLoadFailed(seeded.loadFailed);
     };
     setWorkflowDefinitionsSource('loading');
     void (async () => {
@@ -2040,7 +2258,7 @@ const CommandCenterPage: React.FC = () => {
         const rows = await listWorkflowDefinitions(tenantId, companyId);
         if (cancelled) return;
         const mapped = rows.map(apiRowToWorkflowDefinition).filter((w) => w.steps.length > 0);
-        if (mapped.length) {
+        if (rows.length > 0) {
           setWorkflows(mapped);
           setWorkflowDefinitionsSource('api');
           setWorkflowDefinitionsLoadFailed(false);
@@ -2053,8 +2271,13 @@ const CommandCenterPage: React.FC = () => {
         workflowCatalogHydratedRef.current = true;
       } catch (error) {
         if (!cancelled) {
-          seedLocal();
-          setWorkflowDefinitionsLoadFailed(!allowMockFallback());
+          const seeded = resolveWorkflowDefinitionsApiErrorState([
+            ...getInitialWorkflowGraphDefinitions(),
+            ...getRaciWorkflowPrototypeDefinitions(),
+          ]);
+          setWorkflows(seeded.rows);
+          setWorkflowDefinitionsSource(seeded.source);
+          setWorkflowDefinitionsLoadFailed(seeded.loadFailed);
           if (allowMockFallback()) {
             setMenuNotice(
               `Không tải workflow-engine (${error instanceof Error ? error.message : 'lỗi'}). Dùng mẫu cục bộ.`,
@@ -2083,20 +2306,23 @@ const CommandCenterPage: React.FC = () => {
     const instanceId = ccWorkflowInstanceDeepLinkRef.current;
     if (!instanceId || activeSettingsMenu !== 'workflow') return;
     ccWorkflowInstanceDeepLinkRef.current = null;
-    openInboxTaskDetail({
-      cardId: instanceId,
-      sourceId: instanceId,
-      sourceSystem: 'xbos-workflow',
-      dedupeKey: `wf-inst-${instanceId}`,
-      statusNormalized: 'PENDING_APPROVAL',
-      orgUnitId: MASTER_TENANT_ID,
-      moduleCode: 'business',
-      title: 'Chi tiết quy trình',
-      assigneeUserId: '',
-      assigneeName: '',
-      priority: 'medium',
-    });
+    openInboxTaskDetail(syntheticInboxTaskFromInstanceId(instanceId), { skipUrlSync: true });
   }, [activeSettingsMenu]);
+
+  useEffect(() => {
+    const parsed = parseCommandCenterSettingsDeepLink(location.search);
+    const instanceId = parsed.workflowInstanceId?.trim();
+    if (!instanceId || parsed.settingsMenu) {
+      if (!instanceId) ccInboxHomeDeepLinkRef.current = null;
+      return;
+    }
+    if (inboxDetailOpen && inboxDetailTask?.sourceId === instanceId) return;
+    if (ccInboxHomeDeepLinkRef.current === instanceId) return;
+
+    ccInboxHomeDeepLinkRef.current = instanceId;
+    const matched = inboxTasks.find((t) => t.sourceId === instanceId);
+    openInboxTaskDetail(matched ?? syntheticInboxTaskFromInstanceId(instanceId), { skipUrlSync: true });
+  }, [location.search, inboxTasks, inboxDetailOpen, inboxDetailTask?.sourceId]);
 
   useEffect(() => {
     if (activeSettingsMenu !== 'workflow') {
@@ -2154,23 +2380,51 @@ const CommandCenterPage: React.FC = () => {
     [],
   );
 
+  const effectiveInfraFoundationCategories = useMemo(
+    () =>
+      buildEffectiveInfraFoundationCategories(
+        foundationCategories,
+        foundationForm,
+        foundationWizardOpen,
+      ),
+    [foundationCategories, foundationForm, foundationWizardOpen],
+  );
+
   const infraCustomFieldDefsForEntity = useMemo(() => {
-    const entityId = infraForm.operatingEntityId;
-    if (!entityId) return [];
-    return infrastructureCustomFieldDefsByEntity[entityId] ?? [];
-  }, [infraForm.operatingEntityId, infrastructureCustomFieldDefsByEntity]);
+    return resolveInfraSiteConsumerFieldDefs(
+      infraForm.operatingEntityId ?? '',
+      effectiveInfraFoundationCategories,
+      infrastructureCustomFieldDefsByEntity,
+    );
+  }, [
+    infraForm.operatingEntityId,
+    infrastructureCustomFieldDefsByEntity,
+    effectiveInfraFoundationCategories,
+  ]);
 
   const infraCustomBlocksForEntity = useMemo(() => {
-    const entityId = infraForm.operatingEntityId;
-    if (!entityId) return [];
-    return (infrastructureCustomBlocksByEntity[entityId] ?? []).slice().sort((a, b) => a.order - b.order);
-  }, [infraForm.operatingEntityId, infrastructureCustomBlocksByEntity]);
+    return resolveInfraSiteConsumerCustomBlocks(
+      infraForm.operatingEntityId ?? '',
+      effectiveInfraFoundationCategories,
+      infrastructureCustomBlocksByEntity,
+    );
+  }, [
+    infraForm.operatingEntityId,
+    infrastructureCustomBlocksByEntity,
+    effectiveInfraFoundationCategories,
+  ]);
 
   const infraBlockTitleOverridesForEntity = useMemo(() => {
-    const entityId = infraForm.operatingEntityId;
-    if (!entityId) return {};
-    return infrastructureBlockTitleOverridesByEntity[entityId] ?? {};
-  }, [infraForm.operatingEntityId, infrastructureBlockTitleOverridesByEntity]);
+    return resolveInfraSiteConsumerBlockTitleOverrides(
+      infraForm.operatingEntityId ?? '',
+      effectiveInfraFoundationCategories,
+      infrastructureBlockTitleOverridesByEntity,
+    );
+  }, [
+    infraForm.operatingEntityId,
+    infrastructureBlockTitleOverridesByEntity,
+    effectiveInfraFoundationCategories,
+  ]);
 
   const infraUiMerged = useMemo(() => {
     return {
@@ -2199,16 +2453,79 @@ const CommandCenterPage: React.FC = () => {
   /** Pháp nhân đang chọn có nằm trong ít nhất một danh mục nền đã gán không (để cảnh báo khi nhập điểm). */
   const operatingEntityInFoundationScope = useMemo(() => {
     if (!infraForm.operatingEntityId) return true;
-    return foundationCategories.some((c) =>
-      c.appliesToCompanyIds.includes(infraForm.operatingEntityId),
+    return isOperatingEntityInFoundationScope(
+      infraForm.operatingEntityId,
+      effectiveInfraFoundationCategories,
     );
-  }, [foundationCategories, infraForm.operatingEntityId]);
+  }, [effectiveInfraFoundationCategories, infraForm.operatingEntityId]);
+
+  const infraCustomFieldDefsVisible = useMemo(() => {
+    if (infraForm.operatingEntityId && !operatingEntityInFoundationScope) return [];
+    return infraCustomFieldDefsForEntity;
+  }, [
+    infraCustomFieldDefsForEntity,
+    infraForm.operatingEntityId,
+    operatingEntityInFoundationScope,
+  ]);
+
+  const infraCustomBlocksVisible = useMemo(() => {
+    if (infraForm.operatingEntityId && !operatingEntityInFoundationScope) return [];
+    return infraCustomBlocksForEntity;
+  }, [
+    infraCustomBlocksForEntity,
+    infraForm.operatingEntityId,
+    operatingEntityInFoundationScope,
+  ]);
+
+  const displayableFoundationCategories = useMemo(
+    () => filterDisplayableFoundationCategories(foundationCategories),
+    [foundationCategories],
+  );
+
+  const foundationWizardVisibleFieldCount = useMemo(() => {
+    if (!foundationFieldsPreviewEntityId) return 0;
+    return countInfraSiteVisibleCustomFields(
+      foundationFieldsPreviewEntityId,
+      effectiveInfraFoundationCategories,
+      infrastructureCustomFieldDefsByEntity,
+    );
+  }, [
+    foundationFieldsPreviewEntityId,
+    effectiveInfraFoundationCategories,
+    infrastructureCustomFieldDefsByEntity,
+  ]);
 
   const infraCustomBlocksForModalEntity = useMemo(() => {
-    const entityId = infrastructureFieldsConfigEntityId;
-    if (!entityId) return [];
-    return (infrastructureCustomBlocksByEntity[entityId] ?? []).slice().sort((a, b) => a.order - b.order);
-  }, [infrastructureFieldsConfigEntityId, infrastructureCustomBlocksByEntity]);
+    return resolveMetadataCustomBlocks(
+      {
+        pipeline: 'infra',
+        entityId: infrastructureFieldsConfigEntityId ?? '',
+        foundationCategories: effectiveInfraFoundationCategories,
+      },
+      infrastructureCustomBlocksByEntity,
+    );
+  }, [
+    infrastructureFieldsConfigEntityId,
+    infrastructureCustomBlocksByEntity,
+    effectiveInfraFoundationCategories,
+  ]);
+
+  const infraModalFieldsForSelectedBlock = useMemo(() => {
+    return resolveMetadataFieldDefs(
+      {
+        pipeline: 'infra',
+        entityId: infrastructureFieldsConfigEntityId ?? '',
+        foundationCategories: effectiveInfraFoundationCategories,
+        blockCode: infraSelectedCustomBlockCode ?? 'general',
+      },
+      infrastructureCustomFieldDefsByEntity,
+    );
+  }, [
+    infrastructureFieldsConfigEntityId,
+    infrastructureCustomFieldDefsByEntity,
+    effectiveInfraFoundationCategories,
+    infraSelectedCustomBlockCode,
+  ]);
 
   function openNewCompanyEntity() {
     setCompanyEntityId('new');
@@ -2273,9 +2590,14 @@ const CommandCenterPage: React.FC = () => {
             for (const r of items) byId.set(String(r.id), r);
             return [...byId.values()];
           });
-          const apiRow = items[0];
+          const resolvedId = resolveLegalEntityApiIdFromList(
+            { id, tenantId, code: row.code },
+            items,
+          );
+          if (!resolvedId) return;
+          const apiRow = items.find((r) => String(r.id) === resolvedId);
           if (!apiRow) return;
-          setResolvedLegalEntityApiId(String(apiRow.id));
+          setResolvedLegalEntityApiId(resolvedId);
           setCompanyForm(mapLegalEntityRowToCompanyForm(apiRow) as CompanyFormState);
         })
         .catch(() => {
@@ -2388,7 +2710,8 @@ const CommandCenterPage: React.FC = () => {
     setGroupHrLeftAddBlockOpen(false);
 
     try {
-      const defs = await fetchGroupHrCatalogFieldDefs(tenantId, null);
+      const scope = resolveGroupHrHrmCatalogScope(tenantId);
+      const defs = await fetchGroupHrCatalogFieldDefs(scope.tenantId, scope.companyId);
       if (defs.length > 0) {
         setGroupHrCustomFieldDefsByEntity((prev) => ({ ...prev, [effectiveEntityId]: defs }));
         setGroupHrCustomBlocksByEntity((prev) => ({
@@ -2468,27 +2791,6 @@ const CommandCenterPage: React.FC = () => {
     return fromGroups?.groupLabel ?? blockCode;
   }
 
-  async function publishVersionChange(scope: string, payload: unknown) {
-    try {
-      const res = await fetch('/version/publish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          artifactType: 'system-settings',
-          artifactKey: scope,
-          changedAt: new Date().toISOString(),
-          payload,
-        }),
-      });
-      if (!res.ok) throw new Error('Phản hồi máy chủ không thành công');
-      setPublishMessage(`Đã ghi version mới cho ${scope} lúc ${new Date().toLocaleTimeString('vi-VN')}`);
-    } catch {
-      setPublishMessage(
-        `Không kết nối được /version/publish. Đã lưu tạm trên giao diện (${scope}) lúc ${new Date().toLocaleTimeString('vi-VN')}`,
-      );
-    }
-  }
-
   function getCommandCenterStorageScope() {
     return { tenantId, companyId };
   }
@@ -2509,11 +2811,60 @@ const CommandCenterPage: React.FC = () => {
       customBlocksByEntity: next?.customBlocksByEntity ?? infrastructureCustomBlocksByEntity,
       customFieldDefsByEntity: next?.customFieldDefsByEntity ?? infrastructureCustomFieldDefsByEntity,
     };
-    await saveInfrastructureSettings(
+    const saved = await saveInfrastructureSettings(
       payload as InfrastructureSettingsPayload,
       scope.tenantId,
       scope.companyId,
     );
+    if (saved.customFieldDefsByEntity) {
+      setInfrastructureCustomFieldDefsByEntity(
+        saved.customFieldDefsByEntity as typeof infrastructureCustomFieldDefsByEntity,
+      );
+    }
+    if (saved.customBlocksByEntity) {
+      setInfrastructureCustomBlocksByEntity(
+        saved.customBlocksByEntity as typeof infrastructureCustomBlocksByEntity,
+      );
+    }
+    if (saved.blockTitleOverridesByEntity) {
+      setInfrastructureBlockTitleOverridesByEntity(
+        saved.blockTitleOverridesByEntity as typeof infrastructureBlockTitleOverridesByEntity,
+      );
+    }
+    return saved;
+  }
+
+  function applyInfrastructureSettingsFromPayload(
+    data: InfrastructureSettingsPayload,
+    fallbackCategories?: InfrastructureFoundationCategory[],
+  ) {
+    const apiCategories = Array.isArray(data.foundationCategories)
+      ? (data.foundationCategories as InfrastructureFoundationCategory[])
+      : fallbackCategories ?? [];
+    if (apiCategories.length > 0 || fallbackCategories) {
+      const resolved = loadInfrastructureFoundationFromApi(apiCategories, false);
+      setFoundationCategories(resolved.categories);
+      setInfrastructureCatalogSource(resolved.source);
+      setInfrastructureCatalogFailed(resolved.loadFailed);
+    }
+    if (Array.isArray(data.sites)) {
+      setInfrastructureSites(data.sites as typeof infrastructureSites);
+    }
+    if (data.blockTitleOverridesByEntity) {
+      setInfrastructureBlockTitleOverridesByEntity(
+        data.blockTitleOverridesByEntity as typeof infrastructureBlockTitleOverridesByEntity,
+      );
+    }
+    if (data.customBlocksByEntity) {
+      setInfrastructureCustomBlocksByEntity(
+        data.customBlocksByEntity as typeof infrastructureCustomBlocksByEntity,
+      );
+    }
+    if (data.customFieldDefsByEntity) {
+      setInfrastructureCustomFieldDefsByEntity(
+        data.customFieldDefsByEntity as typeof infrastructureCustomFieldDefsByEntity,
+      );
+    }
   }
 
   async function loadInfrastructureSettingsFromDb() {
@@ -2523,45 +2874,11 @@ const CommandCenterPage: React.FC = () => {
     try {
       const data = await fetchInfrastructureSettings(scope.tenantId, scope.companyId);
       await fetchInfrastructureSummary(scope.tenantId, scope.companyId);
-      const apiCategories = Array.isArray(data.foundationCategories)
-        ? (data.foundationCategories as InfrastructureFoundationCategory[])
-        : [];
-      const resolved = resolveInfrastructureFoundationLoad(
-        apiCategories,
-        allowMockFallback(),
-        INFRASTRUCTURE_MOCK_SEED,
-        false,
-      );
-      setFoundationCategories(resolved.categories);
-      setInfrastructureCatalogSource(resolved.source);
-      setInfrastructureCatalogFailed(resolved.loadFailed);
-      if (Array.isArray(data.sites)) {
-        setInfrastructureSites(data.sites as typeof infrastructureSites);
-      }
-      if (data.blockTitleOverridesByEntity) {
-        setInfrastructureBlockTitleOverridesByEntity(
-          data.blockTitleOverridesByEntity as typeof infrastructureBlockTitleOverridesByEntity,
-        );
-      }
-      if (data.customBlocksByEntity) {
-        setInfrastructureCustomBlocksByEntity(
-          data.customBlocksByEntity as typeof infrastructureCustomBlocksByEntity,
-        );
-      }
-      if (data.customFieldDefsByEntity) {
-        setInfrastructureCustomFieldDefsByEntity(
-          data.customFieldDefsByEntity as typeof infrastructureCustomFieldDefsByEntity,
-        );
-      }
+      applyInfrastructureSettingsFromPayload(data);
       setInfrastructureDbHydrated(true);
       setMenuNotice(null);
     } catch {
-      const resolved = resolveInfrastructureFoundationLoad(
-        [],
-        allowMockFallback(),
-        INFRASTRUCTURE_MOCK_SEED,
-        true,
-      );
+      const resolved = loadInfrastructureFoundationFromApi([], true);
       setFoundationCategories(resolved.categories);
       setInfrastructureCatalogSource(resolved.source);
       setInfrastructureCatalogFailed(true);
@@ -2573,8 +2890,10 @@ const CommandCenterPage: React.FC = () => {
   async function syncGroupHrFieldsToHrmCatalogs(
     entityId: string,
     defs: InfrastructureCustomFieldDef[],
+    onProgress?: (progress: GroupHrSyncProgress) => void,
   ): Promise<void> {
     const entity = settingsLegalEntities.find((x) => x.id === entityId);
+    const scope = resolveGroupHrHrmCatalogScope(entity?.tenantId);
     const payload: GroupHrCatalogFieldDto[] = defs
       .filter((x) => x.visible)
       .map((d) => ({
@@ -2589,7 +2908,12 @@ const CommandCenterPage: React.FC = () => {
           (d.hrmCatalogKey as GroupHrCatalogFieldDto['hrmCatalogKey']) ??
           resolveHrmCatalogKey(d.blockCode, d.fieldCode),
       }));
-    await syncGroupHrFieldDefsToHrm(payload, entity?.tenantId, null);
+    await syncGroupHrFieldDefsToHrm(
+      payload,
+      scope.tenantId,
+      scope.companyId,
+      onProgress,
+    );
   }
 
   async function saveCompanySettings() {
@@ -2722,6 +3046,26 @@ const CommandCenterPage: React.FC = () => {
         }
       }
 
+      const shareholderApiKey = resolveShareholderApiEntityKey(
+        uiEntityId ?? companyEntityId,
+        persistedId,
+      );
+      if (shareholderApiKey && (isHoldingRoot || (persistedId && isPersistedApiId(persistedId)))) {
+        const synced = await syncShareholders(shareholderApiKey, tenantId, shareholderRows);
+        if (synced.length) {
+          setShareholderRows(
+            synced.map((s) => ({
+              id: String(s.id),
+              holderName: String(s.holder_name ?? ''),
+              identityCode: String(s.identity_code ?? ''),
+              ratioPercent: Number(s.ratio_percent ?? 0),
+              contributedValue: Number(s.contributed_value ?? 0),
+              submitted: true,
+            })),
+          );
+        }
+      }
+
       const nextRow: Company = {
       id: persistedId ?? `comp-${Date.now()}`,
       code: stableMemberCode || companyForm.shortName || 'NEW',
@@ -2795,17 +3139,53 @@ const CommandCenterPage: React.FC = () => {
     const tenantId =
       (scopeRow && 'tenantId' in scopeRow ? scopeRow.tenantId : undefined) ??
       MASTER_TENANT_ID;
-    if (!uiId || uiId === GROUP_HOLDING_ROOT_ID) {
-      return { entityId: null, tenantId };
+    return resolveLegalProfileScopeFromState({
+      uiEntityId: uiId,
+      tenantId,
+      code: scopeRow?.code,
+      resolvedLegalEntityApiId,
+      legalEntityApiCache,
+    });
+  }
+
+  async function ensureLegalProfileEntityId(): Promise<{ entityId: string; tenantId: string } | null> {
+    const scope = resolveLegalProfileScope();
+    if (scope.entityId) {
+      return { entityId: scope.entityId, tenantId: scope.tenantId };
     }
-    const entityId =
-      resolvedLegalEntityApiId ??
-      resolveLegalEntityApiIdFromList(
-        { id: uiId, tenantId, code: scopeRow?.code },
-        legalEntityApiCache,
-      ) ??
-      (isPersistedApiId(uiId) ? uiId : null);
-    return { entityId, tenantId };
+    const uiId = companyEntityId && companyEntityId !== 'new' ? companyEntityId : null;
+    if (!uiId) {
+      setPublishMessage(legalProfileScopePersistMessage(null));
+      return null;
+    }
+    if (uiId === GROUP_HOLDING_ROOT_ID) {
+      const scopeRow =
+        settingsLegalEntities.find((e) => e.id === uiId) ??
+        legalEntityList.find((e) => e.id === uiId);
+      const tenantId = scopeRow?.tenantId ?? MASTER_TENANT_ID;
+      try {
+        const holdingRows = await fetchHoldingLegalEntities(tenantId);
+        setLegalEntityApiCache((prev) => {
+          const byId = new Map(prev.map((r) => [String(r.id), r]));
+          for (const r of holdingRows) byId.set(String(r.id), r);
+          return [...byId.values()];
+        });
+        const resolved = resolveLegalEntityApiIdFromList(
+          { id: uiId, tenantId, code: scopeRow?.code },
+          holdingRows,
+        );
+        if (resolved) {
+          setResolvedLegalEntityApiId(resolved);
+          return { entityId: resolved, tenantId };
+        }
+      } catch {
+        /* fall through — user must save holding profile first */
+      }
+    }
+    const msg = legalProfileScopePersistMessage(uiId);
+    setPublishMessage(msg);
+    setCompanySaveFeedback({ kind: 'error', text: msg });
+    return null;
   }
 
   function openEmployeeMetadataPreview(entityId: string) {
@@ -2877,12 +3257,16 @@ const CommandCenterPage: React.FC = () => {
     void (async () => {
       if (isPersistedApiId(id)) {
         const key = resolveDeptConfigEntityKey();
-        const tenantId =
-          settingsLegalEntities.find((e) => e.id === key)?.tenantId ??
-          import.meta.env.VITE_DEFAULT_TENANT_ID ??
-          'xevn';
+        if (!key || key === 'new') return;
+        const scopeRow = settingsLegalEntities.find((e) => e.id === key);
         try {
-          await deleteOrgUnit(tenantId, MEMBER_DEFAULT_COMPANY_ID, id);
+          const ctx = await resolveDepartmentSaveContext({
+            id: key,
+            tenantId: scopeRow?.tenantId,
+            code: scopeRow?.code,
+            entityLevel: scopeRow?.entityLevel,
+          });
+          await deleteOrgUnit(ctx.tenantId, ctx.companyId, id);
         } catch (error) {
           setPublishMessage(error instanceof Error ? error.message : 'Không xóa được phòng ban.');
           return;
@@ -2902,28 +3286,56 @@ const CommandCenterPage: React.FC = () => {
       setPublishMessage('Lưu pháp nhân trước khi ghi phòng ban lên org-foundation.');
       return;
     }
-    const tenantId =
-      settingsLegalEntities.find((e) => e.id === key)?.tenantId ??
-      import.meta.env.VITE_DEFAULT_TENANT_ID ??
-      'xevn';
+    const scopeRow = settingsLegalEntities.find((e) => e.id === key);
     try {
-      const saved = await saveOrgUnit(
-        tenantId,
-        MEMBER_DEFAULT_COMPANY_ID,
-        {
-          code: row.code.trim() || `PB-${Date.now()}`,
-          name: row.name.trim() || 'Phòng ban',
-          orgType: 'department',
-          parentId: row.parentDeptId && isPersistedApiId(row.parentDeptId) ? row.parentDeptId : null,
-          legalEntityId: isPersistedApiId(key) ? key : null,
-          payload: { functionText: row.functionText, headId: row.headId },
-        },
-        isPersistedApiId(row.id) ? row.id : undefined,
-      );
+      const ctx = await resolveDepartmentSaveContext({
+        id: key,
+        tenantId: scopeRow?.tenantId,
+        code: scopeRow?.code,
+        entityLevel: scopeRow?.entityLevel,
+      });
+      if (!ctx.legalEntityId) {
+        setPublishMessage('Không xác định được pháp nhân trên org-foundation. Làm mới danh sách pháp nhân rồi thử lại.');
+        return;
+      }
+      const deptCode = row.code.trim() || `PB-${Date.now()}`;
+      const deptPayload = {
+        code: deptCode,
+        name: row.name.trim() || 'Phòng ban',
+        orgType: 'department',
+        parentId: row.parentDeptId && isPersistedApiId(row.parentDeptId) ? row.parentDeptId : null,
+        legalEntityId: ctx.legalEntityId,
+        payload: { functionText: row.functionText, headId: row.headId },
+      };
+      // D-W4-DEPT-DUP-SAVE-01: client scaffold id → saveOrgUnit resolves existing code → PUT
+      let unitId = isPersistedApiId(row.id) ? row.id : undefined;
+      if (!unitId) {
+        const codeNorm = deptCode.toLowerCase();
+        const cached = (departmentRowsByEntity[key] ?? []).find(
+          (r) =>
+            r.id !== row.id &&
+            isPersistedApiId(r.id) &&
+            r.code.trim().toLowerCase() === codeNorm,
+        );
+        if (cached) unitId = cached.id;
+      }
+      const saved = await saveOrgUnit(ctx.tenantId, ctx.companyId, deptPayload, unitId);
       const savedId = String(saved.id ?? row.id);
       mergeDepartmentRows((prev) =>
         prev.map((r) => (r.id === row.id ? { ...r, id: savedId } : r)),
       );
+      if (ctx.legalEntityId) {
+        const tree = await loadLegalEntityDepartmentTree(ctx.tenantId, key, {
+          id: key,
+          tenantId: scopeRow?.tenantId,
+          code: scopeRow?.code,
+          entityLevel: scopeRow?.entityLevel,
+        });
+        const flat = flattenOrgTreeToDeptRows(tree);
+        if (flat.length > 0) {
+          setDepartmentRowsByEntity((prev) => ({ ...prev, [key]: flat }));
+        }
+      }
       setPublishMessage('Đã lưu phòng ban lên org-foundation.');
     } catch (error) {
       setPublishMessage(error instanceof Error ? error.message : 'Không lưu được phòng ban.');
@@ -2933,13 +3345,17 @@ const CommandCenterPage: React.FC = () => {
   function openInfrastructureMaster() {
     setInfrastructureView('list');
     setInfrastructureEditId(null);
-    setFoundationCategoryDetailId(null);
-    setFoundationForm(null);
+    closeFoundationCategoryWizard();
   }
 
-  function closeFoundationCategoryDetail() {
-    setFoundationCategoryDetailId(null);
+  function closeFoundationCategoryWizard() {
+    const draftId = foundationForm?.id;
+    if (draftId) {
+      setFoundationCategories((prev) => removeUnsavedFoundationDraft(prev, draftId));
+    }
+    setFoundationWizardOpen(false);
     setFoundationForm(null);
+    setFoundationFieldsPreviewEntityId(null);
   }
 
   function openNewFoundationCategory() {
@@ -2951,16 +3367,21 @@ const CommandCenterPage: React.FC = () => {
       description: '',
       appliesToCompanyIds: [],
     };
-    setFoundationCategories((prev) => [...prev, row]);
-    setFoundationCategoryDetailId(id);
+    setFoundationWizardMode('create');
     setFoundationForm(row);
+    setFoundationFieldsPreviewEntityId(null);
+    setFoundationWizardOpen(true);
   }
 
-  function openFoundationCategoryDetail(id: string) {
+  function openEditFoundationCategory(id: string) {
     const cat = foundationCategories.find((c) => c.id === id);
     if (!cat) return;
-    setFoundationCategoryDetailId(id);
+    setFoundationWizardMode('edit');
     setFoundationForm({ ...cat });
+    setFoundationFieldsPreviewEntityId(
+      resolveFoundationFieldsPreviewEntityId(cat.appliesToCompanyIds, null),
+    );
+    setFoundationWizardOpen(true);
   }
 
   async function saveFoundationCategory() {
@@ -2973,25 +3394,55 @@ const CommandCenterPage: React.FC = () => {
       setPublishMessage('Vui lòng nhập tên danh mục nền.');
       return;
     }
-    setFoundationCategories((prev) => {
-      const idx = prev.findIndex((c) => c.id === foundationForm.id);
-      if (idx < 0) return [...prev, foundationForm];
-      const next = prev.slice();
-      next[idx] = foundationForm;
-      return next;
+    setFoundationCategorySaving(true);
+    const nextFoundationCategories = mergeFoundationCategoryIntoList(
+      foundationCategories,
+      foundationForm,
+    );
+    try {
+      const saved = await saveInfrastructureSettingsToDb({
+        foundationCategories: nextFoundationCategories,
+        blockTitleOverridesByEntity: infrastructureBlockTitleOverridesByEntity,
+        customBlocksByEntity: infrastructureCustomBlocksByEntity,
+        customFieldDefsByEntity: infrastructureCustomFieldDefsByEntity,
+      });
+      applyInfrastructureSettingsFromPayload(saved, nextFoundationCategories);
+      await loadInfrastructureSettingsFromDb();
+      setPublishMessage('Đã lưu danh mục nền, phạm vi và cấu hình khối/trường.');
+      setFoundationWizardOpen(false);
+      setFoundationForm(null);
+      setFoundationFieldsPreviewEntityId(null);
+    } catch (error) {
+      setPublishMessage(
+        error instanceof Error ? error.message : 'Không lưu được danh mục nền lên DB.',
+      );
+    } finally {
+      setFoundationCategorySaving(false);
+    }
+  }
+
+  function promptDeleteFoundationCategory(id: string) {
+    const row = foundationCategories.find((c) => c.id === id);
+    const label = row?.nameVi?.trim() || row?.code?.trim() || 'danh mục nền này';
+    requestConfirm({
+      title: 'Xóa danh mục nền',
+      description: `Bạn có chắc muốn xóa "${label}"? Hành động này không thể hoàn tác.`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: async () => {
+        const next = foundationCategories.filter((c) => c.id !== id);
+        try {
+          await saveInfrastructureSettingsToDb({ foundationCategories: next });
+          await loadInfrastructureSettingsFromDb();
+          if (foundationForm?.id === id) closeFoundationCategoryWizard();
+          setPublishMessage('Đã xóa danh mục nền khỏi DB.');
+        } catch (error) {
+          setPublishMessage(
+            error instanceof Error ? error.message : 'Không xóa được danh mục nền.',
+          );
+        }
+      },
     });
-    void publishVersionChange('infrastructure-foundation-category', foundationForm);
-    const nextFoundationCategories = (() => {
-      const idx = foundationCategories.findIndex((c) => c.id === foundationForm.id);
-      if (idx < 0) return [...foundationCategories, foundationForm];
-      const next = foundationCategories.slice();
-      next[idx] = foundationForm;
-      return next;
-    })();
-    void saveInfrastructureSettingsToDb({ foundationCategories: nextFoundationCategories }).catch(() => {
-      setPublishMessage('Lưu danh mục nền cục bộ thành công nhưng chưa ghi được DB.');
-    });
-    setPublishMessage('Đã lưu danh mục nền và phạm vi áp dụng.');
   }
 
   function toggleFoundationCompany(companyId: string) {
@@ -3000,13 +3451,33 @@ const CommandCenterPage: React.FC = () => {
       const set = new Set(prev.appliesToCompanyIds);
       if (set.has(companyId)) set.delete(companyId);
       else set.add(companyId);
-      return { ...prev, appliesToCompanyIds: Array.from(set) };
+      const appliesToCompanyIds = Array.from(set);
+      setFoundationFieldsPreviewEntityId((current) =>
+        resolveFoundationFieldsPreviewEntityId(appliesToCompanyIds, current),
+      );
+      return { ...prev, appliesToCompanyIds };
     });
+  }
+
+  function openFoundationFieldsConfigFromWizard() {
+    const entityId =
+      foundationFieldsPreviewEntityId ??
+      resolveFoundationFieldsPreviewEntityId(foundationForm?.appliesToCompanyIds ?? [], null);
+    if (!entityId) {
+      setPublishMessage('Chọn ít nhất một pháp nhân trước khi cấu hình khối/trường.');
+      return;
+    }
+    openInfrastructureFieldsConfigModal(entityId);
   }
 
   function closeDeptSystemDetail() {
     setDeptSystemDetailId(null);
     setDeptSystemForm(null);
+  }
+
+  function switchDeptSystemTab(tab: 'reference' | 'templates') {
+    setDeptSystemTab(tab);
+    void deptTemplatesHook.reload();
   }
 
   function openNewDeptSystemTemplate() {
@@ -3019,14 +3490,16 @@ const CommandCenterPage: React.FC = () => {
       description: '',
       appliesToCompanyIds: [],
       enabledOrgGradeLevels: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      gradeTitleLayout: buildLayoutForEnabledLevels([1, 2, 3, 4, 5, 6, 7, 8, 9]),
     };
     setDeptSystemTemplates((prev) => [...prev, row]);
     setDeptSystemDetailId(id);
     setDeptSystemForm(row);
   }
 
-  function openDeptSystemDetail(id: string) {
-    const t = deptSystemTemplates.find((x) => x.id === id);
+  async function openDeptSystemDetail(id: string) {
+    const fresh = await deptTemplatesHook.reload();
+    const t = fresh.find((x) => x.id === id);
     if (!t) return;
     setDeptSystemTab('templates');
     setDeptSystemDetailId(id);
@@ -3060,8 +3533,15 @@ const CommandCenterPage: React.FC = () => {
     });
     try {
       await upsertDeptSystemTemplate(deptSystemForm, tenantId, companyId);
-      void deptTemplatesHook.reload();
-      void publishVersionChange('dept-system-foundation-template', deptSystemForm);
+      const fresh = await deptTemplatesHook.reload();
+      const savedId = deptSystemForm.id;
+      const updated = fresh.find((x) => x.id === savedId);
+      if (updated && deptSystemDetailId === savedId) {
+        setDeptSystemForm({ ...updated });
+      }
+      if (deptReferenceTemplateId === savedId || !deptReferenceTemplateId) {
+        setDeptReferenceTemplateId(savedId);
+      }
       setPublishMessage('Đã lưu khung phòng ban và phạm vi ORG GRADE (DB).');
     } catch (error) {
       setPublishMessage(
@@ -3080,17 +3560,95 @@ const CommandCenterPage: React.FC = () => {
     });
   }
 
+  async function deleteDeptSystemTemplateRow(id: string) {
+    const row = deptSystemTemplates.find((x) => x.id === id);
+    const label = row?.nameVi?.trim() || row?.code?.trim() || 'khung phòng/ban này';
+    requestConfirm({
+      title: 'Xóa khung phòng/ban',
+      description: `Bạn có chắc muốn xóa "${label}" khỏi DB? Hành động này không thể hoàn tác.`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          await deleteDeptSystemTemplate(id, tenantId, companyId);
+          setDeptSystemTemplates((prev) => prev.filter((x) => x.id !== id));
+          if (deptSystemDetailId === id) closeDeptSystemDetail();
+          void deptTemplatesHook.reload();
+          setPublishMessage('Đã xóa khung phòng/ban khỏi DB.');
+        } catch (error) {
+          setPublishMessage(
+            error instanceof Error ? error.message : 'Không xóa được khung phòng/ban.',
+          );
+        }
+      },
+    });
+  }
+
   function toggleDeptSystemGrade(level: number) {
     setDeptSystemForm((prev) => {
       if (!prev) return prev;
       const set = new Set(prev.enabledOrgGradeLevels);
       if (set.has(level)) set.delete(level);
       else set.add(level);
+      const enabled = Array.from(set).sort((a, b) => a - b);
       return {
         ...prev,
-        enabledOrgGradeLevels: Array.from(set).sort((a, b) => a - b),
+        enabledOrgGradeLevels: enabled,
+        gradeTitleLayout: buildLayoutForEnabledLevels(enabled, prev.gradeTitleLayout ?? {}),
       };
     });
+  }
+
+  async function applyInfrastructureFieldsConfig() {
+    const entityId = infrastructureFieldsConfigEntityId;
+    if (!entityId) {
+      setInfrastructureFieldsConfigFeedback({
+        kind: 'error',
+        text: 'Chọn pháp nhân trước khi xác nhận.',
+      });
+      return;
+    }
+
+    setInfrastructureFieldsApplyBusy(true);
+    setInfrastructureFieldsConfigFeedback(null);
+    try {
+      const saved = await saveInfrastructureSettingsToDb({
+        blockTitleOverridesByEntity: infrastructureBlockTitleOverridesByEntity,
+        customBlocksByEntity: infrastructureCustomBlocksByEntity,
+        customFieldDefsByEntity: infrastructureCustomFieldDefsByEntity,
+      });
+      applyInfrastructureSettingsFromPayload(saved);
+      await loadInfrastructureSettingsFromDb();
+
+      const savedDefs = (saved.customFieldDefsByEntity ??
+        infrastructureCustomFieldDefsByEntity) as typeof infrastructureCustomFieldDefsByEntity;
+      const savedCategories = Array.isArray(saved.foundationCategories)
+        ? (saved.foundationCategories as InfrastructureFoundationCategory[])
+        : foundationCategories;
+      const visibleFieldCount = countInfraSiteVisibleCustomFields(
+        entityId,
+        savedCategories,
+        savedDefs,
+      );
+      const successText = buildInfraFieldsApplySuccessMessage(entityId, visibleFieldCount);
+
+      setInfrastructureFieldsConfigFeedback({ kind: 'success', text: successText });
+      setInfrastructureApplySuccessBanner(successText);
+      setPublishMessage(successText);
+      setInfrastructureFieldsConfigOpen(false);
+    } catch (error) {
+      const text =
+        error instanceof Error ? error.message : 'Không lưu được cấu hình hạ tầng lên DB.';
+      setInfrastructureFieldsConfigFeedback({ kind: 'error', text });
+      setPublishMessage(text);
+    } finally {
+      setInfrastructureFieldsApplyBusy(false);
+    }
+  }
+
+  function navigateToInfrastructureSiteEntry() {
+    setInfrastructureFieldsConfigOpen(false);
+    navigate(infrastructureSiteEntrySettingsUrl());
   }
 
   /** Mở modal cấu hình khối/trường — gọi từ chi tiết danh mục nền (sau phạm vi) hoặc khi sửa điểm. */
@@ -3101,6 +3659,9 @@ const CommandCenterPage: React.FC = () => {
       legalEntityList[0]?.id ||
       'comp-002';
     setInfrastructureFieldsConfigEntityId(resolved);
+    setInfrastructureFieldsConfigOpenedFromMenu(activeSettingsMenu);
+    setInfrastructureFieldsConfigFeedback(null);
+    setInfrastructureFieldsApplyBusy(false);
     setInfraSelectedCustomBlockCode('general');
     setInfraLeftAddBlockOpen(false);
     const baseUi = {
@@ -3110,7 +3671,11 @@ const CommandCenterPage: React.FC = () => {
         capacity: { titleVi: 'Khối Năng lực (Capacity)' },
       },
     };
-    const ov = infrastructureBlockTitleOverridesByEntity[resolved] ?? {};
+    const ov = resolveInfraSiteConsumerBlockTitleOverrides(
+      resolved,
+      effectiveInfraFoundationCategories,
+      infrastructureBlockTitleOverridesByEntity,
+    );
     setInfraBlockTitleDraft({
       general: ov.general ?? baseUi.blocks.general.titleVi,
       location: ov.location ?? baseUi.blocks.location.titleVi,
@@ -3129,11 +3694,20 @@ const CommandCenterPage: React.FC = () => {
     }));
   }
 
-  function openNewInfrastructureSite() {
+  function openNewInfrastructureSite(preferredOperatingEntityId?: string) {
     setInfrastructureBrowseTab('sites');
-    closeFoundationCategoryDetail();
+    closeFoundationCategoryWizard();
     setInfrastructureEditId('new');
-    setInfraForm(createEmptyInfrastructureForm());
+    const defaultOperatingEntityId = resolveDefaultInfraSiteOperatingEntityId(
+      foundationCategories,
+      preferredOperatingEntityId ?? foundationFieldsPreviewEntityId,
+    );
+    setInfraForm(
+      normalizeInfrastructureFormForEntity({
+        ...createEmptyInfrastructureForm(),
+        operatingEntityId: defaultOperatingEntityId,
+      }),
+    );
     setInfrastructureView('detail');
   }
 
@@ -3141,32 +3715,39 @@ const CommandCenterPage: React.FC = () => {
     const row = infrastructureSites.find((s) => s.id === id);
     if (!row) return;
     setInfrastructureBrowseTab('sites');
-    closeFoundationCategoryDetail();
+    closeFoundationCategoryWizard();
     setInfrastructureEditId(id);
     setInfraForm(infrastructureRowToForm(row));
     setInfrastructureView('detail');
   }
 
   async function saveInfrastructureSite() {
+    if (infraForm.operatingEntityId && !operatingEntityInFoundationScope) {
+      setPublishMessage(
+        'Pháp nhân đang chọn chưa nằm trong phạm vi danh mục nền — gán pháp nhân trong tab 1. Danh mục nền & phạm vi trước khi lưu điểm hạ tầng.',
+      );
+      return;
+    }
     const nextRow: InfrastructureSiteRow = {
       id: infrastructureEditId === 'new' ? `inf-${Date.now()}` : infrastructureEditId!,
       ...infraForm,
     };
-    await publishVersionChange('infrastructure-site', nextRow);
-    if (infrastructureEditId === 'new') {
-      const nextSites = [...infrastructureSites, nextRow];
-      setInfrastructureSites(nextSites);
-      void saveInfrastructureSettingsToDb({ sites: nextSites }).catch(() => {
-        setPublishMessage('Đã lưu điểm hạ tầng cục bộ nhưng chưa ghi được DB.');
-      });
-    } else if (infrastructureEditId) {
-      const nextSites = infrastructureSites.map((s) => (s.id === infrastructureEditId ? nextRow : s));
-      setInfrastructureSites(nextSites);
-      void saveInfrastructureSettingsToDb({ sites: nextSites }).catch(() => {
-        setPublishMessage('Đã cập nhật điểm hạ tầng cục bộ nhưng chưa ghi được DB.');
-      });
+    try {
+      if (infrastructureEditId === 'new') {
+        const nextSites = [...infrastructureSites, nextRow];
+        setInfrastructureSites(nextSites);
+        await saveInfrastructureSettingsToDb({ sites: nextSites });
+      } else if (infrastructureEditId) {
+        const nextSites = infrastructureSites.map((s) => (s.id === infrastructureEditId ? nextRow : s));
+        setInfrastructureSites(nextSites);
+        await saveInfrastructureSettingsToDb({ sites: nextSites });
+      }
+      openInfrastructureMaster();
+    } catch (error) {
+      setPublishMessage(
+        error instanceof Error ? error.message : 'Không lưu được điểm hạ tầng lên DB.',
+      );
     }
-    openInfrastructureMaster();
   }
 
   function addPermissionRole() {
@@ -3224,7 +3805,7 @@ const CommandCenterPage: React.FC = () => {
   }
 
   async function saveWorkflow() {
-    if (!workflowForm) return;
+    if (!workflowForm || workflowSaving) return;
     const sortedSteps = workflowForm.steps
       .slice()
       .sort((a, b) => a.order - b.order)
@@ -3241,6 +3822,7 @@ const CommandCenterPage: React.FC = () => {
     const isNew =
       workflowEditId === 'new' || !workflowEditId || !isPersistedApiId(workflowEditId);
     const apiDefinitionId = isNew ? undefined : workflowEditId ?? undefined;
+    setWorkflowSaving(true);
     try {
       const payload = workflowDefinitionToApiPayload(next);
       const saved = await saveWorkflowDefinition(
@@ -3255,8 +3837,9 @@ const CommandCenterPage: React.FC = () => {
         error instanceof Error ? error.message : 'Không lưu được quy trình lên workflow-engine.',
       );
       return;
+    } finally {
+      setWorkflowSaving(false);
     }
-    await publishVersionChange('workflow-system', next);
     if (isNew) {
       setWorkflows((prev) => [...prev, next]);
     } else if (workflowEditId) {
@@ -3381,28 +3964,24 @@ const CommandCenterPage: React.FC = () => {
     setShareholderRows((prev) =>
       prev.map((row) => {
         if (row.id !== id) return row;
-        const next = { ...row, [key]: value } as ShareholderRow;
-        if (key === 'ratioPercent' || key === 'contributedValue') {
-          const ratio = Number(key === 'ratioPercent' ? value : row.ratioPercent);
-          next.contributedValue = Math.round((Number(companyForm.charterCapital) * ratio) / 100);
-        }
-        return next;
+        return applyShareholderRowFieldUpdate(row, key, value as ShareholderRow[typeof key]);
       }),
     );
   }
 
   async function submitShareholderRow(id: string) {
+    if (shareholderSubmitPendingId) return;
     const target = shareholderRows.find((r) => r.id === id);
     if (!target) return;
-    const { entityId, tenantId } = resolveLegalProfileScope();
-    if (!entityId) {
-      setPublishMessage('Chọn hoặc lưu pháp nhân trước khi ghi cổ đông.');
-      return;
-    }
+    setShareholderSubmitPendingId(id);
     try {
+      const scope = await ensureLegalProfileEntityId();
+      if (!scope) return;
+      const shareholderApiKey = resolveShareholderApiEntityKey(companyEntityId, scope.entityId);
+      if (!shareholderApiKey) return;
       const saved = await saveShareholder(
-        entityId,
-        tenantId,
+        shareholderApiKey,
+        scope.tenantId,
         {
           holderName: target.holderName,
           identityCode: target.identityCode,
@@ -3419,22 +3998,74 @@ const CommandCenterPage: React.FC = () => {
       setPublishMessage('Đã lưu cổ đông lên hệ thống.');
     } catch (error) {
       setPublishMessage(error instanceof Error ? error.message : 'Không lưu được cổ đông.');
+    } finally {
+      setShareholderSubmitPendingId(null);
+    }
+  }
+
+  function toggleShareholderSelection(id: string, checked: boolean) {
+    setShareholderSelection((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function toggleAllShareholderSelection(checked: boolean) {
+    setShareholderSelection(checked ? new Set(shareholderRows.map((r) => r.id)) : new Set());
+  }
+
+  async function deleteShareholderRowsByIds(ids: string[]) {
+    if (ids.length === 0) return;
+    const scope = resolveLegalProfileScope();
+    const shareholderApiKey = resolveShareholderApiEntityKey(companyEntityId, scope.entityId);
+    const failed: string[] = [];
+    for (const id of ids) {
+      if (shareholderApiKey && isPersistedApiId(id)) {
+        try {
+          await deleteShareholderApi(shareholderApiKey, scope.tenantId, id);
+        } catch (error) {
+          failed.push(id);
+          setPublishMessage(error instanceof Error ? error.message : 'Không xóa được cổ đông.');
+        }
+      }
+    }
+    const removed = ids.filter((id) => !failed.includes(id));
+    if (removed.length === 0) return;
+    setShareholderRows((prev) => prev.filter((r) => !removed.includes(r.id)));
+    setShareholderSelection((prev) => {
+      const next = new Set(prev);
+      removed.forEach((id) => next.delete(id));
+      return next;
+    });
+    if (failed.length === 0) {
+      setPublishMessage(removed.length === 1 ? 'Đã xóa cổ đông.' : `Đã xóa ${removed.length} cổ đông.`);
     }
   }
 
   function deleteShareholderRow(id: string) {
-    void (async () => {
-      const { entityId, tenantId } = resolveLegalProfileScope();
-      if (entityId && isPersistedApiId(id)) {
-        try {
-          await deleteShareholderApi(entityId, tenantId, id);
-        } catch (error) {
-          setPublishMessage(error instanceof Error ? error.message : 'Không xóa được cổ đông.');
-          return;
-        }
-      }
-      setShareholderRows((prev) => prev.filter((r) => r.id !== id));
-    })();
+    const row = shareholderRows.find((r) => r.id === id);
+    const label = row?.holderName?.trim() || 'cổ đông này';
+    requestConfirm({
+      title: 'Xóa cổ đông',
+      description: `Bạn có chắc muốn xóa "${label}"? Hành động này không thể hoàn tác.`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: () => deleteShareholderRowsByIds([id]),
+    });
+  }
+
+  function deleteSelectedShareholderRows() {
+    const count = shareholderSelection.size;
+    if (count === 0) return;
+    requestConfirm({
+      title: 'Xóa cổ đông đã chọn',
+      description: `Bạn có chắc muốn xóa ${count} cổ đông đã chọn? Hành động này không thể hoàn tác.`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: () => deleteShareholderRowsByIds([...shareholderSelection]),
+    });
   }
 
   function addLegalDocRow() {
@@ -3459,14 +4090,14 @@ const CommandCenterPage: React.FC = () => {
   }
 
   async function submitLegalDocRow(id: string) {
+    if (legalDocSubmitPendingId) return;
     const target = legalDocRows.find((r) => r.id === id);
     if (!target) return;
-    const { entityId, tenantId } = resolveLegalProfileScope();
-    if (!entityId) {
-      setPublishMessage('Chọn hoặc lưu pháp nhân trước khi ghi tài liệu pháp lý.');
-      return;
-    }
+    setLegalDocSubmitPendingId(id);
     try {
+      const scope = await ensureLegalProfileEntityId();
+      if (!scope) return;
+      const { entityId, tenantId } = scope;
       const saved = await saveLegalDocument(
         entityId,
         tenantId,
@@ -3493,40 +4124,56 @@ const CommandCenterPage: React.FC = () => {
       setPublishMessage('Đã lưu tài liệu pháp lý lên hệ thống.');
     } catch (error) {
       setPublishMessage(error instanceof Error ? error.message : 'Không lưu được tài liệu.');
+    } finally {
+      setLegalDocSubmitPendingId(null);
     }
   }
 
-  function deleteLegalDocRow(id: string) {
-    void (async () => {
-      const { entityId, tenantId } = resolveLegalProfileScope();
-      if (entityId && isPersistedApiId(id)) {
-        try {
-          await deleteLegalDocumentApi(entityId, tenantId, id);
-        } catch (error) {
-          setPublishMessage(error instanceof Error ? error.message : 'Không xóa được tài liệu.');
-          return;
-        }
+  async function deleteLegalDocRowById(id: string) {
+    const { entityId, tenantId } = resolveLegalProfileScope();
+    if (entityId && isPersistedApiId(id)) {
+      try {
+        await deleteLegalDocumentApi(entityId, tenantId, id);
+      } catch (error) {
+        setPublishMessage(error instanceof Error ? error.message : 'Không xóa được tài liệu.');
+        return;
       }
-      setLegalDocRows((prev) => prev.filter((r) => r.id !== id));
-    })();
+    }
+    setLegalDocRows((prev) => prev.filter((r) => r.id !== id));
+    setPublishMessage('Đã xóa tài liệu pháp lý.');
+  }
+
+  function deleteLegalDocRow(id: string) {
+    const row = legalDocRows.find((r) => r.id === id);
+    const label = row?.documentName?.trim() || 'tài liệu này';
+    requestConfirm({
+      title: 'Xóa tài liệu pháp lý',
+      description: `Bạn có chắc muốn xóa "${label}"? Hành động này không thể hoàn tác.`,
+      confirmLabel: 'Xóa',
+      destructive: true,
+      onConfirm: () => deleteLegalDocRowById(id),
+    });
   }
 
   function triggerLegalDocUpload(rowId: string) {
+    legalDocUploadTargetRef.current = rowId;
     setLegalDocUploadTargetId(rowId);
     legalDocFileInputRef.current?.click();
   }
 
   async function onLegalDocFilePicked(file: File | undefined) {
-    const rowId = legalDocUploadTargetId;
+    const rowId = legalDocUploadTargetRef.current ?? legalDocUploadTargetId;
     if (!file || !rowId) return;
-    const { entityId, tenantId } = resolveLegalProfileScope();
-    if (!entityId) {
-      setPublishMessage('Chọn pháp nhân trước khi upload file.');
+    const scope = await ensureLegalProfileEntityId();
+    if (!scope) {
+      setPublishMessage('Chưa lưu hồ sơ pháp nhân — hãy bấm Lưu thay đổi trước khi upload file.');
       return;
     }
+    const { entityId, tenantId } = scope;
     let docId = rowId;
     const row = legalDocRows.find((r) => r.id === rowId);
     if (!row) return;
+    setLegalDocUploadingRowId(rowId);
     try {
       if (!isPersistedApiId(docId)) {
         const created = await saveLegalDocument(entityId, tenantId, {
@@ -3536,26 +4183,30 @@ const CommandCenterPage: React.FC = () => {
           expiredDate: row.expiredDate || undefined,
         });
         docId = String(created.id);
+        legalDocUploadTargetRef.current = docId;
         setLegalDocRows((prev) => prev.map((r) => (r.id === rowId ? { ...r, id: docId } : r)));
       }
       const uploaded = await uploadLegalDocumentFile(entityId, tenantId, docId, file);
+      const displayName = file.name || String(uploaded.document_name ?? 'Đã tải lên');
       setLegalDocRows((prev) =>
         prev.map((r) =>
           r.id === docId || r.id === rowId
             ? {
                 ...r,
                 id: docId,
-                fileName: file.name,
+                fileName: displayName,
                 fileUrl: uploaded.file_url ?? legalDocumentViewUrl(docId),
                 submitted: true,
               }
             : r,
         ),
       );
-      setPublishMessage('Đã upload file tài liệu pháp lý.');
+      setPublishMessage(`Đã upload: ${displayName}`);
     } catch (error) {
       setPublishMessage(error instanceof Error ? error.message : 'Upload file thất bại.');
     } finally {
+      setLegalDocUploadingRowId(null);
+      legalDocUploadTargetRef.current = null;
       setLegalDocUploadTargetId(null);
       if (legalDocFileInputRef.current) legalDocFileInputRef.current.value = '';
     }
@@ -3570,7 +4221,10 @@ const CommandCenterPage: React.FC = () => {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
-  const railItems = useMemo(() => filterRailByRole(mockRailModules, persona), [persona]);
+  const railItems = useMemo(
+    () => filterRailByRole(commandCenterRailModules, persona),
+    [persona],
+  );
 
   const scopedTasks = useMemo(() => {
     const sourceKind =
@@ -3578,7 +4232,7 @@ const CommandCenterPage: React.FC = () => {
     const base =
       sourceKind === 'loading'
         ? inboxTasks
-        : resolveCommandCenterInboxTasks(sourceKind, inboxTasks, mockUnifiedTasks);
+        : resolveCommandCenterInboxTasks(sourceKind, inboxTasks);
     return filterTasksByPersona(base, persona);
   }, [inboxTasks, inboxTasksSource, persona]);
 
@@ -3593,12 +4247,12 @@ const CommandCenterPage: React.FC = () => {
   );
 
   const scopedAlerts = useMemo(() => {
+    const sourceKind =
+      portalAlertsSource === 'loading' ? 'loading' : portalAlertsSource === 'mock' ? 'mock' : 'api';
     const base =
-      portalAlertsSource === 'api' && portalAlerts.length
+      sourceKind === 'loading'
         ? portalAlerts
-        : allowMockFallback()
-          ? mockPortalAlerts
-          : portalAlerts;
+        : resolveCommandCenterPortalAlerts(sourceKind, portalAlerts);
     return filterAlertsByPersona(base, persona);
   }, [portalAlerts, portalAlertsSource, persona]);
 
@@ -3611,21 +4265,26 @@ const CommandCenterPage: React.FC = () => {
         setInboxTasksSource('api');
       } else {
         setInboxTasks([]);
-        setInboxTasksSource(allowMockFallback() ? 'mock' : 'api');
+        setInboxTasksSource(resolveCommandCenterEmptyApiSource());
       }
     } catch {
       setInboxTasks([]);
-      setInboxTasksLoadFailed(!allowMockFallback());
-      setInboxTasksSource(allowMockFallback() ? 'mock' : 'api');
+      const errorState = resolveCommandCenterApiErrorState();
+      setInboxTasksLoadFailed(errorState.loadFailed);
+      setInboxTasksSource(errorState.source);
     }
   };
 
-  const openInboxTaskDetail = (task: UnifiedTask) => {
+  const openInboxTaskDetail = (task: UnifiedTask, options?: { skipUrlSync?: boolean }) => {
     setInboxDetailTask(task);
     setInboxDetailOpen(true);
     setInboxDetailPayload(null);
     setInboxDetailLoadFailed(false);
     setInboxDetailLoading(true);
+    if (!options?.skipUrlSync && selectedModule !== SYSTEM_SETTINGS) {
+      ccInboxHomeDeepLinkRef.current = task.sourceId;
+      navigate(commandCenterInboxInstanceDeepLink(task.sourceId));
+    }
     void fetchWorkflowInstanceDetail(task.sourceId, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID)
       .then((detail) => {
         const normalized = normalizeWorkflowInstanceDetail(detail);
@@ -3644,16 +4303,22 @@ const CommandCenterPage: React.FC = () => {
     setInboxDetailTask(null);
     setInboxDetailPayload(null);
     setInboxDetailLoadFailed(false);
+    ccInboxHomeDeepLinkRef.current = null;
+    const parsed = parseCommandCenterSettingsDeepLink(location.search);
+    if (parsed.workflowInstanceId && !parsed.settingsMenu) {
+      navigate('/command-center', { replace: true });
+    }
   };
 
   const completeInboxFromDrawer = async (outcome: 'approved' | 'rejected') => {
-    if (!inboxDetailTask) return;
+    if (!inboxDetailTask || inboxTasksSource !== 'api') return;
     setInboxDrawerBusy(true);
     try {
-      await completeWorkflowTask(
-        inboxDetailTask.cardId,
-        { outcome },
+      await applyWorkflowInboxTaskDecision(
+        inboxDetailTask,
+        outcome,
         MASTER_TENANT_ID,
+        resolveInboxAssigneeUserId(),
       );
       setMenuNotice(`Đã ${outcome === 'approved' ? 'hoàn thành' : 'từ chối'}: ${inboxDetailTask.title}`);
       closeInboxTaskDetail();
@@ -3665,10 +4330,28 @@ const CommandCenterPage: React.FC = () => {
     }
   };
 
+  const promptRejectInboxFromDrawer = () => {
+    if (!inboxDetailTask || inboxTasksSource !== 'api' || inboxDrawerBusy) return;
+    const title = inboxDetailTask.title?.trim() || 'nhiệm vụ này';
+    requestConfirm({
+      title: 'Từ chối nhiệm vụ',
+      description: `Xác nhận từ chối "${title}"? Hành động không thể hoàn tác.`,
+      confirmLabel: 'Từ chối',
+      destructive: true,
+      onConfirm: () => void completeInboxFromDrawer('rejected'),
+    });
+  };
+
   const quickCompleteInboxTask = async (task: UnifiedTask) => {
+    if (inboxTasksSource !== 'api') return;
     setInboxActionBusyId(task.cardId);
     try {
-      await completeWorkflowTask(task.cardId, { outcome: 'approved' }, MASTER_TENANT_ID);
+      await applyWorkflowInboxTaskDecision(
+        task,
+        'approved',
+        MASTER_TENANT_ID,
+        resolveInboxAssigneeUserId(),
+      );
       setMenuNotice(`Đã xử lý nhanh: ${task.title}`);
       await reloadInboxTasks();
     } catch (error: unknown) {
@@ -3697,11 +4380,6 @@ const CommandCenterPage: React.FC = () => {
     }),
     [scopedTasks],
   );
-
-  const kpiSeries = useMemo(() => {
-    if (kpiRail.series.length) return kpiRail.series;
-    return allowMockFallback() ? getKpiSeriesForPersona(persona) : [];
-  }, [kpiRail.series, persona]);
 
   function renderSettingsSidebar() {
     const companyGroupActive = isCompanySetupMenuKey(activeSettingsMenu);
@@ -3846,10 +4524,6 @@ const CommandCenterPage: React.FC = () => {
     });
     const showCompanyFormStickyNav =
       activeSettingsMenu === 'company_member_units' && companySettingsView === 'form';
-    const showFoundationDetailStickyNav =
-      activeSettingsMenu === 'company_infrastructure' &&
-      infrastructureView === 'list' &&
-      foundationCategoryDetailId !== null;
     const showDeptSystemDetailStickyNav =
       activeSettingsMenu === 'company_dept_system' && deptSystemDetailId !== null;
     const showInfrastructureDetailStickyNav =
@@ -3869,8 +4543,13 @@ const CommandCenterPage: React.FC = () => {
     return (
       <>
       <div
-        className={`flex min-h-0 flex-1 flex-col overflow-hidden border border-xevn-border bg-white/50 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}
+        className={`relative flex min-h-0 flex-1 flex-col overflow-hidden border border-xevn-border bg-white/50 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}
       >
+        {settingsNavShellVisible ? (
+          <div className="absolute inset-0 z-20 animate-in fade-in duration-200">
+            <NavTransitionShell variant="settings" className="h-full" label="Đang tải cấu hình…" />
+          </div>
+        ) : null}
         <div className={WORKSPACE_STICKY_HEADER_ROW}>
           <div className="flex w-full min-h-10 items-center gap-3">
             <div className="flex shrink-0 items-center gap-2">
@@ -3886,17 +4565,6 @@ const CommandCenterPage: React.FC = () => {
                 >
                   <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={RAIL_STROKE} />
                   <span className="hidden sm:inline">Danh sách pháp nhân</span>
-                </button>
-              ) : null}
-              {showFoundationDetailStickyNav ? (
-                <button
-                  type="button"
-                  onClick={() => closeFoundationCategoryDetail()}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg px-1 py-1.5 text-[15px] font-normal text-xevn-primary transition hover:bg-xevn-primary/5 hover:underline active:scale-95"
-                  aria-label="Quay lại danh sách danh mục nền"
-                >
-                  <ArrowLeft className="h-5 w-5 shrink-0" strokeWidth={RAIL_STROKE} />
-                  <span className="hidden sm:inline">Danh mục nền</span>
                 </button>
               ) : null}
               {showDeptSystemDetailStickyNav ? (
@@ -3979,7 +4647,14 @@ const CommandCenterPage: React.FC = () => {
               {menuNotice}
             </p>
           ) : null}
-          {publishMessage ? (
+          {infrastructureApplySuccessBanner ? (
+            <p
+              className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900"
+              role="status"
+            >
+              {infrastructureApplySuccessBanner}
+            </p>
+          ) : publishMessage ? (
             <p className="mb-4 rounded-lg bg-slate-100 px-3 py-2 text-xs text-xevn-textSecondary">{publishMessage}</p>
           ) : null}
 
@@ -4270,14 +4945,17 @@ const CommandCenterPage: React.FC = () => {
                     <span className={SETTINGS_LABEL_CLASS}>Vốn điều lệ (VNĐ)</span>
                     <AutoResizeTextarea
                       aria-label="Vốn điều lệ"
-                      placeholder="500000000000"
+                      placeholder="500.000.000.000"
                       className={`tabular-nums ${companyErrors.charterCapital ? 'border-rose-400' : ''}`}
-                      value={companyForm.charterCapital === 0 ? '' : String(companyForm.charterCapital)}
+                      value={
+                        companyForm.charterCapital === 0
+                          ? ''
+                          : formatViGroupedInteger(companyForm.charterCapital)
+                      }
                       onChange={(v) => {
-                        const d = v.replace(/\D/g, '');
                         setCompanyForm((s) => ({
                           ...s,
-                          charterCapital: d === '' ? 0 : Number(d),
+                          charterCapital: parseViGroupedInteger(v),
                         }));
                       }}
                     />
@@ -4476,23 +5154,56 @@ const CommandCenterPage: React.FC = () => {
               </div>
 
               <div className={`space-y-6 border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <UserCheck className="h-5 w-5 text-xevn-primary" strokeWidth={RAIL_STROKE} />
                     <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Danh sách Cổ đông</h4>
                   </div>
-                  <button
-                    type="button"
-                    onClick={addShareholderRow}
-                    className="rounded-lg border border-xevn-border px-3 py-2 text-sm font-medium transition hover:bg-slate-100 active:scale-95"
-                  >
-                    + Thêm cổ đông
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {shareholderSelection.size > 0 ? (
+                      <button
+                        type="button"
+                        onClick={deleteSelectedShareholderRows}
+                        className="rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-800 transition hover:bg-rose-100 active:scale-95"
+                      >
+                        Xóa đã chọn ({shareholderSelection.size})
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={addShareholderRow}
+                      className="rounded-lg border border-xevn-border px-3 py-2 text-sm font-medium transition hover:bg-slate-100 active:scale-95"
+                    >
+                      + Thêm cổ đông
+                    </button>
+                  </div>
                 </div>
+                {!resolveLegalProfileScope().entityId &&
+                companyEntityId &&
+                companyEntityId !== 'new' ? (
+                  <p
+                    className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950"
+                    role="status"
+                  >
+                    {legalProfileScopePersistMessage(companyEntityId)}
+                  </p>
+                ) : null}
                 <div className={`-mx-1 overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
                   <table className={`min-w-[760px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
+                        <th className="w-10 px-2 py-2 text-center text-sm font-medium text-slate-500">
+                          <input
+                            type="checkbox"
+                            aria-label="Chọn tất cả cổ đông"
+                            checked={
+                              shareholderRows.length > 0 &&
+                              shareholderRows.every((r) => shareholderSelection.has(r.id))
+                            }
+                            onChange={(e) => toggleAllShareholderSelection(e.target.checked)}
+                            className="h-4 w-4 rounded border-xevn-border"
+                          />
+                        </th>
                         <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">
                           Họ tên/Tên tổ chức
                         </th>
@@ -4505,6 +5216,15 @@ const CommandCenterPage: React.FC = () => {
                     <tbody>
                       {shareholderRows.map((row) => (
                         <tr key={row.id} className="border-t border-xevn-border">
+                          <td className="px-2 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              aria-label={`Chọn cổ đông ${row.holderName || row.id}`}
+                              checked={shareholderSelection.has(row.id)}
+                              onChange={(e) => toggleShareholderSelection(row.id, e.target.checked)}
+                              className="h-4 w-4 rounded border-xevn-border"
+                            />
+                          </td>
                           <td className="px-3 py-2">
                             <input
                               value={row.holderName}
@@ -4531,31 +5251,48 @@ const CommandCenterPage: React.FC = () => {
                           </td>
                           <td className="px-3 py-2">
                             <input
-                              value={row.contributedValue.toLocaleString('vi-VN')}
-                              readOnly
-                              className="w-full rounded-input border border-xevn-border bg-slate-50 px-2 py-1"
+                              type="text"
+                              inputMode="numeric"
+                              value={
+                                row.contributedValue === 0
+                                  ? ''
+                                  : formatViGroupedInteger(row.contributedValue)
+                              }
+                              onChange={(e) =>
+                                updateShareholderRow(
+                                  row.id,
+                                  'contributedValue',
+                                  parseViGroupedInteger(e.target.value),
+                                )
+                              }
+                              className="w-full rounded-input border border-xevn-border bg-white px-2 py-1 tabular-nums"
+                              placeholder="0"
                             />
                           </td>
                           <td className="px-3 py-2">
                             <div className="flex items-center justify-center gap-2">
-                              <button
-                                type="button"
+                              <MutationButton
+                                variant="success"
+                                iconOnly
+                                pending={shareholderSubmitPendingId === row.id}
+                                disabled={Boolean(shareholderSubmitPendingId && shareholderSubmitPendingId !== row.id)}
                                 onClick={() => {
                                   void submitShareholderRow(row.id);
                                 }}
-                                className="rounded-lg border border-emerald-300 bg-emerald-50 p-2 text-emerald-700 transition active:scale-95"
-                                title="Submit"
+                                title="Lưu cổ đông"
+                                aria-label="Lưu cổ đông"
                               >
                                 <Check className="h-4 w-4" />
-                              </button>
-                              <button
-                                type="button"
+                              </MutationButton>
+                              <MutationButton
+                                variant="danger"
+                                iconOnly
                                 onClick={() => deleteShareholderRow(row.id)}
-                                className="rounded-lg border border-rose-300 bg-rose-50 p-2 text-rose-700 transition active:scale-95"
-                                title="Delete"
+                                title="Xóa cổ đông"
+                                aria-label="Xóa cổ đông"
                               >
                                 <Trash2 className="h-4 w-4" />
-                              </button>
+                              </MutationButton>
                             </div>
                           </td>
                         </tr>
@@ -4630,11 +5367,12 @@ const CommandCenterPage: React.FC = () => {
                               />
                             </td>
                             <td className="px-3 py-2">
-                              <div className="flex items-center gap-2">
+                              <div className="flex min-w-[180px] items-center gap-2">
                                 <button
                                   type="button"
                                   onClick={() => triggerLegalDocUpload(row.id)}
-                                  className="rounded-lg border border-xevn-border p-1.5 transition active:scale-95"
+                                  disabled={legalDocUploadingRowId === row.id}
+                                  className="rounded-lg border border-xevn-border p-1.5 transition active:scale-95 disabled:opacity-50"
                                   title="Upload"
                                 >
                                   <Upload className="h-4 w-4" />
@@ -4642,34 +5380,50 @@ const CommandCenterPage: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => viewLegalDocument(row)}
-                                  className="rounded-lg border border-xevn-border p-1.5 transition active:scale-95"
-                                  title="View"
+                                  disabled={!row.fileName && !row.fileUrl}
+                                  className="rounded-lg border border-xevn-border p-1.5 transition active:scale-95 disabled:opacity-40"
+                                  title="Xem file"
                                 >
                                   <Eye className="h-4 w-4" />
                                 </button>
-                                <span className="truncate text-xs text-xevn-textSecondary">{row.fileName || '-'}</span>
+                                {legalDocUploadingRowId === row.id ? (
+                                  <span className="truncate text-xs text-xevn-primary">Đang tải lên…</span>
+                                ) : row.fileName ? (
+                                  <span
+                                    className="truncate text-xs font-medium text-emerald-700"
+                                    title={row.fileName}
+                                  >
+                                    {row.fileName}
+                                  </span>
+                                ) : (
+                                  <span className="truncate text-xs text-xevn-textSecondary">Chưa có file</span>
+                                )}
                               </div>
                             </td>
                             <td className="px-3 py-2">
                               <div className="flex items-center justify-center gap-2">
-                                <button
-                                  type="button"
+                                <MutationButton
+                                  variant="success"
+                                  iconOnly
+                                  pending={legalDocSubmitPendingId === row.id}
+                                  disabled={Boolean(legalDocSubmitPendingId && legalDocSubmitPendingId !== row.id)}
                                   onClick={() => {
                                     void submitLegalDocRow(row.id);
                                   }}
-                                  className="rounded-lg border border-emerald-300 bg-emerald-50 p-2 text-emerald-700 transition active:scale-95"
-                                  title="Submit"
+                                  title="Lưu tài liệu"
+                                  aria-label="Lưu tài liệu"
                                 >
                                   <Check className="h-4 w-4" />
-                                </button>
-                                <button
-                                  type="button"
+                                </MutationButton>
+                                <MutationButton
+                                  variant="danger"
+                                  iconOnly
                                   onClick={() => deleteLegalDocRow(row.id)}
-                                  className="rounded-lg border border-rose-300 bg-rose-50 p-2 text-rose-700 transition active:scale-95"
-                                  title="Delete"
+                                  title="Xóa tài liệu"
+                                  aria-label="Xóa tài liệu"
                                 >
                                   <Trash2 className="h-4 w-4" />
-                                </button>
+                                </MutationButton>
                               </div>
                             </td>
                           </tr>
@@ -4710,110 +5464,6 @@ const CommandCenterPage: React.FC = () => {
 
           {activeSettingsMenu === 'company_infrastructure' ? (
             infrastructureView === 'list' ? (
-              foundationCategoryDetailId && foundationForm ? (
-                <div className={`${SETTINGS_SECTION_STACK} min-h-[min(480px,65vh)]`}>
-                  <SettingSectionHeader
-                    title={foundationForm.nameVi.trim() || 'Danh mục nền mới'}
-                    subtitle={
-                      <>
-                        Mã danh mục:{' '}
-                        <span className="font-mono font-semibold text-xevn-text">
-                          {foundationForm.code.trim() || '—'}
-                        </span>
-                        {' — '}
-                        Gán pháp nhân, lưu phạm vi, rồi mới cấu hình khối/trường (theo pháp nhân xem trước).
-                      </>
-                    }
-                  />
-                  <div className={`space-y-6 border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                    <div className={SETTINGS_SECTION_GRID}>
-                      <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4}`}>
-                        <span className={SETTINGS_LABEL_CLASS}>Mã danh mục nền *</span>
-                        <input
-                          value={foundationForm.code}
-                          onChange={(e) =>
-                            setFoundationForm((s) => (s ? { ...s, code: e.target.value } : s))
-                          }
-                          placeholder="VD: HT-LOG-CS"
-                          className={`tabular-nums ${deptInputClass}`}
-                          aria-label="Mã danh mục nền"
-                        />
-                      </label>
-                      <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span8}`}>
-                        <span className={SETTINGS_LABEL_CLASS}>Tên danh mục *</span>
-                        <input
-                          value={foundationForm.nameVi}
-                          onChange={(e) =>
-                            setFoundationForm((s) => (s ? { ...s, nameVi: e.target.value } : s))
-                          }
-                          className={deptInputClass}
-                          aria-label="Tên danh mục nền"
-                        />
-                      </label>
-                      <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span12}`}>
-                        <span className={SETTINGS_LABEL_CLASS}>Mô tả</span>
-                        <AutoResizeTextarea
-                          value={foundationForm.description ?? ''}
-                          onChange={(v) =>
-                            setFoundationForm((s) => (s ? { ...s, description: v } : s))
-                          }
-                          className={deptInputClass}
-                          aria-label="Mô tả danh mục"
-                        />
-                      </label>
-                    </div>
-                    <div>
-                      <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Phạm vi áp dụng</h4>
-                      <p className={`mt-1 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>
-                        Chọn pháp nhân trong tập đoàn phải dùng danh mục này — chỉ các đơn vị được tick mới
-                        vào màn riêng (hoặc do công ty mẹ nhập hộ) để điền giá trị điểm hạ tầng.
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        {legalEntityList.map((c) => (
-                          <label
-                            key={c.id}
-                            className="inline-flex cursor-pointer items-center gap-2 rounded-input border border-xevn-border bg-white px-3 py-2 shadow-sm transition hover:bg-slate-50"
-                          >
-                            <input
-                              type="checkbox"
-                              className="h-4 w-4 rounded border-xevn-border text-xevn-primary focus:ring-xevn-accent"
-                              checked={foundationForm.appliesToCompanyIds.includes(c.id)}
-                              onChange={() => toggleFoundationCompany(c.id)}
-                            />
-                            <span className="text-[15px] text-xevn-text">
-                              {c.code} — {c.name}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-3 border-t border-xevn-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const first = foundationForm.appliesToCompanyIds[0];
-                            if (!first) {
-                              setPublishMessage(
-                                'Chọn ít nhất một pháp nhân trong phạm vi áp dụng trước khi cấu hình khối/trường.',
-                              );
-                              return;
-                            }
-                            openInfrastructureFieldsConfigModal(first);
-                          }}
-                          className="inline-flex items-center justify-center gap-2 rounded-input border border-xevn-border bg-white px-4 py-2.5 text-[15px] font-semibold text-xevn-primary shadow-soft ring-1 ring-xevn-border transition hover:bg-slate-50 active:scale-95"
-                        >
-                          <FileArchive className="h-5 w-5 shrink-0" strokeWidth={RAIL_STROKE} />
-                          Cấu hình khối &amp; trường
-                        </button>
-                        <p className="text-sm text-slate-500">
-                          Mock: mở biểu mẫu theo pháp nhân đầu tiên đã tick.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
               <div className={`${SETTINGS_SECTION_STACK} min-h-[min(480px,65vh)]`}>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0 flex-1">
@@ -4838,7 +5488,7 @@ const CommandCenterPage: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setInfrastructureBrowseTab('foundation');
-                      closeFoundationCategoryDetail();
+                      closeFoundationCategoryWizard();
                     }}
                     className={`rounded-input px-4 py-2 text-[15px] font-semibold transition active:scale-95 ${
                       infrastructureBrowseTab === 'foundation'
@@ -4852,7 +5502,7 @@ const CommandCenterPage: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setInfrastructureBrowseTab('sites');
-                      closeFoundationCategoryDetail();
+                      closeFoundationCategoryWizard();
                     }}
                     className={`rounded-input px-4 py-2 text-[15px] font-semibold transition active:scale-95 ${
                       infrastructureBrowseTab === 'sites'
@@ -4867,9 +5517,9 @@ const CommandCenterPage: React.FC = () => {
                   <>
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <p className="max-w-3xl text-sm leading-relaxed text-slate-600">
-                        Tạo <span className="font-semibold text-xevn-text">danh mục có mã</span>, tick pháp
-                        nhân áp dụng, lưu phạm vi — sau đó trong chi tiết mới mở cấu hình khối/trường (popup
-                        hiện tại). Điểm hạ tầng chỉ nhập giá trị khi pháp nhân đã nằm trong phạm vi.
+                        Tạo <span className="font-semibold text-xevn-text">danh mục có mã</span> qua wizard
+                        full-screen — tick pháp nhân, cấu hình khối/trường, rồi xác nhận. Bảng chỉ hiện danh mục
+                        đã lưu.
                       </p>
                       <button
                         type="button"
@@ -4899,26 +5549,43 @@ const CommandCenterPage: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {foundationCategories.map((row) => (
-                            <tr key={row.id} className="border-t border-xevn-border">
-                              <td className="px-4 py-3 font-mono font-medium tabular-nums text-xevn-text">
-                                {row.code || '—'}
-                              </td>
-                              <td className="px-4 py-3">{row.nameVi || '—'}</td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {row.appliesToCompanyIds.length} pháp nhân
-                              </td>
-                              <td className="px-4 py-3 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => openFoundationCategoryDetail(row.id)}
-                                  className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                                >
-                                  Chi tiết &amp; cấu hình
-                                </button>
+                          {displayableFoundationCategories.length === 0 ? (
+                            <tr className="border-t border-xevn-border">
+                              <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                                Chưa có danh mục nền đã lưu — bấm «Thêm danh mục nền» để mở wizard.
                               </td>
                             </tr>
-                          ))}
+                          ) : (
+                            displayableFoundationCategories.map((row) => (
+                              <tr key={row.id} className="border-t border-xevn-border">
+                                <td className="px-4 py-3 font-mono font-medium tabular-nums text-xevn-text">
+                                  {row.code}
+                                </td>
+                                <td className="px-4 py-3">{row.nameVi}</td>
+                                <td className="px-4 py-3 text-slate-600">
+                                  {row.appliesToCompanyIds.length} pháp nhân
+                                </td>
+                                <td className="px-4 py-3 text-right">
+                                  <div className="inline-flex flex-wrap items-center justify-end gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => openEditFoundationCategory(row.id)}
+                                      className="text-[15px] font-semibold text-xevn-primary hover:underline"
+                                    >
+                                      Sửa
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => promptDeleteFoundationCategory(row.id)}
+                                      className="text-[15px] font-semibold text-rose-700 hover:underline"
+                                    >
+                                      Xóa
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -5013,7 +5680,6 @@ const CommandCenterPage: React.FC = () => {
                   </>
                 )}
               </div>
-            )
             ) : (
               <div className={`${SETTINGS_SECTION_STACK} min-h-[min(480px,65vh)]`}>
                 <SettingSectionHeader
@@ -5043,6 +5709,12 @@ const CommandCenterPage: React.FC = () => {
                     trong tab <strong className="font-semibold">1. Danh mục nền &amp; phạm vi</strong> trước
                     khi khai báo điểm.
                   </div>
+                ) : null}
+                {!infraForm.operatingEntityId ? (
+                  <p className="mb-4 text-sm text-slate-600" role="status">
+                    Chọn <span className="font-semibold text-xevn-text">Đơn vị trực thuộc</span> để
+                    hiển thị biểu mẫu khối/trường theo danh mục nền đã cấu hình.
+                  </p>
                 ) : null}
                 <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
                   <h4 className={`mb-4 ${SETTINGS_SECTION_TITLE_CLASS}`}>{infraUiMerged.blocks.general.titleVi}</h4>
@@ -5162,7 +5834,7 @@ const CommandCenterPage: React.FC = () => {
                         {infrastructureEditId === 'new' ? '—' : infrastructureEditId}
                       </div>
                     </div>
-                    {infraCustomFieldDefsForEntity
+                    {infraCustomFieldDefsVisible
                       .filter((f) => f.blockCode === 'general' && f.visible)
                       .map((f) => {
                         const value = infraForm.customFields?.[f.fieldCode] ?? '';
@@ -5306,7 +5978,7 @@ const CommandCenterPage: React.FC = () => {
                         />
                       </div>
                     </label>
-                    {infraCustomFieldDefsForEntity
+                    {infraCustomFieldDefsVisible
                       .filter((f) => f.blockCode === 'location' && f.visible)
                       .map((f) => {
                         const value = infraForm.customFields?.[f.fieldCode] ?? '';
@@ -5449,7 +6121,7 @@ const CommandCenterPage: React.FC = () => {
                         className={deptInputClass}
                       />
                     </label>
-                    {infraCustomFieldDefsForEntity
+                    {infraCustomFieldDefsVisible
                       .filter((f) => f.blockCode === 'capacity' && f.visible)
                       .map((f) => {
                         const value = infraForm.customFields?.[f.fieldCode] ?? '';
@@ -5526,10 +6198,10 @@ const CommandCenterPage: React.FC = () => {
                       })}
                   </div>
                 </div>
-                {infraCustomBlocksForEntity
+                {infraCustomBlocksVisible
                   .filter((b) => b.visible)
                   .map((block) => {
-                    const fields = infraCustomFieldDefsForEntity.filter(
+                    const fields = infraCustomFieldDefsVisible.filter(
                       (f) => f.blockCode === block.blockCode && f.visible,
                     );
                     if (!fields.length) return null;
@@ -5742,6 +6414,22 @@ const CommandCenterPage: React.FC = () => {
                       })}
                     </div>
                   </div>
+                  <div className="border-t border-xevn-border pt-4">
+                    <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Sơ đồ khung — CRUD &amp; kéo thả</h4>
+                    <p className={`mt-1 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>
+                      Chỉnh thứ tự / thêm / xóa chức danh theo từng cấp ORG GRADE đã bật; lưu khung để ghi{' '}
+                      <code className="text-sm">gradeTitleLayout</code> lên DB.
+                    </p>
+                    <div className="mt-4">
+                      <OrgGradeOrgChartEditor
+                        enabledLevels={deptSystemForm.enabledOrgGradeLevels}
+                        titleLayout={deptSystemForm.gradeTitleLayout ?? {}}
+                        onTitleLayoutChange={(next) =>
+                          setDeptSystemForm((s) => (s ? { ...s, gradeTitleLayout: next } : s))
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -5756,25 +6444,41 @@ const CommandCenterPage: React.FC = () => {
                       loadFailed={deptTemplatesHook.loadFailed && !allowMockFallback()}
                       usingMockFallback={deptTemplatesHook.usingMockFallback}
                       title="Khung phòng/ban mẫu (UC-XBOS-CC-08)"
+                      message={
+                        deptTemplatesLoadErrorMessage(
+                          deptTemplatesHook.loadNotFound,
+                          deptTemplatesHook.loadFailed,
+                        ) ?? undefined
+                      }
                     />
                   </div>
+                  <div className="flex shrink-0 flex-wrap items-center gap-2 self-start">
+                    <button
+                      type="button"
+                      onClick={() => void deptTemplatesHook.reload()}
+                      disabled={deptTemplatesHook.isLoading}
+                      className="rounded-input border border-xevn-border bg-white px-3 py-2 text-[15px] font-medium text-xevn-text transition hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      {deptTemplatesHook.isLoading ? 'Đang tải…' : 'Làm mới từ DB'}
+                    </button>
                   {deptSystemTab === 'templates' ? (
                     <button
                       type="button"
                       onClick={() => openNewDeptSystemTemplate()}
-                      className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-input bg-xevn-primary px-4 py-2.5 text-[15px] font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95"
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-input bg-xevn-primary px-4 py-2.5 text-[15px] font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95"
                     >
                       <Plus className="h-5 w-5 shrink-0" strokeWidth={RAIL_STROKE} />
                       Thêm khung mới
                     </button>
                   ) : null}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2 border-b border-xevn-border pb-3" role="tablist">
                   <button
                     type="button"
                     role="tab"
                     aria-selected={deptSystemTab === 'reference'}
-                    onClick={() => setDeptSystemTab('reference')}
+                    onClick={() => switchDeptSystemTab('reference')}
                     className={`rounded-input px-4 py-2 text-[15px] font-semibold transition active:scale-95 ${
                       deptSystemTab === 'reference'
                         ? 'bg-xevn-primary text-white shadow-soft'
@@ -5787,7 +6491,7 @@ const CommandCenterPage: React.FC = () => {
                     type="button"
                     role="tab"
                     aria-selected={deptSystemTab === 'templates'}
-                    onClick={() => setDeptSystemTab('templates')}
+                    onClick={() => switchDeptSystemTab('templates')}
                     className={`rounded-input px-4 py-2 text-[15px] font-semibold transition active:scale-95 ${
                       deptSystemTab === 'templates'
                         ? 'bg-xevn-primary text-white shadow-soft'
@@ -5798,15 +6502,86 @@ const CommandCenterPage: React.FC = () => {
                   </button>
                 </div>
                 {deptSystemTab === 'reference' ? (
-                  <div className={`space-y-4 border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                    <p className={`${SETTINGS_CONTROL_TEXT} text-slate-600`}>
-                      Bảng tham chiếu 9 cấp (ORG GRADE) — read-only; dùng làm chuẩn khi cấu hình khung phòng/ban
-                      và chức danh.
-                    </p>
-                    <OrgGradeOrgChart />
+                  <div className={`space-y-6 border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
+                    <div>
+                      <h4 className={SETTINGS_SECTION_TITLE_CLASS}>Khung đã lưu</h4>
+                      <p className={`mt-1 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>
+                        Xem trước chức danh đã lưu trong DB — chọn khung từ danh mục. Sau khi lưu tại Chi tiết,
+                        quay lại tab này để kiểm tra (dữ liệu được làm mới khi chuyển tab).
+                      </p>
+                      {deptTemplatesHook.isLoading ? (
+                        <p className={`mt-4 ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                          Đang tải khung từ DB…
+                        </p>
+                      ) : deptSystemTemplates.length ? (
+                        <div className="mt-4 space-y-4">
+                          <label className={`${SETTINGS_FIELD_SHELL} max-w-xl`}>
+                            <span className={SETTINGS_LABEL_CLASS}>Chọn khung xem trước</span>
+                            <select
+                              value={deptReferenceTemplateId ?? ''}
+                              onChange={(e) => setDeptReferenceTemplateId(e.target.value || null)}
+                              className={deptInputClass}
+                              aria-label="Chọn khung phòng ban đã lưu"
+                            >
+                              {deptSystemTemplates.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {t.code.trim() || t.id} — {t.nameVi.trim() || 'Không tên'}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          {deptReferenceTemplate ? (
+                            <OrgGradeOrgChart
+                              enabledLevels={deptReferenceTemplate.enabledOrgGradeLevels}
+                              titleLayout={deptReferenceTemplate.gradeTitleLayout}
+                              heading={`Khung đã lưu: ${deptReferenceTemplate.nameVi.trim() || deptReferenceTemplate.code.trim() || '—'}`}
+                              subtitle={`Mã ${deptReferenceTemplate.code.trim() || '—'} · ${deptReferenceTemplate.enabledOrgGradeLevels.length} cấp ORG GRADE kích hoạt`}
+                              footerNote="Xem trước read-only từ gradeTitleLayout đã lưu — chỉnh sửa tại Danh mục khung → Chi tiết."
+                            />
+                          ) : null}
+                        </div>
+                      ) : (
+                        <p className={`mt-4 ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                          Chưa có khung đã lưu — tạo tại tab <strong>Danh mục khung</strong> → Chi tiết → Lưu khung
+                          phòng/ban.
+                        </p>
+                      )}
+                    </div>
+                    <details className="rounded-xl border border-xevn-border bg-white/60 p-4">
+                      <summary className="cursor-pointer list-none text-[15px] font-semibold text-xevn-text marker:content-none [&::-webkit-details-marker]:hidden">
+                        <span className="inline-flex items-center gap-2">
+                          <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={RAIL_STROKE} />
+                          Chuẩn tập đoàn (read-only)
+                        </span>
+                      </summary>
+                      <p className={`mt-3 ${SETTINGS_CONTROL_TEXT} text-slate-600`}>
+                        Bảng tham chiếu 9 cấp ORG GRADE gốc — không thay đổi khi lưu khung tùy chỉnh.
+                      </p>
+                      <div className="mt-4">
+                        <OrgGradeOrgChart />
+                      </div>
+                    </details>
                   </div>
                 ) : (
                   <div className={`border border-xevn-border p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
+                    <p className={`mb-3 text-sm text-slate-600`}>
+                      Nguồn dữ liệu:{' '}
+                      <span className="font-semibold text-xevn-text">
+                        {deptTemplatesHook.isLoading
+                          ? 'đang tải…'
+                          : deptTemplatesHook.source === 'api'
+                            ? 'DB (business-master)'
+                            : deptTemplatesHook.source === 'mock'
+                              ? 'mock dev'
+                              : 'trống — chạy seed hoặc Thêm khung mới'}
+                      </span>
+                      {deptSystemTemplates.length ? ` · ${deptSystemTemplates.length} khung` : ''}
+                    </p>
+                    {deptTemplatesHook.isLoading ? (
+                      <p className={`py-10 text-center ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                        Đang tải danh mục khung từ DB…
+                      </p>
+                    ) : (
                     <div className="overflow-x-auto">
                       <table className={`min-w-[640px] w-full border-collapse text-left ${SETTINGS_CONTROL_TEXT}`}>
                         <thead>
@@ -5814,6 +6589,7 @@ const CommandCenterPage: React.FC = () => {
                             <th className="px-2 py-2">Mã khung</th>
                             <th className="px-2 py-2">Tên khung</th>
                             <th className="px-2 py-2 text-center">Số pháp nhân</th>
+                            <th className="px-2 py-2 text-center">Cấp ORG</th>
                             <th className="px-2 py-2 text-right">Thao tác</th>
                           </tr>
                         </thead>
@@ -5827,23 +6603,37 @@ const CommandCenterPage: React.FC = () => {
                               <td className="px-2 py-2 text-center tabular-nums text-slate-700">
                                 {row.appliesToCompanyIds.length}
                               </td>
+                              <td className="px-2 py-2 text-center tabular-nums text-slate-700">
+                                {row.enabledOrgGradeLevels.length}
+                              </td>
                               <td className="px-2 py-2 text-right">
+                                <div className="flex flex-wrap justify-end gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => openDeptSystemDetail(row.id)}
+                                  onClick={() => void openDeptSystemDetail(row.id)}
                                   className="rounded-input border border-xevn-border bg-white px-3 py-1.5 text-[15px] font-semibold text-xevn-primary shadow-sm transition hover:bg-slate-50 active:scale-95"
                                 >
                                   Chi tiết
                                 </button>
+                                <button
+                                  type="button"
+                                  onClick={() => void deleteDeptSystemTemplateRow(row.id)}
+                                  className="rounded-input bg-rose-50 px-3 py-1.5 text-[15px] font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-95"
+                                >
+                                  Xóa
+                                </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                    {deptSystemTemplates.length === 0 ? (
+                    )}
+                    {!deptTemplatesHook.isLoading && deptSystemTemplates.length === 0 ? (
                       <p className={`mt-4 text-center ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
-                        Chưa có khung nào — nhấn &quot;Thêm khung mới&quot; để tạo.
+                        Chưa có khung nào — nhấn &quot;Thêm khung mới&quot; hoặc &quot;Làm mới từ DB&quot; sau khi
+                        seed business-master.
                       </p>
                     ) : null}
                   </div>
@@ -5889,6 +6679,16 @@ const CommandCenterPage: React.FC = () => {
                       Thêm phòng ban mới
                     </button>
                   </div>
+                  {deptHeadOptionsError ? (
+                    <ApiLoadBanner
+                      loadFailed
+                      message={`Trưởng bộ phận: ${deptHeadOptionsError} — chọn trưởng bộ phận tạm thời bị khóa.`}
+                    />
+                  ) : deptHeadOptionsLoading ? (
+                    <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                      Đang tải danh sách nhân viên cho Trưởng bộ phận…
+                    </p>
+                  ) : null}
                   <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
                     <div className="min-w-[960px] space-y-4 p-4">
                       {scopedDeptRows.map((row) => {
@@ -5958,8 +6758,9 @@ const CommandCenterPage: React.FC = () => {
                                   }
                                   className={deptSelectClass}
                                   aria-label="Trưởng bộ phận"
+                                  disabled={deptHeadOptionsLoading || Boolean(deptHeadOptionsError)}
                                 >
-                                  {DEPT_HEAD_OPTIONS.map((h) => (
+                                  {deptHeadOptions.map((h) => (
                                     <option key={h.id || 'empty'} value={h.id}>
                                       {h.label}
                                     </option>
@@ -6795,174 +7596,270 @@ const CommandCenterPage: React.FC = () => {
 
           {activeSettingsMenu === 'document' ? (
             <div className={SETTINGS_SECTION_STACK}>
-              <SettingSectionHeader title="Hệ thống văn bản/Quy định" subtitle="Danh mục dạng bảng" />
-              <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
-                <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
-                  <thead className="bg-white/70 backdrop-blur-md">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên văn bản</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Version</th>
-                      <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Hiệu lực</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {documentRows.map((row, index) => (
-                      <tr key={row.code} className="border-t border-xevn-border">
-                        <td className="px-3 py-2">{row.code}</td>
-                        <td className="px-3 py-2">
-                          <input
-                            value={row.title}
-                            onChange={(e) => {
-                              const next = documentRows.map((r, i) =>
-                                i === index ? { ...r, title: e.target.value } : r,
-                              );
-                              setDocumentRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <input
-                            value={row.version}
-                            onChange={(e) => {
-                              const next = documentRows.map((r, i) =>
-                                i === index ? { ...r, version: e.target.value } : r,
-                              );
-                              setDocumentRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                        <td className="px-3 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={row.active}
-                            onChange={(e) => {
-                              const next = documentRows.map((r, i) =>
-                                i === index ? { ...r, active: e.target.checked } : r,
-                              );
-                              setDocumentRows(next);
-                            }}
-                            className="h-4 w-4 active:scale-95"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <SettingSectionHeader
+                title="Hệ thống văn bản/Quy định"
+                subtitle="Danh mục từ XBOS — chỉnh sửa inline, lưu tự động"
+              />
+              {docCatalogLoading ? (
+                <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Đang tải danh mục…</p>
+              ) : (
+                <>
+                  {documentRows.length === 0 ? (
+                    <p className={`rounded-lg border border-dashed border-xevn-border bg-slate-50 px-4 py-6 text-center ${SETTINGS_CONTROL_TEXT} text-slate-600`}>
+                      Chưa có quy định trên hệ thống — nhấn &quot;Thêm dòng&quot; để bắt đầu cấu hình.
+                    </p>
+                  ) : null}
+                  <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
+                    <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
+                      <thead className="bg-white/70 backdrop-blur-md">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên văn bản</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Version</th>
+                          <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Hiệu lực</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {documentRows.map((row, index) => (
+                          <tr key={`${row.code}-${index}`} className="border-t border-xevn-border">
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.code}
+                                onChange={(e) => {
+                                  const next = documentRows.map((r, i) =>
+                                    i === index ? { ...r, code: e.target.value } : r,
+                                  );
+                                  setDocumentRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1 font-mono text-xs"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.title}
+                                onChange={(e) => {
+                                  const next = documentRows.map((r, i) =>
+                                    i === index ? { ...r, title: e.target.value } : r,
+                                  );
+                                  setDocumentRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.version}
+                                onChange={(e) => {
+                                  const next = documentRows.map((r, i) =>
+                                    i === index ? { ...r, version: e.target.value } : r,
+                                  );
+                                  setDocumentRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                            <td className="px-3 py-2 text-center">
+                              <input
+                                type="checkbox"
+                                checked={row.active}
+                                onChange={(e) => {
+                                  const next = documentRows.map((r, i) =>
+                                    i === index ? { ...r, active: e.target.checked } : r,
+                                  );
+                                  setDocumentRows(next);
+                                }}
+                                className="h-4 w-4 active:scale-95"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDocumentRows((prev) => [...prev, createCcRegulationRow()])}
+                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                  >
+                    + Thêm dòng
+                  </button>
+                </>
+              )}
             </div>
           ) : null}
 
           {activeSettingsMenu === 'measurement' ? (
             <div className={SETTINGS_SECTION_STACK}>
-              <SettingSectionHeader title="Hệ thống đo lường/Tiền tệ" subtitle="Biểu mẫu và bảng nhập liệu" />
-              <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
-                <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
-                  <thead className="bg-white/70 backdrop-blur-md">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Metric Key</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn vị</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tiền tệ</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Độ chính xác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {measurementRows.map((row, index) => (
-                      <tr key={row.key} className="border-t border-xevn-border">
-                        <td className="px-3 py-2">{row.key}</td>
-                        <td className="px-3 py-2">
-                          <input
-                            value={row.unit}
-                            onChange={(e) => {
-                              const next = measurementRows.map((r, i) =>
-                                i === index ? { ...r, unit: e.target.value } : r,
-                              );
-                              setMeasurementRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <input
-                            value={row.currency}
-                            onChange={(e) => {
-                              const next = measurementRows.map((r, i) =>
-                                i === index ? { ...r, currency: e.target.value } : r,
-                              );
-                              setMeasurementRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <input
-                            type="number"
-                            value={row.precision}
-                            onChange={(e) => {
-                              const next = measurementRows.map((r, i) =>
-                                i === index ? { ...r, precision: Number(e.target.value) } : r,
-                              );
-                              setMeasurementRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <SettingSectionHeader
+                title="Hệ thống đo lường/Tiền tệ"
+                subtitle="Biểu mẫu và bảng nhập liệu — lưu tự động"
+              />
+              {measureCatalogLoading ? (
+                <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Đang tải danh mục…</p>
+              ) : (
+                <>
+                  {measurementRows.length === 0 ? (
+                    <p className={`rounded-lg border border-dashed border-xevn-border bg-slate-50 px-4 py-6 text-center ${SETTINGS_CONTROL_TEXT} text-slate-600`}>
+                      Chưa có đơn vị đo lường trên hệ thống — nhấn &quot;Thêm dòng&quot; để bắt đầu cấu hình.
+                    </p>
+                  ) : null}
+                  <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
+                    <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
+                      <thead className="bg-white/70 backdrop-blur-md">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Metric Key</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn vị</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tiền tệ</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Độ chính xác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {measurementRows.map((row, index) => (
+                          <tr key={`${row.key}-${index}`} className="border-t border-xevn-border">
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.key}
+                                onChange={(e) => {
+                                  const next = measurementRows.map((r, i) =>
+                                    i === index ? { ...r, key: e.target.value } : r,
+                                  );
+                                  setMeasurementRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1 font-mono text-xs"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.unit}
+                                onChange={(e) => {
+                                  const next = measurementRows.map((r, i) =>
+                                    i === index ? { ...r, unit: e.target.value } : r,
+                                  );
+                                  setMeasurementRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.currency}
+                                onChange={(e) => {
+                                  const next = measurementRows.map((r, i) =>
+                                    i === index ? { ...r, currency: e.target.value } : r,
+                                  );
+                                  setMeasurementRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="number"
+                                value={row.precision}
+                                onChange={(e) => {
+                                  const next = measurementRows.map((r, i) =>
+                                    i === index ? { ...r, precision: Number(e.target.value) } : r,
+                                  );
+                                  setMeasurementRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMeasurementRows((prev) => [...prev, createCcMeasurementRow()])}
+                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                  >
+                    + Thêm dòng
+                  </button>
+                </>
+              )}
             </div>
           ) : null}
 
           {activeSettingsMenu === 'pricing' ? (
             <div className={SETTINGS_SECTION_STACK}>
-              <SettingSectionHeader title="Thiết lập hệ thống giá" subtitle="Bảng giá chỉnh sửa theo dòng" />
-              <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
-                <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
-                  <thead className="bg-white/70 backdrop-blur-md">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã giá</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Diễn giải</th>
-                      <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn giá</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pricingRows.map((row, index) => (
-                      <tr key={row.priceCode} className="border-t border-xevn-border">
-                        <td className="px-3 py-2">{row.priceCode}</td>
-                        <td className="px-3 py-2">
-                          <input
-                            value={row.label}
-                            onChange={(e) => {
-                              const next = pricingRows.map((r, i) =>
-                                i === index ? { ...r, label: e.target.value } : r,
-                              );
-                              setPricingRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                        <td className="px-3 py-2">
-                          <input
-                            type="number"
-                            value={row.amount}
-                            onChange={(e) => {
-                              const next = pricingRows.map((r, i) =>
-                                i === index ? { ...r, amount: Number(e.target.value) } : r,
-                              );
-                              setPricingRows(next);
-                            }}
-                            className="w-full rounded-input border border-xevn-border px-2 py-1"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <SettingSectionHeader
+                title="Thiết lập hệ thống giá"
+                subtitle="Bảng giá chỉnh sửa theo dòng — lưu tự động"
+              />
+              {pricingCatalogLoading ? (
+                <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Đang tải danh mục…</p>
+              ) : (
+                <>
+                  {pricingRows.length === 0 ? (
+                    <p className={`rounded-lg border border-dashed border-xevn-border bg-slate-50 px-4 py-6 text-center ${SETTINGS_CONTROL_TEXT} text-slate-600`}>
+                      Chưa có bảng giá trên hệ thống — nhấn &quot;Thêm dòng&quot; để bắt đầu cấu hình.
+                    </p>
+                  ) : null}
+                  <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
+                    <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
+                      <thead className="bg-white/70 backdrop-blur-md">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã giá</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Diễn giải</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn giá</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pricingRows.map((row, index) => (
+                          <tr key={`${row.priceCode}-${index}`} className="border-t border-xevn-border">
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.priceCode}
+                                onChange={(e) => {
+                                  const next = pricingRows.map((r, i) =>
+                                    i === index ? { ...r, priceCode: e.target.value } : r,
+                                  );
+                                  setPricingRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1 font-mono text-xs"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                value={row.label}
+                                onChange={(e) => {
+                                  const next = pricingRows.map((r, i) =>
+                                    i === index ? { ...r, label: e.target.value } : r,
+                                  );
+                                  setPricingRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="number"
+                                value={row.amount}
+                                onChange={(e) => {
+                                  const next = pricingRows.map((r, i) =>
+                                    i === index ? { ...r, amount: Number(e.target.value) } : r,
+                                  );
+                                  setPricingRows(next);
+                                }}
+                                className="w-full rounded-input border border-xevn-border px-2 py-1"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPricingRows((prev) => [...prev, createCcPricingRow()])}
+                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                  >
+                    + Thêm dòng
+                  </button>
+                </>
+              )}
             </div>
           ) : null}
         </div>
@@ -6981,40 +7878,34 @@ const CommandCenterPage: React.FC = () => {
                 {companySaveFeedback.text}
               </p>
             ) : null}
-            <div className="flex justify-end">
+            <div className="flex flex-wrap items-center justify-end gap-3">
               <button
                 type="button"
-                disabled={companySaving}
+                data-capability="ACT-CC-MU-INFRA-MODAL"
+                onClick={() => {
+                  if (!companyEntityId || companyEntityId === 'new') {
+                    setPublishMessage(
+                      'Lưu pháp nhân trước khi cấu hình khối & trường hạ tầng.',
+                    );
+                    return;
+                  }
+                  openInfrastructureFieldsConfigModal(companyEntityId);
+                }}
+                className={`inline-flex items-center justify-center gap-2 rounded-input border border-xevn-border bg-white px-4 py-2 font-semibold text-xevn-primary shadow-soft ring-1 ring-xevn-border transition hover:bg-slate-50 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
+              >
+                <FileArchive className="h-5 w-5 shrink-0" strokeWidth={RAIL_STROKE} />
+                Cấu hình khối &amp; trường hạ tầng
+              </button>
+              <MutationButton
+                pending={companySaving}
                 onClick={() => {
                   void saveCompanySettings();
                 }}
-                className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${SETTINGS_CONTROL_TEXT}`}
+                className={`rounded-input border-0 bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
               >
-                {companySaving ? 'Đang lưu…' : 'Lưu thay đổi'}
-              </button>
+                Lưu thay đổi
+              </MutationButton>
             </div>
-          </div>
-        ) : null}
-        {activeSettingsMenu === 'company_infrastructure' &&
-        infrastructureView === 'list' &&
-        foundationCategoryDetailId ? (
-          <div className="sticky bottom-0 z-30 flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-xevn-border bg-white/90 xevn-safe-inline py-2 shadow-soft backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => closeFoundationCategoryDetail()}
-              className={`rounded-input border border-xevn-border bg-white px-4 py-2 font-semibold text-xevn-text shadow-soft transition hover:bg-slate-50 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
-            >
-              Quay lại
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                saveFoundationCategory();
-              }}
-              className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
-            >
-              Lưu danh mục nền
-            </button>
           </div>
         ) : null}
         {activeSettingsMenu === 'company_dept_system' && deptSystemDetailId ? (
@@ -7046,10 +7937,11 @@ const CommandCenterPage: React.FC = () => {
             </button>
             <button
               type="button"
+              disabled={Boolean(infraForm.operatingEntityId && !operatingEntityInFoundationScope)}
               onClick={() => {
                 void saveInfrastructureSite();
               }}
-              className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
+              className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 ${SETTINGS_CONTROL_TEXT}`}
             >
               Lưu hạ tầng
             </button>
@@ -7064,15 +7956,15 @@ const CommandCenterPage: React.FC = () => {
             >
               Quay lại
             </button>
-            <button
-              type="button"
+            <MutationButton
+              pending={workflowSaving}
               onClick={() => {
                 void saveWorkflow();
               }}
-              className={`rounded-input bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
+              className={`rounded-input border-0 bg-xevn-primary px-4 py-2 font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-95 ${SETTINGS_CONTROL_TEXT}`}
             >
               Lưu quy trình
-            </button>
+            </MutationButton>
           </div>
         ) : null}
       </div>
@@ -7143,7 +8035,9 @@ const CommandCenterPage: React.FC = () => {
         : null}
       {infrastructureFieldsConfigOpen ? (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm"
+          className={`fixed inset-0 flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm ${
+            foundationWizardOpen ? 'z-[110]' : 'z-[100]'
+          }`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="infra-fields-config-title"
@@ -8113,6 +9007,81 @@ const CommandCenterPage: React.FC = () => {
                   })()}
                 </div>
 
+                <div className="mb-5 rounded-input border border-xevn-border bg-white p-4">
+                  <h4 className="mb-3 text-base font-bold text-xevn-text">
+                    Field đã cấu hình trong khối này
+                    {infraModalFieldsForSelectedBlock.length
+                      ? ` (${infraModalFieldsForSelectedBlock.length})`
+                      : ''}
+                  </h4>
+                  {infraModalFieldsForSelectedBlock.length ? (
+                    <div className="space-y-3">
+                      {infraModalFieldsForSelectedBlock.map((f) => (
+                        <div
+                          key={f.id}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-xevn-border bg-slate-50/80 px-3 py-2"
+                        >
+                          <div className="min-w-[14rem]">
+                            <p className="text-[15px] font-semibold text-xevn-text">{f.labelVi}</p>
+                            <p className="text-xs text-slate-500">
+                              {f.fieldCode} · {f.dataType} · {f.visible ? 'Hiển thị' : 'Ẩn'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const entityId = infrastructureFieldsConfigEntityId;
+                                if (!entityId) return;
+                                setInfrastructureCustomFieldDefsByEntity((prev) => ({
+                                  ...prev,
+                                  [entityId]: (prev[entityId] ?? []).map((x) =>
+                                    x.id === f.id ? { ...x, visible: !x.visible } : x,
+                                  ),
+                                }));
+                              }}
+                              className="rounded-input border border-xevn-border bg-white px-3 py-2 text-[15px] font-medium text-xevn-text transition hover:bg-slate-50 active:scale-[0.99]"
+                            >
+                              {f.visible ? 'Ẩn' : 'Hiển thị'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const entityId = infrastructureFieldsConfigEntityId;
+                                if (!entityId) return;
+                                const nextDefs = {
+                                  ...infrastructureCustomFieldDefsByEntity,
+                                  [entityId]: (infrastructureCustomFieldDefsByEntity[entityId] ?? []).filter(
+                                    (x) => x.id !== f.id,
+                                  ),
+                                };
+                                setInfrastructureCustomFieldDefsByEntity(nextDefs);
+                                try {
+                                  await saveInfrastructureSettingsToDb({
+                                    customFieldDefsByEntity: nextDefs,
+                                  });
+                                  setPublishMessage(`Đã xóa field ${f.fieldCode} khỏi DB.`);
+                                } catch (error) {
+                                  setPublishMessage(
+                                    error instanceof Error ? error.message : 'Không xóa được field trên DB.',
+                                  );
+                                }
+                              }}
+                              className="rounded-input bg-rose-50 px-3 py-2 text-[15px] font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99]"
+                            >
+                              Xóa
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-600">
+                      Chưa có field trong khối này — thêm ở form bên dưới, field mới sẽ hiện tại đây ngay sau khi ghi DB.
+                    </p>
+                  )}
+                </div>
+
                 <div className="rounded-input border border-xevn-border bg-white p-4">
                   <h4 className="mb-3 text-base font-bold text-xevn-text">Thêm field custom (inputType do bạn chọn)</h4>
                   <div className={SETTINGS_SECTION_GRID}>
@@ -8229,7 +9198,7 @@ const CommandCenterPage: React.FC = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={async () => {
                         const entityId = infrastructureFieldsConfigEntityId;
                         if (!entityId) return;
 
@@ -8263,10 +9232,11 @@ const CommandCenterPage: React.FC = () => {
                           selectConfig: infraCustomFieldDraft.selectConfig,
                         };
 
-                        setInfrastructureCustomFieldDefsByEntity((prev) => ({
-                          ...prev,
-                          [entityId]: [...(prev[entityId] ?? []), newDef],
-                        }));
+                        const nextDefs = {
+                          ...infrastructureCustomFieldDefsByEntity,
+                          [entityId]: [...list, newDef],
+                        };
+                        setInfrastructureCustomFieldDefsByEntity(nextDefs);
 
                         const nextBlockCode = (infraSelectedCustomBlockCode ?? 'general') as InfrastructureCustomBlockCode;
                         setInfraCustomFieldDraft({
@@ -8278,7 +9248,20 @@ const CommandCenterPage: React.FC = () => {
                           selectConfig: '',
                         });
 
-                        setPublishMessage(`Đã thêm field custom ${fieldCode} cho ${entityId}`);
+                        try {
+                          await saveInfrastructureSettingsToDb({
+                            customFieldDefsByEntity: nextDefs,
+                          });
+                          setPublishMessage(`Đã thêm field ${labelVi} — hiển thị trong danh sách phía trên.`);
+                        } catch (error) {
+                          setInfrastructureCustomFieldDefsByEntity((prev) => ({
+                            ...prev,
+                            [entityId]: (prev[entityId] ?? []).filter((x) => x.id !== newDef.id),
+                          }));
+                          setPublishMessage(
+                            error instanceof Error ? error.message : 'Không lưu được field lên DB.',
+                          );
+                        }
                       }}
                       className="rounded-input bg-xevn-primary px-4 py-2.5 text-[15px] font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-[0.99]"
                     >
@@ -8290,44 +9273,54 @@ const CommandCenterPage: React.FC = () => {
             </div>
 
             <div className="border-t border-xevn-border px-4 py-3">
+              {shouldShowInfraConsumerNavHint(infrastructureFieldsConfigOpenedFromMenu) ? (
+                <div
+                  className="mb-3 rounded-input border border-sky-200 bg-sky-50/90 px-4 py-3 text-sm text-sky-950"
+                  role="status"
+                >
+                  <p>
+                    Cấu hình khối/trường lưu metadata — để nhập giá trị điểm hạ tầng, mở màn{' '}
+                    <strong className="font-semibold">Hạ tầng cơ sở → Điểm hạ tầng</strong>.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={navigateToInfrastructureSiteEntry}
+                    className="mt-2 inline-flex items-center justify-center rounded-input border border-sky-300 bg-white px-3 py-2 text-[15px] font-semibold text-sky-900 shadow-soft transition hover:bg-sky-100 active:scale-[0.99]"
+                  >
+                    Mở màn nhập điểm hạ tầng
+                  </button>
+                </div>
+              ) : null}
+              {infrastructureFieldsConfigFeedback ? (
+                <p
+                  className={`mb-3 rounded-lg px-3 py-2 text-sm ${
+                    infrastructureFieldsConfigFeedback.kind === 'error'
+                      ? 'border border-red-200 bg-red-50 text-red-900'
+                      : 'border border-emerald-200 bg-emerald-50 text-emerald-900'
+                  }`}
+                  role="alert"
+                >
+                  {infrastructureFieldsConfigFeedback.text}
+                </p>
+              ) : null}
               <div className="flex items-center gap-3">
                 <button
                   type="button"
+                  disabled={infrastructureFieldsApplyBusy}
                   onClick={() => setInfrastructureFieldsConfigOpen(false)}
-                  className="w-full rounded-input border border-xevn-border bg-white py-2.5 text-[15px] font-medium text-xevn-text transition hover:bg-slate-50 active:scale-[0.99]"
+                  className="w-full rounded-input border border-xevn-border bg-white py-2.5 text-[15px] font-medium text-xevn-text transition hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Hủy
                 </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const entityId = infrastructureFieldsConfigEntityId;
-                    if (!entityId) {
-                      setPublishMessage('Chọn pháp nhân trước khi xác nhận.');
-                      return;
-                    }
-
-                    const payload = {
-                      legalEntityId: entityId,
-                      blockTitleOverrides: infrastructureBlockTitleOverridesByEntity[entityId] ?? {},
-                      customBlocks: infrastructureCustomBlocksByEntity[entityId] ?? [],
-                      customFieldDefs: infrastructureCustomFieldDefsByEntity[entityId] ?? [],
-                      // audit-ish: send current UI draft snapshot too
-                      blockTitleDraft: infraBlockTitleDraft,
-                    };
-
-                    await publishVersionChange('company_infrastructure', payload);
-                    await saveInfrastructureSettingsToDb({
-                      blockTitleOverridesByEntity: infrastructureBlockTitleOverridesByEntity,
-                      customBlocksByEntity: infrastructureCustomBlocksByEntity,
-                      customFieldDefsByEntity: infrastructureCustomFieldDefsByEntity,
-                    });
-                    setInfrastructureFieldsConfigOpen(false);
+                <MutationButton
+                  pending={infrastructureFieldsApplyBusy}
+                  onClick={() => {
+                    void applyInfrastructureFieldsConfig();
                   }}
-                  className="w-full rounded-input bg-xevn-primary py-2.5 text-[15px] font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-[0.99]"
+                  className="w-full rounded-input border-0 bg-xevn-primary py-2.5 text-[15px] font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-[0.99]"
                 >
                   Xác nhận (áp dụng)
-                </button>
+                </MutationButton>
               </div>
             </div>
           </div>
@@ -8392,7 +9385,14 @@ const CommandCenterPage: React.FC = () => {
                         ).filter((b) => !hiddenBase.includes(b.blockCode));
                   const presetBlocks = usePresetBlocks ? catalogBlocks : [];
                   const extraBlocks = usePresetBlocks ? [] : catalogBlocks;
-                  const allDefs = groupHrCustomFieldDefsByEntity[entityId ?? ''] ?? [];
+                  const allDefs = resolveMetadataFieldDefs(
+                    {
+                      pipeline: 'group_hr',
+                      entityId: entityId ?? '',
+                      tenantId,
+                    },
+                    groupHrCustomFieldDefsByEntity,
+                  );
                   return (
                     <div className="space-y-2">
                       {presetBlocks.map((b) => {
@@ -8566,10 +9566,17 @@ const CommandCenterPage: React.FC = () => {
 
                 {groupHrDetailEntityId ? (() => {
                   const entityId = groupHrDetailEntityId;
+                  const tenantId = settingsLegalEntities.find((e) => e.id === entityId)?.tenantId;
                   const blockCode = groupHrSelectedCustomBlockCode ?? 'personal';
-                  const rows = (groupHrCustomFieldDefsByEntity[entityId] ?? [])
-                    .filter((f) => f.blockCode === blockCode)
-                    .sort((a, b) => a.labelVi.localeCompare(b.labelVi, 'vi'));
+                  const rows = resolveMetadataFieldDefs(
+                    {
+                      pipeline: 'group_hr',
+                      entityId,
+                      tenantId,
+                      blockCode,
+                    },
+                    groupHrCustomFieldDefsByEntity,
+                  ).sort((a, b) => a.labelVi.localeCompare(b.labelVi, 'vi'));
                   return (
                     <div className="mb-4 rounded-input border border-xevn-border bg-white/95 p-4 shadow-sm">
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -8774,20 +9781,36 @@ const CommandCenterPage: React.FC = () => {
                   disabled={groupHrSyncBusy}
                   onClick={() => {
                     void (async () => {
-                      const defs = groupHrCustomFieldDefsByEntity[groupHrDetailEntityId] ?? [];
+                      const entity = settingsLegalEntities.find((x) => x.id === groupHrDetailEntityId);
+                      const defs = resolveMetadataFieldDefs(
+                        {
+                          pipeline: 'group_hr',
+                          entityId: groupHrDetailEntityId,
+                          tenantId: entity?.tenantId,
+                        },
+                        groupHrCustomFieldDefsByEntity,
+                      );
                       if (!defs.some((d) => d.visible)) {
                         setPublishMessage('Chưa có trường hiển thị để đồng bộ — thêm field hoặc bật Hiển thị.');
                         return;
                       }
                       setGroupHrSyncBusy(true);
+                      setGroupHrSyncProgress(null);
                       setEmployeeMetadataByEntity((prev) => ({
                         ...prev,
                         [groupHrDetailEntityId]: toEmployeeMetadataRows(defs),
                       }));
                       try {
-                        await syncGroupHrFieldsToHrmCatalogs(groupHrDetailEntityId, defs);
-                        const entity = settingsLegalEntities.find((x) => x.id === groupHrDetailEntityId);
-                        const refreshed = await fetchGroupHrCatalogFieldDefs(entity?.tenantId, null);
+                        await syncGroupHrFieldsToHrmCatalogs(
+                          groupHrDetailEntityId,
+                          defs,
+                          (progress) => setGroupHrSyncProgress(progress),
+                        );
+                        const refreshedScope = resolveGroupHrHrmCatalogScope(entity?.tenantId);
+                        const refreshed = await fetchGroupHrCatalogFieldDefs(
+                          refreshedScope.tenantId,
+                          refreshedScope.companyId,
+                        );
                         if (refreshed.length) {
                           setGroupHrCustomFieldDefsByEntity((prev) => ({
                             ...prev,
@@ -8810,12 +9833,17 @@ const CommandCenterPage: React.FC = () => {
                         );
                       } finally {
                         setGroupHrSyncBusy(false);
+                        setGroupHrSyncProgress(null);
                       }
                     })();
                   }}
                   className="w-full rounded-input bg-xevn-primary py-2.5 text-[15px] font-semibold text-white shadow-soft transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {groupHrSyncBusy ? 'Đang đồng bộ…' : 'Xác nhận (áp dụng)'}
+                  {groupHrSyncBusy
+                    ? groupHrSyncProgress
+                      ? `Đang đồng bộ danh mục ${groupHrSyncProgress.completed}/${groupHrSyncProgress.total}…`
+                      : 'Đang đồng bộ…'
+                    : 'Xác nhận (áp dụng)'}
                 </button>
               </div>
             </div>
@@ -8828,17 +9856,6 @@ const CommandCenterPage: React.FC = () => {
         accept=".pdf,.doc,.docx,.xls,.xlsx"
         className="hidden"
         onChange={(e) => void onLegalDocFilePicked(e.target.files?.[0])}
-      />
-      <WorkflowTaskDetailDrawer
-        open={inboxDetailOpen}
-        task={inboxDetailTask}
-        detail={inboxDetailPayload}
-        loading={inboxDetailLoading}
-        detailLoadFailed={inboxDetailLoadFailed}
-        busy={inboxDrawerBusy}
-        inboxFromApi={inboxTasksSource === 'api'}
-        onClose={closeInboxTaskDetail}
-        onComplete={(outcome) => void completeInboxFromDrawer(outcome)}
       />
       {employeeMetadataPreviewOpen ? (
         <div
@@ -9025,7 +10042,7 @@ const CommandCenterPage: React.FC = () => {
       <WorkspaceLayout
         className="min-h-0 flex-1"
         layoutMode={selectedModule === 'hrm' ? 'hrm-embed' : 'default'}
-        hrmModuleRailCollapsed={hrmModuleRailCollapsed}
+        portalRailCollapsed={portalRailCollapsed}
         mainClassName={selectedModule === 'hrm' ? '!overflow-hidden' : undefined}
         secondarySidebar={
           selectedModule === SYSTEM_SETTINGS
@@ -9039,11 +10056,11 @@ const CommandCenterPage: React.FC = () => {
             railItems={railItems}
             selectedModule={selectedModule}
             setSelectedModule={setSelectedModule}
-            hrmModuleRailExpanded={!hrmModuleRailCollapsed}
-            onHrmModuleRailToggle={() => {
-              setHrmModuleRailCollapsed((prev) => {
+            portalRailExpanded={!portalRailCollapsed}
+            onPortalRailToggle={() => {
+              setPortalRailCollapsed((prev) => {
                 const next = !prev;
-                writeHrmModuleRailCollapsed(next);
+                writePortalRailCollapsed(next);
                 return next;
               });
             }}
@@ -9087,7 +10104,7 @@ const CommandCenterPage: React.FC = () => {
               {/* Widgets */}
               <section className="grid gap-6 sm:grid-cols-3">
                 <div className={`border border-xevn-border bg-xevn-surface p-5 shadow-soft ${SETTINGS_RADIUS_CARD}`}>
-                  <p className="text-base font-medium text-xevn-textSecondary">Task_Counter</p>
+                  <p className="text-base font-medium text-xevn-textSecondary">Việc cần xử lý</p>
                   <p className="mt-2 text-3xl font-semibold text-xevn-text">
                     {taskCounts.all}
                   </p>
@@ -9117,19 +10134,23 @@ const CommandCenterPage: React.FC = () => {
                   <ApiLoadBanner
                     loadFailed={kpiRail.loadFailed && !allowMockFallback()}
                     usingMockFallback={kpiRail.usingMockFallback}
-                    message={`Không tải KPI rollup (${describeScopePlaneForUi()}).`}
+                    message={
+                      kpiRail.loadFailed && !allowMockFallback()
+                        ? `Không tải KPI rollup (${describeScopePlaneForUi()}).`
+                        : undefined
+                    }
                   />
-                  <p className="text-base font-medium text-xevn-textSecondary">KPI_Sparkline</p>
+                  <p className="text-base font-medium text-xevn-textSecondary">Chỉ số KPI tập đoàn</p>
                   <div className="mt-2 flex items-end justify-between gap-2">
                     <div>
                       <p className="text-2xl font-semibold text-xevn-primary">
-                        {kpiSeries.length ? `${kpiSeries[kpiSeries.length - 1]?.value}%` : '—'}
+                        {kpiRail.series.length ? `${kpiRail.series[kpiRail.series.length - 1]?.value}%` : '—'}
                       </p>
                       <p className="text-sm text-xevn-textSecondary">
                         {persona === 'employee' ? 'KPI cá nhân' : 'Tổng hợp tập đoàn'}
                       </p>
                     </div>
-                    <Sparkline points={kpiSeries} />
+                    <Sparkline points={kpiRail.series} />
                   </div>
                 </div>
 
@@ -9144,7 +10165,7 @@ const CommandCenterPage: React.FC = () => {
                         : undefined
                     }
                   />
-                  <p className="text-base font-medium text-xevn-textSecondary">Alert_List</p>
+                  <p className="text-base font-medium text-xevn-textSecondary">Cảnh báo hệ thống</p>
                   <ul className="mt-3 max-h-28 space-y-2 overflow-auto text-base leading-snug">
                     {scopedAlerts.length === 0 ? (
                       <li className="text-xevn-textSecondary">Không có cảnh báo trong phạm vi.</li>
@@ -9278,23 +10299,34 @@ const CommandCenterPage: React.FC = () => {
                           </p>
                         </div>
                         <div className="flex shrink-0 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => openInboxTaskDetail(task)}
+                          <CapabilityActionButton
+                            capabilityCode="BTN-A1-INBOX-DETAIL"
+                            variant="secondary"
+                            runtime={{
+                              blocked: inboxTasksSource !== 'api',
+                              blockedReasonVi:
+                                'Hộp thư chưa tải từ workflow-engine — kiểm tra XBOS API (28002) hoặc seed inbox.',
+                            }}
                             className="inline-flex items-center gap-1 rounded-lg border border-xevn-border bg-xevn-surface px-3 py-2 text-base font-medium text-xevn-text transition active:scale-95 hover:bg-slate-50"
+                            onClick={() => openInboxTaskDetail(task)}
                           >
                             Mở chi tiết
                             <ChevronRight className="h-4 w-4" strokeWidth={RAIL_STROKE} />
-                          </button>
-                          <button
-                            type="button"
-                            disabled={inboxActionBusyId === task.cardId}
-                            onClick={() => void quickCompleteInboxTask(task)}
+                          </CapabilityActionButton>
+                          <CapabilityActionButton
+                            capabilityCode="BTN-A1-INBOX-QUICK"
+                            runtime={{
+                              busy: inboxActionBusyId === task.cardId,
+                              blocked: inboxTasksSource !== 'api',
+                              blockedReasonVi:
+                                'Chỉ phê duyệt nhiệm vụ thật từ workflow-engine — không dùng mock inbox.',
+                            }}
                             className="inline-flex items-center gap-1 rounded-lg bg-xevn-primary px-3 py-2 text-base font-medium text-white shadow-sm transition active:scale-95 hover:opacity-90 disabled:opacity-60"
+                            onClick={() => void quickCompleteInboxTask(task)}
                           >
                             {inboxActionBusyId === task.cardId ? 'Đang xử lý…' : 'Xử lý nhanh'}
                             <RefreshCw className="h-4 w-4" strokeWidth={RAIL_STROKE} />
-                          </button>
+                          </CapabilityActionButton>
                         </div>
                       </li>
                     ))
@@ -9306,6 +10338,40 @@ const CommandCenterPage: React.FC = () => {
         </div>
         )}
       </WorkspaceLayout>
+      {foundationForm ? (
+        <FoundationCategoryWizard
+          open={foundationWizardOpen}
+          mode={foundationWizardMode}
+          form={foundationForm}
+          onFormChange={(updater) => setFoundationForm((prev) => (prev ? updater(prev) : prev))}
+          legalEntities={legalEntityList.map((c) => ({
+            id: c.id,
+            code: c.code,
+            name: c.name,
+          }))}
+          onToggleCompany={toggleFoundationCompany}
+          onCancel={closeFoundationCategoryWizard}
+          onConfirm={() => saveFoundationCategory()}
+          confirming={foundationCategorySaving}
+          fieldsPreviewEntityId={foundationFieldsPreviewEntityId}
+          onFieldsPreviewEntityChange={setFoundationFieldsPreviewEntityId}
+          onConfigureFields={openFoundationFieldsConfigFromWizard}
+          visibleFieldCount={foundationWizardVisibleFieldCount}
+        />
+      ) : null}
+      <WorkflowTaskDetailDrawer
+        open={inboxDetailOpen}
+        task={inboxDetailTask}
+        detail={inboxDetailPayload}
+        loading={inboxDetailLoading}
+        detailLoadFailed={inboxDetailLoadFailed}
+        busy={inboxDrawerBusy}
+        inboxFromApi={inboxTasksSource === 'api'}
+        onClose={closeInboxTaskDetail}
+        onApprove={() => void completeInboxFromDrawer('approved')}
+        onRejectRequest={promptRejectInboxFromDrawer}
+      />
+      {confirmDialog}
     </div>
   );
 };

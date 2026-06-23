@@ -30,6 +30,12 @@
         "timeout": 10
       }
     ],
+    "subagentStart": [
+      {
+        "command": "node .cursor/hooks/subagent-start.mjs",
+        "timeout": 5
+      }
+    ],
     "subagentStop": [
       {
         "command": "node .cursor/hooks/subagent-stop.mjs",

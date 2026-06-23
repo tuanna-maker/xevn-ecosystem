@@ -3,6 +3,7 @@
  * work_item_id: P1-U18-DO-B1
  */
 import { HRM_CONTRACT_TYPES, HRM_INSURANCE_PROVIDERS } from './vietnamese-workforce-data.mjs';
+import { buildUatJobTitleCatalogItems } from './hrm-catalog-lineage.mjs';
 
 const stub = (prefix, labels) =>
   labels.map((label, i) => ({ code: `${prefix}_${String(i + 1).padStart(2, '0')}`, label, status: 'active' }));
@@ -17,12 +18,7 @@ export const HRM_XBOS_CATALOG_DEFS = [
   { stt: 5, key: 'management_units', name: 'Trực thuộc quản lý', domain: 'organization', items: stub('MU', ['Tập đoàn', 'Công ty thành viên', 'Chi nhánh']) },
   { stt: 6, key: 'regions', name: 'Khu vực / vùng miền', domain: 'organization', items: stub('REG', ['Miền Bắc', 'Miền Trung', 'Miền Nam']) },
   // §3
-  { stt: 7, key: 'job_titles', name: 'Thư viện mẫu chức danh', domain: 'human_resources', items: [
-    { code: 'CEO', label: 'Tổng Giám đốc', status: 'active' },
-    { code: 'CHRO', label: 'Giám đốc Nhân sự', status: 'active' },
-    { code: 'OPS_MANAGER', label: 'Quản lý Vận hành', status: 'active' },
-    { code: 'DRIVER_LEAD', label: 'Đội trưởng Lái xe', status: 'active' },
-  ] },
+  { stt: 7, key: 'job_titles', name: 'Thư viện mẫu chức danh', domain: 'human_resources', items: buildUatJobTitleCatalogItems() },
   { stt: 8, key: 'company_job_titles', name: 'Chức danh áp dụng theo công ty', domain: 'human_resources', items: stub('CJT', ['TGĐ công ty', 'TP Nhân sự', 'TP Vận hành']) },
   { stt: 9, key: 'departments', name: 'Bộ phận làm việc', domain: 'human_resources', items: stub('DEPT', ['Nhân sự', 'Vận hành', 'Kế toán', 'Kinh doanh']) },
   { stt: 10, key: 'positions', name: 'Chức vụ / vị trí công việc', domain: 'human_resources', items: stub('POS', ['Chuyên viên', 'Trưởng phòng', 'Phó phòng', 'Nhân viên']) },

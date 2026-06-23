@@ -14392,3 +14392,498 @@ fc_0099255ce1879068016a1ef1155a188190ab76cfc6c1f491e8`
 - task_id: `tool_79f06b35-ad72-46ec-99d1-ed6fc86ecf9`
 - title: QC close C-JCC03-01 JWT
 - ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM
+
+## 2026-06-20T10:45:00+07:00 | user -> pm | INCIDENT P1-CC-SHR-RATIO-UX-01
+- summary: Sponsor — nhập tỉ lệ cổ phần tự tính số tiền (FE giả định charterCapital×ratio/100); không yêu cầu. PM vi phạm U31/U61 tự sửa code → **reverted**. Lock U61 active.
+- spec_ref: `docs/xbos/COMMAND_CENTER_P0_SRS.md` UC-CC-P0-01 — ratio_percent & contributed_value **độc lập**
+- flags: UF-XBOS-04 🟢, UF-XBOS-05 🟢 — regression mandatory
+- root_cause_layer: dev-fe unsolicited UX in `CommandCenterPage.tsx` `updateShareholderRow`
+- ack_status: DISPATCHED
+
+## 2026-06-20T10:46:00+07:00 | pm -> ba-process | DISPATCHED
+- work_item_id: `P1-CC-SHR-RATIO-UX-01-BA`
+- exit_criteria: AC/BR delta + spec_ref; ack_status PASS_TO_PM
+- evidence_path: `docs/program/governance/p1-cc-shr-ratio-ux-ba-delta-20260620.md`
+
+## 2026-06-20T10:46:00+07:00 | pm -> dev-fe | DISPATCHED (after BA)
+- work_item_id: `P1-CC-SHR-RATIO-UX-01-FE`
+- exit_criteria: Fix per SRS only; no regression UF-XBOS-04/05; READY_FOR_QA
+- evidence_path: `docs/qa/evidence/p1-cc-shr-ratio-ux-fe-20260620.md`## 2026-06-20T02:33:21.148Z | Hook subagentStop (global) -> PM
+- subagent: `ba-process` status: `completed`
+- task_id: `tool_949c7217-a6a0-4c8f-8cb5-993eb260a54`
+- title: BA delta shareholder fields SRS
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T02:34:48.095Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_76e522f6-2d6a-4e74-95be-358405b8690`
+- title: Fix shareholder ratio UX FE
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T02:37:57.165Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_593e703a-0e9f-4334-8216-d51f1fa660e`
+- title: QA shareholder ratio UX fix
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T02:43:21.140Z | Hook subagentStop (global) -> PM
+- subagent: `ba-process` status: `completed`
+- task_id: `tool_c09d053f-276a-4ec4-a5f8-9ef86cc9b78`
+- title: BA SRS FE feedback AC audit
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T02:47:23.961Z | Hook subagentStop (global) -> PM
+- subagent: `devops` status: `completed`
+- task_id: `tool_56d57677-d7a7-486c-853a-3a73fbe2fd1`
+- title: Deploy FE to :8088 for E2E
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T03:01:13.938Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_3fc5a3c3-53a7-41d3-9820-8a14b39b480`
+- title: Browser E2E XBOS wave :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T03:14:49.005Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_98434477-a36b-47ce-9405-aa6813db10c`
+- title: XBOS browser E2E wave R2
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T03:27:23.101Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_fbf7e6f3-ffed-46a9-82b4-d6eeaccde86`
+- title: XBOS browser E2E wave R3
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T03:28:58.742Z | Hook subagentStop (global) -> PM
+- subagent: `dev-be` status: `completed`
+- task_id: `tool_7004f8d1-3a83-4b27-83e3-0a291c8e739`
+- title: Fix UF-14 catalog 409 scope
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T03:41:34.457Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_69d9a440-a187-4908-afe7-83dd4795a8c`
+- title: XBOS browser R4 no seed
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM
+
+## 2026-06-20T12:00:00+07:00 | user -> pm | REPO-HYGIENE sponsor request
+- summary: Sponsor yêu cầu dọn dẹp source — gom SQL/scripts/evidence/APK build artifacts; giảm file rác.
+- ack_status: INTAKE
+
+## 2026-06-20T12:05:00+07:00 | pm -> devops | DISPATCHED REPO-HYGIENE-01-W1W2
+- work_item_id: REPO-HYGIENE-01-W1W2
+- from_role: pm
+- to_role: devops
+- entry_criteria: Audit `docs/program/REPO_HYGIENE_CLEANUP_PROGRAM.md` §Hiện trạng
+- exit_criteria: W1+W2 done — .gitignore updated; untracked xml/png/tmp scripts removed; tmp tracked promoted to scripts/qa|ops; scripts/README.md; evidence ≤800 disk; qc:dev-stack exit 0
+- evidence_path: docs/qa/evidence/repo-hygiene-cleanup-20260620.md
+- spec_ref: sponsor U65 repo hygiene
+
+## 2026-06-20T14:00:00+07:00 | technical-manager -> pm | INTAKE REPO-HYGIENE-01-W4
+- work_item_id: REPO-HYGIENE-01-W4
+- ack_status: PASS_TO_PM
+- summary: SQL SoT = migrations/{hrm,xbos}; apps/api/xbos-api/migrations = reference track (no delete); evidence repo-hygiene-sql-w4-20260620.md
+- pm_dispatch_hint: REPO-HYGIENE-BE-0003-0004 optional backlog (apply 0003/0004)
+
+## 2026-06-20T14:05:00+07:00 | pm -> devops | DISPATCHED REPO-HYGIENE-01-W3-R2
+- work_item_id: REPO-HYGIENE-01-W3-R2
+- from_role: pm
+- to_role: devops
+- entry_criteria: W3 prior run produced no archive/README — retry program §W3
+- exit_criteria: archive/2026-05 populated; docs/qa/evidence/README.md; EVIDENCE_INDEX updated; §W3 appended to repo-hygiene-cleanup-20260620.md
+- evidence_path: docs/qa/evidence/repo-hygiene-cleanup-20260620.md## 2026-06-20T03:53:40.700Z | Hook subagentStop (global) -> PM
+- subagent: `devops` status: `completed`
+- task_id: `tool_89bdd2cb-8e1f-4af5-97ce-b468399d647`
+- title: Repo hygiene W1 W2 cleanup
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM
+
+## 2026-06-20T16:00:00+07:00 | user -> pm | P1 browser parallel plan
+- summary: Sponsor timeline + plan XBOS 15/15 + HRM 13/13; chạy sub-agent song song
+- plan: docs/program/P1_BROWSER_ACCEPTANCE_PARALLEL_PLAN.md
+
+## 2026-06-20T16:05:00+07:00 | pm -> ALL | DISPATCHED T0 (4 lane parallel)
+- P1-DEPLOY-UF14-8088-01 → devops
+- P1-BROWSER-E2E-INBOX-08-09 → dev-be
+- P1-BROWSER-E2E-RACI-07-01 → dev-fe
+- P1-BROWSER-E2E-HRM-WAVE-8088 → qa
+- rule: U65 zero-seed · U63 browser-only
+
+## 2026-06-20T17:00:00+07:00 | devops -> qa | INTAKE P1-DEPLOY-UF14-8088-01 READY_FOR_QA
+- evidence: docs/ops/evidence/p1-deploy-uf14-8088-20260620.md
+
+## 2026-06-20T17:05:00+07:00 | pm -> qa | DISPATCHED P1-QA-UF14-8088-RETEST
+
+## 2026-06-20T17:30:00+07:00 | dev-fe -> pm | INTAKE P1-BROWSER-E2E-RACI-07-01 READY_FOR_QA
+- evidence: docs/qa/evidence/p1-browser-e2e-raci-07-fe-20260620.md
+
+## 2026-06-20T17:35:00+07:00 | pm -> devops | DISPATCHED P1-DEPLOY-RACI-07-8088
+
+## 2026-06-20T18:00:00+07:00 | dev-be -> pm | INTAKE P1-BROWSER-E2E-INBOX-08-09 READY_FOR_QA
+- evidence: docs/qa/evidence/p1-browser-e2e-inbox-spawn-be-20260620.md
+
+## 2026-06-20T18:05:00+07:00 | pm -> devops | DISPATCHED P1-BROWSER-E2E-INBOX-DEPLOY-8088
+
+## 2026-06-20T18:30:00+07:00 | qa -> pm | INTAKE P1-BROWSER-E2E-HRM-WAVE-8088 — 0/13 embed P0
+- blocker: missing hrmSettingsCatalogItem.ts on VPS
+
+## 2026-06-20T18:35:00+07:00 | pm -> devops | DISPATCHED P1-HRM-EMBED-PSCP-SETTINGS-CATALOG-8088
+
+## 2026-06-20T19:00:00+07:00 | qa -> pm | INTAKE P1-QA-UF14-8088-RETEST PASS — UF-XBOS-14 🟢
+- wave score: XBOS **11/15 🟢** (UF-07,08,09,15 🟡 pending deploy+QA R5)
+
+## 2026-06-20T19:30:00+07:00 | devops -> qa | INTAKE P1-BROWSER-E2E-INBOX-DEPLOY-8088 READY_FOR_QA
+
+## 2026-06-20T19:35:00+07:00 | pm -> qa | DISPATCHED P1-BROWSER-E2E-XBOS-WAVE-8088-R5
+
+## 2026-06-20T20:00:00+07:00 | devops -> qa | INTAKE P1-DEPLOY-RACI-07-8088 READY_FOR_QA
+
+## 2026-06-20T20:05:00+07:00 | pm -> qa | DISPATCHED P1-BROWSER-E2E-RACI-07-01 (UF-07 retest)
+
+## 2026-06-20T20:30:00+07:00 | qa -> pm | INTAKE UF-XBOS-07 🟢 — Wave 1 **12/15**
+
+## 2026-06-20T21:00:00+07:00 | qa -> pm | INTAKE P1-BROWSER-E2E-XBOS-WAVE-8088-R5 — **13/15 🟢** UF-09/15 BLOCKED
+
+## 2026-06-20T21:05:00+07:00 | pm -> dev-be | DISPATCHED P1-BROWSER-E2E-CAT-INBOX-SPAWN-8088-R6
+
+## 2026-06-20T21:30:00+07:00 | dev-be -> pm | INTAKE R6 READY_FOR_QA — cat S2S HRM scope + docker URL
+
+## 2026-06-20T21:35:00+07:00 | pm -> devops | DISPATCHED P1-DEPLOY-CAT-INBOX-R6-8088
+
+## 2026-06-20T22:00:00+07:00 | pm+devops | HRM embed pscp DONE (Shell U66 + sub-agent) — READY_FOR_QA
+
+## 2026-06-20T22:05:00+07:00 | pm -> qa | DISPATCHED P1-BROWSER-E2E-HRM-WAVE-8088-R2## 2026-06-20T06:56:27.796Z | Hook subagentStop (global) -> PM
+- subagent: `cursorGuide` status: `completed`
+- task_id: `tool_b2dbd9a2-0c00-48c0-8f5d-b376196190a`
+- title: Cursor auto-run deploy policy
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:30:00.879Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_97e42b0c-1878-401e-a062-add3c3ed979`
+- title: Fix CC UI raw keys
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:34:34.695Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_8f7a1043-792f-40e1-a1ed-18adf2db08e`
+- title: QA UI label browser :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:39:55.524Z | Hook subagentStop (global) -> PM
+- subagent: `dev-be` status: `completed`
+- task_id: `tool_6b6995a0-83d6-4818-8c02-b55e3597200`
+- title: Fix catalog inbox assignee
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:40:57.995Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_c32f5792-f862-4b00-b154-f20b8c3aedb`
+- title: QA UI labels R2 :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:42:46.861Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_3863505e-4c3a-43ea-a274-57f922f4c84`
+- title: QA browser UF-09 :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:46:22.176Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_884b3edb-83f9-4f13-b4d2-25f106811f5`
+- title: QA browser UF-15 :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:52:57.518Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_5f387905-c650-495a-9d90-e62c5cf7c8c`
+- title: Fix Action Card labels W2
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:56:20.606Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_c47ce0eb-7b36-4a55-be8e-688d8811092`
+- title: QA retest UF-15 extension
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:57:57.052Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_3720b75d-b0fb-4300-9ef9-a01a945d8f3`
+- title: QA retest UF-09 approve
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T07:59:09.436Z | Hook subagentStop (global) -> PM
+- subagent: `dev-be` status: `completed`
+- task_id: `tool_1e0bc682-d309-4988-8d54-71f30269d86`
+- title: Fix catalog approve scope 409
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:00:57.524Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_3ef09d89-aa13-480c-8d1e-c15f73c8a72`
+- title: QA UF-09/15 after scope fix
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:06:21.765Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_6a157b73-bc8b-46c8-8a39-b54205a2d25`
+- title: QA UI labels R3 parallel
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:09:19.976Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_ecc6bf1f-2a49-4077-8937-96c09a772f0`
+- title: QA UF-09/15 R7 browser final
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:17:14.611Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_2b74a2bb-1026-4fe7-8b2d-da93163e18e`
+- title: QC gate Wave 1 XBOS :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:20:42.318Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_1fb2a3a9-64cb-44ff-bb60-46ff24a6e3e`
+- title: QA HRM Wave 2 browser 13UF
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:25:57.175Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_9df9b8f0-ad25-49f5-a4b9-1a5095bd9cc`
+- title: Fix HRM embed blockers
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:33:22.968Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_4f1cae19-c46e-4103-9ba0-865da6d2136`
+- title: QC final A+B gate :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:41:32.015Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_a46a4f63-3ab3-467d-8e3d-3911c3f3447`
+- title: QA HRM Wave 2 R4 browser
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:46:32.448Z | Hook subagentStop (global) -> PM
+- subagent: `dev-be` status: `completed`
+- task_id: `tool_1712d8cb-5b52-45c9-b8ba-d350c9abfb4`
+- title: Fix member UI login :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:48:21.671Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_e6f5096d-fb5e-40e6-bece-6646511b4f4`
+- title: QC re-gate A+B :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:50:33.813Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_e6f5096d-fb5e-40e6-bece-6646511b4f4`
+- title: QC re-gate A+B :8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T08:57:43.193Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_56ba9c33-81ea-4778-9b06-420ad810118`
+- title: QA HRM UF-09/13 R5
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T09:01:16.816Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_4a180ef8-791c-4246-a278-4ec2b32e072`
+- title: Fix member session 403 logout
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T09:08:42.876Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_3b9fa0ba-26e9-47d9-b7b0-d23987ecbc0`
+- title: QC final gate Track A+B
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T09:11:29.270Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_c793608a-98b6-4567-a371-b7c3af9640d`
+- title: Fix portal crypto.randomUUID polyfill
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM
+## 2026-06-20T19:30:00+07:00 | pm -> ba-process | DISPATCHED P1-SCREEN-ACTION-CATALOG-01
+- entry: Sponsor — action inventory per screen; SRS↔TechSpec↔AC; không test reactive
+- exit: Expand docs/ecosystem/ACTION_BUTTON_INVENTORY.md + delta USER_FLOW_SRS_TRACE_DELTA; CC P0 + HRM P0 all buttons/actions
+- evidence_path: docs/ecosystem/ACTION_BUTTON_INVENTORY.md
+## 2026-06-20T19:30:00+07:00 | pm -> dev-be | DISPATCHED P1-UF-XBOS-06-LEGAL-DOC-FILE-BE
+- entry: XBOS-DOC-404 File not found on GET legal-documents/:id/file (metadata OK, disk missing)
+- exit: Upload→storage_path persist; stream 200; jest + local smoke; READY_FOR_QA
+- evidence_path: docs/qa/evidence/p1-uf-xbos-06-legal-doc-file-be-20260620.md
+- spec_ref: UC-CC-P0-02 · COMMAND_CENTER_P0_TECHSPEC.md §4
+## 2026-06-20T21:30:00+07:00 | pm -> ba-process | DISPATCHED P1-METADATA-APPLY-BA-MATRIX-01
+- entry: Sponsor incident — infra field apply 200, member unit form không đổi; cần ma trận toàn hệ thống
+- exit: docs/qa/METADATA_APPLY_PROPAGATION_MATRIX.md — config modal → consumer screen → AC visible change
+- evidence_path: docs/qa/METADATA_APPLY_PROPAGATION_MATRIX.md
+## 2026-06-20T21:30:00+07:00 | pm -> dev-fe | DISPATCHED P1-METADATA-APPLY-UX-FE-01
+- entry: XBOS-INFRA-201 OK nhưng UX zero — CommandCenterPage infra modal «Xác nhận (áp dụng)»
+- exit: Loader2 + success feedback + refresh consumer / CTA → company_infrastructure site form; READY_FOR_QA
+- spec_ref: UC-XBOS-INF-01 · docs/program/P1-METADATA-APPLY-PROPAGATION-PROGRAM.md
+## 2026-06-20T22:15:00+07:00 | pm -> qa | DISPATCHED P1-UF-XBOS-05-HOLDING-SHR-QA
+- entry: QC slice C1 UF-XBOS-05 🔴 vs matrix 🟢 conflict
+## 2026-06-20T22:15:00+07:00 | pm -> qc | DISPATCHED P1-METADATA-QC-PATH-B-CLOSE
+- entry: Path B PASS p1-metadata-mu-infra-entry-qa-20260620.md — close metadata QC C1
+
+- entry: 3 metadata pipelines (infra / groupHr / legal entity) — consumer drift
+- exit: ADR delta or checklist § scope parity metadata consumers; PASS_TO_PM
+- evidence_path: docs/architecture/ADR-METADATA-APPLY-CONSUMERS-DELTA-20260620.md
+
+- BA: P1-SCREEN-ACTION-CATALOG-01 — 72 actions / 16 screens catalog
+- BE: P1-UF-XBOS-06 — legal doc file 404 fix + storage root
+- QA: P1-UX-DEFER-UF-BATCH — 4/4 🟢; G-UX-03 NAV scoped closed
+- DevOps: XBOS_PUBLIC_BASE_URL :8088; QA C1 file URL closed
+- FE: registry 49/49 capability codes
+- IN-FLIGHT: P1-SCREEN-ACTION-QA-MAP-01 (P0 action browser map)
+
+- entry: Close defer UX-XBOS-10 RACI NAV, UX-HRM-09 member, KPI delete F5; UF-XBOS-06 upload→view→F5 on :8088
+- exit: docs/qa/evidence/p1-ux-defer-uf-batch-8088-20260620.md; matrix rows updated
+- evidence_path: docs/qa/evidence/p1-ux-defer-uf-batch-8088-20260620.md
+
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+## 2026-06-20T10:29:49.320Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_ea502a21-1d3d-4bf3-ad3e-29650a6d212`
+- title: QA vendor DELETE F5 spot
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:21:33.702Z | Hook subagentStop (global) -> PM
+- subagent: `ba-process` status: `completed`
+- task_id: `tool_b723ccc4-77cb-442d-a531-fca1812820a`
+- title: BA screen action catalog
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:21:36.145Z | Hook subagentStop (global) -> PM
+- subagent: `dev-be` status: `completed`
+- task_id: `tool_fdaeeee7-4d72-4054-acbb-d4551816e09`
+- title: Fix legal doc file 404
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:24:23.304Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_1e63e86d-6728-4723-9f42-234d472be77`
+- title: QA UF defer batch 8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:26:28.532Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_5c356346-a46d-4576-85c5-acbee7d2e82`
+- title: QC UX defer batch gate
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:29:19.052Z | Hook subagentStop (global) -> PM
+- subagent: `devops` status: `completed`
+- task_id: `tool_e9b23132-04d1-480c-a649-7f7882d5ed5`
+- title: DevOps legal doc env 8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:31:53.308Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_e57649ca-4197-4087-8bda-0151fd6e2e7`
+- title: FE action registry promote
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:34:08.514Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_4500ecf2-cd0f-46e1-aeaa-012a7801021`
+- title: QA Xem file URL spot
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:37:50.175Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_c01e719d-68f3-4ffb-bbb0-52d8d3fcdce`
+- title: QA screen action catalog map
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:40:28.749Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_0dc16661-55f2-484a-9fec-a3408ca2ada`
+- title: QA wave-2 WF reject
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:41:43.373Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_5bae6107-4d4e-4921-9aab-c5403a86986`
+- title: FE insurance link GAP-ACT-06
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:43:43.423Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_35d67e10-5adb-4e7f-b6b9-83cbc7b690d`
+- title: WF reject ConfirmDialog FE
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:46:52.017Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_fc83834e-1f87-4657-a2ab-75ed46753a5`
+- title: QA insurance link retest
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:49:28.654Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_fe4f0de9-8f66-4eab-9ce4-9c256cfc1b6`
+- title: QA WF reject confirm R2
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T12:58:05.497Z | Hook subagentStop (global) -> PM
+- subagent: `devops` status: `completed`
+- task_id: `tool_7db31f65-6cba-4373-9836-b85d9610776`
+- title: Rebuild portal-fe WF fix
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:01:45.804Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_6cc204bd-ac98-453b-8792-0c280b37f89`
+- title: QA WF reject R3 final
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:06:29.323Z | Hook subagentStop (global) -> PM
+- subagent: `ba-process` status: `completed`
+- task_id: `tool_e20b665f-48d5-4e6c-9a06-be251e48607`
+- title: BA metadata propagation matrix
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:07:00.139Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_46c75403-24c4-417c-afbc-304b9add062`
+- title: FE metadata apply UX fix
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:07:01.958Z | Hook subagentStop (global) -> PM
+- subagent: `sa` status: `completed`
+- task_id: `tool_2f4ee5c4-2367-43af-85c5-2f666004d60`
+- title: SA metadata consumer ADR
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:09:59.545Z | Hook subagentStop (global) -> PM
+- subagent: `devops` status: `completed`
+- task_id: `tool_34244cbb-b5b5-4332-8de8-9015f689505`
+- title: Deploy metadata UX portal-fe
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:11:10.750Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_2b604664-2e6e-46ec-a782-a3776d3f40b`
+- title: FE metadata consumer parity
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:15:02.880Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_7e8237d3-0ad8-47dd-aae5-d81b47a6174`
+- title: QA metadata apply UX 8088
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:16:33.829Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_f40c2a6d-4b1e-4bed-bd41-b051c93e876`
+- title: FE member unit infra entry
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:21:21.916Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_370490a6-7f90-43a0-9f11-dad6785fde7`
+- title: Deploy MU infra entry + QA
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:23:17.367Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_da9f3ce8-8b3a-4a5b-90a9-711eba9013f`
+- title: QC metadata Path B close
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T13:42:42.463Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_da9f3ce8-8b3a-4a5b-90a9-711eba9013f`
+- title: QC metadata Path B close
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T14:44:39.835Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_da9f3ce8-8b3a-4a5b-90a9-711eba9013f`
+- title: QC metadata Path B close
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T16:07:03.134Z | Hook subagentStop (global) -> PM
+- subagent: `qc` status: `completed`
+- task_id: `tool_da9f3ce8-8b3a-4a5b-90a9-711eba9013f`
+- title: QC metadata Path B close
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T17:47:29.061Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_874dd89e-5afe-4b80-b8cc-66de540cbe0`
+- title: QA UF-XBOS-05 holding retest
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T17:50:58.917Z | Hook subagentStop (global) -> PM
+- subagent: `ba-process` status: `completed`
+- task_id: `tool_e45b12d3-7cb1-4ccb-9f34-ce39a2ff572`
+- title: BA foundation category wizard UX
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T17:53:00.618Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_369a159b-65a4-448f-b9e9-aafc96bba17`
+- title: QA infra fcat list bug
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T17:54:04.301Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_6595ac8c-6118-45c5-9ac3-de945c6e9b5`
+- title: FE foundation category wizard
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T18:00:40.704Z | Hook subagentStop (global) -> PM
+- subagent: `qa` status: `completed`
+- task_id: `tool_f3c9eb93-2a5f-4e42-978d-3a439876aea`
+- title: Deploy + QA fcat wizard
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM## 2026-06-20T18:09:49.706Z | Hook subagentStop (global) -> PM
+- subagent: `dev-fe` status: `completed`
+- task_id: `tool_f5373581-da31-43ab-ae29-bdf74dfe839`
+- title: FE fcat consumer field bind
+- ack_status: AUTO — PM must read formal bus + dispatch if PASS_TO_PM
+
+## 2026-06-20T19:00:00+07:00 | qc -> pm | INTAKE P1-SCREEN-ACTION-QC-SLICE-C1-CLOSE
+- work_item_id: P1-SCREEN-ACTION-QC-SLICE-C1-CLOSE
+- summary: C1 CLOSED; UF-XBOS-05 PROMOTED; P0 20/20 honest; slice GWC C2–C5 carry
+- evidence_path: docs/qa/evidence/p1-screen-action-qc-slice-01-20260620.md
+- ack_status: **PASS_TO_PM**
+
+## 2026-06-20T19:00:01+07:00 | qa -> pm | INTAKE P1-INFRA-FCAT-CONSUMER-QA-01
+- work_item_id: P1-INFRA-FCAT-CONSUMER-QA-01
+- summary: Consumer bind retest PASS on :8088; R-QA-FCAT-01 closed; residual R-QA-FCAT-02/03
+- evidence_path: docs/qa/evidence/p1-infra-fcat-wizard-qa-20260620.md
+- ack_status: **PASS_TO_PM**
+
+## 2026-06-20T19:00:02+07:00 | pm -> ALL | C1 CLOSED
+- work_item_id: P1-SCREEN-ACTION-PM-CLOSE-01
+- summary: Screen-action P0 block 20/20; UF-XBOS-05 promoted; wave-2 C2–C4 queued to QA
+
+## 2026-06-20T19:00:03+07:00 | pm -> qa | DISPATCHED P1-SCREEN-ACTION-QA-MAP-W2
+- entry: C1 closed; carry C2 vendors CU, C3 UF-XBOS-13, C4 30/52 uf catalog rows
+- exit: Browser/API retest on :8088; update action map; PASS_TO_PM or defect list
+- evidence_path: docs/qa/evidence/p1-screen-action-map-qa-20260620.md
+- ack_status: **DISPATCHED**
+
+## 2026-06-20T19:00:04+07:00 | pm -> qc | DISPATCHED P1-INFRA-FCAT-QC-01
+- entry: QA consumer retest PASS — docs/qa/evidence/p1-infra-fcat-wizard-qa-20260620.md
+- exit: Audit L2 infra + J-XBOS-05; GO/GWC; residual R-QA-FCAT-02 waive or dev-fe; R-QA-FCAT-03 if in scope
+- evidence_path: docs/qa/evidence/p1-infra-fcat-qc-20260620.md
+- ack_status: **DISPATCHED**
+
+## 2026-06-20T19:30:00+07:00 | qc -> pm | INTAKE P1-INFRA-FCAT-QC-01
+- work_item_id: P1-INFRA-FCAT-QC-01
+- summary: GO WITH CONDITIONS — wizard + consumer bind PASS :8088; R-QA-FCAT-01 closed; R-QA-FCAT-02 waived P2; R-QA-FCAT-03 deferred
+- evidence_path: docs/qa/evidence/p1-infra-fcat-qc-20260620.md
+- ack_status: **PASS_TO_PM**
+
+## 2026-06-20T19:30:01+07:00 | pm -> ALL | INFRA FCAT SLICE CLOSED
+- work_item_id: P1-INFRA-FCAT-PM-CLOSE-01
+- summary: J-XBOS-05 footnote updated :8088 wizard wave; infra FCAT slice 🟢; NOT Phase 1 DONE
+
+## 2026-06-20T20:00:00+07:00 | qa -> pm | INTAKE P1-SCREEN-ACTION-QA-MAP-W2
+- work_item_id: P1-SCREEN-ACTION-QA-MAP-W2
+- summary: C2 vendors CU + C3 UF-XBOS-13 CLOSED; C4 52/52 verdicts (36🟢/13🟡/3⬜); P0 20/20; GAP-ACT-05 CLOSED
+- evidence_path: docs/qa/evidence/p1-screen-action-map-qa-20260620.md
+- ack_status: **PASS_TO_PM**
+
+## 2026-06-20T20:00:01+07:00 | pm -> qc | DISPATCHED P1-SCREEN-ACTION-QC-SLICE-W2-CLOSE
+- entry: QA PASS — docs/qa/evidence/p1-screen-action-map-qa-20260620.md; verify 8/8
+- exit: QC audit C2–C4; addendum slice-01; GWC for R-W2-* P2/P3 only; no false 52/52 🟢 claim
+- evidence_path: docs/qa/evidence/p1-screen-action-qc-slice-01-20260620.md
+- ack_status: **DISPATCHED**
+
+## 2026-06-20T20:30:00+07:00 | qc -> pm | INTAKE P1-SCREEN-ACTION-QC-SLICE-W2-CLOSE
+- work_item_id: P1-SCREEN-ACTION-QC-SLICE-W2-CLOSE
+- summary: GWC — C2–C5 CLOSED; 52/52 uf mapped (36🟢/13🟡/3⬜); carry R-W2-* P2/P3 only
+- evidence_path: docs/qa/evidence/p1-screen-action-qc-slice-01-20260620.md
+- ack_status: **PASS_TO_PM**
+
+## 2026-06-20T20:30:01+07:00 | pm -> ALL | SCREEN-ACTION W2 SLICE CLOSED
+- work_item_id: P1-SCREEN-ACTION-PM-W2-CLOSE-01
+- summary: W2 GWC on bus; PROJECT_STATUS_REPORT §5b updated; R-W2-* deferred next wave; NOT Phase 1 DONE
+
+## 2026-06-20T20:30:00+07:00 | qc -> pm | INTAKE P1-SCREEN-ACTION-QC-SLICE-W2-CLOSE
+- work_item_id: P1-SCREEN-ACTION-QC-SLICE-W2-CLOSE
+- summary: GWC — C2–C5 CLOSED; 52/52 uf mapped (36🟢/13🟡/3⬜); carry R-W2-* P2/P3 only
+- evidence_path: docs/qa/evidence/p1-screen-action-qc-slice-01-20260620.md
+- ack_status: **PASS_TO_PM**
+
+## 2026-06-20T20:30:01+07:00 | pm -> ALL | SCREEN-ACTION W2 SLICE CLOSED
+- work_item_id: P1-SCREEN-ACTION-PM-W2-CLOSE-01
+- summary: W2 GWC on bus; PROJECT_STATUS_REPORT §5b updated; R-W2-* deferred next wave; NOT Phase 1 DONE

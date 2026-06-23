@@ -1,6 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
-import { HRM_PILOT_OPERATING_COMPANY_ID, MASTER_TENANT_ID } from './hrm-list-scope';
+import {
+  HRM_COMPANY_UUID_BY_SLUG,
+  HRM_GROUP_MEMBER_COMPANY_SLUGS,
+  HRM_PILOT_OPERATING_COMPANY_ID,
+  MASTER_TENANT_ID,
+} from './hrm-list-scope';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
 
 type ScopeContext = {
@@ -19,11 +24,69 @@ function normalizeUuid(value: string): string {
   return value.trim().toLowerCase();
 }
 
+/**
+ * Group CEO on master JWT `main` may narrow HRM lists to one operating slug (ADR §4).
+ * Request `company_id=holding|trsport|…` while header/JWT stays `main` — not a mismatch.
+ */
+function isGroupCeoMemberSlugNarrowFilter(
+  claimTenantId: string | undefined,
+  claimCompanyId: string | undefined,
+  roleCode: string | undefined,
+  requestedCompanyId: string | undefined,
+): boolean {
+  if (!claimTenantId || !claimCompanyId || !requestedCompanyId) {
+    return false;
+  }
+  if (claimTenantId.trim() !== MASTER_TENANT_ID) {
+    return false;
+  }
+  if (claimCompanyId.trim() !== HRM_PILOT_OPERATING_COMPANY_ID) {
+    return false;
+  }
+  const role = (roleCode ?? '').trim().toLowerCase();
+  if (role !== 'group_ceo' && !role.startsWith('group_')) {
+    return false;
+  }
+  const requested = requestedCompanyId.trim().toLowerCase();
+  return (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(requested);
+}
+
+/** UF-HRM-11 — group CEO on main may submit metadata with employee company_uuid from list. */
+function isGroupCeoPilotCompanyUuid(
+  claimTenantId: string | undefined,
+  claimCompanyId: string | undefined,
+  roleCode: string | undefined,
+  requestedCompanyId: string,
+): boolean {
+  if (!claimTenantId || !claimCompanyId || !requestedCompanyId) {
+    return false;
+  }
+  if (claimTenantId.trim() !== MASTER_TENANT_ID) {
+    return false;
+  }
+  if (claimCompanyId.trim() !== HRM_PILOT_OPERATING_COMPANY_ID) {
+    return false;
+  }
+  const role = (roleCode ?? '').trim().toLowerCase();
+  if (role !== 'group_ceo' && !role.startsWith('group_')) {
+    return false;
+  }
+  if (!isUuid(requestedCompanyId)) {
+    return false;
+  }
+  const requested = normalizeUuid(requestedCompanyId);
+  return Object.values(HRM_COMPANY_UUID_BY_SLUG).some((uuid) => normalizeUuid(uuid) === requested);
+}
+
 /** Mobile JWT: companyId slug + company_uuid; attendance APIs key rows by UUID. */
 function companyScopeMatches(
   claimCompanyId: string | undefined,
   claimCompanyUuid: string | undefined,
   requestedCompanyId: string | undefined,
+  scopeGate?: {
+    claimTenantId?: string;
+    roleCode?: string;
+  },
 ): boolean {
   if (!claimCompanyId || !requestedCompanyId) {
     return true;
@@ -31,6 +94,22 @@ function companyScopeMatches(
   const claim = claimCompanyId.trim();
   const requested = requestedCompanyId.trim();
   if (claim === requested) {
+    return true;
+  }
+  if (
+    isGroupCeoMemberSlugNarrowFilter(
+      scopeGate?.claimTenantId,
+      claim,
+      scopeGate?.roleCode,
+      requested,
+    )
+  ) {
+    return true;
+  }
+  if (
+    scopeGate &&
+    isGroupCeoPilotCompanyUuid(scopeGate.claimTenantId, claim, scopeGate.roleCode, requested)
+  ) {
     return true;
   }
   const claimUuid = claimCompanyUuid?.trim();
@@ -107,6 +186,9 @@ export function resolveScopeContext(
   const claimCompanyUuid = jwtPayload
     ? readClaim(jwtPayload, 'company_uuid', 'companyUuid')
     : undefined;
+  const roleCode = jwtPayload
+    ? readClaim(jwtPayload, 'roleCode', 'role_code', 'role')
+    : undefined;
 
   const normalizedRequest = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
 
@@ -123,7 +205,10 @@ export function resolveScopeContext(
   if (
     claimCompanyId &&
     normalizedRequest.companyId &&
-    !companyScopeMatches(claimCompanyId, claimCompanyUuid, normalizedRequest.companyId)
+    !companyScopeMatches(claimCompanyId, claimCompanyUuid, normalizedRequest.companyId, {
+      claimTenantId,
+      roleCode,
+    })
   ) {
     throw new ApiException('SCOPE_CONTEXT_MISMATCH', 'companyId mismatches token scope', HttpStatus.CONFLICT, {
       field: 'companyId',

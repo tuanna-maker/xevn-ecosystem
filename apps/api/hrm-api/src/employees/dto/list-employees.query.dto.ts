@@ -24,11 +24,27 @@ export class ListEmployeesQueryDto {
 
   @IsOptional()
   @IsString()
+  view?: string;
+
+  @IsOptional()
+  @IsString()
   keyword?: string;
 
   @IsOptional()
   @IsString()
+  q?: string;
+
+  @IsOptional()
+  @IsString()
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  attendance_filter?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => toOptionalBool(value))
+  include_attendance_today?: boolean;
 
   @IsOptional()
   @Transform(({ value }) => toOptionalBool(value))

@@ -125,4 +125,134 @@ describe('BusinessMasterController (UC-XBOS-08 / MD)', () => {
       'Unauthorized internal access',
     );
   });
+
+  it('P1-BROWSER-E2E-UF14-SCOPE-409-01: group CEO JWT main + query holding lists CC catalog without 409', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.list(
+      'command_center_catalogs',
+      'xevn',
+      'holding',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(res.code).toBe('XBOS-MASTER-200');
+    expect(res.data.tenantId).toBe('xevn');
+    expect(res.data.companyId).toBe('holding');
+    expect(serviceMock.list).toHaveBeenCalledWith('xevn', 'holding', 'command_center_catalogs');
+  });
+
+  it('D-W8-CAT-SCOPE-01: group CEO JWT main lists command_center_catalogs under holding partition', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.list(
+      'command_center_catalogs',
+      'xevn',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(res.code).toBe('XBOS-MASTER-200');
+    expect(res.data.companyId).toBe('holding');
+    expect(serviceMock.list).toHaveBeenCalledWith('xevn', 'holding', 'command_center_catalogs');
+  });
+
+  it('D-W8-CAT-SCOPE-01: group CEO JWT main upserts command_center_catalogs under holding partition', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const body = { rows: [{ code: 'QĐ-ATLD', title: 'QA-W8-CAT-DOC-20260606' }] };
+    const res = await controller.upsert(
+      'command_center_catalogs',
+      'regulations',
+      body,
+      'xevn',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(res.code).toBe('XBOS-MASTER-201');
+    expect(serviceMock.upsert).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'command_center_catalogs',
+      'regulations',
+      body,
+    );
+  });
+
+  it('D-W8-CAT-SCOPE-01: group CEO JWT main deletes command_center_catalogs under holding partition', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.remove(
+      'command_center_catalogs',
+      'regulations',
+      'xevn',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(res.code).toBe('XBOS-MASTER-204');
+    expect(serviceMock.remove).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'command_center_catalogs',
+      'regulations',
+    );
+  });
+
+  it('P1-UIUX-VENDOR-DELETE-F5-8088: group CEO JWT main upserts vendors under holding partition', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const body = { code: 'PETRO', name: 'Petro VN', shortName: 'Petro', category: 'fuel' };
+    const res = await controller.upsert(
+      'vendors',
+      'vnd-fuel-01',
+      body,
+      'xevn',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(res.code).toBe('XBOS-MASTER-201');
+    expect(serviceMock.upsert).toHaveBeenCalledWith('xevn', 'holding', 'vendors', 'vnd-fuel-01', body);
+  });
+
+  it('P1-UIUX-VENDOR-DELETE-F5-8088: group CEO JWT main deletes vendors under holding partition', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const res = await controller.remove(
+      'vendors',
+      'vnd-fuel-01',
+      'xevn',
+      'main',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(res.code).toBe('XBOS-MASTER-204');
+    expect(serviceMock.remove).toHaveBeenCalledWith('xevn', 'holding', 'vendors', 'vnd-fuel-01');
+  });
 });

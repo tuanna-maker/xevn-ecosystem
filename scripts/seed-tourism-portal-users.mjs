@@ -21,6 +21,13 @@ const PORTAL_DEV_PASSWORD = process.env.PORTAL_DEV_PASSWORD ?? 'Xevn@2026';
 
 const TOURISM_PORTAL_USERS = [
   {
+    userId: 'du-lich.ceo@xe.vn',
+    tenantId: 'xe-du-lich',
+    roleCode: 'subsidiary_ceo',
+    displayName: 'CEO Du lịch XeVN',
+    companyId: 'main',
+  },
+  {
     userId: 'du-lich.hr@xe.vn',
     tenantId: 'xe-du-lich',
     roleCode: 'HRBP_MANAGER',
@@ -114,7 +121,7 @@ async function main() {
     }
 
     console.log('\n=== Portal Du lịch (dev) ===');
-    console.log(`  Email:     du-lich.hr@xe.vn`);
+    console.log(`  Email:     du-lich.ceo@xe.vn | du-lich.hr@xe.vn`);
     console.log(`  Password:  ${PORTAL_DEV_PASSWORD}`);
     console.log(`  Tenant:    xe-du-lich`);
     console.log(`  Company:   main`);

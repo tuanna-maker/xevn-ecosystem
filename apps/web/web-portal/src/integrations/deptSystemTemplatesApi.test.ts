@@ -21,6 +21,7 @@ describe('deptSystemTemplatesApi', () => {
       description: '',
       appliesToCompanyIds: [],
       enabledOrgGradeLevels: [],
+      gradeTitleLayout: {},
     });
   });
 

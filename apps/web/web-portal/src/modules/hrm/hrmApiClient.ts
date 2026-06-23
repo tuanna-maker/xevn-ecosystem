@@ -1,7 +1,9 @@
 import { resolveHrmOperationalCompanyId } from '../../integrations/commandCenterScope';
 import { IdentityScopeContext } from '../../integrations/identityScope';
 import { buildApiAuthHeaders } from '../../integrations/authSession';
+import { safeRandomUuid } from '../../lib/safeRandomUuid';
 import {
+  HrmApiClientError,
   mapCaughtFetchError,
   mapFailedHttpResponse,
   mapInvalidSuccessEnvelope,
@@ -29,7 +31,7 @@ async function request<T>(path: string, init: RequestInit, scope?: IdentityScope
   const headers: Record<string, string> = {
     ...buildApiAuthHeaders(),
     'Content-Type': 'application/json',
-    'x-request-id': crypto.randomUUID(),
+    'x-request-id': safeRandomUuid(),
   };
   if (!headers.Authorization && SERVICE_JWT_TOKEN) {
     headers.Authorization = `Bearer ${SERVICE_JWT_TOKEN}`;
@@ -230,6 +232,45 @@ export async function listHrmJobRequisitions(scope: IdentityScopeContext) {
     { method: 'GET' },
     listScope,
   );
+}
+
+export async function createHrmJobRequisition(
+  scope: IdentityScopeContext,
+  payload: { title: string; department: string; employment_type: string },
+) {
+  const listScope = hrmListScope(scope);
+  return request<HrmJobRequisitionRow>(
+    '/api/hrm/recruitment/requisitions',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        company_id: listScope.companyId,
+        title: payload.title,
+        department: payload.department,
+        employment_type: payload.employment_type,
+      }),
+    },
+    listScope,
+  );
+}
+
+export async function updateHrmJobRequisition(
+  scope: IdentityScopeContext,
+  requisitionId: string,
+  payload: { status: 'open' | 'closed' | 'on_hold' },
+) {
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
+  const path = `/api/hrm/recruitment/requisitions/${encodeURIComponent(requisitionId)}?${q.toString()}`;
+  const body = JSON.stringify(payload);
+  try {
+    return await request<HrmJobRequisitionRow>(path, { method: 'PATCH', body }, listScope);
+  } catch (error) {
+    if (error instanceof HrmApiClientError && error.status === 404) {
+      return request<HrmJobRequisitionRow>(path, { method: 'PUT', body }, listScope);
+    }
+    throw error;
+  }
 }
 
 export async function listHrmAttendanceRecords(scope: IdentityScopeContext) {

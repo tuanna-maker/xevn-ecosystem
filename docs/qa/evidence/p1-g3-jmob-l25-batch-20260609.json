@@ -1,0 +1,38 @@
+{
+  "work_item_id": "P1-G3-JMOB-L25-BATCH",
+  "ack_status": "PASS_TO_PM",
+  "verdict": "GWC",
+  "apk": {
+    "path": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+    "sha256": "C152EDD6B093871CCA59EE8AF60C65B3C1B615A53C82675DE1E078E240B412BE",
+    "bytes": 69132861,
+    "build": "MOB-UX-17 qa-device"
+  },
+  "api_base": "https://14-225-217-232.nip.io",
+  "device": "emulator-5554",
+  "journeys": {
+    "J-MOB-01": { "pass": true, "note": "deep link home" },
+    "J-MOB-02": { "pass": true, "note": "check-in sticky footer", "xml": "final02-checkin.xml" },
+    "J-MOB-03": { "pass": true, "note": "activity row leave detail", "xml": "final03-leave-detail.xml" },
+    "J-MOB-04": { "pass": true, "note": "payslip tab detail", "xml": "supp-payslip.xml" },
+    "J-MOB-05": { "pass": true, "gwc": true, "note": "pending=0 inbox loads" },
+    "J-MOB-06": { "pass": true, "note": "activity hub việc cần làm" },
+    "J-MOB-07": { "pass": true, "note": "mgr approve tile nv0002" },
+    "J-MOB-08": { "pass": false, "gwc": true, "note": "no birthday seed today" },
+    "J-MOB-09": { "pass": false, "gwc": true, "note": "no leave-today hub seed" },
+    "J-MOB-13-ext": { "pass": true, "note": "notifications bell Vietnamese", "xml": "supp-notifications.xml" },
+    "J-MOB-30": { "pass": true, "note": "team tab row detail", "xml": "supp-team-detail.xml" }
+  },
+  "ila_partner_slice": {
+    "screens_gte_16": 9,
+    "screens_total": 10,
+    "average": 16.3,
+    "formal_capture_pending": true
+  },
+  "residuals": [
+    "R-G3-JMOB-05-01: nip.io pending seed for strict Duyệt",
+    "R-G3-JMOB-08-09: hub birthday/leave-today seed",
+    "R-G3-ILA-R3-FINAL: 10-screen ILA pack on MOB-UX-17 SHA",
+    "R-G3-DEV-REQCYCLE: teamDirectory require-cycle toast"
+  ]
+}

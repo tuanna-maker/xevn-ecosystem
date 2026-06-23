@@ -19,18 +19,18 @@ interface EmployeeSkillsRadarChartProps {
   data?: SkillDataPoint[];
 }
 
-const defaultSkillsData: SkillDataPoint[] = [
-  { subject: 'Kỹ năng giao tiếp', value: 4, fullMark: 5 },
-  { subject: 'Kỹ năng chuyên môn', value: 5, fullMark: 5 },
-  { subject: 'Kỹ năng lãnh đạo', value: 3, fullMark: 5 },
-  { subject: 'Tư duy phản biện', value: 4, fullMark: 5 },
-  { subject: 'Làm việc nhóm', value: 5, fullMark: 5 },
-  { subject: 'Hiểu biết về công ty, sản phẩm', value: 4, fullMark: 5 },
-  { subject: 'Kỹ năng trình bày', value: 3, fullMark: 5 },
-  { subject: 'Kỹ năng sử dụng công nghệ', value: 5, fullMark: 5 },
-];
+export function EmployeeSkillsRadarChart({ data }: EmployeeSkillsRadarChartProps) {
+  if (!data?.length) {
+    return (
+      <div
+        className="flex h-[280px] items-center justify-center text-sm text-muted-foreground"
+        role="status"
+      >
+        Chưa có dữ liệu kỹ năng
+      </div>
+    );
+  }
 
-export function EmployeeSkillsRadarChart({ data = defaultSkillsData }: EmployeeSkillsRadarChartProps) {
   return (
     <div className="w-full h-[280px]">
       <ResponsiveContainer width="100%" height="100%">

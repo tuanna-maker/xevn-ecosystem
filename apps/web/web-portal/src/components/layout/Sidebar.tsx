@@ -400,9 +400,7 @@ const Sidebar: React.FC = () => {
       {/* Logo Header */}
       <div className="p-6 border-b border-slate-700">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-xevn-accent to-blue-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-            X
-          </div>
+          <img src="/xevn-logo.png" alt="XeVN" className="h-10 w-10 object-contain" />
           <div>
             <h1 className="text-white font-bold text-lg tracking-tight">
               X-BOS

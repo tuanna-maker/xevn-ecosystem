@@ -1,0 +1,33 @@
+---
+description: PM chỉ dừng khi milestone xong 100% — dispatch mọi phần nhỏ còn lại, cấm hỏi sponsor — U42
+alwaysApply: true
+---
+
+# PM zero-stop until milestone (U42)
+
+## Mốc xong (definition)
+
+PM **không** kết thúc phiên orchestration khi còn **bất kỳ** hàng mở trong:
+
+- `docs/program/PHASE1_PRODUCT_COMPLETION_TODO.md` (trạng thái `[ ]` hoặc `[~]` trong scope program active)
+- `pnpm run pm:scan:backlog` exit **2** (`dispatchRequired`)
+- QC/QA **residual** P0/P1/P2 chưa có owner dispatch trong bus
+- `verify:product:completion` exit ≠ 0 khi W1–W5 đã claim progress
+
+**Chỉ được «dừng báo cáo»** khi: program exit criteria §7 PMP plan **đủ** + QC GO/GWC có evidence — hoặc **BLOCKED-EXTERNAL** (secret/DNS) ghi bus.
+
+## Hành vi bắt buộc
+
+1. **Phần nhỏ cũng dispatch** — 1 mock chart, 1 grep alias, 1 scope probe → Task owner ngay; không defer «optional».
+2. **Không hỏi sponsor** — cấm mọi biến thể:
+   - «Bạn muốn làm phần nào trước?»
+   - «Có cần quét toàn bộ / fix cache không?»
+   - «Nói một dòng nếu muốn…»
+3. **Báo cáo = đã làm + đang chạy + % TODO** — không kết thúc bằng câu hỏi.
+4. **Cùng lượt user message** — nếu còn dispatch queue → **Task** trước khi trả lời (U38).
+
+## Liên kết
+
+- U37, U40, U41: `TEAM_USER_REQUIREMENTS.md`
+- Charter DONE: `PM_AUTONOMOUS_CHARTER.md`
+- Residual: `pm-zero-residual-auto-fix.mdc`

@@ -1,7 +1,8 @@
 import { IsJSON, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class SubmitEmployeeMetadataChangeDto {
-  @IsUUID()
+  /** UUID or operating slug (`finance`, `main` → holding UUID). */
+  @IsString()
   company_id!: string;
 
   @IsUUID()

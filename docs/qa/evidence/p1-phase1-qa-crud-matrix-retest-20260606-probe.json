@@ -1,0 +1,86 @@
+{
+  "work_item_id": "P1-PHASE1-QA-CRUD-MATRIX-RETST",
+  "portal": "http://127.0.0.1:5173",
+  "executed_at": "2026-06-06T15:31:09.792Z",
+  "account": "ceo@xe.vn",
+  "results": [
+    {
+      "ac_id": "AC-CRUD-CC-WF-G-C-01",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "XBOS-WF-201",
+      "detail": "instance=9530e9f1-05de-4ad1-8528-1c3a93de6399",
+      "owner": null,
+      "u34": "PASS"
+    },
+    {
+      "ac_id": "U34-CC-CAT-G-C-01",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "HRM-SET-209",
+      "detail": "extension create; inbox rows=0",
+      "owner": null,
+      "u34": "PASS"
+    },
+    {
+      "ac_id": "U34-HRM-INS-G-C-01",
+      "verdict": "PASS",
+      "http": 201,
+      "code": "HRM-INS-P-201",
+      "detail": "list 4→5; id=0e09b3a0-6577-4068-a24c-b24484a99d18",
+      "owner": null,
+      "u34": "PASS"
+    },
+    {
+      "ac_id": "U34-HRM-ATT-G-C-01",
+      "verdict": "GWC",
+      "http": 400,
+      "code": "HRM-ATT-001",
+      "detail": "list 50→50",
+      "owner": null,
+      "u34": "SKIP"
+    },
+    {
+      "ac_id": "J-HRM-02",
+      "verdict": "PASS",
+      "http": 200,
+      "code": "HRM-EMP-200",
+      "detail": "list→detail employee 3c5aa470-3725-46e8-867b-590916de1196",
+      "owner": null,
+      "u34": null
+    },
+    {
+      "ac_id": "J-HRM-04",
+      "verdict": "FAIL",
+      "http": 404,
+      "code": "HRM-DATA-404",
+      "detail": "insurance detail id=0e09b3a0-6577-4068-a24c-b24484a99d18",
+      "owner": "dev-be",
+      "u34": null
+    },
+    {
+      "ac_id": "J-HRM-05",
+      "verdict": "PASS",
+      "http": 200,
+      "code": "HRM-REC-200",
+      "detail": "requisition list→detail e5228749-e829-4edf-8864-f3255d8725dd",
+      "owner": null,
+      "u34": null
+    },
+    {
+      "ac_id": "AC-CRUD-HRM-REC-G-U-01",
+      "verdict": "GWC",
+      "http": 404,
+      "code": "HRM-DATA-404",
+      "detail": "no PATCH requisitions/:id — headcount fallback only",
+      "owner": "dev-be",
+      "u34": null
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "pass": 5,
+    "fail": 1,
+    "gwc": 2
+  }
+}

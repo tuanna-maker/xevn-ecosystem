@@ -47,6 +47,8 @@ Người đọc chính: lập trình viên, kiểm thử, vận hành hệ thố
 
 **Ngoài phạm vi:** Hệ thống kế toán tổng hợp độc lập; cổng công khai không xác thực; chi tiết triển khai hạ tầng (thuộc tài liệu vận hành riêng).
 
+**Phạm vi go-live Giai đoạn 1 (UAT):** **245** tình huống sử dụng — Cổng Web Command Center, nhúng HRM, HRM Mobile và nền XBOS kèm khai danh mục Logistic (chưa vận hành đơn/chuyến). SRS liệt kê **373** FR (bao gồm Giai đoạn 2); khi nghiệm thu Giai đoạn 1 chỉ đối chiếu mã thuộc ma trận Phase 1.
+
 ### 1.3 Định nghĩa và viết tắt
 
 | Thuật ngữ | Giải thích |
@@ -65,10 +67,30 @@ Người đọc chính: lập trình viên, kiểm thử, vận hành hệ thố
 
 | # | Tài liệu | Phiên bản |
 |---|---------|----------|
-| 1 | BRD — XeVN Ecosystem OS | 1.0 |
+| 1 | BRD — XeVN Ecosystem OS | 1.1 |
 | 2 | Mô tả hệ sinh thái XeVN | Cập nhật |
 | 3 | SRS — Định danh và phạm vi toàn hệ | Theo phân hệ |
 | 4 | Bảng tổng hợp use case hệ sinh thái XeVN | 373 UC |
+| 5 | Hướng dẫn sử dụng và chạy thử (Pilot) | 1.3 |
+
+### 1.5 Trạng thái triển khai Giai đoạn 1 (UAT)
+
+| Hạng mục | Giá trị |
+|----------|---------|
+| Môi trường chạy thử | https://14-225-217-232.nip.io |
+| Điểm chạm trong phạm vi | Command Center · nhúng HRM · HRM Mobile |
+| Ma trận Giai đoạn 1 | **245** UC (catalog đóng) |
+| Kiểm thử tích hợp API | PASS trên pilot |
+| Production portal.xe.vn | **Chưa mở** |
+
+**Giới hạn cần ghi nhận khi nghiệm thu:**
+
+| Mã | Giới hạn |
+|----|----------|
+| L-01 | Tên miền production chưa cutover |
+| L-02 | Đồng bộ mã nguồn (git parity) pilot ↔ nhánh phát hành — đang rà soát |
+| L-03 | Tiêu chí T5 (mật độ menu HRM benchmark) **hoãn** — không chặn UAT slice |
+| L-04 | FR Giai đoạn 2 (Logistic nghiệp vụ) có trong SRS nhưng **chưa** go-live |
 
 ---`;
 }
@@ -243,9 +265,9 @@ export function buildBatecoSrsMarkdown({ brd, ucRows }) {
 | Thuộc tính | Giá trị |
 |-----------|---------|
 | **Mã tài liệu** | UNICOM/SRS-XEVN-OS-001 |
-| **Phiên bản** | 2.1 |
-| **Ngày hiệu lực** | Tháng 5/2026 |
-| **Trạng thái** | Bản trình bày / làm việc |
+| **Phiên bản** | 2.2 |
+| **Ngày hiệu lực** | Tháng 6/2026 |
+| **Trạng thái** | Bản nghiệm thử Giai đoạn 1 (UAT) |
 | **Dựa trên** | BRD — XeVN Ecosystem OS |
 | **Tác giả** | UNICOM Technology Solutions Co., Ltd |
 

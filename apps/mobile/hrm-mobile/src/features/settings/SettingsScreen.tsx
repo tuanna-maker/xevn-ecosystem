@@ -1,16 +1,62 @@
 import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
-import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+import { FormField } from '../../components/ui/FormField';
+import { ListRow } from '../../components/ui/ListRow';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { SurfaceCard } from '../../components/ui/SurfaceCard';
+import { isQaDevLoginEnabled } from '../../config/qaLogin';
 import { useAuth } from '../../context/AuthContext';
 import { isBiometricEnabled, promptBiometricIfEnabled, setBiometricEnabled } from '../../integrations/biometricUnlock';
 import { vi } from '../../i18n/vi';
 import { STORAGE } from '../../storage/keys';
+import { colors, spacing, typography } from '../../theme/tokens';
+import {
+  fetchHrmOperatingUnits,
+  type HrmOperatingUnitRow,
+} from '../../integrations/hrmOperatingUnits';
+import { resolveCompanyDisplayVi } from '../../utils/companyDisplayVi';
+import { sanitizeProfileDisplay } from '../../utils/profileTabs';
+import { resolveAuthRolesVi } from '../../utils/scopeScreenCopy';
 
 export function SettingsScreen() {
   const auth = useAuth();
   const nav = useNavigation<NavigationProp<ParamListBase>>();
+  const showScopeOverride = (typeof __DEV__ !== 'undefined' && __DEV__) || isQaDevLoginEnabled();
+  const activeMembership = auth.memberships.find(
+    (m) => m.employee_id === auth.employeeId && m.tenant_id === auth.tenantId,
+  );
+  const [operatingUnits, setOperatingUnits] = useState<HrmOperatingUnitRow[]>([]);
+
+  const loadOperatingUnits = useCallback(async () => {
+    if (!auth.signedIn) {
+      setOperatingUnits([]);
+      return;
+    }
+    try {
+      const rows = await fetchHrmOperatingUnits(auth.getHrmAuth());
+      setOperatingUnits(rows);
+    } catch {
+      setOperatingUnits([]);
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    void loadOperatingUnits();
+  }, [loadOperatingUnits]);
+
+  const companyLabel = resolveCompanyDisplayVi(auth.companyId, {
+    membershipCompanyDisplay: activeMembership?.company_display,
+    operatingUnits,
+  });
+  const rolesLabel = resolveAuthRolesVi(auth.roles);
+  const employeeCodeLabel =
+    sanitizeProfileDisplay(activeMembership?.employee_code) !== '—'
+      ? sanitizeProfileDisplay(activeMembership?.employee_code)
+      : sanitizeProfileDisplay(auth.employeeId);
   const [companyUuid, setCompanyUuid] = useState(auth.companyUuid);
   const [employeeId, setEmployeeId] = useState(auth.employeeId);
   const [biometric, setBiometric] = useState(false);
@@ -34,99 +80,74 @@ export function SettingsScreen() {
     setBiometric(next);
   };
 
-  return (
-    <ScrollView style={styles.root} contentContainerStyle={styles.pad}>
-      <Text style={styles.title}>UC-HRM-MOB-02 — Phạm vi đang dùng</Text>
-      <Text style={styles.scope}>
-        tenant: {auth.tenantId}
-        {'\n'}
-        company (header): {auth.companyId}
-        {'\n'}
-        roles: {auth.roles.join(', ') || '(chưa có)'}
-        {'\n'}
-        manager UI: {auth.isManager ? 'bật' : 'ẩn'}
-      </Text>
-      <Text style={styles.title}>{vi.settings}</Text>
-      <Text style={styles.label}>UUID công ty (attendance / payroll)</Text>
-      <TextInput style={styles.input} value={companyUuid} onChangeText={setCompanyUuid} autoCapitalize="none" placeholderTextColor="#64748b" />
-      <Text style={styles.label}>employeeId</Text>
-      <TextInput style={styles.input} value={employeeId} onChangeText={setEmployeeId} autoCapitalize="none" placeholderTextColor="#64748b" />
-      <Pressable style={styles.btn} onPress={() => void persist()}>
-        <Text style={styles.btnText}>Lưu vào SecureStore</Text>
-      </Pressable>
-      <Pressable style={[styles.btn, styles.btnSecondary]} onPress={() => void toggleBiometric()}>
-        <Text style={styles.btnTextSecondary}>
-          {biometric ? 'Tắt' : 'Bật'} mở khóa sinh trắc học (MOB-403)
-        </Text>
-      </Pressable>
-      <Pressable style={[styles.btn, styles.logout]} onPress={() => void auth.signOut()}>
-        <Text style={styles.logoutText}>{vi.logout} (UC-HRM-MOB-15)</Text>
-      </Pressable>
-      <Text style={styles.section}>Điều hướng nhanh</Text>
-      <NavLink nav={nav} title={vi.scope} screen="Scope" />
-      {auth.isManager ? <NavLink nav={nav} title={vi.approvals} screen="ManagerApprovals" /> : null}
-      <NavLink nav={nav} title={vi.payroll} screen="PayrollSummary" />
-      <NavLink nav={nav} title={vi.contracts} screen="Contracts" />
-      {auth.isManager ? <NavLink nav={nav} title={vi.operations} screen="Operations" /> : null}
-      <NavLink nav={nav} title={vi.profile} screen="Profile" />
-      <NavLink nav={nav} title={vi.notifications} screen="Notifications" />
-    </ScrollView>
-  );
-}
+  const navLinks: { title: string; screen: string; show?: boolean }[] = [
+    { title: vi.scope, screen: 'Scope' },
+    { title: vi.approvals, screen: 'ManagerApprovals', show: auth.isManager },
+    { title: vi.payroll, screen: 'PayrollSummary' },
+    { title: vi.contracts, screen: 'Contracts' },
+    { title: vi.operations, screen: 'Operations', show: auth.isManager },
+    { title: vi.profile, screen: 'Profile' },
+    { title: vi.notifications, screen: 'Notifications' },
+  ];
 
-function NavLink({
-  nav,
-  title,
-  screen,
-}: {
-  nav: NavigationProp<ParamListBase>;
-  title: string;
-  screen: string;
-}) {
   return (
-    <Pressable style={styles.link} onPress={() => nav.navigate(screen as never)}>
-      <Text style={styles.linkText}>{title}</Text>
-    </Pressable>
+    <AppScreenLayout title={vi.settings} subtitle="Phạm vi, bảo mật và điều hướng nhanh" largeTitle scroll>
+      <SurfaceCard title="Phạm vi đang dùng">
+        <Text style={styles.scopeText}>
+          Công ty (phạm vi): {companyLabel}
+          {'\n'}
+          Mã nhân viên: {employeeCodeLabel}
+          {'\n'}
+          Vai trò: {rolesLabel}
+          {'\n'}
+          Giao diện quản lý: {auth.isManager ? 'bật' : 'ẩn'}
+        </Text>
+      </SurfaceCard>
+
+      {showScopeOverride ? (
+        <SurfaceCard title="Cấu hình phạm vi (UAT)">
+          <FormField
+            label="Công ty (phạm vi)"
+            value={companyUuid}
+            onChangeText={setCompanyUuid}
+            autoCapitalize="none"
+          />
+          <FormField label="Mã nhân viên" value={employeeId} onChangeText={setEmployeeId} autoCapitalize="none" />
+          <PrimaryButton label="Lưu vào SecureStore" onPress={() => void persist()} />
+        </SurfaceCard>
+      ) : null}
+
+      <PrimaryButton
+        label={biometric ? 'Tắt mở khóa sinh trắc học' : 'Bật mở khóa sinh trắc học'}
+        onPress={() => void toggleBiometric()}
+        variant="secondary"
+      />
+
+      <PrimaryButton label={vi.logout} onPress={() => void auth.signOut()} variant="danger" />
+
+      <Text style={styles.sectionTitle}>Điều hướng nhanh</Text>
+      <View style={styles.navList}>
+        {navLinks
+          .filter((l) => l.show !== false)
+          .map((l) => (
+            <ListRow key={l.screen} title={l.title} onPress={() => nav.navigate(l.screen as never)} />
+          ))}
+      </View>
+    </AppScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a' },
-  pad: { padding: 16, gap: 10, paddingBottom: 40 },
-  title: { color: '#f8fafc', fontSize: 20, fontWeight: '700' },
-  scope: {
-    color: '#cbd5e1',
-    fontSize: 13,
-    lineHeight: 20,
-    marginBottom: 16,
-    padding: 12,
-    backgroundColor: '#1e293b',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#334155',
+  scopeText: {
+    color: colors.text,
+    fontSize: typography.fontSize.sm,
+    lineHeight: typography.fontSize.sm * typography.lineHeight.relaxed,
   },
-  label: { color: '#94a3b8', fontSize: 12 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    padding: 12,
-    color: '#f8fafc',
-    backgroundColor: '#1e293b',
+  sectionTitle: {
+    color: colors.textSecondary,
+    fontSize: typography.fontSize.title2,
+    fontWeight: typography.fontWeight.semibold,
+    marginTop: spacing.sm,
   },
-  btn: {
-    marginTop: 8,
-    backgroundColor: '#0ea5e9',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  btnSecondary: { backgroundColor: '#334155' },
-  btnText: { color: '#0f172a', fontWeight: '700' },
-  btnTextSecondary: { color: '#e2e8f0', fontWeight: '600' },
-  logout: { backgroundColor: '#334155', marginTop: 24 },
-  logoutText: { color: '#fecaca', fontWeight: '700' },
-  section: { color: '#94a3b8', marginTop: 20, marginBottom: 6, fontSize: 13 },
-  link: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#334155' },
-  linkText: { color: '#38bdf8', fontSize: 16 },
+  navList: { gap: spacing.sm },
 });

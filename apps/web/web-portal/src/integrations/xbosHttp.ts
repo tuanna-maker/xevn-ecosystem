@@ -29,7 +29,14 @@ export function mergeRequestHeaders(
   return out;
 }
 
+function requestNeedsJsonContentType(method: string, body?: BodyInit | null): boolean {
+  if (body instanceof FormData || body instanceof URLSearchParams) return false;
+  if (body != null && body !== '') return true;
+  return ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase());
+}
+
 async function buildHeaders(path: string, init?: XbosRequestInit): Promise<Record<string, string>> {
+  const method = (init?.method ?? 'GET').toUpperCase();
   const base = buildApiAuthHeaders();
   const scope: Record<string, string> = {};
   if (init?.tenantId) scope['x-tenant-id'] = init.tenantId;
@@ -38,6 +45,12 @@ async function buildHeaders(path: string, init?: XbosRequestInit): Promise<Recor
       ? resolveXbosApiCompanyIdForPath(path, init.tenantId, init.companyId)
       : undefined;
   if (companyId) scope['x-company-id'] = companyId;
+  if (requestNeedsJsonContentType(method, init?.body) && !init?.headers?.['Content-Type']) {
+    const hasContentType = init?.headers
+      ? Object.keys(init.headers).some((k) => k.toLowerCase() === 'content-type')
+      : false;
+    if (!hasContentType) scope['Content-Type'] = 'application/json';
+  }
   return mergeRequestHeaders(base, scope, init?.headers);
 }
 
@@ -68,7 +81,11 @@ export async function xbosFetch<T>(
       }
       throw err;
     }
-    logApiSuccess(scope, method, url, startedAt, res.status);
+    const responseCode =
+      json && typeof json === 'object' && 'code' in json && typeof (json as { code?: unknown }).code === 'string'
+        ? (json as { code: string }).code
+        : undefined;
+    logApiSuccess(scope, method, url, startedAt, res.status, responseCode);
     return json as T;
   } catch (error) {
     if (error instanceof Error && error.message.includes(`${scope} failed`)) {

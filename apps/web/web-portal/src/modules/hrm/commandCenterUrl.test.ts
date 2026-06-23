@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
   CC_STRICT_XBOS_SETTINGS_KEYS,
+  commandCenterInboxInstanceDeepLink,
   commandCenterSettingsDeepLink,
   parseCommandCenterSettingsDeepLink,
 } from './commandCenterUrl';
+
+describe('commandCenterInboxInstanceDeepLink (J-XBOS-01)', () => {
+  it('builds CC home deep link with wfInstanceId only', () => {
+    const url = commandCenterInboxInstanceDeepLink('inst-42');
+    expect(url).toBe('/command-center?wfInstanceId=inst-42');
+    expect(url).not.toContain('settings=');
+    expect(url).not.toContain('companyId');
+  });
+});
 
 describe('commandCenterSettingsDeepLink (EX-SA01-P1-04)', () => {
   it('never encodes companyId=holding in CC settings URLs', () => {

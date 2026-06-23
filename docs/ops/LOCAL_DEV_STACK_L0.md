@@ -1,0 +1,56 @@
+# Local dev stack — L0 (`qc:dev-stack`) for QA
+
+Use this when QA runs **L0** / **L1** on a developer workstation (not pilot nip.io).
+
+## Ports (default)
+
+| Service | URL | Start command |
+|---------|-----|---------------|
+| hrm-api | `http://127.0.0.1:28001/api/hrm` | `pnpm run dev:hrm-api` (turbo → `nest start --watch`) |
+| xbos-api | `http://127.0.0.1:28002/api/xbos` | `pnpm run dev:xbos-api` |
+| web-portal | `http://127.0.0.1:5173` (optional L0) | `pnpm run dev:web-only` or `pnpm run dev:web` |
+
+`pnpm dev` does **not** start hrm-api — run **`pnpm run dev:hrm-api`** in a separate terminal (same pattern as xbos-api).
+
+**Port:** `HRM_BE_PORT` is read from `deploy/xevn-ecosystem/.env` (loaded by `apps/api/hrm-api/src/load-env.ts` before `apps/api/hrm-api/.env`). For L0, set **`HRM_BE_PORT=28001`** in deploy `.env` so health matches `qc:dev-stack` (default probe URL). Equivalent: `pnpm --filter hrm-api run start:dev` with the same env.
+
+## Startup order (minimum for L0 PASS)
+
+1. Ensure Postgres is up and `deploy/xevn-ecosystem/.env` + `apps/api/*/.env` DB vars are set.
+2. **Terminal A:** `pnpm run dev:hrm-api` — turbo runs `hrm-api` `dev` script (`nest start --watch`); wait for `Nest application successfully started` on the port from `HRM_BE_PORT` (28001 for L0).
+3. **Terminal B:** `pnpm run dev:xbos-api` — same.
+4. **Terminal C (optional):** `pnpm run dev:web-only` — for portal proxy smoke; not required for L0 exit 0.
+5. From repo root: `pnpm run qc:dev-stack` → exit **0** when hrm + xbos health return **200**.
+
+## L1 after L0
+
+```bash
+pnpm run qc:dev-stack
+pnpm run test:system:uat
+```
+
+If `test:system:uat` needs seed: `pnpm run test:system:uat:seed` (see `docs/qa/SYSTEM_INTEGRATION_UAT_SCENARIO.md`).
+
+## Pilot nip.io (L0 on VPS, not local)
+
+When local APIs are off, point env at pilot:
+
+```powershell
+$env:HRM_HEALTH_URL="https://14-225-217-232.nip.io/api/hrm"
+$env:XBOS_HEALTH_URL="https://14-225-217-232.nip.io/api/xbos"
+$env:PORTAL_DEV_URL="https://14-225-217-232.nip.io"
+pnpm run qc:dev-stack
+```
+
+After deploy, wait for APIs or run: `pnpm run probe:stack-stability` (zero 502 on login).
+
+## Common failures
+
+| Symptom | Fix |
+|---------|-----|
+| `ECONNREFUSED :28001` | Start `dev:hrm-api` |
+| `ECONNREFUSED :28002` | Start `dev:xbos-api` |
+| Portal `/api/hrm/*` 500 but APIs up | Portal proxy — check `apps/web/web-portal/.env.local` `VITE_DEV_PROXY_*` |
+| database does not exist | Create DB or fix `DATABASE_URL_*` in deploy `.env` |
+
+See also: `docs/ops/DEPLOY_GUIDE.md`, `docs/program/UAT_PRODUCTION_OPERATING_PLAN.md` §6.

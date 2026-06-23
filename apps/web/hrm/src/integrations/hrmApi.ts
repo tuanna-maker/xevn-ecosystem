@@ -1,8 +1,11 @@
 import { ApiClientError } from "@/lib/apiError";
-import { clampHrmPageSize } from "@/lib/hrmDataMode";
-import { coerceHrmListCompanyId } from "@/lib/hrmListScope";
+import { clampHrmPageSize, HRM_API_MAX_PAGE_SIZE } from "@/lib/hrmDataMode";
+import { coerceHrmListCompanyId, normalizeHrmApiListCompanyId } from "@/lib/hrmListScope";
+import { buildSettingsCatalogItemPayload } from "@/lib/hrmSettingsCatalogItem";
+import { resolveHrmMetadataCompanyUuid, serializeMetadataJsonValue } from "@/lib/hrmMetadataCompany";
 import { getHrmPortalMode } from "@/lib/hrmPortalMode";
 import { resolveHrmSpreadsheetScope } from "@/lib/hrmSpreadsheetScope";
+import { safeRandomUuid } from "@/lib/safeRandomUuid";
 import { getPortalAccessToken, getPortalSessionUser, waitForPortalAccessToken } from "@/lib/portalAuthBridge";
 
 const HRM_API_ORIGIN = (import.meta.env.VITE_HRM_API_ORIGIN ?? "").replace(/\/$/, "");
@@ -40,7 +43,7 @@ function inferRuntimeScope(): HrmSpreadsheetScope | undefined {
 
 async function headers(opts?: HrmHeaderOptions) {
   const baseHeaders: Record<string, string> = {
-    "x-request-id": crypto.randomUUID(),
+    "x-request-id": safeRandomUuid(),
   };
   if (!opts?.omitContentType) {
     baseHeaders["Content-Type"] = "application/json";
@@ -254,9 +257,29 @@ export async function syncSettingsCatalogsFromXbos(scope: HrmSpreadsheetScope) {
   const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/sync-from-xbos`, {
     method: "POST",
     headers: await headers({ scope }),
-    body: "{}",
+    body: JSON.stringify({ company_id: normalizeHrmApiListCompanyId(scope.companyId) }),
   });
   const { data } = await parseHrmJson<{ pulledKeys: string[] }>(res);
+  return data;
+}
+
+export async function upsertSettingsCatalogItem(
+  input: {
+    companyId: string;
+    catalogKey: string;
+    code: string;
+    label: string;
+    itemValue?: string;
+  },
+  scope: HrmSpreadsheetScope,
+) {
+  const body = buildSettingsCatalogItemPayload(input);
+  const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
+    method: "POST",
+    headers: await headers({ scope }),
+    body: JSON.stringify(body),
+  });
+  const { data } = await parseHrmJson<{ upserted?: number; item_key?: string; category_key?: string }>(res);
   return data;
 }
 
@@ -358,9 +381,16 @@ export async function listAttendanceRecords(params: {
 }) {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      search.set(key, String(value));
+    if (value === undefined || value === null || value === "") return;
+    if (key === "page_size") {
+      search.set(key, String(clampHrmPageSize(Number(value))));
+      return;
     }
+    if (key === "company_id" && typeof value === "string") {
+      setListCompanyId(search, value);
+      return;
+    }
+    search.set(key, String(value));
   });
   return requestHrm<{ total: number; page: number; page_size: number; data: HrmAttendanceRecord[] }>(
     `/api/hrm/attendance/records?${search.toString()}`,
@@ -459,7 +489,7 @@ export type HrmPayslipRow = {
 
 export async function listPayrollPayslips(params: { company_id: string; period_id?: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", params.company_id);
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.period_id) search.set("period_id", params.period_id);
   return requestHrm<{ total: number; data: HrmPayslipRow[] }>(
     `/api/hrm/payroll/payslips?${search.toString()}`,
@@ -516,7 +546,7 @@ export async function listJobRequisitions(params: {
   page_size?: number;
 }) {
   const search = new URLSearchParams();
-  search.set("company_id", params.company_id);
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.page) search.set("page", String(params.page));
   if (params.page_size) search.set("page_size", String(params.page_size));
   return requestHrm<{ total: number; page: number; page_size: number; data: HrmJobRequisition[] }>(
@@ -533,8 +563,39 @@ export async function createJobRequisition(payload: {
 }) {
   return requestHrm<HrmJobRequisition>("/api/hrm/recruitment/requisitions", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      ...payload,
+      company_id: normalizeHrmApiListCompanyId(payload.company_id),
+    }),
   });
+}
+
+export async function getJobRequisition(requisitionId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmJobRequisition>(
+    `/api/hrm/recruitment/requisitions/${encodeURIComponent(requisitionId)}?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function updateJobRequisition(
+  requisitionId: string,
+  companyId: string,
+  payload: { status: HrmJobRequisition["status"] },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  const path = `/api/hrm/recruitment/requisitions/${encodeURIComponent(requisitionId)}?${search.toString()}`;
+  const body = JSON.stringify(payload);
+  try {
+    return await requestHrm<HrmJobRequisition>(path, { method: "PATCH", body });
+  } catch (err: unknown) {
+    if (err instanceof ApiClientError && err.status === 404) {
+      return requestHrm<HrmJobRequisition>(path, { method: "PUT", body });
+    }
+    throw err;
+  }
 }
 
 export async function listRecruitmentCandidates(params: {
@@ -677,7 +738,7 @@ export type HrmRecruitmentPlanRow = {
 
 export async function listJobPostings(params: { company_id: string; status?: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.status) search.set("status", params.status);
   return requestHrm<{ total: number; data: HrmJobPostingRow[] }>(
     `/api/hrm/recruitment/job-postings?${search.toString()}`,
@@ -705,13 +766,13 @@ export async function createJobPosting(payload: {
 }) {
   return requestHrm<HrmJobPostingRow>("/api/hrm/recruitment/job-postings", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
 export async function deleteJobPosting(jobPostingId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/recruitment/job-postings/${jobPostingId}?${search.toString()}`,
     { method: "DELETE" },
@@ -720,7 +781,7 @@ export async function deleteJobPosting(jobPostingId: string, companyId: string) 
 
 export async function listCandidatesPool(params: { company_id: string; stage?: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.stage) search.set("stage", params.stage);
   return requestHrm<{ total: number; data: HrmCandidatePoolRow[] }>(
     `/api/hrm/recruitment/candidates-pool?${search.toString()}`,
@@ -747,7 +808,7 @@ export async function createCandidatePool(payload: {
 }) {
   return requestHrm<HrmCandidatePoolRow>("/api/hrm/recruitment/candidates", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
@@ -771,7 +832,7 @@ export async function updateCandidatePool(
   }>,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmCandidatePoolRow>(
     `/api/hrm/recruitment/candidates-pool/${candidateId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -780,7 +841,7 @@ export async function updateCandidatePool(
 
 export async function deleteCandidatePool(candidateId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/recruitment/candidates-pool/${candidateId}?${search.toString()}`,
     { method: "DELETE" },
@@ -792,7 +853,7 @@ export async function listCandidateApplications(params: {
   job_posting_id?: string;
 }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.job_posting_id) search.set("job_posting_id", params.job_posting_id);
   return requestHrm<{ total: number; data: HrmCandidateApplicationRow[] }>(
     `/api/hrm/recruitment/candidate-applications?${search.toString()}`,
@@ -802,7 +863,7 @@ export async function listCandidateApplications(params: {
 
 export async function listRecruitmentPlans(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmRecruitmentPlanRow[] }>(
     `/api/hrm/recruitment/recruitment-plans?${search.toString()}`,
     { method: "GET" },
@@ -815,7 +876,7 @@ export async function updateRecruitmentPlanStatus(
   status: string,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmRecruitmentPlanRow>(
     `/api/hrm/recruitment/recruitment-plans/${planId}/status?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify({ status }) },
@@ -841,7 +902,7 @@ export type HrmEmployeeInsuranceRow = {
 
 export async function listEmployeeInsurances(params: { company_id: string; employee_id: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   search.set("employee_id", params.employee_id);
   return requestHrm<{ total: number; data: HrmEmployeeInsuranceRow[] }>(
     `/api/hrm/employee-insurances?${search.toString()}`,
@@ -864,7 +925,7 @@ export async function createEmployeeInsurance(payload: {
 }) {
   return requestHrm<HrmEmployeeInsuranceRow>("/api/hrm/employee-insurances", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
@@ -891,7 +952,7 @@ export async function updateEmployeeInsurance(
 
 export async function deleteEmployeeInsurance(insuranceId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/employee-insurances/${insuranceId}?${search.toString()}`,
     { method: "DELETE" },
@@ -917,7 +978,7 @@ export type HrmEmployeeBenefitRow = {
 
 export async function listEmployeeBenefits(params: { company_id: string; employee_id: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   search.set("employee_id", params.employee_id);
   return requestHrm<{ total: number; data: HrmEmployeeBenefitRow[] }>(
     `/api/hrm/employee-benefits?${search.toString()}`,
@@ -940,7 +1001,7 @@ export async function createEmployeeBenefit(payload: {
 }) {
   return requestHrm<HrmEmployeeBenefitRow>("/api/hrm/employee-benefits", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
@@ -967,7 +1028,7 @@ export async function updateEmployeeBenefit(
 
 export async function deleteEmployeeBenefit(benefitId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/employee-benefits/${benefitId}?${search.toString()}`,
     { method: "DELETE" },
@@ -994,7 +1055,7 @@ export type HrmEmployeeKpiRow = {
 
 export async function listEmployeeKpis(params: { company_id: string; employee_id: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   search.set("employee_id", params.employee_id);
   return requestHrm<{ total: number; data: HrmEmployeeKpiRow[] }>(
     `/api/hrm/employee-kpis?${search.toString()}`,
@@ -1018,13 +1079,13 @@ export async function createEmployeeKpi(payload: {
 }) {
   return requestHrm<HrmEmployeeKpiRow>("/api/hrm/employee-kpis", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
 export async function deleteEmployeeKpi(kpiId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(`/api/hrm/employee-kpis/${kpiId}?${search.toString()}`, {
     method: "DELETE",
   });
@@ -1044,7 +1105,7 @@ export type HrmSalaryTemplateRow = {
 
 export async function listSalaryTemplates(params: { company_id: string; status?: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.status) search.set("status", params.status);
   return requestHrm<{ total: number; data: HrmSalaryTemplateRow[] }>(
     `/api/hrm/payroll/salary-templates?${search.toString()}`,
@@ -1061,7 +1122,7 @@ export async function createSalaryTemplate(payload: {
 }) {
   return requestHrm<HrmSalaryTemplateRow>("/api/hrm/payroll/salary-templates", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
@@ -1084,7 +1145,7 @@ export async function updateSalaryTemplate(
 
 export async function deleteSalaryTemplate(templateId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/payroll/salary-templates/${templateId}?${search.toString()}`,
     { method: "DELETE" },
@@ -1101,6 +1162,9 @@ export type HrmContractRecord = {
   status: "active" | "expired" | "terminated";
   created_at: string;
   updated_at: string;
+  employee_name?: string | null;
+  employee_code?: string | null;
+  department?: string | null;
 };
 
 export type HrmInsuranceRecord = {
@@ -1113,6 +1177,17 @@ export type HrmInsuranceRecord = {
   status: "active" | "expired" | "cancelled";
   created_at: string;
   updated_at: string;
+  employee_name?: string | null;
+  employee_code?: string | null;
+  department?: string | null;
+  social_insurance_number?: string | null;
+  health_insurance_number?: string | null;
+  unemployment_insurance_number?: string | null;
+  social_insurance_rate?: number | null;
+  health_insurance_rate?: number | null;
+  unemployment_insurance_rate?: number | null;
+  base_salary?: number | null;
+  effective_date?: string | null;
 };
 
 export type HrmEmployeeRecord = {
@@ -1125,6 +1200,7 @@ export type HrmEmployeeRecord = {
   status: "active" | "inactive";
   hired_at: string | null;
   archived_at: string | null;
+  avatar_url?: string | null;
   custom_fields: Record<string, string>;
   created_at: string;
   updated_at: string;
@@ -1145,8 +1221,31 @@ export async function listEmployees(params: {
   );
 }
 
+/** Paginate employees list — respects Nest @Max(100) page_size cap. */
+export async function listAllEmployees(params: {
+  company_id: string;
+  keyword?: string;
+  status?: string;
+  include_archived?: boolean;
+  page_size?: number;
+}): Promise<{ total: number; data: HrmEmployeeRecord[] }> {
+  const all: HrmEmployeeRecord[] = [];
+  let page = 1;
+  let total = 0;
+  const pageSize = clampHrmPageSize(params.page_size ?? HRM_API_MAX_PAGE_SIZE);
+  for (;;) {
+    const res = await listEmployees({ ...params, page, page_size: pageSize });
+    total = res.total ?? all.length;
+    const batch = res.data ?? [];
+    all.push(...batch);
+    if (batch.length === 0 || all.length >= total) break;
+    page += 1;
+  }
+  return { total, data: all };
+}
+
 function setListCompanyId(search: URLSearchParams, companyId: string) {
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
 }
 
 function buildListSearchParams(
@@ -1180,7 +1279,7 @@ export async function getEmployeeById(
     ...new Set(
       [...companyIds]
         .filter(Boolean)
-        .map((c) => coerceHrmListCompanyId(c))
+        .map((c) => normalizeHrmApiListCompanyId(c))
         .sort((a, b) => {
           if (a === "main") return -1;
           if (b === "main") return 1;
@@ -1226,6 +1325,7 @@ export async function createEmployee(payload: {
   full_name: string;
   job_title_key?: string;
   hired_at?: string;
+  avatar_url?: string | null;
   custom_fields?: Record<string, string>;
 }) {
   return requestHrm<HrmEmployeeRecord>("/api/hrm/employees", {
@@ -1239,6 +1339,7 @@ export async function updateEmployee(employeeId: string, payload: {
   full_name?: string;
   job_title_key?: string;
   hired_at?: string;
+  avatar_url?: string | null;
   custom_fields?: Record<string, string>;
 }) {
   return requestHrm<HrmEmployeeRecord>(`/api/hrm/employees/${employeeId}`, {
@@ -1310,30 +1411,80 @@ export async function listInsuranceRecords(params: {
   company_id: string;
   employee_id?: string;
   status?: string;
+  page?: number;
+  page_size?: number;
 }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.employee_id) search.set("employee_id", params.employee_id);
   if (params.status) search.set("status", params.status);
-  return requestHrm<{ total: number; data: HrmInsuranceRecord[] }>(
+  if (params.page) search.set("page", String(params.page));
+  if (params.page_size) search.set("page_size", String(clampHrmPageSize(params.page_size)));
+  return requestHrm<{ total: number; page?: number; page_size?: number; data: HrmInsuranceRecord[] }>(
     `/api/hrm/contracts-insurance/insurance?${search.toString()}`,
     { method: "GET" },
   );
+}
+
+/** Paginate through full insurance list (BR-INS-01 — matches menu-density total). */
+export async function listAllInsuranceRecords(params: {
+  company_id: string;
+  employee_id?: string;
+  status?: string;
+}): Promise<{ total: number; data: HrmInsuranceRecord[] }> {
+  const all: HrmInsuranceRecord[] = [];
+  let page = 1;
+  let total = 0;
+  const pageSize = clampHrmPageSize();
+  for (;;) {
+    const res = await listInsuranceRecords({ ...params, page, page_size: pageSize });
+    total = res.total ?? all.length;
+    const batch = res.data ?? [];
+    all.push(...batch);
+    if (batch.length === 0 || all.length >= total) break;
+    page += 1;
+  }
+  return { total, data: all };
 }
 
 export async function listEmployeeContracts(params: {
   company_id: string;
   employee_id?: string;
   status?: "active" | "expired" | "terminated";
+  page?: number;
+  page_size?: number;
 }) {
   const search = new URLSearchParams();
-  search.set("company_id", params.company_id);
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.employee_id) search.set("employee_id", params.employee_id);
   if (params.status) search.set("status", params.status);
-  return requestHrm<{ total: number; data: HrmContractRecord[] }>(
+  if (params.page) search.set("page", String(params.page));
+  if (params.page_size) search.set("page_size", String(clampHrmPageSize(params.page_size)));
+  return requestHrm<{ total: number; page?: number; page_size?: number; data: HrmContractRecord[] }>(
     `/api/hrm/contracts-insurance/contracts?${search.toString()}`,
     { method: "GET" },
   );
+}
+
+/** Paginate through full contract list for dashboard / reports consumers. */
+export async function listAllEmployeeContracts(params: {
+  company_id: string;
+  employee_id?: string;
+  status?: "active" | "expired" | "terminated";
+}): Promise<{ total: number; data: HrmContractRecord[] }> {
+  const all: HrmContractRecord[] = [];
+  let page = 1;
+  let total = 0;
+  const pageSize = clampHrmPageSize();
+  for (;;) {
+    const res = await listEmployeeContracts({ ...params, page, page_size: pageSize });
+    total = res.total ?? all.length;
+    const batch = res.data ?? [];
+    all.push(...batch);
+    if (batch.length === 0 || all.length >= total) break;
+    page += 1;
+  }
+  return { total, data: all };
 }
 
 export async function updateEmployeeContract(
@@ -1366,9 +1517,9 @@ export type HrmOperationsTask = {
 
 export async function listOperationsTasks(params: { company_id: string; page?: number; page_size?: number }) {
   const search = new URLSearchParams();
-  search.set("company_id", params.company_id);
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.page) search.set("page", String(params.page));
-  if (params.page_size) search.set("page_size", String(params.page_size));
+  if (params.page_size) search.set("page_size", String(clampHrmPageSize(params.page_size)));
   return requestHrm<{ total: number; page: number; page_size: number; data: HrmOperationsTask[] }>(
     `/api/hrm/operations/tasks?${search.toString()}`,
     { method: "GET" },
@@ -1399,7 +1550,7 @@ export async function updateOperationsTaskStatus(taskId: string, payload: {
 
 export async function getOperationsSummary(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", companyId);
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{
     attendance_records: number;
     payroll_periods: number;
@@ -1465,12 +1616,21 @@ export async function submitEmployeeMetadataChangeRequest(payload: {
   workflow_code?: string;
   source_catalog_key?: string;
 }) {
+  const companyUuid = resolveHrmMetadataCompanyUuid(payload.company_id);
+  if (!companyUuid) {
+    throw new ApiClientError({
+      status: 400,
+      code: 'HRM-META-SCOPE',
+      message: 'Không xác định được company_id UUID cho yêu cầu metadata',
+    });
+  }
   return requestHrm<HrmEmployeeMetadataChangeRequest>("/api/hrm/employee-metadata/change-requests", {
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      current_value: JSON.stringify(payload.current_value ?? null),
-      requested_value: JSON.stringify(payload.requested_value),
+      company_id: companyUuid,
+      current_value: serializeMetadataJsonValue(payload.current_value ?? null),
+      requested_value: serializeMetadataJsonValue(payload.requested_value),
     }),
   });
 }
@@ -1478,20 +1638,24 @@ export async function submitEmployeeMetadataChangeRequest(payload: {
 export async function approveEmployeeMetadataChangeRequest(
   changeRequestId: string,
   payload?: { actor_user_id?: string; actor_name?: string; note?: string },
+  scope?: HrmSpreadsheetScope,
 ) {
   return requestHrm<HrmEmployeeMetadataChangeRequest>(
     `/api/hrm/employee-metadata/change-requests/${changeRequestId}/approve`,
     { method: "POST", body: JSON.stringify(payload ?? {}) },
+    scope ? { scope } : undefined,
   );
 }
 
 export async function rejectEmployeeMetadataChangeRequest(
   changeRequestId: string,
   payload?: { actor_user_id?: string; actor_name?: string; note?: string },
+  scope?: HrmSpreadsheetScope,
 ) {
   return requestHrm<HrmEmployeeMetadataChangeRequest>(
     `/api/hrm/employee-metadata/change-requests/${changeRequestId}/reject`,
     { method: "POST", body: JSON.stringify(payload ?? {}) },
+    scope ? { scope } : undefined,
   );
 }
 
@@ -1584,7 +1748,7 @@ function attendanceRequestListParams(params: {
   employee_id?: string;
 }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.status) search.set("status", params.status);
   if (params.employee_id) search.set("employee_id", params.employee_id);
   return search;
@@ -1634,7 +1798,7 @@ export async function createOvertimeRequest(payload: Record<string, unknown>) {
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+      company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")),
     }),
   });
 }
@@ -1714,7 +1878,7 @@ export async function createBusinessTripRequest(payload: Record<string, unknown>
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+      company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")),
     }),
   });
 }
@@ -1788,7 +1952,7 @@ export async function createLateEarlyRequest(payload: Record<string, unknown>) {
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+      company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")),
     }),
   });
 }
@@ -1865,7 +2029,7 @@ export async function createShiftChangeRequest(payload: Record<string, unknown>)
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+      company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")),
     }),
   });
 }
@@ -1931,7 +2095,7 @@ export type HrmAdvanceRequestEmployee = {
 
 export async function listAdvanceRequests(params: { company_id: string; status?: string }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.status) search.set("status", params.status);
   return requestHrm<{ total: number; data: HrmAdvanceRequest[] }>(
     `/api/hrm/payroll/advance-requests?${search.toString()}`,
@@ -1944,14 +2108,14 @@ export async function createAdvanceRequest(payload: Record<string, unknown>) {
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")),
+      company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")),
     }),
   });
 }
 
 export async function listAdvanceRequestEmployees(requestId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmAdvanceRequestEmployee[] }>(
     `/api/hrm/payroll/advance-requests/${requestId}/employees?${search.toString()}`,
     { method: "GET" },
@@ -2034,7 +2198,7 @@ export type HrmAttendanceOverview = {
 
 export async function fetchAttendanceOverview(params: { company_id: string; year?: number }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.year != null) search.set("year", String(params.year));
   return requestHrm<HrmAttendanceOverview>(
     `/api/hrm/attendance/overview?${search.toString()}`,
@@ -2280,7 +2444,7 @@ export async function listHrDecisions(params: {
   status?: string;
 }) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(params.company_id));
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.decision_type) search.set("decision_type", params.decision_type);
   if (params.status) search.set("status", params.status);
   return requestHrm<{ total: number; data: HrmDecisionRecord[] }>(
@@ -2346,7 +2510,7 @@ export async function updateHrDecision(
 
 export async function deleteHrDecision(decisionId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(`/api/hrm/decisions/${decisionId}?${search.toString()}`, {
     method: "DELETE",
   });
@@ -2362,7 +2526,7 @@ export type HrmSalaryComponentRow = Record<string, unknown> & {
 
 export async function listSalaryComponents(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmSalaryComponentRow[] }>(
     `/api/hrm/payroll/salary-components?${search.toString()}`,
     { method: "GET" },
@@ -2371,7 +2535,7 @@ export async function listSalaryComponents(companyId: string) {
 
 export async function listSalaryComponentCategories(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/payroll/salary-component-categories?${search.toString()}`,
     { method: "GET" },
@@ -2381,7 +2545,7 @@ export async function listSalaryComponentCategories(companyId: string) {
 export async function createSalaryComponent(payload: Record<string, unknown>) {
   return requestHrm<HrmSalaryComponentRow>("/api/hrm/payroll/salary-components", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -2391,7 +2555,7 @@ export async function updateSalaryComponent(
   payload: Record<string, unknown>,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmSalaryComponentRow>(
     `/api/hrm/payroll/salary-components/${componentId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -2400,7 +2564,7 @@ export async function updateSalaryComponent(
 
 export async function deleteSalaryComponent(componentId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/payroll/salary-components/${componentId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2410,13 +2574,13 @@ export async function deleteSalaryComponent(componentId: string, companyId: stri
 export async function createSalaryComponentCategory(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/payroll/salary-component-categories", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
 export async function deleteSalaryComponentCategory(categoryId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/payroll/salary-component-categories/${categoryId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2427,7 +2591,7 @@ export type HrmPaymentBatchRow = Record<string, unknown> & { id: string; company
 
 export async function listPaymentBatches(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmPaymentBatchRow[] }>(
     `/api/hrm/payroll/payment-batches?${search.toString()}`,
     { method: "GET" },
@@ -2436,7 +2600,7 @@ export async function listPaymentBatches(companyId: string) {
 
 export async function listPaymentBatchRecords(batchId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/payroll/payment-batches/${batchId}/records?${search.toString()}`,
     { method: "GET" },
@@ -2459,7 +2623,7 @@ export async function addPaymentBatchRecord(
   },
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<Record<string, unknown>>(
     `/api/hrm/payroll/payment-batches/${batchId}/records?${search.toString()}`,
     { method: "POST", body: JSON.stringify(payload) },
@@ -2473,7 +2637,7 @@ export async function processPaymentBatchRecord(
   payload?: { transaction_ref?: string; notes?: string },
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<Record<string, unknown>>(
     `/api/hrm/payroll/payment-batches/${batchId}/records/${recordId}/process?${search.toString()}`,
     { method: "POST", body: JSON.stringify(payload ?? {}) },
@@ -2486,7 +2650,7 @@ export async function processPaymentBatch(
   payload?: { notes?: string },
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<Record<string, unknown>>(
     `/api/hrm/payroll/payment-batches/${batchId}/process?${search.toString()}`,
     { method: "POST", body: JSON.stringify(payload ?? {}) },
@@ -2496,7 +2660,7 @@ export async function processPaymentBatch(
 export async function createPaymentBatch(payload: Record<string, unknown>) {
   return requestHrm<HrmPaymentBatchRow>("/api/hrm/payroll/payment-batches", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -2506,7 +2670,7 @@ export async function updatePaymentBatch(
   payload: Record<string, unknown>,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmPaymentBatchRow>(
     `/api/hrm/payroll/payment-batches/${batchId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -2515,7 +2679,7 @@ export async function updatePaymentBatch(
 
 export async function deletePaymentBatch(batchId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/payroll/payment-batches/${batchId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2526,7 +2690,7 @@ export type HrmWorkShiftRow = Record<string, unknown> & { id: string; company_id
 
 export async function listWorkShifts(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmWorkShiftRow[] }>(
     `/api/hrm/attendance/work-shifts?${search.toString()}`,
     { method: "GET" },
@@ -2536,13 +2700,13 @@ export async function listWorkShifts(companyId: string) {
 export async function createWorkShift(payload: Record<string, unknown>) {
   return requestHrm<HrmWorkShiftRow>("/api/hrm/attendance/work-shifts", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
 export async function updateWorkShift(shiftId: string, companyId: string, payload: Record<string, unknown>) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmWorkShiftRow>(
     `/api/hrm/attendance/work-shifts/${shiftId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -2551,7 +2715,7 @@ export async function updateWorkShift(shiftId: string, companyId: string, payloa
 
 export async function deleteWorkShift(shiftId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/attendance/work-shifts/${shiftId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2562,7 +2726,7 @@ export type HrmAttendanceSheetRow = Record<string, unknown> & { id: string; comp
 
 export async function listAttendanceSheets(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmAttendanceSheetRow[] }>(
     `/api/hrm/attendance/attendance-sheets?${search.toString()}`,
     { method: "GET" },
@@ -2572,7 +2736,7 @@ export async function listAttendanceSheets(companyId: string) {
 export async function createAttendanceSheet(payload: Record<string, unknown>) {
   return requestHrm<HrmAttendanceSheetRow>("/api/hrm/attendance/attendance-sheets", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -2582,7 +2746,7 @@ export async function updateAttendanceSheet(
   payload: Record<string, unknown>,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmAttendanceSheetRow>(
     `/api/hrm/attendance/attendance-sheets/${sheetId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -2591,7 +2755,7 @@ export async function updateAttendanceSheet(
 
 export async function deleteAttendanceSheet(sheetId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/attendance/attendance-sheets/${sheetId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2604,7 +2768,7 @@ export async function updateJobPosting(
   payload: Record<string, unknown>,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmJobPostingRow>(
     `/api/hrm/recruitment/job-postings/${jobPostingId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -2622,13 +2786,13 @@ export async function updateCandidatePoolStage(
 export async function createRecruitmentPlan(payload: Record<string, unknown>) {
   return requestHrm<HrmRecruitmentPlanRow>("/api/hrm/recruitment/recruitment-plans", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
 export async function deleteRecruitmentPlan(planId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/recruitment/recruitment-plans/${planId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2643,7 +2807,7 @@ export type HrmInterviewCatalogRow = Record<string, unknown> & {
 
 export async function listInterviewsCatalog(companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ total: number; data: HrmInterviewCatalogRow[] }>(
     `/api/hrm/recruitment/interviews-catalog?${search.toString()}`,
     { method: "GET" },
@@ -2653,7 +2817,7 @@ export async function listInterviewsCatalog(companyId: string) {
 export async function createInterviewCatalog(payload: Record<string, unknown>) {
   return requestHrm<HrmInterviewCatalogRow>("/api/hrm/recruitment/interviews-catalog", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -2663,7 +2827,7 @@ export async function updateInterviewCatalog(
   payload: Record<string, unknown>,
 ) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<HrmInterviewCatalogRow>(
     `/api/hrm/recruitment/interviews-catalog/${interviewId}?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify(payload) },
@@ -2672,7 +2836,7 @@ export async function updateInterviewCatalog(
 
 export async function deleteInterviewCatalog(interviewId: string, companyId: string) {
   const search = new URLSearchParams();
-  search.set("company_id", coerceHrmListCompanyId(companyId));
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
   return requestHrm<{ id: string }>(
     `/api/hrm/recruitment/interviews-catalog/${interviewId}?${search.toString()}`,
     { method: "DELETE" },
@@ -2961,7 +3125,7 @@ export async function createCandidateApplication(payload: {
 }) {
   return requestHrm<HrmCandidateApplicationRow>("/api/hrm/recruitment/candidate-applications", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
@@ -2995,7 +3159,7 @@ export async function listHeadcountProposals(companyId: string) {
 export async function createHeadcountProposal(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/recruitment/headcount-proposals", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3026,7 +3190,7 @@ export async function listCandidateEvaluations(params: { company_id: string; can
 export async function createCandidateEvaluation(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/recruitment/candidate-evaluations", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3053,7 +3217,7 @@ export async function replaceEvaluationCriteriaTemplates(companyId: string, temp
     "/api/hrm/recruitment/evaluation-criteria-templates/replace",
     {
       method: "POST",
-      body: JSON.stringify({ company_id: coerceHrmListCompanyId(companyId), templates }),
+      body: JSON.stringify({ company_id: normalizeHrmApiListCompanyId(companyId), templates }),
     },
   );
 }
@@ -3078,7 +3242,7 @@ export async function createDepartment(payload: {
 }) {
   return requestHrm<Record<string, unknown>>("/api/hrm/departments", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 
@@ -3095,7 +3259,7 @@ export async function listSalesData(params: { company_id: string; period_month?:
 export async function createSalesData(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/sales-data", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3129,7 +3293,7 @@ export async function listBonusPolicies(companyId: string) {
 export async function createBonusPolicy(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/bonus-policies", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3160,7 +3324,7 @@ export async function listBonusPolicyParticipants(policyId: string, companyId: s
 export async function createBonusPolicyParticipant(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/bonus-policies/participants", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3176,7 +3340,7 @@ export async function listInsurancePolicyParticipants(companyId: string) {
 export async function createInsurancePolicyParticipant(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/insurance-policy-participants", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3207,7 +3371,7 @@ export async function listTaxPolicyParticipants(companyId: string) {
 export async function createTaxPolicyParticipant(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/tax-policy-participants", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3235,7 +3399,7 @@ export async function listFaceData(companyId: string) {
 export async function upsertFaceData(payload: Record<string, unknown>) {
   return requestHrm<Record<string, unknown>>("/api/hrm/face-data", {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(String(payload.company_id ?? "")) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? "")) }),
   });
 }
 
@@ -3299,7 +3463,7 @@ export async function addSalaryTemplateComponent(
 ) {
   return requestHrm<Record<string, unknown>>(`/api/hrm/payroll/salary-templates/${templateId}/components`, {
     method: "POST",
-    body: JSON.stringify({ ...payload, company_id: coerceHrmListCompanyId(payload.company_id) }),
+    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
   });
 }
 

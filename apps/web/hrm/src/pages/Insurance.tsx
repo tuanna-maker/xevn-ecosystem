@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { toErrorMessage } from '@/lib/apiError';
 import { Input } from '@/components/ui/input';
@@ -68,29 +69,19 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
   deleteInsurancePolicyParticipant,
-  listInsurancePolicyParticipants,
 } from '@/integrations/hrmApi';
+import { useInsuranceList, type InsuranceListItem } from '@/hooks/useInsuranceList';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
+import { formatHrmDateVi } from '@/lib/formatHrmDate';
+import {
+  aggregateInsuranceSummary,
+  calculateInsuranceContribution,
+  DEFAULT_INSURANCE_RATES,
+  formatInsuranceSummaryValue,
+} from '@/lib/insuranceSummary';
+import { ACT_HRM_INS_LINK_CAPABILITY } from '@/lib/insuranceParticipantLink';
 
-interface Insurance {
-  id: string;
-  employee_code: string;
-  employee_name: string;
-  employee_avatar: string | null;
-  department: string | null;
-  social_insurance_number: string | null;
-  health_insurance_number: string | null;
-  unemployment_insurance_number: string | null;
-  social_insurance_rate: number | null;
-  health_insurance_rate: number | null;
-  unemployment_insurance_rate: number | null;
-  base_salary: number | null;
-  effective_date: string | null;
-  expiry_date: string | null;
-  status: string;
-  notes: string | null;
-  created_at: string;
-  company_id: string;
-}
+type Insurance = InsuranceListItem;
 
 const getInsuranceTypes = (t: any) => [
   { key: 'all', label: t('insurance.types.all'), icon: LayoutDashboard, color: 'bg-slate-500' },
@@ -124,15 +115,16 @@ const formatCurrency = (amount: number | null) => {
   }).format(amount);
 };
 
-const calculateInsuranceAmount = (baseSalary: number | null, rate: number | null) => {
-  if (!baseSalary || !rate) return 0;
-  return (baseSalary * rate) / 100;
-};
+const calculateInsuranceAmount = (
+  baseSalary: number | null,
+  rate: number | null,
+  hasInsurance: boolean,
+  defaultRate: number,
+) => calculateInsuranceContribution(baseSalary, rate, hasInsurance, defaultRate);
 
 export default function Insurance() {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
-  const queryClient = useQueryClient();
   const insuranceTypes = getInsuranceTypes(t);
   const statusFilters = getStatusFilters(t);
 
@@ -147,34 +139,24 @@ export default function Insurance() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
   const [selectedInsurance, setSelectedInsurance] = useState<Insurance | null>(null);
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const { data: insuranceList = [], isLoading } = useQuery({
-    queryKey: ['insurance', selectedStatus, currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      const response = await listInsurancePolicyParticipants(currentCompanyId);
-      const rows = (response.data ?? []) as Insurance[];
-      if (selectedStatus === 'all') {
-        return rows;
-      }
-      return rows.filter((row) => row.status === selectedStatus);
-    },
-    enabled: !!currentCompanyId,
-  });
+  const { insuranceList, isLoading, refetch } = useInsuranceList(selectedStatus);
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (item: Insurance) => {
       if (!currentCompanyId) {
         throw new Error('Thiếu phạm vi công ty');
       }
-      await deleteInsurancePolicyParticipant(id, currentCompanyId);
+      const participantId = item.participant_id?.trim();
+      if (!participantId) {
+        throw new Error(t('insurance.deleteRequiresParticipant'));
+      }
+      await deleteInsurancePolicyParticipant(participantId, currentCompanyId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance'] });
+      void refetch();
       toast.success(t('insurance.deleteSuccess'));
       setIsDeleteDialogOpen(false);
       setSelectedInsurance(null);
@@ -185,14 +167,22 @@ export default function Insurance() {
   });
 
   const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => {
+    mutationFn: async (items: Insurance[]) => {
       if (!currentCompanyId) {
         throw new Error('Thiếu phạm vi công ty');
       }
-      await Promise.all(ids.map((id) => deleteInsurancePolicyParticipant(id, currentCompanyId)));
+      const missing = items.filter((item) => !item.participant_id?.trim());
+      if (missing.length > 0) {
+        throw new Error(t('insurance.deleteRequiresParticipant'));
+      }
+      await Promise.all(
+        items.map((item) =>
+          deleteInsurancePolicyParticipant(item.participant_id!, currentCompanyId),
+        ),
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['insurance'] });
+      void refetch();
       toast.success(t('insurance.bulkDeleteSuccess', { count: selectedItems.length }));
       setIsBulkDeleteDialogOpen(false);
       setSelectedItems([]);
@@ -281,9 +271,24 @@ export default function Insurance() {
       [t('insurance.export.healthRate')]: item.health_insurance_rate || '',
       [t('insurance.export.unemploymentRate')]: item.unemployment_insurance_rate || '',
       [t('insurance.table.baseSalary')]: item.base_salary || '',
-      [t('insurance.export.socialAmount')]: calculateInsuranceAmount(item.base_salary, item.social_insurance_rate),
-      [t('insurance.export.healthAmount')]: calculateInsuranceAmount(item.base_salary, item.health_insurance_rate),
-      [t('insurance.export.unemploymentAmount')]: calculateInsuranceAmount(item.base_salary, item.unemployment_insurance_rate),
+      [t('insurance.export.socialAmount')]: calculateInsuranceAmount(
+        item.base_salary,
+        item.social_insurance_rate,
+        !!item.social_insurance_number,
+        DEFAULT_INSURANCE_RATES.social,
+      ),
+      [t('insurance.export.healthAmount')]: calculateInsuranceAmount(
+        item.base_salary,
+        item.health_insurance_rate,
+        !!item.health_insurance_number,
+        DEFAULT_INSURANCE_RATES.health,
+      ),
+      [t('insurance.export.unemploymentAmount')]: calculateInsuranceAmount(
+        item.base_salary,
+        item.unemployment_insurance_rate,
+        !!item.unemployment_insurance_number,
+        DEFAULT_INSURANCE_RATES.unemployment,
+      ),
       [t('insurance.table.effectiveDate')]: item.effective_date ? format(new Date(item.effective_date), 'dd/MM/yyyy') : '',
       [t('insurance.table.expiryDate')]: item.expiry_date ? format(new Date(item.expiry_date), 'dd/MM/yyyy') : '',
       [t('insurance.table.status')]: t(`insurance.statuses.${item.status}`) || item.status,
@@ -347,20 +352,14 @@ export default function Insurance() {
     return pages;
   };
 
-  // Calculate totals
-  const totalBHXH = filteredList.reduce((sum, item) => 
-    sum + calculateInsuranceAmount(item.base_salary, item.social_insurance_rate), 0);
-  const totalBHYT = filteredList.reduce((sum, item) => 
-    sum + calculateInsuranceAmount(item.base_salary, item.health_insurance_rate), 0);
-  const totalBHTN = filteredList.reduce((sum, item) => 
-    sum + calculateInsuranceAmount(item.base_salary, item.unemployment_insurance_rate), 0);
+  const insuranceSummary = aggregateInsuranceSummary(filteredList);
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 border-b bg-card">
         <div className="flex items-center gap-2">
-          <Button size="sm" className="gap-2" onClick={() => setIsAddDialogOpen(true)}>
+          <Button size="sm" className="gap-2" onClick={() => setIsAddDialogOpen(true)} data-capability={ACT_HRM_INS_LINK_CAPABILITY}>
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">{t('insurance.addInsurance')}</span>
             <span className="sm:hidden">+</span>
@@ -417,7 +416,13 @@ export default function Insurance() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.totalBHXH')}</p>
-              <p className="font-semibold">{formatCurrency(totalBHXH)}</p>
+              <p className="font-semibold">
+                {formatInsuranceSummaryValue(
+                  insuranceSummary.bhxhAmount,
+                  insuranceSummary.bhxhCount,
+                  formatCurrency,
+                )}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-card rounded-lg border">
@@ -426,7 +431,13 @@ export default function Insurance() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.totalBHYT')}</p>
-              <p className="font-semibold">{formatCurrency(totalBHYT)}</p>
+              <p className="font-semibold">
+                {formatInsuranceSummaryValue(
+                  insuranceSummary.bhytAmount,
+                  insuranceSummary.bhytCount,
+                  formatCurrency,
+                )}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-card rounded-lg border">
@@ -435,7 +446,13 @@ export default function Insurance() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.totalBHTN')}</p>
-              <p className="font-semibold">{formatCurrency(totalBHTN)}</p>
+              <p className="font-semibold">
+                {formatInsuranceSummaryValue(
+                  insuranceSummary.bhtnAmount,
+                  insuranceSummary.bhtnCount,
+                  formatCurrency,
+                )}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-card rounded-lg border">
@@ -444,7 +461,15 @@ export default function Insurance() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.total')}</p>
-              <p className="font-semibold">{formatCurrency(totalBHXH + totalBHYT + totalBHTN)}</p>
+              <p className="font-semibold">
+                {insuranceSummary.hasFinancialData
+                  ? formatCurrency(insuranceSummary.totalAmount)
+                  : formatInsuranceSummaryValue(
+                      0,
+                      insuranceSummary.participantCount,
+                      formatCurrency,
+                    )}
+              </p>
             </div>
           </div>
         </div>
@@ -547,10 +572,25 @@ export default function Insurance() {
               </TableRow>
             ) : (
               paginatedList.map((item) => {
-                const totalInsurance = 
-                  calculateInsuranceAmount(item.base_salary, item.social_insurance_rate) +
-                  calculateInsuranceAmount(item.base_salary, item.health_insurance_rate) +
-                  calculateInsuranceAmount(item.base_salary, item.unemployment_insurance_rate);
+                const totalInsurance =
+                  calculateInsuranceAmount(
+                    item.base_salary,
+                    item.social_insurance_rate,
+                    !!item.social_insurance_number,
+                    DEFAULT_INSURANCE_RATES.social,
+                  ) +
+                  calculateInsuranceAmount(
+                    item.base_salary,
+                    item.health_insurance_rate,
+                    !!item.health_insurance_number,
+                    DEFAULT_INSURANCE_RATES.health,
+                  ) +
+                  calculateInsuranceAmount(
+                    item.base_salary,
+                    item.unemployment_insurance_rate,
+                    !!item.unemployment_insurance_number,
+                    DEFAULT_INSURANCE_RATES.unemployment,
+                  );
 
                 return (
                   <TableRow 
@@ -576,9 +616,17 @@ export default function Insurance() {
                             {getInitials(item.employee_name)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium">
-                          {item.employee_name}
-                        </span>
+                        {item.employee_id ? (
+                          <Link
+                            to={hrmPathWithEmbedSearch(`/employees/${item.employee_id}`)}
+                            className="font-medium text-primary hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {item.employee_name}
+                          </Link>
+                        ) : (
+                          <span className="font-medium">{item.employee_name}</span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -597,9 +645,7 @@ export default function Insurance() {
                       {formatCurrency(totalInsurance)}
                     </TableCell>
                     <TableCell>
-                      {item.effective_date
-                        ? format(new Date(item.effective_date), 'dd/MM/yyyy')
-                        : '-'}
+                      {formatHrmDateVi(item.effective_date)}
                     </TableCell>
                     <TableCell>{getStatusBadge(item.status, t)}</TableCell>
                     <TableCell>
@@ -699,13 +745,19 @@ export default function Insurance() {
       {/* Add Insurance Dialog */}
       <AddInsuranceDialog 
         open={isAddDialogOpen} 
-        onOpenChange={setIsAddDialogOpen} 
+        onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (!open) void refetch();
+        }} 
       />
 
       {/* Edit Insurance Dialog */}
       <AddInsuranceDialog 
         open={isEditDialogOpen} 
-        onOpenChange={setIsEditDialogOpen}
+        onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) void refetch();
+        }}
         editingInsurance={selectedInsurance}
       />
 
@@ -727,7 +779,16 @@ export default function Insurance() {
                 </div>
                 <div>
                   <Label className="text-muted-foreground">{t('insurance.employeeNameLabel')}</Label>
-                  <p className="font-medium">{selectedInsurance.employee_name}</p>
+                  {selectedInsurance.employee_id ? (
+                    <Link
+                      to={hrmPathWithEmbedSearch(`/employees/${selectedInsurance.employee_id}`)}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {selectedInsurance.employee_name}
+                    </Link>
+                  ) : (
+                    <p className="font-medium">{selectedInsurance.employee_name}</p>
+                  )}
                 </div>
               </div>
               <div>
@@ -769,19 +830,40 @@ export default function Insurance() {
                   <div className="p-3 bg-blue-50 rounded-lg">
                     <p className="text-xs text-blue-600">BHXH ({selectedInsurance.social_insurance_rate || 0}%)</p>
                     <p className="font-semibold text-blue-700">
-                      {formatCurrency(calculateInsuranceAmount(selectedInsurance.base_salary, selectedInsurance.social_insurance_rate))}
+                      {formatCurrency(
+                        calculateInsuranceAmount(
+                          selectedInsurance.base_salary,
+                          selectedInsurance.social_insurance_rate,
+                          !!selectedInsurance.social_insurance_number,
+                          DEFAULT_INSURANCE_RATES.social,
+                        ),
+                      )}
                     </p>
                   </div>
                   <div className="p-3 bg-rose-50 rounded-lg">
                     <p className="text-xs text-rose-600">BHYT ({selectedInsurance.health_insurance_rate || 0}%)</p>
                     <p className="font-semibold text-rose-700">
-                      {formatCurrency(calculateInsuranceAmount(selectedInsurance.base_salary, selectedInsurance.health_insurance_rate))}
+                      {formatCurrency(
+                        calculateInsuranceContribution(
+                          selectedInsurance.base_salary,
+                          selectedInsurance.health_insurance_rate,
+                          !!selectedInsurance.health_insurance_number,
+                          DEFAULT_INSURANCE_RATES.health,
+                        ),
+                      )}
                     </p>
                   </div>
                   <div className="p-3 bg-amber-50 rounded-lg">
                     <p className="text-xs text-amber-600">BHTN ({selectedInsurance.unemployment_insurance_rate || 0}%)</p>
                     <p className="font-semibold text-amber-700">
-                      {formatCurrency(calculateInsuranceAmount(selectedInsurance.base_salary, selectedInsurance.unemployment_insurance_rate))}
+                      {formatCurrency(
+                        calculateInsuranceContribution(
+                          selectedInsurance.base_salary,
+                          selectedInsurance.unemployment_insurance_rate,
+                          !!selectedInsurance.unemployment_insurance_number,
+                          DEFAULT_INSURANCE_RATES.unemployment,
+                        ),
+                      )}
                     </p>
                   </div>
                 </div>
@@ -829,7 +911,7 @@ export default function Insurance() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('insurance.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => selectedInsurance && deleteMutation.mutate(selectedInsurance.id)}
+              onClick={() => selectedInsurance && deleteMutation.mutate(selectedInsurance)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t('insurance.deleteInsurance')}
@@ -850,7 +932,10 @@ export default function Insurance() {
           <AlertDialogFooter>
             <AlertDialogCancel>{t('insurance.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => bulkDeleteMutation.mutate(selectedItems)}
+              onClick={() => {
+                const items = insuranceList.filter((row) => selectedItems.includes(row.id));
+                bulkDeleteMutation.mutate(items);
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {t('insurance.deleteRecords', { count: selectedItems.length })}

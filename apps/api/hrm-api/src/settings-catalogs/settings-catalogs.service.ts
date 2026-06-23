@@ -23,6 +23,7 @@ import {
 } from './tenant-position-catalog';
 import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
 import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
+import { assertResourceInHrmScope, resolveHrmListScope } from '../common/hrm-list-scope';
 
 export type SettingsCatalogItem = {
   code: string;
@@ -34,12 +35,19 @@ export type SettingsCatalogItem = {
 
 export type SettingsCatalogOverviewRow = {
   catalogKey: string;
+  /** Snake_case alias for portal probes (UF-XBOS-15). */
+  catalog_key: string;
+  key: string;
   name: string | null;
   domain: string | null;
   xbosVersion: number | null;
   xbosSyncedAt: string | null;
   xbosItems: SettingsCatalogItem[];
   hrmExtensionItems: SettingsCatalogItem[];
+  /** Snake_case alias — includes pending extension requests (HRM-SET-209). */
+  extension_items: SettingsCatalogItem[];
+  extensionItems: SettingsCatalogItem[];
+  items: SettingsCatalogItem[];
   effectiveItems: SettingsCatalogItem[];
 };
 
@@ -216,17 +224,48 @@ export class SettingsCatalogsService {
     `,
       [t, c],
     );
+    const pendingRes = await this.db.query<{
+      catalog_key: string;
+      code: string;
+      label: string;
+      unit: string | null;
+      status: string;
+    }>(
+      `
+      SELECT catalog_key, code, label, unit, status
+      FROM public.hrm_catalog_extension_requests
+      WHERE tenant_id = $1 AND company_id = $2 AND status = 'pending'
+      ORDER BY catalog_key, code
+    `,
+      [t, c],
+    );
     const extByKey = new Map<string, SettingsCatalogItem[]>();
-    for (const row of extRes.rows) {
+    const mergeExtensionRow = (row: {
+      catalog_key: string;
+      code: string;
+      label: string;
+      unit: string | null;
+      status: string;
+    }) => {
       const list = extByKey.get(row.catalog_key) ?? [];
+      const normalizedCode = row.code.toLowerCase();
+      if (list.some((item) => item.code.toLowerCase() === normalizedCode)) {
+        return;
+      }
       list.push({
         code: row.code,
         label: row.label,
         unit: row.unit,
-        status: row.status === 'draft' ? 'draft' : 'active',
+        status: row.status === 'pending' ? 'draft' : row.status === 'draft' ? 'draft' : 'active',
         origin: 'hrm',
       });
       extByKey.set(row.catalog_key, list);
+    };
+    for (const row of extRes.rows) {
+      mergeExtensionRow(row);
+    }
+    for (const row of pendingRes.rows) {
+      mergeExtensionRow({ ...row, status: 'pending' });
     }
 
     const keys = new Set<string>();
@@ -245,25 +284,34 @@ export class SettingsCatalogsService {
       const hrmExtensionItems = extByKey.get(catalogKey) ?? [];
       catalogs.push({
         catalogKey,
+        catalog_key: catalogKey,
+        key: catalogKey,
         name: parsed.name ?? syncedRow?.key ?? catalogKey,
         domain: parsed.domain,
         xbosVersion: syncedRow?.version ?? null,
         xbosSyncedAt: syncedRow?.syncedAt ?? null,
         xbosItems,
         hrmExtensionItems,
+        extension_items: hrmExtensionItems,
+        extensionItems: hrmExtensionItems,
+        items: hrmExtensionItems,
         effectiveItems: this.mergeEffective(xbosItems, hrmExtensionItems),
       });
     }
     return { catalogs };
   }
 
-  async syncAllFromXbos(tenantId: string, companyId: string): Promise<{ pulledKeys: string[] }> {
-    const remote = await this.catalogSync.listRemoteCatalogsFromXbos(tenantId, companyId);
+  async syncAllFromXbos(
+    tenantId: string,
+    companyId: string,
+    authorization?: string,
+  ): Promise<{ pulledKeys: string[] }> {
+    const remote = await this.catalogSync.listRemoteCatalogsFromXbos(tenantId, companyId, authorization);
     const pulledKeys: string[] = [];
     for (const entry of remote.data as Array<{ key?: string }>) {
       const key = typeof entry?.key === 'string' ? entry.key : null;
       if (!key) continue;
-      await this.catalogSync.pullCatalogFromXbos(key, tenantId, companyId);
+      await this.catalogSync.pullCatalogFromXbos(key, tenantId, companyId, authorization);
       pulledKeys.push(key);
     }
     return { pulledKeys };
@@ -310,6 +358,15 @@ export class SettingsCatalogsService {
       );
       submitted += 1;
     }
+    await this.appendExtensionItems(
+      t,
+      c,
+      ck,
+      items.map((row) => ({
+        ...row,
+        status: row.status ?? 'draft',
+      })),
+    );
     const workflow = await this.xbosWorkflow.startCatalogWorkflowIfConfigured(
       batchId,
       t,
@@ -376,8 +433,47 @@ export class SettingsCatalogsService {
     return { items: res.rows };
   }
 
-  async attachWorkflowToBatch(batchId: string, workflowInstanceId: string): Promise<void> {
+  private async assertExtensionBatchInCatalogScope(
+    batchId: string,
+    tenantId: string,
+    catalogCompanyId: string,
+    authorization?: string,
+  ): Promise<void> {
     await this.ensureExtensionSchema();
+    const scope = resolveHrmListScope(authorization, catalogCompanyId, { tenantId });
+    const peek = await this.db.query<{ tenant_id: string; company_id: string }>(
+      `SELECT tenant_id, company_id
+       FROM public.hrm_catalog_extension_requests
+       WHERE batch_id = $1::uuid
+       LIMIT 1`,
+      [batchId],
+    );
+    const row = peek.rows[0];
+    if (!row) {
+      throw new ApiException('HRM-SET-404', 'Extension batch not found', HttpStatus.NOT_FOUND);
+    }
+    const normalizedTenant = tenantId.trim().toLowerCase();
+    if (row.tenant_id?.trim().toLowerCase() !== normalizedTenant) {
+      throw new ApiException(
+        'HRM-SET-409',
+        'Extension batch tenant is outside token scope',
+        HttpStatus.CONFLICT,
+      );
+    }
+    assertResourceInHrmScope(row, scope, {
+      notFoundCode: 'HRM-SET-404',
+      mismatchCode: 'HRM-SET-409',
+    });
+  }
+
+  async attachWorkflowToBatch(
+    batchId: string,
+    workflowInstanceId: string,
+    tenantId: string,
+    catalogCompanyId: string,
+    authorization?: string,
+  ): Promise<void> {
+    await this.assertExtensionBatchInCatalogScope(batchId, tenantId, catalogCompanyId, authorization);
     await this.db.query(
       `UPDATE public.hrm_catalog_extension_requests
        SET workflow_instance_id = $2::uuid
@@ -390,9 +486,12 @@ export class SettingsCatalogsService {
     batchId: string,
     decision: 'approved' | 'rejected',
     reviewerUserId: string,
-    reviewNote?: string,
+    reviewNote: string | undefined,
+    tenantId: string,
+    catalogCompanyId: string,
+    authorization?: string,
   ) {
-    await this.ensureExtensionSchema();
+    await this.assertExtensionBatchInCatalogScope(batchId, tenantId, catalogCompanyId, authorization);
     const res = await this.db.query<{ id: string }>(
       `SELECT id FROM public.hrm_catalog_extension_requests
        WHERE batch_id = $1::uuid AND status = 'pending'`,
@@ -405,16 +504,28 @@ export class SettingsCatalogsService {
     return { batchId, decision, reviewed: results.length, results };
   }
 
-  async getExtensionBatchDetail(batchId: string) {
-    await this.ensureExtensionSchema();
+  async getExtensionBatchDetail(
+    batchId: string,
+    tenantId: string,
+    catalogCompanyId: string,
+    authorization?: string,
+  ) {
+    await this.assertExtensionBatchInCatalogScope(batchId, tenantId, catalogCompanyId, authorization);
+    const normalizedTenant = tenantId.trim().toLowerCase();
+    const normalizedCompany = catalogCompanyId.trim().toLowerCase();
     const res = await this.db.query(
       `SELECT id, batch_id, tenant_id, company_id, catalog_key, code, label, unit, status,
               workflow_instance_id, requested_by_user_id, requested_by_email, created_at
        FROM public.hrm_catalog_extension_requests
        WHERE batch_id = $1::uuid
+         AND tenant_id = $2
+         AND company_id = $3
        ORDER BY catalog_key, code`,
-      [batchId],
+      [batchId, normalizedTenant, normalizedCompany],
     );
+    if (!res.rows.length) {
+      throw new ApiException('HRM-SET-404', 'Extension batch not found', HttpStatus.NOT_FOUND);
+    }
     return { batchId, items: res.rows };
   }
 
@@ -479,24 +590,35 @@ export class SettingsCatalogsService {
     const ck = this.normalizeCatalogKey(catalogKey);
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
-    let upserted = 0;
-    for (const row of items) {
-      const status = row.status ?? 'active';
-      await this.db.query(
-        `
-        INSERT INTO public.hrm_catalog_extension_items (tenant_id, company_id, catalog_key, code, label, unit, status)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        ON CONFLICT (tenant_id, company_id, catalog_key, code)
-        DO UPDATE SET
-          label = EXCLUDED.label,
-          unit = EXCLUDED.unit,
-          status = EXCLUDED.status
-      `,
-        [t, c, ck, row.code, row.label, row.unit ?? null, status],
-      );
-      upserted += 1;
+    if (items.length === 0) {
+      return { upserted: 0 };
     }
-    return { upserted };
+
+    const codes: string[] = [];
+    const labels: string[] = [];
+    const units: Array<string | null> = [];
+    const statuses: string[] = [];
+    for (const row of items) {
+      codes.push(row.code);
+      labels.push(row.label);
+      units.push(row.unit ?? null);
+      statuses.push(row.status ?? 'active');
+    }
+
+    await this.db.query(
+      `
+      INSERT INTO public.hrm_catalog_extension_items (tenant_id, company_id, catalog_key, code, label, unit, status)
+      SELECT $1, $2, $3, u.code, u.label, u.unit, u.status
+      FROM unnest($4::text[], $5::text[], $6::text[], $7::text[]) AS u(code, label, unit, status)
+      ON CONFLICT (tenant_id, company_id, catalog_key, code)
+      DO UPDATE SET
+        label = EXCLUDED.label,
+        unit = EXCLUDED.unit,
+        status = EXCLUDED.status
+    `,
+      [t, c, ck, codes, labels, units, statuses],
+    );
+    return { upserted: items.length };
   }
 
   async upsertCatalogItem(tenantId: string, body: SettingsCatalogItemMutationDto) {

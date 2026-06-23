@@ -2,12 +2,43 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Employee } from './useEmployees';
 import { shouldSkipSupabaseDataFetches } from '@/lib/hrmDataMode';
-import { coerceHrmListCompanyId, HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
+import { normalizeHrmApiListCompanyId, HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import { resolveHrmSpreadsheetScope } from '@/lib/hrmSpreadsheetScope';
 import { hasPortalSession } from '@/lib/portalAuthBridge';
 import { getEmployeeById, type HrmEmployeeRecord } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
+
+/** Top-level BE field when merged; interim fallback via custom_fields.avatar_url. */
+export function resolveEmployeeAvatarUrl(row: HrmEmployeeRecord): string | null {
+  const direct = row.avatar_url?.trim();
+  if (direct) return direct;
+  const fromCustom = row.custom_fields?.avatar_url?.trim();
+  return fromCustom || null;
+}
+
+export function mergeEmployeeAvatarWriteFields(
+  avatarUrl: string | null | undefined,
+  customFields: Record<string, string> | undefined,
+): { avatar_url?: string | null; custom_fields?: Record<string, string> } {
+  if (avatarUrl === undefined) {
+    return customFields && Object.keys(customFields).length > 0
+      ? { custom_fields: customFields }
+      : {};
+  }
+
+  const merged: Record<string, string> = { ...(customFields ?? {}) };
+  if (avatarUrl) {
+    merged.avatar_url = avatarUrl;
+  } else {
+    delete merged.avatar_url;
+  }
+
+  return {
+    avatar_url: avatarUrl,
+    custom_fields: merged,
+  };
+}
 
 export function mapHrmEmployeeRecord(row: HrmEmployeeRecord): Employee {
   return {
@@ -22,7 +53,7 @@ export function mapHrmEmployeeRecord(row: HrmEmployeeRecord): Employee {
     start_date: row.hired_at,
     end_date: null,
     status: row.status,
-    avatar_url: null,
+    avatar_url: resolveEmployeeAvatarUrl(row),
     salary: null,
     manager_id: null,
     gender: null,
@@ -61,7 +92,7 @@ function resolveCompanyIds(
     ...new Set(
       companyIdsRaw
         .filter((id) => !!id && id !== 'all')
-        .map((id) => coerceHrmListCompanyId(id)),
+        .map((id) => normalizeHrmApiListCompanyId(id)),
     ),
   ];
 }

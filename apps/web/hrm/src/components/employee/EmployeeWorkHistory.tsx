@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useDepartments } from '@/hooks/useDepartments';
+import { useTasks } from '@/hooks/useTasks';
+import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -107,138 +109,6 @@ interface TaskItem {
   progress: number;
 }
 
-const initialWorkHistory: WorkHistoryItem[] = [
-  {
-    id: '1',
-    company: 'Công ty TNHH ABC',
-    position: 'Nhân viên kế toán',
-    department: 'Phòng Kế toán',
-    startDate: '2020-01',
-    endDate: '2022-12',
-    isCurrent: false,
-    description: 'Quản lý sổ sách kế toán, báo cáo tài chính hàng tháng',
-  },
-  {
-    id: '2',
-    company: 'Công ty TNHH XYZ',
-    position: 'Trưởng phòng Kế toán',
-    department: 'Phòng Kế toán',
-    startDate: '2023-01',
-    endDate: '',
-    isCurrent: true,
-    description: 'Quản lý đội ngũ kế toán, lập báo cáo tài chính',
-  },
-];
-
-const initialTasks: TaskItem[] = [
-  {
-    id: '1',
-    title: 'Lập báo cáo tài chính Q4/2025',
-    description: 'Tổng hợp và lập báo cáo tài chính quý 4 năm 2025',
-    project: 'Dự án Báo cáo Tài chính',
-    priority: 'high',
-    status: 'completed',
-    assignedDate: '2025-10-01',
-    dueDate: '2025-12-31',
-    completedDate: '2025-12-28',
-    assignedBy: 'Nguyễn Văn A',
-    progress: 100,
-  },
-  {
-    id: '2',
-    title: 'Kiểm toán nội bộ',
-    description: 'Thực hiện kiểm toán nội bộ theo quy trình',
-    project: 'Dự án Kiểm toán 2026',
-    priority: 'urgent',
-    status: 'in_progress',
-    assignedDate: '2026-01-02',
-    dueDate: '2026-01-20',
-    assignedBy: 'Trần Văn B',
-    progress: 65,
-  },
-  {
-    id: '3',
-    title: 'Đào tạo nhân viên mới',
-    description: 'Đào tạo quy trình kế toán cho nhân viên mới',
-    project: 'Đào tạo Nội bộ',
-    priority: 'medium',
-    status: 'pending',
-    assignedDate: '2026-01-05',
-    dueDate: '2026-01-25',
-    assignedBy: 'Lê Thị C',
-    progress: 0,
-  },
-  {
-    id: '4',
-    title: 'Cập nhật hệ thống ERP',
-    description: 'Hỗ trợ cập nhật module kế toán trong hệ thống ERP',
-    project: 'Dự án ERP',
-    priority: 'high',
-    status: 'in_progress',
-    assignedDate: '2025-12-15',
-    dueDate: '2026-02-01',
-    assignedBy: 'Phạm Văn D',
-    progress: 40,
-  },
-  {
-    id: '5',
-    title: 'Xây dựng quy trình thanh toán',
-    description: 'Xây dựng và chuẩn hóa quy trình thanh toán nội bộ',
-    project: 'Dự án Quy trình',
-    priority: 'low',
-    status: 'cancelled',
-    assignedDate: '2025-11-01',
-    dueDate: '2025-12-15',
-    assignedBy: 'Hoàng Văn E',
-    progress: 20,
-  },
-  {
-    id: '6',
-    title: 'Báo cáo thuế tháng 12',
-    description: 'Lập và nộp báo cáo thuế GTGT tháng 12/2025',
-    project: 'Thuế & Pháp lý',
-    priority: 'urgent',
-    status: 'completed',
-    assignedDate: '2025-12-20',
-    dueDate: '2026-01-10',
-    completedDate: '2026-01-08',
-    assignedBy: 'Nguyễn Văn A',
-    progress: 100,
-  },
-];
-
-// Mock data for monthly/quarterly performance charts
-const monthlyPerformanceData = [
-  { month: 'T7/2025', assigned: 5, completed: 4, completionRate: 80, avgProgress: 85 },
-  { month: 'T8/2025', assigned: 7, completed: 6, completionRate: 86, avgProgress: 88 },
-  { month: 'T9/2025', assigned: 6, completed: 5, completionRate: 83, avgProgress: 82 },
-  { month: 'T10/2025', assigned: 8, completed: 7, completionRate: 88, avgProgress: 90 },
-  { month: 'T11/2025', assigned: 5, completed: 4, completionRate: 80, avgProgress: 78 },
-  { month: 'T12/2025', assigned: 6, completed: 5, completionRate: 83, avgProgress: 85 },
-  { month: 'T1/2026', assigned: 4, completed: 2, completionRate: 50, avgProgress: 65 },
-];
-
-const quarterlyPerformanceData = [
-  { quarter: 'Q1/2025', assigned: 15, completed: 12, onTime: 10, late: 2, cancelled: 1, completionRate: 80 },
-  { quarter: 'Q2/2025', assigned: 18, completed: 15, onTime: 13, late: 2, cancelled: 2, completionRate: 83 },
-  { quarter: 'Q3/2025', assigned: 20, completed: 17, onTime: 15, late: 2, cancelled: 1, completionRate: 85 },
-  { quarter: 'Q4/2025', assigned: 19, completed: 16, onTime: 14, late: 2, cancelled: 2, completionRate: 84 },
-];
-
-const priorityDistribution = [
-  { name: 'Thấp', value: 15, color: 'hsl(var(--muted-foreground))' },
-  { name: 'Trung bình', value: 35, color: 'hsl(var(--primary))' },
-  { name: 'Cao', value: 30, color: 'hsl(var(--chart-4))' },
-  { name: 'Khẩn cấp', value: 20, color: 'hsl(var(--destructive))' },
-];
-
-const projectDistribution = [
-  { name: 'Báo cáo Tài chính', tasks: 12, completed: 10 },
-  { name: 'Kiểm toán', tasks: 8, completed: 6 },
-  { name: 'Đào tạo', tasks: 5, completed: 4 },
-  { name: 'ERP', tasks: 10, completed: 7 },
-  { name: 'Thuế & Pháp lý', tasks: 6, completed: 5 },
-];
 
 // chartConfig will be built inside the component using t()
 
@@ -251,8 +121,87 @@ const formatMonthYear = (dateStr: string) => {
 export function EmployeeWorkHistory() {
   const { t } = useTranslation();
   const { departments } = useDepartments();
-  const [workHistory, setWorkHistory] = useState<WorkHistoryItem[]>(initialWorkHistory);
-  const [tasks] = useState<TaskItem[]>(initialTasks);
+  const { tasks: apiTasks, isLoading: tasksLoading } = useTasks();
+  const tasks = useMemo((): TaskItem[] => {
+    return apiTasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      description: task.description || '',
+      project: task.department || '—',
+      priority: (task.priority === 'urgent' ? 'urgent' : task.priority === 'high' ? 'high' : task.priority === 'low' ? 'low' : 'medium') as TaskItem['priority'],
+      status: (task.status === 'completed'
+        ? 'completed'
+        : task.status === 'in_progress'
+          ? 'in_progress'
+          : task.status === 'cancelled'
+            ? 'cancelled'
+            : 'pending') as TaskItem['status'],
+      assignedDate: task.created_at?.split('T')[0] || '',
+      dueDate: task.due_date || task.created_at?.split('T')[0] || '',
+      completedDate: task.completed_date || undefined,
+      assignedBy: task.reporter_name || '—',
+      progress: task.progress ?? 0,
+    }));
+  }, [apiTasks]);
+
+  const monthlyPerformanceData = useMemo(() => {
+    if (!tasks.length) return [];
+    const buckets = new Map<string, { assigned: number; completed: number; progressSum: number }>();
+    for (const task of tasks) {
+      const key = task.assignedDate?.slice(0, 7) || 'unknown';
+      const row = buckets.get(key) ?? { assigned: 0, completed: 0, progressSum: 0 };
+      row.assigned += 1;
+      if (task.status === 'completed') row.completed += 1;
+      row.progressSum += task.progress;
+      buckets.set(key, row);
+    }
+    return [...buckets.entries()].slice(-7).map(([month, row]) => ({
+      month,
+      assigned: row.assigned,
+      completed: row.completed,
+      completionRate: row.assigned > 0 ? Math.round((row.completed / row.assigned) * 100) : 0,
+      avgProgress: row.assigned > 0 ? Math.round(row.progressSum / row.assigned) : 0,
+    }));
+  }, [tasks]);
+
+  const quarterlyPerformanceData = useMemo(() => {
+    if (!tasks.length) return [];
+    return [{
+      quarter: t('workHistory.charts.currentPeriod', 'Hiện tại'),
+      assigned: tasks.length,
+      completed: tasks.filter((x) => x.status === 'completed').length,
+      onTime: tasks.filter((x) => x.status === 'completed').length,
+      late: tasks.filter((x) => x.status !== 'completed' && x.status !== 'cancelled' && new Date(x.dueDate) < new Date()).length,
+      cancelled: tasks.filter((x) => x.status === 'cancelled').length,
+      completionRate: tasks.length > 0
+        ? Math.round((tasks.filter((x) => x.status === 'completed').length / tasks.filter((x) => x.status !== 'cancelled').length || 1) * 100)
+        : 0,
+    }];
+  }, [tasks, t]);
+
+  const priorityDistribution = useMemo(() => {
+    const counts = { low: 0, medium: 0, high: 0, urgent: 0 };
+    for (const task of tasks) counts[task.priority] += 1;
+    return [
+      { name: t('workHistory.tasks.priority.low'), value: counts.low, color: 'hsl(var(--muted-foreground))' },
+      { name: t('workHistory.tasks.priority.medium'), value: counts.medium, color: 'hsl(var(--primary))' },
+      { name: t('workHistory.tasks.priority.high'), value: counts.high, color: 'hsl(var(--chart-4))' },
+      { name: t('workHistory.tasks.priority.urgent'), value: counts.urgent, color: 'hsl(var(--destructive))' },
+    ].filter((row) => row.value > 0);
+  }, [tasks, t]);
+
+  const projectDistribution = useMemo(() => {
+    const map = new Map<string, { tasks: number; completed: number }>();
+    for (const task of tasks) {
+      const row = map.get(task.project) ?? { tasks: 0, completed: 0 };
+      row.tasks += 1;
+      if (task.status === 'completed') row.completed += 1;
+      map.set(task.project, row);
+    }
+    return [...map.entries()].map(([name, row]) => ({ name, tasks: row.tasks, completed: row.completed }));
+  }, [tasks]);
+
+  const [workHistory, setWorkHistory] = useState<WorkHistoryItem[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<WorkHistoryItem | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -638,6 +587,19 @@ export function EmployeeWorkHistory() {
 
         {/* Charts Tab */}
         <TabsContent value="charts" className="space-y-4">
+          {tasksLoading ? (
+            <Card>
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                {t('common.loading', 'Đang tải…')}
+              </CardContent>
+            </Card>
+          ) : tasks.length === 0 ? (
+            <EmbedApiEmptyState
+              title={t('workHistory.charts.emptyTitle', 'Chưa có dữ liệu hiệu suất')}
+              body={t('workHistory.charts.emptyBody', 'Biểu đồ được tổng hợp từ operations/tasks API khi có công việc.')}
+            />
+          ) : (
+          <>
           {/* Monthly Performance Chart */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
@@ -889,6 +851,8 @@ export function EmployeeWorkHistory() {
               </div>
             </CardContent>
           </Card>
+          </>
+          )}
         </TabsContent>
 
         {/* Work History Tab */}

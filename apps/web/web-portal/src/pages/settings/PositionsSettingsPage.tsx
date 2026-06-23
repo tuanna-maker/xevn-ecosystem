@@ -8,12 +8,13 @@ import {
   Column,
 } from '../../components/common';
 import { AutoResizeTextarea } from '../command-center/settings-form-pattern';
-import { mockPositions, Position } from '../../data/mockData';
+import { Position } from '../../data/mockData';
 import { useCompanyFilterOptions } from '../../hooks/useCompanyFilterOptions';
 import { deleteBusinessMasterItem, listBusinessMasterItems, upsertBusinessMasterItem } from '../../integrations/businessMasterApi';
 import { listPositionTemplates, savePositionTemplate } from '../../integrations/positionRbacApi';
 import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback, API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
+import { resolvePositionsSettingsFailure } from '../../utils/portalStrictMode';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const PositionsSettingsPage: React.FC = () => {
@@ -47,13 +48,10 @@ const PositionsSettingsPage: React.FC = () => {
         });
       })
       .catch(() => {
-        setLoadFailed(true);
-        if (allowMockFallback()) {
-          setPositions(mockPositions);
-          setUsingMockFallback(true);
-        } else {
-          setPositions([]);
-        }
+        const failure = resolvePositionsSettingsFailure();
+        setLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setPositions(failure.rows);
       });
   }, [tenantId, companyId]);
 
@@ -255,7 +253,7 @@ const PositionsSettingsPage: React.FC = () => {
         }
       />
       <ApiLoadBanner
-        loadFailed={loadFailed && !allowMockFallback()}
+        loadFailed={loadFailed}
         usingMockFallback={usingMockFallback}
         message={loadFailed ? API_LOAD_FAILED_MESSAGE : undefined}
       />

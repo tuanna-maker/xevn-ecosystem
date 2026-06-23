@@ -3,10 +3,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
 import { shouldSkipSupabaseDataFetches } from '@/lib/hrmDataMode';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import {
   createEmployeeContract,
   deleteEmployeeContract,
-  listEmployeeContracts,
+  listAllEmployeeContracts,
   updateEmployeeContract,
   type HrmContractRecord,
   type HrmEmployeeRecord,
@@ -136,8 +137,9 @@ export function useContracts(selectedType: string = 'all') {
 
     try {
       if (useApi) {
-        const contractRes = await listEmployeeContracts({ company_id: currentCompanyId });
-        let rows = contractRes.data.map((row) => mapApiContract(row));
+        const companyId = coerceHrmListCompanyId(currentCompanyId);
+        const contractRes = await listAllEmployeeContracts({ company_id: companyId });
+        let rows = (contractRes.data ?? []).map((row) => mapApiContract(row));
         if (selectedType !== 'all') {
           rows = rows.filter((c) => c.contract_type === selectedType);
         }

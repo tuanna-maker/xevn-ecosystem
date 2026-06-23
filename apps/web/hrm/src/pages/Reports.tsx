@@ -24,7 +24,8 @@ export default function Reports() {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(String(currentYear));
-  const { isLoading, recruitment, contracts, leave, turnover } = useReportsData(Number(year));
+  const { isLoading, recruitment, contracts, leave, turnover, operationsSummary, employeeTotal, payrollNetTotal } =
+    useReportsData(Number(year));
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -63,7 +64,12 @@ export default function Reports() {
         </TabsList>
 
         <TabsContent value="overview">
-          <OverviewReportTab year={Number(year)} />
+          <OverviewReportTab
+            year={Number(year)}
+            employeeTotal={employeeTotal}
+            payrollNetTotal={payrollNetTotal}
+            operationsSummary={operationsSummary}
+          />
         </TabsContent>
         <TabsContent value="recruitment">
           <RecruitmentReportTab data={recruitment} isLoading={isLoading} />

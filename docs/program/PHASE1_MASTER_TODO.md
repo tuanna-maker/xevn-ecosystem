@@ -141,13 +141,13 @@
 
 | Seq | ID | Role | Task | Status |
 |-----|-----|------|------|--------|
-| 5.1 | P1-S5-PM-01 | PM | Gate ceremony kickoff | [ ] |
+| 5.1 | P1-S5-PM-01 | PM | Gate ceremony kickoff | [x] `S5_SPRINT_BACKLOG.md` 2026-06-05 |
 | 5.2 | P1-S5-QA-01 | QA | Full regression L0–L4 | [x] |
-| 5.3 | P1-S5-QA-02 | QA | `PHASE1_GATE_REPORT` + impl_status | [ ] |
+| 5.3 | P1-S5-QA-02 | QA | `PHASE1_GATE_REPORT` + impl_status | [x] `p1-s5-qa-02-20260605.md` |
 | 5.4 | P1-S5-SA-01 | SA | NFR sign-off | [ ] |
-| 5.5 | P1-S5-TM-01 | TM | Final security gate | [ ] |
-| 5.6 | P1-S5-QC-01 | QC | **GO Phase 1** | [ ] |
-| 5.7 | P1-S5-PM-02 | PM | Release note + Phase 2 charter | [ ] |
+| 5.5 | P1-S5-TM-01 | TM | Final security gate | [x] `p1-s5-tm-01-20260605.md` GWC |
+| 5.6 | P1-S5-QC-01 | QC | **GO Phase 1** | [x] **GWC** `p1-s5-qc-01-20260605.md` |
+| 5.7 | P1-S5-PM-02 | PM | Release note + Phase 2 charter | [x] `S5_RETRO.md` 2026-06-05 |
 
 ---
 
@@ -160,8 +160,8 @@
 | S2 | 8 | 0 | 0% | **Chưa mở** |
 | S3 | 14 | 0 | 0% | **Chưa mở** |
 | S4 | 7 | 0 | 0% | **Chưa mở** |
-| S5 | 7 | 0 | 0% | **Chưa mở** |
-| **Tổng** | **65** | **17** | **~26%** | Program **chưa xong** |
+| S5 | 7 | 6 | 86% | **Done (GWC)** — ceremony closed; **G5/G8/PROD open** |
+| **Tổng** | **65** | **20+** | **~31%** | Program **chưa xong** — matrix 245/245 ≠ PROD |
 
 *Cập nhật cột Status khi PM nhận `PASS_TO_PM` / QC GO — hoặc chạy `node scripts/phase1-sprint-runner.mjs status`.*
 

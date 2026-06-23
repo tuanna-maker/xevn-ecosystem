@@ -1,0 +1,26 @@
+---
+description: Cấm báo cáo còn việc mà không Task cùng lượt — U43
+alwaysApply: true
+---
+
+# PM dispatch same turn (U43)
+
+## Cấm (vi phạm sponsor lock)
+
+- Kết thúc message với «mốc còn lại: W4…» / «~81%» **mà không** có `Task` hoặc `Shell` dispatch **trong cùng message đó**.
+- Câu «PM đã dispatch…» / «theo U42…» / «không dừng hỏi sponsor» **thay cho** tool call thực tế.
+- Liệt kê backlog rồi **dừng** — sponsor phải gửi message tiếp mới chạy.
+
+## Bắt buộc
+
+Khi báo **% xong** hoặc **wave kế**:
+
+1. **Cùng lượt** — `Task` owner cho **ít nhất 1** (tối đa 4) work_item mở tiếp theo từ `PHASE1_PRODUCT_COMPLETION_TODO.md`.
+2. Chỉ mô tả «đang chạy» cho Task **đã gọi** trong message (agent_id / work_item_id).
+3. Message kết bằng **trạng thái dispatch thực** (role + ID), không bằng lời hứa.
+
+## Thứ tự ưu tiên dispatch (program active)
+
+W4 mobile → W5 devops verify gate → W5 QA regression → TM sign-off → QC tổng → cập nhật TODO.
+
+Liên kết: U37, U40, U42 · `PHASE1_PRODUCT_COMPLETION_TODO.md`

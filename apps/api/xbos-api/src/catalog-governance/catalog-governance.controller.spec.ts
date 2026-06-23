@@ -15,6 +15,7 @@ function createInternalJwt(payload: Record<string, unknown>) {
 
 describe('CatalogGovernanceController (UC-XBOS-CAT / XBOS-DM)', () => {
   let controller: CatalogGovernanceController;
+  const envSnapshot = { ...process.env };
 
   const serviceMock = {
     ensureXeDuLichCatalogWorkflow: jest.fn().mockResolvedValue({ id: 'def-1' }),
@@ -32,6 +33,10 @@ describe('CatalogGovernanceController (UC-XBOS-CAT / XBOS-DM)', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     process.env.INTERNAL_API_KEY = 'test-key';
+    process.env.SERVICE_JWT_SECRET = 'xevn-dev-jwt-secret';
+    process.env.SERVICE_JWT_ISSUER = 'xevn-internal';
+    process.env.SERVICE_JWT_AUDIENCE = 'xevn-api';
+    delete process.env.NODE_ENV;
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CatalogGovernanceController],
       providers: [
@@ -40,6 +45,10 @@ describe('CatalogGovernanceController (UC-XBOS-CAT / XBOS-DM)', () => {
       ],
     }).compile();
     controller = module.get<CatalogGovernanceController>(CatalogGovernanceController);
+  });
+
+  afterEach(() => {
+    process.env = { ...envSnapshot };
   });
 
   it('rejects unauthenticated extension-requests', async () => {
@@ -179,6 +188,43 @@ describe('CatalogGovernanceController (UC-XBOS-CAT / XBOS-DM)', () => {
     });
   });
 
+  it('P1-BROWSER-E2E-CAT-S2S-AUTH-8088: hrm-be service JWT passes when NODE_ENV=production (no static key)', async () => {
+    process.env.NODE_ENV = 'production';
+    delete process.env.INTERNAL_API_KEY;
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'hrm-be',
+      svc: 'catalog-sync',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    });
+    const result = await controller.startWorkflow(
+      {
+        batchId: 'batch-s2s',
+        memberTenantId: 'xevn',
+        memberCompanyId: 'holding',
+        requesterUserId: 'ceo@xe.vn',
+      },
+      `Bearer ${token}`,
+      undefined,
+    );
+    expect(result.code).toBe('XBOS-CAT-211');
+  });
+
+  it('P1-BROWSER-E2E-CAT-S2S-AUTH-8088: rejects internal key only when NODE_ENV=production', async () => {
+    process.env.NODE_ENV = 'production';
+    delete process.env.INTERNAL_API_KEY;
+    await expect(
+      controller.startWorkflow(
+        { batchId: 'batch-key-only', memberTenantId: 'xevn', memberCompanyId: 'holding' },
+        undefined,
+        'test-key',
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: 'XBOS-AUTH-001' });
+  });
+
   it('UC-XBOS-CAT-05 / XBOS-DM-13: approves catalog task with XBOS-CAT-201', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
@@ -231,7 +277,28 @@ describe('CatalogGovernanceController (UC-XBOS-CAT / XBOS-DM)', () => {
     expect(serviceMock.actOnTask).toHaveBeenCalledWith('task-2', 'reject', 'ceo@xe.vn', 'deny remove');
   });
 
-  it('rejects approve when group scope uses main against holding JWT', async () => {
+  it('P1-CAT-APPROVE-SCOPE-8088: group CEO JWT main + query holding approves with XBOS-CAT-201 (ADR C2)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const result = await controller.approveTask(
+      'task-1',
+      { review_note: 'ok' },
+      'xevn',
+      'holding',
+      'ceo@xe.vn',
+      `Bearer ${token}`,
+      undefined,
+    );
+    expect(result.code).toBe('XBOS-CAT-201');
+    expect(serviceMock.actOnTask).toHaveBeenCalledWith('task-1', 'approve', 'ceo@xe.vn', 'ok');
+  });
+
+  it('rejects approve when JWT holding scope mismatches query main', async () => {
     const token = createInternalJwt({
       iss: 'xevn-internal',
       aud: 'xevn-api',

@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0f172a"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f172a"
+        "backgroundColor": "#000000"
       },
       "package": "vn.xevn.hrm.mobile"
     },
@@ -32,6 +32,18 @@
         {
           "icon": "./assets/icon.png",
           "color": "#0f172a"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Ứng dụng cần quyền thư viện ảnh để cập nhật ảnh đại diện."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Ứng dụng cần quyền truy cập vị trí để ghi nhận vị trí thiết bị khi chấm công."
         }
       ]
     ],

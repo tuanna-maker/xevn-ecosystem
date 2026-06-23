@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toErrorMessage } from '@/lib/apiError';
 import { isHrmApiDataMode } from '@/lib/hrmDataMode';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { listPayrollPayslips, type HrmPayslipRow } from '@/integrations/hrmApi';
 
 export function buildPayrollPayslipsQuery(companyId: string, periodId?: string) {
@@ -32,7 +33,9 @@ export function usePayrollPayslips(periodId?: string) {
     setIsLoading(true);
     setFetchError(null);
     try {
-      const response = await listPayrollPayslips(buildPayrollPayslipsQuery(currentCompanyId, periodId));
+      const response = await listPayrollPayslips(
+        buildPayrollPayslipsQuery(coerceHrmListCompanyId(currentCompanyId), periodId),
+      );
       setPayslips(response.data ?? []);
     } catch (error: unknown) {
       console.error('Error fetching payroll payslips:', error);

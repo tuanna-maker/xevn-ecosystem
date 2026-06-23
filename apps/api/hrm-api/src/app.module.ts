@@ -16,6 +16,7 @@ import { AttendanceController } from './attendance/attendance.controller';
 import { AttendanceService } from './attendance/attendance.service';
 import { AttendanceRequestsService } from './attendance/attendance-requests.service';
 import { LeaveRequestsService } from './attendance/leave-requests.service';
+import { LeaveBalanceService } from './attendance/leave-balance.service';
 import { AttendanceOverviewService } from './attendance/attendance-overview.service';
 import { RecruitmentController } from './recruitment/recruitment.controller';
 import { RecruitmentCatalogService } from './recruitment/recruitment-catalog.service';
@@ -54,6 +55,10 @@ import { MobileAuthService } from './auth/mobile-auth.service';
 import { PlatformQueueService } from './queue/platform-queue.service';
 import { CatalogExtensionsController } from './catalog-extensions/catalog-extensions.controller';
 import { CatalogExtensionsService } from './catalog-extensions/catalog-extensions.service';
+import { OperatingUnitsController } from './operating-units/operating-units.controller';
+import { OperatingUnitsService } from './operating-units/operating-units.service';
+import { HomeController } from './home/home.controller';
+import { HomeService } from './home/home.service';
 
 @Module({
   imports: [CoreModule, EmployeesModule, FleetModule, SpreadsheetModule],
@@ -77,6 +82,8 @@ import { CatalogExtensionsService } from './catalog-extensions/catalog-extension
     NotificationsController,
     MobileAuthController,
     CatalogExtensionsController,
+    OperatingUnitsController,
+    HomeController,
   ],
   providers: [
     MobileAuthService,
@@ -95,6 +102,7 @@ import { CatalogExtensionsService } from './catalog-extensions/catalog-extension
     AttendanceCatalogService,
     AttendanceService,
     LeaveRequestsService,
+    LeaveBalanceService,
     AttendanceOverviewService,
     AttendanceRequestsService,
     RecruitmentService,
@@ -111,6 +119,8 @@ import { CatalogExtensionsService } from './catalog-extensions/catalog-extension
     PerformanceService,
     PlatformQueueService,
     CatalogExtensionsService,
+    OperatingUnitsService,
+    HomeService,
   ],
 })
 export class AppModule {}

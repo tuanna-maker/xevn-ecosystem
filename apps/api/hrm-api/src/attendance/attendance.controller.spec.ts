@@ -5,6 +5,7 @@ import { AttendanceService } from './attendance.service';
 import { AttendanceRequestsService } from './attendance-requests.service';
 import { AttendanceCatalogService } from './attendance-catalog.service';
 import { LeaveRequestsService } from './leave-requests.service';
+import { LeaveBalanceService } from './leave-balance.service';
 import { AttendanceOverviewService } from './attendance-overview.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
@@ -22,6 +23,7 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
   const serviceMock = {
     createRecord: jest.fn().mockResolvedValue({ id: 'r1' }),
     listRecords: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'r1' }] }),
+    getRecordById: jest.fn().mockResolvedValue({ id: 'r1', status: 'present' }),
     updateStatus: jest.fn().mockResolvedValue({ id: 'r1', status: 'present' }),
     createUpdateRequest: jest.fn().mockResolvedValue({ id: 'ur-1' }),
     listUpdateRequests: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ur-1' }] }),
@@ -36,6 +38,24 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
     listLeaveRequests: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'lr-1' }] }),
     approveLeaveRequest: jest.fn().mockResolvedValue({ id: 'lr-1', status: 'approved' }),
     rejectLeaveRequest: jest.fn().mockResolvedValue({ id: 'lr-1', status: 'rejected' }),
+  };
+
+  const leaveBalanceMock = {
+    getLeaveBalance: jest.fn().mockResolvedValue({
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      leave_type: 'annual',
+      balance_year: 2026,
+      year: 2026,
+      period: 2026,
+      entitled_days: 12,
+      used_days: 3,
+      pending_days: 1,
+      remaining_days: 8,
+      available_days: 8,
+      as_of: '2026-06-07T04:00:00.000Z',
+      source: 'employee_leave_balances',
+    }),
   };
 
   const attendanceCatalogMock = {
@@ -80,6 +100,7 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
         { provide: AttendanceService, useValue: serviceMock },
         { provide: AttendanceCatalogService, useValue: attendanceCatalogMock },
         { provide: LeaveRequestsService, useValue: leaveMock },
+        { provide: LeaveBalanceService, useValue: leaveBalanceMock },
         { provide: AttendanceRequestsService, useValue: attendanceRequestsMock },
         { provide: AttendanceOverviewService, useValue: attendanceOverviewMock },
       ],
@@ -106,6 +127,20 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
       company_id: companyId,
     });
     expect(listRes.code).toBe('HRM-ATT-200');
+  });
+
+  it('loads attendance record by id with scope context (J-HRM-06)', async () => {
+    const recordId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const res = await controller.getRecord(recordId, undefined, 'test-key', 'xevn', undefined, {
+      company_id: 'main',
+    });
+    expect(res.code).toBe('HRM-ATT-200');
+    expect(serviceMock.getRecordById).toHaveBeenCalledWith(
+      recordId,
+      { company_id: 'main' },
+      undefined,
+      { tenantId: 'xevn' },
+    );
   });
 
   it('HRM-AT-03: update attendance record status returns HRM-ATT-202', async () => {
@@ -186,6 +221,19 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
       company_id: companyId,
     });
     expect(listLeave.code).toBe('HRM-LEAVE-200');
+  });
+
+  it('W7-4: get leave balance returns HRM-LEAVE-BAL-200', async () => {
+    const res = await controller.getLeaveBalance(undefined, 'test-key', 'xevn', undefined, {
+      company_id: 'holding',
+      employee_id: employeeId,
+      leave_type: 'annual',
+      year: 2026,
+    });
+    expect(res.code).toBe('HRM-LEAVE-BAL-200');
+    expect(res.data.available_days).toBe(8);
+    expect(res.data.used_days).toBe(3);
+    expect(leaveBalanceMock.getLeaveBalance).toHaveBeenCalled();
   });
 
   it('HRM-AT-12: approve leave request returns HRM-LEAVE-203', async () => {

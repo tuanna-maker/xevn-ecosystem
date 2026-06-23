@@ -63,7 +63,9 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     const companyUuid = auth.getAttendanceCompanyId();
     const employeeId = auth.employeeId.trim();
     if (!companyUuid || !employeeId) return;
-    void tryRegisterExpoPushToken(auth.getHrmAuth(), companyUuid, employeeId);
+    void tryRegisterExpoPushToken(auth.getHrmAuth(), companyUuid, employeeId).catch(
+      () => undefined,
+    );
   }, [
     auth.signedIn,
     auth.baseUrl,

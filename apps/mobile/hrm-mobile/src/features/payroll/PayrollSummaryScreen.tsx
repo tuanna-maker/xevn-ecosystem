@@ -1,13 +1,18 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
-import type { MoreStackParamList } from '../../navigation/types';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { ListShimmerPlaceholder } from '../../components/primitives/ListShimmerPlaceholder';
+import { ListRow } from '../../components/ui/ListRow';
+import type { PayslipStackParamList } from '../../navigation/types';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError } from '../../integrations/mapApiError';
-import { vi } from '../../i18n/vi';
+import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { formatHrmDateRange } from '../../utils/formatHrm';
+import { resolvePayslipPeriodLabelVi } from '../../utils/payslipDisplayVi';
+import { userFacingScopeError } from '../../utils/scopeError';
 
 type Period = {
   id: string;
@@ -19,15 +24,16 @@ type Period = {
 
 export function PayrollSummaryScreen() {
   const auth = useAuth();
-  const nav = useNavigation<NativeStackNavigationProp<MoreStackParamList>>();
+  const nav = useNavigation<NativeStackNavigationProp<PayslipStackParamList>>();
   const [rows, setRows] = useState<Period[]>([]);
   const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     const cid = auth.getPayrollQueryCompanyId();
     if (!cid) {
-      setErr('Cần phạm vi công ty để gọi UC-HRM-MOB-09.');
+      setErr(userFacingScopeError('payrollCompany'));
       setRows([]);
       return;
     }
@@ -42,58 +48,114 @@ export function PayrollSummaryScreen() {
     }
   }, [auth]);
 
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-
-  const onRefresh = useCallback(async () => {
+  const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await load();
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   }, [load]);
 
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      void refresh();
+    }, [refresh]),
+  );
+
+  if (loading && rows.length === 0 && !err) {
+    return (
+      <View style={styles.root}>
+        <View style={styles.header}>
+          <Text style={styles.subtitle}>Danh sách kỳ lương trong phạm vi</Text>
+        </View>
+        <ListShimmerPlaceholder testID="payroll-summary-shimmer" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.wrap}>
-      <Text style={styles.title}>UC-HRM-MOB-09 — {vi.payroll}</Text>
-      {err ? <Text style={styles.err}>{err}</Text> : null}
+    <View style={styles.root}>
       <FlatList
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 32 }}
         data={rows}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
-        renderItem={({ item }) => (
-          <Pressable
-            style={styles.row}
-            onPress={() => nav.navigate('PayslipList', { periodId: item.id, periodLabel: item.period_label })}
-          >
-            <Text style={styles.main}>{item.period_label}</Text>
-            <Text style={styles.sub}>
-              {item.start_date} → {item.end_date} · {item.status}
-            </Text>
-          </Pressable>
-        )}
-        ListEmptyComponent={<Text style={styles.empty}>Chưa có kỳ lương trong phạm vi</Text>}
+        contentContainerStyle={styles.list}
+        ListHeaderComponent={
+          <>
+            <View style={styles.header}>
+              <Text style={styles.subtitle}>Chọn kỳ để xem phiếu lương</Text>
+            </View>
+            {err ? (
+              <View style={styles.errorBanner}>
+                <Text style={styles.errorText}>{err}</Text>
+              </View>
+            ) : null}
+          </>
+        }
+        refreshing={refreshing}
+        onRefresh={() => void refresh()}
+        renderItem={({ item }) => {
+          const periodLabel = resolvePayslipPeriodLabelVi(item.period_label, {
+            membershipCompanyDisplay: auth.memberships.find((m) => m.employee_id === auth.employeeId)
+              ?.company_display,
+          });
+          return (
+            <ListRow
+              title={periodLabel}
+              subtitle={formatHrmDateRange(item.start_date, item.end_date)}
+              status={item.status}
+              onPress={() => nav.navigate('PayslipList', { periodId: item.id, periodLabel })}
+            />
+          );
+        }}
+        ListEmptyComponent={
+          !err ? (
+            <View style={styles.emptyBox}>
+              <Text style={styles.emptyTitle}>Chưa có kỳ lương trong phạm vi</Text>
+              <Text style={styles.emptyHint}>Kéo xuống để làm mới.</Text>
+            </View>
+          ) : null
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: '#0f172a', padding: 16 },
-  title: { color: '#f8fafc', fontSize: 18, fontWeight: '700', marginBottom: 12 },
-  err: { color: '#f87171', marginBottom: 8 },
-  row: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
+  root: { flex: 1, backgroundColor: colors.iosGroupedBackground },
+  list: { padding: spacing.md, gap: spacing.sm, paddingBottom: spacing.xl },
+  header: { gap: spacing.xs, marginBottom: spacing.sm },
+  subtitle: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
   },
-  main: { color: '#e2e8f0', fontSize: 16, fontWeight: '600' },
-  sub: { color: '#94a3b8', fontSize: 13, marginTop: 4 },
-  empty: { color: '#64748b', marginTop: 24 },
+  errorBanner: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: radius.card,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  errorText: {
+    color: '#991B1B',
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
+  },
+  emptyBox: {
+    alignItems: 'center',
+    paddingVertical: spacing['2xl'],
+    gap: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.text,
+  },
+  emptyHint: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+  },
 });

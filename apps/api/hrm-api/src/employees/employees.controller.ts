@@ -11,6 +11,7 @@ import { ListEmployeesQueryDto } from './dto/list-employees.query.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeeProfileListQueryDto } from './dto/employee-profile-list.query.dto';
 import { EmployeeProfileService } from './employee-profile.service';
+import { isDirectoryView } from './employee-directory';
 import { EmployeesService } from './employees.service';
 
 @Controller('employees')
@@ -37,7 +38,7 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
     return this.employeesService
-      .createEmployee(body)
+      .createEmployee(body, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-EMP-201', 'Employee created'));
   }
 
@@ -51,8 +52,14 @@ export class EmployeesController {
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    const scopeContext = toHrmListScopeContext(tenantId);
+    if (isDirectoryView(query.view)) {
+      return this.employeesService
+        .listEmployeeDirectory(query, authorization, scopeContext)
+        .then((data) => ok(data, 'HRM-EMP-DIR-200', 'Employee directory listed'));
+    }
     return this.employeesService
-      .listEmployees(query, authorization, toHrmListScopeContext(tenantId))
+      .listEmployees(query, authorization, scopeContext)
       .then((data) => ok(data, 'HRM-EMP-200', 'Employees listed'));
   }
 
@@ -541,8 +548,14 @@ export class EmployeesController {
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    const scopeContext = toHrmListScopeContext(tenantId);
+    if (isDirectoryView(query.view)) {
+      return this.employeesService
+        .getEmployeeDirectoryById(employeeId, query, authorization, scopeContext)
+        .then((data) => ok(data, 'HRM-EMP-200', 'Employee directory profile retrieved'));
+    }
     return this.employeesService
-      .getEmployeeById(employeeId, query, authorization, toHrmListScopeContext(tenantId))
+      .getEmployeeById(employeeId, query, authorization, scopeContext)
       .then((data) => ok(data, 'HRM-EMP-200', 'Employee retrieved'));
   }
 
@@ -573,7 +586,7 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeesService
-      .archiveEmployee(employeeId, scope.companyId, authorization)
+      .archiveEmployee(employeeId, scope.companyId, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-EMP-203', 'Employee archived'));
   }
 
@@ -586,9 +599,9 @@ export class EmployeesController {
     @Headers('x-company-id') companyId: string | undefined,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeesService
-      .restoreEmployee(employeeId)
+      .restoreEmployee(employeeId, scope.companyId, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-EMP-204', 'Employee restored'));
   }
 }

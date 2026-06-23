@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { XbosDbService } from '../db/xbos-db.service';
+import { PlatformAuditService } from '../platform/platform-audit.service';
 import { UpsertInfrastructureSettingsDto } from './dto/upsert-infrastructure-settings.dto';
 
 type InfraSettingsRow = {
@@ -21,7 +22,10 @@ const MASTER_TENANT_ID = process.env.MASTER_TENANT_ID?.trim().toLowerCase() || '
 
 @Injectable()
 export class InfrastructureService {
-  constructor(private readonly db: XbosDbService) {}
+  constructor(
+    private readonly db: XbosDbService,
+    private readonly platformAudit: PlatformAuditService,
+  ) {}
 
   private async ensureSchema() {
     await this.db.query(`
@@ -233,6 +237,20 @@ export class InfrastructureService {
     if (!row) {
       throw new ApiException('XBOS-INFRA-500', 'Cannot upsert infrastructure settings', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    await this.platformAudit.emit({
+      tenantId,
+      companyId,
+      action: 'infrastructure.settings.upsert',
+      entityType: 'xbos_infrastructure_settings',
+      entityId: `${tenantId}:${companyId}`,
+      payload: {
+        foundationCategoriesCount,
+        sitesCount,
+        updatedAt: row.updated_at,
+      },
+    });
+
     return this.mapRow(row);
   }
 

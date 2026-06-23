@@ -7,6 +7,9 @@ import {
   pushCompanyIdUuidFilter,
   pushEmployeeListScopeFilters,
   pushWorkforceEmployeeScopeFilter,
+  expandHrmTextCompanyIds,
+  normalizeHomeSummaryCompanyId,
+  normalizePayrollListCompanyId,
   resolveHrmListScope,
   resolveHrmOperationsPersistCompanyId,
   resolveHrmPersistCompanyIdText,
@@ -80,6 +83,17 @@ describe('resolveHrmListScope (ADR-HRM-RBAC-SCOPE-LADDER)', () => {
     expect(values).toEqual(['xevn', [...HRM_GROUP_MEMBER_COMPANY_SLUGS]]);
   });
 
+  it('pushWorkforceEmployeeScopeFilter maps holding slug via employee IN (D-W7-HOME-WHOS-SLUG-01)', () => {
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    const scope = resolveHrmListScope(undefined, 'holding');
+    pushWorkforceEmployeeScopeFilter(filters, values, scope, 'lr.employee_id');
+    expect(filters[0]).toContain('lr.employee_id IN');
+    expect(filters[0]).toContain("company_id = $1::text");
+    expect(filters[0]).not.toContain('::uuid');
+    expect(values).toEqual(['holding']);
+  });
+
   it('does not expand when company query is a member operating slug', () => {
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
@@ -89,6 +103,18 @@ describe('resolveHrmListScope (ADR-HRM-RBAC-SCOPE-LADDER)', () => {
     });
     const scope = resolveHrmListScope(`Bearer ${token}`, 'holding');
     expect(scope.companyIds).toEqual(['holding']);
+    expect(scope.masterTenantPartition).toBe(false);
+  });
+
+  it('narrows to trsport when group CEO filters operating unit (AC-INT-SW-02)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'trsport');
+    expect(scope.companyIds).toEqual(['trsport']);
     expect(scope.masterTenantPartition).toBe(false);
   });
 });
@@ -164,5 +190,148 @@ describe('resolveHrmPersistCompanyIdText (EX-SA01-P1-01)', () => {
       roleCode: 'subsidiary_ceo',
     });
     expect(resolveHrmPersistCompanyIdText(`Bearer ${token}`, 'main')).toBe('main');
+  });
+});
+
+describe('mobile payroll / manager pending scope (J-MOB-04/05)', () => {
+  const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+
+  it('normalizePayrollListCompanyId maps mobile company_uuid query to holding slug', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    expect(normalizePayrollListCompanyId(`Bearer ${token}`, holdingUuid)).toBe('holding');
+    expect(normalizePayrollListCompanyId(`Bearer ${token}`, 'main')).toBe('main');
+  });
+
+  it('expandHrmTextCompanyIds includes slug + uuid for manager pending list', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, holdingUuid);
+    const expanded = expandHrmTextCompanyIds(scope, `Bearer ${token}`, holdingUuid);
+    expect(expanded).toEqual(expect.arrayContaining(['holding', holdingUuid]));
+  });
+
+  it('expandHrmTextCompanyIds aligns holding slug probe when row stores uuid TEXT', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'holding');
+    const expanded = expandHrmTextCompanyIds(scope, `Bearer ${token}`, 'holding');
+    expect(expanded).toEqual(expect.arrayContaining(['holding', holdingUuid]));
+  });
+});
+
+describe('home summary scope (D-MOB-HOME-SUMMARY-400-01)', () => {
+  const trsportUuid = '32a3cdcb-c534-4e47-80f9-d2f156e65094';
+
+  it('normalizeHomeSummaryCompanyId maps mobile company_uuid to member JWT slug', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0002@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'trsport',
+      company_uuid: trsportUuid,
+      roleCode: 'employee',
+    });
+    expect(normalizeHomeSummaryCompanyId(`Bearer ${token}`, trsportUuid)).toBe('trsport');
+  });
+
+  it('normalizeHomeSummaryCompanyId rewrites holding rollup to member slug for trsport JWT', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0002@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'trsport',
+      company_uuid: trsportUuid,
+      roleCode: 'employee',
+    });
+    expect(normalizeHomeSummaryCompanyId(`Bearer ${token}`, 'holding')).toBe('trsport');
+  });
+
+  it('normalizeHomeSummaryCompanyId keeps holding for holding JWT (uat.nv0001)', () => {
+    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    expect(normalizeHomeSummaryCompanyId(`Bearer ${token}`, holdingUuid)).toBe('holding');
+    expect(normalizeHomeSummaryCompanyId(`Bearer ${token}`, 'holding')).toBe('holding');
+  });
+});
+
+describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
+  it('group CEO main rollup allows holding employee restore guard', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main', { tenantId: 'xevn' });
+    expect(() => assertResourceInHrmScope({ company_id: 'holding' }, scope)).not.toThrow();
+  });
+
+  it('member CEO scope rejects holding employee restore guard', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'company_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main', { tenantId: 'xe-du-lich' });
+    expect(() => assertResourceInHrmScope({ company_id: 'holding' }, scope)).toThrow(
+      expect.objectContaining<ApiException>({ code: 'HRM-SCOPE-409' }),
+    );
+  });
+
+  it('member CEO scope rejects holding UUID partition row (main slug must not rollup)', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'company_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main', { tenantId: 'xe-du-lich' });
+    expect(() =>
+      assertResourceInHrmScope(
+        {
+          company_id: HRM_COMPANY_UUID_BY_SLUG.holding,
+          custom_fields: { tenant_id: 'xevn' },
+        },
+        scope,
+      ),
+    ).toThrow(expect.objectContaining<ApiException>({ code: 'HRM-SCOPE-409' }));
+  });
+
+  it('member CEO scope rejects master-tenant archived row even when company_id=main', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'company_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main', { tenantId: 'xe-du-lich' });
+    expect(() =>
+      assertResourceInHrmScope(
+        { company_id: 'main', custom_fields: { tenant_id: 'xevn' } },
+        scope,
+        { mismatchCode: 'HRM-EMP-409' },
+      ),
+    ).toThrow(expect.objectContaining<ApiException>({ code: 'HRM-EMP-409' }));
   });
 });

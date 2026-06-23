@@ -28,6 +28,11 @@ export function allowDevBypass(pathname: string): boolean {
   );
 }
 
+/** Aligned with apps/web/hrm `portalLogin.ts` PORTAL_LOGIN_REDIRECT_PARAM. */
+export function buildLoginRedirectUrl(from: string): string {
+  return `/login?redirect=${encodeURIComponent(from)}`;
+}
+
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
@@ -40,7 +45,8 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (allowDevBypass(location.pathname)) {
       return <>{children}</>;
     }
-    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
+    const from = location.pathname + location.search;
+    return <Navigate to={buildLoginRedirectUrl(from)} replace state={{ from }} />;
   }
 
   return <>{children}</>;

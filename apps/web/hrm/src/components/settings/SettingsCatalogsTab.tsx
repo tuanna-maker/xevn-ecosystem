@@ -5,10 +5,10 @@ import { RefreshCw, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  appendSettingsCatalogExtensionItems,
   getSettingsCatalogsOverview,
   requestSettingsCatalogFieldRemoval,
   syncSettingsCatalogsFromXbos,
+  upsertSettingsCatalogItem,
   type HrmSpreadsheetScope,
 } from "@/integrations/hrmApi";
 import { ApiClientError } from "@/lib/apiError";
@@ -25,6 +25,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { resolveCatalogKeyDisplayLabel } from "@/lib/catalogDisplayLabels";
 
 function resolveScope(currentCompanyId: string | null): HrmSpreadsheetScope | null {
   if (!currentCompanyId) return null;
@@ -64,17 +72,20 @@ export function SettingsCatalogsTab() {
 
   const appendMutation = useMutation({
     mutationFn: () =>
-      appendSettingsCatalogExtensionItems(
-        catalogKeyInput.trim().toLowerCase(),
-        [{ code: newCode.trim(), label: newLabel.trim(), status: "active" }],
+      upsertSettingsCatalogItem(
+        {
+          companyId: scope!.companyId,
+          catalogKey: catalogKeyInput.trim(),
+          code: newCode.trim(),
+          label: newLabel.trim(),
+        },
         scope!,
       ),
     onSuccess: (data) => {
       const msg =
-        data?.message ??
-        (data?.status === "pending"
-          ? "Đã gửi duyệt XBOS — trường sẽ hiển thị sau khi tập đoàn phê duyệt."
-          : t("settings.catalogs.savedExtensions"));
+        data?.item_key
+          ? t("settings.catalogs.savedExtensions")
+          : t("settings.catalogs.savedExtensions");
       toast.success(msg);
       setNewCode("");
       setNewLabel("");
@@ -160,17 +171,20 @@ export function SettingsCatalogsTab() {
             <p className="text-sm text-muted-foreground">{t("settings.catalogs.emptyCatalogs")}</p>
           ) : (
             <div className="space-y-6">
-              {catalogs.map((cat) => (
+              {catalogs.map((cat) => {
+                const catalogTitle = resolveCatalogKeyDisplayLabel(cat.catalogKey, cat.name);
+                return (
                 <div key={cat.catalogKey} className="rounded-lg border p-4 space-y-3">
                   <div className="flex flex-wrap items-center gap-2 justify-between">
                     <div>
-                      <h3 className="font-semibold">{cat.name ?? cat.catalogKey}</h3>
+                      <h3 className="font-semibold" title={cat.catalogKey}>
+                        {catalogTitle}
+                      </h3>
                       <p className="text-xs text-muted-foreground">
                         {cat.domain ? `${cat.domain} · ` : ""}
-                        {cat.catalogKey}
                         {cat.xbosSyncedAt
-                          ? ` · ${t("settings.catalogs.xbosSyncedAt", { time: cat.xbosSyncedAt })}`
-                          : ` · ${t("settings.catalogs.notSyncedYet")}`}
+                          ? t("settings.catalogs.xbosSyncedAt", { time: cat.xbosSyncedAt })
+                          : t("settings.catalogs.notSyncedYet")}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -226,7 +240,8 @@ export function SettingsCatalogsTab() {
                     </TableBody>
                   </Table>
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </CardContent>
@@ -240,21 +255,22 @@ export function SettingsCatalogsTab() {
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="ext-catalog-key">{t("settings.catalogs.catalogKeyField")}</Label>
-            <Input
-              id="ext-catalog-key"
-              value={catalogKeyInput}
-              onChange={(e) => setCatalogKeyInput(e.target.value)}
-              placeholder={t("settings.catalogs.catalogKeyPlaceholder")}
-              list="hrm-catalog-key-suggestions"
-              autoComplete="off"
-            />
-            <datalist id="hrm-catalog-key-suggestions">
-              {catalogs.map((c) => (
-                <option key={c.catalogKey} value={c.catalogKey}>
-                  {c.name ?? c.catalogKey}
-                </option>
-              ))}
-            </datalist>
+            <Select
+              value={catalogKeyInput || undefined}
+              onValueChange={setCatalogKeyInput}
+              disabled={catalogs.length === 0}
+            >
+              <SelectTrigger id="ext-catalog-key">
+                <SelectValue placeholder={t("settings.catalogs.catalogKeyPlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {catalogs.map((c) => (
+                  <SelectItem key={c.catalogKey} value={c.catalogKey}>
+                    {resolveCatalogKeyDisplayLabel(c.catalogKey, c.name)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-muted-foreground">{t("settings.catalogs.catalogKeyHint")}</p>
           </div>
           <div className="space-y-2">

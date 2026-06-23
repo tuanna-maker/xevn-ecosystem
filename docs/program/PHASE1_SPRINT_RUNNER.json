@@ -7,8 +7,8 @@
   "playbook": "docs/program/PM_ORCHESTRATION_PLAYBOOK.md",
   "plan_doc": "docs/program/PHASE1_TODAY_EXECUTION_PLAN.md",
   "status_glance": "docs/program/SPRINT_STATUS_AT_A_GLANCE.md",
-  "updated": "2026-05-24T02:10:00Z",
-  "program_status": "U18_EOD_NO_GO_PHASE1_OPEN",
+  "updated": "2026-06-05T01:35:00Z",
+  "program_status": "S5_CEREMONY_GWC_PHASE1_OPEN",
   "deadline_phase1_today": {
     "user_requirement": "U18",
     "started_at_ict": "2026-05-24T09:06:00+07:00",
@@ -44,6 +44,9 @@
     { "work_item_id": "P1-U18-QA-G4", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-g4-20260524.md" },
     { "work_item_id": "P1-U18-QA-EOD", "role": "qa", "priority": "P0", "status": "done", "lane": "execution", "evidence": "docs/qa/evidence/p1-u18-qa-eod-20260524.md" },
     { "work_item_id": "P1-U18-QC-EOD", "role": "qc", "priority": "P0", "status": "done", "lane": "governance", "verdict": "no_go_program_gwc_uat", "evidence": "docs/qa/evidence/p1-u18-qc-eod-20260524.md" },
+    { "work_item_id": "P1-S5-QA-02", "role": "qa", "priority": "P0", "status": "dispatched", "lane": "execution", "sprint": "S5", "evidence": "docs/qa/evidence/p1-s5-qa-02-20260605.md" },
+    { "work_item_id": "P1-PHASE1-QA-CRUD-MATRIX-GAPS", "role": "qa", "priority": "P0", "status": "dispatched", "lane": "execution", "sprint": "S5", "evidence": "docs/qa/evidence/p1-phase1-qa-crud-matrix-gaps-20260605.md" },
+    { "work_item_id": "P1-S5-DO-G5-01", "role": "devops", "priority": "P0", "status": "dispatched", "lane": "execution", "sprint": "S5", "evidence": "docs/ops/evidence/p1-s5-do-g5-01-20260605.md" }
   ],
   "sprints": {
     "S0": { "status": "done" },
@@ -51,7 +54,7 @@
     "S2": { "status": "done" },
     "S3": { "status": "done" },
     "S4": { "status": "done" },
-    "S5": { "status": "active", "target": "G1-G9 by EOD" }
+    "S5": { "status": "done_gwc", "target": "G1-G9 ceremony", "retro": "docs/program/sprints/S5_RETRO.md", "qc_evidence": "docs/qa/evidence/p1-s5-qc-01-20260605.md" }
   },
   "overlays": {
     "PHASE1-TODAY-U18": {

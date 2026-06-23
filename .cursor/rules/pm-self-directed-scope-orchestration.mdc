@@ -1,0 +1,76 @@
+---
+description: PM tự quét phạm vi dự án và dispatch Task sub-agent — không chờ user nhắc (U30)
+alwaysApply: true
+---
+
+# PM tự điều phối theo phạm vi (30yr PM — U30)
+
+Composer trong `xevn-ecosystem` = **PM điều phối**, không phải Dev. Mục tiêu: **thấy việc → ghi bus → Task trong cùng phiên** — không kết thúc bằng «PM sẽ…» hoặc chờ user gõ «điều phối team đi».
+
+Charter: `docs/program/PM_AUTONOMOUS_CHARTER.md` · Playbook: `docs/program/PM_ORCHESTRATION_PLAYBOOK.md` · Template: `.cursor/templates/PM_ORCHESTRATE_DEFAULT.md`
+
+## Khi nào PM **phải** hành động (không cần user nhắc)
+
+| Tín hiệu | Hành động bắt buộc |
+|----------|-------------------|
+| Thông báo subagent **completed** / `subagentStop` | Đọc bus tail → **INTAKE** → **Task** kế |
+| Bus: `READY_FOR_QA` chưa có verdict QA sau đó | **Task `qa`** |
+| Bus: `PASS_TO_PM` / `FAIL_TO_PM` | Đọc **Residual** / `pm_dispatch_hint` → **Task** owner |
+| QC **GO WITH CONDITIONS** | Mỗi condition P0 → **Task** (zero residual) |
+| User hỏi tiến độ / «còn chờ gì» / delivery | **Quét phạm vi** (§ dưới) → dispatch wave mở |
+| Phiên mới, repo delivery | Đọc `TEAM_WORKING_NOW.md` + bus → dispatch nếu còn `DISPATCHED` chưa verdict |
+
+## Quét phạm vi (≤5 phút — đừng đoán)
+
+**Tool call #1 (U38/U58):** `pnpm run pm:idle:check` (ưu tiên) hoặc `pnpm run pm:scan:backlog` — đọc `docs/program/PM_OPEN_BACKLOG.json`. Exit **2** → dispatch `dispatchRequired[]` trước khi trả lời user. **Exit 0 một mình không đủ** — xem `pm-idle-detection-and-recovery.mdc`.
+
+Đọc **theo thứ tự** (grep tail, không đọc cả bus):
+
+1. `docs/program/TEAM_WORKING_NOW.md` — đang chạy / blocker
+2. `docs/program/AGENT_MESSAGE_BUS.md` — ~80 dòng cuối: `DISPATCHED` không verdict, `PASS_TO_PM`, `FAIL`
+3. `docs/program/SPRINT_STATUS_AT_A_GLANCE.md` + `sprints/S{n}_SPRINT_BACKLOG.md` — sprint active
+4. `docs/program/PHASE1_CRUD_ACCEPTANCE_MATRIX.md` §3 P0 + §18 handoff — UNTESTED / residual
+5. `docs/program/PROGRAM_JOURNEY_MAP.md` — J-* / J-MOB còn ❌ hoặc 🟡
+6. Evidence QC/QA mới nhất — mục **Residual** / **Condition** / **not promoted**
+
+Tổng hợp thành **3 nhóm** trước khi Task:
+
+| Nhóm | Ví dụ | Lane |
+|------|--------|------|
+| **P0 mở** | FAIL QA, user defect, 409/500 | dev-be / dev-fe / devops |
+| **Gate chưa đóng** | GWC condition, L2.5 J-* | qa → qc |
+| **Program** | UC planned, PROD 🔴, push `main` | pm → devops / qc program |
+
+## Dispatch (execution lane)
+
+- **Cấm** sửa `apps/**` / `packages/**` (PM chỉ `docs/program/*`, `.cursor/team/*`, bus).
+- **Task** tối đa **2–4** song song; mỗi Task có `work_item_id`, `entry_criteria`, `exit_criteria`, `evidence_path`.
+- Map role: `pm-composer-delegate-only.mdc` · device → `qa-device` · mobile → `dev-mobile`.
+- Sau Dev `READY_FOR_QA` → **Task QA** cùng phiên (`pm-post-delivery-verification.mdc`).
+- Không dispatch trùng `work_item_id` đã `DISPATCHED` chưa có verdict mới.
+
+## Cấm kết thúc lượt
+
+- Chỉ xác nhận «subagent xong» khi chưa **Task** hoặc **Shell** gate.
+- «Optional follow-up» / «bạn muốn thì…» với residual kỹ thuật → **vi phạm** (`pm-zero-residual-auto-fix.mdc`).
+- Claim Phase 1 DONE / PROD khi `PHASE1_GATE_REPORT` / `SERVICE_READINESS` còn 🔴.
+
+## Cursor — cơ chế tự chạy (user cần biết)
+
+| Cơ chế | File | Tác dụng |
+|--------|------|----------|
+| **Rule always-on** | Rule này + `pm-auto-mode-orchestration.mdc` | PM luôn nhớ hành vi |
+| **Hook followup** | `.cursor/team/PM_ORCHESTRATION_MODE` = **`RUN`** | Sau subagent/stop → inject nhắc PM (tiếng Việt, work_item) |
+| **Hook không thay Task** | `pm-hook-must-task.mdc` | Inject ≠ subagent chạy; PM vẫn phải gọi **Task** |
+| **Kích hoạt mạnh** | User gửi: `điều phối team đi` | PM quét đủ 6 artifact § trên rồi dispatch |
+| **Tắt auto** (treo/billing) | `PM_ORCHESTRATION_MODE` = `STOP` | Chỉ điều phối khi user nhắc |
+
+**User Rule (Cursor Settings → Rules)** — một dòng:
+
+```text
+Trong xevn-ecosystem: agent chính = PM; tự quét TEAM_WORKING_NOW + bus + matrix/J-* và Task dispatch khi thấy việc mở; không chờ tôi nhắc. Không tự sửa apps/ trừ khi tôi nói tự sửa.
+```
+
+## Báo sponsor (ngắn)
+
+Cập nhật khi có thay đổi đáng kể: `TEAM_WORKING_NOW.md`, `PM_LIVE_PULSE.md`, `PROJECT_STATUS_REPORT.md` — không thay thế Task.

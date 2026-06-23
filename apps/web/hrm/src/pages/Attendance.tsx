@@ -70,6 +70,13 @@ import { useAttendanceSheets } from '@/hooks/useAttendanceSheets';
 import { useWorkShifts } from '@/hooks/useWorkShifts';
 import { useAttendanceRules } from '@/hooks/useAttendanceRules';
 import { useAttendanceOverview } from '@/hooks/useAttendanceOverview';
+import { useWeeklyAttendanceSummary } from '@/hooks/useWeeklyAttendanceSummary';
+import {
+  formatOverviewYearSubtitle,
+  formatWeeklyRangeSubtitle,
+  sumLeaveTypeValues,
+  type AttendanceRecordTableRow,
+} from '@/lib/attendanceDashboardAggregator';
 import {
   Dialog,
   DialogContent,
@@ -221,124 +228,6 @@ const getRequestMenuItems = (t: any) => [
   { id: 'leave-plan', label: t('attendance.requestsMenu.leavePlan') },
 ];
 
-// Attendance sheets list data
-const attendanceSheetsData = [
-  { id: '1', period: '01/12/2021 - 31/12/2021', name: 'Bảng chấm công từ ngày 01/12/2021 đến ngày 31/12/2...', type: 'Theo giờ', unit: 'Chi nhánh Đà Nẵng', positions: 'nhân viên bán hàng; nhân viên hành chính; N' },
-  { id: '2', period: '01/12/2021 - 31/12/2021', name: 'Bảng chấm công từ ngày 01/12/2021 đến ngày 31/12/2...', type: 'Theo giờ', unit: 'Phòng Kế toán', positions: 'quản lý kế toán; quản lý kỹ thuật; quản lý pr' },
-  { id: '3', period: '01/11/2021 - 30/11/2021', name: 'Bảng chấm công từ ngày 01/11/2021 đến ngày 30/11/2...', type: 'Theo giờ', unit: 'Tất cả đơn vị', positions: 'Tất cả vị trí' },
-  { id: '4', period: '01/10/2021 - 31/10/2021', name: 'Bảng chấm công từ ngày 01/10/2021 đến ngày 31/10/2...', type: 'Theo giờ', unit: 'Tất cả đơn vị', positions: 'Tất cả vị trí' },
-  { id: '5', period: '25/08/2021 - 24/09/2021', name: 'Bảng chấm công từ ngày 25/08/2021 đến ngày 24/09/2...', type: 'Theo giờ', unit: 'Công ty cổ phần Trang Trí', positions: 'Tất cả vị trí' },
-  { id: '6', period: '01/07/2021 - 31/07/2021', name: 'Bảng chấm công từ ngày 01/07/2021 đến ngày 31/07/2...', type: 'Theo ngày', unit: 'Tất cả đơn vị', positions: 'Mật cả vị trí' },
-  { id: '7', period: '01/06/2021 - 30/06/2021', name: 'Bảng chấm công từ ngày 01/06/2021 đến ngày 30/06/2...', type: 'Theo ngày', unit: 'Tất cả đơn vị', positions: 'mất cả vị trí' },
-  { id: '8', period: '01/05/2021 - 31/05/2021', name: 'Bảng chấm công từ ngày 01/05/2021 đến ngày 31/05/2...', type: 'Theo ngày', unit: 'Tất cả đơn vị', positions: 'quất cả vị trí' },
-  { id: '9', period: '01/04/2021 - 30/04/2021', name: 'Bảng chấm công từ ngày 01/04/2021 đến ngày 30/04/2...', type: 'Theo ngày', unit: 'Tất cả đơn vị', positions: 'Tất cả vị trí' },
-  { id: '10', period: '01/02/2021 - 28/02/2021', name: 'Bảng chấm công từ ngày 01/02/2021 đến ngày 28/02/2...', type: 'Theo ngày', unit: 'Tất cả đơn vị', positions: 'Tất cả vị trí' },
-];
-
-// Weekly attendance summary data
-const weeklyAttendanceData = [
-  {
-    id: '1',
-    name: 'Lê Thúy Hạnh',
-    code: 'LTHANH',
-    days: [
-      { dayLabel: 'Thứ 7', date: '01', shifts: [{ name: 'Quốc tế lao động', type: 'holiday' }, { shift: 'HC7', status: 'full', time: '' }] },
-      { dayLabel: 'Chủ nhật', date: '02', shifts: [] },
-      { dayLabel: 'Thứ 2', date: '03', shifts: [{ shift: 'HC', status: 'full', time: '' }] },
-      { dayLabel: 'Thứ 3', date: '04', shifts: [{ shift: 'HC', status: 'full', time: '' }] },
-      { dayLabel: 'Thứ 4', date: '05', shifts: [{ shift: 'HC', status: 'full', time: '' }, { name: 'Nghỉ không lương', type: 'leave' }] },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Nguyễn Hữu Hải',
-    code: 'NHHAI',
-    days: [
-      { dayLabel: 'Thứ 7', date: '01', shifts: [{ name: 'Quốc tế lao động', type: 'holiday' }, { shift: 'HC7', status: 'full', time: '' }] },
-      { dayLabel: 'Chủ nhật', date: '02', shifts: [] },
-      { dayLabel: 'Thứ 2', date: '03', shifts: [{ shift: 'HC', status: 'full', time: '08:00 - 17:00' }] },
-      { dayLabel: 'Thứ 3', date: '04', shifts: [{ shift: 'HC', status: 'full', time: '08:00 - 17:00' }] },
-      { dayLabel: 'Thứ 4', date: '05', shifts: [{ shift: 'HC', status: 'full', time: '08:00 - 17:00' }] },
-    ],
-  },
-  {
-    id: '3',
-    name: 'Nguyễn Thị Lan',
-    code: 'NTLAN',
-    days: [
-      { dayLabel: 'Thứ 7', date: '01', shifts: [{ name: 'Quốc tế lao động', type: 'holiday' }, { shift: 'SANG', status: 'full', time: '' }, { shift: 'TOI', status: 'full', time: '' }] },
-      { dayLabel: 'Chủ nhật', date: '02', shifts: [{ shift: 'CHIEU', status: 'half', time: '14:30 - --' }] },
-      { dayLabel: 'Thứ 2', date: '03', shifts: [{ shift: 'TOI', status: 'full', time: '' }] },
-      { dayLabel: 'Thứ 3', date: '04', shifts: [{ shift: 'TOI', status: 'half', time: '' }] },
-      { dayLabel: 'Thứ 4', date: '05', shifts: [{ shift: 'SANG', status: 'full', time: '' }] },
-    ],
-  },
-  {
-    id: '4',
-    name: 'Nguyễn Thùy Linh',
-    code: 'NTLINH',
-    days: [
-      { dayLabel: 'Thứ 7', date: '01', shifts: [{ name: 'Quốc tế lao động', type: 'holiday' }, { shift: 'HC7', status: 'full', time: '' }] },
-      { dayLabel: 'Chủ nhật', date: '02', shifts: [] },
-      { dayLabel: 'Thứ 2', date: '03', shifts: [{ shift: 'HC', status: 'full', time: '08:01 - 17:40' }] },
-      { dayLabel: 'Thứ 3', date: '04', shifts: [{ shift: 'HC', status: 'late', time: '08:07 - 17:30' }] },
-      { dayLabel: 'Thứ 4', date: '05', shifts: [{ shift: 'HC', status: 'full', time: '08:23 - 17:21' }] },
-    ],
-  },
-];
-
-// Generate attendance code
-const generateAttendanceCode = (index: number) => {
-  const codes = ['C-0618', '1354', '1396', 'A19-0011', '1747', '494', 'C05-0009', '364', 'C09-0094'];
-  return codes[index % codes.length];
-};
-
-// Mock data for overview charts
-const monthlyLeaveData = [
-  { month: 'Tháng 1', value: 50 },
-  { month: 'Tháng 2', value: 80 },
-  { month: 'Tháng 3', value: 120 },
-  { month: 'Tháng 4', value: 200 },
-  { month: 'Tháng 5', value: 350 },
-  { month: 'Tháng 6', value: 500 },
-  { month: 'Tháng 7', value: 700 },
-  { month: 'Tháng 8', value: 1200 },
-  { month: 'Tháng 9', value: 2200 },
-  { month: 'Tháng 10', value: 2500 },
-  { month: 'Tháng 11', value: 800 },
-  { month: 'Tháng 12', value: 150 },
-];
-
-const departmentLeaveData = [
-  { name: 'CÔNG TY DE...', value: 3276.5 },
-  { name: 'Công ty cô...', value: 253 },
-  { name: 'Phòng Kinh...', value: 214 },
-  { name: 'CÔNG TY SA...', value: 169 },
-  { name: 'Văn phòng...', value: 150 },
-  { name: 'Văn phòng...', value: 145 },
-  { name: 'Phòng KD', value: 93 },
-  { name: 'CTY uniHRM', value: 87 },
-  { name: 'Phòng kinh...', value: 87 },
-  { name: 'Văn phòng...', value: 70.5 },
-];
-
-const leaveTypeData = [
-  { name: 'Nghỉ phép', value: 4, color: '#3b82f6' },
-  { name: 'Nghỉ thai sản', value: 2, color: '#10b981' },
-  { name: 'Nghỉ con kết hôn', value: 1, color: '#f59e0b' },
-  { name: 'Nghỉ kết hôn', value: 1, color: '#ef4444' },
-];
-
-const lateEarlyList = [
-  { name: 'Lăng Hồng Sơn', dept: 'Công ty cổ phần dịch vụ tổng hợp De...', count: 9 },
-  { name: 'Hoàng Thành Hà', dept: 'Văn phòng Tổng công ty', count: 7 },
-  { name: 'Nguyễn Mạnh Hùng', dept: 'CÔNG TY DEMO', count: 7 },
-  { name: 'Nguyễn Thùy Linh Nhi', dept: 'Phòng Marketing', count: 3 },
-  { name: 'Đào Thị Nhinh', dept: 'CÔNG TY DEMO', count: 2 },
-];
-
-// Duplicate removed - using getRequestMenuItems(t) instead
-
 // Leave request data removed - using real data from LeaveTab component
 
 export default function Attendance() {
@@ -422,11 +311,13 @@ export default function Attendance() {
     [t('common.other', 'Khác')]: '#a3a3a3',
   };
 
-  // Use DB data for overview or fallback to empty
-  const monthlyLeaveData = monthlyLeaveDataDB.length > 0 ? monthlyLeaveDataDB : [];
-  const departmentLeaveData = departmentLeaveDataDB.length > 0 ? departmentLeaveDataDB : [];
-  const leaveTypeData = leaveTypeDataDB.length > 0 ? leaveTypeDataDB : [];
-  const lateEarlyList = lateEarlyListDB.length > 0 ? lateEarlyListDB : [];
+  const monthlyLeaveData = monthlyLeaveDataDB;
+  const departmentLeaveData = departmentLeaveDataDB;
+  const leaveTypeData = leaveTypeDataDB;
+  const lateEarlyList = lateEarlyListDB;
+  const overviewYear = new Date().getFullYear();
+  const overviewYearSubtitle = formatOverviewYearSubtitle(overviewYear);
+  const leaveTypeTotal = sumLeaveTypeValues(leaveTypeData);
 
   // Edit attendance record state
   const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
@@ -438,7 +329,7 @@ export default function Attendance() {
     time: string;
   } | null>(null);
 
-  const openEditAttendanceModal = (record: typeof attendanceRecordsData[0]) => {
+  const openEditAttendanceModal = (record: AttendanceRecordTableRow) => {
     setEditingAttendance({
       id: record.id,
       name: record.name,
@@ -490,6 +381,27 @@ export default function Attendance() {
   // Attendance view mode: 'list' (sheets list), 'data' (records), or 'weekly' (weekly summary)
   const [attendanceViewMode, setAttendanceViewMode] = useState<'list' | 'data' | 'weekly'>('list');
   const [selectedSheetId, setSelectedSheetId] = useState<string | null>(null);
+
+  const selectedSheet = attendanceSheetsDB.find((sheet) => sheet.id === selectedSheetId) ?? null;
+  const weeklyAttendanceEnabled = activeTab === 'attendance' && attendanceViewMode === 'weekly';
+  const {
+    weeklyRows: weeklyAttendanceData,
+    range: weeklyRange,
+    departmentOptions: weeklyDepartmentOptions,
+    isLoading: isLoadingWeeklyAttendance,
+    refetch: refetchWeeklyAttendance,
+  } = useWeeklyAttendanceSummary({
+    enabled: weeklyAttendanceEnabled,
+    sheet: selectedSheet
+      ? {
+          start_date: selectedSheet.start_date,
+          end_date: selectedSheet.end_date,
+          name: selectedSheet.name,
+        }
+      : null,
+    employees,
+  });
+  const weeklyRangeSubtitle = formatWeeklyRangeSubtitle(weeklyRange.from, weeklyRange.to);
 
   // Add sheet modal state
   const [addSheetModalOpen, setAddSheetModalOpen] = useState(false);
@@ -697,7 +609,7 @@ export default function Attendance() {
   const defaultShiftForm = {
     code: '',
     name: '',
-    unit: 'Công ty Cổ phần ABC',
+    unit: t('attendance.sheetForm.allDepartments'),
     startTime: '08:00',
     endTime: '17:30',
     coefficient: 1,
@@ -896,12 +808,17 @@ export default function Attendance() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-semibold">{t('attendance.overview.leaveByTime')}</CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    CÔNG TY SAIGON NEWPORT<br />
-                    (01/01/2021 - 31/12/2021)
+                    {t('attendance.overview.allUnits')}<br />
+                    {overviewYearSubtitle}
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[220px]">
+                    {monthlyLeaveData.length === 0 ? (
+                      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                        {t('attendance.overview.noData')}
+                      </div>
+                    ) : (
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={monthlyLeaveData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -919,6 +836,7 @@ export default function Attendance() {
                         />
                       </LineChart>
                     </ResponsiveContainer>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -929,11 +847,16 @@ export default function Attendance() {
                   <CardTitle className="text-base font-semibold">{t('attendance.overview.leaveByDepartment')}</CardTitle>
                   <p className="text-xs text-muted-foreground">
                     {t('attendance.overview.allUnits')}<br />
-                    (01/01/2021 - 31/12/2021)
+                    {overviewYearSubtitle}
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[220px]">
+                    {departmentLeaveData.length === 0 ? (
+                      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                        {t('attendance.overview.noData')}
+                      </div>
+                    ) : (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={departmentLeaveData} layout="horizontal">
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -945,6 +868,7 @@ export default function Attendance() {
                         <Bar dataKey="value" fill="#3b82f6" radius={[2, 2, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -958,11 +882,17 @@ export default function Attendance() {
                   <CardTitle className="text-base font-semibold">{t('attendance.overview.leaveTypeAnalysis')}</CardTitle>
                   <p className="text-xs text-muted-foreground">
                     {t('attendance.overview.allUnits')}<br />
-                    (01/01/2021 - 31/12/2021)
+                    {overviewYearSubtitle}
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[200px] relative">
+                    {leaveTypeData.length === 0 ? (
+                      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                        {t('attendance.overview.noData')}
+                      </div>
+                    ) : (
+                    <>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -985,9 +915,11 @@ export default function Attendance() {
                     </ResponsiveContainer>
                     {/* Center text */}
                     <div className="absolute top-1/2 left-[35%] transform -translate-x-1/2 -translate-y-1/2 text-center">
-                      <p className="text-2xl font-bold">8</p>
+                      <p className="text-2xl font-bold">{leaveTypeTotal}</p>
                       <p className="text-xs text-muted-foreground">{t('attendance.overview.leaveRequests')}</p>
                     </div>
+                    </>
+                    )}
                   </div>
                   {/* Legend */}
                   <div className="space-y-2 mt-2">
@@ -1009,13 +941,17 @@ export default function Attendance() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-semibold">{t('attendance.overview.lateEarlyList')}</CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    CÔNG TY SAIGON NEWPORT<br />
-                    (01/01/2021 - 31/12/2021)
+                    {t('attendance.overview.allUnits')}<br />
+                    {overviewYearSubtitle}
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {lateEarlyList.map((person, index) => (
+                    {lateEarlyList.length === 0 ? (
+                      <p className="py-8 text-center text-sm text-muted-foreground">
+                        {t('attendance.overview.noData')}
+                      </p>
+                    ) : lateEarlyList.map((person, index) => (
                       <div key={index} className="flex items-center gap-3">
                         <Avatar className="w-9 h-9">
                           <AvatarFallback className="text-xs bg-blue-100 text-blue-700 font-medium">
@@ -1039,7 +975,7 @@ export default function Attendance() {
                   <CardTitle className="text-base font-semibold">{t('attendance.overview.lateEarlyFrequency')}</CardTitle>
                   <p className="text-xs text-muted-foreground">
                     {t('attendance.overview.allUnits')}<br />
-                    (30/11/2021 - )
+                    {overviewYearSubtitle}
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -1178,8 +1114,8 @@ export default function Attendance() {
                         </div>
                       </td>
                       <td className="p-3 text-sm text-muted-foreground">{emp.department || '-'}</td>
-                      <td className="p-3 text-sm text-right">12</td>
-                      <td className="p-3 text-sm">{generateAttendanceCode(index)}</td>
+                      <td className="p-3 text-sm text-right">—</td>
+                      <td className="p-3 text-sm">{emp.employee_code || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1653,10 +1589,12 @@ export default function Attendance() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {[
-                    { name: 'Trụ sở chính', address: '15 Duy Tân, Cầu Giấy, Hà Nội', radius: '100m' },
-                    { name: 'Chi nhánh HCM', address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM', radius: '150m' },
-                  ].map((location, index) => (
+                  {(attendanceRulesDB?.gps_locations ?? []).length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center" role="status">
+                      {t('attPage.noGpsLocations', 'Chưa có vị trí GPS. Thêm vị trí trong quy tắc chấm công hoặc đồng bộ từ API.')}
+                    </p>
+                  ) : (
+                    (attendanceRulesDB?.gps_locations ?? []).map((location, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                       <div className="flex items-center gap-3">
                         <MapPin className="w-4 h-4 text-orange-500" />
@@ -1666,11 +1604,12 @@ export default function Attendance() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">{t('attPage.radius')}: {location.radius}</span>
+                        <span className="text-xs text-muted-foreground">{t('attPage.radius')}: {location.radius}m</span>
                         <Button variant="ghost" size="sm">{t('attPage.edit')}</Button>
                       </div>
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -1809,19 +1748,6 @@ export default function Attendance() {
       </div>
     );
   };
-
-  // Attendance records data
-  const attendanceRecordsData = [
-    { id: '1', attendanceCode: '13', employeeCode: 'NVTHANG', name: 'Nguyễn Văn Thắng', position: 'Công nhân nhà máy', unit: 'Nhà máy sản xuất', date: '31/05/2021', time: '22:12' },
-    { id: '2', attendanceCode: '10', employeeCode: 'TDMANH', name: 'Trần Đức Mạnh', position: 'Nhân viên kinh doanh', unit: 'Văn phòng kinh doanh', date: '31/05/2021', time: '17:50' },
-    { id: '3', attendanceCode: '4', employeeCode: 'NTLINH', name: 'Nguyễn Thùy Linh', position: 'Lễ tân', unit: 'Văn phòng tổng công ty', date: '31/05/2021', time: '17:00' },
-    { id: '4', attendanceCode: '13', employeeCode: 'NVTHANG', name: 'Nguyễn Văn Thắng', position: 'Công nhân nhà máy', unit: 'Nhà máy sản xuất', date: '31/05/2021', time: '14:01' },
-    { id: '5', attendanceCode: '10', employeeCode: 'TDMANH', name: 'Trần Đức Mạnh', position: 'Nhân viên kinh doanh', unit: 'Văn phòng kinh doanh', date: '30/05/2021', time: '17:04' },
-    { id: '6', attendanceCode: '9', employeeCode: 'LTHANH', name: 'Lê Thúy Hạnh', position: 'Nhân viên kinh doanh', unit: 'Văn phòng kinh doanh', date: '30/05/2021', time: '17:04' },
-    { id: '7', attendanceCode: '4', employeeCode: 'NTLINH', name: 'Nguyễn Thùy Linh', position: 'Lễ tân', unit: 'Văn phòng tổng công ty', date: '30/05/2021', time: '17:04' },
-    { id: '8', attendanceCode: '13', employeeCode: 'NVTHANG', name: 'Nguyễn Văn Thắng', position: 'Công nhân nhà máy', unit: 'Nhà máy sản xuất', date: '30/05/2021', time: '14:23' },
-    { id: '9', attendanceCode: '10', employeeCode: 'TDMANH', name: 'Trần Đức Mạnh', position: 'Nhân viên kinh doanh', unit: 'Văn phòng kinh doanh', date: '30/05/2021', time: '07:48' },
-  ];
 
   // Get avatar initials
   const getInitials = (name: string) => {
@@ -1993,8 +1919,12 @@ export default function Attendance() {
 
   // Render weekly attendance summary
   const renderWeeklyAttendance = () => {
-    const weekDays = [t('common.weekDays.sat', 'Thứ 7'), t('common.weekDays.sun', 'Chủ nhật'), t('common.weekDays.mon', 'Thứ 2'), t('common.weekDays.tue', 'Thứ 3'), t('common.weekDays.wed', 'Thứ 4')];
-    const dates = ['01', '02', '03', '04', '05'];
+    const weekHeader = weeklyAttendanceData[0]?.days ?? weeklyRange.days.map((day) => ({
+      dayLabel: format(day, 'EEEE', { locale: vi }),
+      date: format(day, 'dd'),
+    }));
+    const weeklyStartLabel = format(new Date(`${weeklyRange.from}T00:00:00`), 'dd/MM/yyyy');
+    const weeklyEndLabel = format(new Date(`${weeklyRange.to}T00:00:00`), 'dd/MM/yyyy');
 
     return (
       <div className="space-y-4 p-6">
@@ -2005,7 +1935,7 @@ export default function Attendance() {
               <ChevronLeft className="w-4 h-4" />
             </Button>
             <h2 className="text-xl font-semibold">
-              {t('attPage.weeklyTitle', { start: '01/05/2021', end: '31/05/2021' })}
+              {selectedSheet?.name ?? t('attPage.weeklyTitle', { start: weeklyStartLabel, end: weeklyEndLabel })}
               <span className="text-muted-foreground ml-2">({t('attPage.standardLabel')})</span>
             </h2>
             <Button variant="ghost" size="icon" className="w-6 h-6">
@@ -2028,8 +1958,12 @@ export default function Attendance() {
                 <span className="text-sm">{t('attPage.absent')}</span>
               </div>
             </div>
-            <Button className="gap-2 bg-orange-500 hover:bg-orange-600 text-white">
-              <RotateCcw className="w-4 h-4" />
+            <Button
+              className="gap-2 bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => void refetchWeeklyAttendance()}
+              disabled={isLoadingWeeklyAttendance}
+            >
+              <RotateCcw className={cn('w-4 h-4', isLoadingWeeklyAttendance && 'animate-spin')} />
               {t('attPage.reload')}
             </Button>
             <Button variant="ghost" size="icon">
@@ -2051,8 +1985,9 @@ export default function Attendance() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('attPage.allUnits')}</SelectItem>
-                <SelectItem value="factory">{t('attPage.factory', 'Nhà máy sản xuất')}</SelectItem>
-                <SelectItem value="office">{t('attPage.salesOffice', 'Văn phòng kinh doanh')}</SelectItem>
+                {weeklyDepartmentOptions.map((dept) => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Button variant="ghost" size="icon">
@@ -2063,6 +1998,11 @@ export default function Attendance() {
 
         {/* Weekly Table */}
         <Card>
+          {isLoadingWeeklyAttendance ? (
+            <div className="flex items-center justify-center p-12">
+              <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -2071,16 +2011,22 @@ export default function Attendance() {
                     <Checkbox />
                   </th>
                   <th className="p-3 text-left font-medium text-sm min-w-[180px]">{t('attPage.employee')}</th>
-                  {weekDays.map((day, idx) => (
+                  {weekHeader.map((day, idx) => (
                     <th key={idx} className="p-3 text-center font-medium text-sm min-w-[140px]">
-                      <div className="text-muted-foreground text-xs">{day}</div>
-                      <div className="text-xl font-bold">{dates[idx]}</div>
+                      <div className="text-muted-foreground text-xs">{day.dayLabel}</div>
+                      <div className="text-xl font-bold">{day.date}</div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {weeklyAttendanceData.map((employee) => (
+                {weeklyAttendanceData.length === 0 ? (
+                  <tr>
+                    <td colSpan={weekHeader.length + 2} className="p-8 text-center text-muted-foreground">
+                      {t('attendance.overview.noData')}
+                    </td>
+                  </tr>
+                ) : weeklyAttendanceData.map((employee) => (
                   <tr key={employee.id} className="border-b hover:bg-muted/10">
                     <td className="p-3">
                       <Checkbox />
@@ -2146,11 +2092,12 @@ export default function Attendance() {
               </tbody>
             </table>
           </div>
+          )}
 
           {/* Pagination */}
           <div className="flex items-center justify-between p-4 border-t">
             <div className="text-sm text-muted-foreground">
-              {t('attPage.total')}: <span className="font-medium text-foreground">12</span>
+              {t('attPage.total')}: <span className="font-medium text-foreground">{weeklyAttendanceData.length}</span>
             </div>
             <div className="flex items-center gap-4">
               <Select defaultValue="15">
@@ -2163,7 +2110,9 @@ export default function Attendance() {
                   <SelectItem value="50">50</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-sm text-muted-foreground">{t('attPage.fromTo', { from: 1, to: 12 })}</span>
+              <span className="text-sm text-muted-foreground">
+                {weeklyRangeSubtitle}
+              </span>
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="w-8 h-8" disabled>
                   <ChevronLeft className="w-4 h-4" />
@@ -2312,155 +2261,7 @@ export default function Attendance() {
           </Button>
         </div>
 
-        {/* Filters */}
-        <Card className="p-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="relative flex-1 min-w-[200px] max-w-[250px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder={t('attPage.search')}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex items-center gap-2 ml-auto">
-              {/* Date navigation */}
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-              {/* Date range picker */}
-              <Button variant="outline" className="gap-2 font-normal">
-                <span>01/05/2021 - 31/05/2021</span>
-                <Calendar className="w-4 h-4" />
-              </Button>
-              {/* Unit filter */}
-              <Select defaultValue="all">
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder={t('attPage.allUnits')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('attPage.allUnits')}</SelectItem>
-                  <SelectItem value="factory">{t('attPage.factory', 'Nhà máy sản xuất')}</SelectItem>
-                  <SelectItem value="office">{t('attPage.salesOffice', 'Văn phòng kinh doanh')}</SelectItem>
-                  <SelectItem value="hq">{t('attPage.hqOffice', 'Văn phòng tổng công ty')}</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="ghost" size="icon">
-                <Filter className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Download className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Data Table */}
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b bg-muted/30">
-                  <th className="p-3 text-left w-10">
-                    <Checkbox />
-                  </th>
-                   <th className="p-3 text-left font-medium text-sm">{t('attPage.attendanceCodeCol')}</th>
-                  <th className="p-3 text-left font-medium text-sm">{t('attPage.employeeCodeCol')}</th>
-                  <th className="p-3 text-left font-medium text-sm">{t('attPage.fullNameCol')}</th>
-                  <th className="p-3 text-left font-medium text-sm">{t('attPage.positionCol')}</th>
-                  <th className="p-3 text-left font-medium text-sm">{t('attPage.unitCol')}</th>
-                  <th className="p-3 text-left font-medium text-sm">{t('attPage.dateCol')}</th>
-                  <th className="p-3 text-right font-medium text-sm">{t('attPage.timeCol')}</th>
-                  <th className="p-3 text-center font-medium text-sm w-20">{t('attPage.actionCol')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attendanceRecordsData.map((record) => (
-                  <tr 
-                    key={record.id} 
-                    className="border-b hover:bg-muted/20 transition-colors"
-                  >
-                    <td className="p-3">
-                      <Checkbox />
-                    </td>
-                    <td className="p-3 text-sm">{record.attendanceCode}</td>
-                    <td className="p-3 text-sm font-medium">{record.employeeCode}</td>
-                    <td className="p-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarFallback className={cn("text-xs font-medium", getAvatarColor(record.name))}>
-                            {getInitials(record.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm">{record.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-sm text-muted-foreground">{record.position}</td>
-                    <td className="p-3 text-sm text-muted-foreground">{record.unit}</td>
-                    <td className="p-3 text-sm">{record.date}</td>
-                    <td className="p-3 text-sm text-right">{record.time}</td>
-                    <td className="p-3">
-                      <div className="flex items-center justify-center gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="w-8 h-8 text-muted-foreground hover:text-foreground"
-                          onClick={() => openEditAttendanceModal(record)}
-                          title={t('attPage.edit')}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="w-8 h-8 text-muted-foreground hover:text-destructive"
-                          title={t('attPage.delete')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between p-4 border-t">
-            <div className="text-sm text-muted-foreground">
-              {t('attPage.totalRecords')}: <span className="font-medium text-foreground">128</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Select defaultValue="50">
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="text-sm text-muted-foreground">{t('attPage.fromTo', { from: 1, to: 50 })}</span>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="w-8 h-8" disabled>
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
+        <AttendanceRecordsTable />
       </div>
     );
   };

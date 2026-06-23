@@ -491,3 +491,56 @@ curl -s -H "x-internal-api-key: $KEY" "http://127.0.0.1:28002/api/xbos/workflow-
 | **Gate** | `pnpm verify:dev-stack` (`qc-dev-stack` + `tsc --noEmit`) | BR-MOCK-01 khi `VITE_ALLOW_MOCK_FALLBACK=false` |
 
 **Package scripts mới:** `seed:stack:p0`, `seed:workflow:inbox`, `seed:business-master:kpi`, `seed:business-master:settings-md`, `seed:hrm:operations-sample`, `seed:kpi:actuals`, `verify:dev-stack`.
+
+---
+
+## Delta — PCOMP-W0-QA-01 (2026-06-07) · program `P1-PRODUCT-COMPLETE`
+
+**Work item:** PCOMP-W0-QA-01 · **Evidence:** `docs/qa/evidence/pcomp-w0-mock-matrix-20260607.md` · **Classifier:** `PHASE1_PRODUCT_COMPLETION_PMP_PLAN.md` §3
+
+### Grep summary (non-test `*.ts`/`*.tsx`)
+
+| App | `mockCompanies` | `HRM_MOCK_` | `previewMock` | `allowMockFallback` |
+|-----|-----------------|-------------|---------------|---------------------|
+| `apps/web/hrm` | 0 | 0 | 0 | 0 |
+| `apps/web/web-portal` | 2 files | 2 files | 1 file | 18 files |
+
+**Prod gate (portal only):** `allowMockFallback()` = `import.meta.env.DEV && VITE_ALLOW_MOCK_FALLBACK === 'true'` (`utils/mockPolicy.ts`). Production build without flag → empty/error, not silent mock.
+
+**HRM embed:** no mock gate — inline constants render in pilot/UAT regardless of env.
+
+### Reclassified CLOSED since §3 baseline
+
+| ID | Was | Now |
+|----|-----|-----|
+| M-HRM-03 | Tools/Service report static charts | **CLOSED** — `ToolsReportTab` / `ServiceReportTab` aggregate from API hooks |
+| M-HRM-06 | HeadcountProposalTab chart mock | **P2 OK** — Excel export `statusData`, not UI |
+| M-HRM-08 | Pie/funnel charts | **CLOSED** — props/API derived |
+| M-HRM-R04 | GPS HCM / skills radar | **CLOSED** — empty state + real geolocation |
+
+### New / expanded P0 (HRM embed — W1)
+
+| ID | File | Issue |
+|----|------|-------|
+| M-HRM-09 | `EmployeeSalary.tsx` | `mockSalaryData` / allowances / monthly payroll fallback |
+| M-HRM-10 | `Payroll.tsx` | `advanceBatchesData`, `paymentBatchesData`, `salaryComponentsData`, tax/insurance participants |
+| M-HRM-11 | `EmployeeWorkHistory.tsx` | `initialWorkHistory`, tasks, performance chart arrays |
+| M-HRM-12 | `Recruitment.tsx` | Dead `staffingProposals` / campaigns blocks (**P2** cleanup) |
+
+### P0 still open (unchanged priority)
+
+M-HRM-01 (`weeklyAttendanceData`), M-HRM-02 (`payrollFeedbackData`), M-HRM-04 (`EmployeeJobList`), M-HRM-05 (`CandidateDetailView` radar), M-HRM-01 partial (overview charts API-backed).
+
+### Portal P1 inventory (W2) — gated, not prod-default
+
+M-CC-01..06 per PMP §3.2 plus **M-CC-07** HRPage, **M-CC-08** ExecutiveDashboard, **M-CC-09** Settings catch-fallback, **M-CC-10** KPIDashboard snapshot, **M-CC-11** GlobalFilter, **M-CC-12** CommandCenterPage branches, **M-CC-13** command-center-mock types/seeds, **M-CC-14** Customers/Partners, **M-CC-15** VehicleTypes.
+
+### QA verdict
+
+| Gate | Result |
+|------|--------|
+| W0 source audit | **PASS** — matrix signed; SoT updated |
+| L2 browser | **Deferred** W1 after dev-fe P0 removal |
+| Program mock exit | **NOT DONE** — 8 HRM P0 clusters open |
+
+**ack_status:** PASS_TO_PM · **next:** PM dispatch W1 `dev-fe` (PCOMP-W1-FE-01)

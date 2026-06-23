@@ -5,9 +5,9 @@
 | Mục | Giá trị |
 |-----|---------|
 | Tên tài liệu | BRD Tổng hợp — Hệ sinh thái XeVN OS |
-| Phiên bản | 1.0 |
-| Trạng thái | Bản trình bày / làm việc |
-| Ngày hiệu lực | Tháng 5/2026 |
+| Phiên bản | 1.1 |
+| Trạng thái | Bản nghiệm thử Giai đoạn 1 (UAT) |
+| Ngày hiệu lực | Tháng 6/2026 |
 | Phạm vi | Toàn bộ phân hệ: Cổng Web, XBOS, Nhân sự (HRM), Logistic |
 | Đối tượng | Ban điều hành, chủ đầu tư, phòng IT, nghiệp vụ |
 
@@ -493,6 +493,55 @@ flowchart TB
 | 3 | Chuỗi Logistic chạy thật (Giai đoạn 2) | nghiệm thu thử nghiệm một công ty |
 | 4 | Phân tách dữ liệu đúng công ty con | Kiểm thử hai tài khoản khác công ty |
 | 5 | Phê duyệt tập trung qua XBOS | Demo quy trình + hộp thư |
+
+---
+
+## 14. Trạng thái nghiệm thử Giai đoạn 1 (bản UAT)
+
+### 14.1 Phạm vi đã sẵn sàng chạy thử
+
+Bản nghiệm thử Giai đoạn 1 tập trung ba điểm chạm sau — đối chiếu **245** tình huống sử dụng trong ma trận Giai đoạn 1 (không bao gồm **128** chức năng Logistic nghiệp vụ Giai đoạn 2):
+
+| Điểm chạm | Nội dung nghiệm vụ | Mã tham chiếu (ma trận) |
+|-----------|-------------------|-------------------------|
+| **Cổng Web — Command Center** | Đăng nhập tập đoàn, chọn phạm vi công ty, RACI, hộp thư, cài đặt danh mục | XBOS nền tảng + Command Center |
+| **Nhúng Nhân sự trên cổng** | Hồ sơ nhân viên, chấm công, đơn từ, lương, tuyển dụng (tab nhúng) | HRM Web embed |
+| **HRM Mobile** | Đăng nhập, chấm công, đơn nghỉ, phê duyệt quản lý, phiếu lương | HRM Mobile (15 UC catalog) |
+
+**Môi trường chạy thử đã triển khai:** `https://14-225-217-232.nip.io` (HTTPS, máy chủ pilot).
+
+**Tài khoản thử nghiệm (chỉ môi trường UAT):**
+
+| Kênh | Tài khoản mẫu | Mật khẩu |
+|------|---------------|----------|
+| Cổng Web | `ceo@xe.vn` | `Xevn@2026` |
+| Cổng Web — CEO công ty thành viên | `du-lich.ceo@xe.vn` | `Xevn@2026` |
+| HRM Mobile — bộ 1.000 nhân sự UAT | `uat.nv0001@xe.vn` … `uat.nv1000@xe.vn` | `xevn-uat-2026` |
+
+Chi tiết thao tác: *Hướng dẫn sử dụng và chạy thử — Hệ sinh thái XeVN (Pilot)*.
+
+### 14.2 Kết quả kiểm tra chất lượng (tóm tắt điều hành)
+
+| Hạng mục | Trạng thái | Ghi chú |
+|----------|------------|---------|
+| Ma trận **245** UC Giai đoạn 1 (catalog) | **Đạt** | Đối chiếu ma trận Phase 1 × SRS × TechSpec |
+| Kiểm thử tích hợp API tự động | **Đạt** | Suite UAT hệ thống — verdict PASS trên pilot |
+| Cổng Web + nhúng HRM trên pilot HTTPS | **Đạt có điều kiện** | Luồng chéo P-CC và J-HRM trên `nip.io`; một số persona/màn phụ còn điều kiện nghiệm thu |
+| HRM Mobile trên pilot HTTPS | **Đạt có điều kiện** | J-MOB-01..05 đã kiểm trên bundle pilot |
+| Danh mục XBOS → HRM (≥ 72 mục HRM) | **Đạt** | Đồng bộ catalog trên pilot |
+| Sẵn sàng **production** (`portal.xe.vn`) | **Chưa** | DNS/TLS và cutover production đang chờ |
+
+### 14.3 Giới hạn và cam kết trung thực
+
+| # | Giới hạn | Ảnh hưởng | Hướng xử lý |
+|---|----------|-----------|-------------|
+| L-01 | Tên miền **production** `portal.xe.vn` chưa mở | Người dùng cuối chưa truy cập qua domain chính thức | Hoàn tất DNS/TLS và runbook cutover production |
+| L-02 | **Đồng bộ mã nguồn** (git parity) giữa máy pilot và nhánh phát hành | Một số bản vá nóng trên pilot có thể chưa có trên nhánh `main` | Rà soát merge và tái triển khai có kiểm chứng |
+| L-03 | Tiêu chí **T5** (mật độ menu HRM / benchmark đầy đủ) **hoãn** | Không dùng T5 làm điều kiện chặn UAT slice hiện tại | Lên lịch wave Excellence sau khi đóng production |
+| L-04 | **373** FR trong SRS bao phủ **toàn hệ**; Giai đoạn 1 chỉ **245** UC go-live | FR Logistic nghiệp vụ (Giai đoạn 2) mô tả đặc tả, chưa triển khai vận hành | Phân biệt «đặc tả» và «đã go-live» khi nghiệm thu |
+| L-05 | Mật khẩu trong tài liệu pilot | Chỉ dùng UAT; không áp dụng production | Đổi chính sách mật khẩu khi cutover |
+
+> **Kết luận nghiệm vụ:** Bản Giai đoạn 1 **sẵn sàng chạy thử có kiểm chứng** trên môi trường pilot HTTPS cho **Command Center + nhúng HRM + HRM Mobile**. **Chưa** tuyên bố hoàn tất production hoặc đóng 100% chương trình Excellence.
 
 ---
 

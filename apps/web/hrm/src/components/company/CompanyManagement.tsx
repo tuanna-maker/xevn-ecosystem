@@ -85,6 +85,8 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { fetchGroupMemberUnitsForHrm } from '@/integrations/tenantScopeApi';
+import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 
 interface Company {
   id: string;
@@ -163,7 +165,14 @@ export function CompanyManagement() {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      setCompanies((data as Company[]) || []);
+      const portalEmbed =
+        typeof window !== 'undefined' && getHrmPortalMode(window.location.search);
+      if (portalEmbed) {
+        const rows = await fetchGroupMemberUnitsForHrm();
+        setCompanies(rows);
+        return;
+      }
+      setCompanies([]);
     } catch (error) {
       console.error('Error fetching companies:', error);
       toast({

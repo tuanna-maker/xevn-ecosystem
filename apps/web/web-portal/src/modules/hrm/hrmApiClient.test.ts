@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { listEmployeeMetadataQueue, listHrmInsurance } from './hrmApiClient';
 import { HrmApiClientError } from './hrmApiErrors';
 
-const scope = { tenantId: 't-unit', companyId: 'c-unit' };
+const memberScope = { tenantId: 'xe-du-lich', companyId: 'main' };
+const scope = memberScope;
 
 describe('hrmApiClient (fetch mocks)', () => {
   beforeEach(() => {
@@ -36,6 +37,7 @@ describe('hrmApiClient (fetch mocks)', () => {
     const callUrl = String(vi.mocked(fetch).mock.calls[0]?.[0]);
     expect(callUrl).toContain('/api/hrm/employee-metadata/change-requests');
     expect(callUrl).toContain('company_id=main');
+    expect(callUrl).toContain('tenant_id=xe-du-lich');
   });
 
   it('listHrmEmployees uses main when scope hint is holding (EX-SA01-P1-03)', async () => {
@@ -51,6 +53,10 @@ describe('hrmApiClient (fetch mocks)', () => {
     const callUrl = String(vi.mocked(fetch).mock.calls[0]?.[0]);
     expect(callUrl).toContain('/api/hrm/contracts-insurance/insurance');
     expect(callUrl).toContain('company_id=main');
+    const init = vi.mocked(fetch).mock.calls[0]?.[1] as RequestInit | undefined;
+    const headers = init?.headers as Record<string, string> | undefined;
+    expect(headers?.['x-tenant-id']).toBe('xe-du-lich');
+    expect(headers?.['x-company-id']).toBe('main');
   });
 
   it('throws HrmApiClientError with backend code on HTTP error', async () => {

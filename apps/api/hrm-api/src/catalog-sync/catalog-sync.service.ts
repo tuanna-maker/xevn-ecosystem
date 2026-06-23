@@ -1,6 +1,9 @@
+import { existsSync } from 'node:fs';
 import { Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
+import { extractBearerToken, getVerifiedInternalJwtPayload } from '../common/internal-auth';
+import { signServiceJwt } from '../common/jwt-sign';
 import { fetchWithTimeoutAndRetry } from '../common/http-retry-fetch';
 import { HrmDbService } from '../db/hrm-db.service';
 import { defaultCompanyIdFromEnv, masterTenantIdFromEnv } from '../common/tenant-scope-env';
@@ -27,19 +30,77 @@ export interface HrmCatalogSyncStatus {
   lastSyncedAt: string | null;
 }
 
+const XBOS_DOCKER_HOSTS = ['xbos-be', 'xevn-xbos-be-dev'] as const;
+
+/** UF-HRM-10 — docker/VPS must reach xbos-be (28002), not localhost:3002. */
+export function resolveXbosApiBaseUrl(): string {
+  const explicit = process.env.XBOS_API_URL?.trim();
+  if (explicit) {
+    const normalized = explicit.replace(/\/+$/, '');
+    if (!normalized.includes('localhost') && !normalized.includes('127.0.0.1')) {
+      return normalized;
+    }
+  }
+  const composeDefault = process.env.XEVN_XBOS_API_URL?.trim();
+  if (composeDefault) {
+    return composeDefault.replace(/\/+$/, '');
+  }
+  const port = process.env.XBOS_BE_PORT?.trim() || '28002';
+  let inDocker = false;
+  try {
+    inDocker = existsSync('/.dockerenv');
+  } catch {
+    inDocker = false;
+  }
+  if (inDocker || process.env.DOCKER === '1' || process.env.KUBERNETES_SERVICE_HOST) {
+    return `http://${XBOS_DOCKER_HOSTS[0]}:${port}`;
+  }
+  return `http://127.0.0.1:${port}`;
+}
+
 @Injectable()
 export class CatalogSyncService {
-  private readonly xbosApiUrl = process.env.XBOS_API_URL ?? 'http://localhost:3002';
+  private get xbosApiUrl(): string {
+    return resolveXbosApiBaseUrl();
+  }
   constructor(private readonly db: HrmDbService) {}
 
-  /** Server-to-server auth for XBOS `config-sync` (internal key or configured `INTERNAL_API_KEY`). */
-  buildXbosUpstreamHeaders(): Record<string, string> {
+  /** Server-to-server auth for XBOS `config-sync` (service JWT + internal key). */
+  buildXbosUpstreamHeaders(
+    authorization?: string,
+    scope?: { tenantId: string; companyId: string },
+  ): Record<string, string> {
     const key =
       process.env.INTERNAL_API_KEY ??
       (process.env.NODE_ENV !== 'production' ? 'xevn-dev-internal-key' : '');
     const headers: Record<string, string> = {};
     if (key) {
       headers['x-internal-api-key'] = key;
+    }
+    const callerBearer = extractBearerToken(authorization);
+    let bearer: string | undefined;
+
+    // UF-HRM-10 / SYNC-401: config-sync on xbos-be requires internal JWT — portal login tokens fail XBOS-AUTH-001.
+    if (scope) {
+      try {
+        bearer = signServiceJwt({
+          sub: 'hrm-be',
+          svc: 'catalog-sync',
+          tenantId: scope.tenantId,
+          companyId: scope.companyId,
+          roles: ['service'],
+        });
+      } catch {
+        if (callerBearer && getVerifiedInternalJwtPayload(`Bearer ${callerBearer}`)) {
+          bearer = callerBearer;
+        }
+      }
+    } else if (callerBearer) {
+      bearer = callerBearer;
+    }
+
+    if (bearer) {
+      headers.Authorization = `Bearer ${bearer}`;
     }
     return headers;
   }
@@ -104,7 +165,12 @@ export class CatalogSyncService {
     `);
   }
 
-  async pullCatalogFromXbos(catalogKey: string, tenantId: string, companyId: string) {
+  async pullCatalogFromXbos(
+    catalogKey: string,
+    tenantId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
     const normalizedCompanyId = this.normalizeScopeId(companyId, 'companyId');
@@ -113,7 +179,10 @@ export class CatalogSyncService {
     try {
       response = await fetchWithTimeoutAndRetry(url, {
         method: 'GET',
-        headers: this.buildXbosUpstreamHeaders(),
+        headers: this.buildXbosUpstreamHeaders(authorization, {
+          tenantId: normalizedTenantId,
+          companyId: normalizedCompanyId,
+        }),
       });
     } catch (e) {
       if (e instanceof ApiException) throw e;
@@ -304,7 +373,7 @@ export class CatalogSyncService {
   /**
    * Lists catalogs assigned to HRM on XBOS (live). Used by settings UI to bulk-pull into `synced_catalogs`.
    */
-  async listRemoteCatalogsFromXbos(tenantId: string, companyId: string) {
+  async listRemoteCatalogsFromXbos(tenantId: string, companyId: string, authorization?: string) {
     const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
     const normalizedCompanyId = this.normalizeScopeId(companyId, 'companyId');
     const url = `${this.xbosApiUrl}/api/xbos/config-sync/catalogs?target=hrm&tenantId=${encodeURIComponent(normalizedTenantId)}&companyId=${encodeURIComponent(normalizedCompanyId)}`;
@@ -312,7 +381,10 @@ export class CatalogSyncService {
     try {
       response = await fetchWithTimeoutAndRetry(url, {
         method: 'GET',
-        headers: this.buildXbosUpstreamHeaders(),
+        headers: this.buildXbosUpstreamHeaders(authorization, {
+          tenantId: normalizedTenantId,
+          companyId: normalizedCompanyId,
+        }),
       });
     } catch (e) {
       if (e instanceof ApiException) throw e;

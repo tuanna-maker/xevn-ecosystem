@@ -1,0 +1,60 @@
+---
+description: PM idle taxonomy + recovery — bắt mọi trường hợp tự nhiên dừng (U58)
+alwaysApply: true
+---
+
+# PM — Idle detection & recovery (U58)
+
+Bổ sung U43/U45/U38. **Idle = assistant message kết thúc mà sponsor không thấy tiến độ mới**, dù PM «đã biết» việc kế.
+
+## Định nghĩa idle (bắt buộc)
+
+| # | Class | Triệu chứng | Không phải idle hợp lệ |
+|---|-------|-------------|------------------------|
+| **A** | **Chat-only** | Message cuối **không** có `Task` / `Shell` gate / `StrReplace` bus `DISPATCHED` | `BLOCKED-EXTERNAL` đã ghi bus + owner |
+| **B** | **Lời hứa** | «sẽ Task», «kế tiếp pipeline», «PM dispatch», «không hỏi lại» **ở cuối** message | Cùng message **đã** có `Task` trước câu tóm tắt |
+| **C** | **False idle scan** | `pm:scan:backlog` exit **0** nhưng bus có `INTAKE`/`PASS_TO_PM`/`READY_FOR_QA` chưa `pm->* DISPATCHED` | Item đã `in-flight` có verdict sau DISPATCHED |
+| **D** | **Pipeline break** | QA PASS → dừng trước QC; QC PASS → dừng trước wave kế; dev `READY_FOR_QA` → không Task qa | Chỉ 1 wave trong message và còn quota → wave 2 **cùng phiên** nếu có thể |
+| **E** | **Summary boundary** | Sau context summary / user «lại dừng?» → chỉ giải thích, không `Task` | User chỉ hỏi meta (như rule update) |
+| **F** | **Evidence ≠ xong** | Bảng APK SHA / evidence path / «PASS» chat **không** kèm bus + tool | Evidence **trong** handoff subagent vừa xong + `Task` kế ngay |
+| **G** | **Hook ignored** | `subagentStop` / notification `completed` → PM chỉ «xong» | `Task` là tool call **đầu tiên** sau notification |
+| **H** | **Handoff ignored** | `next_dispatch_prompt` / `pm_dispatch_hint` trong evidence **không** thành `Task` | Hint đã dispatch cùng `work_item_id` trên bus |
+| **I** | **Carry list stall** | Liệt kê R1/R2/carry cuối message **không** dispatch top carry P0/P1 | Carry đã có owner `defer` trong `PM_OPEN_BACKLOG.json` |
+| **J** | **Postmortem stall** | User hỏi «lại dừng?» → PM giải thích root-cause dài, không `Task` | U45: 1 dòng + `Task` cùng lượt |
+| **K** | **User interrupt** | Cursor «interrupted» / Task tool cancelled — pipeline đứng giữa chain | `pm:recover:pipeline` → Task top P0 |
+| **L** | **Hook dedupe** | `subagent-stop.jsonl` `followup_suppressed:true` — hook **không** inject PM | `PM_PENDING_PIPELINE.json` + Task |
+| **M** | **tool_proof stale** | `PM_ORCHESTRATION_STATE` cũ hơn `subagentStop` mới nhất | Cập nhật state sau dispatch |
+| **N** | **Quota error** | Task subagent `error` billing — PM kết thúc không retry | `pm-task-quota-fallback` retry + bus |
+
+**Self-check trước gửi message:** Nếu message có bất kỳ cụm B/D/G/H → **phải** có ≥1 `Task` hoặc `Shell` (`pm:scan:backlog`, `pm:idle:check`, gate) **trước** đoạn tóm tắt.
+
+**Cấm báo `pm:idle:check` exit 2 cho sponsor mà không `Task` cùng lượt** — exit 2 = lệnh dispatch, không phải kết luận chat.
+
+## Recovery protocol (mỗi lượt PM — thứ tự)
+
+1. **`pnpm run pm:idle:check`** (hoặc `pm:scan:backlog` + `pm:subagent:status`) — exit **2** → dispatch top item **trước** trả lời user.
+2. **Bus tail** (~80 dòng): `INTAKE` / `PASS_TO_PM` / `READY_FOR_QA` chưa `pm -> * DISPATCHED` sau đó.
+3. **`.cursor/team/inbox/subagent-stop.jsonl`** (5 dòng cuối): `completed` → map `title` → `work_item_id` → Task qa/qc/pm kế.
+4. **Evidence QC/QA mới nhất** (48h): đọc `next_dispatch_prompt` — nếu chưa dispatch → Task copy-ready.
+5. **`PM_ORCHESTRATION_STATE.json`** `last_pm_tool_proof` — nếu cũ hơn handoff bus → cập nhật sau dispatch.
+
+## Scan blind spots (đã fix — PM không tin exit 0 mù)
+
+- Work item **MOB-***, **D-MOB-***, **C-***, **J-MOB-*** phải vào `pm-backlog-scan` (không chỉ `P1-*`).
+- `pm:scan:backlog` exit **0** **không** đủ để kết luận idle hợp lệ — chạy thêm bước 2–4.
+
+## Cấm kết thúc
+
+- «Queue trống» / «scan exit 0» **mà chưa** chạy recovery protocol.
+- Pipeline 3+ bước (QA→QC→next) **ghi một dòng** «sẽ Task tiếp» — phải chain trong **cùng phiên** tối đa quota.
+- Cập nhật `TEAM_WORKING_NOW.md` **thay cho** `Task` khi còn handoff mở.
+
+## Idle hợp lệ (duy nhất)
+
+Ghi bus `PM -> ALL` + **lý do cụ thể** (milestone exit / BLOCKED-EXTERNAL / sponsor chỉ hỏi meta / `PM_ORCHESTRATION_MODE=STOP`).
+
+## Liên kết
+
+- U38 `pm-continuous-dispatch.mdc` · U43 `pm-lock-task-same-turn-u43.mdc` · U45 `pm-fix-dispatch-no-postmortem.mdc`
+- KB: `docs/program/knowledge/PM_ORCHESTRATION_KB.md` § U58 idle taxonomy
+- Machine: `pnpm run pm:idle:check` · `docs/program/PM_ORCHESTRATION_STATE.json`

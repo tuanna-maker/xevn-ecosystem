@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { WorkflowTaskDetailDrawer } from './WorkflowTaskDetailDrawer';
 import type { UnifiedTask } from '../../data/command-center-mock';
 
@@ -18,24 +18,25 @@ const task: UnifiedTask = {
   priority: 'medium',
 };
 
+const baseProps = {
+  open: true,
+  task,
+  detail: {
+    instance: { id: 'inst-1', status: 'pending' },
+    tasks: [{ id: 's1', step_key: 'dept_head', status: 'pending' }],
+  } as const,
+  loading: false,
+  detailLoadFailed: false,
+  busy: false,
+  inboxFromApi: true,
+  onClose: vi.fn(),
+  onApprove: vi.fn(),
+  onRejectRequest: vi.fn(),
+};
+
 describe('WorkflowTaskDetailDrawer', () => {
   it('UC-CC-P0-06: renders instance id and workflow steps from normalized detail', () => {
-    render(
-      <WorkflowTaskDetailDrawer
-        open
-        task={task}
-        detail={{
-          instance: { id: 'inst-1', status: 'pending' },
-          tasks: [{ id: 's1', step_key: 'dept_head', status: 'pending' }],
-        }}
-        loading={false}
-        detailLoadFailed={false}
-        busy={false}
-        inboxFromApi
-        onClose={vi.fn()}
-        onComplete={vi.fn()}
-      />,
-    );
+    render(<WorkflowTaskDetailDrawer {...baseProps} />);
 
     expect(screen.getByText(/inst-1/)).toBeTruthy();
     expect(screen.getByText('dept_head')).toBeTruthy();
@@ -45,15 +46,9 @@ describe('WorkflowTaskDetailDrawer', () => {
   it('shows load failure when detail API returns empty', () => {
     render(
       <WorkflowTaskDetailDrawer
-        open
-        task={task}
+        {...baseProps}
         detail={null}
-        loading={false}
         detailLoadFailed
-        busy={false}
-        inboxFromApi
-        onClose={vi.fn()}
-        onComplete={vi.fn()}
       />,
     );
 
@@ -61,22 +56,41 @@ describe('WorkflowTaskDetailDrawer', () => {
   });
 
   it('blocks complete actions when inbox not from API', () => {
+    render(<WorkflowTaskDetailDrawer {...baseProps} inboxFromApi={false} />);
+
+    expect(screen.getByRole('button', { name: 'Từ chối nhiệm vụ' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Xử lý nhanh' })).toBeDisabled();
+  });
+
+  it('ACT-CC-WF-REJECT: reject triggers onRejectRequest, not onApprove', () => {
+    const onApprove = vi.fn();
+    const onRejectRequest = vi.fn();
     render(
       <WorkflowTaskDetailDrawer
-        open
-        task={task}
-        detail={{ instance: { id: 'inst-1' }, tasks: [] }}
-        loading={false}
-        detailLoadFailed={false}
-        busy={false}
-        inboxFromApi={false}
-        onClose={vi.fn()}
-        onComplete={vi.fn()}
+        {...baseProps}
+        onApprove={onApprove}
+        onRejectRequest={onRejectRequest}
       />,
     );
 
-    const completeButtons = screen.getAllByRole('button', { name: 'Xử lý nhanh' });
-    expect(completeButtons).toHaveLength(2);
-    completeButtons.forEach((btn) => expect(btn).toBeDisabled());
+    fireEvent.click(screen.getByRole('button', { name: 'Từ chối nhiệm vụ' }));
+    expect(onRejectRequest).toHaveBeenCalledTimes(1);
+    expect(onApprove).not.toHaveBeenCalled();
+  });
+
+  it('approve triggers onApprove directly', () => {
+    const onApprove = vi.fn();
+    const onRejectRequest = vi.fn();
+    render(
+      <WorkflowTaskDetailDrawer
+        {...baseProps}
+        onApprove={onApprove}
+        onRejectRequest={onRejectRequest}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Xử lý nhanh' }));
+    expect(onApprove).toHaveBeenCalledTimes(1);
+    expect(onRejectRequest).not.toHaveBeenCalled();
   });
 });

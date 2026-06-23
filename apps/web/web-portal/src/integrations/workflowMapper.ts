@@ -27,13 +27,32 @@ function parseGraphValue(raw: unknown): Record<string, unknown> {
   if (typeof raw === 'string') {
     try {
       const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) return {};
       return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
     } catch {
       return {};
     }
   }
+  if (Array.isArray(raw)) return {};
   if (raw && typeof raw === 'object') return raw as Record<string, unknown>;
   return {};
+}
+
+/**
+ * Accept workflow-engine graph as `{ steps: [...] }` or a bare step array (D-8088-WF-DEF-01).
+ */
+export function extractGraphSteps(raw: unknown): unknown {
+  if (typeof raw === 'string') {
+    try {
+      raw = JSON.parse(raw) as unknown;
+    } catch {
+      return [];
+    }
+  }
+  if (Array.isArray(raw)) return raw;
+  const graph = parseGraphValue(raw);
+  const steps = graph.steps ?? graph.nodes;
+  return Array.isArray(steps) ? steps : [];
 }
 
 function normalizeStepAction(value: unknown): WorkflowStepAction {
@@ -118,7 +137,14 @@ export function normalizeGraphSteps(rawSteps: unknown): WorkflowGraphStep[] {
     const nextStepId = idx < sorted.length - 1 ? stepIds[idx + 1]! : null;
     const taskName = String(row.taskName ?? row.label ?? row.name ?? '—');
     const handlerRoleId = hatKeyToHandlerRole(
-      String(row.handlerRoleId ?? row.hatKey ?? row.hat_key ?? 'staff'),
+      String(
+        row.handlerRoleId ??
+          row.hatKey ??
+          row.hat_key ??
+          row.roleHat ??
+          row.role_hat ??
+          'staff',
+      ),
     );
     const stepAction = normalizeStepAction(row.stepAction ?? row.action);
     const slaHours = Number(row.slaHours ?? row.sla_hours ?? 24);
@@ -146,7 +172,7 @@ export function normalizeGraphSteps(rawSteps: unknown): WorkflowGraphStep[] {
 
 export function apiRowToWorkflowDefinition(row: WorkflowDefinitionApiRow): WorkflowDefinition {
   const graph = parseGraphValue(row.graph);
-  const steps = normalizeGraphSteps(graph.steps);
+  const steps = normalizeGraphSteps(extractGraphSteps(row.graph));
   const totalFromSteps = steps.reduce((sum, step) => sum + step.slaHours, 0);
 
   return {

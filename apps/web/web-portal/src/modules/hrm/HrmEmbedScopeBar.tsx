@@ -43,7 +43,9 @@ export const HrmEmbedScopeBar: React.FC = () => {
           <p className="mt-1 text-xs text-red-700">{scopeError}</p>
         ) : (
           <p className={`mt-0.5 ${SETTINGS_PAGE_SUBTITLE_CLASS}`}>
-            Đổi tenant trên header portal — iframe nhận JWT + companyId=main. ADR scope ladder: pending SA doc.
+            {groupContext
+              ? 'Tập đoàn: iframe nhận JWT + companyId=main (rollup).'
+              : 'Công ty thành viên: iframe nhận JWT tenant + companyId=main.'}
           </p>
         )}
       </div>

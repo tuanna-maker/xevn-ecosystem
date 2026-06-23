@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-01T01:18:14.129Z",
+  "generated_at": "2026-06-06T04:11:38.933Z",
   "work_item_id": "UC-373-TEST-PROGRAM-01",
   "source": "docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md",
   "total_uc": 373,
-  "test_files_indexed": 157,
+  "test_files_indexed": 178,
   "counts": {
     "covered": 245,
     "partial": 0,
@@ -1173,7 +1173,8 @@
       ],
       "coverage": "covered",
       "refs": [
-        "unit:apps/api/xbos-api/src/command-center/command-center.controller.spec.ts"
+        "unit:apps/api/xbos-api/src/command-center/command-center.controller.spec.ts",
+        "unit:apps/api/xbos-api/src/command-center/command-center.service.spec.ts"
       ],
       "api_hint": {
         "method": "GET",
@@ -1238,6 +1239,7 @@
       "coverage": "covered",
       "refs": [
         "unit:apps/api/xbos-api/src/org-foundation/org-foundation.controller.spec.ts",
+        "unit:apps/api/xbos-api/src/org-foundation/org-foundation.service.spec.ts",
         "unit:apps/web/web-portal/src/integrations/legalEntityFormMapper.test.ts",
         "unit:apps/web/web-portal/src/integrations/legalEntityIdResolver.test.ts",
         "e2e:test:pilot:flows P-CC-02"

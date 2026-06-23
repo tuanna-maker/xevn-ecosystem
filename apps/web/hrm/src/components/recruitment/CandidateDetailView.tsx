@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/table';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { listCandidateEvaluations } from '@/integrations/hrmApi';
+import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 
 interface Candidate {
   id: string;
@@ -110,21 +112,13 @@ const getInterviewStatusConfig = (r: (key: string) => string) => ({
   rescheduled: { label: r('interviewStatus.rescheduled'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
 });
 
-// Mock evaluation data for radar chart
-const radarChartData = [
-  { subject: 'Ká»¹ nÄƒng chuyĂªn mĂ´n', required: 4, actual: 4, fullMark: 5 },
-  { subject: 'Giao tiáº¿p', required: 4, actual: 3.75, fullMark: 5 },
-  { subject: 'LĂ m viá»‡c nhĂ³m', required: 4, actual: 4.25, fullMark: 5 },
-  { subject: 'Giáº£i quyáº¿t váº¥n Ä‘á»', required: 3.5, actual: 3.5, fullMark: 5 },
-  { subject: 'Há»c há»i', required: 4, actual: 4.5, fullMark: 5 },
-  { subject: 'ThĂ­ch nghi', required: 3.5, actual: 3.9, fullMark: 5 },
-];
-
-// Computed scores for display
-const evaluationScores = radarChartData.map(item => ({
-  skill: item.subject,
-  value: Math.round((item.actual / item.fullMark) * 100)
-}));
+interface EvaluationScoreRow {
+  criterion_name: string;
+  category: string;
+  actual_score: number | null;
+  required_score: number;
+  weight: number;
+}
 
 export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: CandidateDetailViewProps) {
   const { t } = useTranslation();
@@ -138,7 +132,20 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
   const [applications, setApplications] = useState<CandidateApplication[]>([]);
   const [loadingInterviews, setLoadingInterviews] = useState(false);
   const [loadingApplications, setLoadingApplications] = useState(false);
+  const [evaluationScores, setEvaluationScores] = useState<EvaluationScoreRow[]>([]);
+  const [loadingEvaluation, setLoadingEvaluation] = useState(false);
   
+  const radarChartData = evaluationScores.map((item) => ({
+    subject: item.criterion_name.length > 15 ? `${item.criterion_name.slice(0, 12)}…` : item.criterion_name,
+    required: item.required_score,
+    actual: item.actual_score ?? 0,
+    fullMark: 5,
+  }));
+
+  const evaluationScoreBars = radarChartData.map((item) => ({
+    skill: item.subject,
+    value: Math.round((item.actual / item.fullMark) * 100),
+  }));
   const currentStageIndex = stageToIndex[candidate.stage || 'applied'] ?? 0;
   const stageConfig = getStageConfig(r);
   const interviewStatusConfig = getInterviewStatusConfig(r);
@@ -187,6 +194,28 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
     if (activeTab === 'campaign') {
       fetchApplications();
     }
+  }, [activeTab, currentCompanyId, candidate.id]);
+
+  useEffect(() => {
+    const fetchEvaluation = async () => {
+      if (!currentCompanyId || activeTab !== 'scoring') return;
+      setLoadingEvaluation(true);
+      try {
+        const result = await listCandidateEvaluations({
+          company_id: currentCompanyId,
+          candidate_id: candidate.id,
+        });
+        const rows = (result.data ?? []) as Array<{ scores?: EvaluationScoreRow[] }>;
+        const latest = rows.find((row) => Array.isArray(row.scores) && row.scores.length > 0);
+        setEvaluationScores(latest?.scores ?? []);
+      } catch (error: unknown) {
+        console.error('Error fetching candidate evaluation:', error);
+        setEvaluationScores([]);
+      } finally {
+        setLoadingEvaluation(false);
+      }
+    };
+    void fetchEvaluation();
   }, [activeTab, currentCompanyId, candidate.id]);
 
   // Handle avatar update
@@ -558,6 +587,25 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
       {/* Scoring Tab */}
       {activeTab === 'scoring' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {loadingEvaluation ? (
+            <Card className="lg:col-span-2">
+              <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                {t('common.loading', 'Đang tải…')}
+              </CardContent>
+            </Card>
+          ) : evaluationScores.length === 0 ? (
+            <div className="lg:col-span-2">
+              <EmbedApiEmptyState
+                title={t('embed.apiEmpty.title')}
+                body={r('noEvaluations')}
+              />
+              <Button onClick={onEvaluate} className="mt-4 w-full sm:w-auto">
+                {r('openDetailedEval')}
+              </Button>
+            </div>
+          ) : (
+            <>
           <Card>
             <CardHeader>
               <CardTitle className="text-base">{r('evaluationChart')}</CardTitle>
@@ -573,7 +621,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {evaluationScores.map((item) => (
+                {evaluationScoreBars.map((item) => (
                   <div key={item.skill} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{item.skill}</span>
@@ -600,6 +648,8 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
               </div>
             </CardContent>
           </Card>
+            </>
+          )}
         </div>
       )}
 

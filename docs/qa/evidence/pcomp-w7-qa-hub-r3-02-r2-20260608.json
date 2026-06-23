@@ -1,0 +1,36 @@
+{
+  "work_item_id": "PCOMP-W7-QA-HUB-R3-02-R2",
+  "date": "2026-06-08",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-release-hub04b.apk",
+  "apk_bytes": 66851388,
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "login_method": "adbkeyboard",
+  "adbkeyboard_required": true,
+  "hub04b_qa_deep_link": false,
+  "best_run_note": "Run 2 of tmp-pcomp-w7-qa-hub-r3-02-r2-device.mjs — full hub except J-MOB-09/J-AVT-02",
+  "persona": {
+    "email": "uat.nv0001@xe.vn",
+    "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+    "is_manager_api": true,
+    "roles": "employee, manager, hr_manager",
+    "manager_pending_api": 2,
+    "whos_out_api": 1
+  },
+  "results": [
+    { "id": "INSTALL", "pass": true },
+    { "id": "API-PROBE", "pass": true, "note": "mgr=2 who=1 is_manager=true" },
+    { "jId": "J-MOB-01", "pass": true, "login_method": "adbkeyboard" },
+    { "id": "MOB-UX-SAFE-01", "pass": true },
+    { "jId": "J-MOB-06", "pass": true },
+    { "jId": "J-MOB-07", "pass": true, "mgrCountDevice": 2, "mgrCountApi": 2, "countMismatch": false },
+    { "jId": "J-MOB-08", "pass": true },
+    { "jId": "J-MOB-09", "pass": false, "note": "whos_out section missing on device; API who=1" },
+    { "jId": "J-AVT-02", "pass": false, "note": "More→Hồ sơ→picker not reached" }
+  ],
+  "logcat_audit": { "hasMain": false, "hasPickerCrash": false },
+  "closes": { "C-W7QC-DEVICE-01": false },
+  "pass": false,
+  "ack_status": "FAIL"
+}

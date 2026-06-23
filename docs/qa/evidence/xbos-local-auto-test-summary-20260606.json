@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-06-06T04:12:05.944Z",
+  "jest_exit": 0,
+  "vitest_exit": 0,
+  "vitest_pass": 154,
+  "vitest_total": 154,
+  "vitest_json": true,
+  "xlsx": "docs\\qa\\evidence\\Bao_cao_auto_test_XBOS_local_20260606.xlsx",
+  "jest": {
+    "suites": 45,
+    "tests": 245,
+    "passed": 245
+  },
+  "uc_xbos_p1": {
+    "total": 126,
+    "pass": 126,
+    "fail": 0,
+    "no_test": 0
+  }
+}

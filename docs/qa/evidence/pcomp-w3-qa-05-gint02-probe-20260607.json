@@ -1,0 +1,94 @@
+{
+  "work_item_id": "PCOMP-W3-QA-05",
+  "generatedAt": "2026-06-07T08:50:00.000Z",
+  "entry": "docs/qa/evidence/pcomp-w3-fe-01-20260607.md",
+  "probes": {
+    "operatingUnitsLabels": {
+      "pass": true,
+      "labels": {
+        "holding": {
+          "actual": "Tập đoàn XeVN",
+          "expected": "Tập đoàn XeVN",
+          "pass": true
+        },
+        "trsport": {
+          "actual": "Khối Vận tải X.E",
+          "expected": "Khối Vận tải X.E",
+          "pass": true
+        },
+        "logistics": {
+          "actual": "Khối Logistics X.E",
+          "expected": "Khối Logistics X.E",
+          "pass": true
+        },
+        "finance": {
+          "actual": "Khối Tài chính X.E",
+          "expected": "Khối Tài chính X.E",
+          "pass": true
+        },
+        "services": {
+          "actual": "Khối Dịch vụ X.E",
+          "expected": "Khối Dịch vụ X.E",
+          "pass": true
+        }
+      }
+    },
+    "jHrm05ScopeSweep": {
+      "pass": true,
+      "paths": {
+        "recruitment-candidates": {
+          "pass": true,
+          "status": 200,
+          "code": "HRM-REC-200"
+        },
+        "recruitment-requisitions": {
+          "pass": true,
+          "status": 200,
+          "code": "HRM-REC-200"
+        },
+        "attendance-records": {
+          "pass": true,
+          "status": 200,
+          "code": "HRM-ATT-200"
+        },
+        "attendance-leave": {
+          "pass": true,
+          "status": 200,
+          "code": "HRM-LEAVE-200"
+        },
+        "employees-trsport": {
+          "pass": true,
+          "status": 200,
+          "code": "HRM-EMP-200"
+        }
+      }
+    },
+    "gInt02SlugJoin": {
+      "pass": true,
+      "employeeId": "0ad0e67e-cf0d-4c67-801d-616efa506009",
+      "company_id": "trsport",
+      "resolvedLabel": "Khối Vận tải X.E",
+      "expected": "Khối Vận tải X.E"
+    },
+    "browserL2": {
+      "pass": true,
+      "recruitment": {
+        "url": "http://127.0.0.1:5173/command-center/hrm/recruitment?portal=1",
+        "has1OFFICE": false,
+        "hasError": false,
+        "hasOperatingUnitFilter": true
+      },
+      "attendance": {
+        "url": "http://127.0.0.1:5173/command-center/hrm/attendance?portal=1",
+        "has1OFFICE": false,
+        "hasDemoBranch": false,
+        "hasError": false,
+        "hasOperatingUnitFilter": true
+      }
+    }
+  },
+  "summary": {
+    "fail": 0,
+    "pass": true
+  }
+}

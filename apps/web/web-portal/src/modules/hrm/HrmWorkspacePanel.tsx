@@ -30,23 +30,7 @@ import {
 import type { HrmWorkspaceMenuKey } from './types';
 import { hrmPortalPath } from './paths';
 import { getParentEntityLabel } from './entity-utils';
-import {
-  HRM_TABLE_SHELL,
-  HRM_TABLE_CLASS,
-  HRM_MOCK_RECRUITMENT,
-  HRM_MOCK_ATTENDANCE,
-  HRM_MOCK_PAYROLL,
-  HRM_MOCK_CONTRACTS,
-  HRM_MOCK_INSURANCE,
-  HRM_MOCK_REPORTS,
-  HRM_MOCK_PENDING_PAYROLL,
-  HRM_MOCK_AI_SESSIONS,
-  HRM_MOCK_TASKS,
-  HRM_MOCK_PROCESSES,
-  HRM_MOCK_SERVICE_REQUESTS,
-  HRM_MOCK_TOOLS_EQUIPMENT,
-  HRM_MOCK_GUIDE_CHAPTERS,
-} from './mock-data';
+import { HRM_TABLE_SHELL, HRM_TABLE_CLASS } from './mock-data';
 import {
   approveEmployeeMetadataRequest,
   listEmployeeMetadataQueue,
@@ -127,8 +111,6 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   const [hrmDataSource, setHrmDataSource] = useState<'api' | 'error'>('api');
   const [hrmLoadError, setHrmLoadError] = useState<string | null>(null);
   const [hrmApiLoading, setHrmApiLoading] = useState(false);
-
-  const previewMockRows = <T,>(rows: T[]): T[] => (allowMockFallback() ? rows : []);
 
   useEffect(() => {
     if (legalEntityListProp?.length) {
@@ -242,8 +224,8 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         status: r.status,
       }));
     }
-    return hrmDataSource === 'error' ? previewMockRows(HRM_MOCK_RECRUITMENT) : [];
-  }, [apiRecruitment, hrmDataSource]);
+    return [];
+  }, [apiRecruitment]);
   const attendanceRows = useMemo(() => {
     if (apiAttendance?.length) {
       return apiAttendance.map((r) => ({
@@ -256,8 +238,8 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         locked: r.status,
       }));
     }
-    return hrmDataSource === 'error' ? previewMockRows(HRM_MOCK_ATTENDANCE) : [];
-  }, [apiAttendance, hrmDataSource]);
+    return [];
+  }, [apiAttendance]);
   const contractRows = useMemo(() => {
     if (apiContracts?.length) {
       return apiContracts.map((r) => ({
@@ -270,14 +252,14 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         status: r.status,
       }));
     }
-    return hrmDataSource === 'error' ? previewMockRows(HRM_MOCK_CONTRACTS) : [];
-  }, [apiContracts, hrmDataSource]);
+    return [];
+  }, [apiContracts]);
   const insuranceRows = useMemo(() => {
     if (apiInsurance?.length) {
       return mapHrmInsuranceEmbedRows(apiInsurance);
     }
-    return hrmDataSource === 'error' ? previewMockRows(HRM_MOCK_INSURANCE) : [];
-  }, [apiInsurance, hrmDataSource]);
+    return [];
+  }, [apiInsurance]);
   const scopeHint =
     (selectedCompany as { tenantId?: string }).tenantId ?? selectedCompany?.id ?? null;
 
@@ -806,7 +788,6 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           <div className="mt-3">
             <ApiLoadBanner
               loadFailed={Boolean(hrmLoadError)}
-              usingMockFallback={hrmDataSource === 'error' && allowMockFallback()}
               title="Trạng thái dữ liệu HRM"
               message={hrmLoadError ?? undefined}
             />
@@ -968,23 +949,13 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                     </tr>
                   </thead>
                   <tbody>
-                    {previewMockRows(HRM_MOCK_PENDING_PAYROLL).map((row) => (
-                      <tr key={row.id} className="border-t border-xevn-border">
-                        <td className="px-3 py-2 font-mono text-sm font-medium text-xevn-primary">{row.batch}</td>
-                        <td className="px-3 py-2 text-slate-700">{row.entity}</td>
-                        <td className="px-3 py-2 text-right tabular-nums">{row.employees}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.blocker}</td>
-                        <td className="px-3 py-2 text-right">
-                          <button
-                            type="button"
-                            className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                            onClick={() => openHrmApp('/hr/payroll')}
-                          >
-                            Mở kỳ lương
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    <tr>
+                      <td colSpan={5} className="px-3 py-8 text-center text-sm text-slate-500">
+                        {hrmLoadError
+                          ? 'Không tải được lô bảng lương — xem banner phía trên.'
+                          : 'Chưa có lô bảng lương từ HRM API.'}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1095,14 +1066,11 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                     </tr>
                   </thead>
                   <tbody>
-                    {previewMockRows(HRM_MOCK_AI_SESSIONS).map((row) => (
-                      <tr key={row.id} className="border-t border-xevn-border">
-                        <td className="px-3 py-2 font-medium text-xevn-text">{row.topic}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.user}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.when}</td>
-                        <td className="px-3 py-2 text-slate-600">{row.outcome}</td>
-                      </tr>
-                    ))}
+                    <tr>
+                      <td colSpan={4} className="px-3 py-8 text-center text-sm text-slate-500">
+                        {API_NOT_AVAILABLE_MESSAGE}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1123,7 +1091,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   </tr>
                 </thead>
                 <tbody>
-                  {apiTasks
+                  {apiTasks && apiTasks.length > 0
                     ? apiTasks.map((row) => {
                         const priorityLabel =
                           row.priority === 'high' ? 'Cao' : row.priority === 'medium' ? 'Trung bình' : 'Thấp';
@@ -1154,28 +1122,16 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                           </tr>
                         );
                       })
-                    : previewMockRows(HRM_MOCK_TASKS).map((row) => (
-                        <tr key={row.id} className="border-t border-xevn-border">
-                          <td className="px-3 py-2 font-medium text-xevn-text">{row.title}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.assignee}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.due}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.priority}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.status}</td>
-                          <td className="px-3 py-2 text-right">
-                            <button
-                              type="button"
-                              className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                              onClick={() => openHrmApp('/hr/tasks')}
-                            >
-                              Mở chi tiết
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                  {apiTasks && apiTasks.length === 0 && !allowMockFallback() ? (
+                    : null}
+                  {!hrmApiLoading && (!apiTasks || apiTasks.length === 0) ? (
                     <tr>
                       <td colSpan={6} className="px-3 py-8 text-center text-slate-500">
-                        Chưa có công việc — chạy <code className="text-xs">pnpm seed:hrm:operations-sample</code>
+                        {hrmLoadError
+                          ? 'Không tải được danh sách công việc — xem banner phía trên.'
+                          : 'Chưa có công việc — chạy '}
+                        {!hrmLoadError ? (
+                          <code className="text-xs">pnpm seed:hrm:operations-sample</code>
+                        ) : null}
                       </td>
                     </tr>
                   ) : null}
@@ -1199,37 +1155,11 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   </tr>
                 </thead>
                 <tbody>
-                  {previewMockRows(HRM_MOCK_PROCESSES).map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.code}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.name}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.version}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.owner}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.effective}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Hiệu lực'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Soạn thảo'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/processes')}
-                        >
-                          Xem PDF
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">
+                      {API_NOT_AVAILABLE_MESSAGE}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1250,7 +1180,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   </tr>
                 </thead>
                 <tbody>
-                  {apiServiceRequests
+                  {apiServiceRequests && apiServiceRequests.length > 0
                     ? apiServiceRequests.map((row) => (
                         <tr key={row.id} className="border-t border-xevn-border">
                           <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.id.slice(0, 8)}</td>
@@ -1270,29 +1200,13 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                           </td>
                         </tr>
                       ))
-                    : previewMockRows(HRM_MOCK_SERVICE_REQUESTS).map((row) => (
-                        <tr key={row.id} className="border-t border-xevn-border">
-                          <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.code}</td>
-                          <td className="px-3 py-2 font-medium text-xevn-text">{row.requester}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.type}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.dept}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.submitted}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.status}</td>
-                          <td className="px-3 py-2 text-right">
-                            <button
-                              type="button"
-                              className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                              onClick={() => openHrmApp('/hr/internal-services')}
-                            >
-                              Xử lý
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                  {apiServiceRequests && apiServiceRequests.length === 0 && !allowMockFallback() ? (
+                    : null}
+                  {!hrmApiLoading && (!apiServiceRequests || apiServiceRequests.length === 0) ? (
                     <tr>
                       <td colSpan={7} className="px-3 py-8 text-center text-slate-500">
-                        Chưa có yêu cầu dịch vụ — seed operations sample.
+                        {hrmLoadError
+                          ? 'Không tải được yêu cầu dịch vụ — xem banner phía trên.'
+                          : 'Chưa có yêu cầu dịch vụ — seed operations sample.'}
                       </td>
                     </tr>
                   ) : null}
@@ -1316,53 +1230,26 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   </tr>
                 </thead>
                 <tbody>
-                  {previewMockRows(HRM_MOCK_TOOLS_EQUIPMENT).map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-mono text-sm text-xevn-primary">{row.asset}</td>
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.name}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.holder}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.location}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.condition}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.nextAudit}</td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/tools-equipment')}
-                        >
-                          Lịch sử
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-500">
+                      {API_NOT_AVAILABLE_MESSAGE}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           ) : null}
 
           {view === 'guide' ? (
-            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-              {previewMockRows(HRM_MOCK_GUIDE_CHAPTERS).map((ch) => (
-                <div
-                  key={ch.id}
-                  className={`border border-xevn-border bg-white/80 p-5 shadow-soft backdrop-blur-md ${SETTINGS_RADIUS_CARD}`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h4 className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>{ch.title}</h4>
-                    <span className="shrink-0 rounded-full bg-xevn-primary/10 px-2 py-0.5 text-xs font-semibold text-xevn-primary">
-                      {ch.steps} bước
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{ch.summary}</p>
-                  <button
-                    type="button"
-                    className="mt-4 text-[15px] font-semibold text-xevn-primary hover:underline"
-                    onClick={() => openHrmApp('/hr/guide')}
-                  >
-                    Mở hướng dẫn
-                  </button>
-                </div>
-              ))}
+            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-700">
+              {API_NOT_AVAILABLE_MESSAGE}{' '}
+              <button
+                type="button"
+                className="font-semibold text-xevn-primary hover:underline"
+                onClick={() => openHrmApp('/hr/guide')}
+              >
+                Mở HRM đầy đủ
+              </button>
             </div>
           ) : null}
 
@@ -1418,7 +1305,8 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
 
           {view === 'employees' ? (
             <p className="mb-2 text-sm text-slate-500">
-              Nguồn dữ liệu: {hrmDataSource === 'api' ? 'HRM API (Postgres)' : 'mock cục bộ'}
+              Nguồn dữ liệu:{' '}
+              {hrmLoadError ? 'API lỗi' : hrmDataSource === 'api' ? 'HRM API (Postgres)' : 'đang tải'}
               {apiEmployees ? ` · ${apiEmployees.length} nhân sự` : ''}
             </p>
           ) : null}
@@ -1568,7 +1456,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
 
           {view === 'payroll' ? (
             <p className="mb-2 text-sm text-slate-500">
-              Nguồn: {hrmDataSource === 'api' ? 'HRM API' : 'mock'}
+              Nguồn: {hrmLoadError ? 'API lỗi' : hrmDataSource === 'api' ? 'HRM API' : 'đang tải'}
               {apiPayslips ? ` · ${apiPayslips.length} phiếu lương` : ''}
             </p>
           ) : null}
@@ -1610,37 +1498,16 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                           </td>
                         </tr>
                       ))
-                    : previewMockRows(HRM_MOCK_PAYROLL).map((row) => (
-                        <tr key={row.id} className="border-t border-xevn-border">
-                          <td className="px-3 py-2 font-medium text-xevn-text">{row.period}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.entity}</td>
-                          <td className="px-3 py-2 text-right font-medium tabular-nums text-xevn-text">{row.gross}</td>
-                          <td className="px-3 py-2 text-slate-700">{row.approved}</td>
-                          <td className="px-3 py-2 text-slate-600">{row.payDate}</td>
-                          <td className="px-3 py-2">
-                            <span
-                              className={
-                                row.status === 'Sẵn sàng chi'
-                                  ? 'font-medium text-emerald-700'
-                                  : row.status === 'Nháp'
-                                    ? 'text-amber-700'
-                                    : 'text-slate-600'
-                              }
-                            >
-                              {row.status}
-                            </span>
-                          </td>
-                          <td className="px-3 py-2 text-right">
-                            <button
-                              type="button"
-                              className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                              onClick={() => openHrmApp('/hr/payroll')}
-                            >
-                              Xem bảng lương
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                    : null}
+                  {!hrmApiLoading && (!apiPayslips || apiPayslips.length === 0) ? (
+                    <tr>
+                      <td colSpan={8} className="px-3 py-8 text-center text-slate-500">
+                        {hrmLoadError
+                          ? 'Không tải được phiếu lương — xem banner phía trên.'
+                          : 'Chưa có phiếu lương trên API.'}
+                      </td>
+                    </tr>
+                  ) : null}
                 </tbody>
               </table>
             </div>
@@ -1763,18 +1630,16 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
 
           {view === 'reports' ? (
             <div className={HRM_TABLE_SHELL}>
-              {!allowMockFallback() && previewMockRows(HRM_MOCK_REPORTS).length === 0 ? (
-                <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  {API_NOT_AVAILABLE_MESSAGE}{' '}
-                  <button
-                    type="button"
-                    className="ml-1 font-semibold text-xevn-primary hover:underline"
-                    onClick={() => openHrmApp('/hr/reports')}
-                  >
-                    Mở HRM đầy đủ
-                  </button>
-                </div>
-              ) : null}
+              <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                {API_NOT_AVAILABLE_MESSAGE}{' '}
+                <button
+                  type="button"
+                  className="ml-1 font-semibold text-xevn-primary hover:underline"
+                  onClick={() => openHrmApp('/hr/reports')}
+                >
+                  Mở HRM đầy đủ
+                </button>
+              </div>
               <table className={`w-full ${SETTINGS_CONTROL_TEXT}`}>
                 <thead className="bg-white/70 backdrop-blur-md">
                   <tr>
@@ -1787,36 +1652,11 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   </tr>
                 </thead>
                 <tbody>
-                  {previewMockRows(HRM_MOCK_REPORTS).map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.name}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.cadence}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.lastRun}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.channel}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Thành công'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Đang chạy'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/reports')}
-                        >
-                          Lịch sử
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={6} className="px-3 py-8 text-center text-sm text-slate-500">
+                      Chưa có báo cáo từ API cockpit.
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>

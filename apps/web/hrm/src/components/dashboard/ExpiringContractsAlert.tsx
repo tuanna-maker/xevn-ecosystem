@@ -1,15 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
-import { listExpiringContracts } from '@/integrations/hrmApi';
+import { listAllEmployeeContracts } from '@/integrations/hrmApi';
+import { filterUpcomingExpiringContracts, formatHrmDateVi, parseHrmDateOnly } from '@/lib/formatHrmDate';
 import { AlertTriangle, FileText, Calendar, ExternalLink, Bell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
-import { format, differenceInDays } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { differenceInDays } from 'date-fns';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 
 interface ExpiringContract {
   id: string;
@@ -32,28 +33,30 @@ export function ExpiringContractsAlert() {
     queryKey: ['expiring-contracts-dashboard', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const res = await listExpiringContracts({ company_id: currentCompanyId, days: 30 });
-      return (res.data ?? [])
-        .filter((row) => row.end_date)
-        .map((row): ExpiringContract => ({
-          id: row.id,
-          contract_code: row.employee_code ? `${row.employee_code}-HD` : `HD-${row.id.slice(0, 8)}`,
-          employee_id: row.employee_id,
-          employee_name: row.employee_name?.trim() || t('expiringContracts.unknown'),
-          employee_avatar: null,
-          department: row.department ?? null,
-          contract_type: row.contract_type,
-          expiry_date: row.end_date!,
-          status: row.status,
-          source: 'employee_contracts',
-        }))
-        .sort((a, b) => new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime());
+      const res = await listAllEmployeeContracts({ company_id: currentCompanyId, status: 'active' });
+      const upcoming = filterUpcomingExpiringContracts(res.data ?? [], 30);
+      return upcoming.map((row): ExpiringContract => ({
+        id: row.id,
+        contract_code: row.employee_code
+          ? `${row.employee_code}-HD`
+          : `HD-${row.id.slice(0, 8).toUpperCase()}`,
+        employee_id: row.employee_id,
+        employee_name: row.employee_name?.trim() || t('expiringContracts.unknown'),
+        employee_avatar: null,
+        department: row.department ?? null,
+        contract_type: row.contract_type,
+        expiry_date: row.end_date,
+        status: row.status,
+        source: 'employee_contracts',
+      }));
     },
     enabled: !!currentCompanyId,
   });
 
   const getDaysRemaining = (expiryDate: string) => {
-    return differenceInDays(new Date(expiryDate), new Date());
+    const expiry = parseHrmDateOnly(expiryDate);
+    if (!expiry) return 0;
+    return differenceInDays(expiry, new Date());
   };
 
   const getUrgencyColor = (days: number) => {
@@ -106,7 +109,7 @@ export function ExpiringContractsAlert() {
               </p>
             </div>
           </div>
-          <Link to="/contracts">
+          <Link to={hrmPathWithEmbedSearch('/contracts')}>
             <Button variant="outline" size="sm" className="gap-1.5 text-xs">
               {t('expiringContracts.viewAll')}
               <ExternalLink className="w-3 h-3" />
@@ -118,12 +121,11 @@ export function ExpiringContractsAlert() {
         <div className="space-y-3">
           {expiringContracts.slice(0, 5).map((contract) => {
             const daysRemaining = getDaysRemaining(contract.expiry_date);
+            const detailPath = hrmPathWithEmbedSearch(
+              contract.employee_id ? `/employees/${contract.employee_id}` : '/contracts',
+            );
             return (
-              <Link
-                key={`${contract.source}-${contract.id}`}
-                to={contract.employee_id ? `/employees/${contract.employee_id}` : '/contracts'}
-                className="block"
-              >
+              <Link key={`${contract.source}-${contract.id}`} to={detailPath} className="block">
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/60 dark:bg-background/40 border border-amber-100 dark:border-amber-800/50 hover:bg-white dark:hover:bg-background/60 transition-colors cursor-pointer">
                   <Avatar className="w-10 h-10 border-2 border-amber-200 dark:border-amber-700">
                     <AvatarImage src={contract.employee_avatar || undefined} />
@@ -157,7 +159,7 @@ export function ExpiringContractsAlert() {
                     </Badge>
                     <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground justify-end">
                       <Calendar className="w-3 h-3" />
-                      {format(new Date(contract.expiry_date), 'dd/MM/yyyy', { locale: vi })}
+                      {formatHrmDateVi(contract.expiry_date)}
                     </div>
                   </div>
                 </div>
@@ -168,7 +170,7 @@ export function ExpiringContractsAlert() {
 
         {expiringContracts.length > 5 && (
           <div className="mt-3 text-center">
-            <Link to="/contracts">
+            <Link to={hrmPathWithEmbedSearch('/contracts')}>
               <Button
                 variant="ghost"
                 size="sm"

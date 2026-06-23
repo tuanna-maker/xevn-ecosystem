@@ -3,14 +3,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import {
   archiveEmployee as archiveEmployeeApi,
   createEmployee as createEmployeeApi,
-  listEmployees as listEmployeesApi,
+  listAllEmployees as listAllEmployeesApi,
   restoreEmployee as restoreEmployeeApi,
   type HrmEmployeeRecord,
   updateEmployee as updateEmployeeApi,
 } from '@/integrations/hrmApi';
+import { mapHrmEmployeeRecord, mergeEmployeeAvatarWriteFields } from '@/hooks/useEmployee';
 
 export interface Employee {
   id: string;
@@ -95,44 +98,7 @@ export function useEmployees(
   // Use specific filter, or null means all companies
   const targetCompanyId = companyIdFilter === undefined ? currentCompanyId : companyIdFilter;
 
-  const mapEmployee = (row: HrmEmployeeRecord): Employee => ({
-    id: row.id,
-    company_id: row.company_id,
-    employee_code: row.employee_code,
-    full_name: row.full_name,
-    email: row.email,
-    phone: null,
-    department: null,
-    position: row.job_title_key,
-    start_date: row.hired_at,
-    end_date: null,
-    status: row.status,
-    avatar_url: null,
-    salary: null,
-    manager_id: null,
-    gender: null,
-    birth_date: null,
-    id_number: null,
-    id_issue_date: null,
-    id_issue_place: null,
-    permanent_address: null,
-    temporary_address: null,
-    emergency_contact: null,
-    emergency_phone: null,
-    employment_type: null,
-    work_location: null,
-    bank_name: null,
-    bank_account: null,
-    tax_code: null,
-    social_insurance_number: null,
-    health_insurance_number: null,
-    custom_fields: row.custom_fields ?? {},
-    deleted_at: row.archived_at,
-    deleted_by: null,
-    delete_reason: null,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-  });
+  const mapEmployee = (row: HrmEmployeeRecord): Employee => mapHrmEmployeeRecord(row);
 
   const fetchEmployees = useCallback(async () => {
     const portalEmbed =
@@ -157,15 +123,14 @@ export function useEmployees(
     try {
       const responses = await Promise.all(
         companyIds.map((companyId) =>
-          listEmployeesApi({
-            company_id: companyId,
+          listAllEmployeesApi({
+            company_id: coerceHrmListCompanyId(companyId),
             include_archived: includeDeleted,
-            page: 1,
-            page_size: 200,
+            page_size: HRM_API_MAX_PAGE_SIZE,
           }),
         ),
       );
-      const merged = responses.flatMap((res) => res.data).map(mapEmployee);
+      const merged = responses.flatMap((res) => res.data ?? []).map(mapEmployee);
       setEmployees(merged.filter((e) => e.deleted_at == null));
       setDeletedEmployees(includeDeleted ? merged.filter((e) => e.deleted_at != null) : []);
     } catch (error: unknown) {
@@ -191,6 +156,7 @@ export function useEmployees(
     }
 
     try {
+      const avatarFields = mergeEmployeeAvatarWriteFields(data.avatar_url, data.custom_fields);
       const payload = {
         company_id:
           (data as EmployeeFormData & { company_id?: string }).company_id?.trim() || currentCompanyId,
@@ -199,7 +165,7 @@ export function useEmployees(
         email: data.email?.trim() || `${data.employee_code.toLowerCase()}@xevn.local`,
         job_title_key: data.position ?? undefined,
         hired_at: data.start_date ?? undefined,
-        custom_fields: data.custom_fields ?? undefined,
+        ...avatarFields,
       };
       const newEmployee = await createEmployeeApi(payload);
       toast.success('Thêm nhân viên thành công');
@@ -214,12 +180,13 @@ export function useEmployees(
 
   const updateEmployee = async (id: string, data: Partial<EmployeeFormData>): Promise<boolean> => {
     try {
+      const avatarFields = mergeEmployeeAvatarWriteFields(data.avatar_url, data.custom_fields);
       await updateEmployeeApi(id, {
         email: data.email ?? undefined,
         full_name: data.full_name ?? undefined,
         job_title_key: data.position ?? undefined,
         hired_at: data.start_date ?? undefined,
-        custom_fields: data.custom_fields ?? undefined,
+        ...avatarFields,
       });
       toast.success('Cập nhật thành công');
       await fetchEmployees();

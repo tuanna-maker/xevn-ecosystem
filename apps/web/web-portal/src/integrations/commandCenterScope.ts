@@ -136,6 +136,24 @@ export function resolveXbosApiCompanyIdForPath(
   );
 }
 
+/**
+ * Command Center catalog autosave — group CEO writes/read holding partition (ADR §4).
+ * Without this, PUT 200 on `main` headers can land in a different partition than GET list.
+ */
+export function resolveXbosCommandCenterCatalogCompanyId(
+  tenantIdHint?: string | null,
+  companyIdHint?: string | null,
+): string {
+  if (isGroupCeoOnMasterTenant(tenantIdHint)) {
+    return XBOS_GROUP_HOLDING_COMPANY_ID;
+  }
+  return resolveXbosApiCompanyIdForPath(
+    '/business-master/command_center_catalogs/items',
+    tenantIdHint,
+    companyIdHint,
+  );
+}
+
 export function resolveXbosApiCompanyIdForMode(
   mode: XbosApiScopeMode,
   tenantIdHint?: string | null,

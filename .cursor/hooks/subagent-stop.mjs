@@ -55,6 +55,7 @@ function buildSignal(payload) {
   const status = pick(payload, ["status", "task_status", "outcome", "result"]);
   const title = pick(payload, ["title", "description", "subagent_description", "prompt"]);
   const model = pick(payload, ["model"]);
+  const error_message = pick(payload, ["error", "error_message", "failure_reason", "detail"]).slice(0, 500);
   return {
     hook: "subagentStop",
     at: new Date().toISOString(),
@@ -63,6 +64,7 @@ function buildSignal(payload) {
     status,
     title: title.slice(0, 400),
     model,
+    error_message: error_message || undefined,
   };
 }
 
@@ -305,6 +307,15 @@ async function main() {
     await appendJsonl(inboxPath, inboxRecord);
 
     if (withinWindow) {
+      // U59: dedupe suppresses hook inject — still nudge PM via pending pipeline file
+      try {
+        const { scanPipelineRecovery } = await import(
+          path.join(root, "scripts", "lib", "pm-pipeline-recovery.mjs")
+        );
+        scanPipelineRecovery(6);
+      } catch {
+        /* non-fatal */
+      }
       process.stdout.write(JSON.stringify({}));
       return;
     }

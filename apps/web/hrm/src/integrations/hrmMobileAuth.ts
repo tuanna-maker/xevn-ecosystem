@@ -1,5 +1,6 @@
 import { ApiClientError } from '@/lib/apiError';
 import { applyPortalSession, type PortalSessionUser } from '@/lib/portalAuthBridge';
+import { safeRandomUuid } from '@/lib/safeRandomUuid';
 
 const HRM_API_ORIGIN = (import.meta.env.VITE_HRM_API_ORIGIN ?? '').replace(/\/$/, '');
 
@@ -52,7 +53,7 @@ export async function mobileLogin(email: string, password: string): Promise<Mobi
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-request-id': crypto.randomUUID(),
+      'x-request-id': safeRandomUuid(),
     },
     body: JSON.stringify({ email, password }),
   });

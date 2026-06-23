@@ -21,13 +21,28 @@ export type LoginResult = {
 
 let unauthorizedHandler: (() => void) | null = null;
 
-/** AuthContext registers logout + redirect when API returns 401/403 with a stored JWT. */
+/** AuthContext registers logout + redirect when API returns 401 with a stored JWT. */
 export function setUnauthorizedHandler(handler: (() => void) | null) {
   unauthorizedHandler = handler;
 }
 
+/** Re-hydrate portal shell sessionStorage from localStorage mirror (HRM iframe bridge). */
+function hydrateSessionFromLocalMirror(): string | null {
+  if (typeof localStorage === 'undefined' || typeof sessionStorage === 'undefined') return null;
+  const mirrored = localStorage.getItem(STORAGE_TOKEN)?.trim();
+  if (!mirrored) return null;
+  sessionStorage.setItem(STORAGE_TOKEN, mirrored);
+  const user = localStorage.getItem(STORAGE_USER);
+  const expires = localStorage.getItem(STORAGE_TOKEN_EXPIRES);
+  if (user) sessionStorage.setItem(STORAGE_USER, user);
+  if (expires) sessionStorage.setItem(STORAGE_TOKEN_EXPIRES, expires);
+  return mirrored;
+}
+
 export function getStoredAccessToken(): string | null {
-  return sessionStorage.getItem(STORAGE_TOKEN)?.trim() || null;
+  const session = sessionStorage.getItem(STORAGE_TOKEN)?.trim();
+  if (session) return session;
+  return hydrateSessionFromLocalMirror();
 }
 
 export function getStoredTokenExpiresAt(): number | null {
@@ -106,14 +121,23 @@ export function stashLoginRedirect(path: string) {
   sessionStorage.setItem(STORAGE_LOGIN_REDIRECT, path);
 }
 
+export function peekLoginRedirect(): string | null {
+  const path = sessionStorage.getItem(STORAGE_LOGIN_REDIRECT);
+  return path?.trim() ? path : null;
+}
+
 export function consumeLoginRedirect(): string | null {
   const path = sessionStorage.getItem(STORAGE_LOGIN_REDIRECT);
   sessionStorage.removeItem(STORAGE_LOGIN_REDIRECT);
   return path;
 }
 
+/**
+ * Global session teardown — **401 only**.
+ * HTTP 403 on business-scope endpoints (e.g. group-member-units for member CEO) is scope denial, not auth expiry.
+ */
 export function handleUnauthorizedResponse(status: number) {
-  if (status !== 401 && status !== 403) return;
+  if (status !== 401) return;
   if (!getStoredAccessToken()) return;
   stashLoginRedirect(window.location.pathname + window.location.search);
   clearAuthSession();
@@ -138,9 +162,12 @@ export async function fetchPortalMe(accessToken: string) {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   const json = await res.json().catch(() => null);
-  if (res.status === 401 || res.status === 403) {
+  if (res.status === 401) {
     handleUnauthorizedResponse(res.status);
     throw new Error(json?.message ?? 'Phiên đăng nhập hết hạn');
+  }
+  if (res.status === 403) {
+    throw new Error(json?.message ?? 'Không có quyền truy cập phiên');
   }
   if (!res.ok || !json?.success) {
     throw new Error(json?.message ?? 'Phiên đăng nhập hết hạn');
@@ -153,7 +180,7 @@ export async function fetchPortalMe(accessToken: string) {
  * VITE_REQUIRE_LOGIN=false + internal key on non–command-center routes may still use key-only dev mode.
  */
 export function buildApiAuthHeaders(userId?: string): Record<string, string> {
-  const h: Record<string, string> = { 'content-type': 'application/json' };
+  const h: Record<string, string> = {};
   const token = getValidAccessToken();
   if (token) {
     h.Authorization = `Bearer ${token}`;

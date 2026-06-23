@@ -1,0 +1,152 @@
+{
+  "work_item_id": "PCOMP-W7-QA-04b-01",
+  "generated": "2026-06-07",
+  "base": "https://14-225-217-232.nip.io",
+  "hcm_today": "2026-06-07",
+  "pass": true,
+  "probes": [
+    {
+      "name": "uat.nv0001 login",
+      "pass": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "name": "GET holding include=celebrations (J-MOB-08)",
+      "pass": true,
+      "detail": "HRM-HOME-200"
+    },
+    {
+      "name": "GET holding include=whos_out (J-MOB-09)",
+      "pass": true,
+      "detail": "HRM-HOME-200"
+    },
+    {
+      "name": "GET holding include=celebrations,whos_out (contract)",
+      "pass": true,
+      "detail": "HRM-HOME-200"
+    },
+    {
+      "name": "J-MOB-08 grep no date_of_birth",
+      "pass": true,
+      "detail": "clean"
+    },
+    {
+      "name": "J-MOB-08 grep no birth_year",
+      "pass": true,
+      "detail": "clean"
+    },
+    {
+      "name": "J-MOB-08 MM-DD only shape",
+      "pass": true,
+      "detail": "total_count=5 items=5 HCM=2026-06-07"
+    },
+    {
+      "name": "J-MOB-09 no reason in payload",
+      "pass": true,
+      "detail": "total_count=1"
+    },
+    {
+      "name": "J-MOB-09 item contract shape",
+      "pass": true,
+      "detail": "annual"
+    },
+    {
+      "name": "J-MOB-09 approved leaves covering HCM today (seed ref)",
+      "pass": true,
+      "detail": "whos_out=1 approved_covering_today=0"
+    },
+    {
+      "name": "ceo@xe.vn xbos login",
+      "pass": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "name": "resolve viewer employee_id for main",
+      "pass": true,
+      "detail": "ecde82b7-a85f-4183-8e1a-bb3f4bcef3de"
+    },
+    {
+      "name": "group CEO main rollup GET summary",
+      "pass": true,
+      "detail": "HRM-HOME-200"
+    },
+    {
+      "name": "main scope privacy grep",
+      "pass": true,
+      "detail": "celebrations=5 whos_out=1"
+    },
+    {
+      "name": "main scope no 409",
+      "pass": true,
+      "detail": "HTTP 200"
+    }
+  ],
+  "holding_sample": {
+    "celebrations": {
+      "total_count": 5,
+      "items": [
+        {
+          "employee_id": "c673ee43-bee8-46d9-8035-7d1e7fef6d5e",
+          "display_name": "Bùi Văn An",
+          "month_day": "06-07",
+          "display_date": "07/06",
+          "avatar_url": null,
+          "avatar_initials": "BA"
+        },
+        {
+          "employee_id": "8ac84520-0d6b-4737-8341-2f9a929b5f81",
+          "display_name": "Huỳnh Văn An",
+          "month_day": "06-07",
+          "display_date": "07/06",
+          "avatar_url": "/api/hrm/files/holding/employee-avatar-1780832507918-do-smoke-1780832507144.png",
+          "avatar_initials": "HA"
+        },
+        {
+          "employee_id": "19b88fe9-1819-4a45-8362-2c44a6a1e468",
+          "display_name": "Huỳnh Văn Hùng",
+          "month_day": "06-07",
+          "display_date": "07/06",
+          "avatar_url": null,
+          "avatar_initials": "HH"
+        },
+        {
+          "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+          "display_name": "Nguyễn Văn An",
+          "month_day": "06-07",
+          "display_date": "07/06",
+          "avatar_url": null,
+          "avatar_initials": "NA"
+        },
+        {
+          "employee_id": "900ea5e6-d4f9-499e-88cf-0192388d92b2",
+          "display_name": "Nguyễn Văn Hùng",
+          "month_day": "06-07",
+          "display_date": "07/06",
+          "avatar_url": null,
+          "avatar_initials": "NH"
+        }
+      ]
+    },
+    "whos_out": {
+      "total_count": 1,
+      "items": [
+        {
+          "employee_id": "8ac84520-0d6b-4737-8341-2f9a929b5f81",
+          "display_name": "Huỳnh Văn An",
+          "leave_type": "annual",
+          "leave_request_id": "c9afd4cf-05b0-4e89-84c9-3322b5a7ac79",
+          "avatar_url": "/api/hrm/files/holding/employee-avatar-1780832507918-do-smoke-1780832507144.png"
+        }
+      ]
+    },
+    "privacy": {
+      "no_date_of_birth": true,
+      "no_birth_year": true,
+      "no_iso_year_in_celebrations": true
+    }
+  },
+  "main_sample": {
+    "celebrations_total": 5,
+    "whos_out_total": 1
+  }
+}

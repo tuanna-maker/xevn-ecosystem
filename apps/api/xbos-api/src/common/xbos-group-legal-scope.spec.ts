@@ -26,6 +26,20 @@ describe('resolveXbosGroupLegalReadScopeContext (ADR C2)', () => {
     expect(scope).toEqual({ tenantId: 'xevn', companyId: XBOS_GROUP_LEGAL_HOLDING });
   });
 
+  it('maps group CEO JWT main with explicit query holding to holding (UF-XBOS-14 browser GET)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveXbosGroupLegalReadScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_LEGAL_HOLDING,
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: XBOS_GROUP_LEGAL_HOLDING });
+  });
+
   it('maps group CEO JWT main with omitted companyId to holding', () => {
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
@@ -65,6 +79,25 @@ describe('resolveXbosGroupLegalReadScopeContext (ADR C2)', () => {
     expect(scope).toEqual({ tenantId: 'xe-du-lich', companyId: XBOS_GROUP_OPERATING_MAIN });
   });
 
+  it('U28: member CEO blocked on group rollup (xevn/main headers)', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'company_ceo',
+    });
+    try {
+      resolveXbosGroupLegalReadScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: XBOS_GROUP_OPERATING_MAIN,
+      });
+      fail('expected mismatch');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiException);
+      expect((error as ApiException).code).toBe('SCOPE_CONTEXT_MISMATCH');
+    }
+  });
+
   it('detects legal-entity UUID path keys', () => {
     expect(isLegalEntityUuid('a1b2c3d4-e5f6-4789-a012-3456789abcde')).toBe(true);
     expect(isLegalEntityUuid('main')).toBe(false);
@@ -97,6 +130,25 @@ describe('resolveXbosGroupLegalReadScopeContext (ADR C2)', () => {
         companyId: 'main',
       }),
     ).not.toThrow();
+  });
+
+  it('org-foundation GET parity: partition assert blocks member CEO cross-tenant UUID', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'company_ceo',
+    });
+    const jwtScope = resolveRaciMatrixJwtScope(`Bearer ${token}`, {
+      tenantId: 'xe-du-lich',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+    });
+    expect(() =>
+      assertJwtMayReadLegalEntityPartition(`Bearer ${token}`, jwtScope, {
+        tenantId: 'xe-vtc',
+        companyId: 'main',
+      }),
+    ).toThrow(expect.objectContaining<ApiException>({ code: 'SCOPE_CONTEXT_MISMATCH' }));
   });
 
   it('assertJwtMayReadLegalEntityPartition: member CEO cannot read other tenant', () => {

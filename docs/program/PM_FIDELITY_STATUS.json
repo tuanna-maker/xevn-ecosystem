@@ -1,0 +1,21 @@
+{
+  "updated": "2026-06-07T01:40:00+07:00",
+  "closed": {
+    "AC-FID-03": true,
+    "AC-FID-04": true,
+    "AC-FID-05": true,
+    "AC-FID-06": true,
+    "AC-FID-07": true,
+    "AC-FID-08": true,
+    "AC-FID-09": true,
+    "AC-FID-10": true,
+    "AC-FID-11": true,
+    "AC-FID-12": true,
+    "AC-FID-13": true,
+    "AC-FID-14": true,
+    "AC-FID-15": true,
+    "AC-FID-16": true
+  },
+  "open": [],
+  "qc_verdict": "GO WITH CONDITIONS localhost U32 — qc-p1-hrm-fidelity-final-r2-20260607.md"
+}

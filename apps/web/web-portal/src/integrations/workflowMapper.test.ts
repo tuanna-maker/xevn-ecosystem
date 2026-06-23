@@ -6,6 +6,7 @@ import {
 } from '../data/workflow-graph';
 import {
   apiRowToWorkflowDefinition,
+  extractGraphSteps,
   isCanvasReadyGraphStep,
   normalizeGraphSteps,
   workflowDefinitionToApiPayload,
@@ -69,6 +70,35 @@ describe('workflowMapper', () => {
     expect(steps[1]?.transitions.find((t) => t.kind === 'exception')?.destinationId).toBe(
       WF_NODE_BOD,
     );
+  });
+
+  it('extractGraphSteps accepts bare array graph (VPS seed shape)', () => {
+    const steps = extractGraphSteps([{ stepKey: 'review', name: 'Duyệt', order: 1 }]);
+    expect(Array.isArray(steps)).toBe(true);
+    expect(steps).toHaveLength(1);
+  });
+
+  it('apiRowToWorkflowDefinition maps graph stored as step array not {steps:[]}', () => {
+    const def = apiRowToWorkflowDefinition({
+      id: 'def-array-graph',
+      workflow_code: 'WF-CAT-01',
+      name: 'Phê duyệt danh mục',
+      company_id: 'main',
+      graph: [{ stepKey: 'group_catalog_approval', name: 'Tập đoàn phê duyệt', order: 1, hatKey: 'group_ceo' }],
+    });
+    expect(def.steps).toHaveLength(1);
+    expect(def.steps[0]?.taskName).toBe('Tập đoàn phê duyệt');
+    expect(def.steps[0]?.handlerRoleId).toBe('bod');
+  });
+
+  it('apiRowToWorkflowDefinition maps roleHat on catalog runtime steps', () => {
+    const def = apiRowToWorkflowDefinition({
+      id: 'def-role-hat',
+      workflow_code: 'WF-RH-01',
+      name: 'Catalog approver',
+      graph: [{ stepKey: 'review', name: 'Review', order: 1, roleHat: 'catalog_approver' }],
+    });
+    expect(def.steps[0]?.handlerRoleId).toBe('catalog_approver');
   });
 
   it('apiRowToWorkflowDefinition maps workflow-engine DB row', () => {

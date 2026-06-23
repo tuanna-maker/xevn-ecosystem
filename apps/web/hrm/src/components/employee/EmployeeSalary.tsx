@@ -73,51 +73,41 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { listPayrollPayslips, type HrmPayslipRow } from '@/integrations/hrmApi';
+import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 
 interface EmployeeSalaryProps {
   employeeId: string;
   employeeName: string;
 }
 
-// Mock data for salary
-const mockSalaryData = {
-  baseSalary: 15000000,
-  grossSalary: 22500000,
-  netSalary: 19800000,
-  effectiveDate: '2024-01-01',
-  salaryGrade: 'Bậc 5',
-  salaryCoefficient: 2.34,
-};
+interface AllowanceRow {
+  id: string;
+  name: string;
+  type: string;
+  amount: number;
+  isFixed: boolean;
+  effectiveDate: string;
+}
 
-const mockAllowances = [
-  { id: '1', name: 'position_allowance', type: 'position', amount: 3000000, isFixed: true, effectiveDate: '2024-01-01' },
-  { id: '2', name: 'transport_allowance', type: 'transport', amount: 1500000, isFixed: true, effectiveDate: '2024-01-01' },
-  { id: '3', name: 'phone_allowance', type: 'phone', amount: 500000, isFixed: true, effectiveDate: '2024-01-01' },
-  { id: '4', name: 'meal_allowance', type: 'meal', amount: 1000000, isFixed: true, effectiveDate: '2024-01-01' },
-  { id: '5', name: 'housing_allowance', type: 'housing', amount: 1500000, isFixed: false, effectiveDate: '2024-01-01' },
-];
+interface SalaryHistoryRow {
+  id: string;
+  effectiveDate: string;
+  baseSalary: number;
+  reason: string;
+  approvedBy: string;
+}
 
-const mockSalaryHistory = [
-  { id: '1', effectiveDate: '2024-01-01', baseSalary: 15000000, reason: 'periodic_adjustment', approvedBy: 'Nguyễn Văn A' },
-  { id: '2', effectiveDate: '2023-07-01', baseSalary: 13500000, reason: 'promotion', approvedBy: 'Nguyễn Văn A' },
-  { id: '3', effectiveDate: '2023-01-01', baseSalary: 12000000, reason: 'periodic_adjustment', approvedBy: 'Trần Văn B' },
-  { id: '4', effectiveDate: '2022-06-01', baseSalary: 10000000, reason: 'starting_salary', approvedBy: 'Trần Văn B' },
-];
-
-const mockMonthlyPayroll = [
-  { id: '1', month: '01/2025', baseSalary: 15000000, allowances: 7500000, bonus: 2000000, deductions: 2200000, netSalary: 22300000, status: 'paid', payDate: '2025-01-05' },
-  { id: '2', month: '12/2024', baseSalary: 15000000, allowances: 7500000, bonus: 5000000, deductions: 2200000, netSalary: 25300000, status: 'paid', payDate: '2024-12-05' },
-  { id: '3', month: '11/2024', baseSalary: 15000000, allowances: 7500000, bonus: 1500000, deductions: 2200000, netSalary: 21800000, status: 'paid', payDate: '2024-11-05' },
-  { id: '4', month: '10/2024', baseSalary: 15000000, allowances: 7500000, bonus: 1000000, deductions: 2200000, netSalary: 21300000, status: 'paid', payDate: '2024-10-05' },
-  { id: '5', month: '09/2024', baseSalary: 15000000, allowances: 7500000, bonus: 2500000, deductions: 2200000, netSalary: 22800000, status: 'paid', payDate: '2024-09-05' },
-  { id: '6', month: '08/2024', baseSalary: 15000000, allowances: 7500000, bonus: 1000000, deductions: 2200000, netSalary: 21300000, status: 'paid', payDate: '2024-08-05' },
-  { id: '7', month: '07/2024', baseSalary: 13500000, allowances: 7500000, bonus: 3000000, deductions: 2000000, netSalary: 22000000, status: 'paid', payDate: '2024-07-05' },
-  { id: '8', month: '06/2024', baseSalary: 13500000, allowances: 7500000, bonus: 1000000, deductions: 2000000, netSalary: 20000000, status: 'paid', payDate: '2024-06-05' },
-  { id: '9', month: '05/2024', baseSalary: 13500000, allowances: 7500000, bonus: 1500000, deductions: 2000000, netSalary: 20500000, status: 'paid', payDate: '2024-05-05' },
-  { id: '10', month: '04/2024', baseSalary: 13500000, allowances: 7500000, bonus: 2000000, deductions: 2000000, netSalary: 21000000, status: 'paid', payDate: '2024-04-05' },
-  { id: '11', month: '03/2024', baseSalary: 13500000, allowances: 7500000, bonus: 1000000, deductions: 2000000, netSalary: 20000000, status: 'paid', payDate: '2024-03-05' },
-  { id: '12', month: '02/2024', baseSalary: 13500000, allowances: 7500000, bonus: 8000000, deductions: 2000000, netSalary: 27000000, status: 'paid', payDate: '2024-02-05' },
-];
+interface MonthlyPayrollRow {
+  id: string;
+  month: string;
+  baseSalary: number;
+  allowances: number;
+  bonus: number;
+  deductions: number;
+  netSalary: number;
+  status: string;
+  payDate: string;
+}
 
 const ALLOWANCE_TYPE_ICONS: Record<string, any> = {
   position: Briefcase,
@@ -140,19 +130,28 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
   const [apiPayslips, setApiPayslips] = useState<HrmPayslipRow[] | null>(null);
-  const [allowances, setAllowances] = useState(mockAllowances);
-  const [salaryHistory] = useState(mockSalaryHistory);
+  const [payslipsLoading, setPayslipsLoading] = useState(true);
+  const [allowances, setAllowances] = useState<AllowanceRow[]>([]);
+  const [salaryHistory] = useState<SalaryHistoryRow[]>([]);
 
   useEffect(() => {
     const companyId = currentCompanyId;
-    if (!companyId) return;
+    if (!companyId) {
+      setPayslipsLoading(false);
+      setApiPayslips([]);
+      return;
+    }
     let cancelled = false;
+    setPayslipsLoading(true);
     void listPayrollPayslips({ company_id: companyId })
       .then((res) => {
         if (!cancelled) setApiPayslips(res.data.filter((p) => p.employee_id === employeeId));
       })
       .catch(() => {
         if (!cancelled) setApiPayslips([]);
+      })
+      .finally(() => {
+        if (!cancelled) setPayslipsLoading(false);
       });
     return () => {
       cancelled = true;
@@ -161,7 +160,16 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
 
   const salaryData = useMemo(() => {
     const latest = apiPayslips?.[0];
-    if (!latest) return mockSalaryData;
+    if (!latest) {
+      return {
+        baseSalary: 0,
+        grossSalary: 0,
+        netSalary: 0,
+        effectiveDate: '',
+        salaryGrade: '—',
+        salaryCoefficient: 0,
+      };
+    }
     const gross = Number(latest.gross_amount);
     const net = Number(latest.net_amount);
     return {
@@ -174,8 +182,8 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
     };
   }, [apiPayslips]);
 
-  const monthlyPayroll = useMemo(() => {
-    if (!apiPayslips?.length) return mockMonthlyPayroll;
+  const monthlyPayroll = useMemo((): MonthlyPayrollRow[] => {
+    if (!apiPayslips?.length) return [];
     return apiPayslips.map((p) => ({
       id: p.id,
       month: p.period_label,
@@ -188,9 +196,11 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
       payDate: p.period_label,
     }));
   }, [apiPayslips]);
+
+  const hasPayslipData = (apiPayslips?.length ?? 0) > 0;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingAllowance, setEditingAllowance] = useState<typeof mockAllowances[0] | null>(null);
+  const [editingAllowance, setEditingAllowance] = useState<AllowanceRow | null>(null);
   
   const [newAllowance, setNewAllowance] = useState({
     name: '',
@@ -306,6 +316,19 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {payslipsLoading ? (
+        <Card>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">
+            {t('common.loading', 'Đang tải…')}
+          </CardContent>
+        </Card>
+      ) : !hasPayslipData ? (
+        <EmbedApiEmptyState
+          title={t('salary.emptyTitle', 'Chưa có dữ liệu lương')}
+          body={t('salary.emptyBody', 'Phiếu lương từ hrm-api sẽ hiển thị tại đây khi có bản ghi cho nhân viên.')}
+        />
+      ) : (
+        <>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/30 border-rose-200 dark:border-rose-800">
@@ -628,6 +651,8 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
           </DialogFooter>
         </DialogContent>
       </Dialog>
+        </>
+      )}
     </div>
   );
 }

@@ -1,20 +1,47 @@
 #!/usr/bin/env node
 /** P4 — seed department_catalog, geographic_regions, kpi_formulas for xevn. */
+import { createHmac } from 'node:crypto';
 import { loadDeployEnv, xbosBase, xbosHeaders } from './seed-env-loader.mjs';
 
 loadDeployEnv();
 
 const TENANT = 'xevn';
-const COMPANY = 'xevn';
+const COMPANY = 'holding';
+
+function seedGroupCeoJwt() {
+  const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const body = Buffer.from(
+    JSON.stringify({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'seed@xe.vn',
+      tenantId: TENANT,
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    }),
+  ).toString('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
+  return `${header}.${body}.${sig}`;
+}
 
 async function upsert(domain, itemId, payload) {
   const url = `${xbosBase()}/api/xbos/business-master/${encodeURIComponent(domain)}/items/${encodeURIComponent(itemId)}`;
   const res = await fetch(url, {
     method: 'PUT',
-    headers: { ...xbosHeaders(), 'Content-Type': 'application/json' },
+    headers: {
+      ...xbosHeaders({ 'x-company-id': 'main', 'x-tenant-id': TENANT }),
+      Authorization: `Bearer ${seedGroupCeoJwt()}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(`${domain}/${itemId} ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`${domain}/${itemId} ${res.status} ${body.slice(0, 200)}`);
+  }
 }
 
 const departments = [

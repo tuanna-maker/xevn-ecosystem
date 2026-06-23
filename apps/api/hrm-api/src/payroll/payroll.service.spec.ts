@@ -110,6 +110,62 @@ describe('PayrollService', () => {
     ]);
   });
 
+  it('getPeriodById keeps list/detail scope parity for company_id=main (G-INT-04)', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const periodId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const periodRow = {
+      id: periodId,
+      company_id: 'holding',
+      period_label: '2026-04',
+      start_date: '2026-04-01',
+      end_date: '2026-04-30',
+      status: 'draft' as const,
+      created_by: null,
+      processed_at: null,
+      closed_at: null,
+      created_at: '2026-04-01T00:00:00.000Z',
+      updated_at: '2026-04-01T00:00:00.000Z',
+    };
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+        return { rows: [periodRow] } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    const result = await service.getPeriodById(periodId, 'main', `Bearer ${token}`);
+
+    expect(result.id).toBe(periodId);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('company_id = ANY'),
+      expect.arrayContaining([periodId, expect.any(Array)]),
+    );
+  });
+
+  it('getPeriodById returns 404 when period is outside member CEO scope (G-INT-04)', async () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+        return { rows: [] } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    await expect(
+      service.getPeriodById('f76f23f7-3683-4120-81b7-5126ee997b8e', 'main', `Bearer ${token}`),
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
+  });
+
   it('lists payslips with employee_id filter (MOB-BE-05)', async () => {
     await service.listPayslips({
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
@@ -118,6 +174,29 @@ describe('PayrollService', () => {
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('p.employee_id = $2::uuid'),
       expect.arrayContaining(['78b8a663-f5e5-4f4d-a020-b8f950ec2037', '11111111-1111-4111-8111-111111111111']),
+    );
+  });
+
+  it('lists payslips when mobile sends company_uuid but rows use holding slug (J-MOB-04)', async () => {
+    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: holdingUuid,
+      roleCode: 'employee',
+    });
+    db.query.mockResolvedValue({ rows: [] } as never);
+    await service.listPayslips(
+      {
+        company_id: holdingUuid,
+        employee_id: '11111111-1111-4111-8111-111111111111',
+      },
+      `Bearer ${token}`,
+    );
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('p.company_id = $1'),
+      expect.arrayContaining(['holding', '11111111-1111-4111-8111-111111111111']),
     );
   });
 

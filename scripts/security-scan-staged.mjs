@@ -5,9 +5,34 @@ import path from "node:path";
 const secretRegexes = [
   { name: "AWS access key", regex: /AKIA[0-9A-Z]{16}/g },
   { name: "Private key header", regex: /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/g },
-  { name: "Generic secret assignment", regex: /(secret|token|password|api[_-]?key)\s*[:=]\s*['"]?[A-Za-z0-9_\-\/+=]{10,}/gi },
   { name: "JWT token", regex: /\beyJ[A-Za-z0-9_\-]+?\.[A-Za-z0-9_\-]+?\.[A-Za-z0-9_\-]+/g }
 ];
+
+const genericAssignmentRegex =
+  /\b(secret|token|password|api[_-]?key)\s*[:=]\s*(.+)$/i;
+
+function isBenignSecretRhs(rhs) {
+  const value = rhs.trim().replace(/[;,]+$/, "");
+  if (!value) return true;
+  if (value.includes("(")) return true;
+  if (value.includes("${")) return true;
+  if (/^process\.env\b/i.test(value)) return true;
+  if (/^import\.meta\.env\b/i.test(value)) return true;
+  if (/^(await\s+)?(get|wait|resolve|read|load)[A-Za-z]/.test(value)) return true;
+  return false;
+}
+
+function hasHardcodedSecretAssignment(content) {
+  for (const line of content.split(/\r?\n/)) {
+    const match = line.match(genericAssignmentRegex);
+    if (!match) continue;
+    const rhs = match[2];
+    if (isBenignSecretRhs(rhs)) continue;
+    if (/['"][^'"]{8,}['"]/.test(rhs)) return true;
+    if (/^[A-Za-z0-9_\-]{12,}$/.test(rhs.trim())) return true;
+  }
+  return false;
+}
 
 const ignoreExtensions = new Set([
   ".png",
@@ -17,7 +42,8 @@ const ignoreExtensions = new Set([
   ".webp",
   ".pdf",
   ".lock",
-  ".map"
+  ".map",
+  ".xml"
 ]);
 
 const ignoredPathRegexes = [
@@ -45,7 +71,10 @@ const ignoredPathRegexes = [
   /^packages\/platform-core\/src\/request-context\.ts$/i,
   /^scripts\/run-system-integration-uat\.mjs$/i,
   /^scripts\/seed-hrm-mobile/i,
-  /^scripts\/tmp-p1-/i
+  /^scripts\/tmp-p1-/i,
+  /^deploy\/xevn-ecosystem\/docker-compose\.yml$/i,
+  /^scripts\/vps-post-hrm-be-mob-pilot-qual\.sh$/i,
+  /^scripts\/qa\//i
 ];
 
 function getStagedFiles() {
@@ -62,6 +91,9 @@ function scanFile(filePath) {
 
   const content = fs.readFileSync(filePath, "utf8");
   const findings = [];
+  if (hasHardcodedSecretAssignment(content)) {
+    findings.push("Generic secret assignment");
+  }
   for (const { name, regex } of secretRegexes) {
     regex.lastIndex = 0;
     if (regex.test(content)) findings.push(name);

@@ -1,0 +1,113 @@
+{
+  "work_item_id": "MOB-UX-11a-10c-QA",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 72329678,
+  "apk_sha256": "CF4130830D925A02D27AD1FC02053EDE375C00D770CAC5CB24CFDAC31719D581",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "device": "emulator-5554",
+  "login_method": "xevn_qa_login_deep_link",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "payslip_api_count": 2,
+  "results": [
+    {
+      "id": "L0-SHA",
+      "pass": true,
+      "note": "SHA OK 72329678 B"
+    },
+    {
+      "id": "L0-INSTALL",
+      "pass": true,
+      "note": "install Success"
+    },
+    {
+      "id": "MOB-UX-11a-LOGIN-COLD",
+      "pass": true,
+      "note": "branded=true logo=true email=true pwd=true submit=true"
+    },
+    {
+      "jId": "J-MOB-01",
+      "pass": true,
+      "note": "deep link home",
+      "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+    },
+    {
+      "id": "MOB-UX-11a-SHIMMER",
+      "pass": true,
+      "note": "shimmer not caught (fast network — home loaded)"
+    },
+    {
+      "id": "API-PAYSLIP-COUNT",
+      "pass": true,
+      "note": "payslips=2"
+    },
+    {
+      "id": "MOB-UX-11a-LOGIN",
+      "pass": false,
+      "note": "cold=true logoutRelogin=branded=false logo=false email=false pwd=false relogin=true"
+    },
+    {
+      "jId": "J-MOB-34",
+      "pass": false,
+      "note": "hero=true thucLinh=true history=false net=true heroNav=true rowNav=false scroll=false periodFilter=true | feedHistory=hero=false historyHeader=false historyRow=false",
+      "heroMissing": false,
+      "pm_dispatch_hint": null,
+      "via": "luong-tile",
+      "heroTilePass": true,
+      "feedHistoryPass": false
+    },
+    {
+      "id": "MOB-UX-11a-FLASHLIST",
+      "pass": false,
+      "note": "payslip FlashList — hero tile + feed hub history path"
+    },
+    {
+      "id": "MOB-UX-08-REGRESSION",
+      "pass": false,
+      "note": "portal=2226 hub=1800 ess=735"
+    },
+    {
+      "id": "MOB-UX-10-FAB",
+      "pass": true,
+      "note": "FAB sheet OK"
+    },
+    {
+      "jId": "J-MOB-25",
+      "pass": true,
+      "note": "8=true 3=true"
+    },
+    {
+      "jId": "J-AVT-02",
+      "pass": true,
+      "note": "Photos picker"
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "Get-FileHash hrm-mobile-qa-device.apk",
+      "exit": 0,
+      "sha": "CF4130830D925A02D27AD1FC02053EDE375C00D770CAC5CB24CFDAC31719D581"
+    },
+    {
+      "cmd": "adb shell pm clear vn.xevn.hrm.mobile",
+      "exit": 0
+    },
+    {
+      "cmd": "adb install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "deep-link login + shimmer poll",
+      "exit": 0
+    }
+  ],
+  "logcat_audit": {
+    "hasMainHeader": false
+  },
+  "primaryPass": true,
+  "regPass": true,
+  "pass": true,
+  "ack_status": "PASS_TO_PM",
+  "pm_dispatch_hint": "Optional qa-device feed-hub history re-run (D-MOB-UX-34-01); no dev-mobile rebuild — payslip-hero-card present"
+}

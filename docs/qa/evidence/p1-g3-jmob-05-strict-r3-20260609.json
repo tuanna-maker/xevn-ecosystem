@@ -1,0 +1,37 @@
+{
+  "work_item_id": "P1-G3-JMOB-05-STRICT-R3",
+  "pass": false,
+  "ack_status": "FAIL_TO_PM",
+  "apkMeta": {
+    "sha": "A00B6433A1C2B4220DA7DD8D84489E81DAF8AF968BEDCAFAB14FDD00F01FB4A7",
+    "bytes": 69149722
+  },
+  "pending": {
+    "leaveTotal": 1,
+    "updTotal": 1,
+    "leaveStatus": 200,
+    "updStatus": 200
+  },
+  "persona": {
+    "email": "uat.nv0002@xe.vn",
+    "roles": ["employee"],
+    "is_manager": false,
+    "tileLabel": "Việc"
+  },
+  "checks": [
+    { "id": "GATE-APK-SHA", "pass": true },
+    { "id": "GATE-LOGIN", "pass": true },
+    { "id": "GATE-PENDING", "pass": true },
+    { "id": "GATE-UUID", "pass": true },
+    { "id": "GATE-PERSONA", "pass": false, "note": "is_manager=false roles=[employee]" },
+    { "id": "J-MOB-05-NAV", "pass": false, "note": "tile→Thông báo 21763B" },
+    { "id": "J-MOB-05-INBOX", "pass": false },
+    { "id": "J-MOB-05-DUYET", "pass": false, "note": "blocked" },
+    { "id": "REG-NV1-LEAVE-83", "pass": false, "note": "UI 0/0 API 8/3" }
+  ],
+  "evidence_paths": [
+    "docs/qa/evidence/p1-g3-jmob-05-strict-r3-20260609.md",
+    "docs/qa/evidence/p1-g3-jmob-05-strict-r3-probe.json",
+    "docs/qa/evidence/p1-g3-jmob-05-strict-r3-screens/"
+  ]
+}

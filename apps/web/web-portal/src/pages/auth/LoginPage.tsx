@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { Building2, Lock, Mail } from 'lucide-react';
+import { Lock, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { consumeLoginRedirect } from '../../integrations/authSession';
 
@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
     setBusy(true);
     setError(null);
     try {
-      await login(email.trim(), password);
+      await login(email.trim().toLowerCase(), password);
       navigate(from, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
@@ -54,11 +54,9 @@ const LoginPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-[#F9FAFB] px-4">
       <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-soft">
         <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1E40AF]/10 text-[#1E40AF]">
-            <Building2 size={24} strokeWidth={1.5} />
-          </span>
+          <img src="/xevn-logo.png" alt="XeVN" className="h-12 w-12 object-contain" />
           <div>
-            <h1 className="text-xl font-semibold text-slate-900">XEVN Portal</h1>
+            <h1 className="text-xl font-semibold text-slate-900">XeVN Portal</h1>
             <p className="text-sm text-slate-500">Đăng nhập tập đoàn / công ty thành viên</p>
           </div>
         </div>

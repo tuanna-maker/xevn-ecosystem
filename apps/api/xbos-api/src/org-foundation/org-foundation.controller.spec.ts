@@ -17,6 +17,9 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
 
   const serviceMock = {
     listLegalEntities: jest.fn().mockResolvedValue([]),
+    resolveLegalEntityPartition: jest
+      .fn()
+      .mockResolvedValue({ tenantId: 'xe-du-lich', companyId: 'main' }),
     getLegalEntityById: jest.fn().mockResolvedValue({ id: 'le-member-1', code: 'VTC', name: 'VTC Corp' }),
     listOrgTree: jest.fn().mockResolvedValue([{ id: 'root', children: [] }]),
     listGroupOrgTreesForUser: jest.fn().mockResolvedValue([{ tenantId: 'xe-vtc', name: 'VTC', tree: [] }]),
@@ -70,7 +73,7 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
 
   it('UC-XBOS-ORG-01: group CEO on master tenant loads aggregated member trees', async () => {
     serviceMock.listOrgTree.mockResolvedValueOnce([
-      { tenantId: 'xe-vtc', name: 'VTC', tree: [{ id: 'ou-1' }] },
+      { tenantId: 'xe-vtc', name: 'VTC', tree: [{ id: 'ou-1', code: 'HCNS' }] },
     ]);
     const token = createInternalJwt({
       iss: 'xevn-internal',
@@ -82,7 +85,11 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     });
     const result = await controller.orgTree(undefined, undefined, `Bearer ${token}`, 'test-key');
     expect(result.code).toBe('XBOS-ORG-200');
-    expect(result.data).toMatchObject({ mode: 'group' });
+    expect(result.data).toMatchObject({
+      mode: 'group',
+      tree: [{ id: 'ou-1', code: 'HCNS' }],
+      groups: [{ tenantId: 'xe-vtc', name: 'VTC', tree: [{ id: 'ou-1', code: 'HCNS' }] }],
+    });
     expect(serviceMock.listOrgTree).toHaveBeenCalledWith('xevn', 'holding', 'ceo@xe.vn');
   });
 
@@ -240,6 +247,7 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     const memberId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
     const result = await controller.getLegalEntity(memberId, 'xevn', 'main', `Bearer ${token}`, 'test-key');
     expect(result.code).toBe('XBOS-ORG-200');
+    expect(serviceMock.resolveLegalEntityPartition).toHaveBeenCalledWith(memberId);
     expect(serviceMock.getLegalEntityById).toHaveBeenCalledWith(memberId);
   });
 
@@ -255,7 +263,28 @@ describe('OrgFoundationController (UC-XBOS-ORG, ADR scope)', () => {
     const memberId = '11d2bb7b-6190-4cb4-b0fe-03d43b5596b8';
     const result = await controller.getLegalEntity(memberId, 'xe-du-lich', 'main', `Bearer ${token}`, 'test-key');
     expect(result.code).toBe('XBOS-ORG-200');
+    expect(serviceMock.resolveLegalEntityPartition).toHaveBeenCalledWith(memberId);
     expect(serviceMock.getLegalEntityById).toHaveBeenCalledWith(memberId);
+  });
+
+  it('P1-PHASE1-BE-SCOPE-P0-S5-01: member CEO GET other tenant legal-entity UUID returns 409', async () => {
+    serviceMock.resolveLegalEntityPartition.mockResolvedValueOnce({
+      tenantId: 'xe-vtc',
+      companyId: 'main',
+    });
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'company_ceo',
+    });
+    const memberId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
+    await expect(
+      controller.getLegalEntity(memberId, 'xe-du-lich', 'main', `Bearer ${token}`, 'test-key'),
+    ).rejects.toMatchObject<ApiException>({ code: 'SCOPE_CONTEXT_MISMATCH' });
+    expect(serviceMock.getLegalEntityById).not.toHaveBeenCalled();
   });
 
   it('P1-CC-BE-MEMBER-LEGAL-BROWSER-PUT-01: browser-shaped PUT with root code/name returns 201 envelope', async () => {

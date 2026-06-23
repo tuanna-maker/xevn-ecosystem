@@ -1,13 +1,20 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useLayoutEffect, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ListShimmerPlaceholder } from '../../components/primitives/ListShimmerPlaceholder';
+import { FilterChipRow } from '../../components/ui/FilterChipRow';
+import { ListRow } from '../../components/ui/ListRow';
 import type { RequestsStackParamList } from '../../navigation/types';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
+import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { resolveAttendanceChangeTypeVi } from '../../utils/attendanceUpdateTypes';
+import { formatHrmDate } from '../../utils/formatHrm';
+import { userFacingScopeError } from '../../utils/scopeError';
 
 type Req = { id: string; status: string; employee_name: string; update_type: string; attendance_date: string };
 
@@ -19,20 +26,21 @@ export function UpdateRequestsScreen() {
   const [rows, setRows] = useState<Req[]>([]);
   const [err, setErr] = useState('');
   const [filter, setFilter] = useState<StatusFilter>('pending');
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useLayoutEffect(() => {
     nav.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 4 }}>
-          <Pressable onPress={() => nav.navigate('LeaveRequestsList')} style={{ paddingHorizontal: 6 }}>
-            <Text style={{ color: '#cbd5e1', fontWeight: '600', fontSize: 12 }}>{vi.leaveList}</Text>
+        <View style={styles.headerActions}>
+          <Pressable onPress={() => nav.navigate('LeaveRequestsList')} style={styles.headerAction}>
+            <Text style={styles.headerActionMuted}>{vi.leaveList}</Text>
           </Pressable>
-          <Pressable onPress={() => nav.navigate('CreateLeaveRequest')} style={{ paddingHorizontal: 6 }}>
-            <Text style={{ color: '#a7f3d0', fontWeight: '600' }}>+ {vi.createLeave}</Text>
+          <Pressable onPress={() => nav.navigate('CreateLeaveRequest')} style={styles.headerAction}>
+            <Text style={styles.headerActionText}>+ {vi.createLeave}</Text>
           </Pressable>
-          <Pressable onPress={() => nav.navigate('CreateUpdateRequest')} style={{ paddingHorizontal: 6 }}>
-            <Text style={{ color: '#38bdf8', fontWeight: '600' }}>+ {vi.createRequest}</Text>
+          <Pressable onPress={() => nav.navigate('CreateUpdateRequest')} style={styles.headerAction}>
+            <Text style={styles.headerActionText}>+ {vi.createRequest}</Text>
           </Pressable>
         </View>
       ),
@@ -42,7 +50,7 @@ export function UpdateRequestsScreen() {
   const load = useCallback(async () => {
     const cid = auth.getAttendanceCompanyId();
     if (!cid) {
-      setErr('Cần UUID công ty.');
+      setErr(userFacingScopeError('company'));
       setRows([]);
       return;
     }
@@ -62,72 +70,147 @@ export function UpdateRequestsScreen() {
     }
   }, [auth, filter]);
 
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-
-  const onRefresh = useCallback(async () => {
+  const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await load();
     } finally {
       setRefreshing(false);
+      setLoading(false);
     }
   }, [load]);
 
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      void refresh();
+    }, [refresh]),
+  );
+
+  React.useEffect(() => {
+    setLoading(true);
+    void refresh();
+  }, [filter, refresh]);
+
+  const chipOptions = useMemo(
+    () =>
+      (['all', 'pending', 'approved', 'rejected'] as const).map((k) => ({
+        key: k,
+        label: k === 'all' ? 'Tất cả' : statusLabel(k),
+      })),
+    [],
+  );
+
+  if (loading && rows.length === 0 && !err) {
+    return (
+      <View style={styles.root}>
+        <View style={styles.chipWrap}>
+          <FilterChipRow value={filter} options={chipOptions} onChange={setFilter} />
+        </View>
+        <ListShimmerPlaceholder testID="update-requests-shimmer" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.root}>
-      <Text style={styles.sub}>UC-HRM-MOB-07 — kéo để làm mới</Text>
-      <View style={styles.chips}>
-        {(['all', 'pending', 'approved', 'rejected'] as const).map((k) => (
-          <Pressable key={k} style={[styles.chip, filter === k && styles.chipOn]} onPress={() => setFilter(k)}>
-            <Text style={[styles.chipText, filter === k && styles.chipTextOn]}>
-              {k === 'all' ? 'Tất cả' : statusLabel(k)}
-            </Text>
-          </Pressable>
-        ))}
+      <View style={styles.chipWrap}>
+        <FilterChipRow
+          value={filter}
+          options={chipOptions}
+          onChange={(k) => {
+            setFilter(k);
+            setLoading(true);
+          }}
+        />
       </View>
-      {err ? <Text style={styles.err}>{err}</Text> : null}
+
+      {err ? (
+        <View style={styles.errWrap}>
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorText}>{err}</Text>
+          </View>
+        </View>
+      ) : null}
+
       <FlatList
         data={rows}
         keyExtractor={(item) => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void onRefresh()} tintColor="#38bdf8" />}
+        contentContainerStyle={styles.list}
+        refreshing={refreshing}
+        onRefresh={() => void refresh()}
         renderItem={({ item }) => (
-          <Pressable style={styles.row} onPress={() => nav.navigate('UpdateRequestDetail', { id: item.id })}>
-            <Text style={styles.rowMain}>
-              {item.employee_name} — {item.update_type}
-            </Text>
-            <Text style={styles.rowSub}>
-              {item.attendance_date} — {statusLabel(item.status)}
-            </Text>
-          </Pressable>
+          <ListRow
+            title={`${item.employee_name} — ${resolveAttendanceChangeTypeVi(item.update_type)}`}
+            subtitle={formatHrmDate(item.attendance_date)}
+            status={item.status}
+            onPress={() => nav.navigate('UpdateRequestDetail', { id: item.id })}
+          />
         )}
-        ListEmptyComponent={<Text style={styles.empty}>Không có đơn</Text>}
+        ListEmptyComponent={
+          !err ? (
+            <View style={styles.emptyBox}>
+              <Text style={styles.emptyTitle}>Không có đơn</Text>
+              <Text style={styles.emptyHint}>Kéo xuống để làm mới hoặc tạo đơn mới.</Text>
+            </View>
+          ) : null
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0f172a', padding: 16 },
-  sub: { color: '#64748b', marginBottom: 8 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  chip: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#1e293b',
-    borderWidth: 1,
-    borderColor: '#334155',
+  root: { flex: 1, backgroundColor: colors.background },
+  chipWrap: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
-  chipOn: { borderColor: '#38bdf8', backgroundColor: '#0c4a6e' },
-  chipText: { color: '#94a3b8', fontSize: 12, textTransform: 'capitalize' },
-  chipTextOn: { color: '#e0f2fe', fontWeight: '700' },
-  err: { color: '#f87171', marginBottom: 8 },
-  row: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#334155' },
-  rowMain: { color: '#e2e8f0', fontSize: 15 },
-  rowSub: { color: '#94a3b8', fontSize: 12 },
-  empty: { color: '#64748b', marginTop: 24 },
+  errWrap: { paddingHorizontal: spacing.md, paddingBottom: spacing.sm },
+  errorBanner: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: radius.card,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    padding: spacing.md,
+  },
+  errorText: {
+    color: '#991B1B',
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  emptyBox: {
+    alignItems: 'center',
+    paddingVertical: spacing['2xl'],
+    gap: spacing.xs,
+  },
+  emptyTitle: {
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.semibold,
+    color: colors.text,
+  },
+  emptyHint: {
+    fontSize: typography.fontSize.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  list: { padding: spacing.md, gap: spacing.sm, paddingBottom: spacing.xl },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingRight: spacing.xs,
+  },
+  headerAction: { paddingHorizontal: spacing.sm },
+  headerActionText: {
+    color: colors.primary,
+    fontWeight: typography.fontWeight.semibold,
+    fontSize: typography.fontSize.sm,
+  },
+  headerActionMuted: {
+    color: colors.textSecondary,
+    fontWeight: typography.fontWeight.semibold,
+    fontSize: typography.fontSize.xs,
+  },
 });

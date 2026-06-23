@@ -3,6 +3,28 @@ import { resolveHrmOperationalCompanyId } from '../../integrations/commandCenter
 /** Base path cho router HRM lồng trong Command Center */
 export const HRM_PORTAL_BASE = '/command-center/hrm';
 
+/** G-INT-08 — query param to bust stale HRM embed bundles on tab navigation. */
+export const HRM_EMBED_CACHE_BUST_PARAM = '_v';
+
+export type HrmEmbedPathOptions = {
+  portal?: boolean;
+  companyId?: string | null;
+  tenantId?: string | null;
+  cacheBust?: number | string | null;
+};
+
+function appendEmbedQueryParams(params: URLSearchParams, opts?: HrmEmbedPathOptions): void {
+  if (opts?.portal) params.set('portal', '1');
+  if (opts?.tenantId) params.set('tenantId', opts.tenantId);
+  const embedCompany = embedCompanyQueryParam(opts?.tenantId, opts?.companyId);
+  if (embedCompany) params.set('companyId', embedCompany);
+  if (opts?.cacheBust != null && String(opts.cacheBust).length > 0) {
+    params.set(HRM_EMBED_CACHE_BUST_PARAM, String(opts.cacheBust));
+  }
+}
+
+const HRM_PORTAL_DEFAULT = 'dashboard';
+
 function embedCompanyQueryParam(
   tenantId?: string | null,
   companyId?: string | null,
@@ -10,8 +32,6 @@ function embedCompanyQueryParam(
   if (!companyId || companyId === 'all') return undefined;
   return resolveHrmOperationalCompanyId(tenantId, companyId);
 }
-
-const HRM_PORTAL_DEFAULT = 'dashboard';
 
 export function hrmPortalPath(view: string): string {
   const trimmed = view.replace(/^\/+/, '').replace(/\/+$/, '');
@@ -28,11 +48,36 @@ export function hrmPortalSuffixFromPathname(pathname: string): string {
   return suffix || HRM_PORTAL_DEFAULT;
 }
 
+/** Registry view key → HRM app route segment (hyphenated where required). */
+export const HRM_VIEW_PATH_MAP: Record<string, string> = {
+  dashboard: '/',
+  employees: '/employees',
+  company: '/company',
+  recruitment: '/recruitment',
+  attendance: '/attendance',
+  payroll: '/payroll',
+  contracts: '/contracts',
+  insurance: '/insurance',
+  decisions: '/decisions',
+  reports: '/reports',
+  settings: '/settings',
+  hrm_ai: '/ai',
+  tasks: '/tasks',
+  processes: '/processes',
+  internal_services: '/internal-services',
+  tools_equipment: '/tools-equipment',
+  guide: '/guide',
+};
+
 /** Chuyển suffix portal → path app HRM (không gồm basename /hr). */
 export function hrmAppRelPathFromPortalSuffix(suffix: string): string {
   const trimmed = suffix.replace(/^\/+/, '').replace(/\/+$/, '');
   if (!trimmed || trimmed === 'dashboard') return '/';
-  return `/${trimmed}`;
+  const [primary, ...rest] = trimmed.split('/');
+  const mapped = HRM_VIEW_PATH_MAP[primary] ?? `/${primary}`;
+  if (mapped === '/') return '/';
+  const tail = rest.length ? `/${rest.join('/')}` : '';
+  return `${mapped}${tail}`;
 }
 
 /** Segment đầu của suffix — dùng highlight menu sidebar. */
@@ -44,17 +89,14 @@ export function hrmPortalPrimaryView(suffix: string): string {
 /** iframe src từ suffix portal (hỗ trợ deep link employees/:id). */
 export function hrmProxyPathFromSuffix(
   portalSuffix: string,
-  opts?: { portal?: boolean; companyId?: string | null; tenantId?: string | null },
+  opts?: HrmEmbedPathOptions,
 ): string {
   const rel = hrmAppRelPathFromPortalSuffix(portalSuffix);
   // HRM Vite `base` is `/hr/` — `/hr?portal=1` 404s; dashboard must be `/hr/?…`.
   const baseHref = rel === '/' ? `${HRM_PROXY_BASE}/` : `${HRM_PROXY_BASE}${rel}`;
 
   const params = new URLSearchParams();
-  if (opts?.portal) params.set('portal', '1');
-  if (opts?.tenantId) params.set('tenantId', opts.tenantId);
-  const embedCompany = embedCompanyQueryParam(opts?.tenantId, opts?.companyId);
-  if (embedCompany) params.set('companyId', embedCompany);
+  appendEmbedQueryParams(params, opts);
 
   const qs = params.toString();
   return qs ? `${baseHref}?${qs}` : baseHref;
@@ -65,37 +107,13 @@ export const HRM_PROXY_BASE = '/hr';
 
 export function hrmProxyPath(
   view: string,
-  opts?: { portal?: boolean; companyId?: string | null; tenantId?: string | null }
+  opts?: HrmEmbedPathOptions,
 ): string {
-  // view key từ registry (vd: "attendance", "tools_equipment"...)
-  const map: Record<string, string> = {
-    dashboard: '/', // HRM dashboard nằm ở "/"
-    employees: '/employees',
-    company: '/company',
-    recruitment: '/recruitment',
-    attendance: '/attendance',
-    payroll: '/payroll',
-    contracts: '/contracts',
-    insurance: '/insurance',
-    decisions: '/decisions',
-    reports: '/reports',
-    settings: '/settings',
-    hrm_ai: '/ai',
-    tasks: '/tasks',
-    processes: '/processes',
-    internal_services: '/internal-services',
-    tools_equipment: '/tools-equipment',
-    guide: '/guide',
-  };
-
-  const suffix = map[view] ?? '/';
+  const suffix = HRM_VIEW_PATH_MAP[view] ?? '/';
   const baseHref = suffix === '/' ? `${HRM_PROXY_BASE}/` : `${HRM_PROXY_BASE}${suffix}`;
 
   const params = new URLSearchParams();
-  if (opts?.portal) params.set('portal', '1');
-  if (opts?.tenantId) params.set('tenantId', opts.tenantId);
-  const embedCompany = embedCompanyQueryParam(opts?.tenantId, opts?.companyId);
-  if (embedCompany) params.set('companyId', embedCompany);
+  appendEmbedQueryParams(params, opts);
 
   const qs = params.toString();
   return qs ? `${baseHref}${baseHref.includes('?') ? '&' : '?'}${qs}` : baseHref;
@@ -108,28 +126,7 @@ export function hrmAppPath(
   view: string,
   opts?: { portal?: boolean; companyId?: string | null; tenantId?: string | null }
 ): string {
-  // view key từ registry (vd: "attendance", "tools_equipment"...)
-  const map: Record<string, string> = {
-    dashboard: '/', // HRM dashboard nằm ở "/"
-    employees: '/employees',
-    company: '/company',
-    recruitment: '/recruitment',
-    attendance: '/attendance',
-    payroll: '/payroll',
-    contracts: '/contracts',
-    insurance: '/insurance',
-    decisions: '/decisions',
-    reports: '/reports',
-    settings: '/settings',
-    hrm_ai: '/ai',
-    tasks: '/tasks',
-    processes: '/processes',
-    internal_services: '/internal-services',
-    tools_equipment: '/tools-equipment',
-    guide: '/guide',
-  };
-
-  const suffix = map[view] ?? '/';
+  const suffix = HRM_VIEW_PATH_MAP[view] ?? '/';
 
   // Prefer same-origin `/hr/...` (portal Vite proxy) so localStorage + postMessage JWT bridge works.
   // Only use VITE_HRM_ORIGIN when explicitly set (e.g. isolated HRM dev without proxy).

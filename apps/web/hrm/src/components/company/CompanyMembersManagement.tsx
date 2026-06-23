@@ -89,7 +89,7 @@ import {
   inviteEmployees,
   listAdminCompanies,
   listCompanyMemberships,
-  listEmployees,
+  listAllEmployees,
   updateCompanyMembership,
   upsertCompanyMembership,
 } from '@/integrations/hrmApi';
@@ -230,7 +230,7 @@ export function CompanyMembersManagement() {
       const companyIds = companies.length ? companies.map((c) => c.id) : ['main'];
       const rows: EmployeeOption[] = [];
       for (const cid of companyIds.slice(0, 5)) {
-        const res = await listEmployees({ company_id: cid, page_size: 200 });
+        const res = await listAllEmployees({ company_id: cid });
         for (const emp of res.data ?? []) {
           rows.push({
             id: emp.id,

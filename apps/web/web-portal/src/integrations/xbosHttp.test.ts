@@ -23,9 +23,9 @@ describe('mergeRequestHeaders', () => {
     expect(merged['X-Company-Id']).toBe('co-1');
   });
 
-  it('preserves unrelated headers from all layers', () => {
+  it('preserves unrelated headers from all layers (legacy duplicate casing)', () => {
     const merged = mergeRequestHeaders(
-      { 'content-type': 'application/json', Authorization: 'Bearer a' },
+      { Authorization: 'Bearer a' },
       { 'x-tenant-id': 'xe-du-lich' },
       { 'Content-Type': 'application/json', 'x-company-id': 'main' },
     );
@@ -70,13 +70,55 @@ describe('xbosFetch buildHeaders integration', () => {
     vi.unstubAllGlobals();
   });
 
-  it('sends single Content-Type when init adds Content-Type over auth content-type', async () => {
+  it('sends single Content-Type when init adds Content-Type (member legal PUT path)', async () => {
     await xbosFetch('/org-foundation/legal-entities/le-1', {
       method: 'PUT',
       tenantId: 'xe-du-lich',
       companyId: 'main',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: 'XE_DU_LICH', name: 'Test' }),
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('auto-adds single Content-Type on PUT when caller omits header (no auth lowercase)', async () => {
+    await xbosFetch('/org-foundation/legal-entities/le-1', {
+      method: 'PUT',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      body: JSON.stringify({ code: 'XE_DU_LICH', name: 'Test' }),
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it('does not force application/json Content-Type for FormData upload', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string, init?: RequestInit) => {
+        const raw = init?.headers;
+        const headerPairs: Array<[string, string]> =
+          raw instanceof Headers
+            ? Array.from(raw.entries())
+            : Array.isArray(raw)
+              ? raw
+              : Object.entries((raw as Record<string, string>) ?? {});
+        const contentTypeKeys = headerPairs.filter(
+          ([k]) => k.toLowerCase() === 'content-type',
+        );
+        expect(contentTypeKeys).toHaveLength(0);
+        return {
+          ok: true,
+          json: async () => ({ data: { id: 'doc-1', file_url: '/file' } }),
+        } as Response;
+      }),
+    );
+    const form = new FormData();
+    form.append('file', new File(['x'], 'gpkd.pdf', { type: 'application/pdf' }));
+    await xbosFetch('/org-foundation/legal-entities/le-1/documents/doc-1/upload', {
+      method: 'POST',
+      tenantId: 'xevn',
+      companyId: 'main',
+      body: form,
     });
     expect(fetch).toHaveBeenCalledOnce();
   });

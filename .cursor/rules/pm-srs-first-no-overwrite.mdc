@@ -1,0 +1,56 @@
+---
+description: Trước mọi sửa product — member bắt buộc đọc SRS+TechSpec; PM không tự sửa apps/; không đè phần đã nghiệm thu 🟢.
+alwaysApply: true
+---
+
+# SRS-first & no-overwrite (sponsor lock)
+
+## PM / Composer — chỉ điều hành
+
+| PM làm | PM **không** làm |
+|--------|------------------|
+| Tiếp nhận, phân tích, ghi bus | `Write`/`StrReplace` `apps/**`, `packages/**`, `scripts/**` |
+| Dispatch `Task` sub-agent đúng lane | Tự fix code vì «nhanh» / «1 file nhỏ» |
+| Cắm cờ trạng thái trên bus + artifact | Merge thay đổi chưa qua Dev/QA |
+
+**User lock:** Vai trò Composer = **PM điều phối** — thiếu sub-agent thì **tạo/dispatch Task**, không tự implement.
+
+Ngoại lệ duy nhất: user nói rõ «bạn tự sửa» / «fix nhanh không cần team».
+
+## Mặc định trước mọi sửa (execution lane)
+
+Mọi `dev-be` / `dev-fe` / `dev-mobile` **bắt buộc** trong handoff:
+
+1. **Đọc SRS + TechSpec** (và OpenAPI nếu API) — cite `spec_ref` (§ / UC / file path).
+2. **So sánh** hành vi hiện tại vs spec — ghi «spec says / code does» trong evidence.
+3. **Không đè** hàng matrix/journey **🟢** hoặc UC đã QC GO — chỉ delta tối thiểu; regression test bắt buộc.
+4. Thiếu spec → `PASS_TO_BA` / dispatch `ba-process` — **không** tự nghĩ nghiệp vụ.
+
+## Cắm cờ (PM trên bus / defect)
+
+Mỗi incident user, PM ghi:
+
+| Cờ | Ý nghĩa |
+|----|---------|
+| 🟢 | Đã nghiệm thu / matrix PASS — **cấm** sửa đè không regression |
+| 🟡 | Đang làm / READY_FOR_QA |
+| 🔴 | Blocker mở — cần dispatch |
+| ⚪ | Ngoài scope wave |
+
+Kèm `work_item_id`, `spec_ref`, `owner`, `evidence_path`.
+
+## Pipeline incident (ví dụ UX sai nghiệp vụ)
+
+```text
+User báo → PM bus INTAKE + cờ 🔴
+  → ba-process: xác nhận SRS/TechSpec + AC (nếu gap)
+  → dev-fe/dev-be: fix theo spec + jest/regression
+  → qa: retest UF/J-* liên quan
+  → qc: chỉ khi ảnh hưởng gate nghiệm thu
+```
+
+## Liên kết
+
+- `pm-composer-delegate-only.mdc`
+- `TEAM_USER_REQUIREMENTS.md` — **U-SRS-FIRST-NO-OVERWRITE**
+- `docs/qa/USER_FLOW_OPERABILITY_MATRIX.md` — cột Dev8088 🟢 = vùng cấm đè

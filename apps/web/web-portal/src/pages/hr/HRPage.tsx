@@ -24,8 +24,7 @@ import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { resolveIdentityScope } from '../../integrations/identityScope';
 import { listHrmEmployees } from '../../modules/hrm/hrmApiClient';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
-import { allowMockFallback } from '../../utils/mockPolicy';
-import { mockEmployees } from '../../data/mock-data';
+import { resolveHrPageEmployeesOnFailure } from '../../utils/portalStrictMode';
 import { hrmPortalPath } from '../../modules/hrm/paths';
 
 const HRPage: React.FC = () => {
@@ -70,29 +69,17 @@ const HRPage: React.FC = () => {
         setApiEmployees(mapped);
       })
       .catch(() => {
-        setApiLoadFailed(true);
-        setApiEmployees([]);
-        if (allowMockFallback()) {
-          setUsingMockFallback(true);
-        }
+        const failure = resolveHrPageEmployeesOnFailure(selectedCompany.id);
+        setApiLoadFailed(failure.loadFailed);
+        setUsingMockFallback(failure.usingMockFallback);
+        setApiEmployees(failure.rows);
       })
       .finally(() => {
         setLoading(false);
       });
   }, [selectedCompany.id]);
 
-  const companyEmployees = useMemo(() => {
-    if (apiEmployees.length > 0) {
-      return apiEmployees;
-    }
-    if (usingMockFallback) {
-      if (selectedCompany.id === 'all') {
-        return mockEmployees;
-      }
-      return mockEmployees.filter((emp) => emp.id.startsWith(selectedCompany.id));
-    }
-    return [];
-  }, [selectedCompany, apiEmployees, usingMockFallback]);
+  const companyEmployees = useMemo(() => apiEmployees, [apiEmployees]);
 
   const stats = useMemo(() => {
     const total = companyEmployees.length;

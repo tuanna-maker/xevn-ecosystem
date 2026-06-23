@@ -12,6 +12,8 @@ export type DeptSystemFoundationTemplate = {
   appliesToCompanyIds: string[];
   /** Các cấp ORG GRADE (1–9) được dùng tại đơn vị — mặc định đủ 9, có thể bỏ cấp 6 (trống) */
   enabledOrgGradeLevels: number[];
+  /** Thứ tự / danh sách chức danh theo cấp (kéo thả trên sơ đồ khung) */
+  gradeTitleLayout?: Partial<Record<number, string[]>>;
 };
 
 export const INITIAL_DEPT_SYSTEM_TEMPLATES: DeptSystemFoundationTemplate[] = [

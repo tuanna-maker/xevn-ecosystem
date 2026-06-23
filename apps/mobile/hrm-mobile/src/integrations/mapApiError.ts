@@ -1,5 +1,12 @@
 import type { HrmRequestResult } from './hrmApiClient';
 
+const SUCCESS_VI: Record<string, string> = {
+  'HRM-ATT-REQ-203': 'Đã duyệt đơn chỉnh sửa chấm công',
+  'HRM-LEAVE-203': 'Đã duyệt đơn nghỉ phép',
+  'HRM-ATT-REQ-204': 'Đã từ chối đơn chỉnh sửa chấm công',
+  'HRM-LEAVE-204': 'Đã từ chối đơn nghỉ phép',
+};
+
 const CODE_VI: Record<string, string> = {
   all: 'Tất cả',
   'HRM-AUTH-001': 'Không có quyền truy cập',
@@ -14,6 +21,10 @@ const CODE_VI: Record<string, string> = {
   SCOPE_TENANT_REQUIRED: 'Thiếu tenantId',
   SCOPE_COMPANY_REQUIRED: 'Thiếu mã công ty',
 };
+
+export function formatHrmSuccess(code: string): string {
+  return SUCCESS_VI[code] ?? 'Thành công';
+}
 
 export function formatHrmError(result: HrmRequestResult<unknown>): string {
   if (result.ok) return '';

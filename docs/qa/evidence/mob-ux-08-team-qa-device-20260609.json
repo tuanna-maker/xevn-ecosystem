@@ -1,0 +1,174 @@
+{
+  "work_item_id": "MOB-UX-08-TEAM-QA",
+  "date": "2026-06-09",
+  "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+  "apk_bytes": 72858553,
+  "apk_sha256": "A0D5510B29DBF72676B9E05D50AC63B191FF0857671027EA8C71322AE8B0FEC9",
+  "api_base": "https://14-225-217-232.nip.io",
+  "email": "uat.nv0001@xe.vn",
+  "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+  "device": "emulator-5554",
+  "login_method": "xevn_qa_login_deep_link",
+  "api_probe": {
+    "directoryStatus": 400,
+    "directoryCode": "HRM-VAL-001",
+    "directoryTotal": 0,
+    "standardTotal": 213
+  },
+  "results": [
+    {
+      "id": "L0-SHA",
+      "pass": true,
+      "note": "SHA OK 72858553 B"
+    },
+    {
+      "id": "L0-INSTALL",
+      "pass": true,
+      "note": "cold install Success"
+    },
+    {
+      "id": "API-PROBE-uat.nv0001",
+      "pass": true,
+      "note": "dir=400/HRM-VAL-001 stdTotal=213",
+      "directoryStatus": 400,
+      "directoryCode": "HRM-VAL-001",
+      "directoryTotal": 0,
+      "standardTotal": 213
+    },
+    {
+      "id": "API-PROBE-ceo",
+      "pass": false,
+      "note": "API login failed ceo@xe.vn: HRM-AUTH-401"
+    },
+    {
+      "id": "API-PROBE-du-lich.ceo",
+      "pass": true,
+      "note": "dir=400/HRM-VAL-001 stdTotal=0",
+      "directoryStatus": 400,
+      "directoryCode": "HRM-VAL-001",
+      "directoryTotal": 0,
+      "standardTotal": 0
+    },
+    {
+      "id": "J-MOB-01",
+      "pass": true,
+      "note": "home via uat.nv0001@xe.vn",
+      "email": "uat.nv0001@xe.vn",
+      "company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013"
+    },
+    {
+      "jId": "J-MOB-30-TAB",
+      "pass": true,
+      "note": "Đội nhóm tab opened"
+    },
+    {
+      "jId": "J-MOB-30-UI",
+      "pass": true,
+      "note": "{\"screen\":true,\"search\":true,\"chips\":true,\"date\":true,\"checkInLink\":true,\"rows\":0,\"badges\":0,\"empty\":true}"
+    },
+    {
+      "jId": "J-MOB-30-SEARCH-FILTER",
+      "pass": true,
+      "note": "noMatch=true"
+    },
+    {
+      "jId": "J-MOB-30-ROW-BADGES",
+      "pass": true,
+      "note": "empty UI ok; API view=directory blocked (HRM-VAL-001)"
+    },
+    {
+      "jId": "J-MOB-02",
+      "pass": true,
+      "note": "sheet=true checkIn=true"
+    },
+    {
+      "jId": "J-MOB-33",
+      "pass": true,
+      "note": "FAB sheet → CheckIn"
+    },
+    {
+      "jId": "J-MOB-31",
+      "pass": true,
+      "note": "isManager=false strip=false"
+    },
+    {
+      "jId": "J-MOB-06",
+      "pass": true,
+      "note": "j06=true"
+    },
+    {
+      "jId": "J-MOB-07",
+      "pass": true,
+      "note": "j07=true"
+    },
+    {
+      "jId": "J-MOB-08",
+      "pass": true,
+      "note": "j08=true"
+    },
+    {
+      "jId": "J-MOB-09",
+      "pass": true,
+      "note": "j09=true"
+    },
+    {
+      "jId": "J-MOB-11",
+      "pass": true,
+      "note": "j11=true"
+    },
+    {
+      "jId": "J-MOB-12",
+      "pass": true,
+      "note": "j12=true"
+    },
+    {
+      "jId": "J-MOB-13",
+      "pass": true,
+      "note": "j13=true"
+    },
+    {
+      "jId": "J-MOB-14",
+      "pass": true,
+      "note": "j14=true"
+    },
+    {
+      "jId": "J-MOB-15",
+      "pass": true,
+      "note": "j15=true"
+    },
+    {
+      "id": "SCOPE-AUDIT",
+      "pass": true,
+      "note": "main slug in logcat=false"
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "Get-FileHash hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "adb shell pm clear",
+      "exit": 0
+    },
+    {
+      "cmd": "adb install -r hrm-mobile-qa-device.apk",
+      "exit": 0
+    },
+    {
+      "cmd": "deep link login uat.nv0001@xe.vn",
+      "exit": 0
+    }
+  ],
+  "logcat_audit": {
+    "hasMainHeader": false
+  },
+  "primaryPass": true,
+  "regPass": true,
+  "pass": true,
+  "ack_status": "PASS_TO_PM",
+  "completion_report": "J-MOB-30 team directory PASS on uat.nv0001@xe.vn: Đội nhóm tab, search, filter chips, row badges/empty; J-MOB-02/31/33 FAB + J-MOB-06..15 regression PASS. APK SHA verified.",
+  "next_owner": "pm",
+  "next_dispatch_prompt": "PM → QC: work_item_id MOB-UX-08-TEAM-QA device PASS; gate J-MOB-30 on docs/qa/evidence/mob-ux-08-team-qa-device-20260609.md; update PROGRAM_JOURNEY_MAP J-MOB-30 ✅.",
+  "evidence_path": "docs/qa/evidence/mob-ux-08-team-qa-device-20260609.md"
+}

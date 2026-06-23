@@ -1,7 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
-import { pushCompanyIdUuidFilter, resolveHrmListScope } from '../common/hrm-list-scope';
+import {
+  expandHrmTextCompanyIds,
+  pushCompanyIdUuidFilter,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import type { HrmRealtimeEventEnvelope } from '../realtime/hrm-realtime.service';
 
@@ -98,7 +102,8 @@ export class HrmInboxService {
     const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdUuidFilter(filters, values, scope.companyIds);
+    const companyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    pushCompanyIdUuidFilter(filters, values, companyIds);
     values.push(employeeId);
     filters.push(`(recipient_employee_id IS NULL OR recipient_employee_id = $${values.length}::uuid)`);
     const lim = Math.min(Math.max(limit, 1), 100);

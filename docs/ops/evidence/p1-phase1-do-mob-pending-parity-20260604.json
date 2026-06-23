@@ -1,0 +1,42 @@
+{
+  "work_item_id": "P1-PHASE1-DO-MOB-PENDING-PARITY-01",
+  "qc_condition": "C-MOBJOB-01",
+  "date": "2026-06-04",
+  "pilot_url": "https://14-225-217-232.nip.io",
+  "verdict": "PASS",
+  "ack_status": "READY_FOR_QA",
+  "hook_script": "scripts/vps-post-hrm-be-mob-pilot-qual.sh",
+  "deploy_integration": "deploy/xevn-ecosystem/deploy.sh (after HRM API healthy)",
+  "package_script": "pnpm run ops:vps:post-hrm-mob-pilot-qual",
+  "seed_script": "pnpm run seed:hrm:uat-mob-pilot-qual",
+  "skip_env": "XEVN_SKIP_MOB_PILOT_QUAL=1",
+  "vps_execution": {
+    "hrm_be": "xevn-hrm-be-dev Up (healthy)",
+    "seed": {
+      "pending_update_requests": 1,
+      "ceo_payslips": 1,
+      "uat_email": "uat.nv0001@xe.vn"
+    },
+    "probes": [
+      {
+        "base": "http://127.0.0.1:3001",
+        "pass": true,
+        "pending": 1,
+        "payslips": 1,
+        "leave": 6
+      },
+      {
+        "base": "https://14-225-217-232.nip.io",
+        "pass": true,
+        "pending": 1,
+        "payslips": 1,
+        "leave": 6
+      }
+    ]
+  },
+  "operator_notes": [
+    "Idempotent seed resets SEED-MOB-UAT attendance_update_requests row to status=pending.",
+    "After manager Duyệt consumes the queue, re-run hook before next J-MOB-05 device pass.",
+    "Upload shell scripts with LF line endings (sed -i 's/\\r$//' on VPS if copied from Windows)."
+  ]
+}

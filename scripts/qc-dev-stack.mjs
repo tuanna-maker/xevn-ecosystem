@@ -46,10 +46,14 @@ async function main() {
 
   if (!hrmOk || !xbosOk) {
     console.log('\n--- Gợi ý xử lý ---');
+    console.log('• Local L0 startup order: docs/ops/LOCAL_DEV_STACK_L0.md');
     if (!hrmOk) {
       console.log('• hrm-api :28001 down → portal `/api/hrm/*` trả 500 — chạy `pnpm run dev:hrm-api`');
     }
-    console.log('• ECONNREFUSED / fetch failed: API chưa chạy → `pnpm dev` hoặc `pnpm dev:xbos-api` / `pnpm dev:hrm-api`');
+    if (!xbosOk) {
+      console.log('• xbos-api :28002 down → login 502 qua nip.io khi VPS xbos-be đang restart — `pnpm run dev:xbos-api`');
+    }
+    console.log('• ECONNREFUSED / fetch failed: API chưa chạy → `pnpm dev:xbos-api` + `pnpm dev:hrm-api` (pnpm dev không gồm hrm-api)');
     console.log('• database "…" does not exist (3D000): tạo DB `xevn_xbos` hoặc đặt DATABASE_URL_XBOS / DB_HOST+DB_PORT+DB_USER+DB_NAME_XBOS');
     console.log('• Trước đó từng lỗi database = tên user OS: đã sửa pool mặc định trong xbos-db.service.ts — pull và restart xbos-api');
     console.log('• Proxy portal: web-portal/.env có VITE_DEV_PROXY_XBOS_API trỏ đúng host:port xbos-api');
