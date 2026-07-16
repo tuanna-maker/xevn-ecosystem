@@ -1,4 +1,5 @@
 import { getStoredUser } from './authSession';
+import { coalesceGet } from './requestCoalescer';
 import { xbosFetch, xbosGetData } from './xbosHttp';
 import type { WorkflowDefinitionApiRow } from './workflowMapper';
 import {
@@ -90,10 +91,15 @@ export async function listWorkflowTasks(
   if (status) search.set('status', status);
   if (assigneeUserId) search.set('assigneeUserId', assigneeUserId);
   const q = search.toString() ? `?${search.toString()}` : '';
-  const data = await xbosGetData<{ items?: WorkflowStepTaskRow[] }>(`/workflow-engine/tasks${q}`, {
-    scope: 'workflow-engine.tasks.list',
-    tenantId: tenantIdHint ?? undefined,
-  });
+  // In-flight dedupe only (no stale cache) — the inbox reloads after approve/reject must stay fresh.
+  const data = await coalesceGet<{ items?: WorkflowStepTaskRow[] }>(
+    `workflow-engine.tasks.list:${tenantIdHint ?? ''}:${status}:${assigneeUserId ?? ''}`,
+    () =>
+      xbosGetData<{ items?: WorkflowStepTaskRow[] }>(`/workflow-engine/tasks${q}`, {
+        scope: 'workflow-engine.tasks.list',
+        tenantId: tenantIdHint ?? undefined,
+      }),
+  );
   return data?.items ?? [];
 }
 

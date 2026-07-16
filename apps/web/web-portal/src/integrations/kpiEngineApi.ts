@@ -1,7 +1,11 @@
 import type { KpiRollupData } from './commandCenterKpi';
 import { resolveXbosKpiRollupCompanyId } from './commandCenterScope';
 import { resolveIdentityScope } from './identityScope';
+import { coalesceGet } from './requestCoalescer';
 import { xbosGetData } from './xbosHttp';
+
+/** Coalesce window for read-only KPI rollup rail (P1-CC-MOUNT-DUP-CALLS-FE). */
+const KPI_ROLLUP_TTL_MS = 30_000;
 
 export type KpiEvaluateInput = {
   target: number;
@@ -47,13 +51,18 @@ export async function fetchKpiRollup(
   if (range?.from) q.set('from', range.from);
   if (range?.to) q.set('to', range.to);
   try {
-    return await xbosGetData<KpiRollupData>(`/kpi-engine/rollup?${q.toString()}`, {
-      scope: 'kpi-engine.rollup',
-      tenantId,
-      companyId: rollupCompanyId,
-      headers: { 'x-company-id': rollupCompanyId },
-      suppressLogStatuses: [409],
-    });
+    return await coalesceGet<KpiRollupData>(
+      `kpi-engine.rollup:${tenantId}:${rollupCompanyId}:${range?.from ?? ''}:${range?.to ?? ''}`,
+      () =>
+        xbosGetData<KpiRollupData>(`/kpi-engine/rollup?${q.toString()}`, {
+          scope: 'kpi-engine.rollup',
+          tenantId,
+          companyId: rollupCompanyId,
+          headers: { 'x-company-id': rollupCompanyId },
+          suppressLogStatuses: [409],
+        }),
+      { ttlMs: KPI_ROLLUP_TTL_MS },
+    );
   } catch {
     return null;
   }

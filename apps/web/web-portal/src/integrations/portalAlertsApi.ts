@@ -10,6 +10,7 @@ import {
   sortPortalAlerts,
   type CatalogInboxItem,
 } from './portalAlertMappers';
+import { coalesceGet } from './requestCoalescer';
 import { listWorkflowTasks } from './workflowEngineApi';
 import { xbosGetData } from './xbosHttp';
 
@@ -37,18 +38,27 @@ export async function fetchPortalAlerts(
       tenantId,
       companyIdHint,
     );
-    const data = await xbosGetData<{ items?: CatalogInboxItem[] }>(
-      `/catalog-governance/inbox?assigneeUserId=${encodeURIComponent(user)}`,
-      { scope: 'catalog-governance.inbox', tenantId, companyId: catalogCompanyId },
+    // In-flight dedupe only — inbox reloads after approve/reject must stay fresh.
+    const data = await coalesceGet<{ items?: CatalogInboxItem[] }>(
+      `catalog-governance.inbox:${tenantId}:${catalogCompanyId}:${user}`,
+      () =>
+        xbosGetData<{ items?: CatalogInboxItem[] }>(
+          `/catalog-governance/inbox?assigneeUserId=${encodeURIComponent(user)}`,
+          { scope: 'catalog-governance.inbox', tenantId, companyId: catalogCompanyId },
+        ),
     );
     alerts.push(...(data?.items ?? []).slice(0, 8).map(mapCatalogInboxToPortalAlert));
   } catch {
     /* catalog inbox optional */
   }
   try {
-    const stored = await xbosGetData<{ items?: Array<Record<string, string>> }>(
-      `/kpi-engine/portal-alerts?tenantId=${encodeURIComponent(tenantId)}&companyId=${encodeURIComponent(companyId)}&limit=20`,
-      { scope: 'kpi-engine.portal-alerts', tenantId, companyId, suppressLogStatuses: [409] },
+    const stored = await coalesceGet<{ items?: Array<Record<string, string>> }>(
+      `kpi-engine.portal-alerts:${tenantId}:${companyId}`,
+      () =>
+        xbosGetData<{ items?: Array<Record<string, string>> }>(
+          `/kpi-engine/portal-alerts?tenantId=${encodeURIComponent(tenantId)}&companyId=${encodeURIComponent(companyId)}&limit=20`,
+          { scope: 'kpi-engine.portal-alerts', tenantId, companyId, suppressLogStatuses: [409] },
+        ),
     );
     for (const row of stored?.items ?? []) {
       alerts.push(mapStoredPortalAlertRow(row));

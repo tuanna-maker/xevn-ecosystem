@@ -1,7 +1,11 @@
 import type { Company } from '../data/mock-data';
 import { MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import type { OrgTreeNode } from './orgFoundationApi';
+import { coalesceGet } from './requestCoalescer';
 import { xbosGetData } from './xbosHttp';
+
+/** Coalesce window for read-only membership scope (P1-CC-MOUNT-DUP-CALLS-FE). */
+const ACCESSIBLE_TENANTS_TTL_MS = 30_000;
 
 /** id tổng hợp cho hàng “công ty mẹ” trên UI Command Center (không bắt buộc trùng uuid DB). */
 export const GROUP_HOLDING_ROOT_ID = 'xbos-group-holding-root';
@@ -80,12 +84,18 @@ type AccessibleEnvelope = {
 };
 
 export async function fetchAccessibleTenants(): Promise<AccessibleTenant[]> {
+  const tenantId = import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID;
   try {
-    const data = await xbosGetData<AccessibleEnvelope>('/tenant-scope/accessible', {
-      scope: 'tenant-scope.accessible',
-      tenantId: import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID,
-      companyId: MEMBER_DEFAULT_COMPANY_ID,
-    });
+    const data = await coalesceGet<AccessibleEnvelope>(
+      `tenant-scope.accessible:${tenantId}:${MEMBER_DEFAULT_COMPANY_ID}`,
+      () =>
+        xbosGetData<AccessibleEnvelope>('/tenant-scope/accessible', {
+          scope: 'tenant-scope.accessible',
+          tenantId,
+          companyId: MEMBER_DEFAULT_COMPANY_ID,
+        }),
+      { ttlMs: ACCESSIBLE_TENANTS_TTL_MS },
+    );
     return data?.items ?? [];
   } catch (error) {
     throw error instanceof Error ? error : new Error('accessible tenants load failed');
