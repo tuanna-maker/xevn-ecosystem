@@ -13,9 +13,12 @@ import {
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { EmployeeSummaryQueryDto } from './dto/employee-summary.query.dto';
 import { GetEmployeeQueryDto } from './dto/get-employee.query.dto';
 import { ListEmployeesQueryDto } from './dto/list-employees.query.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { buildSalaryRangesFromCounts, EMPLOYEE_SALARY_NUM_SQL } from './employee-summary';
+import type { EmployeeSummaryResult } from './employee-summary.types';
 import {
   directoryItemPassesAttendanceFilter,
   mapDirectoryDetail,
@@ -272,7 +275,7 @@ export class EmployeesService implements OnModuleInit {
           status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at
         FROM public.employees
         WHERE ${whereClause}
-        ORDER BY full_name ASC, employee_code ASC
+        ORDER BY full_name ASC, employee_code ASC, id ASC
         LIMIT $${idx} OFFSET $${idx + 1};
       `,
       [...values, pageSize, offset],
@@ -302,6 +305,154 @@ export class EmployeesService implements OnModuleInit {
     };
   }
 
+  /**
+   * P1-HRM-PERF-BE-01 — single-call dashboard aggregates (same list scope filters).
+   * Replaces ~N sequential GET /employees pages for count/stats on embed.
+   */
+  async getEmployeesSummary(
+    query: EmployeeSummaryQueryDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ): Promise<EmployeeSummaryResult> {
+    const listQuery: ListEmployeesQueryDto = {
+      company_id: query.company_id,
+      keyword: query.keyword,
+      status: query.status,
+      include_archived: query.include_archived,
+    };
+    const { filters, values } = this.buildEmployeeListFilters(listQuery, authorization, scopeContext);
+    const whereClause = filters.join(' AND ');
+    const scopedSubquery = `
+      SELECT
+        id,
+        employee_code,
+        full_name,
+        status,
+        hired_at,
+        archived_at,
+        avatar_url,
+        created_at,
+        custom_fields,
+        ${EMPLOYEE_SALARY_NUM_SQL} AS salary_num
+      FROM public.employees
+      WHERE ${whereClause}
+    `;
+
+    const aggregateRes = await this.db.query<{
+      total: string;
+      active_count: string;
+      inactive_count: string;
+      archived_count: string;
+      new_hires_last_30_days: string;
+      total_payroll: string;
+      employees_with_salary: string;
+      salary_range_above_30m: string;
+      salary_range_20_30m: string;
+      salary_range_15_20m: string;
+      salary_range_below_15m: string;
+    }>(
+      `
+        SELECT
+          COUNT(*)::text AS total,
+          COUNT(*) FILTER (WHERE status = 'active')::text AS active_count,
+          COUNT(*) FILTER (WHERE status = 'inactive')::text AS inactive_count,
+          COUNT(*) FILTER (WHERE archived_at IS NOT NULL)::text AS archived_count,
+          COUNT(*) FILTER (WHERE hired_at >= (CURRENT_DATE - INTERVAL '30 days'))::text AS new_hires_last_30_days,
+          COALESCE(SUM(salary_num), 0)::text AS total_payroll,
+          COUNT(*) FILTER (WHERE salary_num IS NOT NULL AND salary_num > 0)::text AS employees_with_salary,
+          COUNT(*) FILTER (WHERE salary_num >= 30000000)::text AS salary_range_above_30m,
+          COUNT(*) FILTER (WHERE salary_num >= 20000000 AND salary_num < 30000000)::text AS salary_range_20_30m,
+          COUNT(*) FILTER (WHERE salary_num >= 15000000 AND salary_num < 20000000)::text AS salary_range_15_20m,
+          COUNT(*) FILTER (WHERE salary_num > 0 AND salary_num < 15000000)::text AS salary_range_below_15m
+        FROM (${scopedSubquery}) scoped;
+      `,
+      values,
+    );
+
+    const departmentRes = await this.db.query<{
+      department: string;
+      count: string;
+      avg_salary: string | null;
+    }>(
+      `
+        SELECT
+          COALESCE(NULLIF(TRIM(custom_fields->>'department'), ''), 'Khác') AS department,
+          COUNT(*)::text AS count,
+          AVG(salary_num)::text AS avg_salary
+        FROM (${scopedSubquery}) scoped
+        GROUP BY 1
+        ORDER BY COUNT(*) DESC, department ASC;
+      `,
+      values,
+    );
+
+    const recentRes = await this.db.query<{
+      id: string;
+      employee_code: string;
+      full_name: string;
+      status: string;
+      hired_at: string | null;
+      avatar_url: string | null;
+    }>(
+      `
+        SELECT
+          id::text AS id,
+          employee_code,
+          full_name,
+          status,
+          hired_at::text AS hired_at,
+          avatar_url
+        FROM (${scopedSubquery}) scoped
+        ORDER BY COALESCE(hired_at, created_at::date) DESC, created_at DESC
+        LIMIT 5;
+      `,
+      values,
+    );
+
+    const aggregate = aggregateRes.rows[0] ?? {
+      total: '0',
+      active_count: '0',
+      inactive_count: '0',
+      archived_count: '0',
+      new_hires_last_30_days: '0',
+      total_payroll: '0',
+      employees_with_salary: '0',
+      salary_range_above_30m: '0',
+      salary_range_20_30m: '0',
+      salary_range_15_20m: '0',
+      salary_range_below_15m: '0',
+    };
+
+    return {
+      company_id: query.company_id,
+      total: Number(aggregate.total),
+      active_count: Number(aggregate.active_count),
+      inactive_count: Number(aggregate.inactive_count),
+      archived_count: Number(aggregate.archived_count),
+      payroll: {
+        total: Number(aggregate.total_payroll),
+        employees_with_salary: Number(aggregate.employees_with_salary),
+      },
+      by_department: departmentRes.rows.map((row) => ({
+        department: row.department,
+        count: Number(row.count),
+        avg_salary: row.avg_salary == null ? null : Number(row.avg_salary),
+      })),
+      salary_ranges: buildSalaryRangesFromCounts(aggregate),
+      new_hires: {
+        last_30_days: Number(aggregate.new_hires_last_30_days),
+        recent: recentRes.rows.map((row) => ({
+          id: row.id,
+          employee_code: row.employee_code,
+          full_name: row.full_name,
+          status: row.status,
+          hired_at: row.hired_at,
+          avatar_url: row.avatar_url ?? null,
+        })),
+      },
+    };
+  }
+
   async listEmployees(
     query: ListEmployeesQueryDto,
     authorization?: string,
@@ -324,7 +475,7 @@ export class EmployeesService implements OnModuleInit {
           status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at
         FROM public.employees
         WHERE ${whereClause}
-        ORDER BY created_at DESC
+        ORDER BY created_at DESC, id DESC
         LIMIT $${idx} OFFSET $${idx + 1};
       `,
       [...values, pageSize, offset],
