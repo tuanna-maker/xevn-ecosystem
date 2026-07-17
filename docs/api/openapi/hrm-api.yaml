@@ -28,6 +28,10 @@ tags:
     description: HRM-OP-01..04 — tasks, summary, service requests (UC-HRM-MOB-11)
   - name: Performance
     description: HRM-PF-01..04 — performance cycles and evaluations
+  - name: Employees
+    description: HRM-EM-01..03 — employee CRUD, directory, summary aggregates
+  - name: Decisions
+    description: UC-HRM-27 — HR decisions CRUD (Implemented-empty)
 components:
   securitySchemes:
     bearerAuth:
@@ -62,6 +66,158 @@ components:
         code: { type: string }
         message: { type: string }
         data: {}
+    EmployeeSummary:
+      type: object
+      required:
+        - company_id
+        - total
+        - active_count
+        - inactive_count
+        - archived_count
+        - payroll
+        - by_department
+        - salary_ranges
+        - new_hires
+      properties:
+        company_id: { type: string }
+        total: { type: integer, minimum: 0 }
+        active_count: { type: integer, minimum: 0 }
+        inactive_count: { type: integer, minimum: 0 }
+        archived_count: { type: integer, minimum: 0 }
+        payroll:
+          type: object
+          required: [total, employees_with_salary]
+          properties:
+            total: { type: number }
+            employees_with_salary: { type: integer, minimum: 0 }
+        by_department:
+          type: array
+          items:
+            type: object
+            required: [department, count, avg_salary]
+            properties:
+              department: { type: string }
+              count: { type: integer, minimum: 0 }
+              avg_salary: { type: number, nullable: true }
+        salary_ranges:
+          type: array
+          items:
+            type: object
+            required: [key, min, max, count]
+            properties:
+              key: { type: string }
+              min: { type: number }
+              max: { type: number, nullable: true }
+              count: { type: integer, minimum: 0 }
+        new_hires:
+          type: object
+          required: [last_30_days, recent]
+          properties:
+            last_30_days: { type: integer, minimum: 0 }
+            recent:
+              type: array
+              items:
+                type: object
+                required: [id, employee_code, full_name, status, hired_at, avatar_url]
+                properties:
+                  id: { type: string, format: uuid }
+                  employee_code: { type: string }
+                  full_name: { type: string }
+                  status: { type: string }
+                  hired_at: { type: string, format: date, nullable: true }
+                  avatar_url: { type: string, nullable: true }
+    HrDecision:
+      type: object
+      required:
+        - id
+        - company_id
+        - decision_code
+        - decision_type
+        - title
+        - employee_name
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id: { type: string, format: uuid }
+        company_id: { type: string }
+        decision_code: { type: string }
+        decision_type: { type: string }
+        title: { type: string }
+        content: { type: string, nullable: true }
+        employee_id: { type: string, format: uuid, nullable: true }
+        employee_name: { type: string }
+        employee_code: { type: string, nullable: true }
+        department: { type: string, nullable: true }
+        position: { type: string, nullable: true }
+        effective_date: { type: string, format: date, nullable: true }
+        expiry_date: { type: string, format: date, nullable: true }
+        signer_name: { type: string, nullable: true }
+        signer_position: { type: string, nullable: true }
+        signing_date: { type: string, format: date, nullable: true }
+        file_url: { type: string, nullable: true }
+        status: { type: string }
+        notes: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    HrDecisionList:
+      type: object
+      required: [total, page, page_size, data]
+      properties:
+        total: { type: integer, minimum: 0 }
+        page: { type: integer, minimum: 1 }
+        page_size: { type: integer, minimum: 1, maximum: 100 }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HrDecision'
+    CreateDecisionRequest:
+      type: object
+      required: [company_id, decision_type, employee_name]
+      properties:
+        company_id: { type: string, minLength: 1, maxLength: 64 }
+        decision_code: { type: string, maxLength: 64 }
+        decision_type: { type: string, maxLength: 64 }
+        title: { type: string, maxLength: 512 }
+        content: { type: string }
+        decision_date: { type: string, format: date }
+        reason: { type: string }
+        employee_id: { type: string, format: uuid }
+        employee_name: { type: string, maxLength: 256 }
+        employee_code: { type: string, maxLength: 64 }
+        department: { type: string, maxLength: 128 }
+        position: { type: string, maxLength: 128 }
+        effective_date: { type: string, format: date }
+        expiry_date: { type: string, format: date }
+        signer_name: { type: string, maxLength: 256 }
+        signer_position: { type: string, maxLength: 128 }
+        signing_date: { type: string, format: date }
+        file_url: { type: string }
+        status: { type: string, maxLength: 32 }
+        notes: { type: string }
+    UpdateDecisionRequest:
+      type: object
+      properties:
+        company_id: { type: string, minLength: 1, maxLength: 64 }
+        decision_code: { type: string, maxLength: 64 }
+        decision_type: { type: string, maxLength: 64 }
+        title: { type: string, maxLength: 512 }
+        content: { type: string }
+        decision_date: { type: string, format: date }
+        reason: { type: string }
+        employee_id: { type: string, format: uuid }
+        employee_name: { type: string, maxLength: 256 }
+        employee_code: { type: string, maxLength: 64 }
+        department: { type: string, maxLength: 128 }
+        position: { type: string, maxLength: 128 }
+        effective_date: { type: string, format: date }
+        expiry_date: { type: string, format: date }
+        signer_name: { type: string, maxLength: 256 }
+        signer_position: { type: string, maxLength: 128 }
+        signing_date: { type: string, format: date }
+        file_url: { type: string }
+        status: { type: string, maxLength: 32 }
+        notes: { type: string }
 paths:
   /:
     get:
@@ -82,6 +238,43 @@ paths:
       responses:
         '200':
           description: Metrics JSON or Prometheus text
+  /employees/summary:
+    get:
+      tags: [Employees]
+      operationId: getEmployeesSummary
+      summary: P1-HRM-PERF-BE-01 — dashboard employee aggregates (single round-trip)
+      description: |
+        Returns scoped counts, payroll totals, department breakdown, salary ranges, and recent hires.
+        Uses the same resolveHrmListScope filters as GET /employees (group CEO company_id=main rollup).
+        Replaces N sequential paginated list calls for dashboard/count widgets.
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+        - name: keyword
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, enum: [active, inactive] }
+        - name: include_archived
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Employee summary envelope (HRM-EMP-SUMMARY-200)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EmployeeSummary'
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
   /employees/{employeeId}:
     get:
       operationId: getEmployeeById
@@ -99,6 +292,184 @@ paths:
           description: Employee envelope (HRM-EMP-200)
         '404':
           description: Employee not found (HRM-EMP-404)
+  /decisions:
+    get:
+      tags: [Decisions]
+      operationId: listDecisions
+      summary: UC-HRM-27 — list HR decisions
+      description: |
+        Returns a scoped decision list. Empty result sets are valid live responses (`total: 0`, `data: []`).
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+        - name: decision_type
+          in: query
+          schema: { type: string, maxLength: 64 }
+        - name: status
+          in: query
+          schema: { type: string, maxLength: 32 }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: page_size
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        '200':
+          description: Decisions listed (HRM-DEC-200)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HrDecisionList'
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    post:
+      tags: [Decisions]
+      operationId: createDecision
+      summary: UC-HRM-27 — create HR decision
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDecisionRequest'
+      responses:
+        '201':
+          description: Decision created (HRM-DEC-201)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HrDecision'
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /decisions/{decisionId}:
+    get:
+      tags: [Decisions]
+      operationId: getDecisionById
+      summary: UC-HRM-27 — get HR decision by id
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: decisionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+      responses:
+        '200':
+          description: Decision detail (HRM-DEC-200)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HrDecision'
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
+        '404':
+          description: Decision not found (HRM-DEC-404)
+        '409':
+          description: Scope mismatch (HRM-DEC-409)
+    patch:
+      tags: [Decisions]
+      operationId: updateDecision
+      summary: UC-HRM-27 — update HR decision
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: decisionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: company_id
+          in: query
+          description: Required unless supplied in body or x-company-id header
+          schema: { type: string, minLength: 1, maxLength: 64 }
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDecisionRequest'
+      responses:
+        '200':
+          description: Decision updated (HRM-DEC-200)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HrDecision'
+        '400':
+          description: company_id is required (HRM-DEC-002)
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
+        '404':
+          description: Decision not found (HRM-DEC-404)
+        '409':
+          description: Scope mismatch (HRM-DEC-409)
+    delete:
+      tags: [Decisions]
+      operationId: deleteDecision
+      summary: UC-HRM-27 — delete HR decision
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - name: decisionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+      responses:
+        '200':
+          description: Decision deleted (HRM-DEC-200)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required: [id]
+                        properties:
+                          id: { type: string, format: uuid }
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
+        '404':
+          description: Decision not found (HRM-DEC-404)
+        '409':
+          description: Scope mismatch (HRM-DEC-409)
   /attendance/records:
     post:
       tags: [Attendance]

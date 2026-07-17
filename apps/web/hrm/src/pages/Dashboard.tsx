@@ -41,8 +41,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEmployees } from '@/hooks/useEmployees';
-import { useDepartments } from '@/hooks/useDepartments';
+import { useEmployeesSummary } from '@/hooks/useEmployeesSummary';
+import { useExpiringContractsDashboard } from '@/hooks/useExpiringContractsDashboard';
 import { useLeaveRequestsData } from '@/hooks/useLeaveRequestsData';
 import { Link } from 'react-router-dom';
 import {
@@ -65,26 +65,26 @@ import {
 import { toast } from 'sonner';
 import { ExpiringContractsAlert } from '@/components/dashboard/ExpiringContractsAlert';
 import { HrmApiReminders } from '@/components/dashboard/HrmApiReminders';
+import { PortalOperationsSummary } from '@/components/dashboard/PortalOperationsSummary';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
-import { listAllEmployeeContracts, listAttendanceRecords } from '@/integrations/hrmApi';
+import { listAttendanceRecords } from '@/integrations/hrmApi';
 import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
-import { filterUpcomingExpiringContracts } from '@/lib/formatHrmDate';
 
-// Hook to get expiring contracts count
-function useExpiringContractsCount() {
-  const { currentCompanyId } = useAuth();
-  return useQuery({
-    queryKey: ['expiring-contracts-count', currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return 0;
-      const res = await listAllEmployeeContracts({ company_id: currentCompanyId, status: 'active' });
-      return filterUpcomingExpiringContracts(res.data ?? [], 30).length;
-    },
-    enabled: !!currentCompanyId,
-  });
-}
+const SALARY_RANGE_LABEL_KEYS: Record<string, string> = {
+  above_30m: 'dashboard2.salaryRanges.above30',
+  range_20_30m: 'dashboard2.salaryRanges.range20to30',
+  range_15_20m: 'dashboard2.salaryRanges.range15to20',
+  below_15m: 'dashboard2.salaryRanges.below15',
+};
+
+const SALARY_RANGE_FILLS: Record<string, string> = {
+  above_30m: '#10b981',
+  range_20_30m: '#3b82f6',
+  range_15_20m: '#8b5cf6',
+  below_15m: '#f59e0b',
+};
 
 // Hook to get attendance records for dashboard
 function useAttendanceDashboard() {
@@ -115,11 +115,15 @@ export default function Dashboard() {
   const [isExporting, setIsExporting] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
 
-  // Real data hooks
-  const { employees, isLoading: employeesLoading } = useEmployees();
-  const { departments } = useDepartments();
+  // Real data hooks — P1-HRM-PERF-FE-04: summary API instead of listAllEmployees
+  const {
+    data: employeeSummary,
+    isLoading: employeeSummaryLoading,
+    isError: employeeSummaryError,
+  } = useEmployeesSummary();
   const { leaveRequests } = useLeaveRequestsData();
-  const { data: expiringContractsCount = 0 } = useExpiringContractsCount();
+  const { data: expiringContractRows = [] } = useExpiringContractsDashboard();
+  const expiringContractsCount = expiringContractRows.length;
   const { data: attendanceRecords = [] } = useAttendanceDashboard();
 
   // Time period options
@@ -144,35 +148,34 @@ export default function Dashboard() {
   const currentPeriod = timePeriods.find(p => p.value === selectedPeriod);
 
   const pendingLeaves = leaveRequests.filter((l) => l.status === 'pending');
-  const activeEmployees = employees.filter((e) => e.status === 'active');
+  const totalEmployees = employeeSummary?.total ?? 0;
+  const activeEmployeesCount = employeeSummary?.active_count ?? 0;
+  const newEmployeesCount = employeeSummary?.new_hires.last_30_days ?? 0;
+  const departmentCount = employeeSummary?.by_department.length ?? 0;
 
-  // --- Real computed data ---
+  // --- Real computed data from employees/summary ---
 
-  // Total payroll from real salary data
-  const totalPayroll = useMemo(() => employees.reduce((sum, e) => sum + (e.salary || 0), 0), [employees]);
-  
+  const totalPayroll = employeeSummary?.payroll.total ?? 0;
+
+  // D-DASH-FE-STORM: payroll tiles are summary-bound. When the summary API is
+  // loading or failed (live 500 tracked by BE D-DASH-01), do NOT render a fake
+  // "0 VNĐ" — show a loading/unavailable state so QA can distinguish a genuine
+  // zero from a missing aggregate.
+  const payrollSummaryPending = employeeSummaryLoading || (!employeeSummary && !employeeSummaryError);
+  const payrollSummaryReady = !!employeeSummary && !employeeSummaryError;
+
   // Estimate tax & insurance from actual salary
   const totalTax = Math.round(totalPayroll * 0.1);
   const totalInsurance = Math.round(totalPayroll * 0.105);
 
-  // Salary range distribution from real employee data
   const salaryRangeData = useMemo(() => {
-    const ranges = [
-      { min: 30000000, label: t('dashboard2.salaryRanges.above30'), fill: '#10b981' },
-      { min: 20000000, max: 30000000, label: t('dashboard2.salaryRanges.range20to30'), fill: '#3b82f6' },
-      { min: 15000000, max: 20000000, label: t('dashboard2.salaryRanges.range15to20'), fill: '#8b5cf6' },
-      { min: 0, max: 15000000, label: t('dashboard2.salaryRanges.below15'), fill: '#f59e0b' },
-    ];
-    return ranges.map(r => {
-      const count = employees.filter(e => {
-        const s = e.salary || 0;
-        if (s === 0) return false;
-        if (r.max === undefined) return s >= r.min;
-        return s >= r.min && s < r.max;
-      }).length;
-      return { range: r.label, count, fill: r.fill };
-    });
-  }, [employees, t]);
+    const ranges = employeeSummary?.salary_ranges ?? [];
+    return ranges.map((r) => ({
+      range: t(SALARY_RANGE_LABEL_KEYS[r.key] ?? r.key),
+      count: r.count,
+      fill: SALARY_RANGE_FILLS[r.key] ?? '#94a3b8',
+    }));
+  }, [employeeSummary, t]);
 
   const topSalaryCount = salaryRangeData[0]?.count || 0;
 
@@ -196,39 +199,30 @@ export default function Dashboard() {
     ];
   }, [totalPayroll, t]);
 
-  // Department salary data from real data
   const departmentSalaryData = useMemo(() => {
-    return departments.map((dept) => {
-      const deptEmployees = employees.filter(e => e.department === dept.name);
-      const avgSalary = deptEmployees.length > 0
-        ? Math.round(deptEmployees.reduce((sum, e) => sum + (e.salary || 0), 0) / deptEmployees.length)
-        : 0;
-      return { name: dept.name.replace('Phòng ', ''), salary: avgSalary };
-    }).filter(d => d.salary > 0);
-  }, [departments, employees]);
+    return (employeeSummary?.by_department ?? [])
+      .filter((d) => (d.avg_salary ?? 0) > 0)
+      .map((d) => ({
+        name: d.department.replace('Phòng ', ''),
+        salary: Math.round(d.avg_salary ?? 0),
+      }));
+  }, [employeeSummary]);
 
-  // Average salary trend - compute from employees by their start month (workforce growth proxy)
   const monthlyTrendData = useMemo(() => {
     const now = new Date();
     const months: { month: string; value: number }[] = [];
     const monthCount = selectedPeriod === 'year' ? 12 : selectedPeriod === 'quarter' ? 3 : 6;
-    
+    const withSalary = employeeSummary?.payroll.employees_with_salary ?? 0;
+    const avgSalary =
+      withSalary > 0 ? Math.round((employeeSummary?.payroll.total ?? 0) / withSalary) : 0;
+
     for (let i = monthCount - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const label = `T${d.getMonth() + 1}`;
-      // Count employees who were active at that month
-      const activeAtMonth = employees.filter(e => {
-        const startDate = e.start_date ? new Date(e.start_date) : null;
-        if (!startDate) return true; // assume always active if no start date
-        return startDate <= d;
-      });
-      const avgSalary = activeAtMonth.length > 0
-        ? Math.round(activeAtMonth.reduce((sum, e) => sum + (e.salary || 0), 0) / activeAtMonth.length)
-        : 0;
       months.push({ month: label, value: avgSalary });
     }
     return months;
-  }, [employees, selectedPeriod]);
+  }, [employeeSummary, selectedPeriod]);
 
   // Attendance rate computation
   const attendanceRate = useMemo(() => {
@@ -276,18 +270,10 @@ export default function Dashboard() {
       year: { current: t('dashboard2.comparison.thisYear'), previous: t('dashboard2.comparison.lastYear') },
     };
 
-    const { currentStart, previousStart, previousEnd } = getPeriodDates(selectedPeriod);
+    const { currentStart, previousStart } = getPeriodDates(selectedPeriod);
 
-    // Employees who started before end of period
-    const currentEmployees = employees.filter(e => {
-      const sd = e.start_date ? new Date(e.start_date) : new Date(e.created_at);
-      return sd <= new Date();
-    }).length;
-
-    const previousEmployees = employees.filter(e => {
-      const sd = e.start_date ? new Date(e.start_date) : new Date(e.created_at);
-      return sd <= previousEnd;
-    }).length;
+    const currentEmployees = totalEmployees;
+    const previousEmployees = Math.max(0, totalEmployees - newEmployeesCount);
 
     // Leave requests in periods
     const currentLeaves = leaveRequests.filter(l => {
@@ -327,7 +313,7 @@ export default function Dashboard() {
       },
       periodLabel: periodLabels[selectedPeriod] || periodLabels.month,
     };
-  }, [employees, leaveRequests, attendanceRecords, totalPayroll, selectedPeriod, t]);
+  }, [leaveRequests, attendanceRecords, totalPayroll, totalEmployees, newEmployeesCount, selectedPeriod, t]);
 
   // Calculate percentage changes
   const calculateChange = (current: number, previous: number) => {
@@ -342,26 +328,21 @@ export default function Dashboard() {
   const formatFullCurrency = (value: number) =>
     new Intl.NumberFormat('vi-VN').format(value);
 
-  // New employees (last 30 days)
-  const newEmployeesCount = useMemo(() => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    return employees.filter(e => {
-      const sd = e.start_date ? new Date(e.start_date) : null;
-      return sd && sd >= thirtyDaysAgo;
-    }).length;
-  }, [employees]);
+  // D-DASH-FE-STORM: render payroll amounts only when the summary aggregate is
+  // available. Avoid showing "0" while the summary is loading or errored.
+  const renderPayrollAmount = (value: number, colorClass: string) => {
+    if (payrollSummaryPending) {
+      return <span className="inline-block h-7 w-24 animate-pulse rounded bg-muted align-middle" />;
+    }
+    if (!payrollSummaryReady) {
+      return <span className="text-muted-foreground" title={t('dashboard2.summaryUnavailable', 'Chưa tải được dữ liệu tổng hợp')}>—</span>;
+    }
+    return <span className={colorClass}>{formatCurrency(value)}</span>;
+  };
 
-  // Newest employees for sidebar
   const newestEmployees = useMemo(() => {
-    return [...employees]
-      .sort((a, b) => {
-        const da = a.start_date || a.created_at;
-        const db = b.start_date || b.created_at;
-        return new Date(db).getTime() - new Date(da).getTime();
-      })
-      .slice(0, 3);
-  }, [employees]);
+    return (employeeSummary?.new_hires.recent ?? []).slice(0, 3);
+  }, [employeeSummary]);
 
   // Export to PDF
   const handleExportPDF = async () => {
@@ -426,6 +407,9 @@ export default function Dashboard() {
         <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{currentPeriod?.shortLabel}</span>
       </div>
 
+      {/* UC-HRM-20 operations summary — Command Center embed (Nest API, no mock) */}
+      <PortalOperationsSummary />
+
       {/* Expiring Contracts Alert */}
       <ExpiringContractsAlert />
 
@@ -467,17 +451,17 @@ export default function Dashboard() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.totalSalary')}</p>
-                      <p className="text-2xl font-bold text-primary mt-1">{formatCurrency(totalPayroll)}</p>
+                      <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalPayroll, 'text-primary')}</p>
                       <p className="text-xs text-muted-foreground">VNĐ</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.personalIncomeTax')}</p>
-                      <p className="text-2xl font-bold text-amber-500 mt-1">{formatCurrency(totalTax)}</p>
+                      <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalTax, 'text-amber-500')}</p>
                       <p className="text-xs text-muted-foreground">VNĐ (~10%)</p>
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.insurance')}</p>
-                      <p className="text-2xl font-bold text-blue-500 mt-1">{formatCurrency(totalInsurance)}</p>
+                      <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalInsurance, 'text-blue-500')}</p>
                       <p className="text-xs text-muted-foreground">VNĐ (~10.5%)</p>
                     </div>
                   </div>
@@ -755,11 +739,11 @@ export default function Dashboard() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t('dashboard2.totalEmployees')}</span>
-                <span className="text-xl font-bold">{employees.length}</span>
+                <span className="text-xl font-bold">{totalEmployees}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t('dashboard2.activeEmployees')}</span>
-                <span className="text-lg font-semibold text-emerald-600">{activeEmployees.length}</span>
+                <span className="text-lg font-semibold text-emerald-600">{activeEmployeesCount}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t('dashboard2.newEmployees')}</span>
@@ -767,7 +751,7 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t('dashboard2.departmentCount')}</span>
-                <span className="text-lg font-semibold text-amber-600">{departments.length}</span>
+                <span className="text-lg font-semibold text-amber-600">{departmentCount}</span>
               </div>
             </CardContent>
           </Card>
@@ -785,7 +769,7 @@ export default function Dashboard() {
                 <p className="text-lg font-bold text-primary">
                   {new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(totalPayroll)} VNĐ
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{employees.length} {t('dashboard2.employeeCount')}</p>
+                <p className="text-xs text-muted-foreground mt-1">{totalEmployees} {t('dashboard2.employeeCount')}</p>
                 <Link to="/payroll" className="text-primary text-xs font-medium flex items-center gap-1 mt-3 hover:underline">
                   <ExternalLink className="w-3 h-3" />
                   {t('dashboard2.details')}
@@ -837,7 +821,7 @@ export default function Dashboard() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{emp.full_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{emp.department}</p>
+                      <p className="text-xs text-muted-foreground truncate">{emp.employee_code}</p>
                     </div>
                   </div>
                 ))}

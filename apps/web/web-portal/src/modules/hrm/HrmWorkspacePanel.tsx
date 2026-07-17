@@ -156,6 +156,10 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       },
       attendance: { title: 'Chấm công', subtitle: 'Ca làm, bảng công và đơn nghỉ.' },
       payroll: { title: 'Tiền lương', subtitle: 'Bảng lương, mẫu tính, phụ cấp và khấu trừ.' },
+      performance: {
+        title: 'Đánh giá',
+        subtitle: 'Chu kỳ đánh giá hiệu suất và bảng đánh giá nhân viên.',
+      },
       contracts: { title: 'Hợp đồng', subtitle: 'Hợp đồng lao động và phụ lục.' },
       insurance: {
         title: 'Bảo hiểm',
@@ -613,6 +617,21 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                 Mở HRM / Lương
               </button>
             </div>
+          </div>
+        );
+      case 'performance':
+        return (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-slate-600">
+              Chu kỳ đánh giá và phiếu chấm điểm được xử lý trong module Đánh giá của HRM.
+            </p>
+            <button
+              type="button"
+              onClick={() => openHrmApp('/hr/performance')}
+              className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
+            >
+              Mở HRM / Đánh giá
+            </button>
           </div>
         );
       case 'tasks':

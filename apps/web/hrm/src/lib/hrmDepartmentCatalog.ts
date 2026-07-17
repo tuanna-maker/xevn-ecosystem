@@ -1,7 +1,9 @@
 import {
   getSettingsCatalogsOverview,
+  listDepartments,
   type HrmSettingsCatalogOverviewRow,
 } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { resolveHrmSpreadsheetScope } from '@/lib/hrmSpreadsheetScope';
 
 const DEPARTMENT_CATALOG_KEYS = ['departments', 'department_catalog', 'org_departments'] as const;
@@ -30,6 +32,65 @@ export type CatalogDepartmentRow = {
   created_at: string;
   updated_at: string;
 };
+
+export function mapHrmDepartmentRow(item: Record<string, unknown>): CatalogDepartmentRow {
+  const now = new Date().toISOString();
+  return {
+    id: String(item.id ?? ''),
+    name: String(item.name ?? ''),
+    code: item.code != null && String(item.code).trim() ? String(item.code).trim() : null,
+    company_id: String(item.company_id ?? ''),
+    parent_id: item.parent_id != null && String(item.parent_id).trim() ? String(item.parent_id) : null,
+    level: Number(item.level ?? 1),
+    sort_order: Number(item.sort_order ?? 0),
+    status: String(item.status ?? 'active'),
+    description: item.description != null ? String(item.description) : null,
+    manager_name: item.manager_name != null ? String(item.manager_name) : null,
+    manager_email: item.manager_email != null ? String(item.manager_email) : null,
+    employee_count: Number(item.employee_count ?? 0),
+    created_at: String(item.created_at ?? now),
+    updated_at: String(item.updated_at ?? now),
+  };
+}
+
+export type LoadCompanyDepartmentsResult = {
+  rows: CatalogDepartmentRow[];
+  fetchError: string | null;
+};
+
+/**
+ * Company Phòng ban tab — HRM `/departments` when populated; else XBOS-synced settings catalog (org DM §1–6).
+ * Non-2xx never coerces to silent empty (P1-HRM-MENU-COMPANY-DEPT-STUB).
+ */
+export async function loadCompanyDepartments(companyId: string): Promise<LoadCompanyDepartmentsResult> {
+  let hrmError: string | null = null;
+
+  try {
+    const response = await listDepartments({ company_id: companyId });
+    const hrmRows = (response.data ?? [])
+      .map((row) => mapHrmDepartmentRow(row))
+      .filter((row) => row.id && row.name);
+    if (hrmRows.length > 0) {
+      return { rows: hrmRows, fetchError: null };
+    }
+  } catch (error) {
+    hrmError = toErrorMessage(error, 'Không tải được danh sách phòng ban từ HRM API.');
+  }
+
+  try {
+    const catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+    if (catalogRows.length > 0) {
+      return { rows: catalogRows, fetchError: null };
+    }
+    if (!hrmError) {
+      return { rows: [], fetchError: null };
+    }
+    return { rows: [], fetchError: hrmError };
+  } catch (error) {
+    const catalogError = toErrorMessage(error, 'Không tải được danh sách phòng ban từ danh mục công ty.');
+    return { rows: [], fetchError: hrmError ?? catalogError };
+  }
+}
 
 /** Department labels from synced XBOS settings catalog (API mode — no Supabase `departments` table). */
 export async function listDepartmentsFromSettingsCatalog(

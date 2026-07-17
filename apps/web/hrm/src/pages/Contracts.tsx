@@ -7,6 +7,11 @@ import { useDepartments } from '@/hooks/useDepartments';
 import { useContracts, type Contract } from '@/hooks/useContracts';
 import { hrmStorageUploadStub, hrmStorageRemoveStub } from '@/lib/hrmStorageUploadStub';
 import { PermissionGate } from '@/components/auth/PermissionGate';
+import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
+import {
+  HRM_LIST_LOAD_FAILED_SHORT,
+  isListFetchFailureEmpty,
+} from '@/lib/hrmListLoadFailure';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -71,6 +76,7 @@ import {
   File,
   X,
   ExternalLink,
+  RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -81,7 +87,7 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
   getSettingsCatalogsOverview,
-  listAllEmployees,
+  listEmployees,
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
@@ -185,7 +191,6 @@ const getStatusBadge = (status: string, t: any) => {
 export default function Contracts() {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
-  const { departments } = useDepartments();
   const scope = useMemo(() => resolveCatalogScope(currentCompanyId), [currentCompanyId]);
   const contractTypes = getContractTypes(t);
   const STATUS_OPTIONS = getStatusOptions(t);
@@ -218,21 +223,32 @@ export default function Contracts() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  // Fetch employees for dropdown
+
+  // P1-HRM-CON-PERF-01: defer departments/catalogs/employee picker until create/edit dialog
+  const needsFormLookups = dialogOpen;
+  const needsEmployeePicker = dialogOpen && !editingContract;
+  const { departments } = useDepartments({ enabled: needsFormLookups });
+
   const { data: employeesList = [] } = useQuery({
-    queryKey: ['employees-list', currentCompanyId],
+    queryKey: ['contracts-employees-picker', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const res = await listAllEmployees({ company_id: currentCompanyId, page: 1 });
+      // Single page for picker — avoid listAllEmployees full fan-out on mount
+      const res = await listEmployees({
+        company_id: currentCompanyId,
+        page: 1,
+        page_size: 100,
+      });
       return res.data ?? [];
     },
-    enabled: !!currentCompanyId,
+    enabled: !!currentCompanyId && needsEmployeePicker,
+    staleTime: 60_000,
   });
 
   const contractCatalogQuery = useQuery({
     queryKey: ['contracts-settings-catalogs', scope?.tenantId, scope?.companyId],
     queryFn: () => getSettingsCatalogsOverview(scope!),
-    enabled: !!scope,
+    enabled: !!scope && needsFormLookups,
     staleTime: 60_000,
   });
   const catalogs = contractCatalogQuery.data?.catalogs ?? [];
@@ -297,12 +313,18 @@ export default function Contracts() {
 
   const {
     contracts,
+    totalCount,
     isLoading,
+    isLoadingMore,
+    fetchError,
+    refetch,
     createContract,
     updateContract,
     deleteContract,
     bulkDeleteContracts,
   } = useContracts(selectedType);
+
+  const loadFailedEmpty = isListFetchFailureEmpty(fetchError, contracts.length);
 
   const handleOpenCreate = () => {
     setEditingContract(null);
@@ -527,9 +549,11 @@ export default function Contracts() {
 
   const typeCounts = contractTypes.map((type) => ({
     ...type,
-    count: type.key === 'all' 
-      ? contracts.length 
-      : contracts.filter((c) => c.contract_type === type.key).length,
+    count: loadFailedEmpty
+      ? 0
+      : type.key === 'all'
+        ? totalCount || contracts.length
+        : contracts.filter((c) => c.contract_type === type.key).length,
   }));
 
   const toggleSelectAll = () => {
@@ -804,6 +828,34 @@ export default function Contracts() {
         </div>
       </div>
 
+      {/* P1-HRM-CON-PERF-01: error / retry — never silent empty on RATE-429 / non-2xx */}
+      {(fetchError || isLoading || isLoadingMore) && (
+        <div className="px-4 md:px-6 pt-4 space-y-2">
+          <HrmListLoadBanner
+            isLoading={isLoading || isLoadingMore}
+            loadFailed={Boolean(fetchError)}
+            errorMessage={fetchError}
+            loadingMessage={
+              isLoadingMore && !isLoading
+                ? t('contracts.loadingMore', 'Đang tải thêm hợp đồng…')
+                : t('contracts.loadingApi', 'Đang tải danh sách hợp đồng từ HRM API…')
+            }
+          />
+          {fetchError ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => void refetch()}
+            >
+              <RefreshCw className="h-4 w-4" />
+              {t('common.retry', 'Thử lại')}
+            </Button>
+          ) : null}
+        </div>
+      )}
+
       {/* Horizontal Menu with Colored Icons */}
       <div className="px-6 py-3 border-b bg-card">
         <div className="flex items-center gap-2 overflow-x-auto">
@@ -828,7 +880,11 @@ export default function Contracts() {
                   <Icon className="w-3.5 h-3.5 text-white" />
                 </div>
                 <span>{type.label}</span>
-                <span className="text-xs bg-muted px-1.5 py-0.5 rounded">{type.count}</span>
+                <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                  {loadFailedEmpty
+                    ? t('contracts.loadFailedShort', HRM_LIST_LOAD_FAILED_SHORT)
+                    : type.count}
+                </span>
               </button>
             );
           })}
@@ -864,6 +920,13 @@ export default function Contracts() {
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-10">
                   {t('contracts.loading')}
+                </TableCell>
+              </TableRow>
+            ) : loadFailedEmpty ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center py-10 text-amber-900">
+                  {fetchError ||
+                    t('contracts.loadFailed', 'Không tải được danh sách hợp đồng')}
                 </TableCell>
               </TableRow>
             ) : paginatedContracts.length === 0 ? (
@@ -978,7 +1041,19 @@ export default function Contracts() {
       <div className="flex items-center justify-between px-6 py-3 border-t bg-card">
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
-            {t('contracts.showing', { from: filteredContracts.length > 0 ? startIndex + 1 : 0, to: Math.min(endIndex, filteredContracts.length), total: filteredContracts.length })}
+            {t('contracts.showing', {
+              from: loadFailedEmpty
+                ? 0
+                : filteredContracts.length > 0
+                  ? startIndex + 1
+                  : 0,
+              to: loadFailedEmpty
+                ? 0
+                : Math.min(endIndex, filteredContracts.length),
+              total: loadFailedEmpty
+                ? t('contracts.loadFailedShort', HRM_LIST_LOAD_FAILED_SHORT)
+                : filteredContracts.length,
+            })}
           </span>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">{t('contracts.rowsPerPage')}</span>

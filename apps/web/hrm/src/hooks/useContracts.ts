@@ -1,17 +1,54 @@
-import { useCallback, useEffect, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /contracts — Hợp đồng list (embed + standalone)
+ * UC:         UF-HRM-02 · J-HRM-03 · P-CC-04
+ * BR:         BR-CON-01
+ * SRS:        docs/hrm/SRS.md (contracts list / detail drawer / PATCH)
+ * TechSpec:   docs/api/openapi/hrm-api.yaml contracts-insurance/contracts
+ * Purpose:    Load contracts via Nest API with progressive pages
+ *             (first page → paint, then append). Non-2xx must surface fetchError —
+ *             never coerce fail → empty «Không có dữ liệu». Employee picker is
+ *             deferred to dialog (Contracts.tsx), not this hook.
+ * WorkItem:   P1-HRM-CON-PERF-01 · D-HRM-CON-PERF-01
+ * Coded:      2026-07-17
+ *
+ * Callers:
+ *   - apps/web/hrm/src/pages/Contracts.tsx → useContracts()
+ *
+ * Callees:
+ *   - listEmployeeContracts (paged) — not listAllEmployeeContracts on mount
+ *   - create/update/deleteEmployeeContract for mutate (UF-HRM-02)
+ *
+ * FE-Actions:
+ *   | User action     | Handler            | Lib / API                 |
+ *   |-----------------|--------------------|---------------------------|
+ *   | Open Hợp đồng   | fetchContracts     | listEmployeeContracts p1  |
+ *   | Retry banner    | refetch            | same                      |
+ *   | Type chip       | selectedType dep   | client filter + refetch   |
+ *   | PATCH / create  | update/create…     | then progressive refetch  |
+ *
+ * BE-Chain: GET /api/hrm/contracts-insurance/contracts?page=&page_size=
+ * Impact:   12× contracts + 12× employees before paint caused RATE-429 empty UI.
+ * must_keep: J-HRM-03 detail from list row; UF-HRM-02 PATCH; fetchError ≠ noData.
+ * SOLID:     Progressive loader pure fn testable; hook owns React state only.
+ * LastVerified: apps/web/hrm/src/hooks/useContracts.test.ts
+ */
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
-import { shouldSkipSupabaseDataFetches } from '@/lib/hrmDataMode';
+import { shouldSkipSupabaseDataFetches, HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import { isListFetchFailureEmpty } from '@/lib/hrmListLoadFailure';
 import {
   createEmployeeContract,
   deleteEmployeeContract,
-  listAllEmployeeContracts,
+  listEmployeeContracts,
   updateEmployeeContract,
   type HrmContractRecord,
   type HrmEmployeeRecord,
 } from '@/integrations/hrmApi';
+
 export type ContractSource = 'contracts' | 'employee_contracts';
 
 export interface Contract {
@@ -47,12 +84,18 @@ export interface ContractFormData {
   employee_id?: string;
 }
 
+/** Nest @Max(100) — one page per request; progressive append for remainder. */
+export const HRM_CONTRACTS_LIST_PAGE_SIZE = HRM_API_MAX_PAGE_SIZE;
+
+/** @deprecated Prefer `isListFetchFailureEmpty` from `@/lib/hrmListLoadFailure`. */
+export const isContractsFetchFailureEmpty = isListFetchFailureEmpty;
+
 function mapApiStatus(status: HrmContractRecord['status']): string {
   if (status === 'terminated') return 'expired';
   return status;
 }
 
-function mapApiContract(row: HrmContractRecord, employee?: HrmEmployeeRecord): Contract {
+export function mapApiContract(row: HrmContractRecord, employee?: HrmEmployeeRecord): Contract {
   const code =
     row.employee_code != null
       ? `${row.employee_code}-HD`
@@ -88,78 +131,170 @@ function mapApiContract(row: HrmContractRecord, employee?: HrmEmployeeRecord): C
   };
 }
 
-function mapSupabaseContract(c: Record<string, unknown>, source: ContractSource, employee?: {
-  full_name?: string;
-  avatar_url?: string | null;
-}): Contract {
-  return {
-    id: String(c.id),
-    contract_code: String(c.contract_code ?? ''),
-    employee_name: String(
-      source === 'employee_contracts' ? employee?.full_name ?? c.employee_name ?? 'Unknown' : c.employee_name ?? '',
-    ),
-    employee_avatar:
-      source === 'employee_contracts'
-        ? (employee?.avatar_url as string | null) ?? null
-        : (c.employee_avatar as string | null) ?? null,
-    department: (c.department as string | null) ?? null,
-    contract_type: String(c.contract_type ?? ''),
-    effective_date: (c.effective_date as string | null) ?? null,
-    expiry_date: (c.expiry_date as string | null) ?? null,
-    status: String(c.status ?? 'pending'),
-    created_by: (c.created_by as string | null) ?? null,
-    created_at: String(c.created_at ?? new Date().toISOString()),
-    file_url: (c.file_url as string | null) ?? null,
-    notes: (c.notes as string | null) ?? null,
-    company_id: String(c.company_id ?? ''),
-    source,
-    employee_id: c.employee_id != null ? String(c.employee_id) : undefined,
+function applyTypeFilter(rows: Contract[], selectedType: string): Contract[] {
+  if (selectedType === 'all') return rows;
+  return rows.filter((c) => c.contract_type === selectedType);
+}
+
+export type ContractsProgressiveCallbacks = {
+  onFirstPage: (payload: { items: Contract[]; total: number }) => void;
+  onProgress?: (payload: { items: Contract[]; total: number }) => void;
+  signal?: AbortSignal;
+};
+
+/**
+ * P1-HRM-CON-PERF-01: paint after page 1; append remaining pages.
+ * Primary contracts non-2xx throws (caller sets fetchError). No employee fan-out.
+ */
+export async function loadContractsListProgressive(
+  companyId: string,
+  selectedType: string,
+  callbacks: ContractsProgressiveCallbacks,
+): Promise<{ items: Contract[]; total: number; pagesFetched: number }> {
+  const pageSize = HRM_CONTRACTS_LIST_PAGE_SIZE;
+  const signal = callbacks.signal;
+  const listCompanyId = coerceHrmListCompanyId(companyId);
+
+  const throwIfAborted = () => {
+    if (signal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
   };
+
+  throwIfAborted();
+
+  const firstRes = await listEmployeeContracts({
+    company_id: listCompanyId,
+    page: 1,
+    page_size: pageSize,
+  });
+
+  throwIfAborted();
+
+  const firstBatch = firstRes.data ?? [];
+  let accumulatedRaw = [...firstBatch];
+  let items = applyTypeFilter(
+    accumulatedRaw.map((row) => mapApiContract(row)),
+    selectedType,
+  );
+  const total = firstRes.total ?? accumulatedRaw.length;
+
+  callbacks.onFirstPage({ items, total });
+
+  let pagesFetched = 1;
+  let page = 2;
+
+  while (accumulatedRaw.length < total) {
+    throwIfAborted();
+    const res = await listEmployeeContracts({
+      company_id: listCompanyId,
+      page,
+      page_size: pageSize,
+    });
+    throwIfAborted();
+    const batch = res.data ?? [];
+    if (batch.length === 0) break;
+    accumulatedRaw = accumulatedRaw.concat(batch);
+    items = applyTypeFilter(
+      accumulatedRaw.map((row) => mapApiContract(row)),
+      selectedType,
+    );
+    pagesFetched += 1;
+    callbacks.onProgress?.({ items, total: res.total ?? total });
+    if (accumulatedRaw.length >= (res.total ?? total)) break;
+    page += 1;
+  }
+
+  return { items, total, pagesFetched };
 }
 
 export function useContracts(selectedType: string = 'all') {
-  const { currentCompanyId, user } = useAuth();
+  const { currentCompanyId } = useAuth();
   const [contracts, setContracts] = useState<Contract[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const useApi = shouldSkipSupabaseDataFetches();
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchContracts = useCallback(async () => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     if (!currentCompanyId) {
       setContracts([]);
+      setTotalCount(0);
       setFetchError(null);
       setIsLoading(false);
+      setIsLoadingMore(false);
       return;
     }
 
     setIsLoading(true);
+    setIsLoadingMore(false);
     setFetchError(null);
 
+    let painted = false;
+
     try {
-      if (useApi) {
-        const companyId = coerceHrmListCompanyId(currentCompanyId);
-        const contractRes = await listAllEmployeeContracts({ company_id: companyId });
-        let rows = (contractRes.data ?? []).map((row) => mapApiContract(row));
-        if (selectedType !== 'all') {
-          rows = rows.filter((c) => c.contract_type === selectedType);
-        }
-        setContracts(rows);
+      if (!useApi) {
+        setContracts([]);
+        setTotalCount(0);
         return;
       }
-      setContracts([]);
+
+      const result = await loadContractsListProgressive(currentCompanyId, selectedType, {
+        signal: controller.signal,
+        onFirstPage: ({ items, total }) => {
+          painted = true;
+          setContracts(items);
+          setTotalCount(total);
+          setIsLoading(false);
+          setIsLoadingMore(total > items.length || total > HRM_CONTRACTS_LIST_PAGE_SIZE);
+        },
+        onProgress: ({ items, total }) => {
+          setContracts(items);
+          setTotalCount(total);
+        },
+      });
+
+      if (controller.signal.aborted) return;
+
+      setContracts(result.items);
+      setTotalCount(result.total);
+      setIsLoadingMore(false);
+      if (!painted) {
+        setIsLoading(false);
+      }
     } catch (error: unknown) {
+      if (controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError')) {
+        return;
+      }
       console.error('Error fetching contracts:', error);
-      setContracts([]);
       const message = toErrorMessage(error, 'Không thể tải danh sách hợp đồng');
       setFetchError(message);
+      // Clear only when first page never painted — avoid empty mask over partial data
+      if (!painted) {
+        setContracts([]);
+        setTotalCount(0);
+      }
+      setIsLoadingMore(false);
       toast.error(message);
     } finally {
-      setIsLoading(false);
+      if (!controller.signal.aborted) {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
     }
   }, [currentCompanyId, selectedType, useApi]);
 
   useEffect(() => {
     void fetchContracts();
+    return () => {
+      abortRef.current?.abort();
+    };
   }, [fetchContracts]);
 
   const createContract = async (data: ContractFormData): Promise<boolean> => {
@@ -245,7 +380,9 @@ export function useContracts(selectedType: string = 'all') {
 
   return {
     contracts,
+    totalCount,
     isLoading,
+    isLoadingMore,
     fetchError,
     refetch: fetchContracts,
     createContract,

@@ -13,6 +13,7 @@ export const HRM_ALL_VIEWS = [
   'recruitment',
   'attendance',
   'payroll',
+  'performance',
   'hrm_ai',
   'tasks',
   'processes',

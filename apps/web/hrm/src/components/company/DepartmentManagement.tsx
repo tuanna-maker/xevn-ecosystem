@@ -13,6 +13,7 @@ import {
   List,
   Network,
   Upload,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,24 +51,18 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { DepartmentImportDialog } from './DepartmentImportDialog';
+import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
+import {
+  isListFetchFailureEmpty,
+} from '@/lib/hrmListLoadFailure';
+import {
+  loadCompanyDepartments,
+  type CatalogDepartmentRow,
+} from '@/lib/hrmDepartmentCatalog';
 
-interface Department {
-  id: string;
-  company_id: string;
-  parent_id: string | null;
-  name: string;
-  code: string | null;
-  description: string | null;
-  manager_name: string | null;
-  manager_email: string | null;
-  employee_count: number;
-  level: number;
-  sort_order: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
+type Department = CatalogDepartmentRow & {
   children?: Department[];
-}
+};
 
 interface DepartmentFormData {
   name: string;
@@ -94,6 +89,7 @@ export function DepartmentManagement() {
   const { currentCompanyId } = useAuth();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
@@ -110,12 +106,17 @@ export function DepartmentManagement() {
 
   const fetchDepartments = async () => {
     if (!currentCompanyId) return;
-    
+
     setLoading(true);
+    setFetchError(null);
     try {
-      setDepartments(data || []);
+      const { rows, fetchError: loadError } = await loadCompanyDepartments(currentCompanyId);
+      setDepartments(rows);
+      setFetchError(loadError);
     } catch (error) {
       console.error('Error fetching departments:', error);
+      setDepartments([]);
+      setFetchError(t('dept.loadError'));
       toast.error(t('dept.loadError'));
     } finally {
       setLoading(false);
@@ -238,6 +239,7 @@ export function DepartmentManagement() {
 
   const departmentTree = buildTree(departments);
   const flatDepartments = flattenForSelect(departmentTree);
+  const loadFailedEmpty = isListFetchFailureEmpty(fetchError, departments.length);
 
   const renderDepartmentItem = (dept: Department, depth = 0) => {
     const hasChildren = dept.children && dept.children.length > 0;
@@ -324,16 +326,6 @@ export function DepartmentManagement() {
     );
   };
 
-  if (loading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <>
       <Card>
@@ -356,7 +348,30 @@ export function DepartmentManagement() {
           </div>
         </CardHeader>
         <CardContent>
-          {departments.length === 0 ? (
+          {(fetchError || loading) && (
+            <div className="mb-4 space-y-2">
+              <HrmListLoadBanner
+                isLoading={loading}
+                loadFailed={Boolean(fetchError)}
+                errorMessage={fetchError}
+                loadingMessage="Đang tải danh sách phòng ban từ HRM API…"
+              />
+              {fetchError ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => void fetchDepartments()}
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  {t('common.retry', 'Thử lại')}
+                </Button>
+              ) : null}
+            </div>
+          )}
+
+          {loadFailedEmpty ? null : departments.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Building2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>{t('dept.empty')}</p>
@@ -377,17 +392,17 @@ export function DepartmentManagement() {
                   {t('dept.orgChart')}
                 </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="list" className="mt-0">
                 <div className="space-y-2">
                   {departmentTree.map(dept => renderDepartmentItem(dept))}
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="chart" className="mt-0">
                 <div className="border rounded-lg bg-muted/20 min-h-[400px]">
-                  <OrgChart 
-                    departments={departments} 
+                  <OrgChart
+                    departments={departments}
                     onNodeClick={(dept) => handleEdit(dept)}
                   />
                 </div>

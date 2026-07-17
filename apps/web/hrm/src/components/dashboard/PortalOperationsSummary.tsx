@@ -1,21 +1,24 @@
 import { ClipboardList, Users, Wallet, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useEmployees } from '@/hooks/useEmployees';
+import { useEmployeesSummary } from '@/hooks/useEmployeesSummary';
 import { useOperationsSummary } from '@/hooks/useOperationsSummary';
 import { isPortalEmbedApiMode } from '@/lib/hrmDataMode';
 
 export function PortalOperationsSummary() {
   const { summary, isLoading, fetchError, useApiMode } = useOperationsSummary();
-  const { employees } = useEmployees(true);
+  // D-DASH-FE-STORM: share the Dashboard employees-summary RQ key (no
+  // include_archived) so this tile coalesces to a single /employees/summary
+  // fetch instead of issuing a duplicate request on dashboard mount.
+  const { data: employeeSummary, isLoading: employeesLoading } = useEmployeesSummary();
 
   if (!isPortalEmbedApiMode() || !useApiMode) return null;
 
   const tiles = [
     {
       label: 'Nhân sự',
-      value: employees.length,
+      value: employeeSummary?.total ?? 0,
       icon: Users,
-      hint: 'GET /employees',
+      hint: 'GET /employees/summary',
     },
     {
       label: 'Chấm công',
@@ -54,7 +57,7 @@ export function PortalOperationsSummary() {
               <SummaryTile
                 key={label}
                 label={label}
-                value={isLoading ? '…' : String(value)}
+                value={isLoading || employeesLoading ? '…' : String(value)}
                 icon={Icon}
                 hint={hint}
               />

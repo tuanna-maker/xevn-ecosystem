@@ -34,6 +34,9 @@ describe('hrmProxyPath (Command Center embed)', () => {
     expect(hrmProxyPath('payroll', { portal: true, companyId: 'main' })).toBe(
       '/hr/payroll?portal=1&companyId=main',
     );
+    expect(hrmProxyPath('performance', { portal: true, companyId: 'main' })).toBe(
+      '/hr/performance?portal=1&companyId=main',
+    );
   });
 
   it('optionally appends cache-bust query when explicitly requested (legacy G-INT-08)', () => {
@@ -104,6 +107,12 @@ describe('hrmProxyPath (Command Center embed)', () => {
     expect(
       hrmProxyPathFromSuffix('tools_equipment', { portal: true, companyId: 'main' }),
     ).toBe('/hr/tools-equipment?portal=1&companyId=main');
+  });
+
+  it('maps performance portal suffix to /hr/performance embed (COND-PF-PORTAL-01)', () => {
+    expect(
+      hrmProxyPathFromSuffix('performance', { portal: true, tenantId: 'xevn', companyId: 'main' }),
+    ).toBe('/hr/performance?portal=1&tenantId=xevn&companyId=main');
   });
 
   it('supports deep link employees/:id via suffix', () => {

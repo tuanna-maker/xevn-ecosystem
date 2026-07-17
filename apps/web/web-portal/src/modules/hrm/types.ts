@@ -11,6 +11,7 @@ export type HrmWorkspaceMenuKey =
   | 'recruitment'
   | 'attendance'
   | 'payroll'
+  | 'performance'
   | 'hrm_ai'
   | 'tasks'
   | 'processes'

@@ -19,6 +19,7 @@ import {
   Users,
   ClipboardList,
   Wallet,
+  TrendingUp,
   LayoutDashboard,
   UserPlus,
   BarChart3,
@@ -110,6 +111,12 @@ const primaryMenus: MenuItem[] = [
         label: 'Tiền lương',
         icon: <Wallet size={18} />,
         path: '/command-center/hrm/payroll',
+      },
+      {
+        id: 'hrm-performance',
+        label: 'Đánh giá',
+        icon: <TrendingUp size={18} />,
+        path: '/command-center/hrm/performance',
       },
       {
         id: 'hrm-company',

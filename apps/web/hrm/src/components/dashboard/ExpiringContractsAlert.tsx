@@ -1,8 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/contexts/AuthContext';
-import { listAllEmployeeContracts } from '@/integrations/hrmApi';
-import { filterUpcomingExpiringContracts, formatHrmDateVi, parseHrmDateOnly } from '@/lib/formatHrmDate';
+import { formatHrmDateVi, parseHrmDateOnly } from '@/lib/formatHrmDate';
+import { useExpiringContractsDashboard } from '@/hooks/useExpiringContractsDashboard';
 import { AlertTriangle, FileText, Calendar, ExternalLink, Bell } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,32 +24,24 @@ interface ExpiringContract {
 }
 
 export function ExpiringContractsAlert() {
-  const { currentCompanyId } = useAuth();
   const { t } = useTranslation();
 
-  const { data: expiringContracts = [], isLoading } = useQuery({
-    queryKey: ['expiring-contracts-dashboard', currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      const res = await listAllEmployeeContracts({ company_id: currentCompanyId, status: 'active' });
-      const upcoming = filterUpcomingExpiringContracts(res.data ?? [], 30);
-      return upcoming.map((row): ExpiringContract => ({
-        id: row.id,
-        contract_code: row.employee_code
-          ? `${row.employee_code}-HD`
-          : `HD-${row.id.slice(0, 8).toUpperCase()}`,
-        employee_id: row.employee_id,
-        employee_name: row.employee_name?.trim() || t('expiringContracts.unknown'),
-        employee_avatar: null,
-        department: row.department ?? null,
-        contract_type: row.contract_type,
-        expiry_date: row.end_date,
-        status: row.status,
-        source: 'employee_contracts',
-      }));
-    },
-    enabled: !!currentCompanyId,
-  });
+  const { data: expiringRows = [], isLoading } = useExpiringContractsDashboard();
+
+  const expiringContracts = expiringRows.map((row): ExpiringContract => ({
+    id: row.id,
+    contract_code: row.employee_code
+      ? `${row.employee_code}-HD`
+      : `HD-${row.id.slice(0, 8).toUpperCase()}`,
+    employee_id: row.employee_id,
+    employee_name: row.employee_name?.trim() || t('expiringContracts.unknown'),
+    employee_avatar: null,
+    department: row.department ?? null,
+    contract_type: row.contract_type,
+    expiry_date: row.end_date,
+    status: row.status,
+    source: 'employee_contracts',
+  }));
 
   const getDaysRemaining = (expiryDate: string) => {
     const expiry = parseHrmDateOnly(expiryDate);

@@ -1,4 +1,39 @@
-import { useCallback, useEffect, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /decisions — Quyết định nhân sự list/create dialog
+ * UC:          UC-HRM-27
+ * BR:          BR-DEC-01, BR-DEC-03, BR-DEC-06
+ * SRS:         docs/hrm/SRS.md § UC-HRM-27
+ * TechSpec:    docs/hrm/TECHSPEC.md §11.2–11.4
+ * Purpose:     Owns the live HRM decisions list and employee picker data used by the
+ *              create/edit dialog, with request coalescing and dialog-gated picker loading.
+ * WorkItem:    PERF-HRM-DEC-01
+ * Coded:       2026-07-17
+ *
+ * Callers:
+ *   - apps/web/hrm/src/pages/Decisions.tsx → useDecisions()
+ *
+ * Callees:
+ *   - decisions query → listHrDecisions() → GET /api/hrm/decisions → hr_decisions
+ *   - employee query → listEmployees() → GET /api/hrm/employees → employees
+ *   - mutations → create/update/deleteHrDecision() → HRM decisions APIs
+ *
+ * FE-Actions:
+ *   | User action        | Handler              | Lib / API                     |
+ *   |--------------------|----------------------|-------------------------------|
+ *   | Open decisions     | useDecisions query   | listHrDecisions               |
+ *   | Open create/edit   | employee query       | listEmployees                 |
+ *   | Save/delete        | mutation methods     | HRM decision write APIs       |
+ *
+ * BE-Chain: GET/POST/PATCH/DELETE /api/hrm/decisions → hr_decisions;
+ *           GET /api/hrm/employees → employees
+ * Impact:      Duplicate mount requests and eager employee loading delay the embedded menu.
+ * must_keep:   Live-empty behavior, scope-aware company_id, no mock fallback, post-write refresh.
+ * SOLID:       This hook isolates decisions server state and dialog-only picker state from page UI.
+ * LastVerified: apps/web/hrm/src/hooks/useDecisions.test.ts
+ */
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { shouldSkipSupabaseDataFetches, HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
@@ -117,62 +152,66 @@ function toApiPayload(companyId: string, data: DecisionFormPayload) {
   };
 }
 
-export function useDecisions(selectedType: string = 'all') {
-  const { currentCompanyId, user } = useAuth();
+export function useDecisions(
+  selectedType: string = 'all',
+  options?: { loadEmployees?: boolean },
+) {
+  const { currentCompanyId } = useAuth();
   const useApiMode = shouldSkipSupabaseDataFetches();
-  const [decisions, setDecisions] = useState<DecisionRecord[]>([]);
-  const [employees, setEmployees] = useState<DecisionEmployeeOption[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const loadEmployees = options?.loadEmployees === true;
 
-  const load = useCallback(async () => {
-    if (!currentCompanyId) {
-      setDecisions([]);
-      setEmployees([]);
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    setFetchError(null);
-    try {
-      {
-        const [decRes, empRes] = await Promise.all([
-          listHrDecisions({
-            company_id: currentCompanyId,
-            decision_type: selectedType !== 'all' ? selectedType : undefined,
-          }),
-          listEmployees({ company_id: currentCompanyId, page_size: HRM_API_MAX_PAGE_SIZE }),
-        ]);
-        setDecisions(decRes.data.map(mapApiRow));
-        setEmployees(
-          (empRes.data ?? []).map((e) => ({
-            id: e.id,
-            full_name: e.full_name,
-            employee_code: e.employee_code ?? null,
-            department:
-              (e.custom_fields as { department?: string } | undefined)?.department ??
-              e.job_title_key ??
-              null,
-            position: e.job_title_key ?? null,
-            avatar_url: null,
-          })),
-        );
-        return;
-      }
+  const decisionsQuery = useQuery({
+    queryKey: ['hrm-decisions', currentCompanyId, selectedType],
+    queryFn: async () => {
+      if (!currentCompanyId) return [];
+      const response = await listHrDecisions({
+        company_id: currentCompanyId,
+        decision_type: selectedType !== 'all' ? selectedType : undefined,
+      });
+      return response.data.map(mapApiRow);
+    },
+    enabled: Boolean(currentCompanyId),
+    staleTime: 30_000,
+  });
 
-    } catch (err: unknown) {
-      setDecisions([]);
-      const msg = toErrorMessage(err, 'Không thể tải quyết định nhân sự');
-      setFetchError(msg);
-      toast.error(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentCompanyId, selectedType, useApiMode]);
+  const employeesQuery = useQuery({
+    queryKey: ['hrm-decision-employees', currentCompanyId],
+    queryFn: async () => {
+      if (!currentCompanyId) return [];
+      const response = await listEmployees({
+        company_id: currentCompanyId,
+        page_size: HRM_API_MAX_PAGE_SIZE,
+      });
+      return (response.data ?? []).map((employee) => ({
+        id: employee.id,
+        full_name: employee.full_name,
+        employee_code: employee.employee_code ?? null,
+        department:
+          (employee.custom_fields as { department?: string } | undefined)?.department ??
+          employee.job_title_key ??
+          null,
+        position: employee.job_title_key ?? null,
+        avatar_url: null,
+      }));
+    },
+    enabled: Boolean(currentCompanyId) && loadEmployees,
+    staleTime: 5 * 60_000,
+  });
+
+  const fetchError = decisionsQuery.error
+    ? toErrorMessage(decisionsQuery.error, 'Không thể tải quyết định nhân sự')
+    : null;
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (fetchError) toast.error(fetchError);
+  }, [fetchError]);
+
+  const refreshDecisions = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['hrm-decisions', currentCompanyId],
+    });
+  };
 
   const createDecision = async (data: DecisionFormPayload): Promise<boolean> => {
     if (!currentCompanyId) return false;
@@ -181,7 +220,7 @@ export function useDecisions(selectedType: string = 'all') {
         await createHrDecision(toApiPayload(currentCompanyId, data));
       }
       toast.success('Tạo quyết định thành công');
-      await load();
+      await refreshDecisions();
       return true;
     } catch (err: unknown) {
       toast.error(toErrorMessage(err, 'Không thể tạo quyết định'));
@@ -196,7 +235,7 @@ export function useDecisions(selectedType: string = 'all') {
         await updateHrDecision(id, toApiPayload(currentCompanyId, data));
       }
       toast.success('Cập nhật quyết định thành công');
-      await load();
+      await refreshDecisions();
       return true;
     } catch (err: unknown) {
       toast.error(toErrorMessage(err, 'Không thể cập nhật quyết định'));
@@ -211,7 +250,7 @@ export function useDecisions(selectedType: string = 'all') {
         await deleteHrDecision(id, currentCompanyId);
       }
       toast.success('Xóa quyết định thành công');
-      await load();
+      await refreshDecisions();
       return true;
     } catch (err: unknown) {
       toast.error(toErrorMessage(err, 'Không thể xóa quyết định'));
@@ -228,12 +267,13 @@ export function useDecisions(selectedType: string = 'all') {
   };
 
   return {
-    decisions,
-    employees,
-    isLoading,
+    decisions: decisionsQuery.data ?? [],
+    employees: employeesQuery.data ?? [],
+    isLoading: decisionsQuery.isLoading,
+    isLoadingEmployees: employeesQuery.isLoading,
     fetchError,
     useApiMode,
-    refetch: load,
+    refetch: decisionsQuery.refetch,
     createDecision,
     updateDecision,
     removeDecision,

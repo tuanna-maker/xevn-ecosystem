@@ -56,6 +56,7 @@ export const HRM_VIEW_PATH_MAP: Record<string, string> = {
   recruitment: '/recruitment',
   attendance: '/attendance',
   payroll: '/payroll',
+  performance: '/performance',
   contracts: '/contracts',
   insurance: '/insurance',
   decisions: '/decisions',

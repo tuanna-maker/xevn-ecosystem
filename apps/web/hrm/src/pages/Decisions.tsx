@@ -203,7 +203,7 @@ export default function Decisions() {
     updateDecision,
     removeDecision,
     removeDecisions: removeDecisionsBulk,
-  } = useDecisions(selectedType);
+  } = useDecisions(selectedType, { loadEmployees: dialogOpen });
 
   const decisions = decisionsFromApi as Decision[];
 
