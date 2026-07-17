@@ -17,11 +17,13 @@ vi.mock('@/lib/hrmSpreadsheetScope', () => ({
 import {
   loadCompanyDepartments,
   mapHrmDepartmentRow,
+  __resetCompanyDepartmentsInflightForTests,
 } from './hrmDepartmentCatalog';
 
 describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    __resetCompanyDepartmentsInflightForTests();
   });
 
   it('mapHrmDepartmentRow maps HRM API rows', () => {
@@ -51,6 +53,30 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(result.rows).toHaveLength(1);
     expect(result.rows[0]?.name).toBe('Ban Giám đốc');
     expect(getSettingsCatalogsOverview).not.toHaveBeenCalled();
+  });
+
+  it('coalesces parallel loads into one listDepartments call (R-DEPT-FETCH-X2)', async () => {
+    let resolveList: (value: { data: Array<{ id: string; company_id: string; name: string; status: string }> }) => void =
+      () => undefined;
+    listDepartments.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveList = resolve;
+        }),
+    );
+
+    const a = loadCompanyDepartments('main');
+    const b = loadCompanyDepartments('main');
+    expect(listDepartments).toHaveBeenCalledTimes(1);
+
+    resolveList({
+      data: [{ id: 'd1', company_id: 'main', name: 'Ban Giám đốc', status: 'active' }],
+    });
+
+    const [ra, rb] = await Promise.all([a, b]);
+    expect(ra.rows).toHaveLength(1);
+    expect(rb.rows).toHaveLength(1);
+    expect(listDepartments).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to settings catalog when HRM list is empty', async () => {

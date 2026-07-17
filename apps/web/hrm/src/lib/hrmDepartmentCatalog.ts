@@ -61,8 +61,27 @@ export type LoadCompanyDepartmentsResult = {
 /**
  * Company Phòng ban tab — HRM `/departments` when populated; else XBOS-synced settings catalog (org DM §1–6).
  * Non-2xx never coerces to silent empty (P1-HRM-MENU-COMPANY-DEPT-STUB).
+ * R-DEPT-FETCH-X2: in-flight coalesce so StrictMode remount / parallel callers share one network GET.
  */
+const companyDepartmentsInflight = new Map<string, Promise<LoadCompanyDepartmentsResult>>();
+
 export async function loadCompanyDepartments(companyId: string): Promise<LoadCompanyDepartmentsResult> {
+  const existing = companyDepartmentsInflight.get(companyId);
+  if (existing) return existing;
+
+  const promise = loadCompanyDepartmentsOnce(companyId).finally(() => {
+    companyDepartmentsInflight.delete(companyId);
+  });
+  companyDepartmentsInflight.set(companyId, promise);
+  return promise;
+}
+
+/** @internal — test helper to clear coalesce map between cases */
+export function __resetCompanyDepartmentsInflightForTests(): void {
+  companyDepartmentsInflight.clear();
+}
+
+async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompanyDepartmentsResult> {
   let hrmError: string | null = null;
 
   try {

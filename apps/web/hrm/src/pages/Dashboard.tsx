@@ -71,6 +71,10 @@ import { useQuery } from '@tanstack/react-query';
 import { listAttendanceRecords } from '@/integrations/hrmApi';
 import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import {
+  DASHBOARD_PAYROLL_CHART_EMPTY_VI,
+  hasEmployeeSalaryAggregate,
+} from '@/lib/dashboardPayrollChart';
 
 const SALARY_RANGE_LABEL_KEYS: Record<string, string> = {
   above_30m: 'dashboard2.salaryRanges.above30',
@@ -157,58 +161,51 @@ export default function Dashboard() {
 
   const totalPayroll = employeeSummary?.payroll.total ?? 0;
 
-  // D-DASH-FE-STORM: payroll tiles are summary-bound. When the summary API is
-  // loading or failed (live 500 tracked by BE D-DASH-01), do NOT render a fake
-  // "0 VNĐ" — show a loading/unavailable state so QA can distinguish a genuine
-  // zero from a missing aggregate.
+  // D-DASH-FE-STORM + R-DASH-PAYROLL-CHART-0: do NOT render fake "0 VNĐ" while
+  // summary loads/errors, or when employees_with_salary === 0 (salary fields absent).
   const payrollSummaryPending = employeeSummaryLoading || (!employeeSummary && !employeeSummaryError);
   const payrollSummaryReady = !!employeeSummary && !employeeSummaryError;
+  const hasPayrollAggregate = hasEmployeeSalaryAggregate(employeeSummary);
 
-  // Estimate tax & insurance from actual salary
-  const totalTax = Math.round(totalPayroll * 0.1);
-  const totalInsurance = Math.round(totalPayroll * 0.105);
+  // Estimate tax & insurance only from real salary aggregate
+  const totalTax = hasPayrollAggregate ? Math.round(totalPayroll * 0.1) : 0;
+  const totalInsurance = hasPayrollAggregate ? Math.round(totalPayroll * 0.105) : 0;
 
   const salaryRangeData = useMemo(() => {
+    if (!hasPayrollAggregate) return [];
     const ranges = employeeSummary?.salary_ranges ?? [];
     return ranges.map((r) => ({
       range: t(SALARY_RANGE_LABEL_KEYS[r.key] ?? r.key),
       count: r.count,
       fill: SALARY_RANGE_FILLS[r.key] ?? '#94a3b8',
     }));
-  }, [employeeSummary, t]);
+  }, [employeeSummary, hasPayrollAggregate, t]);
 
   const topSalaryCount = salaryRangeData[0]?.count || 0;
 
-  // Income structure computed from real salary data
+  // Income structure — only when salary aggregate exists (no fake 100% base pie)
   const incomeStructureData = useMemo(() => {
-    if (totalPayroll === 0) {
-      return [
-        { name: t('dashboard2.incomeItems.baseSalary'), value: 100, color: '#10b981' },
-        { name: t('dashboard2.incomeItems.kpiBonus'), value: 0, color: '#f59e0b' },
-        { name: t('dashboard2.incomeItems.allowance'), value: 0, color: '#8b5cf6' },
-        { name: t('dashboard2.incomeItems.otherBonus'), value: 0, color: '#3b82f6' },
-      ];
-    }
-    // Without separate bonus/allowance tracking, show base salary as dominant
-    // These ratios are derived from actual payroll composition when available
+    if (!hasPayrollAggregate) return [];
     return [
       { name: t('dashboard2.incomeItems.baseSalary'), value: 100, color: '#10b981' },
       { name: t('dashboard2.incomeItems.kpiBonus'), value: 0, color: '#f59e0b' },
       { name: t('dashboard2.incomeItems.allowance'), value: 0, color: '#8b5cf6' },
       { name: t('dashboard2.incomeItems.otherBonus'), value: 0, color: '#3b82f6' },
     ];
-  }, [totalPayroll, t]);
+  }, [hasPayrollAggregate, t]);
 
   const departmentSalaryData = useMemo(() => {
+    if (!hasPayrollAggregate) return [];
     return (employeeSummary?.by_department ?? [])
       .filter((d) => (d.avg_salary ?? 0) > 0)
       .map((d) => ({
         name: d.department.replace('Phòng ', ''),
         salary: Math.round(d.avg_salary ?? 0),
       }));
-  }, [employeeSummary]);
+  }, [employeeSummary, hasPayrollAggregate]);
 
   const monthlyTrendData = useMemo(() => {
+    if (!hasPayrollAggregate) return [];
     const now = new Date();
     const months: { month: string; value: number }[] = [];
     const monthCount = selectedPeriod === 'year' ? 12 : selectedPeriod === 'quarter' ? 3 : 6;
@@ -222,7 +219,7 @@ export default function Dashboard() {
       months.push({ month: label, value: avgSalary });
     }
     return months;
-  }, [employeeSummary, selectedPeriod]);
+  }, [employeeSummary, hasPayrollAggregate, selectedPeriod]);
 
   // Attendance rate computation
   const attendanceRate = useMemo(() => {
@@ -328,17 +325,40 @@ export default function Dashboard() {
   const formatFullCurrency = (value: number) =>
     new Intl.NumberFormat('vi-VN').format(value);
 
-  // D-DASH-FE-STORM: render payroll amounts only when the summary aggregate is
-  // available. Avoid showing "0" while the summary is loading or errored.
+  // D-DASH-FE-STORM + R-DASH-PAYROLL-CHART-0: skeleton / — / real value only.
   const renderPayrollAmount = (value: number, colorClass: string) => {
     if (payrollSummaryPending) {
       return <span className="inline-block h-7 w-24 animate-pulse rounded bg-muted align-middle" />;
     }
-    if (!payrollSummaryReady) {
-      return <span className="text-muted-foreground" title={t('dashboard2.summaryUnavailable', 'Chưa tải được dữ liệu tổng hợp')}>—</span>;
+    if (!payrollSummaryReady || !hasPayrollAggregate) {
+      return (
+        <span
+          className="text-muted-foreground"
+          title={
+            !payrollSummaryReady
+              ? t('dashboard2.summaryUnavailable', 'Chưa tải được dữ liệu tổng hợp')
+              : DASHBOARD_PAYROLL_CHART_EMPTY_VI
+          }
+        >
+          —
+        </span>
+      );
     }
     return <span className={colorClass}>{formatCurrency(value)}</span>;
   };
+
+  const payrollEmptyNotice = (
+    <div
+      className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30 p-4 text-sm text-muted-foreground"
+      data-testid="dashboard-payroll-chart-empty"
+    >
+      <p>{DASHBOARD_PAYROLL_CHART_EMPTY_VI}</p>
+      <Link to="/payroll" className="mt-2 inline-flex items-center gap-1 text-primary hover:underline">
+        {t('dashboard.payrollCalculation')}
+        <ExternalLink className="h-3.5 w-3.5" />
+      </Link>
+    </div>
+  );
 
   const newestEmployees = useMemo(() => {
     return (employeeSummary?.new_hires.recent ?? []).slice(0, 3);
@@ -448,23 +468,27 @@ export default function Dashboard() {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold mb-1">{t('dashboard.payrollSummary')}</h3>
                   <p className="text-sm text-muted-foreground mb-4">{t('dashboard.thisMonth')}</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.totalSalary')}</p>
-                      <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalPayroll, 'text-primary')}</p>
-                      <p className="text-xs text-muted-foreground">VNĐ</p>
+                  {payrollSummaryReady && !hasPayrollAggregate ? (
+                    payrollEmptyNotice
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.totalSalary')}</p>
+                        <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalPayroll, 'text-primary')}</p>
+                        <p className="text-xs text-muted-foreground">VNĐ</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.personalIncomeTax')}</p>
+                        <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalTax, 'text-amber-500')}</p>
+                        <p className="text-xs text-muted-foreground">VNĐ (~10%)</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.insurance')}</p>
+                        <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalInsurance, 'text-blue-500')}</p>
+                        <p className="text-xs text-muted-foreground">VNĐ (~10.5%)</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.personalIncomeTax')}</p>
-                      <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalTax, 'text-amber-500')}</p>
-                      <p className="text-xs text-muted-foreground">VNĐ (~10%)</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.insurance')}</p>
-                      <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalInsurance, 'text-blue-500')}</p>
-                      <p className="text-xs text-muted-foreground">VNĐ (~10.5%)</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -479,28 +503,34 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">{t('dashboard.thisMonth')}</p>
               </CardHeader>
               <CardContent>
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart layout="vertical" data={salaryRangeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                      <XAxis type="number" fontSize={11} />
-                      <YAxis dataKey="range" type="category" fontSize={11} width={90} />
-                      <Tooltip
-                        formatter={(value: number) => [`${value} ${t('dashboard2.employeeCount')}`, '']}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                      />
-                      <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                        {salaryRangeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-3 pt-3 border-t flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">{t('dashboard2.salaryRanges.above30')}:</span>
-                  <span className="font-semibold text-emerald-600">{topSalaryCount} {t('dashboard2.employeeCount')}</span>
-                </div>
+                {payrollSummaryReady && !hasPayrollAggregate ? (
+                  payrollEmptyNotice
+                ) : (
+                  <>
+                    <div className="h-[200px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart layout="vertical" data={salaryRangeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                          <XAxis type="number" fontSize={11} />
+                          <YAxis dataKey="range" type="category" fontSize={11} width={90} />
+                          <Tooltip
+                            formatter={(value: number) => [`${value} ${t('dashboard2.employeeCount')}`, '']}
+                            contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                          />
+                          <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                            {salaryRangeData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">{t('dashboard2.salaryRanges.above30')}:</span>
+                      <span className="font-semibold text-emerald-600">{topSalaryCount} {t('dashboard2.employeeCount')}</span>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -511,30 +541,36 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">{t('dashboard.thisMonth')}</p>
               </CardHeader>
               <CardContent>
-                <div className="h-[200px] relative">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={incomeStructureData.filter(d => d.value > 0)} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value">
-                        {incomeStructureData.filter(d => d.value > 0).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number) => [`${value}%`, '']}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {incomeStructureData.map((item) => (
-                    <div key={item.name} className="flex items-center gap-2 text-xs">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="text-muted-foreground">{item.name}:</span>
-                      <span className="font-medium">{item.value}%</span>
+                {payrollSummaryReady && !hasPayrollAggregate ? (
+                  payrollEmptyNotice
+                ) : (
+                  <>
+                    <div className="h-[200px] relative">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={incomeStructureData.filter(d => d.value > 0)} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={2} dataKey="value">
+                            {incomeStructureData.filter(d => d.value > 0).map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(value: number) => [`${value}%`, '']}
+                            contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
                     </div>
-                  ))}
-                </div>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {incomeStructureData.map((item) => (
+                        <div key={item.name} className="flex items-center gap-2 text-xs">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                          <span className="text-muted-foreground">{item.name}:</span>
+                          <span className="font-medium">{item.value}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -548,26 +584,30 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">{t('dashboard2.last6Months')}</p>
               </CardHeader>
               <CardContent>
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={monthlyTrendData}>
-                      <defs>
-                        <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="month" fontSize={11} />
-                      <YAxis fontSize={11} tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
-                      <Tooltip
-                        formatter={(value: number) => [formatFullCurrency(value) + ' VNĐ', t('dashboard2.income')]}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
-                      />
-                      <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2} fill="url(#colorValue)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
+                {payrollSummaryReady && !hasPayrollAggregate ? (
+                  payrollEmptyNotice
+                ) : (
+                  <div className="h-[200px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={monthlyTrendData}>
+                        <defs>
+                          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="month" fontSize={11} />
+                        <YAxis fontSize={11} tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
+                        <Tooltip
+                          formatter={(value: number) => [formatFullCurrency(value) + ' VNĐ', t('dashboard2.income')]}
+                          contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                        />
+                        <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2} fill="url(#colorValue)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -579,7 +619,9 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="h-[200px]">
-                  {departmentSalaryData.length > 0 ? (
+                  {payrollSummaryReady && !hasPayrollAggregate ? (
+                    <div className="h-full flex items-center justify-center p-2">{payrollEmptyNotice}</div>
+                  ) : departmentSalaryData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={departmentSalaryData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -646,7 +688,7 @@ export default function Dashboard() {
                 <div className="p-4 bg-background rounded-xl border">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-muted-foreground">{t('dashboard2.comparison.totalSalary')}</span>
-                    {(() => {
+                    {hasPayrollAggregate ? (() => {
                       const change = calculateChange(comparisonData.current.salary, comparisonData.previous.salary);
                       return (
                         <span className={`flex items-center text-xs font-medium ${change.isPositive ? 'text-emerald-600' : 'text-red-500'}`}>
@@ -654,11 +696,17 @@ export default function Dashboard() {
                           {change.value}%
                         </span>
                       );
-                    })()}
+                    })() : null}
                   </div>
                   <div className="flex items-end gap-2">
-                    <span className="text-2xl font-bold">{formatCurrency(comparisonData.current.salary)}</span>
-                    <span className="text-sm text-muted-foreground mb-0.5">/ {formatCurrency(comparisonData.previous.salary)}</span>
+                    {hasPayrollAggregate ? (
+                      <>
+                        <span className="text-2xl font-bold">{formatCurrency(comparisonData.current.salary)}</span>
+                        <span className="text-sm text-muted-foreground mb-0.5">/ {formatCurrency(comparisonData.previous.salary)}</span>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-bold text-muted-foreground" title={DASHBOARD_PAYROLL_CHART_EMPTY_VI}>—</span>
+                    )}
                   </div>
                 </div>
 
@@ -714,10 +762,12 @@ export default function Dashboard() {
                       {t('dashboard2.comparison.positiveGrowth')}
                     </p>
                     <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                      {t('dashboard2.comparison.comparedToPrevious', {
-                        salary: calculateChange(comparisonData.current.salary, comparisonData.previous.salary).value,
-                        attendance: calculateChange(comparisonData.current.attendance, comparisonData.previous.attendance || 1).value,
-                      })}
+                      {hasPayrollAggregate
+                        ? t('dashboard2.comparison.comparedToPrevious', {
+                            salary: calculateChange(comparisonData.current.salary, comparisonData.previous.salary).value,
+                            attendance: calculateChange(comparisonData.current.attendance, comparisonData.previous.attendance || 1).value,
+                          })
+                        : `So với kỳ trước: chấm công ${calculateChange(comparisonData.current.attendance, comparisonData.previous.attendance || 1).value}% (lương chưa có aggregate trên hồ sơ NV).`}
                     </p>
                   </div>
                 </div>

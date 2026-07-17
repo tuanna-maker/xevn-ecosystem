@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import {
   Briefcase,
   Plus,
@@ -84,12 +85,12 @@ const initialFormData: DepartmentFormData = {
   status: 'active',
 };
 
+/** Shared RQ key — R-DEPT-FETCH-X2: one GET per scope (StrictMode-safe via loader coalesce + RQ). */
+export const COMPANY_DEPARTMENTS_QUERY_KEY = 'company-departments';
+
 export function DepartmentManagement() {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
@@ -98,29 +99,32 @@ export function DepartmentManagement() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
-  useEffect(() => {
-    if (currentCompanyId) {
-      fetchDepartments();
-    }
-  }, [currentCompanyId]);
+  const {
+    data,
+    isLoading: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({
+    queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY, currentCompanyId],
+    queryFn: async () => {
+      if (!currentCompanyId) {
+        return { rows: [] as CatalogDepartmentRow[], fetchError: null as string | null };
+      }
+      return loadCompanyDepartments(currentCompanyId);
+    },
+    enabled: !!currentCompanyId,
+    staleTime: 60_000,
+  });
 
-  const fetchDepartments = async () => {
-    if (!currentCompanyId) return;
+  const departments: Department[] = data?.rows ?? [];
+  const fetchError =
+    data?.fetchError ??
+    (queryError
+      ? t('dept.loadError')
+      : null);
 
-    setLoading(true);
-    setFetchError(null);
-    try {
-      const { rows, fetchError: loadError } = await loadCompanyDepartments(currentCompanyId);
-      setDepartments(rows);
-      setFetchError(loadError);
-    } catch (error) {
-      console.error('Error fetching departments:', error);
-      setDepartments([]);
-      setFetchError(t('dept.loadError'));
-      toast.error(t('dept.loadError'));
-    } finally {
-      setLoading(false);
-    }
+  const fetchDepartments = () => {
+    void refetch();
   };
 
   const buildTree = (items: Department[], parentId: string | null = null): Department[] => {
