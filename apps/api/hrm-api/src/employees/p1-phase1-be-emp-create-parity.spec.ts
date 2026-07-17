@@ -75,7 +75,12 @@ function createInMemoryHrmDb() {
         const matched = filterRows(rows, params ?? []);
         const pageSize = Number(params?.[params.length - 2]);
         const offset = Number(params?.[params.length - 1]);
-        return { rows: matched.slice(offset, offset + pageSize) };
+        return {
+          rows: matched.slice(offset, offset + pageSize).map((row) => ({
+            ...row,
+            list_total: String(matched.length),
+          })),
+        };
       }
       if (text.startsWith('UPDATE public.employees')) {
         const id = String(params?.[params.length - 1]);

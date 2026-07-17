@@ -73,6 +73,17 @@ export class EmployeesService implements OnModuleInit {
       CREATE INDEX IF NOT EXISTS idx_employees_company_archived_name_code_id
       ON public.employees (company_id, archived_at, full_name ASC, employee_code ASC, id ASC);
     `);
+    // P1-HRM-SCALE-BE-W2 — expression index matches master-tenant partition predicate
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_employees_tenant_co_arch_created_id
+      ON public.employees (
+        (COALESCE(NULLIF(TRIM(custom_fields->>'tenant_id'), ''), 'xevn')),
+        company_id,
+        archived_at,
+        created_at DESC,
+        id DESC
+      );
+    `);
     await this.db.query(`DROP INDEX IF EXISTS public.idx_employees_company_archived;`);
     await this.db.query(`DROP INDEX IF EXISTS public.idx_employees_active_created_id;`);
     await this.db.query(`
@@ -271,15 +282,13 @@ export class EmployeesService implements OnModuleInit {
     });
 
     const whereClause = filters.join(' AND ');
-    const countRes = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.employees WHERE ${whereClause};`,
-      values,
-    );
-    const dataRes = await this.db.query<EmployeeRow>(
+    // P1-HRM-SCALE-BE-W2 — single round-trip: window COUNT + page rows (ADR §5.4 COUNT strategy)
+    const dataRes = await this.db.query<EmployeeRow & { list_total: string }>(
       `
         SELECT
           id, company_id, employee_code, email, full_name, job_title_key, manager_id,
-          status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at
+          status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at,
+          COUNT(*) OVER()::text AS list_total
         FROM public.employees
         WHERE ${whereClause}
         ORDER BY full_name ASC, employee_code ASC, id ASC
@@ -287,6 +296,15 @@ export class EmployeesService implements OnModuleInit {
       `,
       [...values, pageSize, offset],
     );
+
+    let total = Number(dataRes.rows[0]?.list_total ?? 0);
+    if (dataRes.rows.length === 0 && page > 1) {
+      const countRes = await this.db.query<{ total: string }>(
+        `SELECT COUNT(*)::text AS total FROM public.employees WHERE ${whereClause};`,
+        values,
+      );
+      total = Number(countRes.rows[0]?.total ?? 0);
+    }
 
     const attendanceByEmployee = includeAttendanceToday
       ? await this.loadAttendanceTodayByEmployeeIds(dataRes.rows.map((row) => row.id))
@@ -305,7 +323,7 @@ export class EmployeesService implements OnModuleInit {
     }
 
     return {
-      total: Number(countRes.rows[0]?.total ?? 0),
+      total,
       page,
       page_size: pageSize,
       data,
@@ -329,23 +347,8 @@ export class EmployeesService implements OnModuleInit {
     };
     const { filters, values } = this.buildEmployeeListFilters(listQuery, authorization, scopeContext);
     const whereClause = filters.join(' AND ');
-    const scopedSubquery = `
-      SELECT
-        id,
-        employee_code,
-        full_name,
-        status,
-        hired_at,
-        archived_at,
-        avatar_url,
-        created_at,
-        custom_fields,
-        ${EMPLOYEE_SALARY_NUM_SQL} AS salary_num
-      FROM public.employees
-      WHERE ${whereClause}
-    `;
-
-    const aggregateRes = await this.db.query<{
+    // P1-HRM-SCALE-BE-W2 — one CTE scan for agg + dept + recent (was 3 round-trips × scoped scan)
+    type SummaryAggregateRow = {
       total: string;
       active_count: string;
       inactive_count: string;
@@ -357,66 +360,95 @@ export class EmployeesService implements OnModuleInit {
       salary_range_20_30m: string;
       salary_range_15_20m: string;
       salary_range_below_15m: string;
-    }>(
-      `
-        SELECT
-          COUNT(*)::text AS total,
-          COUNT(*) FILTER (WHERE status = 'active')::text AS active_count,
-          COUNT(*) FILTER (WHERE status = 'inactive')::text AS inactive_count,
-          COUNT(*) FILTER (WHERE archived_at IS NOT NULL)::text AS archived_count,
-          COUNT(*) FILTER (WHERE hired_at >= (CURRENT_DATE - INTERVAL '30 days'))::text AS new_hires_last_30_days,
-          COALESCE(SUM(salary_num), 0)::text AS total_payroll,
-          COUNT(*) FILTER (WHERE salary_num IS NOT NULL AND salary_num > 0)::text AS employees_with_salary,
-          COUNT(*) FILTER (WHERE salary_num >= 30000000)::text AS salary_range_above_30m,
-          COUNT(*) FILTER (WHERE salary_num >= 20000000 AND salary_num < 30000000)::text AS salary_range_20_30m,
-          COUNT(*) FILTER (WHERE salary_num >= 15000000 AND salary_num < 20000000)::text AS salary_range_15_20m,
-          COUNT(*) FILTER (WHERE salary_num > 0 AND salary_num < 15000000)::text AS salary_range_below_15m
-        FROM (${scopedSubquery}) scoped;
-      `,
-      values,
-    );
-
-    const departmentRes = await this.db.query<{
+    };
+    type SummaryDeptRow = {
       department: string;
       count: string;
       avg_salary: string | null;
-    }>(
-      `
-        SELECT
-          COALESCE(NULLIF(TRIM(custom_fields->>'department'), ''), 'Khác') AS department,
-          COUNT(*)::text AS count,
-          AVG(salary_num)::text AS avg_salary
-        FROM (${scopedSubquery}) scoped
-        GROUP BY 1
-        ORDER BY COUNT(*) DESC, department ASC;
-      `,
-      values,
-    );
-
-    const recentRes = await this.db.query<{
+    };
+    type SummaryRecentRow = {
       id: string;
       employee_code: string;
       full_name: string;
       status: string;
       hired_at: string | null;
       avatar_url: string | null;
+    };
+
+    const bundledRes = await this.db.query<{
+      aggregate: SummaryAggregateRow | null;
+      by_department: SummaryDeptRow[] | null;
+      recent: SummaryRecentRow[] | null;
     }>(
       `
+        WITH scoped AS (
+          SELECT
+            id,
+            employee_code,
+            full_name,
+            status,
+            hired_at,
+            archived_at,
+            avatar_url,
+            created_at,
+            custom_fields,
+            ${EMPLOYEE_SALARY_NUM_SQL} AS salary_num
+          FROM public.employees
+          WHERE ${whereClause}
+        ),
+        agg AS (
+          SELECT
+            COUNT(*)::text AS total,
+            COUNT(*) FILTER (WHERE status = 'active')::text AS active_count,
+            COUNT(*) FILTER (WHERE status = 'inactive')::text AS inactive_count,
+            COUNT(*) FILTER (WHERE archived_at IS NOT NULL)::text AS archived_count,
+            COUNT(*) FILTER (WHERE hired_at >= (CURRENT_DATE - INTERVAL '30 days'))::text AS new_hires_last_30_days,
+            COALESCE(SUM(salary_num), 0)::text AS total_payroll,
+            COUNT(*) FILTER (WHERE salary_num IS NOT NULL AND salary_num > 0)::text AS employees_with_salary,
+            COUNT(*) FILTER (WHERE salary_num >= 30000000)::text AS salary_range_above_30m,
+            COUNT(*) FILTER (WHERE salary_num >= 20000000 AND salary_num < 30000000)::text AS salary_range_20_30m,
+            COUNT(*) FILTER (WHERE salary_num >= 15000000 AND salary_num < 20000000)::text AS salary_range_15_20m,
+            COUNT(*) FILTER (WHERE salary_num > 0 AND salary_num < 15000000)::text AS salary_range_below_15m
+          FROM scoped
+        ),
+        dept AS (
+          SELECT
+            COALESCE(NULLIF(TRIM(custom_fields->>'department'), ''), 'Khác') AS department,
+            COUNT(*)::text AS count,
+            AVG(salary_num)::text AS avg_salary
+          FROM scoped
+          GROUP BY 1
+        ),
+        recent AS (
+          SELECT
+            id::text AS id,
+            employee_code,
+            full_name,
+            status,
+            hired_at::text AS hired_at,
+            avatar_url
+          FROM scoped
+          ORDER BY COALESCE(hired_at, created_at::date) DESC, created_at DESC
+          LIMIT 5
+        )
         SELECT
-          id::text AS id,
-          employee_code,
-          full_name,
-          status,
-          hired_at::text AS hired_at,
-          avatar_url
-        FROM (${scopedSubquery}) scoped
-        ORDER BY COALESCE(hired_at, created_at::date) DESC, created_at DESC
-        LIMIT 5;
+          (SELECT row_to_json(a) FROM agg a) AS aggregate,
+          COALESCE(
+            (
+              SELECT json_agg(row_to_json(d) ORDER BY d.count::int DESC, d.department ASC)
+              FROM dept d
+            ),
+            '[]'::json
+          ) AS by_department,
+          COALESCE(
+            (SELECT json_agg(row_to_json(r)) FROM recent r),
+            '[]'::json
+          ) AS recent;
       `,
       values,
     );
 
-    const aggregate = aggregateRes.rows[0] ?? {
+    const emptyAggregate: SummaryAggregateRow = {
       total: '0',
       active_count: '0',
       inactive_count: '0',
@@ -429,6 +461,10 @@ export class EmployeesService implements OnModuleInit {
       salary_range_15_20m: '0',
       salary_range_below_15m: '0',
     };
+    const payload = bundledRes.rows[0];
+    const aggregate = payload?.aggregate ?? emptyAggregate;
+    const departmentRows = payload?.by_department ?? [];
+    const recentRows = payload?.recent ?? [];
 
     return {
       company_id: query.company_id,
@@ -440,7 +476,7 @@ export class EmployeesService implements OnModuleInit {
         total: Number(aggregate.total_payroll),
         employees_with_salary: Number(aggregate.employees_with_salary),
       },
-      by_department: departmentRes.rows.map((row) => ({
+      by_department: departmentRows.map((row) => ({
         department: row.department,
         count: Number(row.count),
         avg_salary: row.avg_salary == null ? null : Number(row.avg_salary),
@@ -448,7 +484,7 @@ export class EmployeesService implements OnModuleInit {
       salary_ranges: buildSalaryRangesFromCounts(aggregate),
       new_hires: {
         last_30_days: Number(aggregate.new_hires_last_30_days),
-        recent: recentRes.rows.map((row) => ({
+        recent: recentRows.map((row) => ({
           id: row.id,
           employee_code: row.employee_code,
           full_name: row.full_name,
@@ -471,15 +507,13 @@ export class EmployeesService implements OnModuleInit {
     const { filters, values, idx } = this.buildEmployeeListFilters(query, authorization, scopeContext);
 
     const whereClause = filters.join(' AND ');
-    const countRes = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.employees WHERE ${whereClause};`,
-      values,
-    );
-    const dataRes = await this.db.query<EmployeeRow>(
+    // P1-HRM-SCALE-BE-W2 — single round-trip: window COUNT + page rows (ADR §5.4 COUNT strategy)
+    const dataRes = await this.db.query<EmployeeRow & { list_total: string }>(
       `
         SELECT
           id, company_id, employee_code, email, full_name, job_title_key, manager_id,
-          status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at
+          status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at,
+          COUNT(*) OVER()::text AS list_total
         FROM public.employees
         WHERE ${whereClause}
         ORDER BY created_at DESC, id DESC
@@ -488,8 +522,17 @@ export class EmployeesService implements OnModuleInit {
       [...values, pageSize, offset],
     );
 
+    let total = Number(dataRes.rows[0]?.list_total ?? 0);
+    if (dataRes.rows.length === 0 && page > 1) {
+      const countRes = await this.db.query<{ total: string }>(
+        `SELECT COUNT(*)::text AS total FROM public.employees WHERE ${whereClause};`,
+        values,
+      );
+      total = Number(countRes.rows[0]?.total ?? 0);
+    }
+
     return {
-      total: Number(countRes.rows[0]?.total ?? 0),
+      total,
       page,
       page_size: pageSize,
       data: dataRes.rows.map((row) => this.mapEmployee(row)),

@@ -38,11 +38,11 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
       service = new EmployeesService(db);
     });
 
-    it('returns aggregates in one service call (3 SQL round-trips vs 12+ list pages)', async () => {
-      db.query
-        .mockResolvedValueOnce({
-          rows: [
-            {
+    it('returns aggregates in one service call (1 CTE round-trip vs 12+ list pages)', async () => {
+      db.query.mockResolvedValueOnce({
+        rows: [
+          {
+            aggregate: {
               total: '1107',
               active_count: '1050',
               inactive_count: '57',
@@ -55,26 +55,23 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
               salary_range_15_20m: '200',
               salary_range_below_15m: '240',
             },
-          ],
-        } as never)
-        .mockResolvedValueOnce({
-          rows: [
-            { department: 'Vận hành', count: '400', avg_salary: '18000000' },
-            { department: 'Khác', count: '50', avg_salary: null },
-          ],
-        } as never)
-        .mockResolvedValueOnce({
-          rows: [
-            {
-              id: '11111111-1111-4111-8111-111111111111',
-              employee_code: 'NV1107',
-              full_name: 'Nguyễn Văn Mới',
-              status: 'active',
-              hired_at: '2026-06-01',
-              avatar_url: null,
-            },
-          ],
-        } as never);
+            by_department: [
+              { department: 'Vận hành', count: '400', avg_salary: '18000000' },
+              { department: 'Khác', count: '50', avg_salary: null },
+            ],
+            recent: [
+              {
+                id: '11111111-1111-4111-8111-111111111111',
+                employee_code: 'NV1107',
+                full_name: 'Nguyễn Văn Mới',
+                status: 'active',
+                hired_at: '2026-06-01',
+                avatar_url: null,
+              },
+            ],
+          },
+        ],
+      } as never);
 
       const token = signServiceJwt({
         sub: 'ceo@xe.vn',
@@ -99,13 +96,34 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
       });
       expect(result.new_hires.last_30_days).toBe(24);
       expect(result.new_hires.recent).toHaveLength(1);
-      expect(db.query).toHaveBeenCalledTimes(3);
+      expect(db.query).toHaveBeenCalledTimes(1);
+      expect(db.query.mock.calls[0]?.[0]).toContain('WITH scoped AS');
       expect(db.query.mock.calls[0]?.[0]).toContain('salary_range_above_30m');
       expect(db.query.mock.calls[0]?.[0]).toContain('company_id');
     });
 
     it('uses same scope filters as listEmployees (main JWT → holding partition)', async () => {
-      db.query.mockResolvedValue({ rows: [{ total: '0', active_count: '0', inactive_count: '0', archived_count: '0', new_hires_last_30_days: '0', total_payroll: '0', employees_with_salary: '0', salary_range_above_30m: '0', salary_range_20_30m: '0', salary_range_15_20m: '0', salary_range_below_15m: '0' }] } as never);
+      db.query.mockResolvedValue({
+        rows: [
+          {
+            aggregate: {
+              total: '0',
+              active_count: '0',
+              inactive_count: '0',
+              archived_count: '0',
+              new_hires_last_30_days: '0',
+              total_payroll: '0',
+              employees_with_salary: '0',
+              salary_range_above_30m: '0',
+              salary_range_20_30m: '0',
+              salary_range_15_20m: '0',
+              salary_range_below_15m: '0',
+            },
+            by_department: [],
+            recent: [],
+          },
+        ],
+      } as never);
 
       const token = signServiceJwt({
         sub: 'ceo@xe.vn',

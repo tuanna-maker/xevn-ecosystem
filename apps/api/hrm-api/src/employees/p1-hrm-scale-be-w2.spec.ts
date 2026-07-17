@@ -5,26 +5,22 @@ import type { EmployeeRow } from './employee-directory.types';
 import { EmployeesService } from './employees.service';
 
 /**
- * P1-HRM-EMP-DUP-KEY-BE — React duplicate key on Employees DataTable.
- * Root cause: OFFSET pagination with ORDER BY created_at only → page overlap when
- * many rows share the same created_at (bulk seed). FE listAllEmployees concatenates pages.
- * Fix: ORDER BY created_at DESC, id DESC (stable cursor).
+ * P1-HRM-SCALE-BE-W2 — list/summary query-count remediation.
+ * must_keep: ORDER BY created_at DESC, id DESC; scope parity list↔summary; pagination uniqueness.
  */
-describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
+describe('P1-HRM-SCALE-BE-W2 list/summary round-trip reduction', () => {
   const sharedCreatedAt = '2026-06-01T00:00:00.000Z';
-  const pageSize = 50;
-  const totalRows = 120;
 
-  function buildRows(): EmployeeRow[] {
+  function buildRows(totalRows: number): EmployeeRow[] {
     return Array.from({ length: totalRows }, (_, i) => {
       const n = String(i + 1).padStart(4, '0');
       const slug = HRM_GROUP_MEMBER_COMPANY_SLUGS[i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length];
       return {
-        id: `10000000-0000-4000-8000-00000000${n}`,
+        id: `20000000-0000-4000-8000-00000000${n}`,
         company_id: slug,
-        employee_code: `EMP${n}`,
-        email: `emp${n}@xe.vn`,
-        full_name: `Employee ${n}`,
+        employee_code: `W2${n}`,
+        email: `w2${n}@xe.vn`,
+        full_name: `Scale Employee ${n}`,
         job_title_key: null,
         manager_id: null,
         status: 'active',
@@ -46,12 +42,18 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
     });
   }
 
-  it('list SQL uses created_at DESC, id DESC under group main scope', async () => {
+  it('listEmployees uses one SQL round-trip with COUNT(*) OVER and stable ORDER BY', async () => {
     const db = {
-      query: jest.fn(),
+      query: jest.fn().mockResolvedValue({
+        rows: [
+          {
+            ...buildRows(1)[0],
+            list_total: '1',
+          },
+        ],
+      }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
-    db.query.mockResolvedValueOnce({ rows: [] } as never);
     const service = new EmployeesService(db);
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
@@ -60,29 +62,32 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
       roleCode: 'group_ceo',
     });
 
-    await service.listEmployees(
-      { company_id: 'main', page: 1, page_size: 20 },
+    const result = await service.listEmployees(
+      { company_id: 'main', page: 1, page_size: 50 },
       `Bearer ${token}`,
       { tenantId: 'xevn' },
     );
 
-    const listSql = String(db.query.mock.calls[0]?.[0] ?? '');
-    expect(listSql).toContain('ORDER BY created_at DESC, id DESC');
-    expect(listSql).toContain('COUNT(*) OVER()');
-    expect(listSql).not.toMatch(/ORDER BY created_at DESC\s*(LIMIT|;)/);
+    expect(db.query).toHaveBeenCalledTimes(1);
+    const sql = String(db.query.mock.calls[0]?.[0] ?? '');
+    expect(sql).toContain('COUNT(*) OVER()');
+    expect(sql).toContain('ORDER BY created_at DESC, id DESC');
+    expect(sql).toContain('company_id');
+    expect(result.total).toBe(1);
+    expect(result.data).toHaveLength(1);
   });
 
-  it('multi-page list under main/group scope never returns duplicate ids (tied created_at)', async () => {
-    const store = buildRows();
+  it('multi-page list remains unique under tied created_at (window total)', async () => {
+    const store = buildRows(120);
+    const pageSize = 50;
     const db = {
       query: jest.fn(async (sql: string, params?: unknown[]) => {
         const text = String(sql);
         if (
           text.includes('FROM public.employees') &&
-          text.includes('ORDER BY created_at DESC, id DESC')
+          text.includes('ORDER BY created_at DESC, id DESC') &&
+          text.includes('COUNT(*) OVER()')
         ) {
-          expect(text).toContain('ORDER BY created_at DESC, id DESC');
-          expect(text).toContain('COUNT(*) OVER()');
           const pageSizeArg = Number(params?.[params.length - 2]);
           const offset = Number(params?.[params.length - 1]);
           const sorted = sortStableDesc(store);
@@ -96,7 +101,7 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
         if (text.includes('SELECT COUNT(*)::text AS total')) {
           return { rows: [{ total: String(store.length) }] };
         }
-        throw new Error(`Unexpected SQL in dup-key regression: ${text.slice(0, 120)}`);
+        throw new Error(`Unexpected SQL in BE-W2 regression: ${text.slice(0, 140)}`);
       }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
@@ -128,17 +133,46 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
     );
 
     const merged = [...page1.data, ...page2.data, ...page3.data];
-    expect(merged.length).toBe(totalRows);
-    const ids = merged.map((row) => row.id);
-    expect(new Set(ids).size).toBe(ids.length);
+    expect(merged).toHaveLength(120);
+    expect(new Set(merged.map((r) => r.id)).size).toBe(120);
+    expect(page1.total).toBe(120);
+    expect(page2.total).toBe(120);
   });
 
-  it('directory list SQL uses id ASC tiebreaker', async () => {
+  it('getEmployeesSummary uses one bundled CTE round-trip with same rollup scope', async () => {
     const db = {
-      query: jest.fn(),
+      query: jest.fn().mockResolvedValue({
+        rows: [
+          {
+            aggregate: {
+              total: '1107',
+              active_count: '1050',
+              inactive_count: '57',
+              archived_count: '0',
+              new_hires_last_30_days: '24',
+              total_payroll: '18500000000',
+              employees_with_salary: '900',
+              salary_range_above_30m: '120',
+              salary_range_20_30m: '340',
+              salary_range_15_20m: '200',
+              salary_range_below_15m: '240',
+            },
+            by_department: [{ department: 'Vận hành', count: '400', avg_salary: '18000000' }],
+            recent: [
+              {
+                id: '11111111-1111-4111-8111-111111111111',
+                employee_code: 'NV1107',
+                full_name: 'Nguyễn Văn Mới',
+                status: 'active',
+                hired_at: '2026-06-01',
+                avatar_url: null,
+              },
+            ],
+          },
+        ],
+      }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
-    db.query.mockResolvedValueOnce({ rows: [] } as never);
     const service = new EmployeesService(db);
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
@@ -147,14 +181,21 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
       roleCode: 'group_ceo',
     });
 
-    await service.listEmployeeDirectory(
-      { company_id: 'main', page: 1, page_size: 30 },
+    const result = await service.getEmployeesSummary(
+      { company_id: 'main' },
       `Bearer ${token}`,
       { tenantId: 'xevn' },
     );
 
-    const listSql = String(db.query.mock.calls[0]?.[0] ?? '');
-    expect(listSql).toContain('ORDER BY full_name ASC, employee_code ASC, id ASC');
-    expect(listSql).toContain('COUNT(*) OVER()');
+    expect(db.query).toHaveBeenCalledTimes(1);
+    const sql = String(db.query.mock.calls[0]?.[0] ?? '');
+    const values = db.query.mock.calls[0]?.[1] as unknown[] | undefined;
+    expect(sql).toContain('WITH scoped AS');
+    expect(sql).toContain('salary_range_above_30m');
+    expect(sql).toContain('company_id = ANY');
+    expect(values?.[0]).toEqual(expect.arrayContaining(['holding']));
+    expect(result.total).toBe(1107);
+    expect(result.by_department[0]?.count).toBe(400);
+    expect(result.new_hires.recent).toHaveLength(1);
   });
 });

@@ -383,9 +383,9 @@ describe('EmployeesService', () => {
         companyId: 'main',
         roleCode: 'group_ceo',
       });
-      db.query
-        .mockResolvedValueOnce({ rows: [{ total: '1' }] } as never)
-        .mockResolvedValueOnce({ rows: [directoryRow] } as never);
+      db.query.mockResolvedValueOnce({
+        rows: [{ ...directoryRow, list_total: '1' }],
+      } as never);
 
       const result = await service.listEmployeeDirectory(
         { company_id: 'main', view: 'directory', q: 'nguyen', page: 1, page_size: 30 },
@@ -430,8 +430,7 @@ describe('EmployeesService', () => {
 
     it('listEmployeeDirectory loads attendance_today when include_attendance_today=true', async () => {
       db.query
-        .mockResolvedValueOnce({ rows: [{ total: '1' }] } as never)
-        .mockResolvedValueOnce({ rows: [directoryRow] } as never)
+        .mockResolvedValueOnce({ rows: [{ ...directoryRow, list_total: '1' }] } as never)
         .mockResolvedValueOnce({
           rows: [
             {
@@ -521,10 +520,8 @@ describe('EmployeesService', () => {
     });
 
     it('listEmployees returns avatar_url in data rows', async () => {
-      const rowWithAvatar = { ...baseRow, avatar_url: avatarUrl };
-      db.query
-        .mockResolvedValueOnce({ rows: [{ total: '1' }] } as never)
-        .mockResolvedValueOnce({ rows: [rowWithAvatar] } as never);
+      const rowWithAvatar = { ...baseRow, avatar_url: avatarUrl, list_total: '1' };
+      db.query.mockResolvedValueOnce({ rows: [rowWithAvatar] } as never);
 
       const result = await service.listEmployees({ company_id: 'holding', page: 1, page_size: 20 });
 
