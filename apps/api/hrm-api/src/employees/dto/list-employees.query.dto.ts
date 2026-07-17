@@ -60,6 +60,7 @@ export class ListEmployeesQueryDto {
   @Transform(({ value }) => toOptionalInt(value))
   @IsInt()
   @Min(1)
+  /** Nest hard cap 100 (unchanged). UI tables: prefer 30–50 (ADR-HRM-SCALE §5.2). */
   @Max(100)
   page_size?: number;
 }

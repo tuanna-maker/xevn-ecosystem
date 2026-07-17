@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -75,12 +76,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
   createHeadcountProposal,
   listHeadcountProposals,
   updateHeadcountProposalStatus,
 } from '@/integrations/hrmApi';
-import { toErrorMessage } from '@/lib/apiError';
+import { isAbortLikeError, toErrorMessage } from '@/lib/apiError';
 
 interface HeadcountProposal {
   id: string;
@@ -132,6 +134,16 @@ interface LinkedJobPosting {
   status: string;
   applied_count: number | null;
   headcount: number;
+}
+
+function normalizeHeadcountProposalRows(
+  result: { total?: number; data?: unknown[] } | unknown[] | null | undefined,
+): HeadcountProposal[] {
+  if (Array.isArray(result)) {
+    return result as HeadcountProposal[];
+  }
+  const rows = result?.data;
+  return Array.isArray(rows) ? (rows as HeadcountProposal[]) : [];
 }
 
 export function HeadcountProposalTab() {
@@ -295,7 +307,6 @@ export function HeadcountProposalTab() {
   };
   const [proposals, setProposals] = useState<HeadcountProposal[]>([]);
   const [linkedJobPostings, setLinkedJobPostings] = useState<Record<string, LinkedJobPosting>>({});
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -356,34 +367,47 @@ export function HeadcountProposalTab() {
   };
 
   const { currentCompanyId } = useAuth();
+  const { listCompanyId } = useHrmOperatingUnitFilter();
+  const queryClient = useQueryClient();
+  const effectiveCompanyId = listCompanyId || currentCompanyId;
 
-  const fetchProposals = async () => {
-    if (!currentCompanyId) {
-      setProposals([]);
-      setLoading(false);
-      return;
-    }
-    try {
-      setLoading(true);
-      const result = await listHeadcountProposals(currentCompanyId);
-      setProposals((result.data ?? []) as unknown as HeadcountProposal[]);
-      setLinkedJobPostings({});
-    } catch (error) {
-      console.error('Error fetching proposals:', error);
-      toast({
-        title: t('common.error'),
-        description: toErrorMessage(error, hp('toast.fetchError')),
-        variant: 'destructive',
-      });
-      setProposals([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const proposalsQuery = useQuery({
+    queryKey: ['headcount-proposals', effectiveCompanyId],
+    queryFn: async () => {
+      const result = await listHeadcountProposals(effectiveCompanyId!);
+      return normalizeHeadcountProposalRows(result);
+    },
+    enabled: !!effectiveCompanyId,
+    staleTime: 30_000,
+    retry: (failureCount, error) => {
+      if (isAbortLikeError(error)) return false;
+      return failureCount < 1;
+    },
+  });
 
   useEffect(() => {
-    void fetchProposals();
-  }, [currentCompanyId]);
+    if (proposalsQuery.data) {
+      setProposals(proposalsQuery.data);
+      setLinkedJobPostings({});
+    } else if (!proposalsQuery.isLoading && !effectiveCompanyId) {
+      setProposals([]);
+    }
+  }, [proposalsQuery.data, proposalsQuery.isLoading, effectiveCompanyId]);
+
+  useEffect(() => {
+    if (!proposalsQuery.isError || isAbortLikeError(proposalsQuery.error)) return;
+    toast({
+      title: t('common.error'),
+      description: toErrorMessage(proposalsQuery.error, hp('toast.fetchError')),
+      variant: 'destructive',
+    });
+  }, [proposalsQuery.isError, proposalsQuery.error, t]);
+
+  const loading = proposalsQuery.isLoading;
+
+  const refetchProposals = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ['headcount-proposals', effectiveCompanyId] });
+  }, [queryClient, effectiveCompanyId]);
 
   const filteredProposals = proposals.filter((proposal) => {
     const matchesSearch =
@@ -515,9 +539,7 @@ export function HeadcountProposalTab() {
         low: 'low',
       };
 
-      // Get company_id from the proposal
-
-      if (fetchError || !proposalData?.company_id) {
+      if (!effectiveCompanyId) {
         throw new Error('Could not get company_id from proposal');
       }
 
@@ -535,11 +557,11 @@ export function HeadcountProposalTab() {
         employment_type: 'full-time',
         status: 'active',
         is_salary_visible: true,
-        company_id: proposalData.company_id,
+        company_id: effectiveCompanyId,
         source_proposal_id: proposal.id,
       };
       // Update linked job postings state
-      await fetchProposals();
+      await refetchProposals();
 
       toast({
         title: 'Thành công',
@@ -617,10 +639,10 @@ export function HeadcountProposalTab() {
   };
 
   const handleApproveProposal = async (id: string) => {
-    if (!currentCompanyId) return;
+    if (!effectiveCompanyId) return;
     try {
-      await updateHeadcountProposalStatus(id, currentCompanyId, 'approved');
-      await fetchProposals();
+      await updateHeadcountProposalStatus(id, effectiveCompanyId, 'approved');
+      await refetchProposals();
       toast({
         title: 'Thành công',
         description: 'Đã phê duyệt đề xuất ngoài định biên',
@@ -636,10 +658,10 @@ export function HeadcountProposalTab() {
   };
 
   const handleRejectProposal = async (id: string) => {
-    if (!currentCompanyId) return;
+    if (!effectiveCompanyId) return;
     try {
-      await updateHeadcountProposalStatus(id, currentCompanyId, 'rejected');
-      await fetchProposals();
+      await updateHeadcountProposalStatus(id, effectiveCompanyId, 'rejected');
+      await refetchProposals();
       toast({
         title: 'Thành công',
         description: 'Đã từ chối đề xuất ngoài định biên',
@@ -655,10 +677,10 @@ export function HeadcountProposalTab() {
   };
 
   const onSubmit = async (values: ProposalFormValues) => {
-    if (!currentCompanyId) return;
+    if (!effectiveCompanyId) return;
     try {
       const proposalData = {
-        company_id: currentCompanyId,
+        company_id: effectiveCompanyId,
         title: values.title,
         department: values.department,
         position_name: values.position_name,
@@ -690,7 +712,7 @@ export function HeadcountProposalTab() {
         });
       }
 
-      await fetchProposals();
+      await refetchProposals();
       setIsDialogOpen(false);
       form.reset();
     } catch (error) {

@@ -11,11 +11,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Plus, UtensilsCrossed, Car, Package, Calendar, CheckCircle2, Clock, Search, Loader2, Trash2, Eye, Edit, XCircle } from 'lucide-react';
+import { Plus, UtensilsCrossed, Car, Package, Calendar, CheckCircle2, Clock, Search, Loader2, Trash2, Eye, Edit, XCircle, RefreshCw } from 'lucide-react';
 import { useServiceRequests, ServiceRequest } from '@/hooks/useServiceRequests';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
+import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
+import {
+  HRM_LIST_LOAD_FAILED_SHORT,
+  isListFetchFailureEmpty,
+} from '@/lib/hrmListLoadFailure';
 
 const statusMap: Record<string, { variant: 'default' | 'secondary' | 'outline' | 'destructive'; label: string }> = {
   pending: { variant: 'outline', label: 'Chờ duyệt' },
@@ -34,12 +39,27 @@ export default function InternalServices() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewDialog, setViewDialog] = useState<ServiceRequest | null>(null);
 
-  const { data: allRequests = [], isLoading, addRequest, updateRequest, deleteRequest, approveRequest, rejectRequest } = useServiceRequests();
-  const { employees } = useEmployees();
+  const {
+    data: allRequests,
+    isLoading,
+    fetchError,
+    refetch,
+    addRequest,
+    updateRequest,
+    deleteRequest,
+    approveRequest,
+    rejectRequest,
+  } = useServiceRequests();
+  // D-P1-HRM-INTSVC-EMP-FANOUT-01: defer workforce fetch until create/edit dialog
+  const { employees } = useEmployees(undefined, { enabled: dialogOpen });
 
-  const meals = allRequests.filter(r => r.service_type === 'meal');
-  const vehicles = allRequests.filter(r => r.service_type === 'vehicle');
-  const supplies = allRequests.filter(r => r.service_type === 'supply');
+  const requests = allRequests ?? [];
+  /** D-P1-HRM-INTSVC-429-SILENT-EMPTY-01: non-2xx must not render as happy empty 0. */
+  const loadFailedEmpty = isListFetchFailureEmpty(fetchError, requests.length);
+
+  const meals = requests.filter((r) => r.service_type === 'meal');
+  const vehicles = requests.filter((r) => r.service_type === 'vehicle');
+  const supplies = requests.filter((r) => r.service_type === 'supply');
 
   const getFiltered = (list: ServiceRequest[]) => list.filter(r =>
     !searchTerm || r.employee_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -124,23 +144,25 @@ export default function InternalServices() {
 
   const renderStats = (list: ServiceRequest[], icon: React.ElementType) => {
     const Icon = icon;
-    const pending = list.filter(r => r.status === 'pending').length;
-    const approved = list.filter(r => r.status === 'approved').length;
+    const pending = list.filter((r) => r.status === 'pending').length;
+    const approved = list.filter((r) => r.status === 'approved').length;
+    const statValue = (n: number) =>
+      loadFailedEmpty ? HRM_LIST_LOAD_FAILED_SHORT : isLoading ? '…' : String(n);
     return (
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Card><CardContent className="p-4 text-center">
           <Icon className="w-7 h-7 text-primary mx-auto mb-1.5" />
-          <p className="text-xl font-bold">{list.length}</p>
+          <p className="text-xl font-bold">{statValue(list.length)}</p>
           <p className="text-xs text-muted-foreground">Tổng yêu cầu</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <Clock className="w-7 h-7 text-yellow-500 mx-auto mb-1.5" />
-          <p className="text-xl font-bold">{pending}</p>
+          <p className="text-xl font-bold">{statValue(pending)}</p>
           <p className="text-xs text-muted-foreground">Chờ duyệt</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <CheckCircle2 className="w-7 h-7 text-green-500 mx-auto mb-1.5" />
-          <p className="text-xl font-bold">{approved}</p>
+          <p className="text-xl font-bold">{statValue(approved)}</p>
           <p className="text-xs text-muted-foreground">Đã duyệt</p>
         </CardContent></Card>
       </div>
@@ -151,6 +173,27 @@ export default function InternalServices() {
     const Icon = icon;
     const filtered = getFiltered(list);
     if (isLoading) return <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
+    if (loadFailedEmpty) {
+      return (
+        <Card>
+          <CardContent className="p-8 text-center space-y-3">
+            <p className="text-sm text-amber-900">
+              {fetchError || 'Không tải được danh sách yêu cầu dịch vụ nội bộ'}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => void refetch()}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Thử lại
+            </Button>
+          </CardContent>
+        </Card>
+      );
+    }
     if (filtered.length === 0) return (
       <Card><CardContent className="p-8 text-center text-muted-foreground">
         <Icon className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -230,20 +273,46 @@ export default function InternalServices() {
         subtitle={t('services.description', 'Quản lý báo cơm, đặt xe, văn phòng phẩm')}
       />
 
+      {(fetchError || isLoading) && (
+        <div className="space-y-2">
+          <HrmListLoadBanner
+            isLoading={isLoading}
+            loadFailed={Boolean(fetchError)}
+            errorMessage={fetchError}
+            loadingMessage="Đang tải yêu cầu dịch vụ nội bộ từ HRM API…"
+          />
+          {fetchError ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => void refetch()}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Thử lại
+            </Button>
+          ) : null}
+        </div>
+      )}
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <TabsList className="h-auto bg-transparent gap-1 p-0 overflow-x-auto scrollbar-hide flex flex-nowrap w-full sm:w-auto">
             <TabsTrigger value="meal" className="shrink-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-1.5 text-sm">
               <UtensilsCrossed className="w-4 h-4 mr-1.5" />Báo cơm
-              {meals.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] h-5">{meals.length}</Badge>}
+              {!loadFailedEmpty && meals.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] h-5">{meals.length}</Badge>}
+              {loadFailedEmpty && <Badge variant="outline" className="ml-1.5 text-[10px] h-5">{HRM_LIST_LOAD_FAILED_SHORT}</Badge>}
             </TabsTrigger>
             <TabsTrigger value="vehicle" className="shrink-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-1.5 text-sm">
               <Car className="w-4 h-4 mr-1.5" />Đặt xe
-              {vehicles.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] h-5">{vehicles.length}</Badge>}
+              {!loadFailedEmpty && vehicles.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] h-5">{vehicles.length}</Badge>}
+              {loadFailedEmpty && <Badge variant="outline" className="ml-1.5 text-[10px] h-5">{HRM_LIST_LOAD_FAILED_SHORT}</Badge>}
             </TabsTrigger>
             <TabsTrigger value="supply" className="shrink-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-1.5 text-sm">
               <Package className="w-4 h-4 mr-1.5" />Văn phòng phẩm
-              {supplies.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] h-5">{supplies.length}</Badge>}
+              {!loadFailedEmpty && supplies.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] h-5">{supplies.length}</Badge>}
+              {loadFailedEmpty && <Badge variant="outline" className="ml-1.5 text-[10px] h-5">{HRM_LIST_LOAD_FAILED_SHORT}</Badge>}
             </TabsTrigger>
           </TabsList>
           <Button size="sm" className="shrink-0" onClick={() => openAdd(activeTab)}>

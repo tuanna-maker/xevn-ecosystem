@@ -59,6 +59,7 @@ import {
   Pencil,
   Eye,
   Calculator,
+  RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -71,6 +72,11 @@ import {
   deleteInsurancePolicyParticipant,
 } from '@/integrations/hrmApi';
 import { useInsuranceList, type InsuranceListItem } from '@/hooks/useInsuranceList';
+import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
+import {
+  HRM_LIST_LOAD_FAILED_SHORT,
+  isListFetchFailureEmpty,
+} from '@/lib/hrmListLoadFailure';
 import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import { formatHrmDateVi } from '@/lib/formatHrmDate';
 import {
@@ -142,7 +148,17 @@ export default function Insurance() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const { insuranceList, isLoading, refetch } = useInsuranceList(selectedStatus);
+  const {
+    insuranceList,
+    totalCount,
+    isLoading,
+    isLoadingMore,
+    fetchError,
+    refetch,
+  } = useInsuranceList(selectedStatus);
+
+  /** D-HRM-INS-EMPTY-MASK-01: non-2xx with no rows — never treat as true-empty. */
+  const loadFailedEmpty = isListFetchFailureEmpty(fetchError, insuranceList.length);
 
   const deleteMutation = useMutation({
     mutationFn: async (item: Insurance) => {
@@ -218,18 +234,30 @@ export default function Insurance() {
   const paginatedList = filteredList.slice(startIndex, endIndex);
 
   const typeCounts = insuranceTypes.map((type) => {
-    let count = 0;
-    if (type.key === 'all') {
-      count = insuranceList.length;
+    let count: number | null = 0;
+    if (loadFailedEmpty) {
+      count = null;
+    } else if (type.key === 'all') {
+      // Prefer API total after first page (progressive) when not status-filtered
+      count =
+        selectedStatus === 'all' && totalCount > 0
+          ? totalCount
+          : insuranceList.length;
     } else if (type.key === 'bhxh') {
-      count = insuranceList.filter(i => !!i.social_insurance_number).length;
+      count = insuranceList.filter((i) => !!i.social_insurance_number).length;
     } else if (type.key === 'bhyt') {
-      count = insuranceList.filter(i => !!i.health_insurance_number).length;
+      count = insuranceList.filter((i) => !!i.health_insurance_number).length;
     } else if (type.key === 'bhtn') {
-      count = insuranceList.filter(i => !!i.unemployment_insurance_number).length;
+      count = insuranceList.filter((i) => !!i.unemployment_insurance_number).length;
     }
     return { ...type, count };
   });
+
+  const formatSummaryOrError = (amount: number, count: number) => {
+    if (loadFailedEmpty) return t('insurance.loadFailedShort', HRM_LIST_LOAD_FAILED_SHORT);
+    if (isLoading) return '…';
+    return formatInsuranceSummaryValue(amount, count, formatCurrency);
+  };
 
   const toggleSelectAll = () => {
     if (selectedItems.length === paginatedList.length) {
@@ -398,14 +426,44 @@ export default function Insurance() {
         </div>
       </div>
 
+      {/* D-HRM-INS-EMPTY-MASK-01: error / retry — never silent empty on non-2xx */}
+      {(fetchError || isLoading || isLoadingMore) && (
+        <div className="px-4 md:px-6 pt-4 space-y-2">
+          <HrmListLoadBanner
+            isLoading={isLoading || isLoadingMore}
+            loadFailed={Boolean(fetchError)}
+            errorMessage={fetchError}
+            loadingMessage={
+              isLoadingMore && !isLoading
+                ? t('insurance.loadingMore', 'Đang tải thêm bản ghi bảo hiểm…')
+                : t('insurance.loadingApi', 'Đang tải dữ liệu bảo hiểm từ HRM API…')
+            }
+          />
+          {fetchError ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => void refetch()}
+            >
+              <RefreshCw className="h-4 w-4" />
+              {t('common.retry', 'Thử lại')}
+            </Button>
+          ) : null}
+        </div>
+      )}
+
       {/* Expiring Insurance Alert */}
-      <div className="px-4 md:px-6 pt-4">
-        <ExpiringInsuranceAlert
-          insuranceList={insuranceList}
-          warningDays={30}
-          onViewEmployee={(item) => handleOpenView(item as Insurance)}
-        />
-      </div>
+      {!loadFailedEmpty ? (
+        <div className="px-4 md:px-6 pt-4">
+          <ExpiringInsuranceAlert
+            insuranceList={insuranceList}
+            warningDays={30}
+            onViewEmployee={(item) => handleOpenView(item as Insurance)}
+          />
+        </div>
+      ) : null}
 
       {/* Summary Cards */}
       <div className="px-4 md:px-6 py-3 border-b bg-muted/30">
@@ -417,11 +475,7 @@ export default function Insurance() {
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.totalBHXH')}</p>
               <p className="font-semibold">
-                {formatInsuranceSummaryValue(
-                  insuranceSummary.bhxhAmount,
-                  insuranceSummary.bhxhCount,
-                  formatCurrency,
-                )}
+                {formatSummaryOrError(insuranceSummary.bhxhAmount, insuranceSummary.bhxhCount)}
               </p>
             </div>
           </div>
@@ -432,11 +486,7 @@ export default function Insurance() {
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.totalBHYT')}</p>
               <p className="font-semibold">
-                {formatInsuranceSummaryValue(
-                  insuranceSummary.bhytAmount,
-                  insuranceSummary.bhytCount,
-                  formatCurrency,
-                )}
+                {formatSummaryOrError(insuranceSummary.bhytAmount, insuranceSummary.bhytCount)}
               </p>
             </div>
           </div>
@@ -447,11 +497,7 @@ export default function Insurance() {
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.totalBHTN')}</p>
               <p className="font-semibold">
-                {formatInsuranceSummaryValue(
-                  insuranceSummary.bhtnAmount,
-                  insuranceSummary.bhtnCount,
-                  formatCurrency,
-                )}
+                {formatSummaryOrError(insuranceSummary.bhtnAmount, insuranceSummary.bhtnCount)}
               </p>
             </div>
           </div>
@@ -462,13 +508,17 @@ export default function Insurance() {
             <div>
               <p className="text-xs text-muted-foreground">{t('insurance.summary.total')}</p>
               <p className="font-semibold">
-                {insuranceSummary.hasFinancialData
-                  ? formatCurrency(insuranceSummary.totalAmount)
-                  : formatInsuranceSummaryValue(
-                      0,
-                      insuranceSummary.participantCount,
-                      formatCurrency,
-                    )}
+                {loadFailedEmpty
+                  ? t('insurance.loadFailedShort', HRM_LIST_LOAD_FAILED_SHORT)
+                  : isLoading
+                    ? '…'
+                    : insuranceSummary.hasFinancialData
+                      ? formatCurrency(insuranceSummary.totalAmount)
+                      : formatInsuranceSummaryValue(
+                          0,
+                          insuranceSummary.participantCount,
+                          formatCurrency,
+                        )}
               </p>
             </div>
           </div>
@@ -503,7 +553,7 @@ export default function Insurance() {
                   'px-1.5 py-0.5 rounded text-xs',
                   isSelected ? 'bg-primary-foreground/20' : 'bg-muted-foreground/20'
                 )}>
-                  {type.count}
+                  {type.count == null ? '—' : type.count}
                 </span>
               </button>
             );
@@ -564,6 +614,24 @@ export default function Insurance() {
                    {t('insurance.loading')}
                  </TableCell>
                </TableRow>
+             ) : loadFailedEmpty ? (
+               <TableRow>
+                 <TableCell colSpan={11} className="text-center py-10 space-y-3">
+                   <p className="text-sm text-amber-900">
+                     {fetchError || t('insurance.loadFailed', 'Không tải được danh sách bảo hiểm')}
+                   </p>
+                   <Button
+                     type="button"
+                     variant="outline"
+                     size="sm"
+                     className="gap-2"
+                     onClick={() => void refetch()}
+                   >
+                     <RefreshCw className="h-4 w-4" />
+                     {t('common.retry', 'Thử lại')}
+                   </Button>
+                </TableCell>
+              </TableRow>
              ) : paginatedList.length === 0 ? (
                <TableRow>
                  <TableCell colSpan={11} className="text-center py-10">

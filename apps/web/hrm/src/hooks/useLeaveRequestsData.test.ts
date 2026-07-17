@@ -10,9 +10,11 @@ import {
 const hooksDir = dirname(fileURLToPath(import.meta.url));
 
 describe('useLeaveRequestsData portal mode', () => {
-  it('uses listLeaveRequests from hrmApi instead of Supabase query stub', () => {
+  it('uses listLeaveRequests from hrmApi via shared React Query key', () => {
     const source = readFileSync(join(hooksDir, 'useLeaveRequestsData.ts'), 'utf8');
     expect(source).toContain('listLeaveRequests');
+    expect(source).toContain('useQuery');
+    expect(source).toContain('buildLeaveRequestsQueryKey');
     expect(source).not.toContain('await query');
     expect(source).not.toContain('@/integrations/supabase/client');
   });

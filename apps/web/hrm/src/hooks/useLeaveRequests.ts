@@ -1,4 +1,35 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /attendance — Nghỉ phép (LeaveTab) · Dashboard leave widgets
+ * UC:          UF-HRM-05 · J-HRM-06
+ * BR:          BR-ATT-LEAVE-01
+ * SRS:         docs/hrm/SRS.md (attendance leave requests)
+ * TechSpec:    docs/hrm/TECHSPEC.md attendance leave-requests
+ * Purpose:     Load leave requests via React Query (stable queryKey).
+ *              Prevents fetch storm from unstable toast/`h` callback deps
+ *              that previously re-triggered useEffect → RATE-429.
+ * WorkItem:    D-HRM-ATT-LEAVE-FETCH-STORM
+ * Coded:       2026-07-17
+ *
+ * Callers:
+ *   - components/attendance/LeaveTab.tsx → useLeaveRequests()
+ *   - hooks/useLeaveRequestsData.ts → shared query key
+ *
+ * Callees:
+ *   - listLeaveRequests / createLeaveRequest / approveLeaveRequest / rejectLeaveRequest
+ *
+ * FE-Actions:
+ *   | User action     | Handler        | Lib / API              |
+ *   |-----------------|----------------|------------------------|
+ *   | Open Nghỉ phép  | useQuery       | listLeaveRequests      |
+ *   | Create / approve| mutation + inv | create/approve/reject  |
+ *
+ * must_keep:   mapApiLeaveRequestToUi; portal Nest API (no Supabase)
+ * SOLID:       RQ read path; mutations invalidate shared key (singleflight)
+ * LastVerified: apps/web/hrm/src/hooks/useLeaveRequests.test.ts
+ */
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +40,7 @@ import {
   rejectLeaveRequest,
   type HrmLeaveRequest,
 } from '@/integrations/hrmApi';
-import { buildLeaveRequestsQuery } from '@/hooks/useLeaveRequestsData';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 
 export interface LeaveRequest {
   id: string; company_id: string; employee_id: string; employee_code: string; employee_name: string;
@@ -24,6 +55,22 @@ export interface LeaveRequestFormData {
   employee_id: string; employee_code: string; employee_name: string; department?: string; position?: string;
   leave_type: string; start_date: string; end_date: string; total_days: number; reason?: string;
   handover_to?: string; handover_tasks?: string; approver_name?: string;
+}
+
+export const LEAVE_REQUESTS_QUERY_KEY = 'leave-requests' as const;
+
+export function buildLeaveRequestsQueryKey(
+  companyId: string | null | undefined,
+  statusFilter?: string,
+): readonly unknown[] {
+  return [LEAVE_REQUESTS_QUERY_KEY, companyId ?? null, statusFilter ?? ''] as const;
+}
+
+export function buildLeaveRequestsQuery(companyId: string, statusFilter?: string) {
+  return {
+    company_id: coerceHrmListCompanyId(companyId),
+    ...(statusFilter ? { status: statusFilter } : {}),
+  };
 }
 
 export function mapApiLeaveRequestToUi(row: HrmLeaveRequest): LeaveRequest {
@@ -56,13 +103,14 @@ export function mapApiLeaveRequestToUi(row: HrmLeaveRequest): LeaveRequest {
   };
 }
 
-export function useLeaveRequests() {
+export function useLeaveRequests(opts?: { enabled?: boolean; statusFilter?: string }) {
+  const enabled = opts?.enabled !== false;
+  const statusFilter = opts?.statusFilter;
   const { currentCompanyId, profile, memberships } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const h = (key: string): string => t(`hk.leave.${key}`) as string;
-  const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const toastedErrorRef = useRef<unknown>(null);
 
   const reviewerName = profile?.full_name?.trim() || 'Web HRM';
   const reviewerEmployeeId = useMemo(
@@ -70,25 +118,45 @@ export function useLeaveRequests() {
     [memberships, currentCompanyId],
   );
 
-  const fetchRequests = useCallback(async () => {
-    if (!currentCompanyId) {
-      setRequests([]);
-      setIsLoading(false);
+  const queryKey = buildLeaveRequestsQueryKey(currentCompanyId, statusFilter);
+
+  const query = useQuery({
+    queryKey,
+    queryFn: async (): Promise<LeaveRequest[]> => {
+      if (!currentCompanyId) return [];
+      const response = await listLeaveRequests(
+        buildLeaveRequestsQuery(currentCompanyId, statusFilter),
+      );
+      return (response.data ?? []).map(mapApiLeaveRequestToUi);
+    },
+    enabled: enabled && !!currentCompanyId,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+
+  useEffect(() => {
+    if (!query.isError || !query.error) {
+      toastedErrorRef.current = null;
       return;
     }
-    setIsLoading(true);
-    try {
-      const response = await listLeaveRequests(buildLeaveRequestsQuery(currentCompanyId));
-      setRequests((response.data ?? []).map(mapApiLeaveRequestToUi));
-    } catch (error: unknown) {
-      console.error('Error fetching leave requests:', error);
-      toast({ title: t('messages.error'), description: h('fetchError'), variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentCompanyId, toast, t, h]);
+    if (toastedErrorRef.current === query.error) return;
+    toastedErrorRef.current = query.error;
+    console.error('Error fetching leave requests:', query.error);
+    toast({
+      title: t('messages.error'),
+      description: t('hk.leave.fetchError'),
+      variant: 'destructive',
+    });
+  }, [query.isError, query.error, toast, t]);
 
-  useEffect(() => { void fetchRequests(); }, [fetchRequests]);
+  const invalidateLeaveRequests = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: [LEAVE_REQUESTS_QUERY_KEY] });
+  }, [queryClient]);
+
+  const fetchRequests = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
 
   const createRequest = async (data: LeaveRequestFormData): Promise<LeaveRequest | null> => {
     if (!currentCompanyId) return null;
@@ -109,18 +177,20 @@ export function useLeaveRequests() {
         handover_tasks: data.handover_tasks,
       });
       const mapped = mapApiLeaveRequestToUi(created);
-      setRequests((prev) => [mapped, ...prev]);
-      toast({ title: t('messages.success'), description: h('createSuccess') });
+      await invalidateLeaveRequests();
+      toast({ title: t('messages.success'), description: t('hk.leave.createSuccess') });
       return mapped;
     } catch (error: unknown) {
       console.error('Error creating leave request:', error);
-      toast({ title: t('messages.error'), description: h('createError'), variant: 'destructive' });
+      toast({ title: t('messages.error'), description: t('hk.leave.createError'), variant: 'destructive' });
       return null;
     }
   };
 
   const updateRequest = async (id: string, data: Partial<LeaveRequest>): Promise<boolean> => {
-    setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, ...data } : r)));
+    queryClient.setQueryData<LeaveRequest[]>(queryKey, (prev) =>
+      (prev ?? []).map((r) => (r.id === id ? { ...r, ...data } : r)),
+    );
     return true;
   };
 
@@ -131,11 +201,13 @@ export function useLeaveRequests() {
         reviewer_employee_id: reviewerEmployeeId,
       });
       const mapped = mapApiLeaveRequestToUi(updated);
-      setRequests((prev) => prev.map((r) => (r.id === id ? mapped : r)));
+      queryClient.setQueryData<LeaveRequest[]>(queryKey, (prev) =>
+        (prev ?? []).map((r) => (r.id === id ? mapped : r)),
+      );
       return true;
     } catch (error: unknown) {
       console.error('Error approving leave request:', error);
-      toast({ title: t('messages.error'), description: h('updateError'), variant: 'destructive' });
+      toast({ title: t('messages.error'), description: t('hk.leave.updateError'), variant: 'destructive' });
       return false;
     }
   };
@@ -148,11 +220,13 @@ export function useLeaveRequests() {
         rejected_reason: reason,
       });
       const mapped = mapApiLeaveRequestToUi(updated);
-      setRequests((prev) => prev.map((r) => (r.id === id ? mapped : r)));
+      queryClient.setQueryData<LeaveRequest[]>(queryKey, (prev) =>
+        (prev ?? []).map((r) => (r.id === id ? mapped : r)),
+      );
       return true;
     } catch (error: unknown) {
       console.error('Error rejecting leave request:', error);
-      toast({ title: t('messages.error'), description: h('updateError'), variant: 'destructive' });
+      toast({ title: t('messages.error'), description: t('hk.leave.updateError'), variant: 'destructive' });
       return false;
     }
   };
@@ -160,20 +234,22 @@ export function useLeaveRequests() {
   const deleteRequest = async (_id: string): Promise<boolean> => {
     toast({
       title: t('messages.error'),
-      description: h('deleteError'),
+      description: t('hk.leave.deleteError'),
       variant: 'destructive',
     });
     return false;
   };
 
   return {
-    requests,
-    isLoading,
+    requests: query.data ?? [],
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
     fetchRequests,
     createRequest,
     updateRequest,
     approveRequest,
     rejectRequest,
     deleteRequest,
+    queryKey,
   };
 }

@@ -17,6 +17,7 @@ const friendlyByCode: Record<string, string> = {
   "HRM-PAY-002": "Kỳ lương bị trùng với kỳ đã tồn tại.",
   "HRM-PAY-404": "Không thể xử lý kỳ lương do trạng thái hiện tại không hợp lệ hoặc không tồn tại.",
   "HRM-PAY-405": "Không thể khóa kỳ lương do chưa ở trạng thái đã xử lý.",
+  "RATE-429": "Hệ thống đang giới hạn tần suất truy cập (429). Vui lòng đợi vài giây rồi Thử lại.",
   "SHEET-400": "File import không hợp lệ hoặc thiếu tham số kind.",
   "SHEET-408": "Xử lý file vượt quá thời gian cho phép trên máy chủ.",
   "SHEET-413": "File hoặc dữ liệu vượt quá giới hạn kích thước/số dòng.",
@@ -43,15 +44,29 @@ export class ApiClientError extends Error {
   }
 }
 
+/** True for fetch abort / navigation cancel — not user-facing failures. */
+export function isAbortLikeError(error: unknown): boolean {
+  if (error instanceof DOMException && error.name === "AbortError") return true;
+  if (error instanceof Error) {
+    const name = error.name?.toLowerCase() ?? "";
+    const message = error.message?.toLowerCase() ?? "";
+    if (name === "aborterror") return true;
+    if (message.includes("aborted") || message.includes("abort")) return true;
+  }
+  return false;
+}
+
 export function toErrorMessage(error: unknown, fallback: string) {
   if (error instanceof ApiClientError) {
     if (error.code && friendlyByCode[error.code]) return friendlyByCode[error.code];
+    if (error.status === 429) return friendlyByCode["RATE-429"];
     return error.message || fallback;
   }
 
   if (typeof error === "object" && error !== null) {
-    const candidate = error as { message?: string; code?: string };
+    const candidate = error as { message?: string; code?: string; status?: number };
     if (candidate.code && friendlyByCode[candidate.code]) return friendlyByCode[candidate.code];
+    if (candidate.status === 429) return friendlyByCode["RATE-429"];
     if (candidate.message) return candidate.message;
   }
 

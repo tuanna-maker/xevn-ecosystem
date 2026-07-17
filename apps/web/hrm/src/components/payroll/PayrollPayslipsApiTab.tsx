@@ -98,7 +98,7 @@ export function PayrollPayslipsApiTab() {
                 <TableHead>{t('employees.fullName', 'Họ tên')}</TableHead>
                 <TableHead>{t('payroll.period', 'Kỳ lương')}</TableHead>
                 <TableHead className="text-right">{t('payroll.netSalary', 'Thực lĩnh')}</TableHead>
-                <TableHead>{t('common.status', 'Trạng thái')}</TableHead>
+                <TableHead>{t('common.status.label')}</TableHead>
                 <TableHead className="w-[80px]" />
               </TableRow>
             </TableHeader>

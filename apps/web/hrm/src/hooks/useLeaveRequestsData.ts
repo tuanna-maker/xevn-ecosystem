@@ -1,7 +1,22 @@
-import { useState, useEffect } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /dashboard — leave request summary widgets
+ * UC:          UF-HRM-05
+ * Purpose:     Dashboard leave rows via shared leave-requests React Query key
+ *              (singleflight with LeaveTab / useLeaveRequests).
+ * WorkItem:    D-HRM-ATT-LEAVE-FETCH-STORM
+ * Coded:       2026-07-17
+ * LastVerified: apps/web/hrm/src/hooks/useLeaveRequestsData.test.ts
+ */
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { listLeaveRequests, type HrmLeaveRequest } from '@/integrations/hrmApi';
-import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import {
+  buildLeaveRequestsQuery,
+  buildLeaveRequestsQueryKey,
+  mapApiLeaveRequestToUi,
+} from '@/hooks/useLeaveRequests';
 
 export interface LeaveRequestData {
   id: string;
@@ -15,12 +30,8 @@ export interface LeaveRequestData {
   status: string;
 }
 
-export function buildLeaveRequestsQuery(companyId: string, statusFilter?: string) {
-  return {
-    company_id: coerceHrmListCompanyId(companyId),
-    ...(statusFilter ? { status: statusFilter } : {}),
-  };
-}
+/** Re-export for existing callers / tests. */
+export { buildLeaveRequestsQuery } from '@/hooks/useLeaveRequests';
 
 export function mapApiLeaveRequestToDashboardRow(row: HrmLeaveRequest): LeaveRequestData {
   const totalDays = Number.parseFloat(String(row.total_days ?? 0));
@@ -39,33 +50,38 @@ export function mapApiLeaveRequestToDashboardRow(row: HrmLeaveRequest): LeaveReq
 
 export function useLeaveRequestsData(statusFilter?: string) {
   const { currentCompanyId } = useAuth();
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequestData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryKey = buildLeaveRequestsQueryKey(currentCompanyId, statusFilter);
 
-  useEffect(() => {
-    if (!currentCompanyId) {
-      setLeaveRequests([]);
-      setIsLoading(false);
-      return;
-    }
+  const query = useQuery({
+    queryKey,
+    queryFn: async () => {
+      if (!currentCompanyId) return [];
+      const response = await listLeaveRequests(
+        buildLeaveRequestsQuery(currentCompanyId, statusFilter),
+      );
+      return (response.data ?? []).map(mapApiLeaveRequestToUi);
+    },
+    enabled: !!currentCompanyId,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
 
-    const fetchLeaveRequests = async () => {
-      setIsLoading(true);
-      try {
-        const response = await listLeaveRequests(
-          buildLeaveRequestsQuery(currentCompanyId, statusFilter),
-        );
-        setLeaveRequests((response.data ?? []).map(mapApiLeaveRequestToDashboardRow));
-      } catch (error) {
-        console.error('Error fetching leave requests:', error);
-        setLeaveRequests([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const leaveRequests = useMemo<LeaveRequestData[]>(
+    () =>
+      (query.data ?? []).map((row) => ({
+        id: row.id,
+        employee_id: row.employee_id,
+        employee_name: row.employee_name,
+        leave_type: row.leave_type,
+        start_date: row.start_date,
+        end_date: row.end_date,
+        total_days: row.total_days,
+        reason: row.reason,
+        status: row.status,
+      })),
+    [query.data],
+  );
 
-    void fetchLeaveRequests();
-  }, [currentCompanyId, statusFilter]);
-
-  return { leaveRequests, isLoading };
+  return { leaveRequests, isLoading: query.isLoading };
 }

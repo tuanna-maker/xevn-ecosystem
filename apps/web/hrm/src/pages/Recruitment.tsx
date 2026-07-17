@@ -389,12 +389,12 @@ export default function Recruitment() {
     updatePlanStatus,
   } = useRecruitmentPlans();
 
-  // Fetch candidate evaluations from Supabase
+  const evaluationsTabEnabled = activeTab === 'evaluations';
   const {
     evaluations,
     loading: evaluationsLoading,
     stats: evaluationStats,
-  } = useCandidateEvaluations();
+  } = useCandidateEvaluations(evaluationsTabEnabled);
 
   // Handle drag and drop
   const handleDragEnd = (result: DropResult) => {

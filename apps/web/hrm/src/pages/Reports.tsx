@@ -18,14 +18,24 @@ import LeaveReportTab from '@/components/reports/LeaveReportTab';
 import TurnoverReportTab from '@/components/reports/TurnoverReportTab';
 import ServiceReportTab from '@/components/reports/ServiceReportTab';
 import ToolsReportTab from '@/components/reports/ToolsReportTab';
-import { useReportsData } from '@/hooks/useReportsData';
+import { useReportsData, type ReportsActiveTab } from '@/hooks/useReportsData';
 
 export default function Reports() {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(String(currentYear));
-  const { isLoading, recruitment, contracts, leave, turnover, operationsSummary, employeeTotal, payrollNetTotal } =
-    useReportsData(Number(year));
+  const [activeTab, setActiveTab] = useState<ReportsActiveTab>('overview');
+  const {
+    isLoading,
+    recruitment,
+    contracts,
+    leave,
+    turnover,
+    operationsSummary,
+    employeeTotal,
+    departmentHeadcounts,
+    payrollReconciliation,
+  } = useReportsData(Number(year), activeTab);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -52,7 +62,11 @@ export default function Reports() {
         }
       />
 
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as ReportsActiveTab)}
+        className="space-y-4"
+      >
         <TabsList className="flex flex-wrap gap-1 h-auto p-1 w-full overflow-x-auto scrollbar-hide">
           <TabsTrigger value="overview" className="text-xs sm:text-sm">{t('reports.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="recruitment" className="text-xs sm:text-sm">{t('reports.tabs.recruitment')}</TabsTrigger>
@@ -67,8 +81,9 @@ export default function Reports() {
           <OverviewReportTab
             year={Number(year)}
             employeeTotal={employeeTotal}
-            payrollNetTotal={payrollNetTotal}
+            departmentHeadcounts={departmentHeadcounts}
             operationsSummary={operationsSummary}
+            payrollReconciliation={payrollReconciliation}
           />
         </TabsContent>
         <TabsContent value="recruitment">

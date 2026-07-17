@@ -7,6 +7,7 @@ import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { GetEmployeeQueryDto } from './dto/get-employee.query.dto';
+import { EmployeeSummaryQueryDto } from './dto/employee-summary.query.dto';
 import { ListEmployeesQueryDto } from './dto/list-employees.query.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeeProfileListQueryDto } from './dto/employee-profile-list.query.dto';
@@ -61,6 +62,23 @@ export class EmployeesController {
     return this.employeesService
       .listEmployees(query, authorization, scopeContext)
       .then((data) => ok(data, 'HRM-EMP-200', 'Employees listed'));
+  }
+
+  /** P1-HRM-PERF-BE-01 — dashboard stats in one round-trip (same scope as list). */
+  @Get('summary')
+  getEmployeesSummary(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: EmployeeSummaryQueryDto,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    const scopeContext = toHrmListScopeContext(tenantId);
+    return this.employeesService
+      .getEmployeesSummary(query, authorization, scopeContext)
+      .then((data) => ok(data, 'HRM-EMP-SUMMARY-200', 'Employee summary loaded'));
   }
 
   @Get(':employeeId/degrees')

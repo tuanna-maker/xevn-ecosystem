@@ -188,10 +188,16 @@ export function buildLeaveReportFromApi(leaves: HrmLeaveRequest[], year: number)
   };
 }
 
+export type BuildTurnoverOptions = {
+  /** Scope-wide active headcount (API `total` / summary) — must not use page-1 length. */
+  totalActiveOverride?: number;
+};
+
 export function buildTurnoverReportFromApi(
   employees: HrmEmployeeRecord[],
   year: number,
   now = new Date(),
+  options?: BuildTurnoverOptions,
 ): TurnoverReport {
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
@@ -206,7 +212,11 @@ export function buildTurnoverReportFromApi(
     return sd != null && sd >= yearStart && sd <= yearEnd;
   }).length;
   const terminations = archivedInYear.length;
-  const avgHeadcount = activeEmps.length > 0 ? activeEmps.length : 1;
+  const totalActive =
+    options?.totalActiveOverride != null && Number.isFinite(options.totalActiveOverride)
+      ? Math.max(0, Math.floor(options.totalActiveOverride))
+      : activeEmps.length;
+  const avgHeadcount = totalActive > 0 ? totalActive : 1;
   const turnoverRate = Math.round((terminations / avgHeadcount) * 10000) / 100;
 
   const tenures = activeEmps.map((e) => {
@@ -255,7 +265,7 @@ export function buildTurnoverReportFromApi(
   });
 
   return {
-    totalActive: activeEmps.length,
+    totalActive,
     newHires,
     terminations,
     turnoverRate,
@@ -271,11 +281,23 @@ export function mapOperationsSummaryReport(summary: {
   payroll_periods: number;
   job_requisitions: number;
   tasks: number;
+  service_requests?: number;
 }): OperationsSummaryReport {
   return {
     attendanceRecords: summary.attendance_records,
     payrollPeriods: summary.payroll_periods,
     jobRequisitions: summary.job_requisitions,
     tasks: summary.tasks,
+  };
+}
+
+export function mapPayrollReconciliation(
+  recon: { draft: number; processed: number; closed: number } | null | undefined,
+): NonNullable<OperationsSummaryReport['payrollReconciliation']> | null {
+  if (!recon) return null;
+  return {
+    draft: recon.draft ?? 0,
+    processed: recon.processed ?? 0,
+    closed: recon.closed ?? 0,
   };
 }

@@ -1,15 +1,51 @@
-import { useCallback, useEffect, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /insurance — Bảo hiểm list (embed + standalone)
+ * UC:         UF-HRM-04 · J-HRM-04 · P-CC-05
+ * BR:         BR-INS-01
+ * SRS:        docs/hrm/SRS.md (insurance list / employee drill)
+ * TechSpec:   docs/api/openapi/hrm-api.yaml contracts-insurance/insurance
+ * Purpose:    Load insurance workforce list via Nest API with progressive pages
+ *             (first page → paint, then append). Non-2xx must surface fetchError —
+ *             never coerce fail → empty «Không có dữ liệu».
+ * WorkItem:   D-HRM-INS-EMPTY-MASK-01 · D-HRM-INS-PERF-01
+ * Coded:      2026-07-17
+ *
+ * Callers:
+ *   - apps/web/hrm/src/pages/Insurance.tsx → useInsuranceList()
+ *
+ * Callees:
+ *   - listInsuranceRecords (paged) — not listAllInsuranceRecords on mount
+ *   - listEmployees / listInsurancePolicyParticipants (non-fatal companions)
+ *
+ * FE-Actions:
+ *   | User action     | Handler            | Lib / API              |
+ *   |-----------------|--------------------|------------------------|
+ *   | Open Bảo hiểm   | fetchInsurance     | listInsuranceRecords p1|
+ *   | Retry banner    | refetch            | same                   |
+ *   | Status chip     | selectedStatus dep | client filter + refetch|
+ *
+ * BE-Chain: GET /api/hrm/contracts-insurance/insurance?page=&page_size=
+ * Impact:   11× waterfall before paint caused ~9s blank + 429→empty mask.
+ * must_keep: J-HRM-04 employee_id link; fetchError ≠ noData; first-page paint.
+ * SOLID:     Progressive loader pure fn testable; hook owns React state only.
+ * LastVerified: apps/web/hrm/src/hooks/useInsuranceList.test.ts
+ */
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toErrorMessage } from '@/lib/apiError';
-import { shouldSkipSupabaseDataFetches } from '@/lib/hrmDataMode';
+import { shouldSkipSupabaseDataFetches, HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import {
-  listAllInsuranceRecords,
+  isListFetchFailureEmpty,
+  isRateLimitApiError,
+} from '@/lib/hrmListLoadFailure';
+import {
   listEmployees,
   listInsurancePolicyParticipants,
+  listInsuranceRecords,
   type HrmEmployeeRecord,
   type HrmInsuranceRecord,
 } from '@/integrations/hrmApi';
-import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import {
   buildPolicyParticipantFinancialMap,
   enrichInsuranceListItemFinancials,
@@ -42,6 +78,9 @@ export interface InsuranceListItem {
   created_at: string;
   company_id: string;
 }
+
+/** Nest @Max(100) — one page per request; progressive append for remainder. */
+export const HRM_INSURANCE_LIST_PAGE_SIZE = HRM_API_MAX_PAGE_SIZE;
 
 export function normalizeInsuranceEmployeeId(value: unknown): string | undefined {
   if (value == null) return undefined;
@@ -117,71 +156,205 @@ export function mapApiInsuranceToListItem(
   };
 }
 
+function applyStatusFilter(rows: InsuranceListItem[], selectedStatus: string): InsuranceListItem[] {
+  if (selectedStatus === 'all') return rows;
+  return rows.filter((item) => item.status === selectedStatus);
+}
+
+function enrichInsuranceRows(
+  rows: HrmInsuranceRecord[],
+  employees: HrmEmployeeRecord[],
+  participantRows: Record<string, unknown>[],
+): InsuranceListItem[] {
+  const participantFinancials = buildPolicyParticipantFinancialMap(participantRows);
+  const participantIdsByCode = buildPolicyParticipantIdByCode(participantRows);
+  return rows.map((row) => {
+    const mapped = mapApiInsuranceToListItem(row, findEmployeeForInsuranceRow(row, employees));
+    const enriched = enrichInsuranceListItemFinancials(mapped, participantFinancials);
+    return attachParticipantIdToListItem(enriched, participantIdsByCode);
+  });
+}
+
+export type InsuranceProgressiveCallbacks = {
+  onFirstPage: (payload: { items: InsuranceListItem[]; total: number }) => void;
+  onProgress?: (payload: { items: InsuranceListItem[]; total: number }) => void;
+  signal?: AbortSignal;
+};
+
+/**
+ * D-HRM-INS-PERF-01: paint after page 1; append remaining pages.
+ * Primary insurance non-2xx throws (caller sets fetchError). Companions are soft-fail.
+ */
+export async function loadInsuranceListProgressive(
+  companyId: string,
+  selectedStatus: string,
+  callbacks: InsuranceProgressiveCallbacks,
+): Promise<{ items: InsuranceListItem[]; total: number; pagesFetched: number }> {
+  const pageSize = HRM_INSURANCE_LIST_PAGE_SIZE;
+  const signal = callbacks.signal;
+
+  const throwIfAborted = () => {
+    if (signal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+  };
+
+  throwIfAborted();
+
+  const [firstRes, empRes, participantRes] = await Promise.all([
+    listInsuranceRecords({ company_id: companyId, page: 1, page_size: pageSize }),
+    listEmployees({ company_id: companyId, page_size: pageSize }).catch(() => ({
+      total: 0,
+      data: [] as HrmEmployeeRecord[],
+    })),
+    listInsurancePolicyParticipants(companyId).catch(() => ({
+      total: 0,
+      data: [] as Record<string, unknown>[],
+    })),
+  ]);
+
+  throwIfAborted();
+
+  const employees = empRes.data ?? [];
+  const participantRows = (participantRes.data ?? []) as Record<string, unknown>[];
+  const firstBatch = firstRes.data ?? [];
+  let accumulatedRaw = [...firstBatch];
+  let items = applyStatusFilter(
+    enrichInsuranceRows(accumulatedRaw, employees, participantRows),
+    selectedStatus,
+  );
+  const total = firstRes.total ?? accumulatedRaw.length;
+
+  callbacks.onFirstPage({ items, total });
+
+  let pagesFetched = 1;
+  let page = 2;
+
+  while (accumulatedRaw.length < total) {
+    throwIfAborted();
+    const res = await listInsuranceRecords({
+      company_id: companyId,
+      page,
+      page_size: pageSize,
+    });
+    throwIfAborted();
+    const batch = res.data ?? [];
+    if (batch.length === 0) break;
+    accumulatedRaw = accumulatedRaw.concat(batch);
+    items = applyStatusFilter(
+      enrichInsuranceRows(accumulatedRaw, employees, participantRows),
+      selectedStatus,
+    );
+    pagesFetched += 1;
+    callbacks.onProgress?.({ items, total: res.total ?? total });
+    if (accumulatedRaw.length >= (res.total ?? total)) break;
+    page += 1;
+  }
+
+  return { items, total, pagesFetched };
+}
+
+/** @deprecated Prefer `isListFetchFailureEmpty` from `@/lib/hrmListLoadFailure`. */
+export const isInsuranceFetchFailureEmpty = isListFetchFailureEmpty;
+
 export function useInsuranceList(selectedStatus: string = 'all') {
   const { currentCompanyId } = useAuth();
   const [insuranceList, setInsuranceList] = useState<InsuranceListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const useApi = shouldSkipSupabaseDataFetches();
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchInsurance = useCallback(async () => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     if (!currentCompanyId) {
       setInsuranceList([]);
       setTotalCount(0);
       setFetchError(null);
       setIsLoading(false);
+      setIsLoadingMore(false);
       return;
     }
 
     setIsLoading(true);
+    setIsLoadingMore(false);
     setFetchError(null);
 
+    let painted = false;
+
     try {
-      if (useApi) {
-        const [insuranceRes, empRes, participantRes] = await Promise.all([
-          listAllInsuranceRecords({ company_id: currentCompanyId }),
-          listEmployees({ company_id: currentCompanyId, page_size: HRM_API_MAX_PAGE_SIZE }),
-          listInsurancePolicyParticipants(currentCompanyId).catch(() => ({ total: 0, data: [] })),
-        ]);
-        const employees = empRes.data ?? [];
-        const participantRows = participantRes.data ?? [];
-        const participantFinancials = buildPolicyParticipantFinancialMap(participantRows);
-        const participantIdsByCode = buildPolicyParticipantIdByCode(participantRows);
-        let rows = (insuranceRes.data ?? []).map((row) => {
-          const mapped = mapApiInsuranceToListItem(row, findEmployeeForInsuranceRow(row, employees));
-          const enriched = enrichInsuranceListItemFinancials(mapped, participantFinancials);
-          return attachParticipantIdToListItem(enriched, participantIdsByCode);
-        });
-        setTotalCount(insuranceRes.total ?? rows.length);
-        if (selectedStatus !== 'all') {
-          rows = rows.filter((item) => item.status === selectedStatus);
-        }
-        setInsuranceList(rows);
+      if (!useApi) {
+        setInsuranceList([]);
+        setTotalCount(0);
         return;
       }
-      setInsuranceList([]);
-      setTotalCount(0);
+
+      const result = await loadInsuranceListProgressive(currentCompanyId, selectedStatus, {
+        signal: controller.signal,
+        onFirstPage: ({ items, total }) => {
+          painted = true;
+          setInsuranceList(items);
+          setTotalCount(total);
+          setIsLoading(false);
+          setIsLoadingMore(total > items.length || total > HRM_INSURANCE_LIST_PAGE_SIZE);
+        },
+        onProgress: ({ items, total }) => {
+          setInsuranceList(items);
+          setTotalCount(total);
+        },
+      });
+
+      if (controller.signal.aborted) return;
+
+      setInsuranceList(result.items);
+      setTotalCount(result.total);
+      setIsLoadingMore(false);
+      if (!painted) {
+        setIsLoading(false);
+      }
     } catch (error: unknown) {
+      if (controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError')) {
+        return;
+      }
       console.error('Error fetching insurance:', error);
-      setInsuranceList([]);
-      setTotalCount(0);
-      setFetchError(toErrorMessage(error, 'Không thể tải danh sách bảo hiểm'));
+      const message = toErrorMessage(error, 'Không thể tải danh sách bảo hiểm');
+      setFetchError(message);
+      // D-HRM-INS-EMPTY-MASK-01: clear only when first page never painted (avoid race with setState)
+      if (!painted) {
+        setInsuranceList([]);
+        setTotalCount(0);
+      }
+      setIsLoadingMore(false);
     } finally {
-      setIsLoading(false);
+      if (!controller.signal.aborted) {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
     }
   }, [currentCompanyId, selectedStatus, useApi]);
 
   useEffect(() => {
     void fetchInsurance();
+    return () => {
+      abortRef.current?.abort();
+    };
   }, [fetchInsurance]);
 
   return {
     insuranceList,
     totalCount,
     isLoading,
+    isLoadingMore,
     fetchError,
     refetch: fetchInsurance,
     useApiMode: useApi,
   };
 }
+
+/** @deprecated Prefer `isRateLimitApiError` from `@/lib/hrmListLoadFailure`. */
+export const isRateLimitInsuranceError = isRateLimitApiError;

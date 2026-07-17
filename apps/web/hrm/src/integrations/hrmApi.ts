@@ -3224,14 +3224,27 @@ export async function updateHeadcountProposalStatus(
   );
 }
 
+const candidateEvaluationsInflight = new Map<
+  string,
+  Promise<{ total: number; data: Record<string, unknown>[] }>
+>();
+
 export async function listCandidateEvaluations(params: { company_id: string; candidate_id?: string }) {
   const search = new URLSearchParams();
   setListCompanyId(search, params.company_id);
   if (params.candidate_id) search.set("candidate_id", params.candidate_id);
-  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+  const dedupeKey = `${normalizeHrmApiListCompanyId(params.company_id)}:${params.candidate_id ?? "*"}`;
+  const inflight = candidateEvaluationsInflight.get(dedupeKey);
+  if (inflight) return inflight;
+
+  const promise = requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/recruitment/candidate-evaluations?${search.toString()}`,
     { method: "GET" },
-  );
+  ).finally(() => {
+    candidateEvaluationsInflight.delete(dedupeKey);
+  });
+  candidateEvaluationsInflight.set(dedupeKey, promise);
+  return promise;
 }
 
 export async function createCandidateEvaluation(payload: Record<string, unknown>) {

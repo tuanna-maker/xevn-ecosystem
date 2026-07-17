@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePermissions } from '@/hooks/usePermissions';
-import { useAuth } from '@/contexts/AuthContext';
+import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 
 interface PermissionGateProps {
   children: ReactNode;
@@ -26,39 +26,15 @@ export function PermissionGate({
   anyOf,
   allOf,
 }: PermissionGateProps) {
-  const { user } = useAuth();
   const location = useLocation();
-  const portalMode =
-    (() => {
-      const searchParams = new URLSearchParams(location.search);
-      const portalParam = searchParams.get('portal');
-      const portalQs =
-        portalParam != null && (portalParam === '1' || portalParam.toLowerCase() === 'true');
-      const companyIdParam = searchParams.get('companyId');
-      const portalCompanyId =
-        companyIdParam != null && companyIdParam !== '' && companyIdParam !== 'all';
-      const qsPortal = portalQs || portalCompanyId;
-      const storedSession =
-        typeof sessionStorage !== 'undefined' &&
-        sessionStorage.getItem('hrm_portal_mode') === '1';
-      const storedLocal =
-        typeof localStorage !== 'undefined' && localStorage.getItem('hrm_portal_mode') === '1';
-
-      if (qsPortal) {
-        if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('hrm_portal_mode', '1');
-        if (typeof localStorage !== 'undefined') localStorage.setItem('hrm_portal_mode', '1');
-      }
-
-      return qsPortal || storedSession || storedLocal;
-    })();
+  const portalMode = getHrmPortalMode(location.search);
 
   const { hasPermission, hasAnyPermission, hasAnyOfPermissions, hasAllPermissions } = usePermissions();
 
   let allowed = false;
 
-  // Portal-mode: hệ sinh thái quản lý quyền. Nếu HRM chưa có session/user,
-  // vẫn cho phép render để tránh chặn action ngay từ UI gate.
-  if (portalMode && !user) return <>{children}</>;
+  // Portal embed: RBAC is enforced by XBOS JWT on API — mirror PermissionRoute (no empty HRM stub).
+  if (portalMode) return <>{children}</>;
 
   if (anyOf) {
     allowed = hasAnyOfPermissions(anyOf);

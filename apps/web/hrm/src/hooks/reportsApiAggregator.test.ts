@@ -5,6 +5,7 @@ import {
   buildRecruitmentReportFromApi,
   buildTurnoverReportFromApi,
   mapOperationsSummaryReport,
+  mapPayrollReconciliation,
 } from './reportsApiAggregator';
 
 describe('reportsApiAggregator (portal API mode)', () => {
@@ -132,5 +133,36 @@ describe('reportsApiAggregator (portal API mode)', () => {
     );
     expect(turnover.totalActive).toBe(1);
     expect(turnover.tenureDistribution.length).toBe(5);
+  });
+
+  it('uses totalActiveOverride so page-1 length ≠ scope headcount (D-HRM-RPT-TURNOVER-PAGE-01)', () => {
+    const pageRows = Array.from({ length: 95 }, (_, i) => ({
+      id: `e${i}`,
+      company_id: 'main',
+      employee_code: `NV${i}`,
+      email: `u${i}@xe.vn`,
+      full_name: `Emp ${i}`,
+      job_title_key: 'dev',
+      status: 'active' as const,
+      hired_at: '2024-01-01',
+      archived_at: null,
+      custom_fields: { department: 'IT' },
+      created_at: '2024-01-01',
+      updated_at: '2026-01-01',
+    }));
+    const turnover = buildTurnoverReportFromApi(pageRows, 2026, new Date('2026-05-25'), {
+      totalActiveOverride: 1107,
+    });
+    expect(turnover.totalActive).toBe(1107);
+    expect(pageRows.length).toBe(95);
+  });
+
+  it('maps payroll reconciliation for HRM-PR-06', () => {
+    expect(mapPayrollReconciliation({ draft: 10, processed: 10, closed: 60 })).toEqual({
+      draft: 10,
+      processed: 10,
+      closed: 60,
+    });
+    expect(mapPayrollReconciliation(null)).toBeNull();
   });
 });

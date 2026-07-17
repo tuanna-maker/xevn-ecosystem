@@ -18,6 +18,17 @@ describe('EmployeesController', () => {
   const serviceMock = {
     createEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
     listEmployees: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    getEmployeesSummary: jest.fn().mockResolvedValue({
+      company_id: 'main',
+      total: 0,
+      active_count: 0,
+      inactive_count: 0,
+      archived_count: 0,
+      payroll: { total: 0, employees_with_salary: 0 },
+      by_department: [],
+      salary_ranges: [],
+      new_hires: { last_30_days: 0, recent: [] },
+    }),
     listEmployeeDirectory: jest.fn().mockResolvedValue({ total: 1, page: 1, page_size: 30, data: [] }),
     getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
     getEmployeeDirectoryById: jest.fn().mockResolvedValue({ id: 'e1', full_name: 'Directory User' }),
@@ -172,6 +183,19 @@ describe('EmployeesController', () => {
     expect(serviceMock.getEmployeeDirectoryById).toHaveBeenCalledWith(
       '11111111-1111-4111-8111-111111111111',
       { company_id: 'holding', view: 'directory' },
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.getEmployeeById).not.toHaveBeenCalled();
+  });
+
+  it('D-DASH-01: getEmployeesSummary returns HRM-EMP-SUMMARY-200 without hitting get-by-id', async () => {
+    const summary = await controller.getEmployeesSummary(undefined, 'test-key', 'xevn', 'main', {
+      company_id: 'main',
+    });
+    expect(summary.code).toBe('HRM-EMP-SUMMARY-200');
+    expect(serviceMock.getEmployeesSummary).toHaveBeenCalledWith(
+      { company_id: 'main' },
       undefined,
       { tenantId: 'xevn' },
     );

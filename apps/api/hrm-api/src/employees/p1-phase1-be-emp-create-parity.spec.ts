@@ -56,7 +56,7 @@ function createInMemoryHrmDb() {
           status: 'active',
           hired_at: (params?.[6] as string | null) ?? null,
           archived_at: null,
-          custom_fields: JSON.parse(String(params?.[7] ?? '{}')) as Record<string, string>,
+          custom_fields: JSON.parse(String(params?.[8] ?? '{}')) as Record<string, string>,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
@@ -67,7 +67,11 @@ function createInMemoryHrmDb() {
         const matched = filterRows(rows, params ?? []);
         return { rows: matched.slice(0, 1) };
       }
-      if (text.includes('FROM public.employees') && text.includes('ORDER BY created_at DESC')) {
+      if (
+        text.includes('FROM public.employees') &&
+        text.includes('ORDER BY created_at DESC') &&
+        text.includes('id DESC')
+      ) {
         const matched = filterRows(rows, params ?? []);
         const pageSize = Number(params?.[params.length - 2]);
         const offset = Number(params?.[params.length - 1]);

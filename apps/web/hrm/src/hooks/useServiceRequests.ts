@@ -1,6 +1,24 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /internal-services — Dịch vụ nội bộ
+ * UC:         HRM-SV-02
+ * BR:         list service-requests by company
+ * SRS:        docs/hrm/HRM_MENU_DATA_LINKAGE_MATRIX.md § internal_services
+ * TechSpec:   GET /api/hrm/operations/service-requests
+ * Purpose:    React Query list + mutations for meal/vehicle/supply requests.
+ *             Exposes fetchError for non-2xx (RATE-429) so UI never silent-empty.
+ * WorkItem:   D-P1-HRM-INTSVC-429-SILENT-EMPTY-01
+ * Coded:      2026-07-17
+ *
+ * Callers: apps/web/hrm/src/pages/InternalServices.tsx
+ * Callees: listServiceRequestsApi → GET /operations/service-requests
+ * must_keep: isError/fetchError surfaced; retry via refetch
+ * LastVerified: apps/web/hrm/src/lib/hrmListLoadFailure.test.ts
+ */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { toErrorMessage } from '@/lib/apiError';
 import {
   approveServiceRequest as approveServiceRequestApi,
   createServiceRequest as createServiceRequestApi,
@@ -30,7 +48,7 @@ export interface ServiceRequest {
   vehicle_time_start: string | null;
   vehicle_time_end: string | null;
   vehicle_passengers: number | null;
-  supply_items: any;
+  supply_items: unknown;
   supply_urgency: string | null;
   approved_by: string | null;
   approved_at: string | null;
@@ -46,14 +64,24 @@ export function useServiceRequests(serviceType?: string) {
   const query = useQuery({
     queryKey: ['service-requests', currentCompanyId, serviceType],
     queryFn: async () => {
-      if (!currentCompanyId) return [];
-      return await listServiceRequestsApi({
+      if (!currentCompanyId) return [] as ServiceRequest[];
+      return (await listServiceRequestsApi({
         company_id: currentCompanyId,
         service_type: serviceType,
-      }) as unknown as ServiceRequest[];
+      })) as unknown as ServiceRequest[];
     },
     enabled: !!currentCompanyId,
+    retry: (failureCount, error) => {
+      // Do not hammer rate-limited hosts
+      const msg = toErrorMessage(error, '');
+      if (msg.includes('429') || msg.includes('giới hạn tần suất')) return false;
+      return failureCount < 1;
+    },
   });
+
+  const fetchError = query.isError
+    ? toErrorMessage(query.error, 'Không thể tải danh sách dịch vụ nội bộ')
+    : null;
 
   const addRequest = useMutation({
     mutationFn: async (item: Partial<ServiceRequest>) => {
@@ -63,7 +91,7 @@ export function useServiceRequests(serviceType?: string) {
       queryClient.invalidateQueries({ queryKey: ['service-requests'] });
       toast.success('Đã tạo yêu cầu thành công');
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: unknown) => toast.error(toErrorMessage(e, 'Không thể tạo yêu cầu')),
   });
 
   const updateRequest = useMutation({
@@ -74,7 +102,7 @@ export function useServiceRequests(serviceType?: string) {
       queryClient.invalidateQueries({ queryKey: ['service-requests'] });
       toast.success('Đã cập nhật thành công');
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: unknown) => toast.error(toErrorMessage(e, 'Không thể cập nhật yêu cầu')),
   });
 
   const deleteRequest = useMutation({
@@ -85,7 +113,7 @@ export function useServiceRequests(serviceType?: string) {
       queryClient.invalidateQueries({ queryKey: ['service-requests'] });
       toast.success('Đã xóa yêu cầu');
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: unknown) => toast.error(toErrorMessage(e, 'Không thể xóa yêu cầu')),
   });
 
   const approveRequest = useMutation({
@@ -96,7 +124,7 @@ export function useServiceRequests(serviceType?: string) {
       queryClient.invalidateQueries({ queryKey: ['service-requests'] });
       toast.success('Đã duyệt yêu cầu');
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: unknown) => toast.error(toErrorMessage(e, 'Không thể duyệt yêu cầu')),
   });
 
   const rejectRequest = useMutation({
@@ -107,8 +135,16 @@ export function useServiceRequests(serviceType?: string) {
       queryClient.invalidateQueries({ queryKey: ['service-requests'] });
       toast.success('Đã từ chối yêu cầu');
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: unknown) => toast.error(toErrorMessage(e, 'Không thể từ chối yêu cầu')),
   });
 
-  return { ...query, addRequest, updateRequest, deleteRequest, approveRequest, rejectRequest };
+  return {
+    ...query,
+    fetchError,
+    addRequest,
+    updateRequest,
+    deleteRequest,
+    approveRequest,
+    rejectRequest,
+  };
 }

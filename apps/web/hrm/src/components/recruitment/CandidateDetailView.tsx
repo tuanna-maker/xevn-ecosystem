@@ -20,6 +20,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { listCandidateEvaluations } from '@/integrations/hrmApi';
+import { isAbortLikeError } from '@/lib/apiError';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 
 interface Candidate {
@@ -209,7 +210,9 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
         const latest = rows.find((row) => Array.isArray(row.scores) && row.scores.length > 0);
         setEvaluationScores(latest?.scores ?? []);
       } catch (error: unknown) {
-        console.error('Error fetching candidate evaluation:', error);
+        if (!isAbortLikeError(error)) {
+          console.error('Error fetching candidate evaluation:', error);
+        }
         setEvaluationScores([]);
       } finally {
         setLoadingEvaluation(false);

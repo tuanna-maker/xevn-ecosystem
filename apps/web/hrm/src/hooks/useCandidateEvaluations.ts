@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { deleteCandidateEvaluation, listCandidateEvaluations } from '@/integrations/hrmApi';
-import { toErrorMessage } from '@/lib/apiError';
+import { isAbortLikeError, toErrorMessage } from '@/lib/apiError';
 
 interface EvaluationScore {
   criterion_name: string;
@@ -54,53 +54,45 @@ function mapEvaluation(row: Record<string, unknown>): CandidateEvaluation {
   };
 }
 
-export function useCandidateEvaluations() {
-  const [evaluations, setEvaluations] = useState<CandidateEvaluation[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useCandidateEvaluations(enabled = false) {
   const { currentCompanyId } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const h = (key: string): string => t(`hk.evaluation.${key}`) as string;
+  const queryClient = useQueryClient();
 
-  const fetchEvaluations = useCallback(async () => {
-    if (!currentCompanyId) {
-      setEvaluations([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    try {
-      const result = await listCandidateEvaluations({ company_id: currentCompanyId });
-      setEvaluations((result.data ?? []).map(mapEvaluation));
-    } catch (error: unknown) {
-      console.error('Error fetching evaluations:', error);
-      toast({
-        title: t('messages.error'),
-        description: toErrorMessage(error, h('fetchError')),
-        variant: 'destructive',
-      });
-      setEvaluations([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentCompanyId, toast, t, h]);
+  const query = useQuery({
+    queryKey: ['candidate-evaluations', currentCompanyId],
+    queryFn: async () => {
+      const result = await listCandidateEvaluations({ company_id: currentCompanyId! });
+      return (result.data ?? []).map(mapEvaluation);
+    },
+    enabled: enabled && !!currentCompanyId,
+    staleTime: 60_000,
+    retry: (failureCount, error) => {
+      if (isAbortLikeError(error)) return false;
+      return failureCount < 1;
+    },
+  });
 
-  useEffect(() => {
-    void fetchEvaluations();
-  }, [fetchEvaluations]);
+  const evaluations = query.data ?? [];
 
   const deleteEvaluation = async (evaluationId: string): Promise<boolean> => {
     if (!currentCompanyId) return false;
     try {
       await deleteCandidateEvaluation(evaluationId, currentCompanyId);
-      await fetchEvaluations();
+      await queryClient.invalidateQueries({ queryKey: ['candidate-evaluations', currentCompanyId] });
       return true;
     } catch (error: unknown) {
-      toast({
-        title: t('messages.error'),
-        description: toErrorMessage(error, h('deleteError')),
-        variant: 'destructive',
-      });
+      if (!isAbortLikeError(error)) {
+        toast({
+          title: t('messages.error'),
+          description: toErrorMessage(
+            error,
+            String(t('hk.evaluation.deleteError', 'Không thể xóa đánh giá')),
+          ),
+          variant: 'destructive',
+        });
+      }
       return false;
     }
   };
@@ -113,5 +105,11 @@ export function useCandidateEvaluations() {
     hold: evaluations.filter((e) => e.result === 'hold').length,
   };
 
-  return { evaluations, loading, stats, refetch: fetchEvaluations, deleteEvaluation };
+  return {
+    evaluations,
+    loading: query.isLoading,
+    stats,
+    refetch: () => query.refetch(),
+    deleteEvaluation,
+  };
 }

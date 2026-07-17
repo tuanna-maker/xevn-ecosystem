@@ -64,10 +64,17 @@ export class EmployeesService implements OnModuleInit {
       ON public.employees (company_id, lower(email))
       WHERE archived_at IS NULL;
     `);
+    // ADR-HRM-SCALE-1000-USERS §5.4 / P1-HRM-SCALE-BE-W1 — list ORDER BY created_at, id
     await this.db.query(`
-      CREATE INDEX IF NOT EXISTS idx_employees_company_archived
-      ON public.employees (company_id, archived_at, created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_employees_company_archived_created_id
+      ON public.employees (company_id, archived_at, created_at DESC, id DESC);
     `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_employees_company_archived_name_code_id
+      ON public.employees (company_id, archived_at, full_name ASC, employee_code ASC, id ASC);
+    `);
+    await this.db.query(`DROP INDEX IF EXISTS public.idx_employees_company_archived;`);
+    await this.db.query(`DROP INDEX IF EXISTS public.idx_employees_active_created_id;`);
     await this.db.query(`
       ALTER TABLE public.employees
       ADD COLUMN IF NOT EXISTS custom_fields JSONB NOT NULL DEFAULT '{}'::jsonb;

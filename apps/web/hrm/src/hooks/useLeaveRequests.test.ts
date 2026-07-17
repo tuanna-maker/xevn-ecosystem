@@ -7,12 +7,13 @@ import { mapApiLeaveRequestToUi } from './useLeaveRequests';
 const hooksDir = dirname(fileURLToPath(import.meta.url));
 
 describe('useLeaveRequests portal mode', () => {
-  it('uses Nest leave-requests APIs from hrmApi', () => {
+  it('uses Nest leave-requests APIs from hrmApi via React Query', () => {
     const source = readFileSync(join(hooksDir, 'useLeaveRequests.ts'), 'utf8');
     expect(source).toContain('listLeaveRequests');
     expect(source).toContain('createLeaveRequest');
     expect(source).toContain('approveLeaveRequest');
     expect(source).toContain('rejectLeaveRequest');
+    expect(source).toContain('useQuery');
     expect(source).not.toContain('setRequests(data || [])');
     expect(source).not.toContain('@/integrations/supabase/client');
   });
