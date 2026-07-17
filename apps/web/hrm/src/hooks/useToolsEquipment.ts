@@ -1,6 +1,23 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+/**
+ * @CODE-MEMORY
+ * Screen: /tools-equipment · Công cụ & thiết bị (read-only / deferred)
+ * UC: UC-HRM-27 (deferred)
+ * BR: HRM_MENU_DATA_LINKAGE_MATRIX — tools_equipment has no Nest API in Phase 1
+ * SRS: docs/hrm/HRM_MENU_DATA_LINKAGE_MATRIX.md § tools_equipment
+ * TechSpec: Deferred — no GET/POST tools contract yet
+ * Purpose: Honest empty list until tools API lands. No stub mutations or fake success toasts.
+ * WorkItem: D-HRM-TOOLS-STUB-TOAST-01
+ * Coded: 2026-07-17
+ * Callers: pages/ToolsEquipment.tsx, components/reports/ToolsReportTab.tsx
+ * Callees: React Query (empty list until API contract exists)
+ * FEActions: View only — no Add/Edit/Delete / assignment mutate
+ * Impact: Fake CRUD toasts mislead users into believing persist succeeded
+ * must_keep: No fake success toast on stub mutations; read-only export surface
+ * SOLID: Query-only hook; no mutation façade without API contract
+ * LastVerified: hooks/useToolsEquipment.test.ts
+ */
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
 
 export interface ToolEquipment {
   id: string;
@@ -47,15 +64,21 @@ export interface ToolAssignment {
   updated_at: string;
 }
 
+/** Honest copy when user expects CRUD — tools API is deferred in Phase 1. */
+export const TOOLS_MUTATION_UNSUPPORTED_VI =
+  'Thêm/sửa/xóa CCDC và phiếu cấp phát chưa hỗ trợ — module đang chờ API HRM (Phase 2).';
+
+export const TOOLS_READ_ONLY = true as const;
+
 export function useToolsEquipment() {
   const { currentCompanyId } = useAuth();
-  const queryClient = useQueryClient();
 
   const toolsQuery = useQuery({
     queryKey: ['tools-equipment', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      return [] as unknown as ToolEquipment[];
+      // No Nest list contract for tools yet — empty is honest (not mock).
+      return [] as ToolEquipment[];
     },
     enabled: !!currentCompanyId,
   });
@@ -64,76 +87,14 @@ export function useToolsEquipment() {
     queryKey: ['tool-assignments', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      return [] as unknown as ToolAssignment[];
+      return [] as ToolAssignment[];
     },
     enabled: !!currentCompanyId,
   });
 
-  const addTool = useMutation({
-    mutationFn: async (item: Partial<ToolEquipment>) => {
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tools-equipment'] });
-      toast.success('Đã thêm CCDC thành công');
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const updateTool = useMutation({
-    mutationFn: async ({ id, ...data }: Partial<ToolEquipment> & { id: string }) => {
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tools-equipment'] });
-      toast.success('Đã cập nhật CCDC');
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const deleteTool = useMutation({
-    mutationFn: async (id: string) => {
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tools-equipment'] });
-      toast.success('Đã xóa CCDC');
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const addAssignment = useMutation({
-    mutationFn: async (item: Partial<ToolAssignment>) => {
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tool-assignments'] });
-      toast.success('Đã tạo phiếu thành công');
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const updateAssignment = useMutation({
-    mutationFn: async ({ id, ...data }: Partial<ToolAssignment> & { id: string }) => {
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tool-assignments'] });
-      toast.success('Đã cập nhật phiếu');
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const deleteAssignment = useMutation({
-    mutationFn: async (id: string) => {
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tool-assignments'] });
-      toast.success('Đã xóa phiếu');
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
   return {
-    tools: toolsQuery.data || [],
-    assignments: assignmentsQuery.data || [],
+    tools: toolsQuery.data ?? [],
+    assignments: assignmentsQuery.data ?? [],
     isLoading: toolsQuery.isLoading || assignmentsQuery.isLoading,
-    addTool, updateTool, deleteTool,
-    addAssignment, updateAssignment, deleteAssignment,
   };
 }

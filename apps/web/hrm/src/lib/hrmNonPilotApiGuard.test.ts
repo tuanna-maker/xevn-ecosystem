@@ -19,6 +19,7 @@ const NON_PILOT_MODULES = [
   'hooks/useToolsEquipment.ts',
   'hooks/useAdvanceRequests.ts',
   'pages/Processes.tsx',
+  'pages/ToolsEquipment.tsx',
 ] as const;
 
 describe('hrmNonPilotApiGuard', () => {
