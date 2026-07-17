@@ -1,3 +1,24 @@
+/**
+ * @CODE-MEMORY
+ * Screen: HRM Settings catalogs (`/hr/settings-catalogs`) — overview + item C/U/D
+ * UC: HRM-SC-01..03 · UF-HRM-10
+ * BR: Group CEO `company_id=main` catalogs partition under `holding` (ADR-GROUP-CEO-MAIN-HOLDING-SCOPE)
+ * SRS: docs/hrm/SRS.md §13 portal embed · docs/hrm/BANG_TONG_HOP_USECASE_HRM.md HRM-SC-03
+ * TechSpec: docs/hrm/TECHSPEC.md §11.4 Catalog → form
+ * Purpose: Expose settings-catalogs overview (XBOS snapshot + HRM extension merge) and mutate
+ *   extension items. All read/write paths must use resolveHrmSettingsCatalogCompanyId so portal
+ *   `main` JWT writes to the same `holding` partition overview reads.
+ * WorkItem: D-HRM-SET-ITEM-PERSIST-01
+ * Coded: 2026-07-17
+ * Callers: apps/web/hrm settings-catalogs FE · portal groupHrCatalogApi
+ * Callees: SettingsCatalogsService · resolveHrmSettingsCatalogCompanyId → hrm_catalog_extension_items
+ * FEActions: Thêm/cập nhật mục → POST/PATCH items → GET overview F5
+ * BEChain: resolveScopeContext → resolveHrmSettingsCatalogCompanyId → upsert/delete → same company_id on GET
+ * Impact: Write/read company_id mismatch → 201 with empty hrmExtensionItems after F5
+ * must_keep: XBOS sync-from-xbos still maps main→holding; member tenant main stays main
+ * SOLID: Controller owns auth+scope; service owns SQL upsert/merge
+ * LastVerified: settings-catalogs.controller.spec.ts · d-hrm-set-item-persist-01.spec.ts
+ */
 import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ok } from '../common/api-response';
 import { ApiException } from '../common/api.exception';
@@ -17,6 +38,25 @@ export class SettingsCatalogsController {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
       throw new ApiException('HRM-AUTH-001', 'Unauthorized settings-catalog access', HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  /** Portal JWT `main` → catalog DB partition (`holding` on master); keep FE body company_id as-is for clients. */
+  private resolveCatalogMutationCompanyId(
+    authorization: string | undefined,
+    tenantId: string | undefined,
+    companyIdHeader: string | undefined,
+    bodyCompanyId: string,
+  ): { tenantId: string; catalogCompanyId: string } {
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: bodyCompanyId || companyIdHeader,
+    });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
+    return { tenantId: scope.tenantId, catalogCompanyId };
   }
 
   @Get()
@@ -48,9 +88,14 @@ export class SettingsCatalogsController {
     @Headers('x-company-id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? companyId });
+    const { tenantId: resolvedTenantId, catalogCompanyId } = this.resolveCatalogMutationCompanyId(
+      authorization,
+      tenantId,
+      companyId,
+      body.company_id,
+    );
     return this.settingsCatalogs
-      .upsertCatalogItem(scope.tenantId, body)
+      .upsertCatalogItem(resolvedTenantId, { ...body, company_id: catalogCompanyId })
       .then((data) => ok(data, 'HRM-SET-201', 'Settings catalog item created'));
   }
 
@@ -63,9 +108,14 @@ export class SettingsCatalogsController {
     @Headers('x-company-id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? companyId });
+    const { tenantId: resolvedTenantId, catalogCompanyId } = this.resolveCatalogMutationCompanyId(
+      authorization,
+      tenantId,
+      companyId,
+      body.company_id,
+    );
     return this.settingsCatalogs
-      .upsertCatalogItem(scope.tenantId, body)
+      .upsertCatalogItem(resolvedTenantId, { ...body, company_id: catalogCompanyId })
       .then((data) => ok(data, 'HRM-SET-202', 'Settings catalog item updated'));
   }
 
@@ -78,9 +128,14 @@ export class SettingsCatalogsController {
     @Headers('x-company-id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? companyId });
+    const { tenantId: resolvedTenantId, catalogCompanyId } = this.resolveCatalogMutationCompanyId(
+      authorization,
+      tenantId,
+      companyId,
+      body.company_id,
+    );
     return this.settingsCatalogs
-      .deleteCatalogItem(scope.tenantId, body)
+      .deleteCatalogItem(resolvedTenantId, { ...body, company_id: catalogCompanyId })
       .then((data) => ok(data, 'HRM-SET-200', 'Settings catalog item deleted'));
   }
 

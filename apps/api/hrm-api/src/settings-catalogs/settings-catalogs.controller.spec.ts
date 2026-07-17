@@ -340,6 +340,87 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     expect(deleteRes.code).toBe('HRM-SET-200');
     expect(serviceMock.upsertCatalogItem).toHaveBeenCalledTimes(2);
     expect(serviceMock.deleteCatalogItem).toHaveBeenCalledTimes(1);
+    // D-HRM-SET-ITEM-PERSIST-01: portal main → holding partition (parity with GET overview)
+    expect(serviceMock.upsertCatalogItem).toHaveBeenNthCalledWith(
+      1,
+      'xevn',
+      expect.objectContaining({ company_id: 'holding', item_key: 'L1', item_name: 'Level 1' }),
+    );
+    expect(serviceMock.upsertCatalogItem).toHaveBeenNthCalledWith(
+      2,
+      'xevn',
+      expect.objectContaining({ company_id: 'holding', item_name: 'Level 1 Updated' }),
+    );
+    expect(serviceMock.deleteCatalogItem).toHaveBeenCalledWith(
+      'xevn',
+      expect.objectContaining({ company_id: 'holding', item_key: 'L1' }),
+    );
+  });
+
+  it('D-HRM-SET-ITEM-PERSIST-01: POST/PATCH/DELETE items map group CEO main→holding (UF-HRM-10)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    });
+    const body = {
+      company_id: 'main',
+      category_key: 'activity_capability_map',
+      item_key: 'QAFE071710',
+      item_name: 'QA FE Retest 0717',
+    };
+    const createRes = await controller.createCatalogItem(
+      body,
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+    );
+    expect(createRes.code).toBe('HRM-SET-201');
+    expect(serviceMock.upsertCatalogItem).toHaveBeenCalledWith(
+      'xevn',
+      expect.objectContaining({
+        company_id: 'holding',
+        category_key: 'activity_capability_map',
+        item_key: 'QAFE071710',
+      }),
+    );
+
+    const editRes = await controller.updateCatalogItem(
+      { ...body, item_key: 'ACM_01', item_name: 'HRM-QA-EDIT-16137' },
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+    );
+    expect(editRes.code).toBe('HRM-SET-202');
+    expect(serviceMock.upsertCatalogItem).toHaveBeenLastCalledWith(
+      'xevn',
+      expect.objectContaining({ company_id: 'holding', item_key: 'ACM_01', item_name: 'HRM-QA-EDIT-16137' }),
+    );
+  });
+
+  it('D-HRM-SET-ITEM-PERSIST-01: member tenant main stays main on item write', async () => {
+    const res = await controller.createCatalogItem(
+      {
+        company_id: 'main',
+        category_key: 'job_levels',
+        item_key: 'M1',
+        item_name: 'Member L1',
+      },
+      undefined,
+      'test-key',
+      'xe-du-lich',
+      'main',
+    );
+    expect(res.code).toBe('HRM-SET-201');
+    expect(serviceMock.upsertCatalogItem).toHaveBeenCalledWith(
+      'xe-du-lich',
+      expect.objectContaining({ company_id: 'main', item_key: 'M1' }),
+    );
   });
 
   it('XBOS-DM-HRM-12: seed employee profile template returns HRM-SET-204', async () => {
