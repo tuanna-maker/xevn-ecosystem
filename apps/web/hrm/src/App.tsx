@@ -112,7 +112,13 @@ const App = () => {
           <Sonner />
           <BrowserRouter
             basename={routerBasename}
-            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+            // D-HRM-ATT-NAV-STALL-01: do NOT enable v7_startTransition here.
+            // BrowserRouter always defers location setState via startTransition when
+            // the flag is on — heavy routes (Attendance + Recharts) can leave
+            // window.location updated while Outlet stays on the previous page until F5.
+            // Portal embed soft-nav (postMessage → navigate) requires sync route commit.
+            // Keep v7_relativeSplatPath only.
+            future={{ v7_relativeSplatPath: true }}
           >
             <AuthProvider>
               <HrmOperatingUnitFilterProvider>
