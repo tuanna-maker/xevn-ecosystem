@@ -89,11 +89,16 @@ import {
   inviteEmployees,
   listAdminCompanies,
   listCompanyMemberships,
-  listAllEmployees,
+  listEmployees,
   updateCompanyMembership,
   upsertCompanyMembership,
 } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
+import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
+import {
+  HRM_EMPLOYEE_PICKER_PAGE_SIZE,
+  useDebouncedPickerKeyword,
+} from '@/hooks/useEmployeePicker';
 import { useSystemRoles } from '@/hooks/usePermissions';
 
 interface Company {
@@ -186,6 +191,12 @@ export function CompanyMembersManagement() {
   const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
   const [changingRoleMember, setChangingRoleMember] = useState<CompanyMember | null>(null);
   const [newRole, setNewRole] = useState<string>('');
+  /** P1-HRM-SCALE-FE-W2: keyword for capped employee picker (link / bulk invite). */
+  const [employeePickerKeyword, setEmployeePickerKeyword] = useState('');
+  const debouncedEmployeeKeyword = useDebouncedPickerKeyword(employeePickerKeyword, 300);
+  const [employeesCapped, setEmployeesCapped] = useState(false);
+  const [employeesTotal, setEmployeesTotal] = useState(0);
+  const [employeesLoading, setEmployeesLoading] = useState(false);
 
   const form = useForm<MemberFormValues>({
     resolver: zodResolver(memberFormSchema),
@@ -225,28 +236,47 @@ export function CompanyMembersManagement() {
     }
   };
 
-  const fetchEmployees = async () => {
+  /** Single capped page per company — never listAllEmployees (ADR W2). */
+  const fetchEmployees = async (keyword?: string) => {
+    setEmployeesLoading(true);
     try {
       const companyIds = companies.length ? companies.map((c) => c.id) : ['main'];
       const rows: EmployeeOption[] = [];
+      let totalAcross = 0;
+      let anyCapped = false;
+      const kw = keyword?.trim() || undefined;
       for (const cid of companyIds.slice(0, 5)) {
-        const res = await listAllEmployees({ company_id: cid });
-        for (const emp of res.data ?? []) {
+        const res = await listEmployees({
+          company_id: cid,
+          keyword: kw,
+          page: 1,
+          page_size: HRM_API_MAX_PAGE_SIZE,
+        });
+        const batch = res.data ?? [];
+        totalAcross += res.total ?? batch.length;
+        if ((res.total ?? 0) > batch.length) anyCapped = true;
+        for (const emp of batch) {
           rows.push({
             id: emp.id,
             employee_code: emp.employee_code ?? '',
             full_name: emp.full_name,
             email: emp.email,
-            department: emp.department ?? null,
+            department: emp.custom_fields?.department ?? null,
             position: emp.job_title_key ?? null,
             company_id: emp.company_id,
           });
         }
       }
       setEmployees(rows);
+      setEmployeesTotal(totalAcross);
+      setEmployeesCapped(anyCapped);
     } catch (error) {
       console.error('Error fetching employees:', error);
       setEmployees([]);
+      setEmployeesTotal(0);
+      setEmployeesCapped(false);
+    } finally {
+      setEmployeesLoading(false);
     }
   };
 
@@ -255,11 +285,18 @@ export function CompanyMembersManagement() {
     void fetchMembers();
   }, []);
 
+  // Defer employee picker load until link/bulk dialogs open (no mount dump)
   useEffect(() => {
-    if (companies.length > 0) {
-      void fetchEmployees();
-    }
-  }, [companies.length]);
+    if (!isLinkEmployeeDialogOpen && !isBulkInviteDialogOpen) return;
+    if (companies.length === 0) return;
+    void fetchEmployees(debouncedEmployeeKeyword);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch on dialog open / keyword / company list
+  }, [
+    isLinkEmployeeDialogOpen,
+    isBulkInviteDialogOpen,
+    companies.length,
+    debouncedEmployeeKeyword,
+  ]);
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
@@ -390,7 +427,9 @@ export function CompanyMembersManagement() {
     try {
       await syncMemberEmployee(member.id, member.employee_id);
       await fetchMembers();
-      await fetchEmployees();
+      if (isLinkEmployeeDialogOpen || isBulkInviteDialogOpen) {
+        await fetchEmployees(debouncedEmployeeKeyword);
+      }
       toast({
         title: t('common.success'),
         description: t('company.syncSuccess'),
@@ -991,7 +1030,13 @@ export function CompanyMembersManagement() {
       </AlertDialog>
 
       {/* Link Employee Dialog */}
-      <Dialog open={isLinkEmployeeDialogOpen} onOpenChange={setIsLinkEmployeeDialogOpen}>
+      <Dialog
+        open={isLinkEmployeeDialogOpen}
+        onOpenChange={(open) => {
+          setIsLinkEmployeeDialogOpen(open);
+          if (open) setEmployeePickerKeyword('');
+        }}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>{t('company.linkEmployeeTitle')}</DialogTitle>
@@ -1001,12 +1046,30 @@ export function CompanyMembersManagement() {
           </DialogHeader>
 
           <div className="space-y-4">
+            <Input
+              value={employeePickerKeyword}
+              onChange={(e) => setEmployeePickerKeyword(e.target.value)}
+              placeholder={t('company.selectEmployee')}
+              aria-label={t('company.selectEmployee')}
+            />
+            {employeesCapped && (
+              <p className="text-xs text-muted-foreground">
+                Hiển thị tối đa {HRM_API_MAX_PAGE_SIZE}/{employeesTotal} — gõ tên hoặc mã NV để tìm
+                (page ≤{HRM_EMPLOYEE_PICKER_PAGE_SIZE} khuyến nghị)
+              </p>
+            )}
+            {employeesLoading && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Đang tải nhân viên…
+              </div>
+            )}
             <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
               <SelectTrigger>
                 <SelectValue placeholder={t('company.selectEmployee')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">â€” {t('company.noLink')} â€”</SelectItem>
+                <SelectItem value="none">— {t('company.noLink')} —</SelectItem>
                 {employees
                   .filter(emp => {
                     const alreadyLinked = members.some(
@@ -1035,7 +1098,13 @@ export function CompanyMembersManagement() {
       </Dialog>
 
       {/* Bulk Invite Dialog */}
-      <Dialog open={isBulkInviteDialogOpen} onOpenChange={setIsBulkInviteDialogOpen}>
+      <Dialog
+        open={isBulkInviteDialogOpen}
+        onOpenChange={(open) => {
+          setIsBulkInviteDialogOpen(open);
+          if (open) setEmployeePickerKeyword('');
+        }}
+      >
         <DialogContent className="max-w-2xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -1064,8 +1133,28 @@ export function CompanyMembersManagement() {
               </SelectContent>
             </Select>
 
+            <Input
+              value={employeePickerKeyword}
+              onChange={(e) => setEmployeePickerKeyword(e.target.value)}
+              placeholder="Tìm nhân viên theo tên hoặc mã…"
+              aria-label={t('company.selectEmployee')}
+            />
+            {employeesCapped && (
+              <p className="text-xs text-muted-foreground">
+                Hiển thị tối đa {employees.length}/{employeesTotal} — gõ để tìm thêm (không tải đủ 1000+)
+              </p>
+            )}
+
             {bulkInviteCompanyId && (() => {
               const unlinked = getUnlinkedEmployees(bulkInviteCompanyId);
+              if (employeesLoading) {
+                return (
+                  <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Đang tải…
+                  </div>
+                );
+              }
               return unlinked.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   {t('company.allEmployeesLinked')}

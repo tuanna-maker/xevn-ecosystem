@@ -3,15 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { vi, enUS, zhCN } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
-import { listAllEmployees } from '@/integrations/hrmApi';
 import {
   createInsurancePolicyParticipant,
   updateInsurancePolicyParticipant,
@@ -22,6 +21,10 @@ import {
   resolveInsuranceParticipantMutateTarget,
   type InsuranceParticipantFormPayload,
 } from '@/lib/insuranceParticipantLink';
+import {
+  useDebouncedPickerKeyword,
+  useEmployeePickerSearch,
+} from '@/hooks/useEmployeePicker';
 import {
   Dialog,
   DialogContent,
@@ -89,6 +92,8 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   const queryClient = useQueryClient();
   const isEditing = !!editingInsurance;
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | undefined>();
+  const [employeeKeyword, setEmployeeKeyword] = useState('');
+  const debouncedEmployeeKeyword = useDebouncedPickerKeyword(employeeKeyword, 300);
 
   const getCalendarLocale = () => {
     switch (i18n.language) {
@@ -117,15 +122,16 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
 
   type FormData = z.infer<typeof formSchema>;
 
-  // Fetch employees for dropdown
-  const { data: employees = [] } = useQuery({
-    queryKey: ['employees-list', currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      const res = await listAllEmployees({ company_id: currentCompanyId });
-      return res.data ?? [];
-    },
-    enabled: !!currentCompanyId && open,
+  // P1-HRM-SCALE-FE-W2: keyword typeahead — never listAllEmployees dump
+  const {
+    employees,
+    total: employeeTotal,
+    isCapped: employeesCapped,
+    isFetching: employeesFetching,
+  } = useEmployeePickerSearch({
+    companyId: currentCompanyId,
+    keyword: debouncedEmployeeKeyword,
+    enabled: Boolean(currentCompanyId) && open && !isEditing,
   });
   
   const form = useForm<FormData>({
@@ -149,6 +155,7 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   useEffect(() => {
     if (open) {
       setSelectedEmployeeId(editingInsurance?.employee_id);
+      setEmployeeKeyword('');
       if (editingInsurance) {
         form.reset({
           employee_code: editingInsurance.employee_code,
@@ -278,20 +285,52 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Employee Selection */}
-            {!isEditing && employees.length > 0 && (
+            {/* Employee Selection — keyword typeahead (capped page; no listAllEmployees) */}
+            {!isEditing && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">{d('selectEmployee')}</label>
-                <Select onValueChange={handleEmployeeSelect}>
+                <Input
+                  value={employeeKeyword}
+                  onChange={(e) => setEmployeeKeyword(e.target.value)}
+                  placeholder={d('selectEmployeePlaceholder')}
+                  aria-label={d('selectEmployee')}
+                />
+                {employeesCapped && (
+                  <p className="text-xs text-muted-foreground">
+                    Hiển thị {employees.length}/{employeeTotal} — gõ tên hoặc mã NV để tìm thêm
+                  </p>
+                )}
+                <Select
+                  value={selectedEmployeeId}
+                  onValueChange={handleEmployeeSelect}
+                  disabled={employeesFetching && employees.length === 0}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={d('selectEmployeePlaceholder')} />
+                    <SelectValue
+                      placeholder={
+                        employeesFetching
+                          ? 'Đang tải…'
+                          : d('selectEmployeePlaceholder')
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {employees.map((emp) => (
-                      <SelectItem key={emp.id} value={emp.id}>
-                        {emp.full_name} - {emp.employee_code}
-                      </SelectItem>
-                    ))}
+                    {employeesFetching && employees.length === 0 ? (
+                      <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Đang tải…
+                      </div>
+                    ) : employees.length === 0 ? (
+                      <div className="py-4 text-center text-sm text-muted-foreground">
+                        Không tìm thấy nhân viên
+                      </div>
+                    ) : (
+                      employees.map((emp) => (
+                        <SelectItem key={emp.id} value={emp.id}>
+                          {emp.full_name} - {emp.employee_code}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
