@@ -153,12 +153,17 @@ export default function Insurance() {
     totalCount,
     isLoading,
     isLoadingMore,
+    isCapped,
+    hasMore,
     fetchError,
     refetch,
+    loadMore,
   } = useInsuranceList(selectedStatus);
 
   /** D-HRM-INS-EMPTY-MASK-01: non-2xx with no rows — never treat as true-empty. */
   const loadFailedEmpty = isListFetchFailureEmpty(fetchError, insuranceList.length);
+  /** Loaded row count before client type/search filters — for capped honesty. */
+  const loadedRowCount = insuranceList.length;
 
   const deleteMutation = useMutation({
     mutationFn: async (item: Insurance) => {
@@ -235,27 +240,33 @@ export default function Insurance() {
 
   const typeCounts = insuranceTypes.map((type) => {
     let count: number | null = 0;
+    /** Subtype chips from loaded sample only — never invent full-scope counts when capped. */
+    let countIsPartial = false;
     if (loadFailedEmpty) {
       count = null;
     } else if (type.key === 'all') {
-      // Prefer API total after first page (progressive) when not status-filtered
+      // Honest API total (page-1 response) — not loaded.length
       count =
         selectedStatus === 'all' && totalCount > 0
           ? totalCount
           : insuranceList.length;
     } else if (type.key === 'bhxh') {
       count = insuranceList.filter((i) => !!i.social_insurance_number).length;
+      countIsPartial = isCapped;
     } else if (type.key === 'bhyt') {
       count = insuranceList.filter((i) => !!i.health_insurance_number).length;
+      countIsPartial = isCapped;
     } else if (type.key === 'bhtn') {
       count = insuranceList.filter((i) => !!i.unemployment_insurance_number).length;
+      countIsPartial = isCapped;
     }
-    return { ...type, count };
+    return { ...type, count, countIsPartial };
   });
 
   const formatSummaryOrError = (amount: number, count: number) => {
     if (loadFailedEmpty) return t('insurance.loadFailedShort', HRM_LIST_LOAD_FAILED_SHORT);
     if (isLoading) return '…';
+    // No summary endpoint — amounts are from loaded rows only (label below when capped)
     return formatInsuranceSummaryValue(amount, count, formatCurrency);
   };
 
@@ -454,6 +465,36 @@ export default function Insurance() {
         </div>
       )}
 
+      {/* P1-HRM-SCALE-FE-W2-INS-LIST: capped first page — honest total + explicit load more */}
+      {!loadFailedEmpty && !isLoading && isCapped && totalCount > 0 ? (
+        <div className="px-4 md:px-6 pt-3 flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
+          <p className="text-xs text-muted-foreground">
+            {t('insurance.cappedHint', {
+              loaded: loadedRowCount,
+              total: totalCount,
+              defaultValue: `Hiển thị ${loadedRowCount} / ${totalCount} bản ghi — tổng từ API; số liệu BHXH/BHYT/BHTN theo bản ghi đã tải`,
+            })}
+          </p>
+          {hasMore ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2 shrink-0"
+              disabled={isLoadingMore}
+              onClick={() => void loadMore()}
+            >
+              {isLoadingMore ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+              {t('insurance.loadMore', 'Tải thêm')}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+
       {/* Expiring Insurance Alert */}
       {!loadFailedEmpty ? (
         <div className="px-4 md:px-6 pt-4">
@@ -465,8 +506,17 @@ export default function Insurance() {
         </div>
       ) : null}
 
-      {/* Summary Cards */}
+      {/* Summary Cards — amounts from loaded rows only when capped (no summary endpoint) */}
       <div className="px-4 md:px-6 py-3 border-b bg-muted/30">
+        {isCapped && !loadFailedEmpty && !isLoading ? (
+          <p className="text-[11px] text-muted-foreground mb-2">
+            {t('insurance.summary.partialNote', {
+              loaded: loadedRowCount,
+              total: totalCount,
+              defaultValue: `Số tiền dưới đây tính trên ${loadedRowCount} bản ghi đã tải (tổng API ${totalCount}) — chưa có endpoint summary`,
+            })}
+          </p>
+        ) : null}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <div className="flex items-center gap-3 p-3 bg-card rounded-lg border">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -553,7 +603,11 @@ export default function Insurance() {
                   'px-1.5 py-0.5 rounded text-xs',
                   isSelected ? 'bg-primary-foreground/20' : 'bg-muted-foreground/20'
                 )}>
-                  {type.count == null ? '—' : type.count}
+                  {type.count == null
+                    ? '—'
+                    : type.countIsPartial
+                      ? `~${type.count}`
+                      : type.count}
                 </span>
               </button>
             );

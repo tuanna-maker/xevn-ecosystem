@@ -4,10 +4,12 @@ import {
   findEmployeeForInsuranceRow,
   isInsuranceFetchFailureEmpty,
   isRateLimitInsuranceError,
+  loadInsuranceListNextPage,
   loadInsuranceListProgressive,
   mapApiInsuranceToListItem,
   normalizeInsuranceEmployeeId,
   HRM_INSURANCE_LIST_PAGE_SIZE,
+  HRM_INSURANCE_MOUNT_MAX_PAGES,
 } from './useInsuranceList';
 
 const baseEmployee = {
@@ -171,14 +173,53 @@ describe('D-HRM-INS-EMPTY-MASK-01', () => {
   });
 });
 
-describe('D-HRM-INS-PERF-01 loadInsuranceListProgressive', () => {
+describe('P1-HRM-SCALE-FE-W2-INS-LIST loadInsuranceListProgressive (capped mount)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     listEmployeesMock.mockResolvedValue({ total: 1, data: [baseEmployee] });
     listParticipantsMock.mockResolvedValue({ total: 0, data: [] });
   });
 
-  it('paints after first page then fetches remaining (not one blocking waterfall)', async () => {
+  it('mount default maxPages=1 — paints page 1 only; no page=2..N dump', async () => {
+    const page1 = Array.from({ length: HRM_INSURANCE_LIST_PAGE_SIZE }, (_, i) =>
+      makeInsRow(`p1-${i}`),
+    );
+    listInsuranceRecordsMock.mockResolvedValueOnce({
+      total: HRM_INSURANCE_LIST_PAGE_SIZE + 2,
+      page: 1,
+      page_size: HRM_INSURANCE_LIST_PAGE_SIZE,
+      data: page1,
+    });
+
+    const firstPageTotals: number[] = [];
+    let progressCalls = 0;
+
+    const result = await loadInsuranceListProgressive('main', 'all', {
+      onFirstPage: ({ items, total, hasMore }) => {
+        firstPageTotals.push(items.length);
+        expect(total).toBe(HRM_INSURANCE_LIST_PAGE_SIZE + 2);
+        expect(hasMore).toBe(true);
+      },
+      onProgress: () => {
+        progressCalls += 1;
+      },
+    });
+
+    expect(HRM_INSURANCE_MOUNT_MAX_PAGES).toBe(1);
+    expect(firstPageTotals[0]).toBe(HRM_INSURANCE_LIST_PAGE_SIZE);
+    expect(result.pagesFetched).toBe(1);
+    expect(result.items.length).toBe(HRM_INSURANCE_LIST_PAGE_SIZE);
+    expect(result.hasMore).toBe(true);
+    expect(result.total).toBe(HRM_INSURANCE_LIST_PAGE_SIZE + 2);
+    expect(listInsuranceRecordsMock).toHaveBeenCalledTimes(1);
+    expect(listInsuranceRecordsMock.mock.calls[0][0]).toMatchObject({
+      page: 1,
+      page_size: HRM_INSURANCE_LIST_PAGE_SIZE,
+    });
+    expect(progressCalls).toBe(0);
+  });
+
+  it('explicit maxPages>1 can progressive-append (loadMore path only)', async () => {
     const page1 = Array.from({ length: HRM_INSURANCE_LIST_PAGE_SIZE }, (_, i) =>
       makeInsRow(`p1-${i}`),
     );
@@ -197,28 +238,40 @@ describe('D-HRM-INS-PERF-01 loadInsuranceListProgressive', () => {
         data: page2,
       });
 
-    const firstPageTotals: number[] = [];
-    const progressTotals: number[] = [];
-
     const result = await loadInsuranceListProgressive('main', 'all', {
-      onFirstPage: ({ items, total }) => {
-        firstPageTotals.push(items.length);
-        expect(total).toBe(HRM_INSURANCE_LIST_PAGE_SIZE + 2);
-      },
-      onProgress: ({ items }) => {
-        progressTotals.push(items.length);
-      },
+      maxPages: 2,
+      onFirstPage: () => undefined,
     });
 
-    expect(firstPageTotals[0]).toBe(HRM_INSURANCE_LIST_PAGE_SIZE);
     expect(result.pagesFetched).toBe(2);
     expect(result.items.length).toBe(HRM_INSURANCE_LIST_PAGE_SIZE + 2);
+    expect(result.hasMore).toBe(false);
     expect(listInsuranceRecordsMock).toHaveBeenCalledTimes(2);
-    expect(listInsuranceRecordsMock.mock.calls[0][0]).toMatchObject({
-      page: 1,
+  });
+
+  it('loadInsuranceListNextPage appends a single page', async () => {
+    const page1 = [makeInsRow('p1-0')];
+    listInsuranceRecordsMock.mockResolvedValueOnce({
+      total: 3,
+      page: 2,
       page_size: HRM_INSURANCE_LIST_PAGE_SIZE,
+      data: [makeInsRow('p2-0'), makeInsRow('p2-1')],
     });
-    expect(progressTotals.at(-1)).toBe(HRM_INSURANCE_LIST_PAGE_SIZE + 2);
+
+    const result = await loadInsuranceListNextPage({
+      companyId: 'main',
+      selectedStatus: 'all',
+      page: 2,
+      accumulatedRaw: page1,
+      employees: [baseEmployee],
+      participantRows: [],
+      total: 3,
+    });
+
+    expect(result.items).toHaveLength(3);
+    expect(result.hasMore).toBe(false);
+    expect(listInsuranceRecordsMock).toHaveBeenCalledTimes(1);
+    expect(listInsuranceRecordsMock.mock.calls[0][0]).toMatchObject({ page: 2 });
   });
 
   it('throws on first-page RATE-429 so UI can show error (not empty)', async () => {
@@ -256,5 +309,19 @@ describe('D-HRM-INS-PERF-01 loadInsuranceListProgressive', () => {
 
     expect(result.items).toHaveLength(1);
     expect(result.pagesFetched).toBe(1);
+    expect(result.hasMore).toBe(false);
+  });
+
+  it('hook source mounts with maxPages=HRM_INSURANCE_MOUNT_MAX_PAGES (no unbounded while)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { resolve } = await import('node:path');
+    const src = readFileSync(resolve(__dirname, './useInsuranceList.ts'), 'utf8');
+    expect(src).toContain('maxPages: HRM_INSURANCE_MOUNT_MAX_PAGES');
+    expect(src).toContain('HRM_INSURANCE_MOUNT_MAX_PAGES = 1');
+    expect(src).not.toMatch(/listAllInsuranceRecords\(/);
+    const pageSrc = readFileSync(resolve(__dirname, '../pages/Insurance.tsx'), 'utf8');
+    expect(pageSrc).toContain('loadMore');
+    expect(pageSrc).toContain('isCapped');
+    expect(pageSrc).toContain('cappedHint');
   });
 });

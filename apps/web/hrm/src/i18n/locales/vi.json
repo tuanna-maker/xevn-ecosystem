@@ -2125,8 +2125,13 @@
       "totalBHXH": "Tổng BHXH",
       "totalBHYT": "Tổng BHYT",
       "totalBHTN": "Tổng BHTN",
-      "total": "Tổng cộng"
+      "total": "Tổng cộng",
+      "partialNote": "Số tiền dưới đây tính trên {{loaded}} bản ghi đã tải (tổng API {{total}}) — chưa có endpoint summary"
     },
+    "cappedHint": "Hiển thị {{loaded}} / {{total}} bản ghi — tổng từ API; số liệu BHXH/BHYT/BHTN theo bản ghi đã tải",
+    "loadMore": "Tải thêm",
+    "loadingMore": "Đang tải thêm bản ghi bảo hiểm…",
+    "loadingApi": "Đang tải dữ liệu bảo hiểm từ HRM API…",
     "table": {
       "employeeCode": "Mã NV",
       "employeeName": "Tên nhân viên",

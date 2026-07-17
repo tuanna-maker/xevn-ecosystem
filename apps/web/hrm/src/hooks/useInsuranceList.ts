@@ -1,35 +1,40 @@
 /**
  * @CODE-MEMORY
  * Screen:     /insurance — Bảo hiểm list (embed + standalone)
- * UC:         UF-HRM-04 · J-HRM-04 · P-CC-05
- * BR:         BR-INS-01
- * SRS:        docs/hrm/SRS.md (insurance list / employee drill)
+ * UC:         UC-HRM-25 · UF-HRM-04 · J-HRM-04 · P-CC-05
+ * BR:         BR-INS-01 · BR-LINK-07
+ * SRS:        docs/hrm/SRS.md §UC-HRM-25 (HĐ/BHXH embed)
  * TechSpec:   docs/api/openapi/hrm-api.yaml contracts-insurance/insurance
- * Purpose:    Load insurance workforce list via Nest API with progressive pages
- *             (first page → paint, then append). Non-2xx must surface fetchError —
- *             never coerce fail → empty «Không có dữ liệu».
- * WorkItem:   D-HRM-INS-EMPTY-MASK-01 · D-HRM-INS-PERF-01
+ *             docs/decisions/ADR-HRM-SCALE-1000-USERS-20260717.md §5.2 / §6 T-FANOUT
+ * Purpose:    Load insurance workforce list via Nest API with **bounded** pages
+ *             (mount = page 1 only). Explicit loadMore for progressive append.
+ *             Non-2xx must surface fetchError — never coerce fail → empty.
+ * WorkItem:   P1-HRM-SCALE-FE-W2-INS-LIST (REPLACE unbounded progressive)
  * Coded:      2026-07-17
  *
  * Callers:
  *   - apps/web/hrm/src/pages/Insurance.tsx → useInsuranceList()
  *
  * Callees:
- *   - listInsuranceRecords (paged) — not listAllInsuranceRecords on mount
- *   - listEmployees / listInsurancePolicyParticipants (non-fatal companions)
+ *   - listInsuranceRecords (paged) — never listAllInsuranceRecords on mount
+ *   - listEmployees / listInsurancePolicyParticipants (soft-fail companions, page-1 only)
  *
  * FE-Actions:
  *   | User action     | Handler            | Lib / API              |
  *   |-----------------|--------------------|------------------------|
  *   | Open Bảo hiểm   | fetchInsurance     | listInsuranceRecords p1|
+ *   | Tải thêm        | loadMore           | listInsuranceRecords pN|
  *   | Retry banner    | refetch            | same                   |
  *   | Status chip     | selectedStatus dep | client filter + refetch|
  *
  * BE-Chain: GET /api/hrm/contracts-insurance/insurance?page=&page_size=
- * Impact:   11× waterfall before paint caused ~9s blank + 429→empty mask.
- * must_keep: J-HRM-04 employee_id link; fetchError ≠ noData; first-page paint.
- * SOLID:     Progressive loader pure fn testable; hook owns React state only.
+ * Impact:   Unbounded page=1..11 dump on mount violated ADR T-FANOUT / COND-SCALE-W2-INS-LIST-FANOUT.
+ * must_keep: J-HRM-04 employee_id link; fetchError ≠ noData; W2 picker; ATT-NAV; honest totals.
+ * SOLID:     Bounded loader pure fn testable; hook owns React state only.
  * LastVerified: apps/web/hrm/src/hooks/useInsuranceList.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-17 P1-HRM-SCALE-FE-W2-INS-LIST
+ *   REPLACE auto-progressive while(total) with mount maxPages=1 + explicit loadMore.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -79,8 +84,11 @@ export interface InsuranceListItem {
   company_id: string;
 }
 
-/** Nest @Max(100) — one page per request; progressive append for remainder. */
+/** Nest @Max(100) — one page per request; mount never loops past maxPages. */
 export const HRM_INSURANCE_LIST_PAGE_SIZE = HRM_API_MAX_PAGE_SIZE;
+
+/** ADR T-FANOUT: insurance mount ≤1–2 list GETs (default 1). */
+export const HRM_INSURANCE_MOUNT_MAX_PAGES = 1;
 
 export function normalizeInsuranceEmployeeId(value: unknown): string | undefined {
   if (value == null) return undefined;
@@ -176,21 +184,38 @@ function enrichInsuranceRows(
 }
 
 export type InsuranceProgressiveCallbacks = {
-  onFirstPage: (payload: { items: InsuranceListItem[]; total: number }) => void;
-  onProgress?: (payload: { items: InsuranceListItem[]; total: number }) => void;
+  onFirstPage: (payload: { items: InsuranceListItem[]; total: number; hasMore: boolean }) => void;
+  onProgress?: (payload: { items: InsuranceListItem[]; total: number; hasMore: boolean }) => void;
   signal?: AbortSignal;
+  /**
+   * Max insurance list pages to fetch in this call.
+   * Mount default = {@link HRM_INSURANCE_MOUNT_MAX_PAGES} (1) — ADR T-FANOUT.
+   * Pass a higher value only for explicit progressive UX (loadMore / export preview).
+   */
+  maxPages?: number;
+};
+
+export type InsuranceListLoadResult = {
+  items: InsuranceListItem[];
+  total: number;
+  pagesFetched: number;
+  hasMore: boolean;
+  rawRows: HrmInsuranceRecord[];
+  employees: HrmEmployeeRecord[];
+  participantRows: Record<string, unknown>[];
 };
 
 /**
- * D-HRM-INS-PERF-01: paint after page 1; append remaining pages.
+ * P1-HRM-SCALE-FE-W2-INS-LIST: paint after page 1; **do not** auto-dump pages 2..N.
  * Primary insurance non-2xx throws (caller sets fetchError). Companions are soft-fail.
  */
 export async function loadInsuranceListProgressive(
   companyId: string,
   selectedStatus: string,
   callbacks: InsuranceProgressiveCallbacks,
-): Promise<{ items: InsuranceListItem[]; total: number; pagesFetched: number }> {
+): Promise<InsuranceListLoadResult> {
   const pageSize = HRM_INSURANCE_LIST_PAGE_SIZE;
+  const maxPages = Math.max(1, callbacks.maxPages ?? HRM_INSURANCE_MOUNT_MAX_PAGES);
   const signal = callbacks.signal;
 
   const throwIfAborted = () => {
@@ -224,13 +249,14 @@ export async function loadInsuranceListProgressive(
     selectedStatus,
   );
   const total = firstRes.total ?? accumulatedRaw.length;
+  let hasMore = accumulatedRaw.length < total;
 
-  callbacks.onFirstPage({ items, total });
+  callbacks.onFirstPage({ items, total, hasMore });
 
   let pagesFetched = 1;
   let page = 2;
 
-  while (accumulatedRaw.length < total) {
+  while (pagesFetched < maxPages && accumulatedRaw.length < total) {
     throwIfAborted();
     const res = await listInsuranceRecords({
       company_id: companyId,
@@ -246,12 +272,61 @@ export async function loadInsuranceListProgressive(
       selectedStatus,
     );
     pagesFetched += 1;
-    callbacks.onProgress?.({ items, total: res.total ?? total });
-    if (accumulatedRaw.length >= (res.total ?? total)) break;
+    hasMore = accumulatedRaw.length < (res.total ?? total);
+    callbacks.onProgress?.({ items, total: res.total ?? total, hasMore });
+    if (!hasMore) break;
     page += 1;
   }
 
-  return { items, total, pagesFetched };
+  hasMore = accumulatedRaw.length < total;
+  return { items, total, pagesFetched, hasMore, rawRows: accumulatedRaw, employees, participantRows };
+}
+
+/**
+ * Append a single next insurance page (explicit progressive UX — not mount).
+ */
+export async function loadInsuranceListNextPage(params: {
+  companyId: string;
+  selectedStatus: string;
+  page: number;
+  accumulatedRaw: HrmInsuranceRecord[];
+  employees: HrmEmployeeRecord[];
+  participantRows: Record<string, unknown>[];
+  total: number;
+  signal?: AbortSignal;
+}): Promise<{
+  items: InsuranceListItem[];
+  total: number;
+  hasMore: boolean;
+  rawRows: HrmInsuranceRecord[];
+  pageFetched: number;
+}> {
+  if (params.signal?.aborted) {
+    throw new DOMException('Aborted', 'AbortError');
+  }
+  const res = await listInsuranceRecords({
+    company_id: params.companyId,
+    page: params.page,
+    page_size: HRM_INSURANCE_LIST_PAGE_SIZE,
+  });
+  if (params.signal?.aborted) {
+    throw new DOMException('Aborted', 'AbortError');
+  }
+  const batch = res.data ?? [];
+  const accumulatedRaw =
+    batch.length === 0 ? params.accumulatedRaw : params.accumulatedRaw.concat(batch);
+  const total = res.total ?? params.total;
+  const items = applyStatusFilter(
+    enrichInsuranceRows(accumulatedRaw, params.employees, params.participantRows),
+    params.selectedStatus,
+  );
+  return {
+    items,
+    total,
+    hasMore: accumulatedRaw.length < total && batch.length > 0,
+    rawRows: accumulatedRaw,
+    pageFetched: params.page,
+  };
 }
 
 /** @deprecated Prefer `isListFetchFailureEmpty` from `@/lib/hrmListLoadFailure`. */
@@ -264,8 +339,20 @@ export function useInsuranceList(selectedStatus: string = 'all') {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const useApi = shouldSkipSupabaseDataFetches();
   const abortRef = useRef<AbortController | null>(null);
+  const companionsRef = useRef<{
+    rawRows: HrmInsuranceRecord[];
+    employees: HrmEmployeeRecord[];
+    participantRows: Record<string, unknown>[];
+    nextPage: number;
+  }>({
+    rawRows: [],
+    employees: [],
+    participantRows: [],
+    nextPage: 2,
+  });
 
   const fetchInsurance = useCallback(async () => {
     abortRef.current?.abort();
@@ -275,15 +362,23 @@ export function useInsuranceList(selectedStatus: string = 'all') {
     if (!currentCompanyId) {
       setInsuranceList([]);
       setTotalCount(0);
+      setHasMore(false);
       setFetchError(null);
       setIsLoading(false);
       setIsLoadingMore(false);
+      companionsRef.current = {
+        rawRows: [],
+        employees: [],
+        participantRows: [],
+        nextPage: 2,
+      };
       return;
     }
 
     setIsLoading(true);
     setIsLoadingMore(false);
     setFetchError(null);
+    setHasMore(false);
 
     let painted = false;
 
@@ -291,29 +386,34 @@ export function useInsuranceList(selectedStatus: string = 'all') {
       if (!useApi) {
         setInsuranceList([]);
         setTotalCount(0);
+        setHasMore(false);
         return;
       }
 
+      // Mount: ≤1 insurance list GET (ADR T-FANOUT / COND-SCALE-W2-INS-LIST-FANOUT)
       const result = await loadInsuranceListProgressive(currentCompanyId, selectedStatus, {
         signal: controller.signal,
-        onFirstPage: ({ items, total }) => {
+        maxPages: HRM_INSURANCE_MOUNT_MAX_PAGES,
+        onFirstPage: ({ items, total, hasMore: more }) => {
           painted = true;
           setInsuranceList(items);
           setTotalCount(total);
+          setHasMore(more);
           setIsLoading(false);
-          setIsLoadingMore(total > items.length || total > HRM_INSURANCE_LIST_PAGE_SIZE);
-        },
-        onProgress: ({ items, total }) => {
-          setInsuranceList(items);
-          setTotalCount(total);
         },
       });
 
       if (controller.signal.aborted) return;
 
+      companionsRef.current = {
+        rawRows: result.rawRows,
+        employees: result.employees,
+        participantRows: result.participantRows,
+        nextPage: result.pagesFetched + 1,
+      };
       setInsuranceList(result.items);
       setTotalCount(result.total);
-      setIsLoadingMore(false);
+      setHasMore(result.hasMore);
       if (!painted) {
         setIsLoading(false);
       }
@@ -328,6 +428,7 @@ export function useInsuranceList(selectedStatus: string = 'all') {
       if (!painted) {
         setInsuranceList([]);
         setTotalCount(0);
+        setHasMore(false);
       }
       setIsLoadingMore(false);
     } finally {
@@ -338,6 +439,57 @@ export function useInsuranceList(selectedStatus: string = 'all') {
     }
   }, [currentCompanyId, selectedStatus, useApi]);
 
+  const loadMore = useCallback(async () => {
+    if (!currentCompanyId || !useApi || !hasMore || isLoadingMore || isLoading) return;
+
+    const controller = abortRef.current ?? new AbortController();
+    setIsLoadingMore(true);
+    setFetchError(null);
+
+    try {
+      const companions = companionsRef.current;
+      const result = await loadInsuranceListNextPage({
+        companyId: currentCompanyId,
+        selectedStatus,
+        page: companions.nextPage,
+        accumulatedRaw: companions.rawRows,
+        employees: companions.employees,
+        participantRows: companions.participantRows,
+        total: totalCount,
+        signal: controller.signal,
+      });
+
+      if (controller.signal.aborted) return;
+
+      companionsRef.current = {
+        ...companions,
+        rawRows: result.rawRows,
+        nextPage: result.pageFetched + 1,
+      };
+      setInsuranceList(result.items);
+      setTotalCount(result.total);
+      setHasMore(result.hasMore);
+    } catch (error: unknown) {
+      if (controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError')) {
+        return;
+      }
+      console.error('Error loading more insurance:', error);
+      setFetchError(toErrorMessage(error, 'Không thể tải thêm bản ghi bảo hiểm'));
+    } finally {
+      if (!controller.signal.aborted) {
+        setIsLoadingMore(false);
+      }
+    }
+  }, [
+    currentCompanyId,
+    useApi,
+    hasMore,
+    isLoadingMore,
+    isLoading,
+    selectedStatus,
+    totalCount,
+  ]);
+
   useEffect(() => {
     void fetchInsurance();
     return () => {
@@ -345,13 +497,18 @@ export function useInsuranceList(selectedStatus: string = 'all') {
     };
   }, [fetchInsurance]);
 
+  const isCapped = hasMore || (totalCount > 0 && insuranceList.length < totalCount);
+
   return {
     insuranceList,
     totalCount,
     isLoading,
     isLoadingMore,
+    isCapped,
+    hasMore,
     fetchError,
     refetch: fetchInsurance,
+    loadMore,
     useApiMode: useApi,
   };
 }

@@ -2122,8 +2122,13 @@
       "totalBHXH": "Total Social Ins.",
       "totalBHYT": "Total Health Ins.",
       "totalBHTN": "Total Unemp. Ins.",
-      "total": "Grand Total"
+      "total": "Grand Total",
+      "partialNote": "Amounts below are from {{loaded}} loaded rows (API total {{total}}) — no summary endpoint yet"
     },
+    "cappedHint": "Showing {{loaded}} / {{total}} records — API total; BHXH/BHYT/BHTN counts from loaded rows",
+    "loadMore": "Load more",
+    "loadingMore": "Loading more insurance records…",
+    "loadingApi": "Loading insurance data from HRM API…",
     "table": {
       "employeeCode": "Emp. Code",
       "employeeName": "Employee Name",
