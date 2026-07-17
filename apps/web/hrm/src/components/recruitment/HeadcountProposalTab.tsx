@@ -677,7 +677,23 @@ export function HeadcountProposalTab() {
   };
 
   const onSubmit = async (values: ProposalFormValues) => {
-    if (!effectiveCompanyId) return;
+    if (!effectiveCompanyId) {
+      toast({
+        title: t('common.error'),
+        description: 'Chưa xác định phạm vi công ty để tạo đề xuất.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    // Content update API chưa có — chỉ create + status PATCH (approve/reject).
+    if (editingProposal) {
+      toast({
+        title: 'Chưa hỗ trợ sửa nội dung',
+        description: 'Dùng Duyệt / Từ chối để đổi trạng thái. Tạo đề xuất mới nếu cần thay nội dung.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
       const proposalData = {
         company_id: effectiveCompanyId,
@@ -699,27 +715,20 @@ export function HeadcountProposalTab() {
         status: 'pending',
       };
 
-      if (!editingProposal) {
-        await createHeadcountProposal(proposalData);
-        toast({
-          title: 'Thành công',
-          description: 'Đã tạo đề xuất ngoài định biên',
-        });
-      } else {
-        toast({
-          title: 'Thành công',
-          description: 'Đã cập nhật đề xuất ngoài định biên',
-        });
-      }
+      await createHeadcountProposal(proposalData);
+      toast({
+        title: 'Thành công',
+        description: 'Đã tạo đề xuất ngoài định biên — POST headcount-proposals',
+      });
 
       await refetchProposals();
       setIsDialogOpen(false);
       form.reset();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error saving proposal:', error);
       toast({
         title: 'Lỗi',
-        description: 'Không thể lưu đề xuất',
+        description: toErrorMessage(error, 'Không thể lưu đề xuất'),
         variant: 'destructive',
       });
     }

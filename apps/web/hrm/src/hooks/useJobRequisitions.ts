@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import { toErrorMessage } from '@/lib/apiError';
 import { shouldSkipSupabaseDataFetches, HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import { listJobRequisitions, type HrmJobRequisition } from '@/integrations/hrmApi';
@@ -14,13 +15,15 @@ export function buildJobRequisitionsQuery(companyId: string) {
 
 export function useJobRequisitions() {
   const { currentCompanyId } = useAuth();
+  const { listCompanyId } = useHrmOperatingUnitFilter();
+  const effectiveCompanyId = listCompanyId || currentCompanyId;
   const [requisitions, setRequisitions] = useState<HrmJobRequisition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const useApi = shouldSkipSupabaseDataFetches();
 
   const fetchRequisitions = useCallback(async () => {
-    if (!currentCompanyId || !useApi) {
+    if (!effectiveCompanyId || !useApi) {
       setRequisitions([]);
       setFetchError(null);
       setIsLoading(false);
@@ -30,7 +33,7 @@ export function useJobRequisitions() {
     setIsLoading(true);
     setFetchError(null);
     try {
-      const response = await listJobRequisitions(buildJobRequisitionsQuery(currentCompanyId));
+      const response = await listJobRequisitions(buildJobRequisitionsQuery(effectiveCompanyId));
       setRequisitions(response.data ?? []);
     } catch (error: unknown) {
       console.error('Error fetching job requisitions:', error);
@@ -39,7 +42,7 @@ export function useJobRequisitions() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentCompanyId, useApi]);
+  }, [effectiveCompanyId, useApi]);
 
   useEffect(() => {
     void fetchRequisitions();

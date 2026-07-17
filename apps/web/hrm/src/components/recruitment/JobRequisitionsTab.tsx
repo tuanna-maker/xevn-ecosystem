@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, RefreshCw, Pencil } from 'lucide-react';
+import { Eye, Plus, RefreshCw, Pencil } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
   createJobRequisition,
+  getJobRequisition,
   updateJobRequisition,
   type HrmJobRequisition,
 } from '@/integrations/hrmApi';
@@ -14,6 +16,7 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   REQUISITION_STATUS_LABEL_VI,
 } from '@/lib/jobRequisitionUi';
+import { resolveRequisitionMutateCompanyId } from '@/lib/jobRequisitionScope';
 import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +27,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -70,10 +74,14 @@ function statusBadgeVariant(status: HrmJobRequisition['status']) {
 
 export function JobRequisitionsTab() {
   const { currentCompanyId } = useAuth();
+  const { listCompanyId } = useHrmOperatingUnitFilter();
+  const effectiveCompanyId = listCompanyId || currentCompanyId;
   const { requisitions, isLoading, fetchError, refetch, useApiMode } = useJobRequisitions();
   const [createOpen, setCreateOpen] = useState(false);
   const [editRow, setEditRow] = useState<HrmJobRequisition | null>(null);
   const [editStatus, setEditStatus] = useState<HrmJobRequisition['status']>('open');
+  const [detailRow, setDetailRow] = useState<HrmJobRequisition | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const createForm = useForm<CreateFormValues>({
@@ -86,14 +94,14 @@ export function JobRequisitionsTab() {
   });
 
   const onCreate = async (values: CreateFormValues) => {
-    if (!currentCompanyId) {
+    if (!effectiveCompanyId) {
       toast({ title: 'Lỗi', description: 'Chưa xác định phạm vi công ty.', variant: 'destructive' });
       return;
     }
     setSubmitting(true);
     try {
       await createJobRequisition({
-        company_id: currentCompanyId,
+        company_id: effectiveCompanyId,
         title: values.title.trim(),
         department: values.department.trim(),
         employment_type: values.employment_type,
@@ -114,10 +122,19 @@ export function JobRequisitionsTab() {
   };
 
   const onUpdateStatus = async () => {
-    if (!editRow || !currentCompanyId) return;
+    if (!editRow) return;
+    const mutateCompanyId = resolveRequisitionMutateCompanyId(
+      editRow.company_id,
+      effectiveCompanyId,
+      currentCompanyId,
+    );
+    if (!mutateCompanyId) {
+      toast({ title: 'Lỗi', description: 'Chưa xác định phạm vi công ty.', variant: 'destructive' });
+      return;
+    }
     setSubmitting(true);
     try {
-      await updateJobRequisition(editRow.id, editRow.company_id || currentCompanyId, { status: editStatus });
+      await updateJobRequisition(editRow.id, mutateCompanyId, { status: editStatus });
       toast({ title: 'Đã cập nhật trạng thái', description: 'PATCH/PUT /recruitment/requisitions — HRM-REC-200' });
       setEditRow(null);
       await refetch();
@@ -135,6 +152,34 @@ export function JobRequisitionsTab() {
   const openEdit = (row: HrmJobRequisition) => {
     setEditRow(row);
     setEditStatus(row.status);
+  };
+
+  /** J-HRM-05 list → detail: GET by id (not list-row-only). */
+  const openDetail = async (row: HrmJobRequisition) => {
+    const scopeId = resolveRequisitionMutateCompanyId(
+      row.company_id,
+      effectiveCompanyId,
+      currentCompanyId,
+    );
+    if (!scopeId) {
+      toast({ title: 'Lỗi', description: 'Chưa xác định phạm vi công ty.', variant: 'destructive' });
+      return;
+    }
+    setDetailLoading(true);
+    setDetailRow(row);
+    try {
+      const detail = await getJobRequisition(row.id, scopeId);
+      setDetailRow(detail);
+    } catch (error: unknown) {
+      toast({
+        title: 'Không tải được chi tiết',
+        description: toErrorMessage(error, 'GET /recruitment/requisitions/:id thất bại.'),
+        variant: 'destructive',
+      });
+      setDetailRow(null);
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   if (!useApiMode) {
@@ -208,12 +253,24 @@ export function JobRequisitionsTab() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <PermissionGate module="recruitment" action="update">
-                        <Button type="button" variant="ghost" size="sm" onClick={() => openEdit(row)}>
-                          <Pencil className="mr-1 h-4 w-4" />
-                          Sửa
+                      <div className="flex flex-wrap items-center justify-end gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void openDetail(row)}
+                          disabled={detailLoading}
+                        >
+                          <Eye className="mr-1 h-4 w-4" />
+                          Chi tiết
                         </Button>
-                      </PermissionGate>
+                        <PermissionGate module="recruitment" action="update">
+                          <Button type="button" variant="ghost" size="sm" onClick={() => openEdit(row)}>
+                            <Pencil className="mr-1 h-4 w-4" />
+                            Sửa
+                          </Button>
+                        </PermissionGate>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -227,6 +284,7 @@ export function JobRequisitionsTab() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Tạo yêu cầu tuyển dụng</DialogTitle>
+            <DialogDescription>UF-HRM-12 — POST requisition rồi F5 để xác minh danh sách.</DialogDescription>
           </DialogHeader>
           <Form {...createForm}>
             <form onSubmit={createForm.handleSubmit(onCreate)} className="space-y-4">
@@ -297,6 +355,7 @@ export function JobRequisitionsTab() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Sửa trạng thái yêu cầu</DialogTitle>
+            <DialogDescription>PATCH trạng thái — sau 2xx danh sách làm mới; F5 để xác minh.</DialogDescription>
           </DialogHeader>
           {editRow ? (
             <div className="space-y-4">
@@ -325,6 +384,62 @@ export function JobRequisitionsTab() {
                 <Button type="button" onClick={() => void onUpdateStatus()} disabled={submitting}>
                   Lưu thay đổi
                 </Button>
+              </DialogFooter>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={detailRow != null} onOpenChange={(open) => !open && setDetailRow(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Chi tiết yêu cầu tuyển dụng</DialogTitle>
+            <DialogDescription>J-HRM-05 — dữ liệu từ GET /recruitment/requisitions/:id.</DialogDescription>
+          </DialogHeader>
+          {detailLoading ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">Đang tải chi tiết…</p>
+          ) : detailRow ? (
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground">Tiêu đề</p>
+                <p className="font-medium">{detailRow.title}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Phòng/Ban</p>
+                  <p>{detailRow.department}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Loại hình</p>
+                  <p>{detailRow.employment_type}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Trạng thái</p>
+                  <Badge variant={statusBadgeVariant(detailRow.status)}>
+                    {REQUISITION_STATUS_LABEL_VI[detailRow.status]}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Đơn vị</p>
+                  <p className="font-mono text-xs">{detailRow.company_id}</p>
+                </div>
+              </div>
+              <DialogFooter className="gap-2 sm:justify-end">
+                <Button type="button" variant="outline" onClick={() => setDetailRow(null)}>
+                  Đóng
+                </Button>
+                <PermissionGate module="recruitment" action="update">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      openEdit(detailRow);
+                      setDetailRow(null);
+                    }}
+                  >
+                    <Pencil className="mr-1.5 h-4 w-4" />
+                    Sửa trạng thái
+                  </Button>
+                </PermissionGate>
               </DialogFooter>
             </div>
           ) : null}

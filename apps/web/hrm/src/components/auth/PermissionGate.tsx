@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePermissions } from '@/hooks/usePermissions';
-import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { getHrmPortalMode, isHrmPortalEmbedFrame } from '@/lib/hrmPortalMode';
+import { hasPortalSession } from '@/lib/portalAuthBridge';
 
 interface PermissionGateProps {
   children: ReactNode;
@@ -17,6 +18,19 @@ interface PermissionGateProps {
   allOf?: { module: string; action: string }[];
 }
 
+/**
+ * Portal/Command Center embed: HRM `usePermissions` is an empty stub; RBAC is enforced by XBOS JWT on API.
+ * Bypass when any portal signal is present (query, storage, iframe, or hydrated portal JWT).
+ * @CODE-MEMORY work_item GWC-HRM-REC-UF12-01 — UF-HRM-12 Thêm/Sửa visible for Group CEO embed.
+ */
+export function shouldBypassHrmPermissionGate(search: string): boolean {
+  return (
+    getHrmPortalMode(search) ||
+    hasPortalSession() ||
+    isHrmPortalEmbedFrame()
+  );
+}
+
 export function PermissionGate({
   children,
   module,
@@ -27,14 +41,14 @@ export function PermissionGate({
   allOf,
 }: PermissionGateProps) {
   const location = useLocation();
-  const portalMode = getHrmPortalMode(location.search);
-
   const { hasPermission, hasAnyPermission, hasAnyOfPermissions, hasAllPermissions } = usePermissions();
 
-  let allowed = false;
-
   // Portal embed: RBAC is enforced by XBOS JWT on API — mirror PermissionRoute (no empty HRM stub).
-  if (portalMode) return <>{children}</>;
+  if (shouldBypassHrmPermissionGate(location.search)) {
+    return <>{children}</>;
+  }
+
+  let allowed = false;
 
   if (anyOf) {
     allowed = hasAnyOfPermissions(anyOf);
