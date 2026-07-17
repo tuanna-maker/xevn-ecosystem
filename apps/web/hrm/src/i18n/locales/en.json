@@ -365,10 +365,16 @@
       "label": "Status",
       "pending": "Pending",
       "approved": "Approved",
+      "rejected": "Rejected",
       "completed": "Completed",
       "active": "Active",
       "inactive": "Inactive",
-      "probation": "Probation"
+      "probation": "Probation",
+      "draft": "Draft",
+      "processed": "Processed",
+      "paid": "Paid",
+      "locked": "Locked",
+      "closed": "Closed"
     },
     "actions": "Actions",
     "noData": "No data",

@@ -365,10 +365,16 @@
       "label": "Trạng thái",
       "pending": "Chờ duyệt",
       "approved": "Đã duyệt",
+      "rejected": "Từ chối",
       "completed": "Hoàn thành",
       "active": "Đang hiệu lực",
       "inactive": "Ngừng",
-      "probation": "Thử việc"
+      "probation": "Thử việc",
+      "draft": "Nháp",
+      "processed": "Đã xử lý",
+      "paid": "Đã thanh toán",
+      "locked": "Đã khóa",
+      "closed": "Đã đóng"
     },
     "actions": "Thao tác",
     "noData": "Không có dữ liệu",
