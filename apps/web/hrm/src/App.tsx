@@ -13,6 +13,7 @@ import { PermissionRoute } from "./components/auth/PermissionRoute";
 import { PlatformAdminRoute } from "./components/auth/PlatformAdminRoute";
 import { getHrmPortalMode } from "./lib/hrmPortalMode";
 import { HrmRouteFallback, HrmProfileRouteFallback } from "./components/common/HrmRouteFallback";
+import { PortalEmbedRouterSync } from "./components/layout/PortalEmbedRouterSync";
 
 const Index = lazy(() => import("./pages/Index"));
 const Landing = lazy(() => import("./pages/Landing"));
@@ -48,7 +49,13 @@ const HRMChatWidget = lazy(() =>
   import("./components/ai/HRMChatWidget").then((module) => ({ default: module.HRMChatWidget })),
 );
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60_000,
+    },
+  },
+});
 
 function OptionalHRMChatWidget() {
   const location = useLocation();
@@ -109,6 +116,7 @@ const App = () => {
           >
             <AuthProvider>
               <HrmOperatingUnitFilterProvider>
+              <PortalEmbedRouterSync />
               <Routes>
                 {/* Public routes */}
                 <Route path="/landing" element={withSuspense(<Landing />)} />

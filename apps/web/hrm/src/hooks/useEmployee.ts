@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { Employee } from './useEmployees';
 import { shouldSkipSupabaseDataFetches } from '@/lib/hrmDataMode';
@@ -160,34 +160,42 @@ export async function loadEmployee(
   }
 }
 
+export const EMPLOYEE_DETAIL_QUERY_KEY = 'employee-detail' as const;
+
+/** Stable RQ key — StrictMode / remount must share one in-flight detail GET (D-P1-HRM-EMP-PROFILE-REQ-DEDUPE-01). */
+export function buildEmployeeDetailQueryKey(
+  employeeId: string | undefined,
+  companyId: string | null | undefined,
+): readonly unknown[] {
+  return [EMPLOYEE_DETAIL_QUERY_KEY, employeeId ?? null, companyId ?? null] as const;
+}
+
+/**
+ * P1-HRM-SCALE-FE-W1 / D-P1-HRM-EMP-PROFILE-REQ-DEDUPE-01:
+ * React Query owns detail fetch so list→profile does not double GET /employees/:id.
+ */
 export function useEmployee(employeeId: string | undefined) {
   const { memberships, currentCompanyId } = useAuth();
-  const [employee, setEmployee] = useState<Employee | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const search = typeof window !== 'undefined' ? window.location.search : '';
 
-  const fetchEmployee = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    const result = await loadEmployee(employeeId, {
-      memberships,
-      currentCompanyId,
-    });
-
-    setEmployee(result.employee);
-    setError(result.error);
-    setIsLoading(false);
-  }, [employeeId, memberships, currentCompanyId]);
-
-  useEffect(() => {
-    void fetchEmployee();
-  }, [fetchEmployee]);
+  const query = useQuery({
+    queryKey: buildEmployeeDetailQueryKey(employeeId, currentCompanyId),
+    queryFn: () =>
+      loadEmployee(employeeId, {
+        memberships,
+        currentCompanyId,
+        search,
+      }),
+    enabled: !!employeeId,
+    staleTime: 60_000,
+  });
 
   return {
-    employee,
-    isLoading,
-    error,
-    refetch: fetchEmployee,
+    employee: query.data?.employee ?? null,
+    isLoading: query.isLoading,
+    error: query.data?.error ?? (query.error ? toErrorMessage(query.error, 'Không thể tải thông tin nhân viên') : null),
+    refetch: async () => {
+      await query.refetch();
+    },
   };
 }

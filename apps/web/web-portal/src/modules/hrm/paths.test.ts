@@ -36,7 +36,7 @@ describe('hrmProxyPath (Command Center embed)', () => {
     );
   });
 
-  it('appends cache-bust query on embed navigation (G-INT-08)', () => {
+  it('optionally appends cache-bust query when explicitly requested (legacy G-INT-08)', () => {
     const url = hrmProxyPathFromSuffix('employees', {
       portal: true,
       tenantId: 'xevn',

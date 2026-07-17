@@ -1221,6 +1221,53 @@ export async function listEmployees(params: {
   );
 }
 
+export type HrmEmployeeSummary = {
+  company_id: string;
+  total: number;
+  active_count: number;
+  inactive_count: number;
+  archived_count: number;
+  payroll: {
+    total: number;
+    employees_with_salary: number;
+  };
+  by_department: Array<{
+    department: string;
+    count: number;
+    avg_salary: number | null;
+  }>;
+  salary_ranges: Array<{
+    key: string;
+    min: number;
+    max: number | null;
+    count: number;
+  }>;
+  new_hires: {
+    last_30_days: number;
+    recent: Array<{
+      id: string;
+      employee_code: string;
+      full_name: string;
+      status: string;
+      hired_at: string | null;
+      avatar_url: string | null;
+    }>;
+  };
+};
+
+/** P1-HRM-PERF-BE-01 — dashboard aggregates (HRM-EMP-SUMMARY-200). */
+export async function getEmployeesSummary(params: {
+  company_id: string;
+  keyword?: string;
+  status?: string;
+  include_archived?: boolean;
+}): Promise<HrmEmployeeSummary> {
+  const search = buildListSearchParams(params);
+  return requestHrm<HrmEmployeeSummary>(`/api/hrm/employees/summary?${search.toString()}`, {
+    method: "GET",
+  });
+}
+
 /** Paginate employees list — respects Nest @Max(100) page_size cap. */
 export async function listAllEmployees(params: {
   company_id: string;

@@ -1,3 +1,39 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Pickers / satellite menus needing full employee collection
+ * UC:          UC-HRM-SCOPE-03
+ * BR:          BR-INT-05
+ * SRS:         docs/hrm/SRS.md §15.2, §15.5
+ * TechSpec:    docs/hrm/TECHSPEC.md §11.2, §12
+ * Purpose:     Legacy full-collection loader via listAllEmployees for pickers (attendance, payroll, …).
+ *              Employees **table** must use useEmployeesPage (RQ server page) — P1-HRM-SCALE-FE-W1.
+ * WorkItem:    P1-HRM-EMP-DUP-KEY-FE
+ * Coded:       2026-07-16
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-17 P1-HRM-SCALE-FE-W1
+ *   Employees.tsx no longer calls this hook on mount; table uses useEmployeesPage.
+ *   Keep dedupeEmployeesById export for page + full-merge consumers.
+ *
+ * Callers:
+ *   - Satellite pickers (attendance/payroll/tasks) → useEmployees()
+ *   - NOT Employees.tsx table (use useEmployeesPage)
+ *
+ * Callees:
+ *   - fetchEmployees → listAllEmployeesApi() → GET /api/hrm/employees (multi-page)
+ *   - mutations → useEmployeeMutations() → HRM employee write APIs
+ *
+ * FE-Actions:
+ *   | User action          | Handler          | Lib / API                    |
+ *   |----------------------|------------------|------------------------------|
+ *   | Open picker needing all names | fetchEmployees | listAllEmployeesApi   |
+ *   | Create/update/archive| mutation methods | useEmployeeMutations         |
+ *
+ * BE-Chain: GET /api/hrm/employees → employees; write APIs → employees
+ * Impact:      Duplicate IDs can crash React row identity; full merge fans ~12× at 1k NV.
+ * must_keep:   Stable first-wins ordering, archived split, API pagination, and backend-owned totals.
+ * SOLID:       Full-collection hook for pickers; paged table lives in useEmployeesPage.
+ * LastVerified: apps/web/hrm/src/hooks/useEmployees.dedupe.test.ts
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -6,14 +42,11 @@ import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import {
-  archiveEmployee as archiveEmployeeApi,
-  createEmployee as createEmployeeApi,
   listAllEmployees as listAllEmployeesApi,
-  restoreEmployee as restoreEmployeeApi,
   type HrmEmployeeRecord,
-  updateEmployee as updateEmployeeApi,
 } from '@/integrations/hrmApi';
-import { mapHrmEmployeeRecord, mergeEmployeeAvatarWriteFields } from '@/hooks/useEmployee';
+import { mapHrmEmployeeRecord } from '@/hooks/useEmployee';
+import { useEmployeeMutations } from '@/hooks/useEmployeeMutations';
 
 export interface Employee {
   id: string;
@@ -84,6 +117,19 @@ export interface EmployeeFormData {
   custom_fields?: Record<string, string>;
 }
 
+export function dedupeEmployeesById<T extends Pick<Employee, 'id'>>(items: readonly T[]): T[] {
+  const seenIds = new Set<string>();
+
+  return items.filter((item) => {
+    if (seenIds.has(item.id)) {
+      return false;
+    }
+
+    seenIds.add(item.id);
+    return true;
+  });
+}
+
 export function useEmployees(
   includeDeleted: boolean = false,
   companyIdFilter?: string | null,
@@ -131,8 +177,11 @@ export function useEmployees(
         ),
       );
       const merged = responses.flatMap((res) => res.data ?? []).map(mapEmployee);
-      setEmployees(merged.filter((e) => e.deleted_at == null));
-      setDeletedEmployees(includeDeleted ? merged.filter((e) => e.deleted_at != null) : []);
+      const uniqueEmployees = dedupeEmployeesById(merged);
+      setEmployees(uniqueEmployees.filter((e) => e.deleted_at == null));
+      setDeletedEmployees(
+        includeDeleted ? uniqueEmployees.filter((e) => e.deleted_at != null) : [],
+      );
     } catch (error: unknown) {
       console.error('Error fetching employees:', error);
       toast.error(toErrorMessage(error, 'Không thể tải danh sách nhân viên'));
@@ -149,81 +198,9 @@ export function useEmployees(
     void fetchEmployees();
   }, [fetchEmployees, enabled]);
 
-  const createEmployee = async (data: EmployeeFormData): Promise<Employee | null> => {
-    if (!currentCompanyId) {
-      toast.error('Vui lòng chọn công ty');
-      return null;
-    }
-
-    try {
-      const avatarFields = mergeEmployeeAvatarWriteFields(data.avatar_url, data.custom_fields);
-      const payload = {
-        company_id:
-          (data as EmployeeFormData & { company_id?: string }).company_id?.trim() || currentCompanyId,
-        employee_code: data.employee_code,
-        full_name: data.full_name,
-        email: data.email?.trim() || `${data.employee_code.toLowerCase()}@xevn.local`,
-        job_title_key: data.position ?? undefined,
-        hired_at: data.start_date ?? undefined,
-        ...avatarFields,
-      };
-      const newEmployee = await createEmployeeApi(payload);
-      toast.success('Thêm nhân viên thành công');
-      await fetchEmployees();
-      return mapEmployee(newEmployee);
-    } catch (error: unknown) {
-      console.error('Error creating employee:', error);
-      toast.error(toErrorMessage(error, 'Không thể thêm nhân viên'));
-      return null;
-    }
-  };
-
-  const updateEmployee = async (id: string, data: Partial<EmployeeFormData>): Promise<boolean> => {
-    try {
-      const avatarFields = mergeEmployeeAvatarWriteFields(data.avatar_url, data.custom_fields);
-      await updateEmployeeApi(id, {
-        email: data.email ?? undefined,
-        full_name: data.full_name ?? undefined,
-        job_title_key: data.position ?? undefined,
-        hired_at: data.start_date ?? undefined,
-        ...avatarFields,
-      });
-      toast.success('Cập nhật thành công');
-      await fetchEmployees();
-      return true;
-    } catch (error: unknown) {
-      console.error('Error updating employee:', error);
-      toast.error(toErrorMessage(error, 'Không thể cập nhật nhân viên'));
-      return false;
-    }
-  };
-
-  const softDeleteEmployee = async (id: string, reason?: string): Promise<boolean> => {
-    try {
-      void reason; // giữ signature cũ cho UI, backend hiện chưa nhận lý do.
-      await archiveEmployeeApi(id);
-      toast.success('Đã xóa nhân viên');
-      await fetchEmployees();
-      return true;
-    } catch (error: unknown) {
-      console.error('Error deleting employee:', error);
-      toast.error(toErrorMessage(error, 'Không thể xóa nhân viên'));
-      return false;
-    }
-  };
-
-  const restoreEmployee = async (id: string): Promise<boolean> => {
-    try {
-      await restoreEmployeeApi(id);
-      toast.success('Đã khôi phục nhân viên');
-      await fetchEmployees();
-      return true;
-    } catch (error: unknown) {
-      console.error('Error restoring employee:', error);
-      toast.error(toErrorMessage(error, 'Không thể khôi phục nhân viên'));
-      return false;
-    }
-  };
+  const { createEmployee, updateEmployee, softDeleteEmployee, restoreEmployee } = useEmployeeMutations({
+    onMutated: fetchEmployees,
+  });
 
   return {
     employees,

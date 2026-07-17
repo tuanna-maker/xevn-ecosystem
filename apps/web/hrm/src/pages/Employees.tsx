@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import {
   Plus,
   Search,
-  Filter,
   Download,
   Upload,
   MoreHorizontal,
@@ -13,6 +13,8 @@ import {
   Eye,
   Archive,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { DataTable } from '@/components/common/DataTable';
@@ -51,13 +53,39 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useEmployees, Employee, EmployeeFormData } from '@/hooks/useEmployees';
+import { Employee, EmployeeFormData, dedupeEmployeesById } from '@/hooks/useEmployees';
+import {
+  useEmployeesPage,
+  HRM_EMPLOYEES_TABLE_PAGE_SIZE,
+} from '@/hooks/useEmployeesPage';
+import { useEmployeesSummary } from '@/hooks/useEmployeesSummary';
 import { useCanAddEmployee } from '@/hooks/useCompanySubscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import { resolveOperatingUnitDisplayName } from '@/lib/hrmOperatingUnits';
 import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
+import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import { listAllEmployees } from '@/integrations/hrmApi';
+import { mapHrmEmployeeRecord } from '@/hooks/useEmployee';
 import { PermissionGate } from '@/components/auth/PermissionGate';
+
+/**
+ * @CODE-MEMORY
+ * Screen:     /employees — table + filters + CRUD dialogs
+ * UC:          J-HRM-02 list→profile
+ * WorkItem:    P1-HRM-SCALE-FE-W1
+ * Purpose:     Server-paged Employees table (RQ); no listAllEmployees on mount.
+ * must_keep:   navigate(`/employees/${id}`); do not change portal iframe key.
+ */
+
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebounced(value), delayMs);
+    return () => window.clearTimeout(timer);
+  }, [value, delayMs]);
+  return debounced;
+}
 
 export default function Employees() {
   const { t, i18n } = useTranslation();
@@ -66,34 +94,14 @@ export default function Employees() {
   const { selectedSlug, operatingUnitLabelMap } = useHrmOperatingUnitFilter();
 
   const companyIdForHook = selectedSlug === 'all' ? null : selectedSlug;
+  const scopeCompanyId =
+    companyIdForHook ?? currentCompanyId ?? memberships[0]?.company_id ?? null;
 
-  const {
-    employees,
-    deletedEmployees,
-    isLoading,
-    createEmployee,
-    updateEmployee,
-    softDeleteEmployee,
-    restoreEmployee,
-    refetch,
-  } = useEmployees(true, companyIdForHook);
-
-  const userCompanies = memberships
-    .filter(m => m.company)
-    .map(m => ({ id: m.company_id, name: m.company!.name }));
-
-  const getCompanyName = (companyId: string) => {
-    return (
-      resolveOperatingUnitDisplayName(companyId, operatingUnitLabelMap) ??
-      userCompanies.find((c) => c.id === companyId)?.name ??
-      '—'
-    );
-  };
-
-  const { data: employeeLimit } = useCanAddEmployee();
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [page, setPage] = useState(1);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [formDialogOpen, setFormDialogOpen] = useState(false);
@@ -104,56 +112,131 @@ export default function Employees() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
 
-  // Fetch departments for all relevant companies
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, departmentFilter, statusFilter, companyIdForHook]);
+
+  const {
+    employees,
+    total,
+    pageSize,
+    totalPages,
+    isLoading,
+    isFetching,
+    createEmployee,
+    updateEmployee,
+    softDeleteEmployee,
+    restoreEmployee,
+    refetch,
+    invalidatePages,
+  } = useEmployeesPage(companyIdForHook, {
+    page,
+    pageSize: HRM_EMPLOYEES_TABLE_PAGE_SIZE,
+    keyword: debouncedSearch,
+    status: statusFilter,
+  });
+
+  const { data: employeeSummary } = useEmployeesSummary({
+    include_archived: true,
+  });
+
+  const archivedCount = employeeSummary?.archived_count ?? 0;
+
+  /** Lazy full archive load — only when deleted dialog opens (not on table mount). */
+  const deletedQuery = useQuery({
+    queryKey: ['employees-archived-list', scopeCompanyId],
+    queryFn: async () => {
+      if (!scopeCompanyId) return [] as Employee[];
+      const res = await listAllEmployees({
+        company_id: coerceHrmListCompanyId(scopeCompanyId),
+        include_archived: true,
+      });
+      return dedupeEmployeesById((res.data ?? []).map(mapHrmEmployeeRecord)).filter(
+        (e) => e.deleted_at != null,
+      );
+    },
+    enabled: deletedDialogOpen && !!scopeCompanyId,
+    staleTime: 60_000,
+  });
+
+  /** Export fetch — only when export dialog opens (not on table mount). */
+  const exportQuery = useQuery({
+    queryKey: [
+      'employees-export-list',
+      scopeCompanyId,
+      debouncedSearch,
+      statusFilter === 'all' ? '' : statusFilter,
+    ],
+    queryFn: async () => {
+      if (!scopeCompanyId) return [] as Employee[];
+      const res = await listAllEmployees({
+        company_id: coerceHrmListCompanyId(scopeCompanyId),
+        keyword: debouncedSearch.trim() || undefined,
+        status: statusFilter === 'all' ? undefined : statusFilter,
+      });
+      return dedupeEmployeesById((res.data ?? []).map(mapHrmEmployeeRecord)).filter(
+        (e) => e.deleted_at == null,
+      );
+    },
+    enabled: exportDialogOpen && !!scopeCompanyId,
+    staleTime: 60_000,
+  });
+
+  const userCompanies = memberships
+    .filter((m) => m.company)
+    .map((m) => ({ id: m.company_id, name: m.company!.name }));
+
+  const getCompanyName = (companyId: string) => {
+    return (
+      resolveOperatingUnitDisplayName(companyId, operatingUnitLabelMap) ??
+      userCompanies.find((c) => c.id === companyId)?.name ??
+      '—'
+    );
+  };
+
+  const { data: employeeLimit } = useCanAddEmployee();
+
   useEffect(() => {
     const fetchDepartments = async () => {
-      const companyIds = selectedSlug === 'all'
-        ? memberships.map(m => m.company_id)
-        : [selectedSlug];
-      
+      const companyIds =
+        selectedSlug === 'all' ? memberships.map((m) => m.company_id) : [selectedSlug];
+
       if (companyIds.length === 0) return;
 
       const rows = await listDepartmentsFromSettingsCatalog(companyIds[0]);
       setDepartments(rows.map((d) => ({ id: d.id, name: d.name })));
     };
-    
-    fetchDepartments();
+
+    void fetchDepartments();
   }, [selectedSlug, memberships]);
 
-  const importSpreadsheetScope =
-    (() => {
-      const companyId =
-        selectedSlug === 'all'
-          ? currentCompanyId ?? memberships[0]?.company_id ?? null
-          : selectedSlug;
-      if (!companyId) return null;
-      const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
-      return {
-        tenantId: tenantFromEnv && tenantFromEnv.length > 0 ? tenantFromEnv : companyId,
-        companyId,
-      };
-    })();
+  const importSpreadsheetScope = (() => {
+    const companyId =
+      selectedSlug === 'all'
+        ? currentCompanyId ?? memberships[0]?.company_id ?? null
+        : selectedSlug;
+    if (!companyId) return null;
+    const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
+    return {
+      tenantId: tenantFromEnv && tenantFromEnv.length > 0 ? tenantFromEnv : companyId,
+      companyId,
+    };
+  })();
 
   const handleImportSuccess = async ({ importedCount }: { importedCount: number }) => {
+    await invalidatePages();
     await refetch();
     toast.success(
       t('employeesPage.importSuccess', { success: importedCount, total: importedCount }),
     );
   };
 
-  const filteredEmployees = employees.filter((emp) => {
-    const matchesSearch =
-      emp.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.employee_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (emp.email && emp.email.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesDepartment =
-      departmentFilter === 'all' || emp.department === departmentFilter;
-
-    const matchesStatus = statusFilter === 'all' || emp.status === statusFilter;
-
-    return matchesSearch && matchesDepartment && matchesStatus;
-  });
+  /** Department is not in list API filters — apply on current server page only. */
+  const filteredEmployees = useMemo(() => {
+    if (departmentFilter === 'all') return employees;
+    return employees.filter((emp) => emp.department === departmentFilter);
+  }, [employees, departmentFilter]);
 
   const handleAddEmployee = async (data: EmployeeFormData & { company_id?: string }) => {
     setIsSubmitting(true);
@@ -178,6 +261,14 @@ export default function Employees() {
     await softDeleteEmployee(deleteConfirm.id, deleteReason);
     setDeleteConfirm(null);
     setDeleteReason('');
+  };
+
+  const handleRestore = async (id: string) => {
+    const ok = await restoreEmployee(id);
+    if (ok) {
+      await deletedQuery.refetch();
+    }
+    return ok;
   };
 
   const columns = [
@@ -238,7 +329,7 @@ export default function Employees() {
       key: 'status',
       header: t('common.status.label'),
       hideOnMobile: true,
-      render: (emp: Employee) => <StatusBadge status={emp.status as any} />,
+      render: (emp: Employee) => <StatusBadge status={emp.status as 'active' | 'inactive' | 'probation'} />,
     },
     {
       key: 'actions',
@@ -256,16 +347,18 @@ export default function Employees() {
               {t('common.view')}
             </DropdownMenuItem>
             <PermissionGate module="employees" action="edit">
-              <DropdownMenuItem onClick={() => {
-                setEditingEmployee(emp);
-                setFormDialogOpen(true);
-              }}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setEditingEmployee(emp);
+                  setFormDialogOpen(true);
+                }}
+              >
                 <Edit className="w-4 h-4 mr-2" />
                 {t('common.edit')}
               </DropdownMenuItem>
             </PermissionGate>
             <PermissionGate module="employees" action="delete">
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="text-destructive"
                 onClick={() => setDeleteConfirm(emp)}
               >
@@ -279,20 +372,25 @@ export default function Employees() {
     },
   ];
 
-  // Pass employees directly to export (now uses DB Employee type)
-  const exportEmployees = employees;
+  const exportEmployees =
+    departmentFilter === 'all'
+      ? exportQuery.data ?? []
+      : (exportQuery.data ?? []).filter((emp) => emp.department === departmentFilter);
+
+  const rangeFrom = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rangeTo = Math.min(page * pageSize, total);
 
   return (
     <div className="space-y-4 md:space-y-6 animate-fade-in">
       <PageHeader
         title={t('employees.title')}
-        subtitle={`${t('employees.subtitle')} - ${employees.length}`}
+        subtitle={`${t('employees.subtitle')} - ${total}`}
         actions={
           <div className="flex items-center gap-2 flex-wrap">
             <PermissionGate module="employees" action="delete">
               <Button variant="outline" size="sm" onClick={() => setDeletedDialogOpen(true)}>
                 <Archive className="w-4 h-4 mr-1 md:mr-2" />
-                <span className="hidden sm:inline">{t('employeesPage.deleted')}</span> ({deletedEmployees.length})
+                <span className="hidden sm:inline">{t('employeesPage.deleted')}</span> ({archivedCount})
               </Button>
             </PermissionGate>
             <PermissionGate module="employees" action="import">
@@ -315,7 +413,7 @@ export default function Employees() {
                     toast.error(
                       i18n.language === 'en'
                         ? `Employee limit reached (${employeeLimit.current}/${employeeLimit.max}). Please upgrade your plan.`
-                        : `Đã đạt giới hạn nhân viên (${employeeLimit.current}/${employeeLimit.max}). Vui lòng nâng cấp gói dịch vụ.`
+                        : `Đã đạt giới hạn nhân viên (${employeeLimit.current}/${employeeLimit.max}). Vui lòng nâng cấp gói dịch vụ.`,
                     );
                     return;
                   }
@@ -331,7 +429,6 @@ export default function Employees() {
         }
       />
 
-      {/* Filters */}
       <Card className="p-3 md:p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="relative flex-1 min-w-0">
@@ -372,23 +469,54 @@ export default function Employees() {
         </div>
       </Card>
 
-      {/* Table */}
       <Card>
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={filteredEmployees}
-            keyExtractor={(emp) => emp.id}
-            onRowClick={(emp) => navigate(`/employees/${emp.id}`)}
-          />
+          <>
+            <DataTable
+              columns={columns}
+              data={filteredEmployees}
+              keyExtractor={(emp) => emp.id}
+              onRowClick={(emp) => navigate(`/employees/${emp.id}`)}
+            />
+            <div className="flex items-center justify-between px-4 md:px-6 py-3 border-t">
+              <span className="text-sm text-muted-foreground">
+                {rangeFrom}–{rangeTo} / {total}
+                {isFetching ? ' …' : ''}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm tabular-nums px-2">
+                  {page} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </Card>
 
-      {/* Import Dialog */}
       <EmployeeImportDialog
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
@@ -396,14 +524,12 @@ export default function Employees() {
         spreadsheetScope={importSpreadsheetScope}
       />
 
-      {/* Export Dialog */}
       <EmployeeExportDialog
         open={exportDialogOpen}
         onOpenChange={setExportDialogOpen}
         employees={exportEmployees}
       />
 
-      {/* Add/Edit Employee Dialog */}
       <EmployeeFormDialog
         open={formDialogOpen}
         onOpenChange={(open) => {
@@ -417,15 +543,13 @@ export default function Employees() {
         isLoading={isSubmitting}
       />
 
-      {/* Deleted Employees Dialog */}
       <DeletedEmployeesDialog
         open={deletedDialogOpen}
         onOpenChange={setDeletedDialogOpen}
-        deletedEmployees={deletedEmployees}
-        onRestore={restoreEmployee}
+        deletedEmployees={deletedQuery.data ?? []}
+        onRestore={handleRestore}
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -451,10 +575,12 @@ export default function Employees() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setDeleteConfirm(null);
-              setDeleteReason('');
-            }}>
+            <AlertDialogCancel
+              onClick={() => {
+                setDeleteConfirm(null);
+                setDeleteReason('');
+              }}
+            >
               {t('employeesPage.cancelBtn')}
             </AlertDialogCancel>
             <AlertDialogAction

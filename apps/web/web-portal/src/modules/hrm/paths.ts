@@ -3,7 +3,7 @@ import { resolveHrmOperationalCompanyId } from '../../integrations/commandCenter
 /** Base path cho router HRM lồng trong Command Center */
 export const HRM_PORTAL_BASE = '/command-center/hrm';
 
-/** G-INT-08 — query param to bust stale HRM embed bundles on tab navigation. */
+/** Optional legacy query param to bust stale HRM embed bundles (not used on tab nav — P1-HRM-PERF-FE-01). */
 export const HRM_EMBED_CACHE_BUST_PARAM = '_v';
 
 export type HrmEmbedPathOptions = {

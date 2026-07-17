@@ -48,7 +48,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useEmployee } from '@/hooks/useEmployee';
-import { useEmployees, EmployeeFormData } from '@/hooks/useEmployees';
+import type { EmployeeFormData } from '@/hooks/useEmployees';
+import { useEmployeeMutations } from '@/hooks/useEmployeeMutations';
 import { useDepartments } from '@/hooks/useDepartments';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuth } from '@/contexts/AuthContext';
@@ -146,7 +147,7 @@ export default function EmployeeProfile() {
   const { memberships } = useAuth();
   const { hasPermission } = usePermissions();
   const { employee, isLoading, error, refetch } = useEmployee(id);
-  const { updateEmployee } = useEmployees();
+  const { updateEmployee } = useEmployeeMutations({ onMutated: refetch });
   const { departments } = useDepartments();
 
   const handleAvatarChange = useCallback(async (url: string | null) => {

@@ -12,7 +12,7 @@ vi.mock('@/lib/hrmDataMode', () => ({
   HRM_API_MAX_PAGE_SIZE: 100,
 }));
 
-import { loadEmployee, mapHrmEmployeeRecord, mergeEmployeeAvatarWriteFields, resolveEmployeeAvatarUrl, resolveEmployeeFetchCompanyIds } from './useEmployee';
+import { loadEmployee, mapHrmEmployeeRecord, mergeEmployeeAvatarWriteFields, resolveEmployeeAvatarUrl, resolveEmployeeFetchCompanyIds, buildEmployeeDetailQueryKey, EMPLOYEE_DETAIL_QUERY_KEY } from './useEmployee';
 import type { HrmEmployeeRecord } from '@/integrations/hrmApi';
 
 const sampleRow: HrmEmployeeRecord = {
@@ -29,6 +29,21 @@ const sampleRow: HrmEmployeeRecord = {
   created_at: '2024-01-01T00:00:00.000Z',
   updated_at: '2024-01-02T00:00:00.000Z',
 };
+
+describe('P1-HRM-SCALE-FE-W1 / D-P1-HRM-EMP-PROFILE-REQ-DEDUPE-01 — detail query key', () => {
+  it('buildEmployeeDetailQueryKey is stable per employee + company scope', () => {
+    expect(buildEmployeeDetailQueryKey('emp-1', 'main')).toEqual([
+      EMPLOYEE_DETAIL_QUERY_KEY,
+      'emp-1',
+      'main',
+    ]);
+    expect(buildEmployeeDetailQueryKey(undefined, null)).toEqual([
+      EMPLOYEE_DETAIL_QUERY_KEY,
+      null,
+      null,
+    ]);
+  });
+});
 
 describe('mapHrmEmployeeRecord', () => {
   it('maps Nest employee row to UI Employee shape', () => {
