@@ -33,6 +33,7 @@ import { EmployeeKpisController } from './employee-kpis/employee-kpis.controller
 import { EmployeeKpisService } from './employee-kpis/employee-kpis.service';
 import { ContractsInsuranceController } from './contracts-insurance/contracts-insurance.controller';
 import { ContractsInsuranceService } from './contracts-insurance/contracts-insurance.service';
+import { EmployeeCompensationService } from './contracts-insurance/employee-compensation.service';
 import { OperationsController } from './operations/operations.controller';
 import { OperationsService } from './operations/operations.service';
 import { EmployeeMetadataController } from './employee-metadata/employee-metadata.controller';
@@ -108,6 +109,7 @@ import { HomeService } from './home/home.service';
     RecruitmentService,
     RecruitmentCatalogService,
     ContractsInsuranceService,
+    EmployeeCompensationService,
     DecisionsService,
     DepartmentsService,
     EmployeeInsurancesService,
