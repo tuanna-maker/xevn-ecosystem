@@ -16,8 +16,13 @@ alwaysApply: true
 | **F5** hoặc navigate lại → dữ liệu còn | Chỉ assert API response body |
 | DevTools Network: POST/PUT 2xx **cùng** bước UI | API PASS mà UI trống / trắng / không đổi |
 | Screenshot + click path + URL | Chỉ JSON artifact |
+| **Nghiệp vụ đúng theo AC SRS** (có data / empty hợp lệ / không storm) | Chỉ «console sạch» khi lưới trống mãi / spinner / GET storm / nút Tải lại tự lặp |
 
-PM dispatch **QA** và **QC** **bắt buộc** ghi rõ: URL, account, **UF-ID**, **J-***, và **AC post-mutation FE** (xem mẫu dưới).
+> **Sponsor 2026-07-21:** Console-clean ≠ business PASS. Ví dụ bảng chấm công Công chuẩn — empty + auto-reload = **FAIL** dù 0 `Uncaught`.
+>
+> **Sponsor 2026-08-01 (U76):** Browser test **bám HDSD** — đúng menu/màn/nút/function; inventory HDSD trong evidence. Rule: `qa-hdsd-aligned-browser-test.mdc`.
+
+PM dispatch **QA** và **QC** **bắt buộc** ghi rõ: URL, account, **UF-ID**, **J-***, **hdsd_align** + inventory (U76), và **AC post-mutation FE** (xem mẫu dưới).
 
 ## Mẫu evidence mỗi UF (bắt buộc)
 

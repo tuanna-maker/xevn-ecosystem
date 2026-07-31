@@ -13,6 +13,9 @@ import {
   isWorkItemClosed,
   isWorkItemVerdictClosedOnBus,
 } from "./pm-dispatch-hint.mjs";
+import { checkPeerPmPing } from "./peer-pm-check.mjs";
+import { checkPeerClaudeWatchdog } from "./peer-claude-watchdog-check.mjs";
+import { checkTelegramPmIntake } from "./telegram-pm-check.mjs";
 
 const MODE_PATH_SEG = [".cursor", "team", "PM_ORCHESTRATION_MODE"];
 const WATCHDOG_STATE_SEG = [".cursor", "team", "inbox", "pm-watchdog-state.json"];
@@ -102,6 +105,39 @@ async function main() {
     const status = String(payload.status ?? "");
     const loopCount = Number(payload.loop_count ?? 0);
     const root = process.cwd();
+
+    // Telegram sponsor first — must reply on Telegram (even if PM_ORCHESTRATION_MODE=STOP)
+    try {
+      const tg = await checkTelegramPmIntake(root);
+      if (tg?.followup_message) {
+        process.stdout.write(JSON.stringify(tg));
+        return;
+      }
+    } catch {
+      /* fail-open */
+    }
+
+    // Peer Claude watchdog: reclaim before peer ping (always, independent of PM_ORCHESTRATION_MODE)
+    try {
+      const wd = await checkPeerClaudeWatchdog(root);
+      if (wd?.followup_message) {
+        process.stdout.write(JSON.stringify(wd));
+        return;
+      }
+    } catch {
+      /* fail-open */
+    }
+
+    // Peer-PM: inject even when PM_ORCHESTRATION_MODE=STOP (PEER_PM_AUTO=RUN)
+    try {
+      const peer = await checkPeerPmPing(root);
+      if (peer?.followup_message) {
+        process.stdout.write(JSON.stringify(peer));
+        return;
+      }
+    } catch {
+      /* fail-open */
+    }
 
     if ((await readMode(root)) !== "RUN") {
       process.stdout.write(JSON.stringify({}));

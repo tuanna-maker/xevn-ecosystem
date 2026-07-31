@@ -1,6 +1,10 @@
 # TECHSPEC — Command Center P0
 
-> SRS: [`COMMAND_CENTER_P0_SRS.md`](./COMMAND_CENTER_P0_SRS.md)
+> SRS team: [`COMMAND_CENTER_P0_SRS.md`](./COMMAND_CENTER_P0_SRS.md)  
+> **ref_srs (W1):** khách `docs/client-delivery/xbos/SRS_XBOS_KHACH.md` — **FR-CC-P0-01** (cổ đông) · **FR-XBOS-ORG-03** (hồ sơ + tài liệu) · **FR-XBOS-ORG-02** (phòng ban qua org-foundation, không matrix RBAC).  
+> **ref_srs (W2):** **FR-CC-P0-04** (position-rbac matrix) · **FR-CC-P0-05** (business-master `command_center_catalogs` autosave) — master `docs/xbos/TECHSPEC.md` §14.15–14.16 · evidence `docs/qa/evidence/sa-xbos-techspec-w2-ref-01-20260722.md`.  
+> Master trace: `docs/xbos/TECHSPEC.md` §14.5–14.7 (W1) · §14.14–14.17 (W2).  
+> **Cấm** đè UF-XBOS-04/05/03/06/12/07/13/14/10 🟢.
 
 ## 1. Stack & modules
 

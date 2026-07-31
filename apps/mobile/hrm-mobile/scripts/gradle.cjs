@@ -104,6 +104,73 @@ def expoModulesCorePlugin = _coreDir != null
   }
 }
 
+/**
+ * CMake/ninja on Windows resolve junction → OneDrive Unicode realpath (>260) for
+ * folly-flags.cmake. Prefer GRADLE_PATH_RN_DIR (short junction C:\\rn74).
+ */
+function patchExpoModulesCoreReactNativeDir() {
+  const candidates = [
+    path.join(repoRoot, 'node_modules', 'expo-modules-core', 'android', 'build.gradle'),
+    path.join(mobileRoot, 'node_modules', 'expo-modules-core', 'android', 'build.gradle'),
+  ];
+  const needle = `def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+  ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
+  : file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).parent`;
+  const replacement = `def _rnDirEnv = System.getenv("GRADLE_PATH_RN_DIR")
+def REACT_NATIVE_DIR = _rnDirEnv != null
+  ? file(_rnDirEnv)
+  : (REACT_NATIVE_BUILD_FROM_SOURCE
+  ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
+  : file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).parent)`;
+  for (const target of candidates) {
+    if (!fs.existsSync(target)) continue;
+    let src = fs.readFileSync(target, 'utf8');
+    if (src.includes('GRADLE_PATH_RN_DIR') && src.includes('_rnDirEnv')) {
+      console.error('[gradle] expo-modules-core REACT_NATIVE_DIR already patched:', target);
+      continue;
+    }
+    if (!src.includes(needle)) {
+      console.error('[gradle] expo-modules-core REACT_NATIVE_DIR needle miss:', target);
+      continue;
+    }
+    fs.writeFileSync(target, src.replace(needle, replacement));
+    console.error('[gradle] Patched expo-modules-core REACT_NATIVE_DIR → GRADLE_PATH_RN_DIR:', target);
+  }
+}
+
+/** Short ASCII junction for RN (avoids ninja MAX_PATH on OneDrive Unicode realpath). */
+function ensureShortReactNativeJunction() {
+  if (!isWin) return null;
+  const shortRoot = 'C:\\rn74';
+  const folly = path.join(shortRoot, 'ReactAndroid', 'cmake-utils', 'folly-flags.cmake');
+  if (fs.existsSync(folly)) return shortRoot;
+  try {
+    const rnPkg = require.resolve('react-native/package.json', { paths: [mobileRoot, repoRoot] });
+    const rnDir = path.dirname(rnPkg);
+    if (fs.existsSync(shortRoot)) {
+      try {
+        execSync(`rmdir "${shortRoot}"`, { shell: true, stdio: 'pipe' });
+      } catch {
+        /* ignore */
+      }
+    }
+    execSync(`mklink /J "${shortRoot}" "${rnDir.replace(/"/g, '""')}"`, {
+      shell: true,
+      stdio: 'pipe',
+    });
+  } catch (e) {
+    console.error('[gradle] ensureShortReactNativeJunction failed:', e && e.message ? e.message : e);
+    return null;
+  }
+  return fs.existsSync(folly) ? shortRoot : null;
+}
+
 function patchExpoAutolinkingGradle(env) {
   const impl = env.GRADLE_PATH_EXPO_AUTOLINKING_IMPL;
   if (!impl) return;
@@ -133,7 +200,11 @@ function applyGradlePathEnv(env) {
   env.GRADLE_PATH_EXPO_PKG = gradlePath(expoPkg);
   env.GRADLE_PATH_RN_PKG = gradlePath(rnPkg);
   env.GRADLE_PATH_RN_PKG_METRO = gradlePath(rnPkg);
-  env.GRADLE_PATH_RN_DIR = gradlePath(rnDir);
+  const shortRn = ensureShortReactNativeJunction();
+  env.GRADLE_PATH_RN_DIR = shortRn || gradlePath(rnDir);
+  if (shortRn) {
+    console.error('[gradle] GRADLE_PATH_RN_DIR short junction:', shortRn);
+  }
   env.GRADLE_PATH_EXPO_MODULES_AUTOLINKING_PKG = gradlePath(expoAutolinking);
   env.GRADLE_PATH_EXPO_AUTOLINKING_IMPL = gradlePath(
     path.join(path.dirname(expoAutolinking), 'scripts/android/autolinking_implementation.gradle'),
@@ -152,7 +223,31 @@ function applyGradlePathEnv(env) {
   );
   env.GRADLE_PATH_CLI_ANDROID_PKG = gradlePath(cliAndroid);
   const expoConstants = resolveFromMobile('expo-constants/package.json');
-  env.GRADLE_PATH_EXPO_CONSTANTS_PKG = gradlePath(path.dirname(expoConstants));
+  /**
+   * Prefer short junction symlink for createExpoConfig (cmd.exe + OneDrive Unicode
+   * mojibake MODULE_NOT_FOUND). Do not realpath — keep C:\\xevn-ecosystem\\...\\expo-constants.
+   */
+  const expoConstantsShortCandidates = [
+    path.join(mobileRoot, 'node_modules', 'expo-constants'),
+    path.join(repoRoot, 'node_modules', 'expo-constants'),
+    gradlePath(path.dirname(expoConstants)),
+  ];
+  let expoConstantsDir = expoConstantsShortCandidates.find((p) =>
+    fs.existsSync(path.join(p, 'scripts', 'getAppConfig.js')),
+  );
+  if (!expoConstantsDir) {
+    expoConstantsDir = gradlePath(path.dirname(expoConstants));
+  }
+  env.GRADLE_PATH_EXPO_CONSTANTS_PKG = expoConstantsDir;
+  try {
+    fs.writeFileSync(
+      path.join(androidDir, '.expo-constants-dir'),
+      expoConstantsDir,
+      'utf8',
+    );
+  } catch {
+    /* non-fatal */
+  }
 
   const link = path.join(mobileRoot, 'android', '.rn-gradle-plugin');
   if (fs.existsSync(link)) {
@@ -175,6 +270,17 @@ function applyGradlePathEnv(env) {
     env.GRADLE_REAL_REPO_ROOT = realRoot;
     env.GRADLE_SUBST_REPO_ROOT = repoRoot;
   }
+
+  // Avoid OneDrive file locks on android build intermediates (Windows).
+  const localBuildRoot =
+    process.env.GRADLE_OFF_ONEDRIVE_BUILD_ROOT ||
+    process.env.GRADLE_LOCAL_BUILD_ROOT ||
+    (isWin ? 'C:\\xevn-android-build' : '');
+  if (localBuildRoot) {
+    fs.mkdirSync(localBuildRoot, { recursive: true });
+    env.GRADLE_OFF_ONEDRIVE_BUILD_ROOT = localBuildRoot;
+    env.GRADLE_LOCAL_BUILD_ROOT = localBuildRoot;
+  }
 }
 
 function runLinkPlugin(env) {
@@ -195,6 +301,7 @@ try {
   applyGradlePathEnv(env);
   patchExpoAutolinkingGradle(env);
   patchExpoAndroidBuildGradle(env);
+  patchExpoModulesCoreReactNativeDir();
   runLinkPlugin(env);
   const r = spawnSync(gradlew, args, { cwd: execCwd, stdio: 'inherit', shell: isWin, env });
   status = r.status ?? 1;

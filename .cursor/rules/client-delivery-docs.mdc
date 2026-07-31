@@ -26,7 +26,7 @@ alwaysApply: false
 | BRD | `docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md` | `01_BRD_XeVN_OS.html` | `pnpm docs:brd:html` |
 | SRS | Catalog + overrides | `02_SRS_XeVN_OS.html` | `pnpm docs:srs:audit` → `pnpm docs:srs:html` |
 
-- Shell TSCAir/Unicom: `doc-tscair-shell.mjs`, logo `docs/client-delivery/assets/logo-unicom.png`
+- Shell TSCAir: `doc-tscair-shell.mjs`, logo `docs/client-delivery/assets/xevn-logo.png` (sync từ `assets/brand/xevn-logo-master.png`)
 - SRS CSS bổ sung: `srs-delivery-styles.mjs`
 - Meta lọc: `stripClientDeliveryMeta()` — vẫn không ghi meta từ đầu
 

@@ -19,3 +19,9 @@ alwaysApply: true
 - Keep visual/system consistency across components and screens.
 - Prevent UI regressions with targeted checks for key journeys.
 - No UI feature marked DONE without UX acceptance evidence.
+
+## Locale format lock (vi-VN — sponsor 2026-07-20)
+- **Dates:** user-facing display/entry = `dd/MM/yyyy`; datetime = `dd/MM/yyyy HH:mm`. Invalid/null → safe empty (`—`), never crash / epoch junk.
+- **Money & business quantities (MUST):** auto thousand grouping while typing (`vi-VN`); parse to plain number on submit/API. Examples: salary, insurance amounts, charter capital, contributed value, VND budgets.
+- **EXEMPT (no thousand group):** page size, year, scores/ratings 0–100, percents (`ratio_percent`), chart axes, OTP/PIN.
+- SoT AC: `docs/program/UX_VI_DATE_NUMBER_FORMAT_AC.md` · QA pointer: `docs/qa/USER_FLOW_OPERABILITY_MATRIX.md` §2b.

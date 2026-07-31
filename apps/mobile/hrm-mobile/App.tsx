@@ -10,6 +10,7 @@ import { NetworkProvider } from './src/context/NetworkContext';
 import { RealtimeProvider } from './src/context/RealtimeContext';
 import { useQaLoginDeepLink } from './src/hooks/useQaLoginDeepLink';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { ThemeProvider } from './src/theme/Theme';
 
 function QaLoginDeepLinkBridge() {
   useQaLoginDeepLink();
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
+      <ThemeProvider>
       <AppErrorBoundary resetKey={resetKey} onRetry={onRetry}>
         <AuthProvider key={resetKey}>
           <QaLoginDeepLinkBridge />
@@ -47,6 +49,7 @@ export default function App() {
           </NetworkProvider>
         </AuthProvider>
       </AppErrorBoundary>
+      </ThemeProvider>
     </SafeAreaProvider>
     </GestureHandlerRootView>
   );

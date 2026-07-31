@@ -75,9 +75,10 @@ export default {
           payroll: "hsl(var(--hrm-payroll))",
           employee: "hsl(var(--hrm-employee))",
         },
-        /** XeVN tokens for cross-portal UI consistency (class names: bg-xevn-*, text-xevn-*) */
+        /** XeVN tokens — SoT mirrors portal / proposal §3.1 (XEVN-THM-FE-00) */
         xevn: {
           primary: "#1E40AF",
+          primaryPressed: "#1E3A8A",
           accent: "#06B6D4",
           success: "#10B981",
           warning: "#F59E0B",
@@ -86,9 +87,11 @@ export default {
           neutral: "#6B7280",
           background: "#F9FAFB",
           surface: "#FFFFFF",
-          text: "#1F2937",
-          textSecondary: "#6B7280",
+          text: "#111827",
+          textSecondary: "#4B5563",
+          textMuted: "#6B7280",
           border: "#E5E7EB",
+          brandShell: "#000000",
         },
       },
       borderRadius: {
@@ -99,6 +102,16 @@ export default {
         input: "8px",
         /** XeVN Symmetrical Grid Law — cards & panels */
         card: "12px",
+      },
+      /** Portal parity — proposal §3 space scale (L2) */
+      spacing: {
+        xs: "0.25rem",
+        sm: "0.5rem",
+        md: "1rem",
+        lg: "1.5rem",
+        xl: "2rem",
+        "2xl": "3rem",
+        "3xl": "4rem",
       },
       keyframes: {
         "accordion-down": {

@@ -87,7 +87,9 @@ if (expoAutolinking != null) {
 }
 useExpoModules()
 
-// Remap autolinked module dirs from OneDrive Unicode realpath → C:\xevn-ecosystem junction (Gradle 8 variant API).
+// Remap autolinked module dirs from OneDrive Unicode realpath → subst/junction ASCII root.
+// When GRADLE_USE_SUBST is on, MUST use GRADLE_SUBST_REPO_ROOT (e.g. Y:\) — mixing C:\xevn-ecosystem
+// with Y:\apps\... breaks Kotlin incremental ("different roots").
 def mapProjectDirToJunction(File dir) {
   if (dir == null) return dir
   def abs = dir.absolutePath.replace('/', '\\')
@@ -96,7 +98,11 @@ def mapProjectDirToJunction(File dir) {
   if (idx < 0) return dir
   def rel = abs.substring(idx + marker.length())
   if (rel.startsWith('\\')) rel = rel.substring(1)
-  def mapped = new File('C:\\xevn-ecosystem', rel)
+  def root = System.getenv('GRADLE_SUBST_REPO_ROOT')
+  if (root == null || root.isEmpty()) {
+    root = 'C:\\xevn-ecosystem'
+  }
+  def mapped = new File(root, rel)
   return mapped.exists() ? mapped : dir
 }
 

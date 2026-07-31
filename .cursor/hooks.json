@@ -21,7 +21,7 @@
     "sessionStart": [
       {
         "command": "node .cursor/hooks/session-start.mjs",
-        "timeout": 10
+        "timeout": 12
       }
     ],
     "afterShellExecution": [
@@ -49,6 +49,12 @@
         "command": "node .cursor/hooks/stop-pm-orchestration.mjs",
         "timeout": 8,
         "loop_limit": 10
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "node .cursor/hooks/after-agent-response-telegram.mjs",
+        "timeout": 8
       }
     ],
     "postToolUse": [

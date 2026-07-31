@@ -88,11 +88,17 @@ export async function isWorkItemClosed(root, workItemId) {
 export function isWaveClosedOnBus(busTail) {
   const tail = (busTail || "").split(/\r?\n/).slice(-200).join("\n");
   if (/HTTPS-PILOT-WAVE-CLOSED|WATCHDOG stale.*JWT already GO/i.test(tail)) return true;
-  if (/WATCHDOG-LOOP-BREAK|HTTPS-RESIDUAL-03-R4.*CLOSED/i.test(tail)) return true;
+  if (/WATCHDOG-LOOP-BREAK|HTTPS-RESIDUAL-03-R4.*CLOSED|SUPERSEDE.*HTTPS-RESIDUAL-03-R4|R4-LOOP-BREAK/i.test(tail))
+    return true;
   if (/P1-EX-BE-HTTPS-P-CC-01-JWT[\s\S]{0,800}PASS_TO_PM[\s\S]{0,400}GO/i.test(tail))
     return true;
   if (/P1-EX-PM-HTTPS-PROBE-PROMOTE[\s\S]{0,200}VERIFIED/i.test(tail)) return true;
   if (/P1-EX-QC-HTTPS-P-CC-01-JWT[\s\S]{0,400}PASS_TO_PM/i.test(tail)) return true;
+  // 2026-07-28: QC GWC freshness closed + SUPERSEDE re-dispatch — stop JWT loop
+  if (/SUPERSEDE(#\d+)?\s+P1-EX-BE-HTTPS-P-CC-01-JWT/i.test(tail)) return true;
+  if (/P-CC-01-jwt\s+\*\*CLOSED\*\*/i.test(tail)) return true;
+  if (/INTAKE\s+P1-EX-QC-HTTPS-P-CC-01-JWT[\s\S]{0,200}GWC/i.test(tail)) return true;
+  if (/IDLE-OK.*JWT|JWT already QC GO|JWT-LOOP-BREAK/i.test(tail)) return true;
   return false;
 }
 
@@ -236,21 +242,46 @@ export function deriveDispatchHint({ busTail, inboxRec, root: rootArg }) {
   } else if (role === "devops") {
     nextRole = "qa";
     actionVi =
-      "QA smoke sau deploy: xác nhận bản build mới trên https://14-225-217-232.nip.io và ghi evidence PASS/FAIL.";
+      "QA smoke sau deploy: xác nhận bản build mới trên http://14.225.217.232:8088 và ghi evidence PASS/FAIL.";
   } else if (role === "qa") {
     const ack = parseLatestAck(bus);
-    if (ack === "FAIL_TO_PM") {
+    // R4 attendance localhost already CLOSED (2026-05-31) — never re-inject
+    if (
+      /HTTPS-RESIDUAL-03-R4|P1-EX-FE-BE-HTTPS-RESIDUAL-03-R4|R4-LOOP-BREAK/i.test(bus) &&
+      /CLOSED|PASS_TO_PM|SUPERSEDE/i.test(bus)
+    ) {
+      nextRole = "pm";
+      workItemId = "P1-EX-PM-IDLE";
+      actionVi = "HTTPS RESIDUAL-03-R4 đã CLOSED — không Task Dev-FE 54321; đọc wave mở (ERP fidelity / Claude).";
+    } else if (ack === "FAIL_TO_PM" && /54321|fallbackAllCount\s*[>:=]\s*[1-9]/i.test(bus)) {
       nextRole = "dev-fe";
       workItemId = feResidualNextRound(workItemId);
       actionVi =
         "QA FAIL (fallback 127.0.0.1:54321 còn >0): loại hết Supabase localhost trên attendance HTTPS; READY_FOR_QA.";
+    } else if (ack === "FAIL_TO_PM") {
+      nextRole = "pm";
+      workItemId = "P1-EX-PM-IDLE";
+      actionVi = "QA FAIL — đọc residual thật trên bus/evidence; không mặc định R4 54321.";
     } else {
       nextRole = "qc";
       workItemId = qaToQcWorkItem(workItemId);
       actionVi = "QC gate: đọc evidence QA, GO / GWC / NO-GO.";
     }
   } else if (role === "qc") {
-    if (/P-CC-01-jwt|C-JCC03-01/i.test(bus) || /j-cc-03|p-cc-04c/i.test(title)) {
+    // JWT residual đã CLOSED (GWC dual 86400) — không fallback Dev-BE JWT nữa
+    if (
+      /SUPERSEDE(#\d+)?\s+P1-EX-BE-HTTPS-P-CC-01-JWT|P-CC-01-jwt\s+\*\*CLOSED\*\*|JWT-LOOP-BREAK/i.test(
+        bus
+      )
+    ) {
+      nextRole = "pm";
+      workItemId = "P1-EX-PM-IDLE";
+      actionVi =
+        "P-CC-01-jwt đã CLOSED — không Task Dev-BE JWT; intake wave mở (nip.io / UX) nếu còn.";
+    } else if (
+      (/P-CC-01-jwt|C-JCC03-01/i.test(bus) || /j-cc-03|p-cc-04c/i.test(title)) &&
+      /FAIL|expiresInSec(?!\s*=\s*86400)|probe exit\s*1/i.test(bus)
+    ) {
       nextRole = "dev-be";
       workItemId = "P1-EX-BE-HTTPS-P-CC-01-JWT-01";
       actionVi =
@@ -261,10 +292,9 @@ export function deriveDispatchHint({ busTail, inboxRec, root: rootArg }) {
       if (!workItemId.includes("RESIDUAL")) workItemId = "P1-EX-FE-BE-HTTPS-RESIDUAL-03-R4";
       actionVi = "QC NO-GO — dev-fe/dev-be sửa residual P0; READY_FOR_QA.";
     } else {
-      nextRole = "dev-be";
-      workItemId = "P1-EX-BE-HTTPS-P-CC-01-JWT-01";
-      actionVi =
-        "QC xong — kiểm tra residual P-CC-01-jwt trên bus; dispatch dev-be nếu probe còn FAIL.";
+      nextRole = "pm";
+      workItemId = "P1-EX-PM-IDLE";
+      actionVi = "QC xong — đọc Residual; chỉ Task nếu còn P0 mở (không mặc định JWT).";
     }
   } else if (role === "pm") {
     const dispatched = lastPmDispatchRole(bus);

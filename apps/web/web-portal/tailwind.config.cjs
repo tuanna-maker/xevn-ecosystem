@@ -1,4 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+/**
+ * XeVN web-portal — Tailwind class SoT for brand colors / radius / shadow.
+ * Hex values MUST stay in lockstep with `:root --xevn-*` in `src/index.css`
+ * (proposal §3 · FE-XEVN-BRAND-TOKENS-L1-01). Prefer `bg-xevn-primary` over
+ * hardcoded `#1E40AF`. Focus: `ring-xevn-accent` | `ring-xevn-primary`.
+ */
 module.exports = {
   content: [
     "./index.html",
@@ -9,6 +15,7 @@ module.exports = {
       colors: {
         xevn: {
           primary: '#1E40AF',
+          primaryPressed: '#1E3A8A',
           accent: '#06B6D4',
           success: '#10B981',
           warning: '#F59E0B',
@@ -17,9 +24,14 @@ module.exports = {
           neutral: '#6B7280',
           background: '#F9FAFB',
           surface: '#FFFFFF',
-          text: '#1F2937',
-          textSecondary: '#6B7280',
+          /** Body — sponsor sharp (proposal §3.1) */
+          text: '#111827',
+          /** Hint / label — ban pale AI gray for readable content */
+          textSecondary: '#4B5563',
+          /** Icon / placeholder only — never table/ops labels */
+          textMuted: '#6B7280',
           border: '#E5E7EB',
+          brandShell: '#000000',
         },
       },
       borderColor: {

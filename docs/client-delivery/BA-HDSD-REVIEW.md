@@ -49,7 +49,7 @@ Tài liệu **đủ khung** cho pilot: chuẩn bị Windows, lệnh seed/UAT, đ
 | P1 | **4.6–4.7**, **5.3** | Thay `docs/hrm/...`, `docs/qa/...` bằng tên tài liệu; giữ nội dung đăng nhập. |
 | P1 | **8. Phụ lục — Phụ lục B** | Đổi tiêu đề / tách bản IT; narrative khách không liệt kê `scripts/`. |
 | P1 | **8. Phụ lục — Phụ lục C** | Viết lại cho khách (PDF/HTML tùy chọn) hoặc xóa meta pipeline. |
-| P1 | *(dòng ký **Kiểm soát thay đổi** / footer)* | Bỏ “nội bộ”; dùng “Bản pilot — UNICOM / XeVN Group”. |
+| P1 | *(dòng ký **Kiểm soát thay đổi** / footer)* | Bỏ “nội bộ”; dùng “Bản pilot — XeVN Group”. |
 | P2 | **4.6** (trước bảng đăng nhập) | Bảng phân loại tài khoản & mật khẩu pilot. |
 | P2 | **5. Luồng nghiệp vụ thử theo vai** | Thêm cột tham chiếu MOD/FR hoặc UC pilot. |
 | P2 | **4.5** và **5.5** | Thống nhất bắt buộc/tùy chọn Portal trong pilot. |

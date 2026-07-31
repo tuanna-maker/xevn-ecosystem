@@ -26,7 +26,8 @@ services:
     environment:
       CI: "true"
       VITE_DEV_PROXY_HRM_WEB: http://hrm-fe:8080
-      VITE_DEV_PROXY_HRM_API: http://hrm-be:3001
+      # Via hrm-api-lb least_conn (hrm-be + hrm-be-2) — P1-HRM-SCALE-DO-W4
+      VITE_DEV_PROXY_HRM_API: http://hrm-api-lb:80
       # xbos-be reads XBOS_BE_PORT as its bind port (28002); proxy must match container-side port
       VITE_DEV_PROXY_XBOS_API: http://xbos-be:28002
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/web-portal exec vite -- --host 0.0.0.0 --port 5173"
@@ -37,7 +38,7 @@ services:
         condition: service_completed_successfully
       hrm-fe:
         condition: service_started
-      hrm-be:
+      hrm-api-lb:
         condition: service_started
       xbos-be:
         condition: service_started
@@ -53,14 +54,14 @@ services:
       - xevn_repo_node_modules:/app/node_modules
     environment:
       CI: "true"
-      VITE_DEV_PROXY_HRM_API: http://hrm-be:3001
+      VITE_DEV_PROXY_HRM_API: http://hrm-api-lb:80
     command: sh -lc "corepack enable && cd /app && pnpm --dir apps/web/hrm exec vite -- --host 0.0.0.0 --port 8080"
     ports:
       - "${HRM_FE_PORT:-8080}:8080"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
-      hrm-be:
+      hrm-api-lb:
         condition: service_started
     restart: unless-stopped
 
@@ -82,15 +83,17 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
-  # --- BE: HRM API ---
+  # --- BE: HRM API (replica 1) ---
+  # Fixed container_name kept for stable ops; scale via sibling hrm-be-2 (not compose scale).
   hrm-be:
     image: node:22-alpine
     container_name: xevn-hrm-be-dev
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/api/hrm/ >/dev/null 2>&1 || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 8
+      # Longer timeout under T-CONC — avoid false unhealthy while Nest is busy (not LB peer-down)
+      test: ["CMD-SHELL", "wget -qO- --timeout=8 http://127.0.0.1:3001/api/hrm/ >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
       start_period: 120s
     working_dir: /app
     volumes:
@@ -106,6 +109,13 @@ services:
       # Force container-side port — HRM_BE_PORT in .env is the HOST port, not app port
       PORT: "3001"
       DOCKER: "1"
+      # Split pool across replicas (Σ ≤ Postgres headroom) — ERRBUDGET: 13×3=39 (r1 near-pass)
+      PG_POOL_MAX: "${HRM_BE_PG_POOL_MAX:-13}"
+      # Nest HTTP keepalive ≥65s (align nginx upstream keepalive 60s) — HOLD-ERRBUDGET
+      HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
+      HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
+      # Endurance: headroom for 1000 VU hold (no mem_limit — avoid OOM kill cliff)
+      NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
       # S2S bridge — dev VPS: literal key (deploy/.env hash vs apps/*/.env mismatch caused XBOS-AUTH-001)
       INTERNAL_API_KEY: xevn-dev-internal-key
       # UF-XBOS-09/15 + UF-HRM-10 — service JWT must match xbos-be (apps/*/.env replace_with_strong_secret drift)
@@ -116,11 +126,173 @@ services:
       XBOS_API_URL: http://xbos-be:${XBOS_BE_PORT:-28002}
     ports:
       - "${HRM_BE_PORT:-3001}:3001"
-    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:dev"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    # Prefer prod runtime for load windows (nest watch adds overhead under T-CONC)
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:prod"
     depends_on:
       pnpm-install:
         condition: service_completed_successfully
       xbos-be:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- BE: HRM API (replica 2) — host :3011; nginx least_conn via deploy/nginx/upstream-replicas.conf ---
+  hrm-be-2:
+    image: node:22-alpine
+    container_name: xevn-hrm-be-2-dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --timeout=8 http://127.0.0.1:3001/api/hrm/ >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    env_file:
+      - ../../deploy/xevn-ecosystem/.env
+      - ../../apps/api/hrm-api/.env
+    environment:
+      CI: "true"
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: "3001"
+      DOCKER: "1"
+      PG_POOL_MAX: "${HRM_BE_PG_POOL_MAX:-13}"
+      HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
+      HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
+      NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
+      INTERNAL_API_KEY: xevn-dev-internal-key
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
+      SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
+      SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
+      XBOS_API_URL: http://xbos-be:${XBOS_BE_PORT:-28002}
+    ports:
+      - "${HRM_BE_2_PORT:-3011}:3001"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:prod"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      xbos-be:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- BE: HRM API (replica 3) — host :3012; HOLD-ERRBUDGET status=0 headroom ---
+  hrm-be-3:
+    image: node:22-alpine
+    container_name: xevn-hrm-be-3-dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --timeout=8 http://127.0.0.1:3001/api/hrm/ >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    env_file:
+      - ../../deploy/xevn-ecosystem/.env
+      - ../../apps/api/hrm-api/.env
+    environment:
+      CI: "true"
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: "3001"
+      DOCKER: "1"
+      PG_POOL_MAX: "${HRM_BE_PG_POOL_MAX:-13}"
+      HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
+      HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
+      NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
+      INTERNAL_API_KEY: xevn-dev-internal-key
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
+      SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
+      SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
+      XBOS_API_URL: http://xbos-be:${XBOS_BE_PORT:-28002}
+    ports:
+      - "${HRM_BE_3_PORT:-3012}:3001"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:prod"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      xbos-be:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- BE: HRM API (replica 4) — host :3013; ERRBUDGET r2 headroom (r1 = 1.002%) ---
+  hrm-be-4:
+    image: node:22-alpine
+    container_name: xevn-hrm-be-4-dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --timeout=8 http://127.0.0.1:3001/api/hrm/ >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    working_dir: /app
+    volumes:
+      - ../..:/app
+      - xevn_repo_node_modules:/app/node_modules
+    env_file:
+      - ../../deploy/xevn-ecosystem/.env
+      - ../../apps/api/hrm-api/.env
+    environment:
+      CI: "true"
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: "3001"
+      DOCKER: "1"
+      PG_POOL_MAX: "${HRM_BE_PG_POOL_MAX:-13}"
+      HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
+      HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
+      NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
+      INTERNAL_API_KEY: xevn-dev-internal-key
+      SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
+      SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
+      SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
+      XBOS_API_URL: http://xbos-be:${XBOS_BE_PORT:-28002}
+    ports:
+      - "${HRM_BE_4_PORT:-3013}:3001"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    command: sh -lc "corepack enable && cd /app && pnpm --dir apps/api/hrm-api start:prod"
+    depends_on:
+      pnpm-install:
+        condition: service_completed_successfully
+      xbos-be:
+        condition: service_started
+    restart: unless-stopped
+
+  # --- LB: HRM API least_conn (host :3101 for T-CONC; portal/hrm-fe proxy target) ---
+  hrm-api-lb:
+    image: nginx:1.27-alpine
+    container_name: xevn-hrm-api-lb-dev
+    volumes:
+      - ./nginx/hrm-api-lb-nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/hrm-api-lb.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "${HRM_API_LB_PORT:-3101}:80"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    depends_on:
+      hrm-be:
+        condition: service_started
+      hrm-be-2:
+        condition: service_started
+      hrm-be-3:
         condition: service_started
     restart: unless-stopped
 

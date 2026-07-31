@@ -7,9 +7,13 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "build:clean": "node -e \"const fs=require('fs');['dist','tsconfig.build.tsbuildinfo'].forEach(p=>{try{fs.rmSync(p,{recursive:true,force:true})}catch{}})\" && nest build && node ./scripts/verify-dist.mjs",
+    "postbuild": "node ./scripts/verify-dist.mjs",
+    "predev": "node ./scripts/ensure-dist.mjs",
     "dev": "nest start --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "prestart:dev": "node ./scripts/ensure-dist.mjs",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

@@ -1,5 +1,7 @@
 # SRS Phân Hệ XBOS
 
+> **SoT khách (Bateco W1+W2 — 2026-07-22):** `docs/client-delivery/xbos/SRS_XBOS_KHACH.md` + `BRD_XBOS_KHACH.md` · inventory `docs/xbos/UC_INVENTORY_BRD_SRS.md` (**16 FR** = 12 W1 spine + RACI/RBAC/CAT-CC/KPI). File này giữ **annex kỹ thuật / API** đội ngũ — **không** đè FR khách; leftover CAT/WF/RACI sâu = đợt W3+.
+
 ## 1. Mục Đích
 
 Đặc tả yêu cầu phần mềm chi tiết cho XBOS, bảo đảm:
@@ -12,6 +14,10 @@
 ### 1.1 Tham chiếu bắt buộc — phạm vi dữ liệu toàn hệ
 
 Mọi use case XBOS có truy cập dữ liệu theo tenant hoặc phát hành xuống phân hệ phải **bổ sung** hành vi từ `UC-ECO-SCOPE-01` và `UC-ECO-SCOPE-02` trong `docs/ecosystem/SRS.md` (và `BR-ECO-SCOPE-*` trong `docs/ecosystem/BRD.md`). Phân hệ mới trong hệ sinh thái chỉ cần trích dẫn bộ tài liệu `docs/ecosystem/*` thay vì sao chép.
+
+| Khái niệm | Quy tắc | Tài liệu |
+|-----------|---------|----------|
+| **Field display (U72 — toàn XBOS)** | Mọi enum/code/slug trên UI người dùng (CC, portal, x-bos-core) phải qua dictionary → nhãn VI; thiếu map → **«—»**; **cấm** fallback raw key; **cấm** bind `entity_type` làm ngành nghề | **FR-XBOS-U72-LABEL-01** · **BR-XBOS-LABEL-01..03** · slice `docs/xbos/SRS_FIELD_DISPLAY.md` · **AC-F-XBOS-*** / **AC-H-XBOS-*** |
 
 ## 2. Danh Sách Use Case Chuẩn
 
@@ -292,3 +298,28 @@ sequenceDiagram
 **Phụ thuộc:** `tenant-scope`, legal entities, `infrastructure/settings` runtime API.
 
 **Business Logic:** `INITIAL_INFRASTRUCTURE_FOUNDATION_CATEGORIES` → migrate sang DB/catalog-governance.
+
+---
+
+## 13. Hiển thị trường XBOS — U72 (ADD `BA-U72-FIELD-DISPLAY-XBOS-SRS-01`)
+
+> **ADD-only** — không đè FR khách W1/W2 trong `SRS_XBOS_KHACH.md`; không đè AC-CO-IND / shareholder CRUD.  
+> **Slice đầy đủ (bảng nguồn · label VI · dạng nguồn · dạng UI · null→— + ma trận AC QA):** `docs/xbos/SRS_FIELD_DISPLAY.md`.
+
+### FR-XBOS-U72-LABEL-01 — Nhãn hiển thị bắt buộc (toàn module XBOS)
+
+| Mục | Nội dung |
+|-----|----------|
+| **Mục đích** | Người dùng XBOS / Command Center / x-bos-core luôn đọc được nhãn nghiệp vụ tiếng Việt trên list/detail/badge/select/toast — không thấy khóa kỹ thuật. |
+| **Phạm vi** | F-XBOS-01..11 (inventory; **GWC R2 CLOSED** local must_keep) + high-risk H-XBOS-01..14 + **Catalog SoT** `entity_type` / `business_lines` / `legal_form` (§3.1) + UNKNOWN U-XBOS-01..04. |
+| **Quy tắc** | Dictionary trước render; **BR-U72-NULL-01**: miss → **«—»**; **cấm** `\|\| raw`; copy UI không nhúng EN jargon (`holding`). |
+| **Must keep** | `ENTITY_LEVEL_LABELS`; `INFRA_*_LABELS`; HRM `resolveIndustryDisplay` / AC-CO-IND-02; shareholder text fields; **không reopen** AC-F-XBOS-01..11 GWC 🟢. |
+
+| AC (tóm tắt) | Pass | Fail |
+|--------------|------|------|
+| **AC-U72-XBOS-GLOBAL** | Enum/code/slug → nhãn VI hoặc «—» | Raw key trên UI |
+| **AC-F-XBOS-01..11** | Đã GWC local — regression only nếu raw mới | Reopen không có FAIL evidence |
+| **AC-C-XBOS-ET/BL/LF** | Catalog §3.1 nhãn VI | Raw entity_type / ngành / legal_form |
+| **AC-H-XBOS-*** / **AC-U-XBOS-*** | Spot high-risk + UNKNOWN | Raw trên industry / affiliate / legacy LF / toast soft |
+
+**Evidence BA:** `docs/qa/evidence/ba-u72-field-display-xbos-srs-01-20260727.md` · inventory: `ba-display-xbos-review-01-20260727.md` · QC: `qc-xbos-u72-field-display-01-r2-20260727.md`.

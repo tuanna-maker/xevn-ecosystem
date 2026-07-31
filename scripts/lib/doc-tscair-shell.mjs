@@ -146,12 +146,12 @@ const renderRoot = wrapper.querySelector('.md-render');
 const htmlContent = marked.parse(mdRaw);
 renderRoot.innerHTML = htmlContent;
 
-Object.entries(DIAGRAMS).forEach(([key, fig]) => {
-  const token = '<p>[[IMG:' + key + ']]</p>';
+Object.entries(DIAGRAMS).forEach(([entryKey, fig]) => {
+  const imgToken = '<p>[[IMG:' + entryKey + ']]</p>';
   const block =
     '<figure class="architecture-figure"><img src="' + fig.dataUrl + '" alt="' + fig.caption + '" loading="eager" />' +
     '<figcaption>' + fig.caption + '</figcaption></figure>';
-  renderRoot.innerHTML = renderRoot.innerHTML.split(token).join(block);
+  renderRoot.innerHTML = renderRoot.innerHTML.split(imgToken).join(block);
 });
 
 renderRoot.querySelectorAll('pre code.language-mermaid').forEach((codeEl) => {

@@ -7,7 +7,7 @@
 | **Ngày** | 05/06/2026 |
 | **Trạng thái** | Bản pilot — vận hành & nghiệm thử |
 | **Đối tượng** | Ban TGĐ, phòng Nhân sự, IT vận hành pilot |
-| **Tác giả** | UNICOM — AI Software Factory |
+| **Tác giả** | XeVN Group |
 
 **Mục đích:** Hướng dẫn đội vận hành và nghiệp vụ **chuẩn bị môi trường**, **khởi động dịch vụ**, **đăng nhập thử** và **đi qua các luồng nghiệp vụ chính** trên bản pilot XeVN OS — cùng giọng văn và cấu trúc bộ tài liệu BRD/SRS đã gửi khách.
 
@@ -484,7 +484,7 @@ Phụ lục này dành cho **IT** khi làm việc trong repository; không in ri
 ### Phụ lục C — Định dạng phát hành
 
 - **BRD / SRS HTML:** `01_BRD_XeVN_OS.html`, `02_SRS_XeVN_OS.html` (khi đã phát hành trong bộ tài liệu pilot).
-- **HDSD (tài liệu này):** nguồn markdown — xuất **PDF hoặc in** trực tiếp; có thể ghép bìa UNICOM cùng bộ BRD/SRS mà không cần build HTML tự động.
+- **HDSD (tài liệu này):** nguồn markdown — xuất **PDF hoặc in** trực tiếp; có thể ghép bìa XeVN cùng bộ BRD/SRS mà không cần build HTML tự động.
 
 ---
 
@@ -515,4 +515,4 @@ Tài liệu này mô tả bản **sẵn sàng chạy thử** Giai đoạn 1 — 
 
 ---
 
-*Bản pilot — UNICOM Technology Solutions / XeVN Group. Mật khẩu UAT trong tài liệu chỉ dùng môi trường thử nghiệm.*
+*Bản pilot — XeVN Group. Mật khẩu UAT trong tài liệu chỉ dùng môi trường thử nghiệm.*

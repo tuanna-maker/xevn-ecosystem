@@ -1,7 +1,13 @@
+<!--
+  @CODE-MEMORY MOB-XEVN-BRAND-TOKENS-L1-01 · 2026-07-22
+  Purpose: Khóa native Android splash + Material primary khớp brand XeVN.
+  must_keep: splashscreen_background = #000000 (Expo + SplashIntro); colorPrimary = #1E40AF.
+  SoT: docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L1m · AC-BRAND-DNA-06
+-->
 <resources>
-  <color name="splashscreen_background">#0f172a</color>
-  <color name="iconBackground">#0f172a</color>
-  <color name="colorPrimary">#023c69</color>
-  <color name="colorPrimaryDark">#0f172a</color>
-  <color name="notification_icon_color">#0f172a</color>
+  <color name="splashscreen_background">#000000</color>
+  <color name="iconBackground">#000000</color>
+  <color name="colorPrimary">#1E40AF</color>
+  <color name="colorPrimaryDark">#1E3A8A</color>
+  <color name="notification_icon_color">#1E40AF</color>
 </resources>

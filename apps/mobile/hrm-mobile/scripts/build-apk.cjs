@@ -148,7 +148,7 @@ function prebundle(target, bundleFlags) {
         NODE_ENV: 'production',
         CI: '1',
         EXPO_PUBLIC_HRM_API_BASE_URL:
-          process.env.EXPO_PUBLIC_HRM_API_BASE_URL || 'https://14-225-217-232.nip.io',
+          process.env.EXPO_PUBLIC_HRM_API_BASE_URL || 'http://14.225.217.232:3001',
         /* Pilot release APK has no google-services.json — keep push registration off unless FCM is wired. */
         EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION:
           process.env.EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION || '0',
@@ -302,9 +302,18 @@ function runGradle(target) {
 }
 
 function copyApk(target) {
-  const releaseDir = path.join(androidDir, 'app/build/outputs/apk/release');
-  if (!fs.existsSync(releaseDir)) {
-    throw new Error(`Không thấy thư mục APK: ${releaseDir}`);
+  const localBuildRoot =
+    process.env.GRADLE_OFF_ONEDRIVE_BUILD_ROOT ||
+    process.env.GRADLE_LOCAL_BUILD_ROOT ||
+    (process.platform === 'win32' ? 'C:\\xevn-android-build' : '');
+  const releaseCandidates = [
+    path.join(androidDir, 'app/build/outputs/apk/release'),
+    localBuildRoot ? path.join(localBuildRoot, '_app', 'outputs', 'apk', 'release') : null,
+    localBuildRoot ? path.join(localBuildRoot, 'app', 'outputs', 'apk', 'release') : null,
+  ].filter(Boolean);
+  const releaseDir = releaseCandidates.find((d) => fs.existsSync(d));
+  if (!releaseDir) {
+    throw new Error(`Không thấy thư mục APK. Tried: ${releaseCandidates.join(' | ')}`);
   }
   const apks = fs.readdirSync(releaseDir).filter((f) => f.endsWith('.apk'));
   if (!apks.length) {

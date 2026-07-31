@@ -49,4 +49,16 @@ subprojects { subproject ->
       subproject.projectDir = new File(substRoot + ap.substring(realRoot.length()))
     }
   }
+  // PCOMP-W7-MOB-WAVE-APK-01: keep intermediates off OneDrive (junction target) — avoid
+  // NoSuchFileException / Kotlin different-roots races during mergeReleaseResources.
+  def offOneDriveBuild = System.getenv("GRADLE_OFF_ONEDRIVE_BUILD_ROOT")
+  if (offOneDriveBuild != null && !offOneDriveBuild.isEmpty()) {
+    subproject.buildDir = new File(offOneDriveBuild, subproject.path.replace(':', '_'))
+  }
+}
+
+// Root :app also needs off-OneDrive buildDir when env set.
+def offOneDriveBuildRoot = System.getenv("GRADLE_OFF_ONEDRIVE_BUILD_ROOT")
+if (offOneDriveBuildRoot != null && !offOneDriveBuildRoot.isEmpty()) {
+  project.buildDir = new File(offOneDriveBuildRoot, '_root')
 }

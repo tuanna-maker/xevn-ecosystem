@@ -92,6 +92,8 @@ function followupMessage(signal, busTail) {
       status: signal.status,
     },
   });
+  // Closed wave (JWT GWC / SUPERSEDE) — do not inject stale Dev-BE Task
+  if (hint?.closed || hint?.workItemId === "P1-EX-PM-IDLE") return "";
   return buildPmFollowupVi({ hint, variant: "subagent" });
 }
 
@@ -271,6 +273,18 @@ async function main() {
     /** Hook audit mirror only — formal program bus is `docs/program/AGENT_MESSAGE_BUS.md`. */
     const busPath = path.join(teamDir, "AGENT_MESSAGE_BUS.md");
 
+    // Telegram sponsor = chat-priority wake (even when PM_ORCHESTRATION_MODE=STOP)
+    try {
+      const { checkTelegramPmIntake } = await import("./telegram-pm-check.mjs");
+      const tg = await checkTelegramPmIntake(root);
+      if (tg?.followup_message) {
+        process.stdout.write(JSON.stringify(tg));
+        return;
+      }
+    } catch {
+      /* fail-open — continue normal subagentStop */
+    }
+
     const signal = buildSignal(payload);
     const completionText = extractCompletionText(payload);
     const role = signal.subagent_type;
@@ -347,10 +361,9 @@ async function main() {
     await fs.appendFile(busPath, entry, "utf8");
 
     const busTail = await readBusTailShort(root);
+    const msg = followupMessage(signal, busTail);
     process.stdout.write(
-      JSON.stringify({
-        followup_message: followupMessage(signal, busTail),
-      })
+      msg ? JSON.stringify({ followup_message: msg }) : JSON.stringify({})
     );
   } catch {
     process.stdout.write(JSON.stringify({}));

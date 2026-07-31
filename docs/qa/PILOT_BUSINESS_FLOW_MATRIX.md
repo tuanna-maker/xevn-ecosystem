@@ -35,8 +35,9 @@ pnpm run test:system:uat
 
 | ID | Route | Nghiệp vụ | UC-ID | SRS ref | PASS criteria | L2 status |
 |----|-------|-----------|-------|---------|---------------|-----------|
-| P-CC-01 | `/login` → `/command-center` | Đăng nhập tập đoàn | UC-ECO-SCOPE-02, UC-XBOS-AUTH-02 | `docs/ecosystem/SRS.md` §9–10 | Redirect OK; JWT `expiresInSec=86400` | PASS (L1/L0) |
+| P-CC-01 | `/login` → `/command-center` | Đăng nhập tập đoàn | UC-ECO-SCOPE-02, UC-XBOS-AUTH-02 | `docs/ecosystem/SRS.md` §9–10 | Redirect OK; JWT `expiresInSec=86400` | **PASS** HTTPS nip.io freshness 2026-07-22 — QC GWC `P-CC-01-jwt`+`C-JCC03-01` CLOSED (`p1-ex-qc-https-p-cc-01-jwt-01-20260722.md`; QA/BE probe exit 0 · L2 23/23 · L2.5 7/7) |
 | P-CC-02 | `/command-center` (settings) | Đơn vị thành viên | UC-CC-03, UC-ECO-MASTER-01 | `docs/ecosystem/SRS.md` §8.1 | `group-member-units` 200; ≥1 row; không 403 | PASS (L1/L0) |
+| P-CC-HRM-DASH | `/command-center/hrm/dashboard` | Dashboard HRM embed | **UC-HRM-20** | `docs/hrm/SRS.md` §13 · `HRM_MENU_DATA_LINKAGE_MATRIX.md` §2.1 | Browser load: **every** `/api/hrm/*` 2xx; bắt buộc `employees/summary`, `attendance/overview`, `payroll/payslips`, `attendance/leave-requests` **200**; không HRM API Sync ERROR | **PASS** 2026-07-31 — [`qa-hrm-dash-net-01-verify-20260730.md`](evidence/qa-hrm-dash-net-01-verify-20260730.md): 4 spine **200** load+F5 · no `attendance/records` storm |
 | P-CC-03 | `/command-center/hrm/employees` | Danh sách nhân sự | **UC-HRM-21** | `docs/hrm/SRS.md` §13 UC-HRM-21 | Sync CONNECTED; `employees?page_size=100` 200; row hoặc **empty+200**; không 409/54321 load | **PASS** |
 | P-CC-04 | `/command-center/hrm/contracts` | Hợp đồng | **UC-HRM-25** (HĐ) | `docs/hrm/SRS.md` §13 UC-HRM-25 | Không 54321; `settings-catalogs` 200; `contracts-insurance` 200; không 409 rollup scope | **PASS** |
 | P-CC-05 | `/command-center/hrm/insurance` | Bảo hiểm | **UC-HRM-25** (BHXH) | `docs/hrm/SRS.md` §13 UC-HRM-25 | Nest/proxy **200** hoặc empty+200; không 409 load; không 54321 bắt buộc; xem BA trace § P-CC-05 | **PASS** (S0 QA 2026-05-23) |
@@ -44,6 +45,18 @@ pnpm run test:system:uat
 | P-CC-07 | `/command-center/hrm/attendance` | Chấm công | **UC-HRM-23** | `docs/hrm/SRS.md` §13 UC-HRM-23 | `attendance/records` 200; row hoặc empty+200; không 409; không ngày 1970 | **PASS** (S0 L2 2026-05-23) |
 | P-CC-08 | `/command-center/hrm/payroll` | Tiền lương | **UC-HRM-24** | `docs/hrm/SRS.md` §13 UC-HRM-24 | `payroll/payslips` 200; row hoặc empty+200; không 409/54321 load | **PASS** (S0 L2 2026-05-23) |
 | P-CC-09 | `/command-center?settings=hrm_catalog_governance` (alias `/catalog-governance`) | Hộp thư duyệt DM HRM | **UC-XBOS-CAT-03**, **UC-XBOS-CAT-05** (`BTN-A2`) | `docs/ecosystem/SRS.md` §XBOS governance | `GET catalog-governance/inbox` **200** `XBOS-CAT-212`; row hoặc **empty+200**; không **409** load; approve `POST …/tasks/:id/approve` → `XBOS-CAT-201` khi có pending task (write scope strict — ADR C2) | **PASS** (S2 QA-02 2026-05-24) |
+
+### HRM embed — full registry network audit (19 menus)
+
+SoT registry: `apps/web/web-portal/src/modules/hrm/registry.ts` · QA `QA-HRM-EMBED-NETWORK-AUDIT-01` · evidence [`qa-hrm-embed-network-audit-20260730.md`](evidence/qa-hrm-embed-network-audit-20260730.md)
+
+| ID | Route suffix | L2 network (2026-07-30) |
+|----|--------------|-------------------------|
+| P-CC-HRM-00 | `dashboard` | **PASS** — see P-CC-HRM-DASH · qa-hrm-dash-net-01-verify-20260730.md |
+| P-CC-HRM-01..08 | employees…payroll | **PASS** — 0 bad /api/hrm on load |
+| P-CC-HRM-09 | `performance` | **PASS** — `performance/evaluations` **200** · QA-HRM-PERF-EVAL-500-01 2026-07-30 |
+| P-CC-HRM-10..17 | hrm_ai…reports | **FAIL** cascade — hrm-api 500 storm / down; retest R2 |
+| P-CC-HRM-18..19 | settings, guide | **NOT RUN** — portal refuse mid-audit |
 
 **Scope / empty (mọi P-CC-03..08):** Happy = dữ liệu + 200; Alternate = **empty + 200** (BR-MOCK-01); Exception = **409** `SCOPE_CONTEXT_MISMATCH` khi mismatch; **FAIL** nếu empty che 4xx/5xx hoặc 54321 bắt buộc — chi tiết nhánh trong BA trace.
 
@@ -61,6 +74,7 @@ pnpm run test:system:uat
 | J-HRM-05 | P-CC-06 | Tuyển dụng → requisition/candidate | Detail 200 | **PASS** · [R4](docs/qa/evidence/p1-ex-qa-01-r4-20260526.md) |
 | J-HRM-06 | P-CC-07 | Chấm công → bản ghi | Detail 200 | **PASS** · [R4](docs/qa/evidence/p1-ex-qa-01-r4-20260526.md) |
 | J-HRM-07 | P-CC-08 | Lương → phiếu lương | Payslip detail 200 | **PASS** · [R4](docs/qa/evidence/p1-ex-qa-01-r4-20260526.md) |
+| **J-HRM-IM-01** | P-CC-03 | Employees → Import Excel → preview → Cancel/F5 | `POST …/spreadsheet/import/preview` **HTTP 200** `SHEET-200`; zero persist; **FR-HRM-IM-01**; U65; **not** IM-02 commit | ✅ **PASS local** · QC GWC [`qc-hrm-im-01-preview-ac-01-20260727.md`](evidence/qc-hrm-im-01-preview-ac-01-20260727.md) · BA [`ba-j-hrm-im-01-journey-01-20260727.md`](evidence/ba-j-hrm-im-01-journey-01-20260727.md) · **HOLD_DEPLOY** / **NOT :8088** (host **J-HRM-02** unchanged) |
 
 **L2 PASS without L2.5 PASS = QA FAIL** — QC **NO-GO** cho UAT-READY claim trên slice đó.
 

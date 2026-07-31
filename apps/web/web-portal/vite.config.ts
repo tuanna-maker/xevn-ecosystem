@@ -1,3 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen: Vite web-portal (local/dev)
+ * UC: N/A (tooling)
+ * BR: N/A
+ * SRS: N/A — sponsor TG-INTAKE remove perimeter host from source
+ * TechSpec: N/A
+ * Purpose: Portal Vite proxy `/hr` + `/api/hrm` + `/api/xbos` về localhost/Docker sibling. Không gắn hostname perimeter trong comment/config.
+ * WorkItem: D-FE-REMOVE-NIPIO-01
+ * Coded: 2026-07-28
+ * Callers: `pnpm run dev:web` · portal :5173
+ * Callees: HRM web `VITE_DEV_PROXY_HRM_WEB` · Nest HRM/XBOS ports
+ * FEActions: N/A
+ * BEChain: N/A
+ * Impact: `changeOrigin: true` trên `/hr` → Host sai (`hrm-fe`) khi Vite HRM lọc allowedHosts.
+ * must_keep: Proxy local/dev; `changeOrigin: false` trên `/hr`; HOLD_DEPLOY
+ * SOLID: Host deploy SoT thuộc Ops — FE chỉ local/dev.
+ * LastVerified: docs/qa/evidence/d-fe-remove-nipio-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: D-FE-REMOVE-NIPIO-01
+ * Date: 2026-07-28
+ * Change: Comment proxy `/hr` bỏ tham chiếu perimeter; giữ `changeOrigin: false` cho Docker Host `hrm-fe`.
+ * must_keep: VITE_DEV_PROXY_* defaults 127.0.0.1
+ */
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -37,15 +62,14 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      // Cho phép Host: <IP VPS> / tên miền khi chạy Vite dev trong Docker — mặc định Vite có thể từ chối hoặc không phục vụ đúng SPA khi truy cập qua IP công cộng.
-      // Chỉ dùng cho môi trường dev; production build tĩnh không dùng cấu hình này.
+      // Local/Docker Vite may receive sibling Host headers — allow all in dev only (static prod build ignores this).
       allowedHosts: true,
       // Unified Portal / Command Center — cổng quen thuộc localhost:5173 (x-bos-core chuyển 5176).
       port: 5173,
       strictPort: true,
       proxy: {
         // HRM (base `/hr/`): HTML + HMR + assets đều đi qua prefix này khi nhúng iframe từ portal.
-        // Preserve browser Host (nip.io) — changeOrigin would send Host: hrm-fe and trip Vite allowedHosts.
+        // Keep browser Host — changeOrigin would rewrite Host and trip Vite allowedHosts on hrm-fe.
         '/hr': {
           target: proxyHrmWeb,
           changeOrigin: false,

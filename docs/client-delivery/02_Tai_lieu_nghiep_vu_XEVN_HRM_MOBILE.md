@@ -8,7 +8,7 @@
 | **Ngày cập nhật** | 20/05/2026 |
 | **Trạng thái** | Bản gửi khách hàng / pilot |
 | **Dựa trên** | BRD `01_Tai_lieu_thiet_ke_he_thong_XEVN_HRM_MOBILE.md` v1.0 |
-| **Tác giả** | UNICOM — AI Software Factory |
+| **Tác giả** | XeVN Group |
 
 ---
 
@@ -264,4 +264,4 @@ flowchart TB
 
 ---
 
-*Tài liệu UNICOM — AI Software Factory. Đối chiếu mã nguồn: `apps/mobile/hrm-mobile`, `apps/api/hrm-api`.*
+*Tài liệu XeVN Group. Đối chiếu mã nguồn: `apps/mobile/hrm-mobile`, `apps/api/hrm-api`.*

@@ -79,8 +79,12 @@
 | UC23-E2 | Exception | `attendance_date` epoch 0 trên UI | Render | Ngày **01/01/1970** → **FAIL** data quality |
 | UC23-E3 | Exception | `company_id` invalid UUID khi BE strict | Query | **400** `HRM-VAL-001` (class validation) |
 | UC23-E4 | Exception | Network | A/B | BR-MOCK-02 |
+| **UC23-S1** (ADD) | Happy sheet | Create sheet kỳ + Công chuẩn | `POST …/attendance-sheets` **201** `HRM-AS-201` → list row | AC-ATT-SHEET-01 |
+| **UC23-S2** (ADD) | Happy/Alt open | Open sheet | Grid data **hoặc** empty + lý do | AC-ATT-SHEET-02 |
+| **UC23-S3** (ADD) | Exception storm | List hoặc weekly load | ≤2 GET / URL / 10s; no Abort×N | AC-ATT-SHEET-04/06 |
+| **UC23-S4** (ADD) | F5 | After create | Sheet còn; kỳ đúng | AC-ATT-SHEET-05 |
 
-**Ghi chú:** Mobile check-in (UC-HRM-MOB-04) **ngoài** P-CC-07 nhưng cùng bảng `attendance_records` — L1 UAT P3.
+**Ghi chú:** Mobile check-in (UC-HRM-MOB-04) **ngoài** P-CC-07 nhưng cùng bảng `attendance_records` — L1 UAT P3. **Sheet CRUD** = **HRM-AT-14** / **J-HRM-06b** / **UF-HRM-16**.
 
 ### UC-HRM-24 — Embed lương (P-CC-08)
 
@@ -144,6 +148,8 @@
 | Exception | A/B | Scope 409 | FAIL | TC-BAP-07-E-SCOPE |
 | Exception | B | Date epoch 0 | Không **01/01/1970** trên cột ngày | TC-BAP-07-E-DATE |
 | Exception | A/B | API fail | BR-MOCK-02 | TC-BAP-07-E-API |
+| **Sheet create** (ADD) | App/embed | Kỳ 01/07–31/07 + Công chuẩn → Lưu | POST **201**; list row; no storm | TC-BAP-07-S-CREATE · **J-HRM-06b** |
+| **Sheet open** (ADD) | App/embed | Click sheet | Grid hoặc empty lý do; records ≤2 GET/10s | TC-BAP-07-S-OPEN |
 
 ### P-CC-08 — Tiền lương (UC-HRM-24 / UC24-*)
 
@@ -232,6 +238,7 @@
 |----------------|-------------------|----------|
 | J-HRM-01 | List→profile: no «Không tìm thấy» when list row exists under `main` | P0 regression guard (BR-EMP-LIST-01) · **PASS** W5B |
 | J-HRM-02 | P-CC-03 employees list → row → profile (`GET …/employees/:id?company_id=main`) | **PASS** API scope parity nip.io 2026-06-05 · browser embed click **GWC** (**C-EMPGRPQC-01**) · [`p1-phase1-qc-hrm-emp-group-crud-20260604.md`](evidence/p1-phase1-qc-hrm-emp-group-crud-20260604.md) |
+| **J-HRM-IM-01** | P-CC-03 Employees → Import Excel → preview → Cancel/F5 (non-persist) | **PASS local** · **FR-HRM-IM-01** · Network `POST …/import/preview` **200** `SHEET-200` · zero persist · U65 · QC GWC [`qc-hrm-im-01-preview-ac-01-20260727.md`](evidence/qc-hrm-im-01-preview-ac-01-20260727.md) · BA [`ba-j-hrm-im-01-journey-01-20260727.md`](evidence/ba-j-hrm-im-01-journey-01-20260727.md) · **HOLD_DEPLOY** / NOT :8088 · **OUT** IM-02 · **must_keep** host J-HRM-02 |
 | J-HRM-04 / P-CC-05 | Surface A «Bảo hiểm» shows BHXH columns from `GET .../insurance`, not contract-shaped proxy | **P0** BR-INS-01 |
 | J-HRM-06 / P-CC-07 | No date cell `01/01/1970` when `attendance_date` invalid | **P0** BR-ATT-DATE-01 |
 | J-HRM-01..02 | Profile satellite tab in embed: no `:54321`; `EmbedGuardedTab` or Nest data | **P1** BR-360-SOURCE-01 |
@@ -251,7 +258,7 @@ L2 **PASS** on a row does **not** satisfy UX AC above — QA must cite benchmark
 | **J-HRM-INT-02** | P-CC-03 employee → P-CC-04 contract same NV | ≥1 contract; slug match (extends J-HRM-01) | Both | ⏳ |
 | **J-HRM-INT-03** | P-CC-03 employee → P-CC-08 payslip same NV | `employee_id` + period slug match (extends J-HRM-07) | Both | ⏳ |
 | **J-HRM-INT-04** | P-CC-06 hire → P-CC-03 new employee row | Visible without tenant switch; slug = requisition | Both | ⏳ |
-| **J-HRM-INT-05** | Switcher slug **holding** → tabs 03/04/06/08 | All APIs same selected slug; **0× 409** | Group CEO only | ⏳ |
+| **J-HRM-INT-05** | Switcher slug **holding** → tabs 03/04/06/08 | All APIs same selected slug; **0× 409** | Group CEO only | **PASS** · CD-FB-06 QC GWC 2026-07-19 (`cd-fb-06-role-switch-qc-20260719.md`) |
 
 **Scope overlay:** UC-HRM-SCOPE-01 (rollup) · UC-HRM-SCOPE-02 (member) · UC-HRM-SCOPE-03 (switcher) — AC-INT-SCOPE-* / AC-INT-SW-* in governance doc §7.
 
@@ -325,6 +332,163 @@ L2 **PASS** on a row does **not** satisfy UX AC above — QA must cite benchmark
 - CEO token `companyId=main`; query `company_id=main` (payroll slug; attendance UUID resolved by scope).
 - `VITE_HRM_USE_API` default true; portal session via `portalAuthBridge`.
 - Implementation truth: `docs/hrm/SRS.md` §13 + `apps/web/web-portal/src/modules/hrm/HrmWorkspacePanel.tsx` + `apps/api/hrm-api` controllers cited above.
+
+## 16. Recruitment workflow bridge — J-REC-WF-01..06 (`XHRM-REC-WF-BA-01`)
+
+**Source:** `docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_BA_DELTA.md` · Program `P1-XBOS-HRM-REC-WF-BRIDGE`  
+**Account:** `ceo@xe.vn` (Group CEO rollup `company_id=main`) · Approver via XBOS Inbox (resolver)  
+**must_keep:** UF-HRM-12 · J-HRM-05 · P-CC-06 · LeaveWorkflowBridge · F6 AC-CD-F6-*  
+**U65:** zero-seed — inbox task chỉ sau chuỗi FE (canvas → HRM submit → spawn).
+
+| Journey | Click path | Pass (L2.5) |
+|---------|------------|-------------|
+| **J-REC-WF-01** | XBOS Workflow canvas → save active `hrm_recruitment_*` → reload | Definition + resolver persist (AC-REC-WF-01) |
+| **J-REC-WF-02** | P-CC-06 / HRM → tạo plan → Gửi duyệt → F5 | Spawn 2xx **hoặc** banner `SPAWN-MISSING` + pending (AC-REC-WF-02) |
+| **J-REC-WF-03** | XBOS Inbox → Duyệt task tuyển dụng → HRM status sync → F5 | Status approved/open; **cấm** seed inbox (AC-REC-WF-03) |
+| **J-REC-WF-04** | Candidate roadmap → sau step → stage chip = F6 map → J-HRM-05 | Unmapped fail-closed (AC-REC-WF-04) |
+| **J-REC-WF-05** | P-CC-06 dashboard funnel 6 cột | Counts = live aggregate post-sync; BR-DQ-01 (AC-REC-WF-05) |
+| **J-REC-WF-06** | Inbox Từ chối + lý do | rejected + notify; no hired downgrade (AC-REC-WF-06) |
+
+**Waves:** BA `XHRM-REC-WF-BA-01` → SA ADR `XHRM-REC-WF-SA-01` → ba-data → Dev → QA L2.5.
+
+## 16b. B-Minutes customer retest — BM-02..BM-07 AC (`BM-BA-AC-MATRIX-01`)
+
+**Source:** `docs/program/deltas/BMINUTES_AC_MATRIX.md` · Evidence `docs/qa/evidence/bm-ba-ac-matrix-01-20260722.md` · Program `P1-BMINUTES-CUST-RETEST-01`  
+**U65:** zero-seed · PASS = FE post-mutation + Network 2xx + F5 · `code_does` UNKNOWN until explore/QA  
+**must_keep:** UF-HRM-02/12 · J-HRM-03/05 · J-HRM-INT-05 · J-REC-WF-01..06 (DRAFT until QA) · AC-CD-F3..F6 / AC-REC-WF-*  
+**BM-01:** Connect/template **DEFER** (not in matrix).
+
+| BM | AC cluster | Primary journeys / UF |
+|----|------------|------------------------|
+| **BM-02** | BM-AC-02-01..04 | J-HRM-INT-05 · UF-HRM-09/13 |
+| **BM-03** | BM-AC-03-01..05 | F4 leave + J-REC-WF-01 pattern |
+| **BM-04** | BM-AC-04-01..05 | UF-HRM-02 · J-HRM-03 |
+| **BM-05** | BM-AC-05-01..04 | UF-HRM-12 · J-HRM-05 · J-REC-WF-05 |
+| **BM-06** | BM-AC-06-01..08 | **J-REC-WF-01..06** · UF-HRM-12 |
+| **BM-07** | BM-AC-07-01..03 | UF-HRM-10 · UF-HRM-03 (≠ G-DB-04 dual catalog) |
+
+## 17. HRM full sidebar sweep — J-HRM-MENU-SWEEP (`BA-HRM-MENU-UF-MATRIX-01`)
+
+**Source:** QA proposal in `docs/qa/evidence/qa-hrm-menu-full-sweep-01-20260720.md` · Matrix [`USER_FLOW_OPERABILITY_MATRIX.md`](./USER_FLOW_OPERABILITY_MATRIX.md) §4b · Journey [`PROGRAM_JOURNEY_MAP.md`](../program/PROGRAM_JOURNEY_MAP.md)  
+**Account:** `ceo@xe.vn` · `companyId=main` · U65 zero-seed  
+**Scope:** Load + no tech chrome + no crash/console P0 — **không** thay AC mutate UF-HRM-01..13.
+
+| Journey | Click path | Pass (L2 / L2.5 load) |
+|---------|------------|------------------------|
+| **J-HRM-MENU-SWEEP** | CC HRM embed → lần lượt mọi leaf AppSidebar (17) | Mỗi UF-HRM-MENU-01..17 load OK; no chrome patterns; no Sync ERROR / RangeError |
+| **UF-HRM-MENU-02b** | Employees → mở 1 hồ sơ → tab Lương | No Invalid time; no badge `API` |
+| **UF-HRM-MENU-17** | Settings + catalogs + metadata queue | Sync stamp human-readable; P3 workflow ids = GWC condition (không block load PASS) |
+
+**Waves:** BA matrix `BA-HRM-MENU-UF-MATRIX-01` → optional QA promote Dev8088 · residual FE metadata ids (P3).
+
+## 18. P0 date fidelity — ATT sheet + company founded (`FID-P0-BA-DATE-01`)
+
+**Source:** `docs/qa/evidence/fid-p0-ba-date-01-20260722.md` · Program `P1-HRM-SPEC-CODE-DB-FIDELITY` · SoT `UX_VI_DATE_NUMBER_FORMAT_AC.md`  
+**Incidents:** INC-DATE-ATT-SHEET · INC-DATE-CO-FOUND  
+**U65:** zero-seed · picker MUST open · parse padded+unpadded → Network `yyyy-MM-dd`
+
+| Journey / surface | AC cluster | Pass when |
+|-------------------|------------|-----------|
+| **J-HRM-06b** (reopen date slice) | AC-FID-ATT-D01..D05 · AC-FID-DATE-01..07 | Picker mở trên Thêm bảng; `1/7/2026` → body `2026-07-01`; POST 201; must_keep AC-ATT-SHEET storm/empty |
+| **Company detail / edit** (embed Phòng/Ban & Công ty) | AC-FID-CO-D01..D04 | Founded picker mở; bind + persist `founded_date`; MST/email/phone không «—» giả |
+
+**Waves:** BA `FID-P0-BA-DATE-01` → FE `FID-P0-FE-DATE-01` + SA `FID-P0-SA-DATE-01` (company SoT) → QA J-HRM-06b date + company founded.
+
+## 19. Employees list — cột «Thông tin công ty» vs ĐVTV (`BA-HRM-EMP-COMPANY-COL-01`)
+
+**Source:** `docs/qa/evidence/ba-hrm-emp-company-col-01-20260722.md`  
+**Symptom:** `:8088` `/command-center/hrm/employees` hiện «Khối … X.E» — lệch danh sách công ty/ĐVTV DB.  
+**Spec says:** cột = pháp nhân / ĐVTV (Plane A); **code does:** operating-unit registry Khối (Plane B).  
+**HOLD_DEPLOY:** cấm deploy brand/FE pilot đến khi sponsor cho phép.
+
+| Journey / surface | AC cluster | Pass when |
+|-------------------|------------|-----------|
+| **J-HRM-02** / **P-CC-03** employees list | **AC-EMP-COL-01..07** · BR-EMP-COL-01..04 | Cột «Thông tin công ty» ∈ tên LE/ĐVTV; **0** `Khối … X.E`; F5 giữ; J-HRM-02 detail OK |
+
+**Waves:** BA `BA-HRM-EMP-COMPANY-COL-01` → BE `D-HRM-EMP-COMPANY-COL-BE-01` + FE `D-HRM-EMP-COMPANY-COL-FE-01` → QA `QA-HRM-EMP-COMPANY-COL-01`.
+
+**Traceability program:** `BA-SPEC-CODE-GAP-HRM-01` merged G-ORPH-01/02 + G-SPEC-01/04/05/06 into `docs/program/SPEC_CODE_TRACEABILITY_GAP_REGISTER.md` §4–§5 — evidence `docs/qa/evidence/ba-spec-code-gap-hrm-01-20260722.md` (HOLD_DEPLOY).
+
+---
+
+## 19b. Mobile ESS — nhãn công ty vs Khối pilot (`BA-MOB-ORPH-KHOI-LABEL-01`)
+
+**Source:** `docs/qa/evidence/ba-mob-orph-khoi-label-01-20260730.md` · QC FAIL `qc-mob-spec-orphan-code-sample-01-20260730.md`  
+**Symptom:** Scope / Settings / Home / Payslip / Login toast hiện «Khối … X.E» từ `PILOT_HRM_OPERATING_UNITS`.  
+**Spec says:** **FR-HRM-EMP-COL-01** + **FR-HRM-MOB-OU-01** — nhãn công ty = Plane A (TECHSPEC §19.1); **code does:** Plane B Khối hardcode.
+
+| Journey / surface | AC cluster | Pass when |
+|-------------------|------------|-----------|
+| **J-MOB-01** Scope / Settings | **AC-MOB-LABEL-01..02, 07** · BR-MOB-LABEL-01 | 0 «Khối … X.E»; §4 legal names or «—» |
+| **J-MOB-01** Home / Payslip | **AC-MOB-LABEL-03..04** | Subtitle/greeting ∈ Plane A |
+| **J-MOB-01** Login toast | **AC-MOB-LABEL-05** · G-ORPH-MOB-03 | Resolver parity Settings |
+| OU filter (Group CEO) | **AC-MOB-OU-01..02** · BR-MOB-LABEL-04 | Row label = synced LE name; title «Đơn vị vận hành» giữ |
+
+**Waves:** BA `BA-MOB-ORPH-KHOI-LABEL-01` → Dev-Mobile `D-MOB-G-ORPH-KHOI-01` → QA U65 → QC re-gate orphan sample. **HOLD_DEPLOY** · **U65** no seed.
+
+---
+
+## 20. Company Management — headcount ĐVTV ↔ slug (`D-HRM-CO-EMP-COUNT-BA-01`)
+
+**Source:** `docs/qa/evidence/ba-hrm-co-emp-count-01-20260727.md`  
+**Symptom:** `/command-center/hrm/company` «Tổng nhân viên»=0 / mọi «Số nhân viên»=0 trong khi Dashboard ≈1109.  
+**Spec says:** Card + cột = workforce via LE→`GROUP_MEMBER_SLUGS` bridge (BR-INT-05 · BR-CO-EMP-01); **code does:** XBOS-only + `employee_count: null` → UI `|| 0`.  
+**Prior QA:** UF-HRM-MENU-15 load-only 🟢 = **insufficient** — không promote headcount PASS.
+
+| Journey / surface | AC cluster | Pass when |
+|-------------------|------------|-----------|
+| **J-HRM-CO-01** / Company `/company` · UF-HRM-MENU-15 (extend) | **AC-CO-EMP-01..06** · **AC-CO-IND-01..04** · BR-INT-05 · BR-CO-EMP-01..02 · **BR-CO-IND-01** · **BR-CO-LABEL-01** | Card ≈ `GET /employees/summary?company_id=main` `total`; per-row = slug count (Visun→`logistics`…); fail→«—»; F5 giữ; **«Ngành nghề»** = VI từ `business_lines`/catalog — **cấm** raw `entity_type`/`subsidiary` |
+
+**Waves:** BA `D-HRM-CO-EMP-COUNT-BA-01` → BE `D-HRM-CO-EMP-COUNT-BE-01` + FE `D-HRM-CO-EMP-COUNT-FE-01` → QA `QA-HRM-CO-EMP-COUNT-01`.
+
+---
+
+## 19. HRM Import Excel preview — J-HRM-IM-01 (`BA-J-HRM-IM-01-JOURNEY-01`)
+
+**Source:** QC GWC condition **C-IM01-JMAP-01** · [`qc-hrm-im-01-preview-ac-01-20260727.md`](evidence/qc-hrm-im-01-preview-ac-01-20260727.md) · BA evidence [`ba-j-hrm-im-01-journey-01-20260727.md`](evidence/ba-j-hrm-im-01-journey-01-20260727.md)  
+**Spec:** **FR-HRM-IM-01** · `docs/hrm/SRS_HRM_IM_01_RESIDUAL_TEAM.md` · `docs/hrm/API_DESIGN_HRM_IMPORT_PREVIEW.md`  
+**Host:** **J-HRM-02** (employees list) — **must_keep** status; this row is preview-only L2.5.
+
+| Journey | Click path | Pass when |
+|---------|------------|-----------|
+| **J-HRM-IM-01** | Login Group CEO → P-CC-03 Employees → Import Excel → upload → preview → **Cancel** → **F5** | Network `POST /api/hrm/spreadsheet/import/preview` → **HTTP 200** + **`SHEET-200`**; FE preview rows; **zero persist** (headcount unchanged; no commit); U65; **OUT** IM-02 · HOLD_DEPLOY / NOT :8088 |
+
+## 20. E2 E-PAY-CLEAN journey slices (ADD `BA-ERP-E2-SRS-01` · 2026-07-28)
+
+**Source:** `docs/program/deltas/BA_ERP_E2_SRS_01_20260728.md` · evidence `docs/qa/evidence/ba-erp-e2-srs-01-20260728.md` · SRS §16.5  
+**Host must_keep:** **J-HRM-07** (payslip) · **J-HRM-03** + **UF-HRM-02** (contracts load)  
+**Unlock:** E1-A + E1-B QC GWC · carry **R-E1A-A8-CTYPE**
+
+| Journey | Click path | Pass when |
+|---------|------------|-----------|
+| **J-HRM-PAY-E2-01** | Group CEO → Payroll → Salary components → chọn bản chất (`pay_types`) → Lưu → F5; invalid Zod reject; invent nature → BE 400; **không** mock tax/BH islands | AC-E2-NOMOCK/PAY-NATURE/ZOD/BE/F5 · U65 |
+| **J-HRM-CI-TYPE-E2-01** | Profile HĐ **và** Contracts page → loại HĐ từ `contract_types` → Lưu → F5; hai surface cùng SoT; invent → 400 | AC-E2-CI-TYPE/PARITY/BE · đóng R-E1A-A8-CTYPE |
+
+## 21. E3 CONSTRAINT + PERF-SM + INS-DEPTH journey slices (ADD `BA-ERP-E3-SRS-01` · 2026-07-28)
+
+**Source:** `docs/program/deltas/BA_ERP_E3_SRS_01_20260728.md` · evidence `docs/qa/evidence/ba-erp-e3-srs-01-20260728.md` · SRS §16.6  
+**Host must_keep:** **J-HRM-03** · **UF-HRM-04** (insurance/contracts load) · Performance list load  
+**Unlock:** E2 QC GWC CLOSED · Cohort 4 E3
+
+| Journey | Click path | Pass when |
+|---------|------------|-----------|
+| **J-HRM-PERF-E3-01** | Group CEO → Đánh giá → tạo/sửa chu kỳ → tạo phiếu → nộp→duyệt→hoàn thành → F5; illegal jump reject; KPI/`job_grades`/`departments` picker khi expose | AC-PERF-01..05 · AC-E3-ZOD/SM/U72 · U65 |
+| **J-HRM-INS-E3-01** | Group CEO → Bảo hiểm → tạo policy (`insurers`+`insurance_types`) → gắn NV → PATCH/end → F5; invent insurer/type → 400; trùng sổ reject khi cấm | AC-INS-01..05 · AC-E3-BE/F5 · U65 |
+| **J-HRM-SM-E3-01** | Spot Leave approve path + một RC stage illegal transition | AC-E3-SM-01 · VAL-E3-07/08 |
+
+## 22. E-XBOS-CTRL-SPEC — apply-to-members expand (ADD `BA-ERP-XBOS-CTRL-SPEC-01` · 2026-07-28)
+
+**Source:** `docs/program/deltas/BA_ERP_XBOS_CTRL_SPEC_01_20260728.md` · evidence `docs/qa/evidence/ba-erp-xbos-ctrl-spec-01-20260728.md` · SRS §16.7  
+**Unlock:** E3 QC GWC CLOSED · Cohort 5 SPEC docs only — **HOLD** Dev G1/G2 đến sponsor chốt  
+**must_keep:** J-XBOS-02 / J-XBOS-08 publish→sync spine · UF-09/15 catalog gov · E1-B Settings buckets
+
+| Journey | Click path | Pass when |
+|---------|------------|-----------|
+| **J-XBOS-CTRL-01** | Admin XBOS: publish `departments` → apply-to-members (≥1 ĐVTV) → HRM Settings PB → sync/pull → list + F5; cross-nav consumer dept picker cùng code | AC-XBOS-CTRL-02 · HRM-01/02 · U65 |
+| **J-XBOS-CTRL-02** | Cùng luồng `leave_types` (+ spot `job_titles` regression keep) | AC-XBOS-CTRL-03 · 01 · U65 |
+| **J-XBOS-CTRL-03** | Apply key ngoài allow-list phase → **400** `XBOS-CFG-005`; member L0 không đổi | AC-XBOS-CTRL-04 |
+
+**P0 allow-list (normative):** `job_titles` · `departments` · `leave_types` · `recruitment_channels` · `job_grades`
 
 ---
 

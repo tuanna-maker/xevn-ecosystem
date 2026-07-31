@@ -71,6 +71,7 @@ Add to [`USER_FLOW_OPERABILITY_MATRIX.md`](./USER_FLOW_OPERABILITY_MATRIX.md) §
 | **UF-HRM-11** | **Metadata queue** — duyệt/từ chối change-request | Group CEO | **UC-HRM-26** | `GET …/employee-metadata/change-requests`; `POST …/{id}/approve\|reject` | ⬜ | **AC-UF-HRM-11** | dev-fe embed dashboard/metadata |
 | **UF-HRM-12** | **Tuyển dụng** — tạo/sửa requisition UI + F5 | Group CEO | **UC-HRM-22** · **UC-HRM-30** | `POST …/recruitment/requisitions` (Create **GWC**); Update **GWC** `C-CRUDMAT-01` | ⬜ | **AC-UF-HRM-12** | dev-fe — separate from read-only UF-HRM-05 path |
 | **UF-HRM-13** | Member CEO — contract/employee mutate UI | Member CEO | **UC-HRM-SCOPE-02** | Member probe **MEM-CRUD-01/02** (API PASS) | ⬜ | **AC-UF-HRM-13** | qa — narrows UF-HRM-09 |
+| **UF-HRM-16** | **Bảng chấm công** — tạo kỳ + Công chuẩn → list → mở lưới / empty; **cấm** reload storm | Group CEO | **UC-HRM-23** · **HRM-AT-14** · **J-HRM-06b** | `POST/GET …/attendance/attendance-sheets` `HRM-AS-201/200`; weekly `GET …/records` | 🟢 | **AC-ATT-SHEET-01..06** | **Dev8088 promote 2026-07-21** — [QA](./evidence/qa-hrm-att-sheet-ac-01-20260721.md) · [QC GWC](./evidence/qc-hrm-att-sheet-ac-01-20260721.md) · [BA](./evidence/ba-hrm-att-sheet-ac-01-20260721.md) · [promote](./evidence/qa-uf-hrm-16-promote-01-20260721.md) |
 
 **Read-only / N/A (no UF mutate row required):** UC-CC-P0-07 preview (client-only), UC-CC-P0-08 workspace-meta (GET), UC-HRM-27 decisions backlog, UC-CC-P0-09 mock policy (config).
 

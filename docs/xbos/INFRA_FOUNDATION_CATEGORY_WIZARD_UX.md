@@ -135,6 +135,7 @@ sequenceDiagram
 | BR-FCAT-SCOPE-01 | Bước 3 mở khối/trường | `previewEntityId = appliesToCompanyIds[0]` | Nếu rỗng → chặn vào bước 3 |
 | BR-FCAT-SCOPE-02 | `appliesToCompanyIds` đổi sau bước 3 config | Giữ defs the entity keys đã lưu; warn nếu bỏ entity đã có field | Không silent delete |
 | BR-FCAT-SCOPE-03 | Holding alias (`main`, `xbos-group-holding-root`) | Tick một → resolver coi match alias (`infraEntityIdsMatch`) | AC-META-PROP-FND-01 không regression |
+| BR-FCAT-SCOPE-04 | Key plane `appliesToCompanyIds` | **Plane A** LE UUID (member) + holding aliases; cấm B′ / slug `trsport|logistics|finance|services` | ADR `ADR-XBOS-INF-APPLIES-TO-COMPANY-IDS-KEY-PLANE-20260727` · `API_DESIGN_XBOS_INFRASTRUCTURE` |
 
 **AC bước 2 — AC-FCAT-S2-01..05**
 

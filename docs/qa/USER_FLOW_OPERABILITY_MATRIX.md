@@ -36,6 +36,18 @@
 
 **FAIL ưu tiên:** mọi 🔴 và 🟡 trước khi claim UAT-ready.
 
+### 2b. UX format lock (project-wide — vi-VN)
+
+**SoT:** [`docs/program/UX_VI_DATE_NUMBER_FORMAT_AC.md`](../program/UX_VI_DATE_NUMBER_FORMAT_AC.md) · evidence BA [`ba-ux-vi-format-ac-01-20260720.md`](./evidence/ba-ux-vi-format-ac-01-20260720.md)
+
+| Rule | PASS when |
+|------|-----------|
+| **Date** | Display/entry user-facing = `dd/MM/yyyy`; datetime = `dd/MM/yyyy HH:mm` |
+| **Money / qty MUST** | Thousand grouping **vi-VN while typing**; Network submit = **numeric** (no `"20.000.000"` string) |
+| **EXEMPT** | page size, year, 0–100 score/%, chart axis, OTP — **no** thousand group |
+
+QA sau FE waves: checklist trong evidence BA §3 (`QA-UX-VI-FORMAT-01`). Không đánh 🟢 UF chỉ vì HTTP 200 nếu MUST field vẫn raw `type=number` không group (khi wave đã wire field đó).
+
 ---
 
 ## 3. XBOS Command Center — Cài đặt / Org
@@ -46,7 +58,7 @@
 | **UF-XBOS-02** | Chọn đơn vị thành viên (list) | Group CEO | UC-CC-03 | 🟢 | **Dev8088 browser U63** — 5-row list + Chỉnh sửa detail — [Wave1](./evidence/p1-browser-e2e-xbos-hrm-20260620.md) |
 | **UF-XBOS-03** | Sửa hồ sơ pháp nhân **đơn vị thành viên** + Lưu | Group CEO | UC-XBOS-ORG-03 | 🟢 | **Dev8088 browser U63** — PUT **200** + toast + F5 list — [Wave1](./evidence/p1-browser-e2e-xbos-hrm-20260620.md) |
 | **UF-XBOS-04** | **Thêm cổ đông** + Lưu (nút xanh / Lưu thay đổi) — **đơn vị thành viên** | Group CEO | UC-XBOS-ORG-03 | 🟢 | **Dev8088 browser R3** — POST **201** + **F5** `QA-BRW-R2-SHR-64838` — [§R3](./evidence/p1-browser-e2e-xbos-hrm-20260620.md) |
-| **UF-XBOS-05** | **Thêm cổ đông** — màn **TẬP ĐOÀN (holding root)** | Group CEO | UC-CC-P0-01 | 🟢 | **Dev8088 browser** — POST **201** `XBOS-SHR-201` — [L25 final2](./evidence/p1-qa-8088-l25-cc-rail-20260620.md) |
+| **UF-XBOS-05** | **Thêm cổ đông** — màn **TẬP ĐOÀN (holding root)** | Group CEO | UC-CC-P0-01 | 🟢 | **:5173** RET-03-SHR POST **201** + **F5** — [evidence](./evidence/qa-hdsd-mutate-ret-03-shr-20260731.md) · Dev8088 L25 |
 | **UF-XBOS-06** | Thêm tài liệu pháp lý + upload + **Xem file 200** | Group CEO | UC-XBOS-ORG-03 | 🟢 | **Dev8088** — upload + GET **200** + **F5** + **Xem :8088** (GWC C1 closed) — [evidence](./evidence/p1-uf-xbos-06-devops-8088-20260620.md) |
 | **UF-XBOS-07** | Ma trận RACI member unit — sửa ô + lưu | Group CEO | UC-CC-RACI | 🟢 | **Dev8088 R5 browser** — BDH-001×HĐQT **I→R**; **PUT 200** matrix/cell; **F5 sticky R** — [§R5 UF-07](./evidence/p1-browser-e2e-xbos-hrm-20260620.md) |
 | **UF-XBOS-08** | Workflow inbox — Duyệt task | Group CEO | UC-XBOS-WF | 🟢 | **Dev8088 R5 browser** — POST WF **201** `QA-R5-WF-537120` → inbox spawn → complete **201** → F5 — [§R5](./evidence/p1-browser-e2e-xbos-r5-8088-20260620.md) |
@@ -73,10 +85,44 @@
 | **UF-HRM-07** | Mobile — login → Home | Mobile NV | J-MOB-01 | ⚪ | **Ngoài scope nghiệm thu web :8088** |
 | **UF-HRM-08** | Mobile — đăng ký nghỉ + duyệt | NV / QL | J-MOB-03..05 | ⚪ | **Ngoài scope nghiệm thu web :8088** |
 | **UF-HRM-09** | Member CEO / HRBP — HRM mutate scope | Member CEO / HRBP | U28-R2 | 🟢 | **Dev8088 R6** — `du-lich.hr@xe.vn` login **201** · HRM embed **18** NV · session persists on GMU **403** — [R6](./evidence/p1-browser-e2e-hrm-wave-8088-r6-20260620.md) |
-| **UF-HRM-10** | **Settings catalogs** — sync XBOS + sửa item | Group CEO | HRM-SC-01..03 | 🟢 | **Dev8088 R4** — route load + catalog rows — [R4](./evidence/p1-browser-e2e-hrm-wave-8088-r4-20260620.md) |
+| **UF-HRM-10** | **Settings catalogs** — sync XBOS + sửa item | Group CEO | HRM-SC-01..03 | 🟢 | **Dev8088 retest 2026-07-17 PASS** — create `QAFE*` POST **201** → FE row → **F5** + overview `hrmExtensionItems`/`effectiveItems`; edit label F5 PASS (`D-HRM-SET-ITEM-PERSIST-01` CLOSED @63915ed) — [QA](./evidence/d-hrm-set-item-persist-01-qa-retest-20260717.md) · prior FAIL [retest](./evidence/p1-hrm-menu-settings-retest-20260717.md) |
 | **UF-HRM-11** | **Metadata queue** — duyệt/từ chối change-request | Group CEO | UC-HRM-26 | 🟢 | **Dev8088 R4** — approve **12→11** + F5 — [R4](./evidence/p1-browser-e2e-hrm-wave-8088-r4-20260620.md) |
-| **UF-HRM-12** | **Tuyển dụng** — tạo/sửa requisition UI + F5 | Group CEO | UC-HRM-22 | 🟢 | **Dev8088 R4** — dialog **Tạo đề xuất** · crypto polyfill **closed** — [R4](./evidence/p1-browser-e2e-hrm-wave-8088-r4-20260620.md) |
+| **UF-HRM-12** | **Tuyển dụng** — tạo/sửa requisition UI + F5 | Group CEO | UC-HRM-22 · J-HRM-05 | 🟢 | **Dev8088 GWC retest 2026-07-17 PASS** (@397ac81) — Thêm/Sửa/Chi tiết present; PATCH status **200** → FE «Đang tuyển» → F5; Đề xuất POST **201** → FE row → F5; J-HRM-05 GET by id **200**; no eval storm / RATE-429 — [QA](./evidence/gwc-hrm-rec-uf12-01-qa-20260717.md) · prior FAIL [menu](./evidence/p1-hrm-menu-recruitment-20260717.md) |
 | **UF-HRM-13** | Member CEO — contract/employee mutate UI | Member CEO | UC-HRM-SCOPE-02 | 🟢 | **Dev8088 R6** — `du-lich.ceo@xe.vn` login **201** · HRM **18** NV · scope negatives **403/409** OK — [R6](./evidence/p1-browser-e2e-hrm-wave-8088-r6-20260620.md) |
+| **UF-HRM-16** | **Bảng chấm công** — tạo kỳ + Công chuẩn → list → mở lưới / empty; **cấm** reload storm | Group CEO | UC-HRM-23 · HRM-AT-14 · **J-HRM-06b** | 🟢 | **Dev8088 2026-07-21 PASS** — POST sheet **201** → list row → open weekly settled empty (no forever spinner); records GET idle **0**/10s (storm CLOSED); F5 list persists; 0 Invalid time · U65 — [QA](./evidence/qa-hrm-att-sheet-ac-01-20260721.md) · [QC GWC](./evidence/qc-hrm-att-sheet-ac-01-20260721.md) · [BA AC](./evidence/ba-hrm-att-sheet-ac-01-20260721.md) · promote [UF16](./evidence/qa-uf-hrm-16-promote-01-20260721.md) |
+
+---
+
+## 4b. Full HRM sidebar sweep (UF-HRM-MENU-*) — load / chrome / crash gate
+
+**Sponsor lock:** QA/QC phải phủ **mọi** leaf `AppSidebar` (`apps/web/hrm/src/components/layout/AppSidebar.tsx`), không chỉ UF-HRM-01..13 (mutate samples).  
+**Journey:** [`J-HRM-MENU-SWEEP`](../program/PROGRAM_JOURNEY_MAP.md#j-hrm-menu-sweep) · SoT sweep [`qa-hrm-menu-full-sweep-01-20260720.md`](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) · R2 [`…-r2-20260720.md`](./evidence/qa-hrm-menu-full-sweep-01-r2-20260720.md) · QC GWC [`qc-hrm-menu-full-sweep-01-20260720.md`](./evidence/qc-hrm-menu-full-sweep-01-20260720.md) · BA [`ba-hrm-menu-uf-matrix-01-20260720.md`](./evidence/ba-hrm-menu-uf-matrix-01-20260720.md)
+
+**AC chung (mỗi UF-HRM-MENU-*):** (1) route load OK trong embed `?portal=1`; (2) **không** tech chrome user-facing (`GET /…`, `UC-HRM-*`, `Nest API`, `hrm-api`, `XBOS-DM-*`, badge `API`, raw ISO-Z); (3) **không** white-crash / Uncaught RangeError / Sync ERROR / console P0; (4) empty list / Phase-2 stub **được phép** nếu copy nghiệp vụ rõ.  
+**Cờ §4b:** 🟢 = **load AC PASS** (khác 🟢 mutate của §4). Persona mặc định: Group CEO `ceo@xe.vn` · `companyId=main`. U65 zero-seed.
+
+| UF-ID | Menu / path | Persona | J-* / note | Local | Dev8088 | AC (browser) + evidence |
+|-------|-------------|---------|------------|-------|---------|-------------------------|
+| **UF-HRM-MENU-01** | Dashboard `/` | Group CEO | J-HRM-MENU-SWEEP | 🟢 | ⬜ | Load; no GET/ops/UC/Nest chrome; no Sync ERROR — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) · R2 spot PASS |
+| **UF-HRM-MENU-02** | Employees `/employees` | Group CEO | J-HRM-02 | 🟢 | ⬜ | Load; list rows; open ≥1 profile — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-02b** | Employee → tab Lương | Group CEO | deep · J-HRM-07 | 🟢 | ⬜ | No Invalid time; no tech badge `API` — R2 PASS · prior FAIL CLOSED |
+| **UF-HRM-MENU-03** | Contracts `/contracts` | Group CEO | J-HRM-03 | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-04** | Insurance `/insurance` | Group CEO | J-HRM-04 | 🟢 | ⬜ | Load OK (BHYT alert = business OK) — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-05** | Decisions `/decisions` | Group CEO | — | 🟢 | 🟢 density 2026-07-22 | Load OK; empty «Không có quyết định nào»; create→list→F5 U65 — QC GWC `qc-hrm-g-dec-01-density-01-20260722.md` (**không** = UC-27 product DONE) |
+| **UF-HRM-MENU-06** | Recruitment `/recruitment` (+ tabs) | Group CEO | J-HRM-05 | 🟢 | ⬜ | Load; no UC-id chrome; Tin/Ứng viên submenu deep-nav optional — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-07** | Attendance `/attendance` | Group CEO | J-HRM-06 | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-08** | Payroll `/payroll` | Group CEO | J-HRM-07 | 🟢 | ⬜ | Load; **no `hrm-api` label** — R2 PASS · prior FAIL CLOSED |
+| **UF-HRM-MENU-09** | Performance `/performance` | Group CEO | — | 🟢 | ⬜ | Load; human-readable cycle dates — R2 PASS |
+| **UF-HRM-MENU-10** | AI `/ai` | Group CEO | — | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-11** | Tasks `/tasks` | Group CEO | — | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-12** | Processes `/processes` | Group CEO | — | 🟢 | ⬜ | Load; no internal DM codes — R2 PASS · prior FAIL CLOSED |
+| **UF-HRM-MENU-13** | Internal services `/internal-services` | Group CEO | — | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-14** | Tools & equipment `/tools-equipment` | Group CEO | — | 🟢 | ⬜ | Load OK; Phase-2 stub allowed — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-15** | Company `/company` | Group CEO | — | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-16** | Reports `/reports` | Group CEO | — | 🟢 | ⬜ | Load OK — [sweep](./evidence/qa-hrm-menu-full-sweep-01-20260720.md) |
+| **UF-HRM-MENU-17** | Settings `/settings` + `/settings-catalogs` + `/employee-metadata` | Group CEO | UF-HRM-10/11 | 🟡 | ⬜ | Load + sync stamp human-readable **PASS** (R2); **P3** metadata workflow ids still visible — QC GWC **C-01** [`qc-hrm-menu-full-sweep-01`](./evidence/qc-hrm-menu-full-sweep-01-20260720.md) |
+
+**Dev8088:** cột ⬜ = chưa promote từ Local sweep; QA optional `QA-HRM-MENU-UF-PROMOTE-8088-01` khi stack `:8088` sẵn sàng. **Không** claim Phase1 DONE từ §4b.
 
 ---
 
@@ -138,11 +184,16 @@ Mỗi UF-ID khi PASS phải ghi: `Local=🟢` và/hoặc `Dev8088=🟢` trong ev
 | Tab Nhân sự — tạo/sửa NV | CRUD nhân viên | UF-HRM-03 |
 | Tab Bảo hiểm — drill NV | Liên kết BH ↔ NV | UF-HRM-04 |
 | Tab Chấm công — xem bản ghi | Đọc chấm công | UF-HRM-05 |
+| Tab Chấm công — tạo/mở bảng kỳ | CRUD bảng chấm công + lưới tuần | UF-HRM-16 · J-HRM-06b |
 | Tab Lương — phiếu lương | Xem payroll | UF-HRM-06 |
 | Settings catalogs — sync/sửa | Danh mục HRM từ XBOS | UF-HRM-10 |
 | Metadata queue — duyệt | Phê duyệt thay đổi metadata NV | UF-HRM-11 |
 | Tab Tuyển dụng — tạo/sửa | CRUD requisition | UF-HRM-12 |
+| Sidebar — mọi leaf load (Dashboard…Settings) | Load + no tech chrome + no crash P0 | UF-HRM-MENU-01..17 · J-HRM-MENU-SWEEP |
+| Hồ sơ NV → tab Lương (deep) | No Invalid time / no badge `API` | UF-HRM-MENU-02b |
 
-**Dev8088 summary (QC R3 GO):** §3 XBOS **15/15 🟢** · §4 HRM web **11/11 🟢** (2 mobile ⚪) · **Combined sponsor nghiệm thu :8088 GO WITH CONDITIONS 26/26 web** — QC R3 [`p1-browser-e2e-qc-final-r3-8088-20260620.md`](./evidence/p1-browser-e2e-qc-final-r3-8088-20260620.md) · HRM R6 [`p1-browser-e2e-hrm-wave-8088-r6-20260620.md`](./evidence/p1-browser-e2e-hrm-wave-8088-r6-20260620.md) · Wave 1 XBOS [`p1-browser-e2e-xbos-wave-8088-qc-close-20260620.md`](./evidence/p1-browser-e2e-xbos-wave-8088-qc-close-20260620.md) · P2 carry non-blocking (batch row, screenshots, upstream pack format).
+**Dev8088 summary (QC R3 GO + UF-HRM-16 promote):** §3 XBOS **15/15 🟢** · §4 HRM web **12/12 🟢** (2 mobile ⚪) · **Combined sponsor nghiệm thu :8088 GO WITH CONDITIONS 27/27 web** — QC R3 [`p1-browser-e2e-qc-final-r3-8088-20260620.md`](./evidence/p1-browser-e2e-qc-final-r3-8088-20260620.md) · HRM R6 [`p1-browser-e2e-hrm-wave-8088-r6-20260620.md`](./evidence/p1-browser-e2e-hrm-wave-8088-r6-20260620.md) · Wave 1 XBOS [`p1-browser-e2e-xbos-wave-8088-qc-close-20260620.md`](./evidence/p1-browser-e2e-xbos-wave-8088-qc-close-20260620.md) · **UF-HRM-16** [QA AC](./evidence/qa-hrm-att-sheet-ac-01-20260721.md) · [QC GWC](./evidence/qc-hrm-att-sheet-ac-01-20260721.md) · [promote](./evidence/qa-uf-hrm-16-promote-01-20260721.md). P2 carry non-blocking (batch row, screenshots, upstream pack format). **NOT** Phase1 DONE · **NOT** PROD-READY.
 
-**Cập nhật lần cuối:** 2026-06-20T18:45+07 — QC `P1-BROWSER-E2E-QC-FINAL-R2-8088`.
+**§4b Local (2026-07-20):** UF-HRM-MENU-01..16 **🟢** load · MENU-17 **🟡** (P3 metadata ids) · Dev8088 **⬜** — BA `BA-HRM-MENU-UF-MATRIX-01` · QC GWC Local only.
+
+**Cập nhật lần cuối:** 2026-07-21 — QA `P1-UF-HRM-16-PROMOTE-01` (§4 UF-HRM-16 🟢) · prior BA `BA-UX-VI-FORMAT-AC-01` (§2b) · `BA-HRM-MENU-UF-MATRIX-01` (§4b).

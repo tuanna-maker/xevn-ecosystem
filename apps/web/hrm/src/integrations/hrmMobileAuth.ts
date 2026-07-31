@@ -16,12 +16,15 @@ export type MobileAuthMembership = {
   company_id: string;
   tenant_id?: string;
   role?: string;
+  is_primary?: boolean;
 };
 
 export type MobileLoginResult = {
   access_token: string;
   expires_in_sec?: number;
   memberships?: MobileAuthMembership[];
+  default_tenant_id?: string;
+  default_company_id?: string;
   user?: { user_id?: string; email?: string; display_name?: string };
 };
 

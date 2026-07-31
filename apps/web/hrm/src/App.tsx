@@ -1,9 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM SPA root (QueryClient + routes)
+ * UC:         J-HRM-* embed
+ * Purpose:    App shell; default RQ staleTime 60s reduces remount/focus refetch storm.
+ * WorkItem:   P1-HRM-PERF-FE-04 / CD-FB-04-PERF-FIX
+ * Coded:      2026-06-20
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-04-PERF-FIX
+ * what: Confirm QueryClient default staleTime 60_000 (FE-04); no product route changes
+ * why: Dashboard + catalogs rely on shared cache across soft-nav remounts
+ * must_keep: F3–F6 routes; portal embed mode hides chat widget
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-FE-HRM-FLEET-CATALOG-UX-01
+ * change_mode: ADD
+ * What: Lazy Route /fleet → Fleet page (FL-01 list-only · G-FL-07 empty/catalog UX)
+ * Why: Close G-FL-07 — honest empty + catalog-missing VI · keyword q · no invent create
+ * must_keep: F3–F6 routes · staleTime 60s · U65 · HOLD_DEPLOY · soft U72 maps untouched
+ */
 import React, { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -45,6 +64,7 @@ const Tasks = lazy(() => import("./pages/Tasks"));
 const Processes = lazy(() => import("./pages/Processes"));
 const InternalServices = lazy(() => import("./pages/InternalServices"));
 const ToolsEquipment = lazy(() => import("./pages/ToolsEquipment"));
+const Fleet = lazy(() => import("./pages/Fleet"));
 const HRMChatWidget = lazy(() =>
   import("./components/ai/HRMChatWidget").then((module) => ({ default: module.HRMChatWidget })),
 );
@@ -112,13 +132,11 @@ const App = () => {
           <Sonner />
           <BrowserRouter
             basename={routerBasename}
-            // D-HRM-ATT-NAV-STALL-01: do NOT enable v7_startTransition here.
-            // BrowserRouter always defers location setState via startTransition when
-            // the flag is on — heavy routes (Attendance + Recharts) can leave
-            // window.location updated while Outlet stays on the previous page until F5.
-            // Portal embed soft-nav (postMessage → navigate) requires sync route commit.
-            // Keep v7_relativeSplatPath only.
-            future={{ v7_relativeSplatPath: true }}
+            // D-FE-CONSOLE-A11Y-DIALOG-RR-01: opt-in RR v7 flags (silence Future Flag Warning).
+            // D-HRM-ATT-NAV-STALL-01 / CD-FB-09: soft-nav still uses flushSync + navigate
+            // `{ flushSync: true }` in applyPortalEmbedSoftNavigate — must_keep that path
+            // so Attendance → other tabs commit sync even with v7_startTransition on.
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
           >
             <AuthProvider>
               <HrmOperatingUnitFilterProvider>
@@ -167,7 +185,11 @@ const App = () => {
                   <Route path="/tasks" element={<PermissionRoute module="tasks">{withSuspense(<Tasks />)}</PermissionRoute>} />
                   <Route path="/processes" element={<PermissionRoute module="processes">{withSuspense(<Processes />)}</PermissionRoute>} />
                   <Route path="/internal-services" element={<PermissionRoute module="services">{withSuspense(<InternalServices />)}</PermissionRoute>} />
+                  <Route path="/internal_services" element={<Navigate to="/internal-services" replace />} />
                   <Route path="/tools-equipment" element={<PermissionRoute module="tools">{withSuspense(<ToolsEquipment />)}</PermissionRoute>} />
+                  <Route path="/tools_equipment" element={<Navigate to="/tools-equipment" replace />} />
+                  {/* FL-01 list-only — portal bypass; no invent create (G-FL-07 / G-FL-UPSERT) */}
+                  <Route path="/fleet" element={withSuspense(<Fleet />)} />
                 </Route>
 
                 <Route path="*" element={withSuspense(<NotFound />)} />

@@ -8,7 +8,7 @@
 | **Ngày cập nhật** | 20/05/2026 |
 | **Trạng thái** | Bản gửi khách hàng / pilot |
 | **Phạm vi** | Ứng dụng HRM Mobile (iOS/Android), API HRM, liên kết Portal/XBOS đa tenant; chi tiết màn hình thuộc SRS |
-| **Tác giả / Đơn vị triển khai** | UNICOM — AI Software Factory |
+| **Tác giả / Đơn vị triển khai** | XeVN Group |
 
 ---
 
@@ -286,7 +286,7 @@ sequenceDiagram
 |-----------|---------|
 | CBCNV | Đăng nhập nhanh, chấm công và đơn giản |
 | Trưởng đơn vị | Duyệt trên điện thoại, ít thao tác |
-| CNTT / UNICOM | Tài liệu, API ổn định, mở rộng tenant |
+| CNTT / Đội triển khai | Tài liệu, API ổn định, mở rộng tenant |
 
 ### P.3 Tài khoản pilot & HDSD
 
@@ -327,4 +327,4 @@ Xem `docs/hrm/HUONG_DAN_DANG_NHAP_PILOT.md` (email `@xe.vn`, mật khẩu mobile
 
 ---
 
-*Tài liệu do UNICOM soạn thảo cho chương trình XeVN HRM Mobile. Chữ ký số tài liệu điện tử (nếu có) theo quy trình nội bộ khách hàng.*
+*Tài liệu XeVN Group — chương trình XeVN HRM Mobile. Chữ ký số tài liệu điện tử (nếu có) theo quy trình nội bộ khách hàng.*

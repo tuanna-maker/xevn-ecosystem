@@ -3,6 +3,53 @@ import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import { ApiClientError } from '@/lib/apiError';
 import { safeRandomUuid } from '@/lib/safeRandomUuid';
 
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM embed → Công ty (CompanyManagement) — danh sách + chi tiết tập đoàn/thành viên
+ * UC:         UC-HRM-ORG-COMPANY · UF-XBOS-03 (hồ sơ pháp nhân)
+ * BR:         BR-CO-BIND-01 (SoT XBOS legal, không hard-null)
+ * SRS:        docs/qa/evidence/fid-p0-ba-data-01-20260722.md §2 · UX_VI_DATE_NUMBER_FORMAT_AC.md
+ * TechSpec:   GET /tenant-scope/group-member-units (nav) + GET /org-foundation/legal-entities (hồ sơ)
+ * Purpose:    Map đơn vị tập đoàn/thành viên sang hàng Company HRM; MST/email/phone/ngày thành lập
+ *             lấy từ xbos_legal_entity (+ payload.companyForm), không ép null.
+ * WorkItem:   FID-P0-FE-CO-BIND-01
+ * Coded:      2026-07-22
+ * Callers:    CompanyManagement.fetchCompanies (portal embed)
+ * Callees:    /api/xbos/tenant-scope/group-member-units · /api/xbos/org-foundation/legal-entities
+ * FEActions:  load list → enrich holding (company_id=holding) + members (payload / flat legal)
+ * must_keep:  id holding = xbos-group-holding-root (OU filter / CC nav); null SoT → «—» honest; cấm seed
+ * SOLID:      Mapper thuần tách fetch; enrichment tách SoT pháp nhân khỏi tenant-scope mỏng
+ * LastVerified: docs/qa/evidence/fid-p0-fe-co-bind-01-20260722.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: FID-P0-FE-CO-BIND-01
+ * change_mode: FIX
+ * What: Bỏ hard-null tax/email/phone/founded; bind legal entity + companyForm; enrich holding qua API
+ * Why: H1 — group-member-units holding chỉ có name; mapper ép null → UI «—» dù SoT có data
+ * must_keep: Không đổi synthetic holding id; không toast-only claim persist; OU filter giữ nguyên
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-CO-EMP-COUNT-FE-01
+ * change_mode: FIX
+ * What: Mapper vẫn để employee_count=null (XBOS không có headcount); enrich workforce ở CompanyManagement
+ *       via hrmCompanyEmployeeCount (slug, không LE UUID).
+ * Why: `|| 0` trên null → card/table 0; dashboard dùng employees/summary đúng slug
+ * must_keep: CO-BIND tax/founded/MST; GROUP_HOLDING_ROOT_ID; không mutate JWT companyId
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-CO-INDUSTRY-FE-01
+ * change_mode: FIX
+ * What: Ngành nghề = business_lines / companyForm.industry (VI hoặc catalog key→industries.*);
+ *       cấm map entity_type (holding/subsidiary) vào industry.
+ * Why: Cột «Ngành nghề» hiện raw `subsidiary` — SoT sai field (entity_type ≠ ngành)
+ * must_keep: CO-EMP-COUNT enrich; CO-BIND tax/founded/MST; OU filter / GROUP_HOLDING_ROOT_ID
+ */
+
+export const GROUP_HOLDING_ROOT_ID = 'xbos-group-holding-root';
+const MASTER_TENANT_ID = 'xevn';
+const HOLDING_COMPANY_ID = 'holding';
+const OPERATING_MAIN_COMPANY_ID = 'main';
+
 export type GroupMemberUnitRow = {
   tenant_id: string;
   tenant_name: string;
@@ -12,6 +59,11 @@ export type GroupMemberUnitRow = {
   name: string;
   entity_type: string;
   payload: Record<string, unknown> | null;
+  tax_code?: string | null;
+  established_at?: string | null;
+  address?: string | null;
+  /** XBOS legal-entity SoT for «Ngành nghề» — never confuse with entity_type. */
+  business_lines?: string | null;
 };
 
 export type GroupMemberUnitsPayload = {
@@ -38,12 +90,189 @@ export type HrmCompanyRow = {
   updated_at: string;
 };
 
-async function xbosHeaders(): Promise<Record<string, string>> {
+/** Org-foundation legal entity row (subset used for company profile bind). */
+export type LegalEntityProfileRow = {
+  id: string;
+  tenant_id: string;
+  company_id?: string;
+  code?: string;
+  name?: string;
+  entity_type?: string | null;
+  tax_code?: string | null;
+  established_at?: string | null;
+  address?: string | null;
+  business_lines?: string | null;
+  payload?: Record<string, unknown> | null;
+};
+
+/** Legal / org entity_type keys — must never appear in industry column. */
+const ENTITY_TYPE_AS_INDUSTRY_BLOCKLIST = new Set([
+  'holding',
+  'subsidiary',
+  'parent',
+  'member',
+  'branch',
+]);
+
+/**
+ * Catalog keys aligned with CompanyManagement Select + i18n `industries.*` (vi).
+ * Mapper resolves keys → VI so table/badge show human text without react-i18n.
+ */
+export const INDUSTRY_CATALOG_VI: Readonly<Record<string, string>> = {
+  it: 'Công nghệ thông tin',
+  manufacturing: 'Sản xuất',
+  trading: 'Thương mại',
+  services: 'Dịch vụ',
+  finance: 'Tài chính - Ngân hàng',
+  realestate: 'Bất động sản',
+  education: 'Giáo dục',
+  healthcare: 'Y tế',
+  tourism: 'Du lịch - Khách sạn',
+  logistics: 'Vận tải - Logistics',
+  construction: 'Xây dựng',
+  other: 'Khác',
+};
+
+/**
+ * Resolve raw industry / business_lines → display string for «Ngành nghề».
+ * - empty → null (UI «—» / «-»)
+ * - entity_type keys (holding/subsidiary…) → null (never show as industry)
+ * - catalog key (tourism, logistics…) → VI label matching `industries.*`
+ * - otherwise keep human-readable text as-is
+ */
+export function resolveIndustryDisplay(raw: unknown): string | null {
+  const s = nonempty(raw);
+  if (!s) return null;
+  const lower = s.toLowerCase();
+  if (ENTITY_TYPE_AS_INDUSTRY_BLOCKLIST.has(lower)) return null;
+  const catalog = INDUSTRY_CATALOG_VI[lower];
+  if (catalog) return catalog;
+  return s;
+}
+
+/**
+ * Prefer XBOS `business_lines`, then companyForm industry / businessLines fields.
+ * Never reads entity_type.
+ */
+export function extractIndustryFromLegalSources(opts: {
+  business_lines?: string | null;
+  payload?: Record<string, unknown> | null | undefined;
+}): string | null {
+  const form = companyFormFromPayload(opts.payload);
+  return (
+    resolveIndustryDisplay(opts.business_lines) ??
+    resolveIndustryDisplay(form.industry) ??
+    resolveIndustryDisplay(form.businessLines) ??
+    resolveIndustryDisplay(form.business_lines) ??
+    null
+  );
+}
+
+function nonempty(value: unknown): string | null {
+  if (value == null) return null;
+  const s = String(value).trim();
+  return s.length > 0 ? s : null;
+}
+
+function asIsoDateOnly(value: unknown): string | null {
+  const raw = nonempty(value);
+  if (!raw) return null;
+  const iso = raw.slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso : null;
+}
+
+function companyFormFromPayload(
+  payload: Record<string, unknown> | null | undefined,
+): Record<string, unknown> {
+  if (!payload || typeof payload !== 'object') return {};
+  const nested = payload.companyForm;
+  if (nested && typeof nested === 'object' && !Array.isArray(nested)) {
+    return nested as Record<string, unknown>;
+  }
+  return {};
+}
+
+/**
+ * SoT hồ sơ pháp nhân → field Company UI.
+ * tax_code / established_at từ cột legal; email/phone/website từ payload.companyForm;
+ * industry từ business_lines (không dùng entity_type).
+ */
+export function mapLegalEntityProfileToCompanyFields(
+  row: LegalEntityProfileRow | null | undefined,
+): Pick<
+  HrmCompanyRow,
+  'tax_code' | 'email' | 'phone' | 'founded_date' | 'address' | 'website' | 'industry'
+> {
+  if (!row) {
+    return {
+      tax_code: null,
+      email: null,
+      phone: null,
+      founded_date: null,
+      address: null,
+      website: null,
+      industry: null,
+    };
+  }
+  const form = companyFormFromPayload(row.payload);
+  return {
+    tax_code: nonempty(row.tax_code) ?? nonempty(form.taxCode),
+    email: nonempty(form.companyEmail),
+    phone: nonempty(form.hotline) ?? nonempty(form.legalRepPhone),
+    founded_date:
+      asIsoDateOnly(row.established_at) ?? asIsoDateOnly(form.firstIssueDate),
+    address: nonempty(row.address) ?? nonempty(form.headOfficeAddress),
+    website: nonempty(form.website),
+    industry: extractIndustryFromLegalSources({
+      business_lines: row.business_lines,
+      payload: row.payload,
+    }),
+  };
+}
+
+/** Map payload.companyForm (member list) when flat legal row chưa enrich. */
+export function mapCompanyFormPayloadToCompanyFields(
+  payload: Record<string, unknown> | null | undefined,
+): Pick<
+  HrmCompanyRow,
+  'tax_code' | 'email' | 'phone' | 'founded_date' | 'address' | 'website' | 'industry'
+> {
+  const form = companyFormFromPayload(payload);
+  return {
+    tax_code: nonempty(form.taxCode),
+    email: nonempty(form.companyEmail),
+    phone: nonempty(form.hotline) ?? nonempty(form.legalRepPhone),
+    founded_date: asIsoDateOnly(form.firstIssueDate),
+    address: nonempty(form.headOfficeAddress),
+    website: nonempty(form.website),
+    industry: extractIndustryFromLegalSources({ payload }),
+  };
+}
+
+export function pickHoldingLegalEntity(
+  entities: LegalEntityProfileRow[],
+  holdingTenantId: string,
+): LegalEntityProfileRow | null {
+  const tid = holdingTenantId.trim().toLowerCase();
+  const byTypeAndTenant = entities.find(
+    (row) =>
+      String(row.entity_type ?? '').toLowerCase() === 'holding' &&
+      String(row.tenant_id ?? '').toLowerCase() === tid,
+  );
+  if (byTypeAndTenant) return byTypeAndTenant;
+  const byType = entities.find(
+    (row) => String(row.entity_type ?? '').toLowerCase() === 'holding',
+  );
+  if (byType) return byType;
+  return entities[0] ?? null;
+}
+
+async function xbosHeaders(companyId: string = OPERATING_MAIN_COMPANY_ID): Promise<Record<string, string>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'x-request-id': safeRandomUuid(),
-    'x-tenant-id': 'xevn',
-    'x-company-id': 'main',
+    'x-tenant-id': MASTER_TENANT_ID,
+    'x-company-id': companyId,
   };
   let token = getPortalAccessToken();
   if (!token && typeof window !== 'undefined' && getHrmPortalMode(window.location.search)) {
@@ -62,7 +291,7 @@ export function mapGroupMemberUnitsToHrmCompanies(data: GroupMemberUnitsPayload)
   const list: HrmCompanyRow[] = [];
   if (data.holding) {
     list.push({
-      id: 'xbos-group-holding-root',
+      id: GROUP_HOLDING_ROOT_ID,
       name: data.holding.name,
       code: data.holding.short_name?.trim() || data.holding.tenant_id,
       logo_url: null,
@@ -85,19 +314,24 @@ export function mapGroupMemberUnitsToHrmCompanies(data: GroupMemberUnitsPayload)
       member.payload && typeof member.payload.shortName === 'string'
         ? (member.payload.shortName as string)
         : undefined;
+    const fromForm = mapCompanyFormPayloadToCompanyFields(member.payload);
     list.push({
       id: member.id,
       name: member.name,
       code: member.code,
       logo_url: null,
-      address: null,
-      phone: null,
-      email: null,
-      tax_code: null,
-      website: null,
-      industry: member.entity_type || null,
+      address: nonempty(member.address) ?? fromForm.address,
+      phone: fromForm.phone,
+      email: fromForm.email,
+      tax_code: nonempty(member.tax_code) ?? fromForm.tax_code,
+      website: fromForm.website,
+      industry:
+        extractIndustryFromLegalSources({
+          business_lines: member.business_lines,
+          payload: member.payload,
+        }) ?? fromForm.industry,
       employee_count: null,
-      founded_date: null,
+      founded_date: asIsoDateOnly(member.established_at) ?? fromForm.founded_date,
       description: shortFromPayload || member.tenant_short_name || null,
       status: 'active',
       created_at: now,
@@ -107,11 +341,98 @@ export function mapGroupMemberUnitsToHrmCompanies(data: GroupMemberUnitsPayload)
   return list;
 }
 
-/** Group CEO — member units from XBOS tenant-scope (same as Command Center settings). */
+/** Merge SoT legal profile vào hàng holding + members (match id / tenant). */
+export function enrichHrmCompaniesWithLegalProfiles(
+  companies: HrmCompanyRow[],
+  opts: {
+    holdingTenantId?: string | null;
+    holdingEntities?: LegalEntityProfileRow[];
+    memberEntities?: LegalEntityProfileRow[];
+  },
+): HrmCompanyRow[] {
+  const holdingEntity = pickHoldingLegalEntity(
+    opts.holdingEntities ?? [],
+    opts.holdingTenantId ?? MASTER_TENANT_ID,
+  );
+  const holdingFields = mapLegalEntityProfileToCompanyFields(holdingEntity);
+  const membersById = new Map(
+    (opts.memberEntities ?? []).map((row) => [String(row.id), row] as const),
+  );
+  const membersByTenant = new Map<string, LegalEntityProfileRow>();
+  for (const row of opts.memberEntities ?? []) {
+    const tid = String(row.tenant_id ?? '').toLowerCase();
+    if (tid && !membersByTenant.has(tid)) {
+      membersByTenant.set(tid, row);
+    }
+  }
+
+  return companies.map((company) => {
+    if (company.id === GROUP_HOLDING_ROOT_ID) {
+      return {
+        ...company,
+        tax_code: holdingFields.tax_code,
+        email: holdingFields.email,
+        phone: holdingFields.phone,
+        founded_date: holdingFields.founded_date,
+        address: holdingFields.address ?? company.address,
+        website: holdingFields.website ?? company.website,
+        industry: holdingFields.industry ?? company.industry,
+        name: nonempty(holdingEntity?.name) ?? company.name,
+      };
+    }
+    const byId = membersById.get(company.id);
+    const byTenant =
+      byId ??
+      (company.code
+        ? (opts.memberEntities ?? []).find(
+            (row) =>
+              String(row.code ?? '').toLowerCase() === String(company.code).toLowerCase(),
+          )
+        : undefined);
+    if (!byId && !byTenant) {
+      return company;
+    }
+    const fields = mapLegalEntityProfileToCompanyFields(byId ?? byTenant);
+    return {
+      ...company,
+      tax_code: fields.tax_code ?? company.tax_code,
+      email: fields.email ?? company.email,
+      phone: fields.phone ?? company.phone,
+      founded_date: fields.founded_date ?? company.founded_date,
+      address: fields.address ?? company.address,
+      website: fields.website ?? company.website,
+      industry: fields.industry ?? company.industry,
+    };
+  });
+}
+
+async function fetchLegalEntitiesForHrm(
+  companyId: string,
+): Promise<LegalEntityProfileRow[]> {
+  const res = await fetch('/api/xbos/org-foundation/legal-entities', {
+    method: 'GET',
+    headers: await xbosHeaders(companyId),
+  });
+  const body = (await res.json().catch(() => null)) as {
+    success?: boolean;
+    data?: { items?: LegalEntityProfileRow[] };
+    message?: string;
+  } | null;
+  if (!res.ok || !body?.success) {
+    throw new ApiClientError({
+      status: res.status,
+      code: 'XBOS-ORG-LEGAL',
+      message: body?.message ?? 'Không tải được hồ sơ pháp nhân',
+    });
+  }
+  return body.data?.items ?? [];
+}
+
+/** Group CEO — member units from XBOS tenant-scope + legal profile enrich (SoT). */
 export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
   const res = await fetch('/api/xbos/tenant-scope/group-member-units', {
     method: 'GET',
-    headers: await xbosHeaders(),
+    headers: await xbosHeaders(OPERATING_MAIN_COMPANY_ID),
   });
   const body = (await res.json().catch(() => null)) as {
     success?: boolean;
@@ -125,5 +446,27 @@ export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
       message: body?.message ?? 'Không tải được danh sách công ty thành viên',
     });
   }
-  return mapGroupMemberUnitsToHrmCompanies(body.data);
+
+  const base = mapGroupMemberUnitsToHrmCompanies(body.data);
+  let holdingEntities: LegalEntityProfileRow[] = [];
+  let memberEntities: LegalEntityProfileRow[] = [];
+
+  // Holding SoT — company_id=holding (không dùng tenant-scope mỏng).
+  try {
+    holdingEntities = await fetchLegalEntitiesForHrm(HOLDING_COMPANY_ID);
+  } catch (err) {
+    console.warn('[tenantScopeApi] holding legal-entities enrich skipped', err);
+  }
+  // Member SoT flat — company_id=main trả listGroupMemberLegalEntitiesFlat (SELECT *).
+  try {
+    memberEntities = await fetchLegalEntitiesForHrm(OPERATING_MAIN_COMPANY_ID);
+  } catch (err) {
+    console.warn('[tenantScopeApi] member legal-entities enrich skipped', err);
+  }
+
+  return enrichHrmCompaniesWithLegalProfiles(base, {
+    holdingTenantId: body.data.holding?.tenant_id ?? MASTER_TENANT_ID,
+    holdingEntities,
+    memberEntities,
+  });
 }

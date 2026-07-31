@@ -50,3 +50,21 @@ tmp/
 
 # One-off tmp scripts (promoted to scripts/qa|ops — see scripts/README.md)
 scripts/tmp-*
+
+# Telegram PM bridge — local secrets + poll state (never commit)
+.cursor/team/telegram-pm/.env
+.cursor/team/telegram-pm/state.json
+
+.cursor/team/telegram-pm/mirror-state.json
+
+
+.cursor/team/telegram-pm/intake-hook-state.json
+
+
+.cursor/team/inbox/telegram-pm-files/
+
+
+.cursor/team/telegram-pm/channel-state.json
+.cursor/team/telegram-pm/bridge.pid
+.cursor/team/telegram-pm/wake.json
+

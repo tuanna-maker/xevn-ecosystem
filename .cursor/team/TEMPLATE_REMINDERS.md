@@ -17319,3 +17319,18515 @@
 - 2026-06-23T02:01:33.503Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
 
 - 2026-06-23T02:02:18.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-06-23T02:06:14.466Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T07:57:43.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:12:54.899Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:13:50.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:14:00.825Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:14:03.143Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:14:03.179Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:14:03.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:14:07.581Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:14:14.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:14:14.507Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:14:14.952Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:14:37.618Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:15:04.150Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:15:04.896Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:17:13.758Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:17:17.591Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:19:00.722Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:19:03.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:19:11.490Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:19:38.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:20:39.839Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:21:08.631Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:21:23.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:21:27.933Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:21:28.740Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:21:43.916Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:21:44.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:22:01.902Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:23:30.031Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:23:30.795Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:23:58.658Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:25:59.709Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:26:10.852Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:26:20.851Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:26:35.404Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:26:46.851Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:27:09.342Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:27:19.183Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:27:27.662Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:28:18.611Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:28:52.331Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:29:37.712Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:29:52.816Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:30:04.604Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:30:06.230Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:30:53.889Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:32:21.251Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:32:33.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T08:34:43.728Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:35:07.793Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:36:19.221Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:36:19.924Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T08:36:21.560Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:37:58.819Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:01.935Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:30.445Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:33.735Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:38.856Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:40.507Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:43.840Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:44.796Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:45.586Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:47.920Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:48.710Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:49.502Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:50.221Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:52.195Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:38:57.143Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:39:01.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:39:03.088Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:39:17.299Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:39:29.803Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:39:48.057Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:02.513Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:03.504Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:04.448Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:06.220Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:10.903Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:24.534Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:40:28.534Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T08:41:45.454Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T09:38:12.929Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T09:39:16.456Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T09:40:30.097Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T09:40:30.104Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:02:28.448Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T16:03:02.954Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:03:05.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:03:07.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:03:23.577Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:03:23.652Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:03:24.292Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:03:58.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:07:36.244Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-16T16:07:57.609Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T16:08:05.934Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:08:39.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:08:41.225Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:08:51.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:08:53.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:09:09.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:09:35.783Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:09:41.106Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T16:09:45.833Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:10:53.704Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:13:27.322Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:14:44.321Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T16:15:38.835Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T18:52:09.547Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:46:09.046Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T20:47:24.831Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:48:36.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T20:49:12.879Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-16T20:49:49.900Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:50:04.407Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-16T20:50:09.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:57:55.131Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:58:55.773Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:59:03.858Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T20:59:11.275Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T21:01:03.873Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T21:01:49.854Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T21:03:05.975Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T21:04:13.308Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T21:04:42.528Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-16T23:19:06.941Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:53:40.187Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:54:15.047Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:15.233Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:21.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:23.814Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:27.681Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:54:30.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:54:36.042Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:54:44.802Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:47.855Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:50.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:54:50.459Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:54:56.508Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:02.880Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:55:04.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:55:07.335Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:12.353Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:14.284Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:14.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:19.676Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:19.716Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:20.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:39.187Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:39.858Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:55:57.402Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:56:02.961Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:56:11.152Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:56:12.482Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:56:13.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:56:13.676Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:56:19.950Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:56:27.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:56:36.039Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:56:37.838Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:56:40.860Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:56:45.672Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:56:45.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:56:50.069Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:57:02.900Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:20.436Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:22.178Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:22.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:26.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:31.950Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:57:32.124Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:40.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:41.344Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:44.711Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:57.462Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:57:57.491Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:57:59.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:02.933Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:05.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:11.535Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:16.739Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:58:24.526Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:58:27.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:45.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:45.309Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:58:57.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:58:59.966Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:13.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:15.264Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:19.149Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:59:19.292Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:26.437Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T01:59:29.833Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:29.865Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:59:31.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:36.639Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:36.658Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:40.764Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T01:59:53.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T01:59:57.889Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:00:00.799Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:00:07.525Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:00:12.939Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:00:16.865Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:00:24.092Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:00:27.179Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:00:30.165Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:00:32.791Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:00:57.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:01:00.014Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:01:09.317Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:01:14.286Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:01:14.539Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:01:19.613Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:01:20.540Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:01:23.171Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:01:30.181Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:01:40.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:01:53.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:01:58.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:02:23.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:02:24.095Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:02:29.437Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:02:31.594Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:02:36.380Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:02:42.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:02:55.295Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:03:06.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:03:20.348Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:03:38.883Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:03:41.157Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:03:46.646Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:03:50.998Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:04:04.106Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:04:06.864Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:04:11.178Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:04:12.104Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:05:18.175Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:05:19.881Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:05:20.227Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:05:20.469Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:05:20.910Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:05:32.853Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:05:33.424Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:05:45.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:05:47.076Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:05:56.757Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:06:14.913Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:06:26.524Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:06:27.219Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:06:27.275Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:06:47.730Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:07:22.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:07:25.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:07:26.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:07:32.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:07:33.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:07:45.053Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:02.175Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:08:13.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:16.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:18.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:20.114Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:20.757Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:21.585Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:24.263Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:08:24.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:27.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:29.267Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:43.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:43.540Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:08:55.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:09:00.259Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:09:00.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:09:03.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:09:05.634Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:09:06.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:09:09.213Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:09:10.158Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:09:48.820Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:09:51.210Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:09:51.271Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:10:03.993Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:10:13.276Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:10:18.618Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:10:28.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:10:30.606Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:10:40.721Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:10:55.933Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:11:08.167Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:11:12.632Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:11:15.711Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:11:20.839Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:11:27.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:11:33.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:11:39.040Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:11:46.023Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:11:46.809Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:11:51.650Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:12:06.424Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:07.051Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:09.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:14.417Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:12:23.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:25.328Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:25.339Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:12:25.395Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:12:28.794Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:12:35.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:12:39.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:51.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:12:59.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:13:02.245Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:13:03.087Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:13:03.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:13:03.793Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:13:05.851Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:13:14.155Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:13:21.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:13:30.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:13:30.915Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:13:36.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:13:36.081Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:13:44.741Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:13:47.299Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:05.393Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:05.624Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:14:15.127Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:14:16.770Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:14:17.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:24.719Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:14:26.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:33.776Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:14:35.602Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:50.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:50.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:14:59.461Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:14:59.717Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:15:14.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:15:15.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:15:22.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:15:25.197Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:15:28.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:16:25.995Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:17:11.457Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:17:27.777Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:17:37.198Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:17:42.899Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:17:51.396Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:18:07.547Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:18:12.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:18:13.211Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:18:19.060Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:18:27.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:18:38.524Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:18:41.900Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:18:44.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:19:05.144Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:11.436Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:19:19.212Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:22.360Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:22.780Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:44.854Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:46.290Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:47.283Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:50.410Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:53.254Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:19:54.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:20:07.476Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:20:07.477Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:20:19.569Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:20:21.802Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:20:24.181Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:20:25.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:20:26.437Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:20:44.748Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:20:52.929Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:21:08.934Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:21:18.214Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:21:27.599Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:21:29.940Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:21:43.609Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:21:44.448Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:22:15.596Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:22:17.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:22:23.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:22:24.518Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:22:49.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:22:58.034Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:23:57.399Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:24:03.142Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:24:12.456Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:25:53.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:27:37.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:28:05.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:30:37.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:38:35.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:38:59.708Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:49:13.655Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T02:50:36.620Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:51:11.356Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:51:37.802Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:53:30.017Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T02:54:12.178Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T02:54:33.130Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:06:27.193Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:06:41.231Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:06:45.660Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:06:54.377Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:03.896Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:24.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:33.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:43.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:45.860Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:53.797Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:57.400Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:58.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:07:59.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:01.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:02.496Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:12.395Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:13.211Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:20.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:21.880Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:22.058Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:30.272Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:08:37.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:51.396Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:56.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:08:58.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:09:15.944Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:09:31.144Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:09:43.686Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:10:17.842Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:10:25.642Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:10:33.536Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:10:34.746Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:11:02.895Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:12:01.011Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:12:12.227Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:12:18.523Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:12:21.728Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:13:19.668Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:13:42.686Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:13:43.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:13:48.383Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:14:14.539Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-17T03:14:19.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:14:23.752Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:14:32.699Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:14:33.438Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:15:36.487Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:15:47.803Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:15:49.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:15:56.527Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:15:56.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:16:20.757Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:16:39.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:16:41.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:17:01.162Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:17:04.622Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:17:21.798Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:17:23.308Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:17:24.340Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:17:35.260Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:17:45.811Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:17:49.523Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:17:50.622Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:18:14.357Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:18:28.076Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:18:38.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:18:55.192Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:18:59.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:19:11.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:19:12.824Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:19:20.774Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:19:21.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:19:39.638Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:19:41.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:20:09.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:23:39.796Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:25:47.341Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:26:56.286Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:27:34.107Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:27:41.683Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:27:44.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:28:55.630Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:29:22.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:29:38.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:30:15.640Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:30:21.759Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:30:29.477Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:30:30.219Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:30:34.615Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:30:39.443Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:30:40.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:31:00.741Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:31:32.260Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:32:51.841Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:33:09.317Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:34:08.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:34:26.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:35:14.632Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:35:25.500Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:35:40.594Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:35:43.621Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:36:30.702Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:37:18.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:37:55.369Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:38:01.571Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:38:23.109Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:38:30.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:38:38.964Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:38:46.017Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:38:50.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:38:51.186Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:38:54.982Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:39:10.267Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:39:13.372Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:39:18.450Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:39:34.977Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:40:57.239Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:41:16.709Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:42:34.924Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:50:44.851Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:51:06.419Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:52:11.646Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:53:34.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:53:54.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:54:16.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:54:47.736Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T03:56:28.809Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:57:50.252Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:57:58.830Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:58:10.255Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:58:12.475Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:58:13.553Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:58:40.627Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:58:41.707Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:59:06.817Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:59:22.120Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:59:37.754Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T03:59:55.884Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T03:59:58.862Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:00:00.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:00:04.758Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:00:21.925Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:00:31.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:01:09.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:03:47.652Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:04:21.545Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:05:08.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:06:07.146Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:06:54.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:07:10.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:07:49.278Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:08:14.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:08:23.685Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:08:46.457Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:09:25.457Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:09:28.168Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:09:29.259Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:09:35.483Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:09:42.442Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:14:59.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:16:44.064Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:51:33.702Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:51:53.329Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:54:37.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:55:14.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T04:55:33.866Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:56:29.642Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T04:58:06.689Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:58:56.042Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T04:59:28.442Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:00:04.348Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T05:00:20.720Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:00:25.790Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T05:00:28.442Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:00:48.587Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T05:00:55.672Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T05:01:32.414Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T05:01:43.644Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T05:02:57.644Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:03:41.908Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:04:21.166Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:04:35.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:05:13.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:05:30.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:05:39.929Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:05:40.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:05:52.377Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:05:55.595Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:05:58.775Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:00.155Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:06.996Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:16.688Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:17.981Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:27.509Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:28.945Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:29.880Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:33.841Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:47.043Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:06:59.044Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:07:00.429Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:07:19.656Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:07:20.791Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:07:41.305Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:08:13.767Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:08:13.958Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T05:08:30.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:09:02.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T05:09:29.092Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:23:49.099Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:26:44.128Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:26:58.107Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:28:15.568Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:29:11.969Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:31:35.296Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:32:38.790Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:34:11.862Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:35:34.236Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:35:47.520Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:39:09.312Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:39:21.174Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:39:31.252Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:42:15.493Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T06:45:48.257Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:46:16.158Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:48:55.622Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:50:35.566Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T06:56:42.664Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:03:28.850Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:04:29.427Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:06:55.239Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:07:07.123Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:07:08.870Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:07:15.462Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:07:16.663Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:07:21.452Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:07:53.466Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:08:00.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:08:43.568Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:08:49.427Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:11:42.150Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:13:45.065Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:14:11.593Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:20:36.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:25:51.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:28:03.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:29:59.192Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:30:47.927Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:42:55.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:43:22.487Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:43:57.328Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:45:41.143Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:47:30.884Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:48:23.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:50:19.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:51:16.467Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:52:21.409Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:53:04.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:54:19.242Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:54:26.285Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:54:32.575Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T07:54:33.647Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:54:35.829Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:54:36.729Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:54:46.421Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:55:00.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:55:56.110Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:57:17.253Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:58:52.926Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:58:53.275Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:59:10.190Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T07:59:52.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T07:59:57.558Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:01:01.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:01:06.720Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:01:34.258Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:02:58.570Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:04:40.745Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:05:05.461Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:12:24.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:14:30.334Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:14:50.117Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:15:12.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:18:32.191Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:22:00.291Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:22:17.045Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:22:48.634Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:23:06.059Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:24:51.370Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:24:56.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:25:04.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:25:54.495Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:26:05.845Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:26:10.806Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:26:48.940Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:26:50.254Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:27:06.054Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:27:12.853Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:27:17.542Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:27:33.926Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:27:38.748Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:27:45.361Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:27:46.184Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:27:50.879Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:27:52.603Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:28:01.401Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:28:05.071Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:28:41.329Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:29:21.930Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:30:19.306Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:30:34.506Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:30:37.633Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:30:38.379Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:30:55.496Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:31:28.908Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:31:37.088Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:31:37.996Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:32:04.417Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:32:42.062Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:33:33.579Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:33:34.275Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:33:50.644Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:33:56.811Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:34:43.100Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:36:32.530Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:37:27.521Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:37:30.624Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:37:44.781Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:37:45.341Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:37:48.146Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:38:05.491Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T08:38:22.024Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:38:36.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:38:59.890Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T08:40:29.130Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T08:41:29.292Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T10:23:08.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T10:23:25.434Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T10:23:56.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T10:27:28.427Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T11:24:19.369Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:12:42.829Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:12:58.067Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:13:38.053Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:15:22.132Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:15:23.246Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:15:24.346Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:15:35.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:15:37.274Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T12:17:11.498Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:17:30.140Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:17:55.323Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:18:42.146Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:18:54.752Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:19:14.828Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:19:35.226Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T12:20:54.513Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T13:52:26.357Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T15:45:42.614Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:48:22.636Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:48:37.975Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:48:38.051Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:48:44.440Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T15:48:46.172Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T15:48:49.216Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T15:48:50.030Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T15:50:28.861Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:50:41.888Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:50:59.091Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T15:50:59.945Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T15:51:25.597Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:56:44.733Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:58:11.073Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:58:29.935Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:58:45.475Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:59:10.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:59:21.429Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:59:37.821Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T15:59:51.176Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:23:59.030Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:24:18.246Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:24:24.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:24:48.950Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:24:50.803Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:24:53.058Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:24:54.342Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:25:04.332Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:25:04.450Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:43:29.873Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:43:51.123Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:44:09.905Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:44:24.250Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:45:18.701Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:45:21.502Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:46:38.554Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:46:42.475Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:46:54.434Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:46:57.257Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:46:59.508Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:47:03.272Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:47:06.406Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:47:15.148Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:48:02.957Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:48:53.299Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:49:00.728Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:49:08.639Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:49:10.714Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:49:12.119Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:49:17.774Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:49:44.363Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:49:52.422Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:51:07.393Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:51:22.149Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:52:10.646Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:52:15.349Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:52:46.182Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:52:53.212Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:53:03.299Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:53:12.127Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:53:12.949Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:53:13.442Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:53:15.290Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:53:15.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T16:53:25.774Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:53:26.594Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T16:54:03.586Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:54:09.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T16:54:46.607Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:54:50.423Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T16:55:17.317Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:02:10.037Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:02:23.546Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:11:06.176Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:12:07.052Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:12:18.706Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:13:46.138Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:14:13.619Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:14:24.216Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T17:14:24.925Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T17:14:48.352Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:15:07.367Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:19:44.893Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:19:45.801Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:22:36.880Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:50:56.936Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:51:10.521Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:51:31.854Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:51:47.240Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T17:51:59.489Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T17:52:12.524Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:53:10.623Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:53:27.000Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:53:27.733Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:53:32.666Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:17.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:18.596Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:32.700Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:35.377Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:36.951Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:37.223Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:40.196Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:54:42.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-17T17:54:42.017Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-17T17:54:56.466Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:55:08.166Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-17T17:55:20.425Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T04:58:59.264Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T04:59:47.054Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:02:05.222Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T05:02:58.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:05:03.162Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:05:11.543Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:05:29.362Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:09:27.316Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T05:10:23.404Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T05:11:36.468Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T05:13:58.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T05:14:20.978Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:14:42.146Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:17:54.251Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T05:18:10.167Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T05:18:32.355Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:02:25.007Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:04:20.723Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:34:15.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:34:34.382Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:34:37.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:12.345Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:16.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:26.452Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:36.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:40.245Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:42.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:43.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:54.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:54.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:58.281Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:35:59.575Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:00.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:05.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:06.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:09.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:11.610Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:12.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:13.496Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:17.983Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:23.617Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:24.671Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:30.886Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:31.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:32.169Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:36.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:39.413Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:40.179Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:36:49.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:37:08.385Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:37:47.168Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:38:04.712Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:38:08.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:38:24.513Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:38:26.352Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:38:39.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:38:41.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:38:51.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:38:52.025Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:39:09.582Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:39:28.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:40:25.522Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:42:56.377Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T06:44:24.622Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:44:37.002Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:45:22.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:46:04.597Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:46:47.029Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:47:05.109Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:48:02.494Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:49:56.931Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T06:52:11.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:52:29.636Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:52:36.021Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T06:53:09.548Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:53:15.445Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:53:31.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:19.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:20.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:31.020Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:33.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:35.984Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:37.063Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:54:53.445Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:08.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:11.557Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:12.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:29.049Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:34.078Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:35.315Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:37.781Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:55:38.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:56:16.167Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:56:24.747Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:56:38.318Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:57:08.489Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:57:12.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:57:15.657Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:07.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:15.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:16.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:22.072Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:22.279Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:43.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:50.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:52.402Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:58:52.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:59:26.178Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:59:30.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T06:59:30.690Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T06:59:47.330Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:00:30.522Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:00:46.714Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:01:08.946Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:01:48.873Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:01:52.195Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:01:56.238Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:03:06.428Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:03.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:24.593Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:25.252Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:27.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:29.686Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:34.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:34.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:44.771Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:04:54.308Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:05:02.651Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:05:30.808Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:09:42.602Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:10:30.649Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:11:51.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:13:35.891Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:13:47.882Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T07:18:11.661Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:20:18.448Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:20:25.653Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:21:29.898Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:23:52.713Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:25:04.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:28:45.199Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:30:40.069Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:34:49.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:35:15.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T07:35:25.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:35:31.164Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T07:39:21.740Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:40:52.688Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T07:49:57.135Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:15:51.753Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:16:14.942Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:36:03.200Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:36:15.722Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:38:05.684Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:38:27.709Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:38:42.551Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:39:17.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:40:17.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:40:20.572Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:40:21.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:40:22.504Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:40:23.415Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:40:40.207Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:40:40.429Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:42:57.791Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:43:11.101Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:43:29.643Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:43:36.134Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:43:42.987Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:43:52.222Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:45:30.290Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:45:50.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:45:58.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:45:59.344Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:46:24.643Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:46:24.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:46:34.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:46:34.982Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:46:36.577Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:46:49.682Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:47:02.095Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:47:06.626Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:47:12.107Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:47:39.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:47:39.418Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:47:44.902Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:47:48.727Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:47:49.290Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:47:51.048Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:48:07.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:48:08.222Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:48:22.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:48:26.508Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:48:27.244Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:48:35.771Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:48:35.809Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:48:44.006Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:48:48.721Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:48:57.589Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:48:57.611Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:48:57.668Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:06.976Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:20.660Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:22.169Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:27.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:28.708Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:40.472Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:41.734Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:49:44.150Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:50:20.224Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:50:23.867Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:50:31.586Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:50:31.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:02.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:12.585Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:16.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:16.513Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:18.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:20.889Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:21.638Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:25.197Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:25.507Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:27.137Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:32.760Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:51:34.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:35.929Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:37.959Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:39.463Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:41.912Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:51:46.111Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:52:02.901Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:52:23.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:52:36.243Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:36.513Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:37.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:46.965Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:50.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:53.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:56.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:52:59.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:03.318Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:07.683Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:08.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:25.781Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:27.947Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:44.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:54.503Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:53:58.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:54:15.268Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:54:37.548Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:54:39.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:54:40.051Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:54:44.018Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:54:48.270Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:54:48.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:54:49.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:54:56.882Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:55:02.163Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:55:03.501Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:06.745Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-19T08:55:10.969Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:55:21.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:25.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:28.754Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:55:29.033Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:41.401Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:48.377Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:51.014Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:55:52.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:55:56.166Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:00.131Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:00.816Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:02.126Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:56:02.613Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:06.469Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:10.655Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:37.153Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:42.250Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:56:50.588Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:56:51.773Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:57:07.036Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:57:17.777Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:57:24.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:57:25.692Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:57:57.919Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:57:59.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:58:06.961Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:58:11.940Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:58:11.942Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:58:15.138Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:58:18.874Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:58:23.094Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:58:29.571Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:58:30.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:58:33.984Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:58:37.366Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:58:45.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:59:07.086Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:59:07.223Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:59:09.600Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:59:18.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:59:21.556Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T08:59:21.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:59:35.610Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T08:59:44.992Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:59:45.299Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T08:59:49.417Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:03.096Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:07.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:07.794Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:00:10.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:10.541Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:00:11.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:13.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:16.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:16.907Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:00:17.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:19.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:19.927Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:25.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:26.392Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:29.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:30.536Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:44.281Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:00:46.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:47.557Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:48.526Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:49.639Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:55.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:00:58.309Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:01:04.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:01:06.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:01:09.001Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:01:09.277Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:01:09.813Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:01:12.789Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:01:18.964Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:01:24.675Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:01:27.647Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:01:40.986Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:01:41.213Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:01:41.944Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:01:44.227Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:01:59.788Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:02:05.321Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:02:14.487Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:02:22.798Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:02:22.940Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:02:37.932Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:02:45.324Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:02:46.564Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:03:03.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:03:22.619Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:03:24.983Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:03:32.861Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:03:33.853Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:03:41.828Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:03:53.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:03:55.453Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:03:55.655Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:04:04.779Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:04:08.068Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:04:10.120Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:04:14.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:04:24.998Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:04:48.375Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:04:55.828Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:05:13.337Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:05:57.015Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:06:19.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:06:30.765Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:06:34.480Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:06:52.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:07:18.569Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:07:38.646Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:07:39.126Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:07:45.253Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:07:56.951Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:08:07.373Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:08:14.326Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:08:32.462Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:09:15.125Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:09:17.862Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:09:23.374Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:09:27.222Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:09:50.216Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:09:52.446Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:10:18.263Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:10:19.571Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:10:31.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:10:37.007Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:10:39.934Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:10:51.006Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:11:37.272Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:12:04.128Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:12:33.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:12:40.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:12:51.168Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:13:05.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:13:47.299Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:14:11.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:14:13.142Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:14:17.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:14:47.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:15:12.657Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:16:22.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:16:23.419Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:16:28.395Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:16:31.000Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:16:40.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:16:51.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:17:00.487Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:17:43.721Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:21:38.937Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:21:38.941Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:21:48.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:22:00.731Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:22:20.034Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:22:41.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:23:12.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:23:21.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:23:42.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:23:48.286Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:23:59.259Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:24:09.353Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:24:23.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:24:34.466Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:24:41.536Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:24:59.260Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:25:02.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:25:12.743Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:26:07.085Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:26:15.364Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:26:20.805Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:26:21.482Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:26:22.207Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:26:33.527Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:26:44.336Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:27:10.548Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:27:29.774Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:28:25.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:40.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:45.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:45.906Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:51.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:52.765Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:57.437Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:28:59.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:29:02.314Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:29:08.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:29:09.966Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:29:12.072Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:29:13.839Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:29:15.175Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:29:29.142Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:29:35.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:29:45.111Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:29:46.054Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:30:02.734Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:30:03.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:30:15.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:30:23.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:30:26.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:30:26.082Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:30:27.213Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:30:31.279Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:30:40.293Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:30:56.377Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:31:21.777Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:31:23.032Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:31:23.687Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:31:31.103Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:32:04.656Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:08.363Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:10.445Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:17.852Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:24.374Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:32:25.404Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:30.706Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:39.045Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:32:41.683Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:47.471Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:49.526Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:50.681Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:51.691Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:54.930Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:55.980Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:56.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:57.155Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:32:58.233Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:33:08.201Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:33:09.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:34:48.963Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:34:50.967Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:35:26.251Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:35:27.368Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:35:28.470Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:36:03.672Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:37:29.938Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:37:40.039Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T09:39:58.383Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:44:03.029Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:45:26.663Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:45:58.145Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:54:04.251Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:54:19.089Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:54:19.765Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:54:34.081Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:54:34.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:55:21.473Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:06.834Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:07.458Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:08.281Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:09.213Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:14.591Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:15.568Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:56:50.325Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T09:57:24.710Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:58:10.203Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:58:46.883Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:58:47.940Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:58:51.245Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:58:51.699Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:58:56.017Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:00.038Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:00.763Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:04.316Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:07.585Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:18.224Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:26.915Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:30.087Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:34.538Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T09:59:41.955Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T10:01:38.295Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T10:01:50.726Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T10:02:37.513Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T10:02:42.588Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T10:04:10.395Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T10:04:20.496Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T10:04:37.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T10:09:33.717Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:28:41.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:28:51.852Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:28:54.654Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:28:58.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:28:59.149Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:29:09.188Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:29:09.743Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:29:10.692Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:29:15.951Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:29:16.759Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:29:26.579Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:29:33.019Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:29:57.383Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:30:20.743Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:30:42.774Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T11:30:51.210Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:30:55.125Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T11:31:11.042Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:32:11.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:32:13.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:33:26.768Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:33:27.541Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:33:28.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:33:39.312Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:35:25.217Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:36:48.506Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:37:08.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:37:30.418Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:37:47.859Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:38:02.512Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:38:23.427Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:38:25.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:38:39.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:38:59.949Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:58:10.950Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:58:19.305Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:58:22.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:58:56.683Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T11:59:03.626Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:59:23.617Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T11:59:40.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:00:34.026Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:01:06.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:02:01.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:02:01.689Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:02:20.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:02:42.207Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:03:09.456Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:03:29.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:03:45.119Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:04:28.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:04:45.492Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:05:05.370Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:05:43.602Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:06:02.171Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:06:29.073Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:07:41.714Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:07:43.066Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:07:49.045Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:07:54.710Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:08:00.003Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:08:01.096Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:08:02.600Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:09:30.622Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:10:03.224Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:11:13.406Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:20.868Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:23.862Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:27.372Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:11:28.483Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:11:35.867Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:11:37.830Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:39.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:11:39.798Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:11:41.752Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:42.649Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:43.354Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:11:49.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:11:58.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:12:22.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:13:02.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:13:09.392Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:14:12.442Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:15:40.359Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:15:44.125Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:17:37.930Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:17:59.162Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:19:19.826Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:19:24.533Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:19:36.717Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:19:40.799Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:22:48.041Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:22:53.741Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:23:00.635Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:23:35.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:46.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:47.520Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:51.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:55.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:56.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:56.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:23:56.984Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:24:01.988Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:10.498Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:13.817Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:15.206Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:15.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:16.500Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:17.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:18.066Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:23.084Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:24:27.197Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:29.271Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:29.573Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:30.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:30.704Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:32.450Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:34.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:34.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:35.110Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:39.216Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:24:41.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:42.389Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:24:43.050Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:24:54.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:57.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:24:59.406Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:00.061Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:01.450Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:02.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:02.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:04.185Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:15.378Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:20.161Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:20.791Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:22.705Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:25.383Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:28.315Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:29.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:31.475Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:25:39.411Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:40.919Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:41.354Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:25:50.714Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:25:59.313Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:26:06.485Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:26:12.944Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:26:20.754Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:26:26.004Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:26:42.413Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:26:56.450Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:27:13.499Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:27:38.164Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:28:50.613Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:29:47.799Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:29:50.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:30:14.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:30:19.996Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:30:22.057Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:30:39.403Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:30:40.820Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:31:29.858Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:31:33.654Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:31:57.868Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:32:06.999Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:11.000Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:32:16.015Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:32:16.303Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:20.148Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:24.027Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:31.092Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:39.767Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:40.520Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:44.372Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:32:47.601Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:33:03.820Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:33:15.961Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:33:16.316Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:33:20.753Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:33:22.730Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:33:24.756Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:33:49.703Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:33:51.422Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:34:01.316Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:34:05.389Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:34:14.375Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:34:16.780Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:34:51.829Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:35:19.877Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:35:53.412Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:38:03.790Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:40:20.630Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:40:49.565Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:41:55.340Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:42:22.637Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:42:26.689Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:42:28.238Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:42:34.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:42:39.408Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:42:41.365Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:42:41.484Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:42:48.820Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:43:11.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:43:42.640Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:44:09.664Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:44:53.846Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:46:38.445Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:48:45.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:48:56.265Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:49:14.819Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:49:32.652Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:50:13.528Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:51:34.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:51:35.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:51:46.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:53:02.051Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:53:04.295Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T12:53:44.243Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T12:55:58.287Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:56:57.781Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T12:58:05.684Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T13:03:19.080Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T13:04:11.902Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:04:31.331Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T13:06:57.008Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:06:58.862Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:06:59.588Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:07:24.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:07:25.152Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:08:58.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T13:09:17.622Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T13:11:42.724Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:13:17.350Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T13:19:47.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T13:21:04.095Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T13:21:55.729Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:21:56.398Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:23:34.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T13:23:47.495Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T13:28:07.297Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:28:46.781Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T13:33:34.571Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T13:33:58.068Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T15:46:45.295Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T15:46:52.265Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T15:48:04.630Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T15:50:39.881Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T15:51:07.978Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-19T15:52:03.733Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T15:55:23.246Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-19T15:56:04.538Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T15:56:04.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T15:56:20.593Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-19T15:56:26.156Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T00:12:04.713Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T00:13:58.908Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T00:19:08.793Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T00:20:20.885Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T00:20:41.407Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:23:55.546Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:23:59.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:24:53.492Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:25:20.604Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:25:52.085Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:25:52.674Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:25:55.499Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:25:57.579Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:25:59.430Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:26:27.866Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:26:28.254Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:26:40.211Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:26:42.282Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:27:14.965Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:27:15.487Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:27:58.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:28:08.980Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:28:39.211Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:28:50.633Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:29:39.942Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:30:39.592Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:31:43.361Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:34:44.713Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:35:54.832Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:37:47.168Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:38:16.365Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:38:16.617Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:39:27.700Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:39:34.186Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:41:52.675Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:42:13.257Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:42:15.724Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:44:38.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:44:40.628Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:44:54.521Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:44:55.372Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:46:09.429Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:46:21.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:47:08.599Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:52:45.825Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:53:00.686Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:53:16.550Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:54:45.393Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:55:12.987Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:55:13.671Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:55:32.891Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T03:55:33.217Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T03:55:49.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T03:55:53.892Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T06:58:02.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T06:58:05.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T06:58:12.268Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T06:58:13.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T06:59:27.733Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T06:59:39.509Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:00:29.019Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:01:11.194Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:01:22.740Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:01:44.016Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:06:02.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:07:16.546Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:07:47.908Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:08:04.415Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:22:42.182Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:22:42.909Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:22:43.602Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:22:48.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:22:48.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:16.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:25.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:26.395Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:27.266Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:28.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:29.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:23:30.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:24:34.609Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:24:47.272Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:28:53.661Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:29:36.321Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:29:45.370Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:29:57.445Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:30:04.723Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:32:17.110Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:32:28.536Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:32:30.899Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:32:32.184Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:32:53.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:33:20.833Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:33:23.331Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:33:26.271Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:33:26.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:33:44.862Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:33:46.383Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:34:07.494Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:34:15.953Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:34:17.078Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:34:37.581Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:35:16.892Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:38:05.949Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:38:44.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:38:45.060Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:40:37.141Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:42:56.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:43:53.850Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:45:47.578Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:47:10.266Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:48:41.332Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:50:13.252Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:52:36.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:52:44.403Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:53:07.648Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:53:36.750Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:37.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:38.074Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:38.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:39.396Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:40.457Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:41.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:42.182Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:43.053Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:45.223Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:46.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:47.044Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:47.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:48.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:48.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:53:58.540Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:54:03.676Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:09.061Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:09.731Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:10.359Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:11.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:11.627Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:13.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:13.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:19.188Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:20.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:22.163Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:46.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:51.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:54:57.335Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:54:58.541Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:54:59.685Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:54:59.807Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:55:00.793Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:55:00.945Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:55:02.244Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:55:05.193Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T07:55:31.990Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:55:43.728Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:55:44.711Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:55:53.365Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T07:56:00.544Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T07:58:42.793Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:01:44.540Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:01:45.902Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:01:53.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:01:55.167Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:01:57.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:02:08.212Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:02:13.094Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:02:16.856Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:02:18.083Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:03:17.946Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:04:10.006Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:04:42.595Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:09:45.062Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:10:33.640Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:10:37.513Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:10:38.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:11:48.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:11.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:14.626Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:16.907Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:12:22.745Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:12:23.449Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:12:24.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:33.436Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:34.539Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:35.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:35.915Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:39.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:46.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:12:54.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:13:47.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:13:54.987Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:13:56.175Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:15:30.463Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:16:11.153Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:16:41.646Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:16:54.403Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:18:15.466Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:18:17.496Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:18:18.182Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:18:43.695Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:18:49.296Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:18:52.100Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:19:05.700Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:27:10.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:28:02.563Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:28:10.237Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:28:34.055Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:28:35.272Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:28:37.069Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:28:38.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:28:42.418Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:28:47.814Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:28:55.708Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:29:04.965Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:29:10.267Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:29:19.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:29:24.428Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:29:53.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:30:15.570Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:32:17.664Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:32:32.163Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:32:52.730Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:32:54.134Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:32:54.991Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:32:56.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:09.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:14.527Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:16.281Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:16.927Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:26.651Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:29.110Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:29.884Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:30.588Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:31.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:35.813Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:36.529Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:40.646Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:41.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:48.911Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:33:50.527Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:33:56.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:34:03.020Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:05.527Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:06.294Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:07.027Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:07.702Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:14.519Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:22.557Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:26.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:33.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:34.874Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:39.924Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:42.084Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:42.950Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:50.005Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:53.762Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:54.983Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:34:55.158Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:01.730Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:08.920Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:12.614Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:23.134Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:23.829Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:27.189Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:46.109Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:46.884Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:50.421Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:35:51.134Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:36:14.996Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:36:37.081Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:36:40.360Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:36:44.258Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:37:00.090Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T08:37:31.125Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:38:00.611Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:38:27.972Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:38:42.746Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:38:45.918Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:38:48.015Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:39:21.951Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:39:28.723Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:39:28.785Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:39:37.117Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:39:38.310Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:39:42.185Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:41:20.932Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:41:29.188Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:41:33.210Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:42:14.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:42:33.321Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:43:51.329Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:43:56.756Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:44:23.286Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:45:27.563Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:45:31.350Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:45:34.730Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:45:42.780Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:46:44.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:47:07.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:47:22.101Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:48:40.845Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T08:49:59.230Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T08:53:27.440Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:04:06.698Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T09:09:38.501Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:09:46.725Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:10:40.381Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:41.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:43.098Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:43.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:50.702Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:50.702Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:58.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:10:58.854Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:11:00.166Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:11:00.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:11:01.599Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:11:06.483Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T09:12:26.575Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:12:58.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:13:17.486Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:13:25.268Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:13:58.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:14:04.233Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:14:08.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:14:40.838Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:14:57.655Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:15:02.198Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:15:30.365Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:15:34.764Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:15:39.430Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:15:44.158Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:16:21.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:16:33.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:25:20.976Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:25:59.873Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T09:26:05.418Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:27:08.872Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:27:58.600Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:11.127Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:28:15.424Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:16.389Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:17.734Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:18.685Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:20.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:22.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:27.048Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:28:29.875Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:34.998Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:35.918Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:41.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:28:41.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T09:29:06.627Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:29:16.695Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:29:17.619Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:29:18.977Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:29:19.915Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:29:20.765Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:30:17.345Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:30:18.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:30:26.145Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:30:26.894Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:31:14.139Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:36:33.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:39:01.715Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T09:39:32.213Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T09:39:34.349Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T14:19:22.040Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T14:19:30.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T14:19:51.628Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T14:30:41.724Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T14:31:32.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T14:31:44.748Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T14:31:46.329Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T14:31:47.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T14:32:29.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T14:34:03.028Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T14:38:05.487Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T14:39:10.176Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T14:39:28.389Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:20.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T15:27:21.615Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T15:27:28.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T15:27:33.756Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T15:27:34.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T15:27:39.961Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:43.548Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:44.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:45.801Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:48.544Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:50.032Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:51.505Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:27:52.471Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:28:03.228Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:28:23.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:29:40.781Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:29:54.883Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T15:29:55.279Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-20T15:31:36.302Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:32:14.028Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-20T15:33:20.482Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-20T15:56:22.161Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T03:54:38.107Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T03:55:30.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T03:57:25.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T03:57:41.879Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T03:58:28.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T03:58:55.635Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T03:59:54.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:00:19.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:01:58.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:02:24.083Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:03:27.291Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:04:28.494Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:04:29.671Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:04:42.829Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:06:30.844Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:20:50.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:04.747Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:05.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:18.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:51.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:52.996Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:55.893Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:21:56.559Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:00.597Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:08.744Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:08.753Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:08.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:13.900Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:13.904Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:21.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:27.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:30.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:34.891Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:40.918Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:49.615Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:22:55.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:10.204Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:10.977Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:22.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:25.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:26.017Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:27.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:27.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:29.053Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:29.733Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:23:47.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:03.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:19.365Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:19.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:22.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:24.830Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:35.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:37.003Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:37.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:46.413Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:47.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:49.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:52.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:24:52.836Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:01.532Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:07.816Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:25:10.580Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:25:11.814Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:13.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:16.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:20.196Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:21.004Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:25:22.838Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:25:25.415Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:25:29.380Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:25:31.359Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:35.411Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:25:35.746Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:36.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:47.130Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:55.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:25:58.414Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:26:00.285Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:26:00.984Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:26:07.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:26:37.567Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:26:47.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:26:48.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:27:07.899Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:27:22.336Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:27:31.323Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:27:49.373Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:28:01.899Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:35:50.886Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:36:20.770Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:37:42.511Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:39:05.118Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:39:48.171Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:40:15.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:40:21.527Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:40:54.115Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:41:15.765Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:41:15.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:41:56.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:42:22.412Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:44:39.548Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:48:25.124Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:48:37.827Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:52:01.925Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:53:52.387Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:54:01.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:54:06.238Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:54:10.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:54:20.436Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:54:23.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:54:24.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:54:50.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:55:14.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T04:55:14.501Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T04:55:17.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T04:55:47.921Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:43:12.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:43:13.388Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:43:49.644Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:06.112Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:15.449Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:16.137Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:26.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:28.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:34.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:44:39.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:04.826Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:07.949Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:09.216Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:09.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:15.705Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:26.357Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:26.473Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:27.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:45:27.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:46:29.767Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:46:53.008Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:47:39.408Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:47:43.758Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:47:43.781Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:48:06.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:14.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:31.117Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:31.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:32.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:37.669Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:42.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:49:45.586Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:02.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:25.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:33.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:33.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:42.909Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:49.867Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:54.272Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:51:54.282Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:52:21.962Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:52:22.467Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:52:22.894Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:52:34.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:52:34.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:52:45.097Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:27.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:37.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:38.643Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:38.995Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:43.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:44.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:44.596Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:46.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:50.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:50.465Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:52.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:53:58.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:54:00.088Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:54:11.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:55:14.915Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:55:17.295Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:55:18.176Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:56:07.466Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:56:08.258Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:56:12.852Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:56:51.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:56:52.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:57:35.550Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T06:58:12.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:25.176Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:26.366Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:37.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:41.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:42.063Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:42.849Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:43.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:58:43.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T06:59:00.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:00:10.950Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:00:10.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:00:25.849Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:00:34.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:00:35.604Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:00:39.167Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:01:05.076Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:01:05.427Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:01:23.661Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:01:27.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:01:54.759Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:02:05.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:02:06.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:02:11.067Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:02:11.237Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:02:37.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:02:56.525Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:03:11.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:03:22.584Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T07:05:03.548Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:05:30.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:06:32.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:06:57.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:27.830Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:42.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:53.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:54.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:56.204Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:58.215Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:07:59.519Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:02.730Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:18.793Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:19.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:21.058Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:22.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:23.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:26.885Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:08:27.196Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:09:04.820Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:09:05.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:09:06.058Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:09:30.464Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:09:35.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:06.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:18.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:18.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:19.092Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:19.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:42.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:10:46.951Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:05.718Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:13.521Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T07:11:16.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:19.498Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:29.610Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:30.029Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:30.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:31.271Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:33.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:38.627Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:41.204Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:41.204Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:42.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:42.570Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:43.310Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:43.952Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:44.146Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:44.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:11:57.097Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:12:19.698Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T07:12:38.641Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:12:49.331Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:13:08.226Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:13:08.346Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:13:11.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:13:16.729Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:13:21.169Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:13:29.110Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T07:13:29.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T07:14:16.049Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:14:29.993Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:14:59.615Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:15:04.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:15:09.455Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:15:11.661Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:15:11.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:15:21.475Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:15:29.230Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:16:01.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:16:01.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:16:03.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:16:06.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:16:19.210Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T07:16:56.245Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:18:46.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:19:58.643Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:20:03.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:20:05.490Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T07:20:11.438Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:20:12.889Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:20:17.336Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T07:20:19.522Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T07:20:22.631Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:20:40.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:20:45.406Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:21:29.373Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:21:29.998Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:21:38.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:21:41.414Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:21:43.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:21:44.471Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:22:04.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:22:04.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:22:40.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:22:41.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:23:05.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:23:11.906Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:23:25.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:23:38.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:24:12.351Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:24:22.660Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:24:29.418Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:25:14.249Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:25:21.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:25:40.839Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:25:41.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:25:44.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:26:07.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:26:47.393Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:27:22.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:27:31.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:27:48.147Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:27:49.457Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T07:30:02.914Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:30:18.580Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T07:30:18.641Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T07:31:22.464Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:31:31.524Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:31:37.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:31:38.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:33:33.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:33:45.456Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:33:46.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:35:00.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:35:34.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T07:36:03.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T08:23:26.404Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T09:40:40.419Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T09:55:22.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:07:33.169Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:06.226Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:20.952Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:31.727Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:35.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:36.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:38.960Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:38.960Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:40.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:40.759Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:45.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:48.828Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:08:54.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:09:27.096Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:09:27.814Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:09:38.722Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:09:47.055Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:09:47.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:09:58.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:01.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:02.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:05.250Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:10:11.803Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:12.502Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:16.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:19.197Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:21.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:23.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:23.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:27.203Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:27.404Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:27.990Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:28.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:29.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:31.669Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:10:39.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:42.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:42.278Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:10:42.391Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:10:42.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:48.948Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:49.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:50.053Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:10:54.831Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T10:11:03.752Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:07.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:15.336Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:18.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:20.120Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:20.727Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:30.883Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:32.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:40.889Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:45.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:46.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:47.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:55.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:11:58.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:04.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:11.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:15.715Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:18.167Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:19.205Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:24.582Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:40.450Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:12:41.249Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:00.882Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:01.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:12.514Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:20.088Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:33.800Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:51.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:52.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:13:59.088Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T10:14:11.319Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:20.093Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:24.308Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:25.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:33.262Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:34.195Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:47.128Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:47.779Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:49.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:14:51.924Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:15:13.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:15:24.352Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:15:24.386Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:15:57.033Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:15:57.793Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:16:10.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:16:27.246Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:16:38.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:16:59.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:07.933Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:08.708Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:09.538Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:10.470Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:10.744Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:28.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:34.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:17:34.210Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:18:06.049Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:18:09.908Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:18:15.901Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:18:25.651Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:18:27.223Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:18:57.787Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:19:09.975Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:19:15.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:19:34.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:20:32.430Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T10:20:47.061Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:21:12.150Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T10:21:43.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:22:07.460Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:22:36.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:22:37.633Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:23:15.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:23:27.164Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:23:27.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:23:48.457Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:23:49.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T10:24:37.279Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:06:49.924Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:07:02.143Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:07:06.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:07:09.775Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:07:30.604Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:07:44.208Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:08:27.825Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:09:22.128Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:09:42.504Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:10:08.594Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:11:48.654Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:13:21.230Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:13:35.076Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:16:17.469Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:18:25.645Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:21:40.535Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:23:17.130Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:23:32.953Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:23:50.157Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:23:54.714Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:24:33.735Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:24:43.437Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:26:08.490Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:26:19.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:26:35.894Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:26:36.677Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:26:36.690Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:26:37.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:26:55.596Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:27:05.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:27:33.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:27:38.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:27:54.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:04.013Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:28:16.309Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:28:21.386Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:26.305Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:31.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:34.346Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:36.012Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:28:40.936Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:28:44.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:45.227Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:28:58.511Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:14.069Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:29:20.132Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:20.829Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:39.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:39.992Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:44.948Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:55.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:56.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:29:57.759Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:02.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:07.674Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:30:08.458Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:12.983Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:17.496Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:20.080Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:20.581Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:43.221Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:43.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:30:51.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:31:30.346Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:31:43.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:31:44.166Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:33:51.424Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:34:15.722Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:25.089Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:30.686Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:38.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:40.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:42.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:45.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:34:45.927Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:35:16.965Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:35:24.871Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:35:25.743Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:35:26.558Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:35:35.578Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:35:52.452Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:35:53.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:35:59.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:36:03.583Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:36:10.430Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:36:11.786Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:36:12.834Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:36:58.504Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:36:59.347Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:38:11.386Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:38:11.653Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:38:19.133Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:39:03.936Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:42:23.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:43:05.623Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:43:40.971Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:43:53.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:44:25.672Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:45:00.514Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:45:59.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:46:28.349Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:47:00.790Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:47:04.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:47:29.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:47:34.777Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T14:49:27.533Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:49:37.916Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:50:21.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:51:12.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:51:24.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:51:25.595Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:52:06.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:53:32.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:53:36.112Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:54:21.577Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:54:21.972Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:54:51.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:56:53.420Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:56:56.487Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:58:00.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T14:58:11.642Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T14:58:13.157Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:00:30.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:03:54.650Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:04:23.689Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:04:23.836Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:07:12.284Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:07:30.537Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:08:51.919Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:09:35.455Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:26:22.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:28:14.278Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:29:10.626Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:29:46.533Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:30:02.394Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:30:28.531Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:32:49.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:33:14.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:33:16.360Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:33:59.399Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:34:06.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:35:23.418Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:35:50.022Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:35:50.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:35:59.292Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:36:03.942Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:36:25.322Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:36:26.773Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:36:29.804Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:37:00.860Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:38:30.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:32.143Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:35.515Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:39.423Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:41.524Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:43.758Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:46.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:38:50.712Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:00.551Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:01.664Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:04.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:06.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:07.428Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:09.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:11.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:13.149Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:20.115Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:21.580Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:23.176Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:24.925Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:36.650Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:37.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:39:38.956Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:42:39.861Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:44:13.592Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:44:20.895Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:57:18.425Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:57:35.269Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:57:58.423Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:57:58.443Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:58:05.491Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:58:07.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:07.384Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:07.818Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:09.362Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:58:10.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:11.830Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:12.825Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:19.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:21.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:22.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:22.347Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:23.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:58:23.386Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:58:29.254Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T15:58:30.514Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:38.186Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:41.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:50.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:51.384Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:58:58.179Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:11.987Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:15.714Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:16.055Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:21.076Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:36.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:36.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:37.746Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:59:41.517Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T15:59:50.110Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T15:59:57.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:13.940Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:00:17.819Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:00:18.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:18.924Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:00:27.208Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:27.932Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:00:30.868Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:00:35.022Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:37.696Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:38.282Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:00:39.345Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:50.402Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:00:55.654Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:01:00.136Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:01:14.906Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:01:15.536Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:01:17.792Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:03:06.786Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:03:09.693Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:04:16.860Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:04:20.612Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:08:15.120Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:08:58.865Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:09:04.480Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:09:09.340Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:10:03.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:10:19.158Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:11:00.825Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:11:16.440Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:11:56.706Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:12:28.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:12:28.961Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:12:54.541Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:13:01.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:04.099Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:13.390Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:14.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:15.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:15.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:16.110Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:32.925Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:33.512Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:40.637Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:41.378Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:13:51.537Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:13:52.123Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:13:57.974Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:13:58.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:14:11.429Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:14:18.853Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:14:37.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:14:46.859Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:14:53.594Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:14:53.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:15:05.875Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:15:26.124Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:15:38.601Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:15:54.763Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:16:12.801Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:16:18.329Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:16:30.978Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:16:46.854Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:18:02.234Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:19:35.675Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:19:56.075Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:24:04.066Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:27:53.366Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:33:39.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:34:01.942Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:34:21.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:35:17.000Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:35:22.923Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:36:18.403Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:36:50.824Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:36:51.029Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:36:55.808Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:37:02.462Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:37:12.414Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:37:41.130Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:37:49.411Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:38:36.023Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:38:55.575Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:39:37.006Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:40:07.043Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:40:32.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:40:56.412Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:41:43.539Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:42:08.148Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:42:41.612Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:43:21.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:44:05.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:44:35.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:44:58.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:46:15.109Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:46:28.647Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:46:39.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:47:26.282Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:48:14.498Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:48:19.232Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:49:35.178Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:49:35.786Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:49:41.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:49:43.234Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:49:48.971Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:49:52.118Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:49:54.422Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:49:55.545Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:50:28.633Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:51:16.546Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:51:41.778Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:51:43.262Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:52:40.766Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:54:06.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:55:02.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:55:30.806Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:55:39.330Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:55:58.126Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:55:58.137Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T16:56:28.189Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:56:50.627Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:56:50.917Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:57:06.997Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:57:42.694Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:58:08.155Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:58:34.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T16:59:03.099Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:59:28.529Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T16:59:58.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:00:22.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:04:04.145Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:06:52.693Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:07:48.931Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:08:27.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:09:24.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:09:39.994Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:11:26.572Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:11:47.710Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:11:58.446Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:15:37.876Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:15:38.501Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:16:12.714Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:17:12.586Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:17:46.044Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:18:39.232Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:19:14.068Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:19:19.592Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:19:33.847Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:19:40.597Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:19:43.766Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:20:08.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:20:13.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:21:16.074Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:21:48.928Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:23:32.723Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:23:57.620Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:28:22.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:28:35.685Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:28:51.287Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-21T17:30:01.816Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-21T17:30:19.451Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-21T17:30:51.132Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:50:25.241Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:50:35.045Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:50:38.922Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:50:40.653Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:51:10.751Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:51:28.196Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:51:36.010Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:51:47.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:52:03.238Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:52:38.062Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:52:39.888Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:53:30.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:53:47.649Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:53:58.638Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:54:10.708Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:54:12.108Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:54:12.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:54:30.389Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:54:38.545Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:54:41.576Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:54:43.066Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:54:44.379Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:54:50.136Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:54:59.675Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:55:02.993Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:55:21.270Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:55:42.549Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:55:44.068Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:55:46.760Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:55:57.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:56:03.889Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:56:14.161Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:56:46.556Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:56:52.676Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:56:56.357Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:56:56.530Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:56:59.757Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:57:03.999Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:57:08.264Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:57:17.396Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T01:57:20.241Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:57:33.571Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:57:46.038Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:57:46.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:58:29.149Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T01:58:37.178Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:58:46.521Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:59:17.395Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T01:59:53.754Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T02:00:24.251Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T02:00:29.783Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T02:01:17.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:01:25.123Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:01:36.839Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:01:40.956Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:01:41.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:01:46.180Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:01:46.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:02:16.363Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:02:17.249Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:03:31.823Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T02:03:42.731Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:04:10.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:04:50.926Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T02:05:04.753Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T02:06:21.788Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T03:50:58.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:51:40.027Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:52:39.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:52:48.426Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:54:15.378Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:55:08.324Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:55:43.448Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T03:58:02.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:58:27.838Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:58:47.104Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T03:58:49.527Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T03:58:56.455Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T03:59:42.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:00:11.450Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T04:01:00.069Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:01:05.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:02:15.430Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:02:58.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:03:55.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:05:51.306Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:06:00.516Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:06:06.737Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:06:19.877Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:06:48.119Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:07:35.485Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:38:16.394Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:39:01.424Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:39:17.508Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:41:28.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:41:30.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:41:31.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:41:32.267Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:42:21.183Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:42:41.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:45:19.891Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T04:47:15.983Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:47:26.233Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:47:35.499Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:47:44.107Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:47:55.652Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:48:00.144Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:48:03.743Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:48:07.258Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:48:13.571Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:48:33.281Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T04:48:43.864Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:32:15.430Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T06:34:09.626Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:34:18.988Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:34:42.703Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:35:39.750Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:36:17.947Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T06:38:14.311Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T06:39:57.230Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T06:40:12.591Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:42:39.305Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:43:03.758Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T06:43:08.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:43:10.453Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:43:49.190Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:44:25.804Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:44:40.402Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:44:41.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:44:48.723Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:44:49.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:45:05.072Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:45:17.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:45:18.049Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:46:13.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:46:39.637Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:48:50.838Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:48:59.337Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:02.118Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:02.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:04.286Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:04.286Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:26.105Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:26.203Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:31.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:40.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:41.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:49:45.853Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:50:13.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:50:41.414Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:50:41.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:50:47.471Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:00.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:00.997Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:13.234Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:14.135Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:14.309Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:41.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:41.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:45.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:51.657Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:52:57.883Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:53:18.035Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:54:24.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:54:25.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:54:59.459Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:55:12.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:55:13.593Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:55:41.807Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:56:50.718Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:56:57.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:56:58.602Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:57:18.728Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:57:32.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T06:59:03.417Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T06:59:27.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:00:43.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:01:02.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:01:03.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:01:41.624Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T07:01:41.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:04:01.490Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T07:04:03.138Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T07:05:25.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:05:54.128Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:05:54.939Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:06:36.646Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T07:06:52.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T07:06:53.862Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T07:08:27.911Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T07:08:40.102Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T07:09:22.445Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:38:46.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:39:12.610Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:39:23.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:39:35.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:39:38.292Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:39:38.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:08.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:09.020Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:09.679Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:39.746Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:42.152Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:44.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:46.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:57.220Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:40:57.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:03.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:08.950Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:31.537Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:51.134Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:52.469Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:54.779Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:41:55.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:42:26.419Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:42:50.752Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:42:55.465Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:42:56.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:02.765Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:07.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:23.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:40.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:41.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:41.711Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:53.542Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:43:55.424Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:44:25.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:44:37.552Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:44:37.868Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:44:58.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:45:00.867Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:45:12.438Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:45:13.159Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:45:19.345Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:45:40.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:45:40.708Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:46:08.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:46:17.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:46:17.968Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:47:05.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:48:15.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:48:39.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:49:13.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:49:22.940Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:09.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:18.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:18.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:34.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:34.887Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:42.745Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:43.202Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:53.746Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:54.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:50:55.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:51:05.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:51:29.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:51:30.230Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:51:31.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:52:17.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:52:41.442Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:52:42.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:52:54.638Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T09:53:03.146Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:53:25.308Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T09:53:26.612Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:54:10.558Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:54:10.683Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:54:11.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:54:49.568Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:54:53.026Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:54:53.790Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:55:00.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:55:36.946Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:55:39.296Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:55:45.136Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:55:45.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:56:25.472Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:56:39.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:56:45.298Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:56:45.593Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:56:45.915Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:56:56.810Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-22T09:57:05.081Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-22T09:57:33.483Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:58:00.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T09:58:09.744Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:58:23.060Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:58:23.199Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T09:58:24.960Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:58:38.858Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:11.912Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:19.529Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:24.316Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:25.213Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:42.805Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:43.783Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T09:59:44.547Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T10:00:23.796Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:00:52.014Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T10:01:02.915Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T10:01:38.386Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:01:45.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:02:26.873Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:02:38.853Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:02:57.641Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:03.329Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:03.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:16.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:17.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:36.147Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:56.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:57.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:03:59.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:04:08.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:04:10.382Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T10:04:36.428Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T10:04:56.679Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:07:07.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:07:09.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T10:07:15.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:07:24.895Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T10:07:44.709Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T10:08:43.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:12:10.513Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T10:12:34.188Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:12:36.455Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T10:12:36.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:12:52.960Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:12:55.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:13:00.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:13:04.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:13:05.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:13:23.573Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:13:25.410Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T10:13:25.681Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T10:13:54.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:14:01.641Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:14:03.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:15:10.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T10:15:19.478Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:07:20.820Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:07:42.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:08:30.411Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:08:32.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:08:36.575Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:08:43.517Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:09:12.909Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:09:30.281Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:11:38.884Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:14:08.546Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:15:08.857Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:15:43.579Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:17:48.816Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:18:11.632Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:18:40.293Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:19:14.409Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:19:42.092Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:20:27.476Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:20:45.930Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:21:37.500Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:21:39.143Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:23:11.282Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:23:12.852Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:23:14.062Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:23:15.001Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:24:26.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:24:32.454Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:24:51.419Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:25:26.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:25:49.951Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:27:02.641Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:27:06.585Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:28:09.589Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:29:11.089Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:29:20.101Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:05.363Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:06.873Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:08.733Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:09.505Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:15.622Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:16.960Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:51.653Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:32:52.151Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:33:04.577Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:33:05.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:33:06.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:33:23.967Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:36:00.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:36:09.110Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:36:09.958Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:36:35.962Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:36:37.087Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:36:40.633Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:36:41.520Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:36:46.204Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:37:04.710Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:37:06.523Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:37:07.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:37:25.849Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:37:26.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:37:42.035Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:37:49.259Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:38:24.909Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:38:33.045Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:38:54.508Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:39:58.888Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:40:08.196Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:40:18.241Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:40:35.760Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:40:51.027Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:40:55.070Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:40:59.003Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:44:33.098Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:44:50.443Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:45:19.184Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:45:37.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:45:39.434Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:47:29.865Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:47:37.860Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:47:39.820Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:47:40.810Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:47:57.356Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:48:00.718Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:48:39.204Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:48:59.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:49:00.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:49:09.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:49:18.699Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:49:19.269Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:50:19.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:50:51.959Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:51:04.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:51:26.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:51:29.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:51:41.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:51:42.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:52:14.045Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:52:14.241Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:52:30.700Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:52:31.376Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:52:39.317Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:52:40.839Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:52:41.693Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:52:54.330Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:52:55.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:53:11.891Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:53:13.158Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T12:53:14.626Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:53:31.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:53:32.097Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:53:51.337Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:54:01.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:55:13.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:58:44.361Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T12:59:01.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:59:50.119Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T12:59:58.764Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:00:34.277Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:02:56.033Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:03:01.197Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:03:12.252Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:03:18.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:03:21.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:03:22.764Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:03:27.805Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:03:42.336Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:03:47.106Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:03:58.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:04:00.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:04:01.359Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:04:12.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:05:03.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T13:05:12.179Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T13:35:03.588Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:35:17.447Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:36:18.705Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:36:56.643Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:37:19.091Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:41:24.454Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T13:42:45.779Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:37:03.050Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:39:21.885Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:39:32.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:39:34.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:39:35.913Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:39:39.595Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:41:04.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:41:23.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:41:28.317Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:41:37.377Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:41:49.514Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:43:17.121Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:43:58.228Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:43:58.466Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:44:32.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:44:46.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:45:02.086Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:45:10.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:45:15.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:45:21.927Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:56:32.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:56:36.538Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:56:39.843Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:56:43.126Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:57:05.871Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:57:27.149Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:57:31.754Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:57:32.396Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:57:59.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:58:20.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:58:48.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:07.780Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:59:10.558Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:11.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:12.982Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:15.343Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:59:16.112Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:16.418Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:59:20.164Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:59:21.482Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T14:59:24.292Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:24.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:26.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:29.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:30.074Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:37.516Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T14:59:51.134Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T14:59:53.181Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:00:00.322Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:00:02.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:04.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:07.966Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:16.573Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:00:21.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:23.114Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:23.849Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:25.129Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:00:28.328Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:29.171Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:00:37.739Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:00:51.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:01:05.977Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:09.584Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:10.881Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:01:11.604Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:14.378Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:21.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:01:24.791Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:25.670Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:46.426Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:01:49.065Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:01:57.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:02:02.515Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:02:07.633Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:02:19.077Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:02:30.816Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:02:31.567Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:02:36.445Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:02:40.535Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:02:58.514Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:03:13.159Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:03:35.492Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:03:45.609Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:03:56.958Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:04:08.182Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:04:15.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:04:28.957Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:04:29.252Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:05:01.346Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:05:01.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:22.642Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:26.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:30.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:39.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:42.988Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:46.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:05:50.452Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:07:17.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:07:25.627Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:07:37.716Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:07:56.407Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:08:11.448Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:08:34.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:08:40.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:08:42.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:08:55.548Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:09:02.956Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:09:06.884Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:09:15.992Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:09:16.681Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:09:16.913Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:09:28.116Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:09:28.349Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:09:31.450Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:09.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:09.905Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:10:21.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:22.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:23.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:24.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:24.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:25.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:10:48.467Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:11:00.552Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:11:12.660Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:11:23.387Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:11:32.254Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:11:52.925Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:11:53.342Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:12:15.083Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:12:17.375Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:12:31.372Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:12:31.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:12:46.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:12:47.984Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:02.114Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:11.791Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:13:16.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:20.652Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:21.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:22.949Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:24.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:28.033Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:13:39.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:42.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:13:54.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:14:00.618Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:14:01.088Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:14:06.738Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:14:11.240Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:14:31.204Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:14:45.288Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:14:47.507Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:14:48.766Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:14:50.828Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:15:06.399Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:15:11.581Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:15:17.601Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:15:17.668Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:15:20.758Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:15:22.916Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:15:23.965Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:15:25.543Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:15:35.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:15:38.251Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:15:46.893Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:16:19.468Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:16:26.773Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:16:27.361Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:16:34.306Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:17:23.485Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:17:36.174Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:18:06.941Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:18:11.083Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:18:12.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:18:15.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:18:16.671Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:18:27.137Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:19:24.166Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:19:41.612Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:19:49.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:20:19.213Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:20:19.329Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:20:24.152Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:20:24.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:20:29.758Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:20:42.487Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:21:01.045Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:04.311Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:04.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:05.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:05.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:06.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:07.546Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:08.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:10.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:21.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:22.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:33.524Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:33.700Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:34.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:44.587Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:21:51.028Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:21:52.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:22:04.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:22:13.545Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:22:16.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:22:17.789Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:22:25.000Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:22:29.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:22:30.248Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:22:30.888Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:23:08.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:23:19.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:23:32.403Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:23:53.838Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:24:07.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:24:22.795Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:24:33.759Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:25:04.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:25:21.043Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:25:35.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:25:42.716Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:27:26.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:27:38.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:27:49.592Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:27:52.219Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:28:04.634Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:28:05.359Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:28:11.913Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:29:55.320Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:29:56.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:30:07.866Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:30:43.330Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:31:04.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:31:05.339Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:31:45.233Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:31:50.032Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:32:25.035Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:32:48.418Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:32:53.604Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:33:01.730Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:33:18.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:33:35.996Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:34:00.941Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:34:23.382Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:35:26.686Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:35:26.993Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:35:45.923Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:35:46.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:07.479Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:10.783Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:36:18.074Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:36:23.792Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:25.750Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:29.542Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:36:47.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:52.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:55.030Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:36:56.148Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:37:17.891Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:37:28.355Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:37:31.645Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:37:45.340Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:37:50.846Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:38:03.600Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:38:03.699Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:38:14.212Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:38:14.983Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:39:02.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:39:21.343Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:39:25.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:39:27.432Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:39:30.666Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:39:44.824Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:39:49.721Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:39:50.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:39:51.214Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:40:27.522Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:40:29.514Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:40:55.382Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:40:56.476Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:41:03.086Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:41:03.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:41:19.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:41:20.847Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:41:21.810Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:41:27.401Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:41:42.581Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:41:42.615Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:41:44.118Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:42:14.100Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:42:32.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:43:24.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:43:39.501Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:44:03.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:44:11.393Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:44:25.808Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:44:46.812Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:44:47.192Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:44:49.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:44:49.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:44:49.949Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:44:56.385Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:44:56.708Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:45:09.023Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:45:18.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:45:28.355Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:45:45.429Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:46:03.054Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:15.824Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:19.959Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:30.105Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:32.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:32.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:32.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:45.226Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:46:45.546Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:46.255Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:47.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:53.375Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:46:53.990Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:55.959Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:57.828Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:46:57.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:09.313Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:47:10.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:11.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:13.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:18.011Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:47:27.549Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:31.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:32.787Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:34.448Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:40.663Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:48.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:47:49.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:48:16.466Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:48:25.405Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:48:37.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:48:39.715Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:49:13.615Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:49:33.216Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:49:43.951Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:49:55.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:49:57.489Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:50:05.536Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:50:06.479Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:50:14.519Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:50:21.715Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:52:59.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:53:02.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:53:49.727Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:53:57.134Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:53:57.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:15.282Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:15.642Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:17.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:18.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:19.559Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:33.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:33.262Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:34.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:35.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:36.710Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:54:49.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:55:05.169Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:55:11.587Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:55:29.071Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:04.189Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:11.745Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:12.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:13.903Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:56:16.168Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:56:27.828Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:28.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:29.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:30.895Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:31.617Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:38.580Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:44.308Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:46.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:56:57.998Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:01.856Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:02.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:03.260Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:57:04.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:11.137Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:15.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:17.779Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:57:39.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:53.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:57:58.616Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:58:10.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:58:50.059Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T15:58:51.014Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:58:57.797Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:58:59.888Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:59:01.840Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T15:59:20.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T15:59:57.494Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:00:21.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:00:46.363Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:01:03.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:01:08.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:01:30.652Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:01:57.845Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:02:11.699Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:02:20.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:02:31.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:02:31.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:02:48.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:02:49.586Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:03.282Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:03.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:06.034Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:07.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:12.916Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:16.561Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:24.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:25.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:26.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:26.796Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:31.992Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:46.972Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:03:47.528Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:04:03.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:10.101Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:13.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:15.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:23.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:23.760Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:04:23.902Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:34.582Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:37.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:45.614Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:04:48.739Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:04:49.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:05.801Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:18.221Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:19.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:36.607Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:41.409Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:45.406Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:05:47.750Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:06:03.222Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:06:09.478Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:06:09.817Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:06:29.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:06:30.984Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:06:31.383Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:06:47.600Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:06:47.857Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:08:12.662Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:08:24.047Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:08:28.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:08:37.744Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:08:38.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:09:01.075Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:09:02.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:09:08.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:09:08.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:09:09.654Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:09:10.614Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:15.393Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:16.884Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:17.879Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:41.542Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:42.217Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:09:50.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:51.100Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:09:53.702Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:09:55.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:00.137Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:00.700Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:03.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:03.675Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:10:22.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:41.668Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:10:46.089Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:53.298Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:10:59.561Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:11:00.043Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:11:00.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:11:08.490Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:11:09.407Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:11:12.271Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:11:19.279Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:11:20.694Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:11:25.452Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:11:38.382Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:11:55.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:11.900Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:29.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:29.456Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:40.205Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:44.239Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:44.655Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:46.397Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:12:53.456Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:54.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:54.224Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:54.540Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:58.570Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:12:59.900Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:01.507Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:04.105Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:12.909Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:22.199Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:27.066Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:28.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:37.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:38.205Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:40.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:42.951Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:43.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:43.637Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:43.787Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:44.049Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:44.285Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:45.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:45.904Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:46.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:13:53.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:10.119Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:10.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:10.896Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:11.818Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:11.983Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:12.066Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:14.441Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:15.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:15.570Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:16.107Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:19.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:19.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:22.827Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:23.502Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:29.876Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:32.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:36.529Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:37.710Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:39.106Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:43.582Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:44.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:44.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:45.503Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:46.437Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:51.776Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:56.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:14:58.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:04.143Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:15:04.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:07.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:14.230Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:15:15.868Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:17.191Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:17.253Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:17.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:17.662Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:21.841Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:23.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:24.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:25.935Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:26.125Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:26.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:27.549Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:27.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:33.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:33.910Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:33.932Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:34.037Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:34.042Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:34.066Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:34.797Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:36.222Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:15:36.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:37.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:37.980Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:39.575Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:40.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:40.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:40.222Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:40.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:41.420Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:42.702Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:42.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:43.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:44.192Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:50.125Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:51.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:53.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:57.379Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:58.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:15:59.123Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:02.305Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:03.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:03.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:11.532Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:16:14.313Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:15.947Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:16:16.502Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:20.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:16:23.103Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:16:24.880Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:34.223Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:35.145Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:44.663Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:50.790Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:16:55.086Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:00.856Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:01.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:02.076Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:02.385Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:03.005Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:03.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:04.891Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:07.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:08.045Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:08.421Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:17:09.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:17.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:18.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:19.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:20.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:21.812Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:22.602Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:23.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:24.101Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:25.056Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:27.496Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:29.595Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:17:29.760Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:17:30.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:17:35.785Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:36.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:45.626Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:48.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:48.724Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:49.354Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:49.366Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:50.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:17:56.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:01.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:02.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:02.954Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:18:05.687Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:16.232Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:18:21.414Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:23.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:24.238Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:27.093Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:28.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:31.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:33.535Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:33.927Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:34.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:37.341Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:44.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:46.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:18:49.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:01.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:02.685Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:09.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:25.349Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:19:29.392Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:19:30.994Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:19:36.712Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:40.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:43.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:51.580Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-22T16:19:54.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:19:57.252Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:20:04.202Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-22T16:20:14.718Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:20:15.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:20:30.341Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:21:05.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:21:13.184Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:21:19.934Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:21:30.786Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-22T16:21:32.328Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:47:31.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:48:35.054Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:49:03.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:51:15.564Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:53:03.551Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:54:08.603Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:54:37.233Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:56:13.171Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:56:51.996Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:57:05.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:57:21.411Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:57:23.289Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T06:57:26.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:57:46.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:04.479Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:34.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:58:34.651Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:58:39.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:39.884Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:40.649Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:58:40.807Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:44.341Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:58:45.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:49.236Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:49.549Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:51.430Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:58:59.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:58:59.787Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:59:02.391Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T06:59:05.712Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:59:52.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T06:59:55.779Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:00:41.457Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:00:50.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:00:53.227Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:00:53.626Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:00:54.176Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:00:56.591Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:11.095Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:12.014Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:15.458Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:01:16.734Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:44.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:46.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:49.256Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:01:52.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:02:10.244Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:02:12.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:02:14.188Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:02:19.211Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:02:36.094Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:02:42.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:04.847Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:08.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:08.337Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:14.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:16.258Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:17.537Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:03:18.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:25.914Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:39.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:40.518Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:41.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:03:52.204Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:04:12.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:04:34.075Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:04:53.764Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:02.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:04.484Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:13.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:14.129Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:14.646Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:23.675Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:28.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:35.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:36.776Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:41.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:47.708Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:05:50.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:06:27.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:06:33.819Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:13.417Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:13.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:19.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:19.696Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:30.005Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:33.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:07:45.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:08:46.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:01.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:04.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:06.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:10.350Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:11.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:12.566Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:30.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:31.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:38.068Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:40.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:41.507Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:09:42.653Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:08.123Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:09.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:15.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:24.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:26.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:36.352Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:36.834Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:10:39.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:40.599Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:42.171Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:51.248Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:10:52.734Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:11:08.457Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:11:31.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:11:38.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:11:45.285Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:12:47.469Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:12:47.471Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:12:54.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:13:54.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:17:54.800Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:18:04.701Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:18:50.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:19:05.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:19:06.745Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:19:20.383Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:19:26.188Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:19:28.551Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:19:35.672Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:19:52.090Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:20:37.721Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:21:11.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:21:39.933Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:22:01.458Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:22:33.462Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:22:34.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:22:47.159Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:22:51.644Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:22:53.941Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:23:01.281Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:23:02.116Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:23:29.891Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:23:30.149Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:23:34.138Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:23:35.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:23:36.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:23:39.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:23:53.097Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:24:08.830Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:24:15.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:16.221Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:18.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:21.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:25.264Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:37.714Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:38.621Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:47.152Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:24:47.908Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:25:04.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:25:05.292Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:25:24.611Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:25:34.310Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:25:36.330Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:25:47.385Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:25:49.567Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:25:55.710Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:03.442Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:12.457Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:13.052Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:13.644Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:24.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:30.540Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:31.324Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:26:48.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:00.132Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:27:00.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:27:01.087Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:27:05.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:06.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:09.978Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:16.990Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:18.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:23.459Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:24.063Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:24.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:25.885Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:27:29.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:36.232Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:37.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:27:51.033Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:18.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:19.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:29.248Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:32.804Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:33.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:41.547Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:50.728Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:51.055Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:28:51.681Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:55.346Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:56.710Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:28:57.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:29:19.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:29:27.571Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:29:33.735Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:29:36.332Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:29:38.883Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:29:39.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:29:48.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:29:53.876Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:29:54.611Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:13.616Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:30:14.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:16.095Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:20.814Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:21.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:37.329Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:30:46.601Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:30:47.802Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:30:50.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:51.907Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-23T07:30:57.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:30:59.139Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:30:59.331Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:31:01.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:31:03.017Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:31:04.857Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:31:07.785Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:31:09.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:31:10.186Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-23T07:31:10.427Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-23T07:31:20.785Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T04:07:06.084Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-25T04:07:30.824Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T04:08:03.516Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T04:20:25.784Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T04:22:47.846Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T05:14:46.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T05:14:46.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T05:17:14.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T05:18:15.982Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T06:55:18.760Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:10:29.118Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:10:29.231Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:10:54.615Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:02.747Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:30.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:34.217Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:36.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:11:37.241Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:37.278Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:11:37.897Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:39.894Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:11:57.110Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:12:01.431Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:12:01.534Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:12:02.149Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:12:25.208Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:12:55.966Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:13:03.147Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:13:15.918Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:13:28.880Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:13:51.362Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:14:07.116Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:14:09.715Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:14:20.828Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:14:21.985Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:14:57.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:14:58.055Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:15:02.908Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:15:11.634Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:15:12.943Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:15:14.072Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:15:28.111Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:00.206Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:13.249Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:13.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:14.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:16:22.381Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:16:23.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:16:23.689Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:26.967Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:27.409Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:16:27.597Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:16:48.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:16:53.481Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:16:56.368Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:17:08.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:11.906Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:15.536Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:18.730Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:17:20.658Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:28.035Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:31.886Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:37.587Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:38.974Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:42.835Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:44.522Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:17:45.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:49.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:51.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:53.934Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:17:58.818Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:18:02.384Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:18:06.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:18:11.679Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:18:14.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:18:22.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:18:30.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:18:30.211Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:18:30.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:18:32.699Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:18:41.693Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:18:54.833Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:19:00.659Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:19:12.099Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:19:27.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:19:31.873Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:20:06.334Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:09.256Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:10.606Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:10.631Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:30.060Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:32.186Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:37.868Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:20:50.248Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:20:53.443Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:05.394Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:12.346Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:13.567Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:15.394Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:38.293Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:51.291Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:21:55.345Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:21:56.449Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:02.213Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:22:05.558Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:06.309Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:08.190Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:22:14.498Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:22:24.855Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:27.638Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:22:28.777Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:28.956Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:44.911Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:22:48.376Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:23:32.520Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:23:55.763Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:24:13.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:24:24.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:24:58.695Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:24:59.871Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:26:02.534Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:26:03.020Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:27:09.943Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:27:19.090Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:27:20.499Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:27:32.026Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:27:49.907Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:27:57.541Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:27:57.961Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:28:09.359Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:28:09.936Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:28:35.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:28:45.560Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:28:47.694Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:28:49.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:28:51.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:29:05.787Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:29:12.765Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:29:14.068Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:29:17.083Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:29:18.536Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:29:31.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:29:33.016Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:31:15.870Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:31:59.451Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:32:07.579Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:32:16.197Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:33:31.423Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:33:35.389Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:33:59.298Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:02.640Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:02.751Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:04.856Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:04.892Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:13.409Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:15.383Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:16.415Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:23.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:32.644Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:34.513Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:34.999Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:34:39.837Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:39.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:47.924Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:34:57.722Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:35:03.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:36:50.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:36:51.594Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:36:56.897Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:37:16.284Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:37:32.640Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:38:09.096Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:38:29.355Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:38:40.203Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:38:49.694Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:38:57.859Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:38:59.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:39:09.645Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:39:11.512Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:39:17.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:39:19.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:39:31.578Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:39:56.262Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:39:56.622Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:40:06.071Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:41:05.311Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:41:30.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:41:40.158Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:41:45.548Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:42:15.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:42:23.809Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:42:25.275Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:42:43.686Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:42:50.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:43:01.334Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:44:02.797Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:44:31.174Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:09.773Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:21.645Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:27.887Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:29.292Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:29.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:38.514Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:55.386Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:45:58.259Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:46:07.388Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:46:08.800Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:46:15.334Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:47:13.221Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:48:14.089Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:48:21.719Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:48:43.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T10:49:02.989Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:49:06.157Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:49:13.724Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:49:22.880Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:49:30.008Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:49:30.736Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:49:31.175Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:49:37.053Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T10:49:51.533Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:50:40.060Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:04.563Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:14.761Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:15.771Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:15.942Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:21.647Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:22.547Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:51:47.248Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:52:45.656Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:53:19.624Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:53:49.322Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:53:53.817Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:53:55.647Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:54:15.041Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:54:43.205Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:55:31.842Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:56:20.409Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:56:32.234Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:56:33.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:56:35.850Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:56:41.799Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:56:57.362Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:57:07.014Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:57:19.105Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:57:30.034Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:57:36.620Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:57:44.867Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:57:58.593Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:29.825Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:33.353Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:34.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:51.275Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:52.021Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:52.284Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:58:53.243Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:01.500Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:07.631Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:07.692Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:11.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:25.683Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:33.014Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:34.060Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T10:59:40.557Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:00:56.623Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:00.335Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:26.687Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:27.899Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:34.952Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:41.183Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:47.872Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:01:48.936Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:02:00.896Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:02:08.421Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:02:10.881Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:02:11.460Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:02:12.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:02:12.449Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:03:13.523Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:03:17.958Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:03:40.561Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:03:50.133Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:03:57.270Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:03:59.128Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:04:15.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:04:24.169Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:04:30.856Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:04:55.069Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:04:57.611Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:04:58.702Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:05:05.580Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:05:07.236Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:05:09.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:05:10.581Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:05:19.085Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:05:24.359Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:05:31.469Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:05:43.955Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:05:46.274Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:06:23.231Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:06:25.950Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:06:40.622Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:06:45.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:07:09.097Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:07:22.573Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:01.742Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:04.065Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:07.723Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:09.772Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:10.577Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:22.526Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:24.650Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:36.639Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:09:56.129Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:10:16.276Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:12:55.151Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:14:10.902Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:14:11.715Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:14:12.768Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:14:58.770Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:15:20.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:15:22.649Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:15:23.995Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:15:25.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:15:33.400Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:15:40.680Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T11:15:48.192Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:03.986Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:08.520Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:09.841Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:16:17.527Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:20.758Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:21.905Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:26.531Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:16:36.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:17:17.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:17:52.746Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:18:18.377Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:18:25.091Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:18:31.518Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:18:39.011Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:18:40.241Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:18:58.796Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:19:13.050Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:19:22.702Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:19:33.590Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:19:36.133Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:19:47.431Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:19:53.178Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:20:19.691Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:20:21.132Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:20:25.242Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T11:20:47.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:21:04.597Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:21:28.028Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:22:06.639Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:23:29.232Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:31:30.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:31:30.874Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-25T11:32:05.577Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:32:17.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:33:51.539Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-25T11:35:38.928Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-25T11:35:39.704Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T02:15:47.807Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:17:38.165Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:20:40.109Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:22:17.056Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:22:17.586Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:23:56.773Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:23:58.113Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:00.751Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:01.631Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:30.631Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:33.344Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:34.919Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:35.981Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:24:49.005Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T02:25:56.448Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T02:26:21.334Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:26:46.617Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:27:04.420Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:27:05.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:27:07.795Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:27:09.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:27:09.966Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:28:07.991Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:28:12.332Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:28:46.469Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:28:48.525Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T02:28:52.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:30:17.354Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:30:28.130Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:31:59.423Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:32:44.109Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T02:35:19.112Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:35:22.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:35:23.246Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:35:45.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:35:51.350Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:36:11.808Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:36:50.001Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:37:14.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:37:27.411Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:37:58.423Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:38:15.635Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:38:16.388Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:39:15.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:40:16.586Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:40:32.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:40:51.033Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:42:28.183Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:42:28.858Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:42:48.965Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:42:53.486Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:43:53.859Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:45:05.233Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:45:28.407Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:45:44.445Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:45:46.700Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:45:51.202Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:47:07.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:47:51.056Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:47:54.048Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:47:54.635Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:48:48.564Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:49:12.308Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:50:30.754Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:50:45.697Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:51:11.868Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:51:28.111Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:51:49.392Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:51:51.432Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:51:51.765Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:52:19.609Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:52:20.501Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:52:35.005Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:52:42.918Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T02:54:58.536Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:54:59.310Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:55:00.282Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:55:22.838Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:55:33.752Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:55:37.296Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:55:38.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:56:24.289Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:57:07.578Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T02:57:19.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T02:57:24.547Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T03:00:25.438Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:00:37.806Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:01:37.004Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:01:44.418Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:01:46.276Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T03:01:49.965Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T03:02:05.518Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:02:25.112Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:14:39.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:15:09.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:17:09.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:17:15.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:17:41.649Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:17:52.876Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:18:33.925Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:19:54.315Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:20:36.133Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:21:49.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:22:35.862Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:22:56.767Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:37:48.516Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:39:50.342Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:42:10.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:42:11.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:42:38.459Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:42:50.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:42:52.637Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:42:55.492Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:42:56.217Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:43:21.843Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:44:50.367Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T03:44:56.996Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:45:29.977Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T03:51:25.944Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:52:37.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:54:08.445Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:54:09.292Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:54:51.828Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:56:01.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T03:56:07.228Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:27:18.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:28:03.498Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:29:58.315Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:30:15.731Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:30:21.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:30:27.130Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:30:42.434Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:30:56.852Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:09.129Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:21.595Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:23.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:24.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:42.991Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:50.771Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:52.272Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:31:57.896Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:04.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:04.595Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:12.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:13.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:13.581Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T04:32:27.400Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:29.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:29.202Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:30.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:32.767Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:34.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:34.744Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:45.224Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:45.908Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:32:57.775Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T04:33:18.845Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:33:22.152Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:33:40.423Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T04:33:51.233Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:33:51.699Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:33:59.126Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:33:59.999Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:34:04.017Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T04:35:32.585Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:36:46.279Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:51:05.397Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:51:07.252Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T04:57:54.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:58:13.085Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T04:58:43.674Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T04:59:32.724Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:00:41.279Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:04:55.018Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:05:01.784Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:05:17.838Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:06:20.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:05.219Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:05.824Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:06.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:16.132Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:16.856Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:17.478Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:18.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:18.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:24.425Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:25.390Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:26.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:26.567Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:36.932Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:37.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:37.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:50.962Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:07:51.535Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:14.810Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:08:15.581Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:22.570Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:25.137Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:28.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:30.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:32.466Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:34.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:34.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:37.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:38.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:40.991Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:08:44.830Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:45.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:45.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:57.022Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:08:57.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:09:13.950Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:09:14.296Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:09:22.402Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:09:22.851Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:10:02.928Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:10:35.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:10:40.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:10:41.276Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:10:58.594Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:10:59.214Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:11:00.268Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:11:01.313Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:11:03.312Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:11:06.143Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:11:08.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:11:11.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:11:12.834Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:11:13.627Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:11:14.852Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:11:15.948Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:11:29.144Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:11:34.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:38:04.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:38:05.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:38:15.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:38:15.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:38:15.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:39:22.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:39:23.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:39:28.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:39:36.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:39:36.692Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:39:37.199Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:40:10.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:40:20.952Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:40:21.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:40:34.438Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:40:35.100Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:40:35.806Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:16.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:22.638Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:41:25.561Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:26.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:28.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:29.690Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:46.040Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:41:52.946Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:42:02.940Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T05:49:45.425Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:53:03.848Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T05:56:57.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:57:04.093Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:57:45.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:57:49.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:57:58.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:57:58.890Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:17.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:18.767Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:25.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:26.029Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:37.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:39.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:58:40.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:59:04.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:59:40.262Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T05:59:55.042Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:00:53.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:01:00.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:01:01.701Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:01:31.887Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:01:31.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:01:39.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:01:45.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:01:54.405Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:16.888Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:19.595Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:20.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:46.479Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:55.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:55.685Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:02:56.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:03:01.405Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:03:04.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:03:05.319Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:03:35.344Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:04:03.451Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:04:06.443Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:04:07.010Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:04:33.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:04:34.535Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:05:45.567Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:05:45.928Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:07:20.166Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:08:44.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:09:27.073Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:11:08.529Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:11:55.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:12:31.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:12:42.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:12:55.398Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:19:57.657Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:21:27.997Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:21:29.647Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:22:50.590Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:26:15.211Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:27:04.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:27:17.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:28:10.990Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:28:33.803Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:31:34.558Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:31:44.036Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:34:17.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:34:22.245Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:34:29.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:36:14.510Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:36:39.588Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:36:41.998Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:37:19.547Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:38:29.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:41:36.628Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:43:20.430Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:43:57.323Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:44:04.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:45:57.541Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:50:41.174Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:50:54.698Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:51:12.953Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:51:22.104Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:51:30.314Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:51:48.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:51:57.190Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:52:11.289Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:52:46.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:53:02.779Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:53:29.264Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:53:51.690Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:54:04.807Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:54:32.685Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T06:54:57.036Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:55:00.888Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:55:09.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:55:14.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:55:21.466Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T06:55:31.454Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:57:43.251Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:57:50.801Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:57:55.201Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:58:10.703Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:58:48.137Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:58:52.284Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:59:07.408Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:59:10.781Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T06:59:24.554Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:00:25.767Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T07:01:41.172Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:01:52.269Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:02:37.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:02:48.881Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:03:16.102Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:03:16.446Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:03:16.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:03:16.500Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T07:06:12.308Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:08:29.033Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:08:34.400Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:08:36.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:08:40.013Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:08:45.529Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:09:05.167Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:09:12.942Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:09:20.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:09:25.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:09:27.683Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:09:28.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:09:36.054Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:09:58.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:09:58.499Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:10:07.950Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:10:29.408Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:10:37.377Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:10:43.937Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:10:46.357Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:10:48.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:10:52.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:10:54.785Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:10:56.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:10:57.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:01.539Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:02.928Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:08.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:09.041Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:09.724Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:12.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:12.192Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:12.962Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:16.020Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:18.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:20.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:24.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:29.757Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:11:29.819Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:11:31.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:32.031Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:11:32.811Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:11:34.488Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:11:36.524Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:41.995Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:47.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:48.147Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:11:51.798Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:54.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:56.894Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:11:56.956Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:00.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:00.441Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:00.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:05.264Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:09.513Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:10.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:14.364Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:14.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:14.414Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:15.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:20.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:34.148Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:35.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:35.939Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:39.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:39.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:41.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:42.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:45.803Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:12:45.980Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:53.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:53.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:55.995Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:57.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:12:58.006Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:03.970Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:13:08.026Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:13:09.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:12.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:12.573Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:12.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:12.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:14.829Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:15.256Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:17.188Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:13:19.890Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:23.119Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:26.058Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:28.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:32.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:32.658Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:13:33.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:33.773Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:33.890Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:34.618Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:37.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:39.623Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:13:40.970Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:50.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:52.283Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:13:53.406Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:56.159Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:13:59.489Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:11.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:21.542Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:21.792Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:22.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:25.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:26.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:27.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:27.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:27.614Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:28.035Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:28.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:31.184Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:33.774Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:34.476Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:36.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:38.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:47.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:47.586Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:14:59.766Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:15:02.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:04.151Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:04.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:05.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:06.213Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:08.353Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:09.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:10.061Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:13.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:14.393Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:17.837Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:18.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:19.135Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:19.147Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:22.467Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:25.494Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:28.353Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:31.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:31.931Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:33.175Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:15:34.734Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:35.121Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:15:42.867Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:48.426Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:15:48.446Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:15:50.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:09.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:11.216Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:16:13.958Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:16.287Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:16:17.455Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:16:22.111Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:22.706Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:34.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:34.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:37.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:40.511Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:16:45.093Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:46.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:49.098Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:16:58.544Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:16:58.862Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:08.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:17:12.088Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:22.959Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:35.864Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:46.959Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:47.832Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:48.819Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:17:50.678Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:18:00.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:04.353Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:08.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:09.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:09.873Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:10.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:10.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:13.633Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:24.073Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:18:37.737Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:18:53.063Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:18:55.863Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:19:08.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:19:10.336Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:19:16.440Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:19:19.150Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:19:27.860Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:19:38.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:19:47.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:19:48.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:09.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:20:13.429Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:20:14.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:21.408Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:20:22.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:22.786Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:34.017Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:34.019Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:38.749Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:20:40.812Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:56.537Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:20:58.438Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:21:04.284Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:21:08.025Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:21:11.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:21:18.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:21:22.461Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:21:41.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:21:52.634Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:21:55.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:09.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:10.036Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:10.777Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:17.250Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:22:17.679Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:22.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:23.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:28.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:32.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:34.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:22:35.372Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:02.820Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:06.010Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:10.132Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:26.473Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:31.747Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:36.408Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:23:44.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:07.460Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:16.501Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:24:26.641Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:28.072Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:29.552Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:36.482Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:39.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:57.493Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:24:59.217Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:25:08.693Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:25:09.988Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:25:31.980Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:25:42.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:25:43.503Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:25:50.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:25:55.817Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:25:57.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:25:59.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:02.628Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:04.520Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:04.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:10.883Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:11.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:13.125Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:14.027Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:14.765Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:19.005Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:21.779Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:26:28.013Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:26:28.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:42.464Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:43.447Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:26:47.932Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:26:51.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:52.183Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:26:53.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:55.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:56.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:26:59.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:11.977Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:18.438Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:21.836Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:25.493Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:27:27.350Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:29.026Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:36.403Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:27:51.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:27:53.062Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:27:54.352Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:03.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:08.241Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:09.796Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:47.994Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:52.234Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:54.251Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:55.939Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:55.940Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:28:56.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:00.091Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:01.927Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:04.517Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:29:06.476Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:29:08.462Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:11.649Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:12.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:13.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:15.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:18.393Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:29:21.820Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:25.018Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:29:36.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:29:45.903Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:30:08.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:15.075Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:29.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:29.630Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:30:43.115Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:44.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:45.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:45.682Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:30:50.128Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:58.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:30:59.662Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:10.275Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:31:24.719Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:27.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:31.834Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:32.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:33.355Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:31:38.121Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:31:47.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:53.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:31:58.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:32:00.844Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:32:01.974Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:32:06.873Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:32:13.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:32:14.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:32:28.035Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:32:29.163Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:32:31.170Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:32:31.605Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:32:34.140Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:32:51.001Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:33:07.711Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:11.272Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:17.622Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:25.771Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:27.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:28.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:33.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:34.744Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:38.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:49.151Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:50.571Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:59.051Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:33:59.578Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:05.000Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:06.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:06.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:07.266Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:10.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:15.321Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:16.839Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:17.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:19.316Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:23.368Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:30.585Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:34:36.982Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:34:39.129Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:34:40.024Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:34:58.914Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:35:02.875Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:35:09.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:35:12.654Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:35:31.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:35:32.457Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:35:34.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:35:47.487Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:36:05.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:08.632Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:10.112Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:12.865Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:16.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:34.116Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:37.900Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:39.718Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:40.126Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:40.812Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:45.166Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:47.363Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:48.308Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:50.974Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:36:59.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:04.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:08.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:09.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:11.262Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:37:16.129Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:17.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:19.126Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:20.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:32.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:37.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:42.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:53.455Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:37:59.170Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:38:05.117Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:38:19.598Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:38:19.949Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:39:16.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:39:17.677Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:39:28.278Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:39:44.615Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:39:46.604Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:39:50.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:39:50.734Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:39:50.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:39:51.010Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:39:54.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:40:17.848Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:40:49.060Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:40:52.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:18.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:22.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:31.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:33.217Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:33.523Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:35.628Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:37.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:41:39.778Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:41:53.328Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:42:12.893Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:42:13.935Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:42:55.641Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:43:18.036Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:43:24.752Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:43:28.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:43:36.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:43:55.496Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:06.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:16.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:19.178Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:26.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:26.739Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-27T08:44:27.367Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:29.216Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:30.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:31.690Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:44:34.602Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:44:39.283Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-27T08:44:44.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:45:55.044Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:46:00.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:46:00.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:46:07.750Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:46:10.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:46:16.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:46:20.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:02.249Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:19.451Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:28.537Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:29.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:31.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:33.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:47:48.124Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:48:06.888Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:48:27.340Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:48:46.673Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:48:46.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:48:50.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:49:25.379Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:49:53.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:50:01.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:50:03.056Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:50:04.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:50:06.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:50:26.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:51:03.787Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:51:07.238Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:51:07.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:51:07.838Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:51:10.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:51:41.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:02.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:09.524Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:10.699Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:13.217Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:14.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:20.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:20.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:28.029Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:52:32.042Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:52:49.564Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:52:50.758Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T08:53:23.454Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:53:44.729Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:54:07.411Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:54:36.655Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:54:40.593Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:54:42.006Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:54:43.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:54:44.131Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T08:55:04.236Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T08:55:25.111Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:01:11.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:26.972Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:30.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:33.761Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:33.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:33.791Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:37.426Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:01:39.311Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:39.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:42.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:01:54.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:03.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:06.002Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:02:06.566Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:02:14.446Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:16.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:17.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:19.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:20.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:21.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:21.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:22.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:26.523Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:02:27.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:27.946Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:28.992Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:29.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:30.564Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:31.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:31.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:31.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:32.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:35.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:37.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:39.352Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:43.506Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:44.005Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:45.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:47.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:47.723Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:02:48.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:02:50.902Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:02:54.660Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:03:00.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:04.136Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:03:04.484Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:08.888Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:09.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:13.826Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:16.745Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:17.977Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:19.355Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:19.967Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:20.679Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:29.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:34.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:37.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:41.378Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:42.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:43.152Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:03:43.171Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:07.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:11.418Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:12.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:22.410Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:23.458Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:23.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:32.449Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:33.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:33.805Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:34.486Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:04:41.399Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:42.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:45.938Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:04:46.707Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:05:00.560Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:05:09.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:05:10.663Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:05:16.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:05:18.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:05:22.593Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:06:02.902Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:06:09.638Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:06:15.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:06:36.203Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:07:14.523Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:07:31.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:07:33.262Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:07:37.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:07:43.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:07:49.434Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:06.510Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:07.030Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:08.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:17.618Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:19.832Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:08:21.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:21.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:22.933Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:23.448Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:25.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:25.684Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:26.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:27.539Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:29.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:30.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:08:37.480Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:08:58.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:09:07.744Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:09:08.789Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:09:13.859Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:09:19.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:09:19.911Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:09:24.865Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:09:32.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:09:43.877Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:10:13.886Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:10:17.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:10:37.589Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:10:46.250Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:11:06.654Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:11:06.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:11:17.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:11:19.169Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:11:19.372Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:11:35.552Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:11:45.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:11:48.644Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:11:55.132Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:11:57.380Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:12:37.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:12:40.691Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:12:56.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:13:00.920Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:13:03.068Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:13:13.117Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:13:16.986Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:13:22.103Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:13:27.406Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:13:34.521Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:14:17.834Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:14:42.707Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:23:15.573Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:23:27.559Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:23:30.859Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:23:37.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:23:41.623Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:23:49.605Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:24:09.493Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:24:21.729Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:24:38.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:25:31.172Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:25:31.998Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:25:44.745Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:26:05.652Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:26:26.325Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:27:07.856Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:27:19.970Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:27:32.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:28:42.928Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:28:43.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:08.921Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:09.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:10.657Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:11.387Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:12.036Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:12.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:13.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:25.395Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:33.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:39.658Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:41.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:29:45.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:40:25.061Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:41:22.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:41:26.170Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:04.292Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:11.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:14.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:15.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:15.902Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:19.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:21.921Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:22.241Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:37.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:38.641Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:47.959Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:49.275Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:49.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:50.068Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:51.116Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:51.120Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:51.460Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:52.067Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:52.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:53.165Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:54.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:55.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:55.470Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:42:55.691Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:42:55.931Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:43:00.709Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:43:26.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:43:36.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:44:04.514Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:44:10.545Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:44:18.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:44:22.008Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:44:46.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:45:21.745Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:45:23.271Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:45:26.826Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:45:31.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:45:36.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:45:37.112Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:45:56.686Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:16.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:18.748Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:19.525Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:36.326Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:46:49.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:49.705Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:55.623Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:46:57.552Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:46:58.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:05.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:13.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:15.301Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:16.417Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:17.983Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:31.895Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:47:36.491Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:47:37.440Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:47:52.644Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:47:52.665Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:47:58.160Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:48:12.914Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:48:14.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:48:16.088Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:48:16.925Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:48:19.627Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:49:04.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:49:08.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:49:11.130Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:49:19.893Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T09:49:22.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:49:29.865Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:49:42.318Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:51:19.567Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:51:30.250Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:51:55.539Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:51:58.611Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:53:03.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:53:07.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:53:23.182Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:55:41.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:57:41.594Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:57:45.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:58:06.533Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T09:58:55.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:06.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:09.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:12.644Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:15.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:15.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:15.956Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:26.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:26.650Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:38.392Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:51.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:52.876Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:54.027Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:54.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T09:59:55.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:00.704Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:13.356Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:13.719Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:15.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:15.389Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:25.852Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:37.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:37.965Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:46.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:52.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:53.474Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:00:53.986Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T10:01:00.791Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:01:47.597Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:02:04.387Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:02:45.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:11.432Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:24.756Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:25.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:48.151Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T10:04:49.301Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:51.105Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:51.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:04:55.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:05:16.494Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T10:05:32.138Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:05:34.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T10:05:44.630Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:44:24.117Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:45:19.206Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:45:20.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:45:34.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:45:41.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:45:42.180Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:46:24.684Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:46:26.891Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:46:50.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:47:38.025Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:49:23.965Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:49:30.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:51:23.631Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:52:22.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:25.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:26.106Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:26.308Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:52:27.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:29.732Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:52:29.751Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:34.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:45.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:45.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:55.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:56.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:52:59.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:01.761Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:05.854Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:07.202Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:08.344Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:08.876Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:09.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:16.092Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:16.844Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:22.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:23.790Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:24.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:38.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:39.578Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:40.747Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:42.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:43.423Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:44.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:45.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:53:53.834Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:53:54.018Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:54:01.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:54:06.918Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:54:07.479Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:54:13.056Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:54:14.701Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:54:21.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:54:23.943Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:54:57.483Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:55:02.512Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:56:13.112Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:56:23.395Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:56:26.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:56:59.716Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:08.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:11.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:15.184Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:18.538Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:22.545Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:44.407Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T13:57:44.763Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:57:56.472Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:57:59.062Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T13:58:25.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:58:55.839Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T13:58:56.114Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:59:20.219Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T13:59:57.673Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:00:08.149Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:00:08.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:00:27.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:00:41.499Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:01:02.666Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:01:19.597Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:01:29.190Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:01:29.881Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:01:31.052Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:01:44.713Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:02:15.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:02:18.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:03:08.902Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:04:37.634Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T14:06:05.074Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:10:16.977Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:11:39.871Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:13:39.647Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:13:55.046Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:14:03.977Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:16:42.515Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:16:54.674Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:16:59.994Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T14:18:25.642Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:19:35.224Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:19:57.578Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:20:19.571Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T14:20:38.525Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T14:21:01.988Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:04:44.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:23.964Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:24.845Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:30.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:30.753Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:36.144Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:36.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:38.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:38.053Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:38.097Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:42.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:42.964Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:05:52.077Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:07.741Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:09.776Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:11.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:12.785Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:14.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:15.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:16.897Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:20.996Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:21.880Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:38.511Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:42.804Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:43.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:44.442Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:46.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:48.292Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:49.020Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:50.551Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:52.706Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:55.575Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:56.405Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:06:58.909Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:07:05.738Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:07:06.014Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:07:09.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:07:13.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:07:13.951Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:07:14.244Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:07:19.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:07:27.353Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:08:20.929Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:08:27.852Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:08:35.470Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:08:35.474Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:08:43.011Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:09:47.726Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:09:48.519Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:09:52.223Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:09:56.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:02.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:02.610Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:06.216Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:10:09.879Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:29.019Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:31.591Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:10:36.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:37.279Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:45.099Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:50.827Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:10:51.312Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:11:11.203Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:11:22.724Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:11:23.840Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:13:27.599Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:13:30.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:14:04.421Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:14:11.646Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:14:12.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:15:14.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:15:46.618Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:15:52.967Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:16:02.897Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:16:37.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:16:56.757Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:16:59.248Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:17:05.846Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:17:06.681Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:17:20.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:17:23.002Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:17:23.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:17:47.885Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:17:51.935Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:18:19.721Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:18:20.986Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:18:21.820Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:18:28.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:18:29.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:19:39.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:19:41.011Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:19:42.186Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:20:28.808Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:20:29.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:22:19.800Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:22:41.399Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:22:41.801Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:24:45.573Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:25:05.293Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:25:21.484Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:28:10.932Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:28:32.192Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:28:57.728Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:11.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:29.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:33.190Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:35.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:37.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:39.540Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:43.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:44.757Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:47.673Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:29:51.521Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:30:05.111Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:30:06.094Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:30:08.311Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:30:09.629Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:30:21.205Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:30:22.165Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:30:23.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:30:55.924Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:31:24.900Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:34:21.248Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:34:31.106Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:34:40.285Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:37:23.140Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:37:36.614Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:37:50.052Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:24.704Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:38:28.987Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:33.172Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:33.223Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:37.969Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:43.285Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:47.163Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:38:52.316Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:39:02.895Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:39:39.179Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:39:46.305Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:39:47.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:39:48.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:39:50.381Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:40:04.981Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:40:08.242Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:40:15.564Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:40:17.677Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:40:23.688Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:40:43.337Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:40:48.637Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:40:48.842Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:40:52.442Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:41:10.847Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:41:15.050Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:41:17.219Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:41:28.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:41:45.998Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:01.105Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:42:19.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:22.756Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:24.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:26.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:27.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:30.748Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:43.249Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:42:54.354Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:42:58.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:43:04.710Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:43:41.277Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:44:01.401Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:44:29.967Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:44:29.972Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:44:53.628Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:44:55.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:45:00.471Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:45:43.826Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:46:07.593Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:46:10.111Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:46:10.938Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:46:18.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:46:20.902Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:46:22.757Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:46:25.980Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:46:46.566Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:46:54.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:47:02.107Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:47:18.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:48:22.021Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:49:32.362Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:49:39.518Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:50:16.170Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:51:40.611Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:52:29.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:56:23.056Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:56:41.554Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:56:51.184Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:57:14.478Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:57:18.424Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:58:24.615Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:58:44.065Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:58:48.219Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-27T16:59:04.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-27T16:59:06.834Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-27T16:59:30.899Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T01:35:41.708Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T01:46:05.658Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-28T01:46:05.810Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-28T01:46:12.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T01:53:24.469Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T01:56:48.014Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T02:00:24.714Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T02:28:14.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T02:30:01.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T02:32:03.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T02:32:20.899Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T02:38:18.727Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T02:40:05.119Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T02:40:19.344Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T02:40:59.392Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T02:41:11.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T02:41:14.224Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T02:44:48.354Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:18:39.636Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:19:00.041Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-28T03:19:07.832Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:19:32.251Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:19:35.067Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:19:59.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:20:23.105Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:20:38.806Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:20:41.579Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:20:46.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:20:46.914Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:20:54.406Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:20:57.035Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:20:57.470Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:03.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:05.712Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:13.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:14.572Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:18.480Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:19.301Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:32.309Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:21:44.761Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:21:51.276Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:22:25.383Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:22:40.699Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:22:50.345Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:22:54.329Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:23:05.926Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T03:23:11.823Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T03:25:15.837Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:25:24.078Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:25:34.685Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:26:04.337Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:31:05.333Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:31:51.195Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:33:13.278Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:33:22.440Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T03:53:20.673Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T03:57:10.734Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:00:31.696Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T04:07:46.837Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:07:56.305Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:08:24.906Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:08:31.276Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:08:36.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:08:40.546Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:08:40.830Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:09:28.688Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:09:33.398Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:09:36.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:09:40.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:09:41.460Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:09:42.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:10:05.317Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:10:07.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:10:08.205Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:11:40.958Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:11:41.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:11:53.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:14:25.276Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:15:18.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:17:59.807Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:18:11.765Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:18:13.859Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:20:52.348Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:47:53.065Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:48:07.662Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:48:51.962Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:51:13.624Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:52:30.096Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:52:42.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:53:01.606Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:53:46.938Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:53:52.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:53:52.991Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:54:02.589Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:54:09.094Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:54:12.399Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:54:24.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:54:24.445Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:54:24.460Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:55:09.951Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:55:11.896Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:55:16.001Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:56:32.527Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:56:42.276Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:56:48.650Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T04:56:57.217Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:57:03.254Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T04:57:50.853Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:19.768Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:58:21.451Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:24.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:25.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:26.017Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:28.760Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:29.136Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:33.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:38.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:38.767Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:58:50.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:54.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:58:55.819Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:03.561Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:04.217Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:04.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:11.846Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:13.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:14.692Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:59:17.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:18.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T04:59:39.528Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T04:59:53.253Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T05:06:16.229Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T05:07:32.124Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T05:12:57.681Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T05:13:07.093Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T05:13:10.721Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T05:13:36.947Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:09:03.429Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:12:50.546Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T06:14:57.977Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:16:59.829Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T06:17:09.681Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:17:33.401Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:21:14.922Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:21:20.830Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:23:43.725Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:23:51.093Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:23:52.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:25:27.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:35.145Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:37.764Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:48.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:49.063Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:51.363Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:52.359Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:53.604Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:54.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:56.577Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:56.967Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:57.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:25:59.325Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:13.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:19.169Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:19.309Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:22.783Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:27.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:28.384Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:26:48.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:27:05.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:27:16.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:27:20.077Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:27:21.275Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:27:23.293Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T06:27:29.204Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T06:27:32.613Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:27:33.876Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:27:37.172Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:27:38.812Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:27:48.907Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:27:50.246Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:27:57.421Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:28:38.046Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:29:41.596Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:30:01.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:30:20.443Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:31:46.798Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:36:19.646Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:36:23.438Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:38:14.690Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T06:38:17.436Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:40:01.369Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:43:08.252Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:43:50.969Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:44:10.882Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:44:13.197Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:45:38.359Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:46:56.961Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:46:57.824Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:46:58.737Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:49:06.597Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:49:07.285Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:49:16.422Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:50:54.016Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:51:06.250Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:53:31.986Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:01.029Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:07.592Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:19.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:21.101Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:25.666Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:31.054Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:32.233Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T06:54:33.873Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:54:40.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:54:44.199Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:54:45.664Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:54:58.979Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:55:02.504Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:55:02.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:55:07.636Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:55:14.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:55:52.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T06:57:45.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:00:15.619Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:02:13.932Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:22.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:23.617Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:24.496Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:32.329Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:40.323Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:41.428Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:42.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:43.071Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:02:46.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:04:19.768Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:09:35.139Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:09:58.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:10:02.803Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:10:03.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:10:08.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:10:16.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:10:25.413Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:10:41.840Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:10:44.403Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:11:10.158Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:12:12.980Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:14:09.010Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:14:17.706Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:14:21.134Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:15:24.296Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:15:30.733Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:16:38.931Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:16:55.335Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:19:37.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:19:50.002Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:19:55.077Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:20:04.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:20:06.521Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:20:27.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:22:27.174Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:25:34.907Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:25:36.720Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:27:05.880Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:27:11.664Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:27:53.965Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:28:35.820Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:28:42.603Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:28:47.869Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:28:48.439Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:29:04.397Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:29:40.206Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:30:22.907Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:33:36.602Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:33:37.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:33:38.609Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:33:39.266Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:33:46.003Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:33:47.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:33:48.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:33:49.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:33:51.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:33:52.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:34:22.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:34:47.521Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:35:22.204Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:35:25.278Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:35:25.306Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:35:44.346Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:36:36.976Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:47:14.962Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:49:12.872Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:51:28.370Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:52:13.205Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:52:20.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:52:27.512Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:53:21.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:53:30.467Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:53:33.099Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:53:33.101Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:53:59.504Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:54:32.139Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:54:33.484Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:54:37.725Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:54:37.739Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T07:54:45.498Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:12.331Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:19.271Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:22.436Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:22.451Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:24.071Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:32.550Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:55:46.930Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T07:55:47.934Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:56:40.437Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:56:41.752Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:56:42.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:15.291Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:24.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:33.011Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:39.371Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:48.922Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:50.582Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:50.584Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:54.706Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:55.908Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:57.195Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:58.389Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:57:59.656Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:00.981Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:02.256Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:03.482Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:04.623Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:05.843Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:09.837Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:11.704Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:13.929Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:16.281Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:18.336Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:19.605Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:20.939Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:22.477Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:23.785Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:25.414Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:30.019Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:58:51.984Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:59:24.373Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:59:25.714Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:59:27.691Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T07:59:46.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:00:13.078Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:01:33.166Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:01:39.343Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:01:41.415Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:01:58.018Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:02:13.911Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:03:28.368Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-28T08:04:51.563Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:05:18.620Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:05:22.017Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:05:23.766Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:05:38.810Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:07:32.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:08:00.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:08:05.354Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:08:06.184Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:08:12.888Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:08:51.345Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:10:10.273Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:12:14.996Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:12:15.686Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:13:49.306Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:14:08.712Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:14:10.478Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:14:13.323Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:14:18.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:14:22.037Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:52:13.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:24.457Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:52:25.513Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:52:26.605Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:52:27.651Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:52:41.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:43.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:44.313Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:47.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:56.219Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:57.553Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:58.409Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:52:58.779Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:53:06.146Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:53:50.372Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:53:57.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:54:07.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:54:52.347Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T08:54:55.657Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:55:22.587Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T08:55:58.278Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:56:14.955Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:57:38.208Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:59:09.028Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T08:59:58.418Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:02:09.801Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T09:04:48.561Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:05:40.221Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:17:37.682Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:17:57.812Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:18:00.941Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T09:32:59.386Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:33:21.764Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:33:32.231Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:34:04.169Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:35:40.881Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:35:50.471Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:35:56.401Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:36:19.467Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:46:42.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:47:10.679Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:48:47.013Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:48:49.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:48:50.594Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:48:55.571Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T09:49:01.690Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:49:12.529Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:49:28.208Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:49:33.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:49:33.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:49:39.904Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:49:42.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:49:47.114Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:49:48.832Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:49:53.981Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:50:01.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:50:02.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:50:26.324Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T09:50:30.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:51:02.706Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:51:05.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:51:26.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:52:37.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:53:02.321Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T09:54:13.833Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:54:51.070Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:55:03.981Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:56:24.354Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:56:59.363Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:58:07.687Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T09:58:11.368Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T09:59:17.277Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T09:59:45.223Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:07:45.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:08:14.317Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:08:52.252Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:03.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:15.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:18.673Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:19.210Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:21.977Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:26.747Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:09:31.968Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:09:33.356Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:09:33.880Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:09:44.416Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:09:46.315Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:09:57.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:01.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:05.382Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:10:33.876Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:10:37.935Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:39.043Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:10:42.099Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:10:45.492Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:48.103Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:49.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:53.583Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:10:54.315Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:54.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:55.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:56.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:58.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:10:58.999Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:11:03.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:11:11.079Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:11:11.882Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:11:39.138Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:12:29.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:12:40.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:13:08.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:13:19.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:13:26.653Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:03.731Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:19.574Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:22.220Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:14:26.489Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:29.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:14:29.947Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:30.341Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:33.733Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:14:35.271Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:14:40.674Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:14:41.856Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:14:43.194Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:51.532Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:14:52.440Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:15:05.169Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:15:05.206Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:15:42.359Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T10:15:43.558Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:15:44.733Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T10:16:00.714Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T10:16:24.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:36:05.431Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T15:51:58.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:10.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:13.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:18.431Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:18.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:25.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:26.857Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:27.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:31.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:31.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:31.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:41.088Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:52:57.487Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:06.287Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:21.777Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:28.119Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:39.750Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:41.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:44.532Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:45.130Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:49.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:53:51.300Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T15:53:53.179Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T15:53:54.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:00.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:03.051Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:03.068Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:04.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:13.364Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:22.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:23.039Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:29.047Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:31.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:54:44.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:22.769Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:29.259Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:32.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:36.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:40.526Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:52.908Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:55:55.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:56:07.594Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:56:11.078Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T15:56:25.483Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:56:54.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:57:00.613Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:57:36.711Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:57:42.109Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:57:48.163Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T15:57:53.208Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T15:57:53.849Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:58:38.380Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:58:53.122Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T15:59:32.918Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:35.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:38.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:45.689Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:46.017Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:50.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:51.062Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:52.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:52.933Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:57.938Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:58.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T15:59:59.942Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:03.837Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:04.203Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:10.131Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:00:10.493Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:14.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:17.246Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:18.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:22.806Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:23.116Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:00:23.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:25.047Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:25.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:28.577Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:00:31.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:37.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:37.949Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:40.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:41.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:47.394Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:47.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:54.546Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:55.240Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:55.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:56.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:00:57.649Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:01.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:02.442Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:04.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:04.069Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:01:04.452Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:06.067Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:07.868Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:09.255Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:01:13.345Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:15.062Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:16.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:16.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:17.182Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:01:17.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:18.635Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:19.168Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:20.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:27.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:28.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:29.188Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:01:30.111Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:31.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:33.849Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:01:39.495Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:41.317Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:41.318Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:43.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:46.354Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:50.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:54.039Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:56.242Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:01:58.478Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:06.494Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:06.676Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:08.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:09.600Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:13.395Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:21.011Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:22.130Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:23.111Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:24.128Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:25.021Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:26.257Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:27.192Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:28.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:29.340Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:30.507Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:30.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:31.191Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:02:33.786Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:34.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:44.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:48.213Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:52.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:02:57.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:03:05.359Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:06.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:07.563Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:13.048Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:14.227Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:15.243Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:18.889Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:20.276Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:24.811Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:27.969Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:28.004Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:03:31.151Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:31.804Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:03:32.351Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:43.162Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:44.106Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:45.101Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:46.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:03:52.117Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:03:55.888Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:56.800Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:03:58.239Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:00.419Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:08.456Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:09.855Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:11.073Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:13.797Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:15.361Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:23.622Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:25.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:27.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:27.824Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:28.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:40.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:44.485Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:45.929Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:04:47.412Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:50.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:04:57.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:03.701Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:08.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:14.006Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:20.726Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:05:20.734Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:21.836Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:22.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:05:45.134Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:05:57.763Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:06:04.382Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:06:09.715Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:06:11.209Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:06:19.430Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:06:29.475Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:06:30.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:06:31.524Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:07:25.984Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:07:29.888Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:08:01.998Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:08:22.040Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:08:30.491Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:09:53.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:13:22.135Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:13:38.725Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:15:02.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:30.138Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:37.566Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:46.873Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:50.694Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:56.521Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:58.352Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:16:59.353Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:17:00.772Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:17:03.389Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:17:50.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:19:22.973Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:19:26.776Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:19:34.125Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:19:42.864Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:19:57.205Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:06.033Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:12.869Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:15.341Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:17.885Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:26.681Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:28.476Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:20:32.119Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:22:40.112Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:08.976Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:12.670Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:14.706Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:17.279Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:20.711Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:21.858Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:22.585Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:25.972Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:23:30.501Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:25:43.193Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:25:47.430Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:25:50.560Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:25:56.191Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:28:06.171Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:28:10.956Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:28:14.874Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:28:15.852Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:28:26.847Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:28:27.979Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:30:12.001Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:30:14.121Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:32:20.450Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:34:50.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:34:50.721Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:34:54.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:34:57.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:05.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:13.176Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:35:14.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:35:15.762Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:35:17.593Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:35:18.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:35:19.471Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:35:46.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:50.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:52.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:53.934Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:54.868Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:35:56.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:36:57.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:38:21.517Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:38:25.045Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:38:31.917Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:38:36.968Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:41:13.876Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:42:01.696Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:42:15.921Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:44:39.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:44:53.587Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:44:55.437Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:45:14.111Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:45:40.016Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:45:40.814Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:45:46.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:45:59.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:46:45.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:46:55.301Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:47:02.547Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:47:18.473Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:47:30.607Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:47:37.402Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:47:53.240Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:47:57.080Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:48:37.946Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:49:55.258Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:00.704Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:02.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:03.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:04.483Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:05.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:06.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:12.944Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:27.441Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:31.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:50:35.241Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:51:07.436Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:51:47.315Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:52:12.305Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T16:52:12.558Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:52:59.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:54:07.742Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:54:13.466Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:55:16.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:22.692Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:23.811Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:26.134Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:26.671Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:30.008Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:30.844Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:31.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:33.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:37.164Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:42.370Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:55:47.471Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:55:50.318Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:51.094Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:57.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:55:58.387Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:09.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:10.382Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:17.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:20.571Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:24.591Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:25.992Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:29.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:32.801Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:35.806Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:37.275Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:56:54.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:55.736Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:57.243Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:56:58.355Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:01.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:03.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:19.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:22.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:24.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:35.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:38.470Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:42.008Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:43.542Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:57:47.053Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:57:50.690Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:03.330Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:06.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:09.630Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:10.988Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:12.091Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:13.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:14.098Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:58:25.624Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:58:29.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:58:33.688Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:58:39.218Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:58:41.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:58:43.392Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:59:22.453Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:59:33.147Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T16:59:38.235Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T16:59:38.333Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:00:28.738Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:00:44.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:01:50.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:04:26.117Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:06:06.744Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:06:09.394Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:06:13.458Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:06:16.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:06:17.752Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:09:59.211Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:10:03.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:10:04.135Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:10:23.918Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:11:32.208Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:11:33.125Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:12:43.001Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:14:39.347Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:17:15.337Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:18:13.764Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:18:35.871Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:19:38.188Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:23:09.058Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:23:49.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:23:57.317Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:24:29.921Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:24:34.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:24:34.709Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:24:42.599Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:24:45.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:24:45.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:25:36.525Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:25:53.806Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:13.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:21.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:24.533Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:26:24.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:24.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:28.505Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:37.158Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:26:37.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:39.823Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:26:45.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:46.262Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:48.235Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:49.511Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:26:49.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:50.258Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:54.393Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:54.411Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:26:55.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:08.150Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:08.664Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:28.448Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:33.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:41.819Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:44.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:46.143Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:48.589Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:51.120Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:52.774Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:54.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:57.572Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:58.887Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:27:59.705Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:00.379Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:05.794Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:06.950Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:13.314Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:15.319Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:16.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:20.244Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:21.979Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:22.839Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:27.607Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:28.375Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:29.043Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:29.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:37.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:39.910Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:46.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:49.202Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:50.960Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:28:52.120Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:29:11.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:29:42.191Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:30:29.140Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:30:32.821Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:30:34.130Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:30:37.084Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:30:37.740Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:30:38.417Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:30:41.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:31:06.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:31:21.536Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:31:25.234Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:32:06.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:32:07.115Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:32:16.150Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:32:41.778Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:32:52.774Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:33:04.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:10.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:11.537Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:13.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:14.073Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:33:14.413Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:20.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:24.125Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:28.235Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:46.073Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:50.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:51.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:53.661Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:57.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:33:59.116Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:02.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:04.073Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:07.248Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:09.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:11.245Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:12.178Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:15.025Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:18.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:34:19.922Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:34:20.603Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:34:22.952Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:34:23.815Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:34:28.435Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:36.230Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:38.814Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:39.652Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:54.128Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:58.932Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:59.719Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:34:59.978Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:35:00.825Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:35:06.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:35:20.372Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:35:40.270Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:35:40.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:35:41.368Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:35:46.574Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:35:49.999Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:35:52.857Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:35:54.318Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:35:57.780Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:02.805Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:36:03.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:36:13.424Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:14.762Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:29.521Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:30.742Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:31.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:36:33.701Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:37.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:36:42.342Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:36:46.715Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:36:49.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:36:54.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:37:00.738Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:37:29.893Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:37:41.245Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:38:03.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:38:20.104Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:38:39.936Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:38:41.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:39:17.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:40:04.235Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:47:59.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:48:57.078Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:49:03.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:49:08.285Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:49:08.286Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:50:07.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:50:24.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:50:43.585Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:50:48.424Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:50:57.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:50:59.790Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:00.996Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:02.395Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:05.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:09.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:09.420Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:51:18.441Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:51:19.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:20.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:24.251Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:26.698Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:51:28.595Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:51:30.563Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:51:31.768Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:51:37.211Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:51:41.934Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:03.109Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:12.072Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:14.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:16.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:19.470Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:19.616Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:26.602Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:27.364Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:31.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:33.638Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:35.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:37.423Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:42.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:43.479Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:45.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:46.290Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:52.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:52.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:54.324Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:52:56.300Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:53:10.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T17:53:25.524Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T17:54:30.013Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T17:54:37.698Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:32:44.773Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:33:35.751Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:33:52.847Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:33:54.191Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:34:32.364Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:34:39.152Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:34:40.248Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:35:51.416Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:36:04.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:37:34.742Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:37:59.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:38:06.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:38:07.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:38:09.226Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:38:18.187Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:38:32.154Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:39:01.787Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:39:21.901Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:39:26.226Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T18:39:31.022Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-28T18:39:36.818Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:39:40.467Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:40:34.872Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:41:17.589Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:41:21.808Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:41:41.771Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:45:03.765Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:46:11.394Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:47:02.550Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:48:48.803Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-28T18:49:03.275Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-28T18:49:37.458Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T08:58:59.040Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-30T09:00:04.073Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:03:48.530Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:03:53.756Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:07:21.379Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:07:21.428Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:12:01.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:12:07.378Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:13:31.278Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:14:06.366Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:14:07.270Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:14:14.050Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:14:18.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:14:46.527Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:15:28.196Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:15:50.433Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:16:02.349Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:16:12.663Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:16:47.480Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:17:52.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:17:58.927Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:18:15.503Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:19:18.316Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:19:23.654Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:19:23.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:19:27.771Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:20:13.172Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:20:15.697Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:20:41.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:20:44.363Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:20:45.221Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:21:56.580Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:21:58.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:21:59.346Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:22:00.082Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:23:09.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:23:10.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:25:20.320Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T09:54:49.520Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:55:44.528Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:56:32.462Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:57:04.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:58:41.512Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:58:42.401Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:58:42.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:58:47.210Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:58:47.461Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T09:58:48.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T09:59:57.364Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:00:45.759Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-30T10:00:52.684Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T10:04:30.668Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:05:46.904Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:09:58.012Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:11:49.114Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:11:51.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T10:12:22.725Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:12:29.865Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T10:15:28.635Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:16:51.414Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:17:30.992Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:17:32.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:22:14.192Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:23:16.662Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:23:59.582Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T10:24:45.411Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T10:24:45.412Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T10:24:46.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:07:57.463Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:08:32.916Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:08:43.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:04.353Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:07.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:16.663Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:16.748Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:16.916Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:17.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:09:18.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:10:51.230Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:05.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:12.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:25.110Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:30.212Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:30.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:34.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:35.924Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:55.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:11:59.547Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:13:49.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:14:04.237Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:14:14.836Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:14:21.645Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:07.883Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:24.318Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:29.714Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:32.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:39.498Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:41.166Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:15:42.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:16:11.723Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:16:15.442Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:16:32.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:16:40.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:16:43.607Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:17:45.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:17:52.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:17:56.386Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:17:58.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:17:58.299Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:18:00.728Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:02.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:17.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:24.972Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:26.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:37.764Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:47.580Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:54.407Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:55.575Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:56.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:56.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:57.787Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:58.357Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:18:58.703Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:02.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:03.100Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:03.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:04.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:04.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:05.721Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:05.753Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:05.792Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:07.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:08.045Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:08.104Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:19:09.288Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:09.786Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:12.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:13.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:15.275Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:15.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:17.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:17.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:18.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:18.813Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:19.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:19.742Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:21.415Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:22.265Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:22.301Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:23.613Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:26.016Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:28.131Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:32.931Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:33.514Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:37.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:43.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:47.307Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:19:47.391Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:53.341Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:53.516Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:55.065Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:19:56.733Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:01.165Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:03.844Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:09.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:11.000Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:20:12.636Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:18.599Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:31.739Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:34.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:20:42.582Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:21:15.827Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:21:33.149Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:40.845Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:41.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:41.578Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:49.114Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:49.360Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:50.460Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:53.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:54.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:54.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:59.212Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:21:59.235Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:04.912Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:22:08.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:11.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:11.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:17.075Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:19.464Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:21.752Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:22:26.893Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:30.608Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:22:39.105Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:22:40.240Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:22:45.359Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:22:57.089Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:23:04.825Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:23:14.251Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:10.647Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:18.515Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:24:26.520Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:33.867Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:24:39.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:40.667Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:44.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:49.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:24:58.719Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:25:14.862Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:25:17.402Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:25:20.894Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:25:25.597Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:25:34.862Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:26:07.477Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:26:11.742Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:26:43.384Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:26:43.531Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:26:47.619Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:26:51.923Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:26:53.073Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:26:58.552Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:27:05.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:27:13.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:27:27.223Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:05.157Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:07.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:13.485Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:19.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:23.931Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:27.631Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:31.093Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:34.719Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:34.981Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:38.966Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:42.207Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:45.125Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:47.758Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:51.243Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:51.455Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:51.482Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:51.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:54.894Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:55.013Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:55.087Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:28:57.454Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:28:58.925Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:04.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:04.563Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:04.733Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:04.764Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:05.025Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:29:08.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:08.684Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:11.897Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:12.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:12.651Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:17.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:17.880Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:17.996Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:22.487Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:22.614Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:22.664Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:26.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:30.960Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:35.035Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:40.133Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:45.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:29:52.389Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:29:54.170Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:29:54.347Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:30:33.225Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:30:38.352Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:30:40.663Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:30:42.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:30:45.779Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:30:46.528Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:30:51.711Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:30:53.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:30:56.560Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:03.885Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:07.411Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:07.512Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:09.967Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:10.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:22.398Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:23.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:24.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:27.949Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:29.031Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:32.027Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:34.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:37.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:37.944Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:40.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:41.093Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:43.106Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:47.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:49.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:50.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:51.962Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:31:52.775Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:55.632Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:31:58.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:01.135Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:06.462Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:08.756Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:32:11.266Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:15.417Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:16.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:19.157Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:23.548Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:26.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:29.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:31.980Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:41.080Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:41.326Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:32:43.831Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:46.819Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:48.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:53.604Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:56.617Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:32:57.206Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:32:59.228Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:01.383Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:33:01.954Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:04.299Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:06.816Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:09.901Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:13.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:33:13.600Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:19.336Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:33:26.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:33:50.627Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:34:26.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:34:30.583Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:35:18.129Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:36:42.993Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:37:06.199Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:37:23.733Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:37:24.681Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:37:42.695Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:38:07.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:38:07.322Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:38:09.964Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:38:47.929Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:39:28.399Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:40:28.641Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:40:32.224Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:40:39.469Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:40:41.581Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:40:42.705Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:40:52.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:41:19.177Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:41:48.063Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:41:49.004Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:41:55.313Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:42:06.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:42:22.726Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:42:51.054Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:43:36.027Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:43:37.090Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:43:40.215Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:43:41.066Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:43:51.600Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:45:20.606Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:45:37.876Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:45:40.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:45:49.585Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:45:50.240Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:45:52.256Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:45:59.210Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:46:00.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:07.809Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:11.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:22.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:22.592Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:46:22.710Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:46:29.444Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:32.864Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:46:35.224Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:35.414Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:39.638Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:39.879Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:45.041Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:45.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:48.250Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:50.923Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:53.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:56.230Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:46:56.471Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:58.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:46:59.185Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:47:01.197Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:47:10.402Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:47:16.510Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:47:32.218Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:47:35.591Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:47:47.675Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:47:55.068Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:48:23.769Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:48:31.557Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:48:45.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:48:49.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:48:56.518Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:04.330Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:11.721Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:17.616Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:49:19.788Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:26.944Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:49:26.953Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:34.924Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:49:36.136Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:37.526Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:44.479Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:49:45.982Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:47.625Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:53.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:56.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:49:59.135Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:50:02.382Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:50:13.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:50:18.838Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:52:02.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:52:03.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:52:41.229Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:54:03.853Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:54:27.213Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:54:44.540Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:55:28.635Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:55:34.250Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:55:41.492Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:55:47.434Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:56:17.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:56:46.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:56:58.384Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:57:27.408Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:57:27.646Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T14:57:31.145Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T14:59:34.066Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:59:41.497Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T14:59:52.484Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:00:18.357Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:00:50.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:01:04.194Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:01:17.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:17.598Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:01:27.706Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:32.257Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:42.765Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:46.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:46.905Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:48.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:51.968Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:51.989Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:54.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:01:56.829Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:02:00.408Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:02:01.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:02:10.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:02:10.872Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:02:33.732Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:02:49.665Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:02:58.010Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:03:10.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:03:17.857Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:03:28.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:03:46.742Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:03:47.949Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:03:54.151Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:03:54.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:03:59.852Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:05.799Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:12.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:22.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:25.864Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:28.495Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:31.811Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:34.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:34.676Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:04:36.798Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:44.548Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:44.583Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:47.651Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:49.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:50.156Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:04:56.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:05:26.783Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:05:33.491Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:05:56.964Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:06:08.245Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:06:09.379Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:06:17.152Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:06:26.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:06:52.958Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:06:56.183Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:07:02.907Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:07:05.379Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:07:37.188Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:07:41.698Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:07:48.195Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:08:18.595Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:08:33.152Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:08:36.551Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:08:53.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:09.164Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:09:33.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:34.776Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:09:37.685Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:37.732Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:39.520Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:09:41.666Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:46.520Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:50.621Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:09:50.844Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:09:57.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:09:57.452Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:10:01.688Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:10:06.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:10:06.935Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:10:17.110Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:10:23.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:10:29.516Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:10:32.315Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:10:33.388Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:10:54.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:10:55.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:11:00.355Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:11:03.444Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:11:54.898Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:12:04.697Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:12:08.510Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:12:11.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:11.702Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:18.179Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:18.227Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:12:22.768Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:23.074Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:12:32.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:33.364Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:12:38.661Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:39.483Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:40.006Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:12:42.327Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:43.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:43.821Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:12:44.855Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:47.081Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:52.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:54.803Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:12:57.663Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:03.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:03.757Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:03.997Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:04.310Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:06.332Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:13:07.377Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:13:09.151Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:09.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:09.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:11.596Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:13:15.894Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:16.044Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:16.195Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:13:18.447Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:18.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:23.365Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:23.986Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:28.339Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:28.515Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:30.675Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:30.686Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:32.371Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:32.390Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:34.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:36.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:36.745Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:36.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:38.503Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:38.513Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:40.298Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:40.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:43.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:43.877Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:46.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:46.094Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:48.295Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:48.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:50.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:51.644Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:52.488Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:53.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:54.093Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:13:58.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:03.742Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:10.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:12.569Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:13.364Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:14:14.263Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:18.426Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:29.017Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:14:32.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:34.476Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:40.154Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:14:40.360Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:14:47.241Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:22.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:29.719Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:35.241Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:43.522Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:44.519Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:46.512Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:50.058Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:15:56.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:59.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:15:59.974Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:04.960Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:05.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:06.012Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:16:06.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:10.236Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:11.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:12.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:14.380Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:17.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:19.079Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:16:19.297Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:25.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:34.743Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:16:38.477Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:16:43.132Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:16:46.119Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:16:51.244Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:17:25.290Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:17:41.749Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:17:54.180Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:18:13.477Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:18:22.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:18:41.795Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:19:00.591Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:19:04.328Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:19:06.669Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:19:28.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:19:29.151Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:19:33.584Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:19:33.709Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:19:33.783Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:19:37.929Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:20:10.323Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:20:13.398Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:20:15.784Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:20:18.140Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:20:51.801Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:20:54.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:21:10.182Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:21:32.729Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:21:38.566Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:21:41.676Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:21:42.759Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:21:53.114Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:22:06.445Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:22:09.223Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:22:11.101Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:22:23.471Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:22:23.514Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:22:30.371Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:22:39.800Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:22:44.706Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:22:47.300Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:23:19.883Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:23:35.760Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:23:43.238Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:23:58.529Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:24:10.693Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:24:26.613Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:24:49.251Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:24:54.519Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:25:27.069Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:25:29.507Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:25:32.310Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:25:52.452Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:25:53.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:02.274Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:26:10.357Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:26:16.022Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:21.169Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:26:25.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:31.016Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:33.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:40.985Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:46.231Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:26:56.157Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:27:08.059Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:27:08.361Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:27:16.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:28:13.691Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:28:57.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:29:07.762Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:29:17.144Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:29:32.806Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:29:45.565Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:30:13.751Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:31:42.850Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:32:03.097Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:32:47.281Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T15:33:54.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:34:40.798Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:34:41.055Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:34:51.620Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:35:00.867Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:35:50.334Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T15:35:58.648Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:36:01.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T15:36:50.439Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:01:28.656Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:03:50.629Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:05:47.090Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:06:04.860Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:06:08.724Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:09:47.172Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:14:47.923Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:15:28.092Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:15:35.472Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:16:08.168Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:17:21.491Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:17:23.473Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:17:26.687Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:17:28.308Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:17:38.390Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:17:48.910Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:01.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:02.368Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:03.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:07.576Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:15.629Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:18:23.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:29.121Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-30T16:18:29.121Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:35.298Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:18:41.557Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:47.206Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:18:48.411Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:19:48.857Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:06.224Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:07.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:10.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:12.598Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:12.680Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:20:14.213Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:23.499Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-30T16:20:51.804Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:52.086Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:20:53.174Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:56.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:20:58.661Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:21:00.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:21:08.982Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:21:12.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:21:17.131Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:21:54.032Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:22:19.984Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:21.281Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:31.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:31.847Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:35.235Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:39.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:41.642Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:22:44.144Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:45.343Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:22:45.938Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:22:52.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:22:54.756Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:23:02.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:23:53.575Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:23:59.803Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:24:15.463Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:25:12.935Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:25:13.918Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:25:15.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:25:15.877Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:25:17.511Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:25:18.821Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:25:23.095Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:25:30.422Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:25:33.210Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:25:46.650Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:25:54.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:26:41.502Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:27:43.139Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:28:17.921Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:19.320Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:20.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:25.684Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:27.475Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:29.281Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:30.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:31.912Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:36.385Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:40.878Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:42.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:43.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:44.551Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:45.670Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:46.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:48.456Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:28:53.564Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:29:00.574Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:29:04.699Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:29:06.088Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:29:07.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:29:07.629Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:29:24.455Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:29:38.966Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:29:51.026Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:30:14.605Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:30:19.299Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:30:19.370Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:30:54.693Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:31:56.330Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:32:47.347Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:33:13.148Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:34:36.510Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:35:59.000Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:36:02.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:36:28.697Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:37:47.571Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:37:51.017Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:37:55.173Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:38:13.770Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:38:24.317Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:39:04.153Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:39:08.103Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:40:12.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:40:22.311Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:40:24.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:40:25.243Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:40:29.318Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:40:41.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:40:50.951Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:41:14.170Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:41:18.454Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:41:21.620Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:41:40.478Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:41:41.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:41:41.553Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:41:44.400Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:41:51.128Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:41:54.179Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:41:56.378Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:41:59.658Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:01.293Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:06.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:08.644Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:24.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:26.828Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:27.992Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:30.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:42:32.257Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:43:00.215Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:43:04.135Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:43:15.671Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:44:33.155Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:44:49.956Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:45:28.382Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:45:28.424Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:45:40.965Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:46:20.521Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:46:21.429Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:46:22.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:46:23.660Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:46:24.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:47:03.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:47:05.214Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:49:13.575Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:18.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:19.148Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:20.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:21.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:22.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:25.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:49:48.744Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:49:54.436Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:06.114Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:08.107Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:10.657Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:11.028Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:12.827Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:15.910Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:15.915Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:18.196Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:26.695Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:27.803Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:50:28.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:28.505Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:32.869Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:50:34.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:36.177Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:50:38.239Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:50.253Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:50:51.753Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:51:01.374Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:51:11.321Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:01.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:03.549Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:05.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:13.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:16.269Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:21.122Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:52:51.279Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:52:56.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:53:50.087Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:54:06.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:54:57.593Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:55:16.071Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:55:31.751Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:55:31.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:55:34.789Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:55:34.829Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:55:37.151Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:55:59.866Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:56:32.705Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:56:32.718Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:56:43.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:56:46.400Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:56:48.394Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:57:23.510Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:23.546Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:57:30.772Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:32.332Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:33.776Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:57:41.338Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:44.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:45.844Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:48.850Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:49.473Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:51.829Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:57:52.112Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:54.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:56.243Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:57:57.584Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:02.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:04.129Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:05.432Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:05.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:58:06.943Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:08.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:08.612Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:58:09.443Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:10.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:12.455Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:13.971Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:15.260Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:19.845Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:22.892Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:49.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:49.278Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T16:58:50.480Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:58:57.400Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:58:57.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:01.658Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:06.702Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:06.759Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:10.239Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:24.735Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:38.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:44.682Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:53.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:53.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T16:59:56.360Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T16:59:56.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:00.250Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:03.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:04.872Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:06.138Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:07.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:08.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:09.198Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:10.088Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:20.086Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:00:20.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:20.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:21.326Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:21.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:22.343Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:23.259Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:25.341Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:00:29.138Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:00:32.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:33.861Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:00:35.621Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:00:47.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:49.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:51.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:58.572Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:00:59.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:01:00.675Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:01:02.962Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:01:03.442Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:01:04.841Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:01:11.019Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:01:24.009Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:01:28.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:01:32.977Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:01:34.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:02:03.918Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:02:04.055Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:03:57.565Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:04:25.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:04:25.437Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:04:30.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:04:41.299Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:04:42.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:04:44.061Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:05:27.028Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:05:43.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:05:59.609Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:06:31.032Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:06:31.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:13:30.624Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:13:34.563Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:13:55.594Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:14:04.793Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:04.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:05.942Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:06.204Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:07.086Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:08.744Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:12.192Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:12.412Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:13.459Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:15.438Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:17.347Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:20.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:21.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:23.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:24.705Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:25.531Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:33.599Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:38.507Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:38.508Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:15:39.433Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:40.112Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:40.357Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:41.977Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:43.110Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:15:55.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:16:16.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:16:35.220Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:16:35.311Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:17:40.172Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:26:34.610Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:26:37.686Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:27:04.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:27:08.981Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:27:38.337Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:27:39.941Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:28:03.183Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:28:10.876Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:28:21.703Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:28:30.002Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:28:44.098Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:28:44.886Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:28:48.733Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:28:49.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:28:50.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:01.535Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:05.907Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:09.485Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:10.391Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:15.322Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:16.480Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:19.384Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:20.698Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:29:22.160Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:22.946Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:23.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:27.187Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:30.072Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:36.220Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:37.206Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:38.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:39.061Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:39.929Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:42.656Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:43.670Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:44.537Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:45.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:46.497Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:47.400Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:48.237Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:29:49.021Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:30:27.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:30:51.409Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:30:51.712Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:49.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:50.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:51.730Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:52.910Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:53.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:54.536Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:55.356Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:31:58.209Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:32:20.232Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:44:11.714Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:44:15.876Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:44:36.165Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:44:38.306Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:45:01.404Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:45:37.054Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:45:51.812Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:45:54.365Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:45:55.422Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:45:55.763Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:45:56.653Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:01.585Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:02.198Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:02.664Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:46:02.665Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:03.474Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:46:07.717Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:08.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:14.278Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:46:48.684Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:47:10.231Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:47:11.092Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:56:44.302Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:56:49.002Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:57:07.357Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T17:57:08.107Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:57:37.947Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:58:40.618Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:58:41.640Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:58:42.384Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:58:43.475Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:58:43.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:58:44.439Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:58:45.300Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:58:52.537Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:58:53.307Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:58:54.589Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:58:56.299Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:59:04.669Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:59:05.281Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:59:09.910Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:59:10.488Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T17:59:36.458Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T17:59:42.917Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:00:00.965Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:00:03.403Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:05:42.079Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:05:45.843Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:06:08.145Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:06:10.835Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:06:51.572Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:06:52.969Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:06:59.267Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:07:04.640Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:07:05.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:07:06.396Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:07:07.454Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:07:08.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:07:11.717Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:07:22.132Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:07:34.259Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:08:02.878Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:09:09.875Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:09:30.402Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:09:30.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:14:37.818Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:14:48.321Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:15:12.261Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:15:12.639Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:15:20.583Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:16:43.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:16:43.556Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:16:44.579Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:16:48.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:16:50.566Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:16:52.342Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:16:53.284Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:16:58.479Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:16:58.481Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:16:58.498Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:16:59.701Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:17:04.948Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:17:04.958Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:17:05.848Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:17:06.672Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:17:35.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:18:36.908Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:18:52.518Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:19:53.289Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:20:57.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:21:10.006Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:21:13.468Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:21:23.433Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:21:29.842Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:21:37.715Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:21:46.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:21:51.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:21:53.283Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:21:57.645Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:22:09.103Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:22:10.162Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:22:21.084Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:22:39.774Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:22:54.007Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:23:10.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:23:11.382Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:23:45.409Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:01.760Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:02.902Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:04.583Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:05.556Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:21.819Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:24:56.332Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:57.197Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:24:58.135Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:25:03.385Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:25:05.702Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:25:11.917Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:25:27.438Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:26:03.130Z | Suggested template: `.cursor/templates/GO_NO_GO_TEMPLATE.md`
+
+- 2026-07-30T18:26:05.113Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:26:16.953Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:26:18.101Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:26:19.861Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:26:20.722Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:26:21.795Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:26:25.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:26:26.678Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:26:31.032Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:26:32.606Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:26:36.802Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:26:58.881Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:27:10.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:27:11.562Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:27:14.866Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:27:15.905Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:27:38.738Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:27:52.948Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:27:54.517Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:28:27.069Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:28:29.669Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:30:23.380Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:30:38.382Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:32:08.490Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:08.490Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:32:09.341Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:16.829Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:17.712Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:18.668Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:19.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:20.432Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:21.219Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:22.940Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:23.821Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:24.729Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:25.604Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:26.477Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:27.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:28.190Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:31.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:32:31.395Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:32:33.302Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:33:10.385Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:33:11.558Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:33:28.606Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:39:19.011Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:39:34.336Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:40:52.446Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:40:57.005Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:40:57.961Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:40:59.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:09.615Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:30.401Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:39.089Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:40.973Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:46.468Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:51.369Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:53.151Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:54.471Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:55.692Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:41:59.822Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:01.808Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:02.860Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:07.199Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:14.059Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:42:35.012Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:36.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:42.978Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:42:46.096Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:43:02.506Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:43:12.386Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:43:29.510Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:44:52.251Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:45:05.214Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:48:48.863Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:49:07.922Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:51:18.743Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:51:19.294Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:20.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:21.556Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:22.832Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:26.129Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:27.957Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:28.766Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:30.333Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:33.075Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:34.050Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:34.501Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:43.886Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:51:44.623Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:51:45.337Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:51:53.747Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:51:54.603Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:51:55.358Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:52:15.605Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:52:24.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T18:52:30.270Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:52:31.186Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T18:53:11.886Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:59:39.035Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T18:59:59.574Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:00:45.041Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:45.996Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:48.817Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:49.622Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:50.380Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:51.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:51.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:52.755Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:00:53.537Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:01:02.163Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:01:06.177Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:01:15.116Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:01:15.869Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:01:39.753Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:01:53.310Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:06:42.914Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:06:47.167Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:07:03.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:07:03.555Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:09:16.781Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:09:28.127Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:09:48.506Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:09:50.986Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:10:51.283Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:12:41.682Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:12:42.550Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:14:20.296Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:14:22.499Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:14:39.087Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:14:39.247Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:14:50.941Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:15:28.622Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:15:40.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:16:06.718Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:16:06.964Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:16:10.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:17:40.728Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:19:47.999Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:20:02.490Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:20:05.362Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:22:27.966Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:22:31.767Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:22:47.670Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:22:47.776Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:22:59.108Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:23:27.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:23:40.694Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:23:46.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:23:55.997Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:24:04.691Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:24:08.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:24:14.102Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:24:19.592Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:24:28.336Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:24:43.159Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:24:44.854Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:24:49.296Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:26:49.751Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:35:05.517Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:06.354Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:07.143Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:07.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:10.851Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:13.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:22.502Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:43.812Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:35:46.016Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:36:58.096Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:36:58.915Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:36:59.713Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:00.541Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:01.328Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:07.566Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:08.334Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:09.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:14.756Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:15.653Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:16.478Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:31.109Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:31.959Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:37:32.911Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:38:28.151Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:38:41.226Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:38:44.516Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:41:18.899Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:46:44.555Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:46:59.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:03.420Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:04.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:07.842Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:13.708Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:35.752Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:47:36.530Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:38.144Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:47:52.882Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:47:56.823Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:48:01.791Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:48:01.800Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:48:01.803Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:49:00.424Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:49:40.146Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:49:40.524Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:49:43.557Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:50:31.465Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:51:32.107Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:51:50.001Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:51:50.450Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:52:33.214Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:52:37.968Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:53:04.940Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:53:05.016Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:53:13.020Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:53:17.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:54:01.804Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T19:54:05.837Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:55:36.931Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:55:40.226Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:55:52.131Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:56:03.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:56:07.671Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:56:15.511Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:56:15.528Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:56:40.978Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:56:45.997Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:57:01.840Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:57:07.085Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:57:29.974Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:57:30.159Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T19:57:34.610Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:57:38.266Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:58:03.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:58:21.887Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:58:24.465Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:59:25.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:59:33.920Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:59:39.754Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:59:42.109Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T19:59:55.093Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:00:01.717Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:00:17.543Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:00:17.704Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:01:03.802Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:01:15.304Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:01:31.153Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:01:31.222Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:01:34.975Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:01:40.215Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:01:43.904Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:02:39.544Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:02:42.331Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:03:51.321Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:03:54.926Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:04:08.605Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:04:08.796Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:04:35.746Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:05:03.335Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:05:16.142Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:05:30.714Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:05:32.107Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:05:39.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:05:46.967Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:05:50.137Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:06:35.216Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:07:45.654Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:07:46.498Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:07:47.342Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:07:48.174Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:08:28.553Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:09:05.589Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:06.201Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:07.277Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:08.080Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:08.854Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:13.285Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:09:29.574Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:29.639Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:09:40.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:45.533Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:59.515Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:59.544Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:09:59.550Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:10:38.254Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:10:50.639Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:08.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:09.372Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:11:20.976Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:21.011Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:24.588Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:24.601Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:33.532Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:36.194Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:41.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:49.742Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:11:59.129Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:12:24.815Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:12:33.392Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:06.582Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:16.871Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:17.747Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:23.448Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:26.372Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:26.509Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:31.164Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:39.901Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:13:43.727Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:16:09.056Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-30T20:16:26.205Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:16:26.248Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:17:44.159Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:17:57.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:18:24.487Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:18:56.497Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-30T20:19:01.859Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-30T20:19:14.577Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:00:42.844Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:00:56.203Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:02:42.469Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:02:58.757Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:11:05.697Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:11:05.766Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:11:12.325Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:13:31.616Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:13:48.140Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:14:37.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:15:03.150Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:15:10.465Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:15:21.759Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:15:39.988Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:15:52.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:16:35.064Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:16:35.348Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:17:01.161Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:17:09.385Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:17:14.158Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:17:26.633Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:18:12.288Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:18:43.796Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:18:44.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:18:57.591Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:19:07.696Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:19:25.138Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:19:33.628Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:22:59.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:22:59.322Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:23:03.047Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:24:33.761Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:24:45.902Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:24:55.474Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:25:51.852Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:25:58.782Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:26:06.448Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:26:16.663Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:26:27.623Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:26:28.903Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:26:53.870Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:26:54.338Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:27:04.472Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:27:18.789Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:27:19.181Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:27:22.867Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:27:54.350Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:27:54.404Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:28:19.617Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:28:22.397Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:28:36.549Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:28:56.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:29:01.046Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:29:09.778Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:29:53.729Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:30:08.753Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:31:23.729Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:31:54.487Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:32:00.462Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:35:22.749Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:35:31.116Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:37:34.847Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:37:59.376Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:38:26.124Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:40:34.102Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:40:35.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:42:25.767Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:43:39.325Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:44:28.826Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:45:21.680Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:45:40.066Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:45:42.113Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:45:43.817Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:45:57.314Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:45:58.295Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:46:15.963Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:46:16.636Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:46:42.486Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:46:59.381Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:47:22.857Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:47:41.416Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:47:49.077Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:47:50.248Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:48:06.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:48:36.874Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:48:52.045Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:48:54.047Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:49:01.212Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:49:19.091Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:49:30.965Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:49:37.131Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:49:43.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:49:48.214Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:50:20.088Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:50:48.559Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:50:48.574Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:51:15.796Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:51:35.345Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:51:59.024Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:52:02.653Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:52:08.131Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:52:58.457Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:53:32.162Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:53:32.234Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:53:32.554Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:53:56.918Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:54:05.074Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:27.533Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:31.872Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:54:34.829Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:46.252Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:46.582Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:51.276Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:52.945Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:54:59.070Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:55:22.708Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:55:30.459Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:55:40.686Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T03:56:01.120Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:56:27.107Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:57:11.098Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:57:11.146Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:57:24.469Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:57:56.751Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T03:57:56.906Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T03:59:49.351Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:00:07.832Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:00:37.856Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:01:11.012Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:01:12.580Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:01:13.462Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:01:18.222Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:15.619Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:20.498Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:21.769Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:02:25.499Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:37.597Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:43.893Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:44.620Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:02:49.049Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:03:02.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:03:02.939Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:03:13.590Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:03:37.608Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:04:14.863Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:04:15.066Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:04:40.913Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:04:46.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:04:49.977Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:00.362Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:04.472Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:10.458Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:18.324Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:33.677Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:38.015Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:05:40.237Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:06:01.023Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:06:24.895Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:07:03.453Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:07:53.274Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:07:53.394Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:08:34.066Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:08:43.193Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:09:35.269Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:09:36.085Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:09:53.346Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:09:59.899Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:10:13.048Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:10:14.200Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:10:34.857Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:10:55.905Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:11:37.614Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:11:38.555Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:11:56.406Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:11:58.033Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:12:51.990Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:13:25.627Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:13:52.856Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:17:03.925Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:18:11.711Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:18:24.547Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:20:04.928Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:20:19.195Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:20:26.075Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:23:28.542Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:23:45.822Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:27:06.983Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:27:25.824Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:31:14.324Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:31:14.720Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:31:23.749Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:32:12.675Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:32:18.837Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:33:01.218Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:33:28.186Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:33:33.614Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:33:44.917Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:33:50.789Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:07.370Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:18.839Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:34.291Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:47.527Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:50.952Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:52.926Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:34:59.570Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:35:02.352Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:35:02.919Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:35:05.229Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:35:38.053Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:35:38.936Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:35:50.553Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:36:07.780Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:36:37.331Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:37:12.858Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:37:17.606Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:38:17.514Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:40:42.109Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:42:15.988Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:42:22.120Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:42:43.557Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:42:48.055Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:42:56.957Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:43:23.376Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:44:00.122Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:44:14.858Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:44:21.052Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:44:25.563Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:44:29.182Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:44:29.361Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:45:14.095Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:45:33.886Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:45:35.591Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T04:46:14.413Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:47:11.774Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:48:02.952Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:49:11.972Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:50:40.190Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T04:51:25.628Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:55:39.311Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:55:54.052Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:57:23.737Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T04:57:55.103Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T05:02:14.717Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T05:02:33.018Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T05:03:20.356Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T05:05:31.270Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T05:05:38.757Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T05:06:06.921Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T05:06:16.267Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T05:06:32.175Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:29:27.098Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:33:55.875Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:35:41.922Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:35:41.933Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:37:00.846Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:41:31.920Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:42:36.280Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:44:51.461Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:45:54.999Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:45:57.035Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T06:45:59.289Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:46:55.501Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T06:49:41.508Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:49:57.692Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:49:59.310Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:50:41.779Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:50:54.039Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:51:29.086Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:51:34.133Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:51:49.767Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:52:37.583Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:52:42.625Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:53:00.412Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:53:02.274Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:55:10.844Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:55:44.519Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:55:55.038Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:55:56.993Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:56:01.938Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:56:02.464Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T06:56:06.716Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:57:11.543Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:57:17.582Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:57:18.870Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T06:58:00.303Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:00:16.273Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:05:36.670Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:10:09.901Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:11:38.068Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:11:54.790Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:12:55.009Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:13:53.273Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:13:57.246Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:13:57.484Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:14:21.715Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:14:27.094Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:14:53.674Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:14:55.505Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:15:29.646Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:15:38.634Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:15:44.898Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:15:58.533Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:15:58.542Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:16:28.373Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:16:30.755Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:16:35.455Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:16:45.421Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:16:52.048Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:16:55.337Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:16:57.163Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:03.641Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:21.927Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:24.718Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:26.020Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:44.173Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:50.889Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:17:51.993Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:18:14.119Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:18:19.540Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:18:20.725Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:18:35.405Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:19:09.835Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:19:21.937Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:19:38.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:20:00.603Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:21:33.348Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:21:45.160Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:21:55.955Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:21:59.743Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:23:33.784Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:24:08.351Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:24:41.504Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:24:45.078Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:25:23.879Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:26:09.479Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:26:28.260Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:26:51.189Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:27:07.907Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:27:23.080Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:28:19.645Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:28:27.727Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:28:36.217Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:29:40.517Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:30:01.517Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:30:38.495Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:30:52.588Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:30:55.630Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:30:56.226Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:30:57.132Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:30:57.208Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:31:16.360Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:31:24.418Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:31:34.860Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:31:40.339Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:31:50.598Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:31:53.775Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:31:58.045Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:00.136Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:02.265Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:22.998Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:33:23.795Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:24.659Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:33:26.034Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:33:33.134Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:40.349Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:48.164Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:52.536Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:56.466Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:33:58.571Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:34:18.403Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:34:24.332Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:34:25.635Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:34:36.224Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:34:39.234Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:34:40.008Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:34:50.698Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:34:51.737Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:35:25.415Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:35:29.927Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:35:34.721Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:35:50.921Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:36:38.074Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:37:07.995Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:37:29.745Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:37:31.761Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:38:20.493Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:39:07.907Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:39:24.023Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:39:38.590Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:39:44.503Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:40:13.490Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:40:44.323Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:40:56.000Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:41:04.538Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:41:17.668Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:41:18.566Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:41:28.863Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:41:40.811Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:41:40.864Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:41:42.467Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:41:43.225Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:41:47.133Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:41:48.358Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:41:53.380Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:41:59.565Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:42:02.451Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:42:02.972Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:42:20.496Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:43:08.252Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:43:20.368Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:43:21.973Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:43:25.137Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:43:43.160Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:44:32.053Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:44:52.157Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:45:15.310Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:45:22.634Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:45:31.783Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:45:50.502Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:47:59.327Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:48:07.042Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:49:24.369Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:49:27.241Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:49:53.198Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:51:13.141Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:52:01.387Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:52:27.250Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:52:28.667Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:52:48.733Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:53:11.587Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:53:18.303Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:53:19.470Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:53:41.909Z | Suggested template: `.cursor/templates/SRS_TEMPLATE.md`
+
+- 2026-07-31T07:53:44.002Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T07:53:51.539Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:53:52.072Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:54:14.687Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:58:56.642Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T07:59:03.236Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T08:00:30.741Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T08:02:50.592Z | Suggested template: `.cursor/templates/PRD_TEMPLATE.md`
+
+- 2026-07-31T08:04:04.189Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T08:04:05.140Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`
+
+- 2026-07-31T08:11:16.666Z | Suggested template: `.cursor/templates/ADR_OPTION_TEMPLATE.md`

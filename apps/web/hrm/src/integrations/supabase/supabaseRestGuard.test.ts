@@ -30,10 +30,10 @@ describe('shouldBlockSupabaseRest', () => {
     window.history.replaceState({}, '', '/');
   });
 
-  it('blocks on HTTPS attendance when API mode default', async () => {
+  it('blocks on attendance path when API mode default', async () => {
     vi.stubEnv('VITE_HRM_USE_API', 'true');
     Object.defineProperty(window, 'location', {
-      value: new URL('https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main'),
+      value: new URL('http://127.0.0.1:5173/hr/attendance?portal=1&companyId=main'),
       writable: true,
     });
     expect(shouldBlockSupabaseRest()).toBe(true);

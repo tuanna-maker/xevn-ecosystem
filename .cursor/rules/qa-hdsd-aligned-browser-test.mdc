@@ -1,0 +1,34 @@
+# QA/QC — Test bám HDSD (sponsor lock U76)
+
+**Sponsor (2026-08-01):** Thao tác người dùng khi test **phải bám HDSD** — đúng menu, đúng màn, đúng chức năng. Trong menu đó HDSD liệt kê bao nhiêu màn / nút / function thì QA **phải** cover (hoặc ghi 🟡 product_gap nếu UI thiếu so với HDSD).
+
+## Bắt buộc mỗi wave browser (UF / J-* / E2E)
+
+1. **SoT HDSD** trước click: HTML/PDF client HDSD chương/module liên quan (vd. HRM Tuyển dụng) — hoặc inventory BA đã rút từ HDSD.
+2. **Inventory bảng** trong evidence:
+   - Menu / tab / màn (đúng label VI HDSD)
+   - Nút / CTA / function HDSD nêu
+   - Verdict 🟢/🟡/🔴/⬜ + click path
+3. **Không** chỉ chạy “happy path kỹ thuật” lệch menu HDSD (sai tab, sai tên nút, bỏ submenu HDSD có liệt kê).
+4. Thiếu control trên FE so với HDSD → **🟡 product_gap** + `spec_ref` HDSD § — **không** fake 🟢.
+5. U65 vẫn giữ: zero-seed · FE-only · FE sau 2xx + F5.
+
+## PM dispatch
+
+Mỗi Task QA/QC phải có:
+
+```text
+hdsd_align: true
+hdsd_sot: <path HTML/PDF hoặc inventory md>
+hdsd_coverage: bảng menu×màn×nút bắt buộc trong evidence
+```
+
+## QC
+
+NO-GO / từ chối clean GO nếu evidence thiếu bảng HDSD coverage hoặc click path lệch HDSD mà vẫn claim 🟢.
+
+## Liên kết
+
+- U63 · U65 · `qa-fe-outside-browser-gate.mdc`
+- Lesson: `docs/program/knowledge/PM_LESSON_PRIMARY_FLOW_E2E_ORCHESTRATION.md`
+- Ví dụ E2E: `docs/qa/P1_BROWSER_E2E_RECRUITMENT_13STEP_XBOS_HRM.md`
