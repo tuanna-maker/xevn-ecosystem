@@ -204,6 +204,91 @@ export class SettingsCatalogsService {
     return [...byCode.values()].sort((a, b) => a.code.localeCompare(b.code));
   }
 
+  /**
+   * Effective catalog items for one key (XBOS sync + HRM extension merge).
+   * WorkItem: DO-HDSD-MUTATE-SOFTDEL-BH-REDEPLOY-01 — compile dep for E3 insurance-policies.
+   */
+  async getEffectiveItemsForKey(
+    tenantId: string,
+    companyId: string,
+    catalogKey: string,
+  ): Promise<SettingsCatalogItem[]> {
+    await this.ensureExtensionSchema();
+    const t = tenantId.trim().toLowerCase();
+    const c = companyId.trim().toLowerCase();
+    const key = this.normalizeCatalogKey(catalogKey);
+    const synced = await this.catalogSync.listSyncedCatalogs(t, c);
+    const syncedRow = synced.data.find((row) => String(row.key).toLowerCase() === key);
+    const parsed = syncedRow
+      ? this.parsePayloadItems(syncedRow.payload)
+      : { name: null, domain: null, key: null, items: [] as Array<{ code: string; label: string; unit?: string | null; status?: string }> };
+    const xbosItems = this.toXbosOriginItems(parsed.items);
+    const extRes = await this.db.query<{
+      code: string;
+      label: string;
+      unit: string | null;
+      status: string;
+    }>(
+      `
+      SELECT code, label, unit, status
+      FROM public.hrm_catalog_extension_items
+      WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3
+      ORDER BY code
+    `,
+      [t, c, key],
+    );
+    const hrmItems: SettingsCatalogItem[] = extRes.rows.map((row) => ({
+      code: row.code,
+      label: row.label,
+      unit: row.unit,
+      status: row.status === 'draft' ? 'draft' : 'active',
+      origin: 'hrm' as const,
+    }));
+    return this.mergeEffective(xbosItems, hrmItems);
+  }
+
+  /**
+   * BR-HRM-MD-01 — persist only codes present in effective catalog.
+   * WorkItem: DO-HDSD-MUTATE-SOFTDEL-BH-REDEPLOY-01 — compile dep for E3 insurance consumers.
+   */
+  async assertCodeInEffectiveCatalog(opts: {
+    tenantId: string;
+    companyId: string;
+    catalogKey: string;
+    code: string;
+    errorCode: string;
+    errorMessage?: string;
+  }): Promise<SettingsCatalogItem> {
+    const code = opts.code.trim();
+    if (!code) {
+      throw new ApiException(
+        opts.errorCode,
+        opts.errorMessage ?? `Catalog code required for ${opts.catalogKey}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const items = await this.getEffectiveItemsForKey(opts.tenantId, opts.companyId, opts.catalogKey);
+    const activeOnly = items.filter((i) => i.status === 'active');
+    if (activeOnly.length === 0) {
+      throw new ApiException(
+        opts.errorCode,
+        opts.errorMessage ??
+          `Catalog '${opts.catalogKey}' has no active items — sync from XBOS or add in Settings`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const hit = activeOnly.find((i) => i.code.toLowerCase() === code.toLowerCase());
+    if (!hit) {
+      throw new ApiException(
+        opts.errorCode,
+        opts.errorMessage ??
+          `Code '${code}' is not in catalog '${opts.catalogKey}' (free-text SoT forbidden)`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return hit;
+  }
+
   async getOverview(tenantId: string, companyId: string): Promise<{ catalogs: SettingsCatalogOverviewRow[] }> {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
