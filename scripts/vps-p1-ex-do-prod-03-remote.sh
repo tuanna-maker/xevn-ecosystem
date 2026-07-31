@@ -47,7 +47,7 @@ cd "$REPO"
 node scripts/verify-production-env.mjs
 echo "verify_exit=$?"
 
-BASE=https://14-225-217-232.nip.io
+BASE=http://14.225.217.232:8088
 for path in / /command-center /api/hrm/metrics?format=prometheus /api/xbos/metrics?format=prometheus; do
   code=$(curl -sk -o /dev/null -w '%{http_code}' "${BASE}${path}" || echo 000)
   echo "https_smoke ${path} -> ${code}"
@@ -55,7 +55,7 @@ done
 
 echo "[cors] pilot origin OPTIONS hrm metrics"
 curl -sk -si -X OPTIONS "${BASE}/api/hrm/metrics?format=prometheus" \
-  -H "Origin: https://14-225-217-232.nip.io" \
+  -H "Origin: http://14.225.217.232:8088" \
   -H "Access-Control-Request-Method: GET" | head -15
 
 echo "=== done; log $LOG ==="

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-24T10:37:29.371Z",
+  "generatedAt": "2026-07-29T14:44:48.988132+07:00",
   "freezeReady": true,
   "devReady": true,
   "qaReady": true,
@@ -97,6 +97,87 @@
       "priority": "MEDIUM",
       "queueId": "Q-B-005",
       "phase": "B"
+    },
+    {
+      "phase": "B",
+      "task": "BRAND-TOKENS-L1",
+      "to": "A7",
+      "module": "Wave B",
+      "priority": "HIGH",
+      "queueId": "Q-B-006",
+      "reason": "Brand token L1 verification; emit qc->pm verdict"
+    },
+    {
+      "phase": "B",
+      "task": "BRAND-PRIMITIVES-L2",
+      "to": "A7",
+      "module": "Wave B",
+      "priority": "HIGH",
+      "queueId": "Q-B-007",
+      "reason": "Brand primitives L2 verification; emit qc->pm verdict"
+    },
+    {
+      "phase": "B",
+      "task": "HRM-COMPANY-COL",
+      "to": "A7",
+      "module": "HRM",
+      "priority": "HIGH",
+      "queueId": "Q-B-008",
+      "reason": "Company-col sync visual regression; emit qc->pm verdict"
+    },
+    {
+      "phase": "B",
+      "task": "ORPHAN-CODE-SAMPLE",
+      "to": "A7",
+      "module": "Spec",
+      "priority": "MEDIUM",
+      "queueId": "Q-B-009",
+      "reason": "Orphan code sample audit; emit qa->pm READY_FOR_QC"
+    },
+    {
+      "phase": "B",
+      "task": "HTTPS-RESIDUAL-R3",
+      "to": "A7",
+      "module": "PROD",
+      "priority": "HIGH",
+      "queueId": "Q-B-010",
+      "reason": "HTTPS residual R3 verification; reconcile state"
+    },
+    {
+      "phase": "B",
+      "task": "SETTINGS-MASTER-DATA",
+      "to": "A7",
+      "module": "HRM",
+      "priority": "HIGH",
+      "queueId": "Q-B-011",
+      "reason": "Master data settlement QA probe; emit qa->pm PASS_TO_PM"
+    },
+    {
+      "phase": "B",
+      "task": "HOOK-qa-276034_5",
+      "to": "A7",
+      "module": "ERP",
+      "priority": "P0",
+      "queueId": "Q-B-012",
+      "reason": "Narrow probe ERP fidelity multi-domain spot; emit qc->pm verdict"
+    },
+    {
+      "phase": "B",
+      "task": "HOOK-qa-309fd5_5",
+      "to": "A7",
+      "module": "HRM",
+      "priority": "P0",
+      "queueId": "Q-B-013",
+      "reason": "Narrow probe HRM settings picker spot; emit qc->pm verdict"
+    },
+    {
+      "phase": "B",
+      "task": "HRM-MD-PICKER-SPOT",
+      "to": "A7",
+      "module": "HRM",
+      "priority": "HIGH",
+      "queueId": "Q-B-014",
+      "reason": "Verify markdown picker spot on HRM settings"
     }
   ]
 }

@@ -136,3 +136,9 @@ Các condition W12 (`C-W12QC-01` mobile P5, `C-W12QC-02` contracts ratio) **CLOS
 - `docs/qa/evidence/p1-p100-w12-qc-final-20260531.md`
 - `docs/qa/evidence/p1-p100-w14-qc-prod-20260601.md`
 - `docs/ops/evidence/p1-p100-w14-do-domain-01-20260601.md`
+
+---
+## Pulse 2026-07-27 ~17:32 — U71 F.1 path + U72 GWC local
+- U71: 21 physical F.1 pairs · G-RULE-11 CLOSED (tm-u71-physical-backlog-close-01-20260727.md)
+- U72: HRM R3 + XBOS R2 GWC local · HOLD_DEPLOY · NOT Phase1/PROD/:8088
+- Soft OpenAPI/G-DTO/leave/G-IM deferred P2–P3

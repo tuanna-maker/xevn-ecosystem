@@ -4,7 +4,7 @@
 **Mục đích:** PM và QA **không** chỉ kiểm «tab load» — phải biết luồng user thật end-to-end.  
 **Liên kết:** `PILOT_BUSINESS_FLOW_MATRIX.md` (L2), rule `uat-production-readiness-orchestration.mdc` (L2.5)
 
-**Cập nhật:** 2026-06-06 — **J-XBOS-11** catalogs U34 + F5 persist QC GWC local (`qc-p1-xbos-w8-20260606.md`); **J-XBOS-01** + **J-XBOS-10** (`qc-p1-xbos-w7-20260606.md`); prior 2026-06-05 **C-RBACQC-05** sync
+**Cập nhật:** 2026-07-27 — **J-HRM-IM-01** ADD (`BA-J-HRM-IM-01-JOURNEY-01` · FR-HRM-IM-01 preview); prior 2026-07-19 **J-REC-WF-01..06**; 2026-06-06 **J-XBOS-11** / **J-XBOS-01** + **J-XBOS-10**
 
 **Program gate (nip.io):** **C-RBACQC-03 CLOSED** — `phase1:gate --strict` exit **0** (244/245 e2e_pass); A1 capabilities **2/2**; evidence [`p1-phase1-qc-program-gate-03-20260605.md`](../qa/evidence/p1-phase1-qc-program-gate-03-20260605.md). **NOT** Phase 1 DONE / **NOT** PROD-READY.
 
@@ -47,16 +47,40 @@
 
 | J-ID | Journey | Steps | Scope note | Status |
 |------|---------|-------|------------|--------|
-| **J-HRM-01** | **Hợp đồng → Hồ sơ NV** | P-CC-04 list → click tên NV → `/employees/:id` | `GET /employees/:id?company_id=main` phải rollup như list (ADR C2) | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) |
-| **J-HRM-02** | Nhân sự list → Hồ sơ | P-CC-03 → row → detail | Same scope parity | ✅ API PASS · group CEO C/U/D nip.io 2026-06-05 · browser L2.5 **GWC** (**C-EMPGRPQC-01**) · [`p1-phase1-qc-hrm-emp-group-crud-20260604.md`](../qa/evidence/p1-phase1-qc-hrm-emp-group-crud-20260604.md) |
+| **J-HRM-01** | **Hợp đồng → Hồ sơ NV** | P-CC-04 list → click tên NV → `/employees/:id` | `GET /employees/:id?company_id=main` phải rollup như list (ADR C2) | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) · **W2a standalone** `:8080/hr/employees` mobile JWT **GWC** 2026-08-01 · [`qc-hrm-w2a-standalone-rbac-01-20260801.md`](../qa/evidence/qc-hrm-w2a-standalone-rbac-01-20260801.md) · R-W2A-RBAC-01 closed |
+| **J-HRM-02** | Nhân sự list → Hồ sơ | P-CC-03 → row → detail | Same scope parity | ✅ API PASS · group CEO C/U/D nip.io 2026-06-05 · browser L2.5 **GWC** (**C-EMPGRPQC-01**) · [`p1-phase1-qc-hrm-emp-group-crud-20260604.md`](../qa/evidence/p1-phase1-qc-hrm-emp-group-crud-20260604.md) · **Scale FE W1** Dev8088 2026-07-17: T-FANOUT ≤1 + profile dedupe CLOSED · QC GWC [`qc-p1-hrm-scale-w1-20260717.md`](../qa/evidence/qc-p1-hrm-scale-w1-20260717.md) |
 | J-HRM-03 | Hợp đồng → tab chi tiết HĐ | P-CC-04 → open contract drawer/modal | contracts-insurance API | ✅ PASS · H12 browser 2026-06-06 · [`p1-hrm-h12-journey-qa-20260606.md`](../qa/evidence/p1-hrm-h12-journey-qa-20260606.md) · QC H11 [`qc-p1-hrm-h11-closeout-20260606.md`](../qa/evidence/qc-p1-hrm-h11-closeout-20260606.md) |
 | J-HRM-04 | Bảo hiểm → NV linked | P-CC-05 → employee link | insurance + employee scope | ✅ PASS · J04 retest 2026-06-06 · H13 ins-summary regression · [`p1-hrm-h13-ins-summary-qa-20260606.md`](../qa/evidence/p1-hrm-h13-ins-summary-qa-20260606.md) · QC H13 regate [`qc-p1-hrm-h13-regate-20260606.md`](../qa/evidence/qc-p1-hrm-h13-regate-20260606.md) |
-| J-HRM-05 | Tuyển dụng → ứng viên/requisition | P-CC-06 → detail | recruitment API | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) |
-| J-HRM-06 | Chấm công → bản ghi / yêu cầu | P-CC-07 → detail | attendance scope | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) · **HTTPS pilot** [R6](docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r6-20260529.md) [QC GWC](docs/qa/evidence/qc-https-j-hrm-06-01-r6-20260529.md) |
+| J-HRM-05 | Tuyển dụng → ứng viên/requisition | P-CC-06 → detail | recruitment API | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) · **must_keep** for REC-WF bridge |
+| J-HRM-06 | Chấm công → bản ghi / yêu cầu | P-CC-07 → detail | attendance scope | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) · **HTTPS pilot** [R6](docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r6-20260529.md) [QC GWC](docs/qa/evidence/qc-https-j-hrm-06-01-r6-20260529.md) · **local :5173** [QA+QC GWC r2 2026-07-30](docs/qa/evidence/p1-ex-qc-https-residual-03-r3-20260730-local5173.md) incl. dashboard C-RES03R3-06 |
+| **J-HRM-06b** | **Bảng chấm công** tạo → list → mở lưới | P-CC-07 / `/attendance` → Thêm sheet (kỳ + Công chuẩn) → list → open weekly | `POST/GET attendance-sheets` + `GET records` kỳ; **cấm** reload storm | ✅ PASS · [QA AC 2026-07-21](../qa/evidence/qa-hrm-att-sheet-ac-01-20260721.md) · AC-ATT-SHEET-01..06 · [BA AC](../qa/evidence/ba-hrm-att-sheet-ac-01-20260721.md) · [QC GWC](../qa/evidence/qc-hrm-att-sheet-ac-01-20260721.md) · **UF-HRM-16 🟢** [promote](../qa/evidence/qa-uf-hrm-16-promote-01-20260721.md) |
 | J-HRM-07 | Lương → phiếu lương | P-CC-08 → payslip detail | payroll scope | ✅ PASS · [W5B L2.5](docs/qa/evidence/p1-close-qa-w5b-20260525.md#l25) · H1–H7 browser retest 2026-06-06 · QC GWC [`qc-p1-hrm-h1-7-20260606.md`](../qa/evidence/qc-p1-hrm-h1-7-20260606.md) |
 | J-HRM-08 | Catalog governance approve | P-CC-09 → inbox → approve | XBOS write scope strict | ✅ S2 |
+| **J-HRM-CO-01** | **Company Management headcount + ngành nghề** | `/command-center/hrm/company` → card «Tổng nhân viên» + cột «Số nhân viên» + cột «Ngành nghề» → F5; optional row→detail back | LE→slug bridge · `summary?company_id=main` parity · **AC-CO-EMP-01..06** · **AC-CO-IND-01..04** (cấm `industry←entity_type`) | ✅ PASS local (2026-07-27) — headcount [`qa-hrm-co-emp-count-01`](../qa/evidence/qa-hrm-co-emp-count-01-20260727.md) · industry [`qa-hrm-co-industry-01`](../qa/evidence/qa-hrm-co-industry-01-20260727.md) · QC GWC [`qc-hrm-co-industry-01`](../qa/evidence/qc-hrm-co-industry-01-20260727.md); HOLD_DEPLOY / NOT :8088 |
+| **J-HRM-IM-01** | **Nhân sự → Import Excel preview (non-persist)** | P-CC-03 Employees → Import Excel → upload sheet → preview table → **Cancel** → **F5** (host **J-HRM-02** list unchanged) | **FR-HRM-IM-01** · AC-IM-01-SCOPE/SESSION/VAL · `POST /api/hrm/spreadsheet/import/preview` → **HTTP 200** + **`SHEET-200`** · `dryRun` · **zero persist** (no employee INSERT; no commit IM-02) · U65 zero-seed · Group CEO `company_id=main` | ✅ **PASS local** (2026-07-27) — QA [`qa-hrm-im-01-preview-ac-01`](../qa/evidence/qa-hrm-im-01-preview-ac-01-20260727.md) · QC GWC [`qc-hrm-im-01-preview-ac-01`](../qa/evidence/qc-hrm-im-01-preview-ac-01-20260727.md) · BA map [`ba-j-hrm-im-01-journey-01`](../qa/evidence/ba-j-hrm-im-01-journey-01-20260727.md); **HOLD_DEPLOY** / **NOT :8088** / **NOT** IM-02 |
+| **J-HRM-MENU-SWEEP** | **Full AppSidebar leaf sweep** | Login Group CEO → từng leaf sidebar (17) + deep Lương / Settings catalogs / metadata | Load OK · no tech chrome · no crash/console P0 · empty/stub OK · UF-HRM-MENU-01..17 | 🟡 Local GWC · Dev8088 ⬜ — [sweep](../qa/evidence/qa-hrm-menu-full-sweep-01-20260720.md) · [R2](../qa/evidence/qa-hrm-menu-full-sweep-01-r2-20260720.md) · [QC GWC](../qa/evidence/qc-hrm-menu-full-sweep-01-20260720.md) · [BA matrix](../qa/evidence/ba-hrm-menu-uf-matrix-01-20260720.md) · matrix §4b |
+
+<a id="j-hrm-menu-sweep"></a>
+
+**J-HRM-MENU-SWEEP notes:** Không thay J-HRM-01..08 (cross-nav mutate). Gate riêng cho **coverage sidebar**. Residual P3: metadata workflow id strings (`UF-HRM-MENU-17`). Promote Dev8088 = optional QA sau Local GWC.
 
 **FAIL pattern (P0):** UI «Không tìm thấy nhân viên», console **404** trên `GET /employees/:id` với `company_id=main`.
+
+---
+
+## HRM ↔ XBOS — Recruitment workflow bridge (L2.5 draft — `XHRM-REC-WF-BA-01`)
+
+**SoT delta:** [`docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_BA_DELTA.md`](./deltas/XBOS_HRM_REC_WF_BRIDGE_BA_DELTA.md) · Program `P1-XBOS-HRM-REC-WF-BRIDGE`  
+**U65:** zero-seed; FE chain only. **must_keep:** UF-HRM-12 · J-HRM-05 · LeaveWorkflowBridge · F6 AC-CD-F6-*.
+
+| J-ID | Journey | Steps | Scope note | Status |
+|------|---------|-------|------------|--------|
+| **J-REC-WF-01** | XBOS canvas QT tuyển dụng | Admin → Workflow canvas → save active `hrm_recruitment_*` definition → reload resolver còn | UC-HRM-REC-WF-01 · AC-REC-WF-01 | ✅ PASS 2026-07-22 `bm-qa-j-rec-wf-01-canvas-01` |
+| **J-REC-WF-02** | Submit plan → spawn instance | P-CC-06 / HRM → tạo plan → Gửi duyệt → start 2xx **hoặc** banner `SPAWN-MISSING` + pending → F5 | UC-HRM-REC-WF-02 · Group CEO `company_id=main` rollup | ✅ PASS R2 2026-07-22 `bm-qa-rec-wf-spawn-r2` / QC GWC |
+| **J-REC-WF-03** | Inbox duyệt → HRM sync | XBOS Inbox → task tuyển dụng → Duyệt → plan/req status sync → F5 | Maps J-XBOS-01 pattern · **cấm** seed inbox | ✅ PASS 2026-07-22 `bm-qa-j-rec-wf-03-inbox-01` |
+| **J-REC-WF-04** | Roadmap bước ứng viên | Candidate detail roadmap → sau step inbox → stage chip = map F6 → cross-nav J-HRM-05 | UC-HRM-REC-WF-04 · unmapped = fail-closed | ✅ PASS R2 2026-07-22 `bm-qa-j-rec-wf-04-step-sync-r2` / QC GWC |
+| **J-REC-WF-05** | Dashboard funnel sau WF sync | P-CC-06 dashboard → 6 cột = live aggregate; filter ĐVTV | Extends AC-CD-F6-03/04 · BR-DQ-01 | ✅ PASS 2026-07-22 `bm-qa-j-rec-wf-05-funnel-01` |
+| **J-REC-WF-06** | Reject path | Inbox Từ chối + lý do → rejected + notify; không downgrade `hired` | UC-HRM-REC-WF-06 | ✅ PASS 2026-07-22 `bm-qa-j-rec-wf-06-reject-01` / QC GWC |
 
 ---
 
@@ -107,6 +131,9 @@
 | J-XBOS-10 | Workflow: tạo → lưu → list consumer sync (U34, no F5) | ✅ L2 PASS local · [`p1-xbos-w7-wf-qa-retest-20260606.md`](../qa/evidence/p1-xbos-w7-wf-qa-retest-20260606.md) · QC GWC [`qc-p1-xbos-w7-20260606.md`](../qa/evidence/qc-p1-xbos-w7-20260606.md) |
 | J-XBOS-11 | Văn bản / Đo lường / Giá — edit → debounce → U34 + F5 DB persist | ✅ L2.5 PASS local · [`p1-xbos-w8-catalogs-qa-retest-20260606.md`](../qa/evidence/p1-xbos-w8-catalogs-qa-retest-20260606.md) · QC GWC [`qc-p1-xbos-w8-20260606.md`](../qa/evidence/qc-p1-xbos-w8-20260606.md) · D-W8-CAT-SCOPE-01 closed |
 | J-XBOS-12 | Yêu cầu tài sản — create → U34 list sync → transition (KT 5 bước) | ✅ L2 PASS local · U34 consumer sync · [`p1-xbos-w9-asset-audit-20260606.md`](../qa/evidence/p1-xbos-w9-asset-audit-20260606.md) · QC GWC [`qc-p1-xbos-w9-20260606.md`](../qa/evidence/qc-p1-xbos-w9-20260606.md) |
+| **J-XBOS-CTRL-01** | Holding publish `departments` → apply-to-members → HRM Settings sync/pull → list + F5 | 🟢 PASS · QA [`qa-xbos-ctrl-g1-01-20260729.md`](../qa/evidence/qa-xbos-ctrl-g1-01-20260729.md) · QC GWC [`qc-xbos-ctrl-g1-01-20260729.md`](../qa/evidence/qc-xbos-ctrl-g1-01-20260729.md) · sponsor Telegram «Chốt P0+P1» · HOLD_DEPLOY |
+| **J-XBOS-CTRL-02** | Apply `leave_types` (+ `job_titles` regression) → HRM Settings → F5 | 🟢 PASS · same QA/QC pack · API CFG-204 leave_types · U65 |
+| **J-XBOS-CTRL-03** | Apply key ngoài allow-list → **400** `XBOS-CFG-005`; member không đổi | 🟢 PASS · Tier C CFG-005 trong QA/QC G1 |
 
 ---
 
@@ -137,3 +164,10 @@
 | 2026-06-06 | J-HRM-04 | H12 browser FAIL → FE fix → retest PASS | `employee_id` absent on API row | **D-HRM-J04-CLICK-01 CLOSED** · `p1-hrm-h12-j04-qa-20260606.md` · **C-HRMQC-H11-J04 CLOSED** · QC regate `qc-p1-hrm-h11-regate-20260606.md` |
 | 2026-06-06 | J-HRM-04 / P-CC-05 | H13 ins-summary + AC-FID slugs batch | Summary cards «-» · slug contract_ratio | **D-HRM-INS-SUMMARY-01 CLOSED** · **R-H10-01 CLOSED** · **AC-FID-03 CLOSED** · QC H13 regate `qc-p1-hrm-h13-regate-20260606.md` — J-HRM **7/7** localhost U32 |
 | 2026-06-06 | J-HRM-03 | H12 browser PASS — contract Eye → detail | Prior drawer gap | **D-HRM-J03-DRAWER-01 CLOSED** · QC H11 closeout |
+| 2026-07-20 | J-HRM-MENU-SWEEP | Sponsor: cover mọi HRM sidebar leaf (không chỉ UF-HRM-01..13) | Matrix gap load-only | BA `BA-HRM-MENU-UF-MATRIX-01` → UF-HRM-MENU-01..17 · Local GWC · Dev8088 ⬜ |
+| 2026-07-27 | **J-HRM-IM-01** | QC GWC soft **C-IM01-JMAP-01** — dedicated import-preview journey missing | Map had host **J-HRM-02** only | BA `BA-J-HRM-IM-01-JOURNEY-01` ADD row · local PASS cite QC · HOLD_DEPLOY · **must_keep** J-HRM-02 · **cấm** invent IM-02 |
+| 2026-08-01 | J-HRM-01 | W2a `:8080/hr/employees` «Không có quyền truy cập» standalone | PermissionRoute blocked mobile JWT path | **D-HRM-W2A-STANDALONE-RBAC-01 CLOSED** · QC GWC [`qc-hrm-w2a-standalone-rbac-01-20260801.md`](../qa/evidence/qc-hrm-w2a-standalone-rbac-01-20260801.md) · P2 R-HARNESS-RBAC deferred |
+
+
+
+

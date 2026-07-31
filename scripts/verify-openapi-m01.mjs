@@ -24,6 +24,29 @@ const required = [
   'M01-KPI',
   'M01-Org',
   'M01-Alerts',
+  // W2 RACI + CC catalogs (BE-XBOS-OA-RACI-CC-01 / G-OA-W2-RACI-01 / G-OA-W2-CC-CAT-01)
+  'operationId: raciGovernanceListCatalog',
+  'operationId: raciGovernanceUpsertMatrixCell',
+  '/raci-governance/companies/{companyId}/matrix',
+  'CommandCenterCatalogKind',
+  'enum: [regulations, measurements, pricing]',
+  'G-OA-W2-RACI-01',
+  'G-OA-W2-CC-CAT-01',
+  // G-DTO-W2-POS-01 / BE-XBOS-OA-DTO-P2-01
+  'PermissionMatrixRow',
+  'SavePermissionMatrixRequest',
+  'operationId: positionRbacSaveMatrix',
+  'G-DTO-W2-POS-01',
+  // G-DTO-W2-KPI-01 / BE-XBOS-OA-KPI-DTO-01
+  'KpiRollupData',
+  'KpiRollupSeries',
+  'KpiRollupPoint',
+  'KpiEvaluateResult',
+  'PublishPortalAlertRequest',
+  'operationId: kpiEngineEvaluateBatch',
+  'operationId: kpiEnginePortalAlerts',
+  'G-DTO-W2-KPI-01',
+  'FR-XBOS-KPI-03',
 ];
 
 if (!fs.existsSync(specPath)) {

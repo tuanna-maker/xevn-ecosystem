@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 /**
- * Seed danh mục chức danh (department + position selects) cho từng tenant HRM.
- * Gọi: node scripts/seed-tenant-position-catalog.mjs
+ * BOOTSTRAP-ONLY (G-ORPH-BE-03 retired as production SoT).
+ * Prefer: POST …/settings-catalogs/sync-from-xbos + catalog-sync/pull job_titles|departments.
  *
- * Tác động: upsert field `department` + `position` trong catalog `hrm_employee_basic_fields`
- * cho từng tenant bằng dữ liệu đúng từ tenant-position-catalog.ts (qua API endpoint).
+ * Requires HRM API env: HRM_ALLOW_TENANT_POSITION_SEED=1
+ * and empty POS Settings/XBOS catalogs for each scope — else API returns 403/409.
+ * U65: never use this script for UAT evidence.
+ *
+ * Gọi: node scripts/seed-tenant-position-catalog.mjs
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';

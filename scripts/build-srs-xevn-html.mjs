@@ -12,7 +12,8 @@ import {
   buildContentTailJs,
   buildTocPage,
   extractTscairStyle,
-  loadReferenceHtml,
+  loadStyleSourceHtml,
+  XEVN_COVER_BRAND_STYLES,
 } from './lib/doc-tscair-shell.mjs';
 import {
   loadDiagramBundle,
@@ -25,12 +26,12 @@ import { applySrsVietnameseProse } from './lib/brd-vietnamese-prose.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs/client-delivery/02_SRS_XeVN_OS.html');
-const LOGO = path.join(ROOT, 'docs/client-delivery/assets/logo-unicom.png');
+const LOGO = path.join(ROOT, 'docs/client-delivery/assets/xevn-logo.png');
 const ASSETS = path.join(ROOT, 'docs/ecosystem/assets');
 const UC_MD = path.join(ROOT, 'docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md');
 const BRD_MD = path.join(ROOT, 'docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md');
 
-const DOC_CODE = 'UNICOM/SRS-XEVN-OS-001';
+const DOC_CODE = 'XEVN/SRS-XEVN-OS-001';
 const VERSION_LINE = 'Phiên bản 2.2 &nbsp;·&nbsp; Tháng 6/2026 &nbsp;·&nbsp; Giai đoạn 1 UAT';
 const FOOTER_PAGE = 'XeVN ECOSYSTEM OS — SRS';
 
@@ -44,15 +45,18 @@ function buildBodyMarkdown() {
 }
 
 function main() {
-  const ref = loadReferenceHtml(DEFAULT_SRS_REF);
-  const style = extractTscairStyle(ref) + SRS_DELIVERY_STYLES;
+  if (!fs.existsSync(LOGO)) {
+    throw new Error(`Missing XeVN logo: ${LOGO} (copy from assets/brand/xevn-logo-master.png)`);
+  }
+  const { html: ref } = loadStyleSourceHtml(DEFAULT_SRS_REF, OUT);
+  const style = extractTscairStyle(ref) + SRS_DELIVERY_STYLES + XEVN_COVER_BRAND_STYLES;
   const diagrams = loadDiagramBundle(ASSETS);
   const logoB64 = fs.readFileSync(LOGO).toString('base64');
   const mdRaw = buildBodyMarkdown();
   const frCount = (mdRaw.match(/^#### FR-/gm) || []).length;
 
   const html = buildTscairHtml({
-    title: 'SRS — XeVN Ecosystem OS | UNICOM',
+    title: 'SRS — XeVN Ecosystem OS | XeVN',
     style,
     coverHtml: buildTscairCover({
       logoB64,
@@ -63,7 +67,7 @@ function main() {
       titleBateco: 'ECOSYSTEM OS',
       subtitle: 'Yêu cầu phần mềm — Hệ sinh thái đa phân hệ',
       metaHtml: `<strong>Khách hàng:</strong> Tập đoàn XeVN Group<br>
-      <strong>Đơn vị phát triển:</strong> Unicom Technology Solutions Co., Ltd`,
+      <strong>Đơn vị phát triển:</strong> XeVN Group`,
     }),
     tocPageHtml: buildTocPage({
       docCode: DOC_CODE,
@@ -94,7 +98,12 @@ function main() {
     !html.includes('REQ-SRS-') &&
     html.includes('Phiên bản 2.2') &&
     html.includes('**Diễn biến nghiệp vụ (theo sơ đồ):**') &&
-    frCount === 373;
+    frCount === 373 &&
+    html.includes('alt="XeVN"') &&
+    html.includes(DOC_CODE) &&
+    !html.includes('logo-unicom') &&
+    !html.includes('UNICOM | AI SOFTWARE FACTORY') &&
+    !/#3d7de8/i.test(html);
   console.log(`Wrote ${OUT} (${kb} KB) fr_blocks=${frCount} ok=${ok}`);
   if (!ok) process.exit(1);
 }

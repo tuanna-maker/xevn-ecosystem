@@ -5,9 +5,9 @@
  *
  * Usage:
  *   node scripts/stack-stability-login-probe.mjs
- *   PORTAL_DEV_URL=https://14-225-217-232.nip.io node scripts/stack-stability-login-probe.mjs --samples 30
+ *   PORTAL_DEV_URL=http://14.225.217.232:8088 node scripts/stack-stability-login-probe.mjs --samples 30
  */
-const PORTAL = (process.env.PORTAL_DEV_URL || 'https://14-225-217-232.nip.io').replace(/\/+$/, '');
+const PORTAL = (process.env.PORTAL_DEV_URL || 'http://14.225.217.232:8088').replace(/\/+$/, '');
 const EMAIL = process.env.XEVN_PROBE_EMAIL || 'ceo@xe.vn';
 const PASSWORD = process.env.XEVN_PROBE_PASSWORD || 'Xevn@2026';
 

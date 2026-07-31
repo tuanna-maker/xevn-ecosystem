@@ -62,7 +62,11 @@ async function upsertSlugMapRows() {
       `INSERT INTO public.company_slug_map (tenant_id, company_slug, company_uuid, display_name, updated_at)
        VALUES ($1, $2, $3::uuid, $4, NOW())
        ON CONFLICT (tenant_id, company_slug) DO UPDATE SET
-         display_name = COALESCE(NULLIF(TRIM(company_slug_map.display_name), ''), EXCLUDED.display_name),
+         display_name = CASE
+           WHEN NULLIF(TRIM(company_slug_map.display_name), '') IS NULL THEN EXCLUDED.display_name
+           WHEN company_slug_map.display_name ~ '^Khối[[:space:]]' THEN EXCLUDED.display_name
+           ELSE company_slug_map.display_name
+         END,
          company_uuid = EXCLUDED.company_uuid,
          updated_at = NOW()`,
       [row.tenant_id, row.company_slug, row.company_uuid, row.display_name],

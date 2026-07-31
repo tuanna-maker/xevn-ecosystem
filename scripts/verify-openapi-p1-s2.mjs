@@ -9,7 +9,6 @@ const specPath = path.join(root, 'docs/api/openapi/xbos-api.yaml');
 
 const required = [
   'openapi: 3.1.0',
-  'version: 1.2.0-p1-s2',
   'operationId: configSyncPublishCatalog',
   'operationId: configSyncListCatalogs',
   'operationId: kpiEngineRollup',
@@ -40,6 +39,33 @@ const required = [
   '/workflow-engine/instances',
   '/workflow-engine/tasks',
   '/workflow-engine/reporting-routes',
+  // W2 RACI + CC catalogs (BE-XBOS-OA-RACI-CC-01)
+  'operationId: raciGovernanceListCatalog',
+  'operationId: raciGovernanceGetCompanyMatrix',
+  'operationId: raciGovernanceUpsertMatrixCell',
+  '/raci-governance/catalog',
+  'CommandCenterCatalogKind',
+  'enum: [regulations, measurements, pricing]',
+  // G-DTO-W2-POS-01 / BE-XBOS-OA-DTO-P2-01
+  'PermissionMatrixRow',
+  'SavePermissionMatrixRequest',
+  'operationId: positionRbacGetMatrix',
+  'operationId: positionRbacSaveMatrix',
+  'enum: [personal, department, legal_entity, group]',
+  // G-DTO-W2-KPI-01 / BE-XBOS-OA-KPI-DTO-01
+  'KpiRollupData',
+  'KpiRollupSeries',
+  'KpiRollupPoint',
+  'KpiEvaluateResult',
+  'KpiEvaluateBatchRequest',
+  'KpiPortalAlertListData',
+  'PublishPortalAlertRequest',
+  'operationId: kpiEngineEvaluateBatch',
+  'operationId: kpiEnginePortalAlerts',
+  'operationId: kpiEnginePublishPortalAlert',
+  'G-DTO-W2-KPI-01',
+  'FR-XBOS-KPI-03',
+  'rollupMode',
 ];
 
 if (!fs.existsSync(specPath)) {
@@ -49,6 +75,12 @@ if (!fs.existsSync(specPath)) {
 
 const text = fs.readFileSync(specPath, 'utf8');
 let failed = 0;
+
+if (!/version:\s*1\.2\.\d+-p1-s2/.test(text)) {
+  failed += 1;
+  console.error('FAIL missing fragment: version: 1.2.x-p1-s2');
+}
+
 for (const needle of required) {
   if (!text.includes(needle)) {
     failed += 1;

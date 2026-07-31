@@ -17,7 +17,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 const sdk = process.env.LOCALAPPDATA + '\\Android\\Sdk';
 const adb = `${sdk}\\platform-tools\\adb.exe`;
-const API_BASE = process.env.HRM_API_BASE || 'https://14-225-217-232.nip.io';
+const API_BASE = process.env.HRM_API_BASE || 'http://14.225.217.232:8088';
 const EMAIL = process.argv.includes('--email')
   ? process.argv[process.argv.indexOf('--email') + 1]
   : 'uat.nv0001@xe.vn';

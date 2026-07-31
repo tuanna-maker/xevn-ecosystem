@@ -85,11 +85,21 @@ sequenceDiagram
 - Else if công ty chọn không thuộc phạm vi token -> `HRM-ERR-SCOPE-INVALID`.
 - Else -> ghi nhận `companyId` đang hoạt động vào state ứng dụng.
 
+#### Delta FR-HRM-MOB-OU-01 (ADD 2026-07-23 · orphan #2)
+
+- Bộ lọc / Scope hiển thị đơn vị: nếu copy = **công ty / ĐVTV** → nhãn **Plane A** (cùng SoT **FR-HRM-EMP-COL-01** trên web) — **cấm** «Khối … X.E».
+- Nếu giữ surface **đơn vị vận hành (Plane B)** → copy tách rõ; không ghi đè nghĩa «công ty».
+- AC: AC-MOB-OU-01..02 — `docs/program/deltas/BA_HRM_ORPHAN_TO_SRS_01_20260723.md` §16.2.
+
 ### UC-HRM-MOB-03 — Xem bảng điều khiển cá nhân
 
 - If token hết hạn -> `HRM-ERR-AUTH-INVALID` -> điều hướng UC-HRM-MOB-01.
 - Else if một trong các API tổng hợp lỗi -> hiển thị **partial state** (card lỗi theo module), không crash toàn màn hình.
 - Else -> hiển thị tóm tắt: trạng thái chấm công hôm nay, số đơn đang xử lý, việc gấp (nếu có dữ liệu).
+
+#### Delta FR-HRM-MOB-HUB-01 (ADD 2026-07-23 · orphan #17)
+
+- Section Home (sinh nhật, who’s-out, celebration) có **limit + TZ + leave_type label** khóa trong FR — xem delta §16.17; AC-MOB-HUB-01..03.
 
 ### UC-HRM-MOB-04 — Ghi nhận chấm công / điểm danh
 

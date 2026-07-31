@@ -1,12 +1,19 @@
 openapi: 3.1.0
 info:
-  title: XeVN HRM API — Phase 1 S3b (Metadata · Spreadsheet · Operations · Performance)
-  version: 1.3.0-p1-s3b
+  title: XeVN HRM API — Phase 1 S3b (Metadata · Spreadsheet · Operations · Performance · Admin)
+  version: 1.3.5-admin-f1
   description: |
     Canonical REST contract for HRM khối C (Sprint 3) + U18 S3b extensions.
     Scope: internal JWT or x-internal-api-key; tenant/company via headers or body.
     List paths use resolveHrmListScope — group CEO company_id=main returns rollup partition.
     ADR: docs/decisions/ADR-HRM-RBAC-SCOPE-LADDER.md
+    CD-FB-05: GET /employees supports optional keyset `cursor` + `next_cursor` (ADR-HRM-SCALE §5.4).
+    BE-HRM-OA-IMPORT-FLEET-01: F.1 deepen POST /spreadsheet/import/preview (multipart, non-persist)
+    + GET /fleet/vehicles (FL-01 list only). Physical: API_DESIGN_HRM_IMPORT_PREVIEW · API_DESIGN_HRM_FLEET.
+    BE-HRM-IM-PREVIEW-HTTP-ALIGN-01: sheetPreview success = HTTP 200 + SHEET-200 (Nest @HttpCode OK; not 201).
+    BE-HRM-FLEET-KEYWORD-01: GET /fleet/vehicles optional keyword|q (plate + name in fleet_fields) — closes G-FL-02.
+    BE-HRM-OA-ADMIN-01: F.1 deepen POST /admin/platform-admin · company-admin · invite-employee ·
+    reset-user-password (FR-HRM-02..05 · API_DESIGN_HRM_ADMIN). company_id TEXT Plane B slug (G-ADM-DTO-01 CLOSED).
 servers:
   - url: /api/hrm
 tags:
@@ -23,11 +30,18 @@ tags:
   - name: Metadata
     description: HRM-MD-01..05 — employee metadata change queue (UC-HRM-26 embed)
   - name: Spreadsheet
-    description: HRM-IM-01..04 — employee import/export
+    description: HRM-IM-01..04 — employee import/export · IM-01 preview non-persist (SHEET-200)
+  - name: Fleet
+    description: FR-HRM-FL-01 — fleet vehicles list only (HRM-FLEET-200); no public mutate
   - name: Operations
     description: HRM-OP-01..04 — tasks, summary, service requests (UC-HRM-MOB-11)
   - name: Performance
     description: HRM-PF-01..04 — performance cycles and evaluations
+  - name: Admin
+    description: |
+      FR-HRM-02..05 — platform/company admin, invite batch, reset credentials
+      (HRM-ADMIN-201..204). Physical: docs/hrm/API_DESIGN_HRM_ADMIN.md.
+      company_id TEXT Plane B (slug|UUID-as-text); user_id reset = UUID profiles plane.
   - name: Employees
     description: HRM-EM-01..03 — employee CRUD, directory, summary aggregates
   - name: Decisions
@@ -76,6 +90,7 @@ components:
         - archived_count
         - payroll
         - by_department
+        - by_company
         - salary_ranges
         - new_hires
       properties:
@@ -99,6 +114,25 @@ components:
               department: { type: string }
               count: { type: integer, minimum: 0 }
               avg_salary: { type: number, nullable: true }
+        by_company:
+          type: array
+          description: |
+            D-HRM-CO-EMP-COUNT-BE-01 / GOV-HRM-CO-EMP-TS-01 — per operating-slug headcount (Plane B).
+            ref_srs: FR-HRM-CO-HC-01 / UC-HRM-CO-01 · TechSpec docs/hrm/TECHSPEC.md §19.
+            company_id ∈ {holding,trsport,logistics,finance,services}; never XBOS legal-entity UUID.
+            Group CEO company_id=main zero-fills all 5 slugs under same resolveHrmListScope as list.
+            FE: map ĐVTV → operating_slug → by_company[].total; API fail → UI em-dash not silent 0.
+          items:
+            type: object
+            required: [company_id, total, active_count, inactive_count, archived_count]
+            properties:
+              company_id:
+                type: string
+                enum: [holding, trsport, logistics, finance, services]
+              total: { type: integer, minimum: 0 }
+              active_count: { type: integer, minimum: 0 }
+              inactive_count: { type: integer, minimum: 0 }
+              archived_count: { type: integer, minimum: 0 }
         salary_ranges:
           type: array
           items:
@@ -126,6 +160,24 @@ components:
                   status: { type: string }
                   hired_at: { type: string, format: date, nullable: true }
                   avatar_url: { type: string, nullable: true }
+    EmployeeListPage:
+      type: object
+      required: [total, page, page_size, next_cursor, data]
+      description: |
+        CD-FB-05 — OFFSET (`page`) remains default. Optional `cursor` switches to keyset
+        (created_at DESC, id DESC). `next_cursor` is null when no further page.
+        `total` is always the full scoped count (not remaining-after-cursor).
+      properties:
+        total: { type: integer, minimum: 0 }
+        page: { type: integer, minimum: 1 }
+        page_size: { type: integer, minimum: 1, maximum: 100 }
+        next_cursor:
+          type: string
+          nullable: true
+          description: Opaque keyset cursor for the next page (base64url of created_at + id)
+        data:
+          type: array
+          items: { type: object }
     HrDecision:
       type: object
       required:
@@ -218,6 +270,196 @@ components:
         file_url: { type: string }
         status: { type: string, maxLength: 32 }
         notes: { type: string }
+    SheetRowError:
+      type: object
+      required: [row, code]
+      description: Per-row validation error on import preview (still HTTP 200 with SHEET-200)
+      properties:
+        row: { type: integer, minimum: 1 }
+        field: { type: string }
+        code: { type: string, example: SHEET-422 }
+        message: { type: string }
+    ImportPreviewRow:
+      type: object
+      required: [employee_code, email, full_name, job_title_key, hired_at]
+      description: Canonical preview fields — logical map to employees at IM-02 commit only (no persist on preview)
+      properties:
+        employee_code: { type: string }
+        email: { type: string }
+        full_name: { type: string }
+        job_title_key: { type: string }
+        hired_at: { type: string }
+    ImportPreviewData:
+      type: object
+      required:
+        - kind
+        - headersDetected
+        - canonicalHeaders
+        - rowCount
+        - previewRows
+        - truncated
+        - errors
+        - dryRun
+      description: |
+        In-memory preview payload (DB_DESIGN_HRM_IMPORT_PREVIEW = N/A table).
+        must_keep: zero INSERT/UPDATE employees on this path (FR-HRM-IM-01 #7).
+      properties:
+        kind: { type: string, const: employee_import }
+        headersDetected:
+          type: array
+          items: { type: string }
+        canonicalHeaders:
+          type: array
+          items: { type: string }
+        rowCount: { type: integer, minimum: 0 }
+        previewRows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportPreviewRow'
+        truncated: { type: boolean }
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SheetRowError'
+        dryRun: { type: boolean }
+    FleetVehicle:
+      type: object
+      required:
+        - id
+        - tenant_id
+        - company_id
+        - license_plate
+        - fleet_fields
+        - status
+        - created_at
+        - updated_at
+      description: Row from public.hrm_fleet_vehicles (Plane B TEXT company_id slug)
+      properties:
+        id: { type: string, format: uuid }
+        tenant_id: { type: string }
+        company_id:
+          type: string
+          description: Plane B operating slug (xe-du-lich, holding, …) — not XBOS LE UUID
+        license_plate: { type: string }
+        fleet_fields:
+          type: object
+          additionalProperties: true
+        status: { type: string, enum: [active, inactive] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    FleetVehicleList:
+      type: object
+      required: [total, data]
+      properties:
+        total: { type: integer, minimum: 0 }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FleetVehicle'
+    CreatePlatformAdminRequest:
+      type: object
+      required: [email, password]
+      description: CreatePlatformAdminDto — FR-HRM-02 (no company_id)
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        full_name: { type: string }
+    CreatePlatformAdminData:
+      type: object
+      required: [success, user_id]
+      properties:
+        success: { type: boolean, const: true }
+        user_id: { type: string, format: uuid }
+    CreateCompanyAdminRequest:
+      type: object
+      required: [email, password, company_id]
+      description: |
+        CreateCompanyAdminDto — FR-HRM-03.
+        company_id TEXT MaxLength(64) Plane B slug (`holding`, member) or UUID-as-text — G-ADM-DTO-01 CLOSED.
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        full_name: { type: string }
+        company_id:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: Plane B operating slug (holding, trsport, …) or UUID-as-text — not LE-only UUID DTO
+          example: holding
+        role:
+          type: string
+          description: Default admin when omitted
+    CreateCompanyAdminData:
+      type: object
+      required: [success, user_id, is_existing_user]
+      properties:
+        success: { type: boolean, const: true }
+        user_id: { type: string, format: uuid }
+        is_existing_user: { type: boolean }
+    InviteEmployeeItem:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        full_name: { type: string }
+        employee_id:
+          type: string
+          format: uuid
+          description: Optional soft link → employees.id (UUID); omit for account-only invite
+    InviteEmployeesRequest:
+      type: object
+      required: [company_id, employees]
+      description: |
+        InviteEmployeesDto — FR-HRM-04.
+        company_id TEXT Plane B; employees ArrayMinSize(1).
+      properties:
+        company_id:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: Plane B TEXT slug or UUID-as-text
+          example: holding
+        employees:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/InviteEmployeeItem'
+    InviteEmployeeResult:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean }
+        email: { type: string }
+        user_id: { type: string, format: uuid }
+        error: { type: string }
+    InviteEmployeesData:
+      type: object
+      required: [success, total, invited, failed, results]
+      properties:
+        success: { type: boolean, const: true }
+        total: { type: integer, minimum: 0 }
+        invited: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0 }
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InviteEmployeeResult'
+    ResetUserPasswordRequest:
+      type: object
+      required: [user_id]
+      description: |
+        ResetUserPasswordDto — FR-HRM-05.
+        user_id UUID (profiles.user_id) — ≠ XBOS Auth TEXT email user_id (must_keep dual-plane).
+        At least one of new_password (≥8) or new_email required (ValidateIf).
+      properties:
+        user_id: { type: string, format: uuid }
+        new_password: { type: string, minLength: 8 }
+        new_email: { type: string, format: email }
+    ResetUserPasswordData:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean, const: true }
 paths:
   /:
     get:
@@ -238,15 +480,73 @@ paths:
       responses:
         '200':
           description: Metrics JSON or Prometheus text
+  /employees:
+    get:
+      tags: [Employees]
+      operationId: listEmployees
+      summary: List employees (OFFSET page or CD-FB-05 keyset cursor)
+      description: |
+        Default: page + page_size OFFSET with stable ORDER BY created_at DESC, id DESC.
+        Optional `cursor` (from prior `next_cursor`) uses keyset pagination — preferred for
+        export / listAllEmployees walks to avoid deep OFFSET storms (~12 pages @1k NV).
+        Same resolveHrmListScope as GET /employees/summary. Not supported with view=directory.
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+        - name: keyword
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, enum: [active, inactive] }
+        - name: include_archived
+          in: query
+          schema: { type: boolean }
+        - name: view
+          in: query
+          schema: { type: string }
+          description: Pass directory for mobile directory sort (cursor unsupported)
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Ignored when cursor is set
+        - name: page_size
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+          description: Opaque keyset cursor from previous next_cursor (CD-FB-05)
+      responses:
+        '200':
+          description: Employees listed (HRM-EMP-200)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EmployeeListPage'
+        '400':
+          description: Invalid cursor (HRM-EMP-CURSOR-001) or cursor+directory (HRM-EMP-CURSOR-002)
+        '401':
+          description: Unauthorized (HRM-AUTH-001)
   /employees/summary:
     get:
       tags: [Employees]
       operationId: getEmployeesSummary
       summary: P1-HRM-PERF-BE-01 — dashboard employee aggregates (single round-trip)
       description: |
-        Returns scoped counts, payroll totals, department breakdown, salary ranges, and recent hires.
+        Returns scoped counts, payroll totals, department breakdown, per-company (operating slug)
+        headcounts (`by_company`), salary ranges, and recent hires.
         Uses the same resolveHrmListScope filters as GET /employees (group CEO company_id=main rollup).
         Replaces N sequential paginated list calls for dashboard/count widgets.
+        D-HRM-CO-EMP-COUNT-BE-01 / GOV-HRM-CO-EMP-TS-01: `by_company[].company_id` is Plane B slug only
+        (not XBOS LE UUID). Physical contract: docs/hrm/TECHSPEC.md §19 · ref_srs FR-HRM-CO-HC-01 / UC-HRM-CO-01.
       security: [{ bearerAuth: [] }, { internalApiKey: [] }]
       parameters:
         - $ref: '#/components/parameters/CompanyIdQuery'
@@ -702,12 +1002,96 @@ paths:
     get:
       tags: [Recruitment]
       operationId: listJobRequisitions
-      summary: HRM-RC-02
+      summary: HRM-RC-02 — includes nullable workflow_instance_id (ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE §5)
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5
+      x-data-contract: docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_DATA_CONTRACT.md
       parameters:
         - $ref: '#/components/parameters/CompanyIdQuery'
       responses:
         '200':
           description: HRM-REC-200
+  /recruitment/requisitions/{requisitionId}/submit-workflow:
+    post:
+      tags: [Recruitment]
+      operationId: submitJobRequisitionWorkflow
+      summary: UC-HRM-REC-WF-02 — spawn hrm_requisition_approval; SPAWN-MISSING keeps pending_approval
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5
+      parameters:
+        - name: requisitionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-REC-WF-200
+  /recruitment/workflow/step:
+    post:
+      tags: [Recruitment]
+      operationId: recruitmentWorkflowStep
+      summary: Internal XBOS→HRM step callback (BR-REC-WF-03/04) — 422 HRM-REC-WF-STAGE-UNMAPPED
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5.2
+      x-data-contract: docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_DATA_CONTRACT.md §5
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [businessType, businessId, workflowInstanceId, stepKey, taskType, reviewerUserId]
+              properties:
+                businessType:
+                  type: string
+                  enum: [hrm_recruitment_plan, hrm_requisition, hrm_candidate]
+                businessId: { type: string, format: uuid }
+                workflowInstanceId: { type: string, format: uuid }
+                stepKey: { type: string }
+                taskType: { type: string }
+                taskId: { type: string }
+                reviewerUserId: { type: string }
+                reviewerName: { type: string }
+      responses:
+        '200':
+          description: HRM-REC-WF-CALLBACK-200
+        '401':
+          description: HRM-AUTH-001
+        '404':
+          description: Not found
+        '422':
+          description: HRM-REC-WF-STAGE-UNMAPPED
+  /recruitment/workflow/terminal:
+    post:
+      tags: [Recruitment]
+      operationId: recruitmentWorkflowTerminal
+      summary: Internal XBOS→HRM terminal callback (BR-REC-WF-05/06/07) — idempotent skip
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5.2
+      x-data-contract: docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_DATA_CONTRACT.md §5
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [businessType, businessId, workflowInstanceId, terminalStatus, reviewerUserId]
+              properties:
+                businessType:
+                  type: string
+                  enum: [hrm_recruitment_plan, hrm_requisition, hrm_candidate]
+                businessId: { type: string, format: uuid }
+                workflowInstanceId: { type: string, format: uuid }
+                terminalStatus: { type: string, enum: [completed, rejected] }
+                reviewerUserId: { type: string }
+                reviewerName: { type: string }
+                rejectedReason: { type: string, nullable: true }
+      responses:
+        '200':
+          description: HRM-REC-WF-CALLBACK-200
+        '401':
+          description: HRM-AUTH-001
+        '404':
+          description: Not found
   /recruitment/candidates:
     post:
       tags: [Recruitment]
@@ -750,7 +1134,7 @@ paths:
     post:
       tags: [ContractsInsurance]
       operationId: createLaborContract
-      summary: HRM-CI-01
+      summary: HRM-CI-01 — contract term only (salary via compensation-packages, F5)
       security: [{ bearerAuth: [] }, { internalApiKey: [] }]
       responses:
         '200':
@@ -764,6 +1148,87 @@ paths:
       responses:
         '200':
           description: HRM-CON-200
+  /contracts-insurance/compensation-packages:
+    post:
+      tags: [ContractsInsurance]
+      operationId: createCompensationPackage
+      summary: UC-HRM-CI-08 — create compensation package (base/probation/allowance)
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      responses:
+        '200':
+          description: HRM-COMP-201
+    get:
+      tags: [ContractsInsurance]
+      operationId: listCompensationPackages
+      summary: List compensation packages for employee/scope
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: employee_id
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-COMP-200
+  /contracts-insurance/compensation-packages/active:
+    get:
+      tags: [ContractsInsurance]
+      operationId: getActiveCompensationPackage
+      summary: UC-HRM-INT-03 / BR-CD-F5-07 — active package as-of date for payroll
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: employee_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+        - name: as_of
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: HRM-COMP-200
+  /contracts-insurance/compensation-packages/{packageId}:
+    get:
+      tags: [ContractsInsurance]
+      operationId: getCompensationPackageById
+      summary: Compensation package detail with lines
+      parameters:
+        - name: packageId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CompanyIdQuery'
+      responses:
+        '200':
+          description: HRM-COMP-200
+  /contracts-insurance/compensation-packages/{packageId}/revise:
+    post:
+      tags: [ContractsInsurance]
+      operationId: reviseCompensationPackage
+      summary: UC-HRM-CI-11 — versioned revise (closes prior, append history)
+      parameters:
+        - name: packageId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-COMP-201
+  /contracts-insurance/compensation-history:
+    get:
+      tags: [ContractsInsurance]
+      operationId: listCompensationHistory
+      summary: UC-HRM-CI-11 — append-only compensation change history
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: employee_id
+          in: query
+          schema: { type: string, format: uuid }
+        - name: package_id
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: HRM-COMP-200
   /contracts-insurance/contracts/expiring:
     get:
       tags: [ContractsInsurance]
@@ -944,24 +1409,92 @@ paths:
     post:
       tags: [Spreadsheet]
       operationId: sheetPreview
-      summary: HRM-IM-01 — preview employee import
+      summary: FR-HRM-IM-01 / HRM-IM-01 — preview employee import (non-persist)
+      description: |
+        API_DESIGN Endpoint A (F.1) · docs/hrm/API_DESIGN_HRM_IMPORT_PREVIEW.md §A ·
+        DB_DESIGN_HRM_IMPORT_PREVIEW.md (N/A table — no staging invent).
+        Mục đích: Cho phép HCNS tải tệp import nhân sự và xem trước bảng dòng hợp lệ / lỗi từng dòng
+        trước khi xác nhận import — không tạo hồ sơ nhân viên hàng loạt.
+        Nghiệp vụ: Auth (HRM-AUTH-001) → resolveScopeContext → kind=employee_import → require multipart
+        field `file` → assertImportUploadMime → parse csv/xlsx → validateEmployeeImportRow →
+        SHEET-200 { previewRows, errors, truncated, dryRun } — **zero INSERT/UPDATE** employees.
+        dryRun mặc định true khi omit; string 'false' vẫn không ghi DB trên preview path.
+        Bước SRS: FR-HRM-IM-01 / UC HRM-IM-01 Diễn biến #1–#8 (khách SRS_HRM_KHACH.md §3.32).
+        #4 catalog sync + duplicate employee_code DB = residual G-IM-CATALOG-01 (in-memory only today).
+        Runtime: SpreadsheetController.importPreview → SpreadsheetService.previewEmployeeImport.
+        Envelope: SHEET-200 · message `Import preview`. must_keep: IM-01 non-persist · U65 · no claim IM-02 DONE.
+        HTTP status: 200 (SoT API_DESIGN §A · SRS team Network 200 · Nest @HttpCode(OK) — not Nest POST default 201).
       security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
       requestBody:
         required: true
+        description: multipart/form-data — field name `file` required (FileInterceptor)
         content:
           multipart/form-data:
             schema:
               type: object
               required: [file, kind]
               properties:
-                file: { type: string, format: binary }
-                kind: { type: string, enum: [employee_import] }
-                dryRun: { type: string, enum: ['true', 'false'] }
+                file:
+                  type: string
+                  format: binary
+                  description: CSV or XLSX employee import workbook
+                kind:
+                  type: string
+                  enum: [employee_import]
+                  description: ImportMultipartMetaDto — employee_import only
+                dryRun:
+                  type: string
+                  enum: ['true', 'false']
+                  description: Default true when omitted; preview path never persists
+            encoding:
+              file:
+                contentType: text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       responses:
         '200':
-          description: SHEET-200 preview envelope
+          description: HTTP 200 · SHEET-200 — Import preview (may include row errors[] with code SHEET-422)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      code: { type: string, const: SHEET-200 }
+                      data:
+                        $ref: '#/components/schemas/ImportPreviewData'
+              examples:
+                previewOk:
+                  summary: FR-HRM-IM-01 #8 bảng xem trước
+                  value:
+                    code: SHEET-200
+                    message: Import preview
+                    data:
+                      kind: employee_import
+                      headersDetected: [employee_code, email, full_name, job_title_key, hired_at]
+                      canonicalHeaders: [employee_code, email, full_name, job_title_key, hired_at]
+                      rowCount: 1
+                      previewRows:
+                        - employee_code: NV001
+                          email: nv001@xe.vn
+                          full_name: Nguyen Van A
+                          job_title_key: JT_DRIVER
+                          hired_at: '2026-01-15'
+                      truncated: false
+                      errors: []
+                      dryRun: true
+        '400':
+          description: SHEET-400 — missing file / bad MIME / empty / bad sheet
+        '401':
+          description: HRM-AUTH-001 — Unauthorized spreadsheet access
+        '408':
+          description: SHEET-408 — parse/validate timeout
         '409':
           description: SCOPE_CONTEXT_MISMATCH
+        '413':
+          description: SHEET-413 — over size / rows / columns
   /spreadsheet/import/commit:
     post:
       tags: [Spreadsheet]
@@ -1006,6 +1539,83 @@ paths:
           description: CSV attachment
         '409':
           description: SCOPE_CONTEXT_MISMATCH
+  /fleet/vehicles:
+    get:
+      tags: [Fleet]
+      operationId: fleetListVehicles
+      summary: FR-HRM-FL-01 — list fleet vehicles (view-only)
+      description: |
+        API_DESIGN Endpoint A (F.1) · docs/hrm/API_DESIGN_HRM_FLEET.md §A ·
+        DB_DESIGN_HRM_FLEET.md · table public.hrm_fleet_vehicles (TEXT company_id Plane B).
+        Mục đích: Cấp danh sách hồ sơ xe trong phạm vi đơn vị để bảng Hồ sơ xe hiển thị đúng biển số —
+        empty trung thực khi chưa khai xe; không lộ xe đơn vị khác.
+        Nghiệp vụ: Auth (HRM-AUTH-001) → resolveScopeContext → resolveHrmListScope (company_id query/header;
+        main rollup → member slug array) → filter tenant_id + company_id IN scope → optional status ∈
+        active|inactive → optional keyword|q ILIKE license_plate + soft name keys in fleet_fields
+        (driver_name, manufacturer, model, route_name, name, vehicle_name) → limit clamp 1..2000
+        (default 500) → ORDER BY license_plate ASC → HRM-FLEET-200 { total, data[] }.
+        Empty = total=0, data=[] (not ERROR). No side-effect seed; no write.
+        GET by id = residual G-FL-01 (not this operation). Keyword filter = CLOSED G-FL-02 (BE-HRM-FLEET-KEYWORD-01).
+        Bước SRS: FR-HRM-FL-01 Diễn biến #1/#2/#3/#4/#6/#8 (khách SRS_HRM_KHACH.md §3.49).
+        Runtime: FleetController.listVehicles → FleetService.listVehicles.
+        must_keep: FL-01 GET list only · TEXT slug · U65 no seed · service upsertVehicle not public HTTP.
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+        - name: company_id
+          in: query
+          required: false
+          description: Optional Plane B slug override; else x-company-id / JWT scope
+          schema: { type: string, minLength: 1, maxLength: 64 }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [active, inactive] }
+        - name: keyword
+          in: query
+          required: false
+          description: |
+            F.1 · FR-HRM-FL-01 #4 — tìm biển số / tên trong ĐV (ILIKE).
+            Prefer `q` when both set. Matches license_plate + fleet_fields name keys.
+            Empty/omit = no keyword filter (full in-scope list / empty OK).
+          schema: { type: string, maxLength: 100 }
+        - name: q
+          in: query
+          required: false
+          description: Alias of keyword; wins over keyword when both present (employees parity)
+          schema: { type: string, maxLength: 100 }
+        - name: limit
+          in: query
+          required: false
+          description: Clamp 1..2000; default 500
+          schema: { type: integer, minimum: 1, maximum: 2000, default: 500 }
+      responses:
+        '200':
+          description: HRM-FLEET-200 — Fleet vehicles listed (empty in-scope is valid)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      code: { type: string, const: HRM-FLEET-200 }
+                      data:
+                        $ref: '#/components/schemas/FleetVehicleList'
+              examples:
+                emptyHonest:
+                  summary: FR-HRM-FL-01 #3 empty trung thực
+                  value:
+                    code: HRM-FLEET-200
+                    message: Fleet vehicles listed
+                    data:
+                      total: 0
+                      data: []
+        '401':
+          description: HRM-AUTH-001 — Unauthorized fleet access
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH (standing G-SCOPE-01)
   /operations/tasks:
     post:
       tags: [Operations]
@@ -1130,6 +1740,273 @@ paths:
           description: HRM-PERF-200
         '409':
           description: SCOPE_CONTEXT_MISMATCH
+  /admin/platform-admin:
+    post:
+      tags: [Admin]
+      operationId: adminCreatePlatformAdmin
+      summary: FR-HRM-02 / HRM-ADMIN-201 — create platform admin
+      description: |
+        API_DESIGN Endpoint A (F.1) · docs/hrm/API_DESIGN_HRM_ADMIN.md §A ·
+        DB_DESIGN_HRM_ADMIN.md · profiles + platform_admins.
+        Mục đích: Cho phép quản trị nền tảng được ủy quyền tạo (hoặc upsert grant) tài khoản
+        quản trị nền tảng — ghi profiles + platform_admins — để vận hành cấu hình cấp nền tảng
+        và mở khóa UC-HRM-03.
+        Nghiệp vụ: Auth Bearer (HRM-AUTH-001) → assertPlatformAdmin (role platform_admin|group_ceo
+        OR platform_admins grant → else HRM-AUTH-002) → validate email + password≥8 →
+        findOrCreatePortalUser (profiles SHA-256) → UPSERT platform_admins on user_id
+        (G-ADM-03 upsert, not hard-fail duplicate) → HRM-ADMIN-201 { success, user_id } —
+        never echo password.
+        Bước SRS: FR-HRM-02 / UC-HRM-02 Diễn biến #1/#3/#6/#8 (khách SRS_HRM_KHACH.md §3.24).
+        Runtime: HrmAdminController.createPlatformAdmin → HrmAdminService.createPlatformAdmin.
+        must_keep: G-ADM-DTO-01 CLOSED behavior · Auth/Tenant JWT cite · U65 · HOLD_DEPLOY · no plaintext.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlatformAdminRequest'
+            examples:
+              createOk:
+                summary: FR-HRM-02 #6 Lưu thành công
+                value:
+                  email: platform.admin@xe.vn
+                  password: Xevn@2026
+                  full_name: Platform Admin
+      responses:
+        '200':
+          description: HRM-ADMIN-201 — Platform admin created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      code: { type: string, const: HRM-ADMIN-201 }
+                      data:
+                        $ref: '#/components/schemas/CreatePlatformAdminData'
+              examples:
+                platformAdminCreated:
+                  summary: FR-HRM-02 #8 Thành công cuối
+                  value:
+                    code: HRM-ADMIN-201
+                    message: Platform admin created
+                    data:
+                      success: true
+                      user_id: 11111111-1111-4111-8111-111111111111
+        '400':
+          description: Validation — invalid email / password < 8 (FR-02 #3)
+        '401':
+          description: HRM-AUTH-001 — Unauthorized
+        '403':
+          description: HRM-AUTH-002 — Not platform admin
+  /admin/company-admin:
+    post:
+      tags: [Admin]
+      operationId: adminCreateCompanyAdmin
+      summary: FR-HRM-03 / HRM-ADMIN-202 — create or update company admin
+      description: |
+        API_DESIGN Endpoint B (F.1) · docs/hrm/API_DESIGN_HRM_ADMIN.md §B ·
+        DB_DESIGN_HRM_ADMIN.md · profiles + user_company_memberships (TEXT company_id).
+        Mục đích: Gán hoặc cập nhật quản trị doanh nghiệp cho một đơn vị đích — tạo/khôi phục
+        profiles và UPSERT user_company_memberships với role quản trị — để HCNS đơn vị vận hành
+        và mở khóa mời nhân viên (UC-HRM-04).
+        Nghiệp vụ: Auth + assertPlatformAdmin → validate email, password≥8, company_id TEXT
+        MaxLength(64) Plane B slug|UUID-as-text (G-ADM-DTO-01 CLOSED) → findOrCreatePortalUser →
+        UPSERT membership (role default admin, status active) → HRM-ADMIN-202
+        { success, user_id, is_existing_user } — no plaintext password.
+        Bước SRS: FR-HRM-03 / UC-HRM-03 Diễn biến #1/#2/#4/#6/#8 (khách SRS_HRM_KHACH.md §3.25).
+        Runtime: HrmAdminController.createCompanyAdmin → HrmAdminService.createCompanyAdmin.
+        Example company_id: holding (TEXT slug — not UUID-only DTO).
+        must_keep: G-ADM-DTO-01 CLOSED · Auth/Tenant · U65 · HOLD_DEPLOY · no wipe DTO plane.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyAdminRequest'
+            examples:
+              slugHolding:
+                summary: FR-HRM-03 #2 company_id TEXT slug holding
+                value:
+                  email: holding.admin@xe.vn
+                  password: Xevn@2026
+                  full_name: Holding Admin
+                  company_id: holding
+                  role: admin
+              uuidAsText:
+                summary: company_id UUID-as-text accepted
+                value:
+                  email: member.admin@xe.vn
+                  password: Xevn@2026
+                  company_id: a1b2c3d4-e5f6-4789-a012-3456789abcde
+      responses:
+        '200':
+          description: HRM-ADMIN-202 — Company admin created or updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      code: { type: string, const: HRM-ADMIN-202 }
+                      data:
+                        $ref: '#/components/schemas/CreateCompanyAdminData'
+              examples:
+                companyAdminUpserted:
+                  summary: FR-HRM-03 #8 Thành công cuối
+                  value:
+                    code: HRM-ADMIN-202
+                    message: Company admin created or updated
+                    data:
+                      success: true
+                      user_id: 22222222-2222-4222-8222-222222222222
+                      is_existing_user: false
+        '400':
+          description: Validation — empty/overlong company_id or weak password (FR-03 #4)
+        '401':
+          description: HRM-AUTH-001
+        '403':
+          description: HRM-AUTH-002
+  /admin/invite-employee:
+    post:
+      tags: [Admin]
+      operationId: adminInviteEmployees
+      summary: FR-HRM-04 / HRM-ADMIN-203 — invite employees batch
+      description: |
+        API_DESIGN Endpoint C (F.1) · docs/hrm/API_DESIGN_HRM_ADMIN.md §C ·
+        path singular invite-employee (G-ADM-PATH-01 alias docs).
+        Mục đích: Xử lý lô mời nhân viên theo đơn vị — mỗi dòng có kết quả thành công/lỗi riêng —
+        tạo/khôi phục tài khoản + membership role=employee (soft employee_id khi có) mà không
+        dừng cả lô khi một dòng lỗi.
+        Nghiệp vụ: Bearer required; if token ≠ INTERNAL_API_KEY → assertPlatformAdmin →
+        validate company_id TEXT + employees ArrayMinSize(1) → per-row findOrCreate
+        (temp password G-ADM-04) + UPSERT membership role=employee → aggregate
+        { success, total, invited, failed, results[] } → HRM-ADMIN-203.
+        Per-row fail still HTTP 200 envelope (results[].success=false).
+        Không tạo employees row giả khi chỉ mời tài khoản; không claim outbox email.
+        Bước SRS: FR-HRM-04 / UC-HRM-04 Diễn biến #1/#2/#3/#4/#6/#7/#8 (khách SRS_HRM_KHACH.md §3.26).
+        Runtime: HrmAdminController.inviteEmployees → HrmAdminService.inviteEmployees.
+        must_keep: G-ADM-DTO-01 CLOSED · path singular · U65 · HOLD_DEPLOY · no seed invite.
+      security: [{ bearerAuth: [] }, { internalApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteEmployeesRequest'
+            examples:
+              batchSlug:
+                summary: FR-HRM-04 #2 company_id=holding TEXT
+                value:
+                  company_id: holding
+                  employees:
+                    - email: nv.moi@xe.vn
+                      full_name: Nguyen Van Moi
+                    - email: bad-row@xe.vn
+                      employee_id: 33333333-3333-4333-8333-333333333333
+      responses:
+        '200':
+          description: HRM-ADMIN-203 — Employee invitation batch processed (may include per-row fails)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      code: { type: string, const: HRM-ADMIN-203 }
+                      data:
+                        $ref: '#/components/schemas/InviteEmployeesData'
+              examples:
+                batchPartial:
+                  summary: FR-HRM-04 #7 xem kết quả lô
+                  value:
+                    code: HRM-ADMIN-203
+                    message: Employee invitation batch processed
+                    data:
+                      success: true
+                      total: 2
+                      invited: 1
+                      failed: 1
+                      results:
+                        - success: true
+                          email: nv.moi@xe.vn
+                          user_id: 44444444-4444-4444-8444-444444444444
+                        - success: false
+                          email: bad-row@xe.vn
+                          error: No email provided
+        '400':
+          description: Validation — empty employees[] / invalid company_id (FR-04 #3)
+        '401':
+          description: HRM-AUTH-001
+        '403':
+          description: HRM-AUTH-002
+  /admin/reset-user-password:
+    post:
+      tags: [Admin]
+      operationId: adminResetUserPassword
+      summary: FR-HRM-05 / HRM-ADMIN-204 — reset user credentials
+      description: |
+        API_DESIGN Endpoint D (F.1) · docs/hrm/API_DESIGN_HRM_ADMIN.md §D ·
+        profiles.user_id UUID plane (≠ XBOS Auth TEXT email user_id — must_keep dual-plane).
+        Mục đích: Cho phép quản trị có quyền cập nhật thông tin nhạy cảm (mật khẩu và/hoặc email)
+        của tài khoản đích — cập nhật profiles và cascade email sang memberships/platform_admins —
+        không lộ bí mật trên UI/log.
+        Nghiệp vụ: Auth + assertPlatformAdmin → validate user_id UUID + new_password≥8 and/or
+        new_email → UPDATE password_hash / email cascade → HRM-ADMIN-204 { success:true } —
+        never echo password. Dedicated audit row = residual G-ADM-01. Missing user = residual G-ADM-05.
+        Bước SRS: FR-HRM-05 / UC-HRM-05 Diễn biến #1/#2/#5/#6/#8 (khách SRS_HRM_KHACH.md §3.27).
+        Runtime: HrmAdminController.resetUserPassword → HrmAdminService.resetUserPassword.
+        must_keep: G-ADM-DTO-01 CLOSED (UUID user_id) · Auth/Tenant cite · U65 · HOLD_DEPLOY.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetUserPasswordRequest'
+            examples:
+              resetPassword:
+                summary: FR-HRM-05 #6 đổi mật khẩu
+                value:
+                  user_id: 55555555-5555-4555-8555-555555555555
+                  new_password: Xevn@2026New
+              resetEmail:
+                summary: FR-HRM-05 cascade email
+                value:
+                  user_id: 55555555-5555-4555-8555-555555555555
+                  new_email: renamed.user@xe.vn
+      responses:
+        '200':
+          description: HRM-ADMIN-204 — User credential updated (no password in body)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelope'
+                  - type: object
+                    properties:
+                      code: { type: string, const: HRM-ADMIN-204 }
+                      data:
+                        $ref: '#/components/schemas/ResetUserPasswordData'
+              examples:
+                credentialUpdated:
+                  summary: FR-HRM-05 #8 Thành công cuối
+                  value:
+                    code: HRM-ADMIN-204
+                    message: User credential updated
+                    data:
+                      success: true
+        '400':
+          description: Validation — non-UUID user_id / weak password / neither password nor email
+        '401':
+          description: HRM-AUTH-001
+        '403':
+          description: HRM-AUTH-002
   /auth/mobile/login:
     post:
       operationId: mobileLogin

@@ -33,10 +33,18 @@ LOG_LEVEL=info
 
 # Khuyến nghị P1+
 REDIS_URL=redis://127.0.0.1:6379
+# Prod default conservative; Dev8088 T-CONC UAT load window (DO-W3): 120000 (per-IP memory bucket)
 RATE_LIMIT_MAX=300
 RATE_LIMIT_WINDOW_MS=60000
-PG_POOL_MAX=10
+# HRM_RATE_LIMIT_MAX / XBOS_RATE_LIMIT_MAX — set when UAT load uses dedicated probe IP
+# Pilot Dev8088 concurrency (ADR-HRM-SCALE / P1-HRM-SCALE-DO-W2): 40
+# Prod start conservative; raise after pg_pool_waiting_count + max_connections review
+# With ≥2 hrm-be replicas: split budget (e.g. 20+20) so total ≤ Postgres headroom
+PG_POOL_MAX=40
 PG_IDLE_TIMEOUT_MS=30000
+PG_CONNECTION_TIMEOUT_MS=10000
+PG_KEEPALIVE=true
+PG_KEEPALIVE_DELAY_MS=10000
 
 # Tracing (bật sau khi stack obs chạy)
 OTEL_ENABLED=true
@@ -203,9 +211,30 @@ blocker: <nếu thiếu TLS cert / secret owner>
 
 ---
 
-## 7. Không làm
+## 7. HRM concurrency pool delta (P1-HRM-SCALE-DO-W2 · 2026-07-17)
+
+| Knob | Before (Dev8088) | After | Rationale |
+|------|------------------|-------|-----------|
+| `PG_POOL_MAX` | unset → **10** | **40** | W3 T-CONC failures = client timeout (status=0), 0% 429 → pool/replica saturation |
+| `PG_CONNECTION_TIMEOUT_MS` | (pg default long wait) | **10000** | Fail fast vs 30s client hang |
+| `PG_KEEPALIVE` | off | **true** | Survive idle NAT/firewall to remote PG `:6432` |
+| `pg_pool_waiting_count` | Prometheus gauge (platform-core) | observe under 100 VU | Alert when waiting > 0 sustained |
+| hrm-be replicas | **1** (`container_name` fixed + host `:3001`) | **2** (`hrm-be` `:3001` + `hrm-be-2` `:3011`) + `hrm-api-lb` `:3101` least_conn | DO-W4 live; portal/hrm-fe proxy via LB; HTTPS nip.io `/api/hrm/` → `:3101` |
+| Per-replica `PG_POOL_MAX` | n/a (single 40) | **20+20** (`HRM_BE_PG_POOL_MAX`) | Σ ≤ prior headroom; raise Postgres `max_connections` before growing Σ |
+| Container CPU/mem limits | none | none | Host 8 vCPU / ~5 GiB available — soft limits would **reduce** capacity; do not add on pilot |
+
+**Reversible:** unset `PG_POOL_*` / set `PG_POOL_MAX=10` + recreate `hrm-be` only; stop `hrm-be-2` + `hrm-api-lb` and restore portal proxy to `hrm-be:3001`.
+
+**Horizontal status:** `P1-HRM-SCALE-DO-W4-REPLICA` **applied** — evidence `docs/qa/evidence/p1-hrm-scale-do-w4-20260717.md`. T-CONC ceiling still **400 VU** (timeout@600); next = DB/query headroom or sponsor cap.
+
+Evidence: `docs/qa/evidence/p1-hrm-scale-do-w2-20260717.md` · `p1-hrm-scale-do-w4-20260717.md`
+
+---
+
+## 8. Không làm
 
 - Commit `.env` có password lên git.
 - Ghi secret vào `AGENT_MESSAGE_BUS.md` hoặc chat.
 - `docker compose down` trên VPS shared multi-project.
 - Bật `PLATFORM_RLS_ENABLED` without SA sign-off (`migrations/hrm/0010_tenant_rls_policies.sql`).
+

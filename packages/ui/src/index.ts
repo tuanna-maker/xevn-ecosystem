@@ -13,6 +13,31 @@ export { LoadingOverlay, type LoadingOverlayProps } from './components/LoadingOv
 export { Container, type ContainerProps } from './components/Container';
 export { Section, type SectionProps } from './components/Section';
 export { Breadcrumbs, type BreadcrumbsProps } from './components/Breadcrumbs';
+export {
+  ViGroupedIntegerInput,
+  type ViGroupedIntegerInputProps,
+} from './components/ViGroupedIntegerInput';
+export {
+  ViDateInput,
+  type ViDateInputProps,
+} from './components/ViDateInput';
 export { cn } from './lib/utils';
+export {
+  formatViGroupedInteger,
+  parseViGroupedInteger,
+  formatViGroupedDecimal,
+  parseViGroupedDecimal,
+} from './lib/viNumberFormat';
+export {
+  formatDisplayDate,
+  VI_DATE_DISPLAY_PATTERN,
+  VI_DATETIME_DISPLAY_PATTERN,
+} from './lib/formatDisplayDate';
+export {
+  formatIsoDateToViDisplay,
+  parseViDisplayToIsoDate,
+  isCompleteViDateDraft,
+  isViMoneyFieldHint,
+} from './lib/viDateFormat';
 export * from './design-tokens';
 export type { Column, SortDirection, SortConfig, PageLayoutProps } from './types';

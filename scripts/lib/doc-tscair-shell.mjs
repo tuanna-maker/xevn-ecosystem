@@ -1,5 +1,5 @@
 /**
- * Shared TSCAir / Unicom HTML document shell helpers.
+ * Shared TSCAir HTML document shell helpers (XeVN cover brand P0).
  */
 import fs from 'fs';
 
@@ -11,10 +11,43 @@ export const DEFAULT_SRS_REF =
   process.env.SRS_REF ||
   'c:/Users/ADMIN/Downloads/Telegram Desktop/Unicom_SRS_TASMOS_Phase1_v3.0 (4) (2).html';
 
+/** Cover accent: product PRIMARY → portal cyan (XEVN_BRAND_UIUX_PROPOSAL §6 P0). */
+export const XEVN_COVER_BRAND_STYLES = `
+:root {
+  --xevn-primary: #1E40AF;
+  --xevn-secondary: #06B6D4;
+  --cyan: #06B6D4;
+}
+.doc-page.cover .accent-bar,
+.doc-page.cover .sep {
+  background: linear-gradient(90deg, var(--xevn-primary), var(--xevn-secondary)) !important;
+}
+.doc-page.cover .project-title .eo {
+  background: linear-gradient(135deg, var(--xevn-primary), var(--xevn-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.doc-page.cover h1,
+.doc-page.cover .project-title {
+  border-color: var(--xevn-primary);
+}
+`;
+
+/**
+ * Purge legacy UNICOM accent hex from TSCAir reference CSS so rebuild
+ * never re-introduces #3d7de8 / #0ab4d8 as the document color axis.
+ */
+export function rewriteLegacyUnicomAccentCss(css) {
+  return css
+    .replace(/#3d7de8/gi, '#1E40AF')
+    .replace(/#0ab4d8/gi, '#06B6D4');
+}
+
 export function extractTscairStyle(html) {
   const m = html.match(/<style>([\s\S]*?)<\/style>/);
   if (!m) throw new Error('TSCAir: no <style> block');
-  return m[1];
+  return rewriteLegacyUnicomAccentCss(m[1]);
 }
 
 export function extractTscairTailJs(html, replacements = []) {
@@ -79,7 +112,7 @@ export function buildTocPage({ docCode, versionLine, footerPage }) {
     <div id="toc-list" class="toc-list"></div>
   </div>
   <div class="inner-brd-footer">
-    <div class="inner-brd-footer-l">UNICOM TECHNOLOGY SOLUTIONS CO., LTD</div>
+    <div class="inner-brd-footer-l">XeVN Group</div>
     <div class="inner-brd-footer-r"><span class="ft-page">${footerPage}</span></div>
   </div>
 </div>`;
@@ -103,7 +136,7 @@ wrapper.innerHTML = \`
     <div class="md-render"></div>
   </div>
   <div class="inner-brd-footer">
-    <div class="inner-brd-footer-l">UNICOM TECHNOLOGY SOLUTIONS CO., LTD</div>
+    <div class="inner-brd-footer-l">XeVN Group</div>
     <div class="inner-brd-footer-r"><span class="ft-page">${footerPage}</span></div>
   </div>
 \`;
@@ -210,7 +243,7 @@ export function buildTscairCover({
   <div class="divider"></div>
   <div class="main">
     <div class="logo-wrap">
-      <img src="data:image/png;base64,${logoB64}" alt="UNICOM"/>
+      <img src="data:image/png;base64,${logoB64}" alt="XeVN"/>
     </div>
     <div class="sep"></div>
     <div class="doc-label">${docLabel}</div>
@@ -221,7 +254,7 @@ export function buildTscairCover({
     <div class="meta-info">${metaHtml}</div>
   </div>
   <div class="footer">
-    <div class="footer-l">UNICOM TECHNOLOGY SOLUTIONS CO., LTD</div>
+    <div class="footer-l">XeVN Group</div>
     <div class="footer-r">${footerRight}</div>
   </div>
 </div>`;
@@ -267,4 +300,23 @@ export function loadReferenceHtml(path) {
     throw new Error(`Missing reference HTML: ${path}`);
   }
   return fs.readFileSync(path, 'utf8');
+}
+
+/**
+ * Prefer external golden shell; if missing (CI / new machine), reuse style from
+ * an existing client-delivery HTML so brand rebuilds stay unblocked.
+ */
+export function loadStyleSourceHtml(primaryPath, fallbackPath) {
+  if (fs.existsSync(primaryPath)) {
+    return { html: fs.readFileSync(primaryPath, 'utf8'), source: primaryPath };
+  }
+  if (fallbackPath && fs.existsSync(fallbackPath)) {
+    console.warn(
+      `[doc-tscair-shell] Missing primary style ref:\n  ${primaryPath}\n  → fallback: ${fallbackPath}`,
+    );
+    return { html: fs.readFileSync(fallbackPath, 'utf8'), source: fallbackPath };
+  }
+  throw new Error(
+    `Missing style reference HTML.\n  primary: ${primaryPath}\n  fallback: ${fallbackPath || '(none)'}`,
+  );
 }

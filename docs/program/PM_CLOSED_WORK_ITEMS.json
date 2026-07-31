@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-07T01:00:00+07:00",
+  "updated": "2026-07-29T09:30:00+07:00",
   "items": [
     "P1-HRM-H17-AC-FID-07-PAY",
     "P1-HRM-H17-AC-FID-07-PAY-QA",
@@ -46,6 +46,10 @@
     "P1-HRM-H26-AC-FID-16-LINEAGE-RETEST",
     "P1-HRM-FIDELITY-QC-FINAL-R2",
     "P1-HRM-H19",
-    "P1-XBOS-W7-WF-FIX"
+    "P1-XBOS-W7-WF-FIX",
+    "MOB-XEVN-BRAND-TOKENS-L1-01",
+    "P1-EX-QA-HTTPS-RESIDUAL-03-R3",
+    "HRM-EMP-COMPANY-COL-01",
+    "HOOK-qa-309fd5_5"
   ]
 }

@@ -114,7 +114,7 @@ W5 QC GO/GWC on localhost U32
 | ID | Owner | Note |
 |----|-------|------|
 | G-INT-02 | dev-fe + dev-be | Chart label join — Plane B names in DB; FE resolver open |
-| G-INT-03 Plane A | ba-data | XBOS 4 tenants vs HRM 5 slugs — documented UAT drift; block PROD |
+| G-INT-03 Plane A | sa (**CLOSED design** 2026-07-27) | 4 member LE + synthetic/holding ↔ 5 slugs **by design** (Option A) — `ADR-HRM-XBOS-PLANE-A-BRIDGE-4LE-5SLUG-20260727`; evidence `sa-g-int-03-plane-a-bridge-01-20260727.md`. PROD still gated by deploy/env elsewhere — not by open cardinality redesign. |
 | G-INT-05 | dev-fe + qa | Browser company switcher E2E |
 | G-INT-06 | dev-be + qa | J-HRM-INT-03/04 + full L2.5 journeys |
 | G-INT-08 | dev-fe + qa | Stale CC embed iframe |

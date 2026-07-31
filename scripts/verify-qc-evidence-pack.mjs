@@ -64,10 +64,10 @@ const checks = [
   {
     id: 'portal_url',
     ok:
-      /portal.*(5173|5175|127\.0\.0\.1)|PORTAL_DEV_URL/i.test(text) ||
-      /api_base.*nip\.io|14-225-217-232\.nip\.io/i.test(text) ||
+      /portal.*(5173|5175|127\.0\.0\.1|8088)|PORTAL_DEV_URL/i.test(text) ||
+      /14\.225\.217\.232(:8088)?/i.test(text) ||
       (isMobileDevicePack && /\*\*api_base\*\*/i.test(text)),
-    hint: 'Record portal URL, PORTAL_DEV_URL, or mobile api_base @ nip.io',
+    hint: 'Record portal URL, PORTAL_DEV_URL, or mobile api_base (local or http://14.225.217.232:8088)',
   },
   {
     id: 'journey_l25',

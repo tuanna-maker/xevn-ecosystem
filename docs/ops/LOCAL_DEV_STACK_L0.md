@@ -1,6 +1,6 @@
 # Local dev stack — L0 (`qc:dev-stack`) for QA
 
-Use this when QA runs **L0** / **L1** on a developer workstation (not pilot nip.io).
+Use this when QA runs **L0** / **L1** on a developer workstation (not VPS DEV).
 
 ## Ports (default)
 
@@ -31,14 +31,14 @@ pnpm run test:system:uat
 
 If `test:system:uat` needs seed: `pnpm run test:system:uat:seed` (see `docs/qa/SYSTEM_INTEGRATION_UAT_SCENARIO.md`).
 
-## Pilot nip.io (L0 on VPS, not local)
+## VPS DEV (L0 on server, not local)
 
-When local APIs are off, point env at pilot:
+When local APIs are off, point env at deploy SoT (`PORTAL_FE_PORT=8088`):
 
 ```powershell
-$env:HRM_HEALTH_URL="https://14-225-217-232.nip.io/api/hrm"
-$env:XBOS_HEALTH_URL="https://14-225-217-232.nip.io/api/xbos"
-$env:PORTAL_DEV_URL="https://14-225-217-232.nip.io"
+$env:HRM_HEALTH_URL="http://14.225.217.232:8088/api/hrm"
+$env:XBOS_HEALTH_URL="http://14.225.217.232:8088/api/xbos"
+$env:PORTAL_DEV_URL="http://14.225.217.232:8088"
 pnpm run qc:dev-stack
 ```
 

@@ -1,0 +1,38 @@
+[
+  {
+    "url": "http://14.225.217.232:8088/hr/src/lib/hrmMetadataCompany.ts",
+    "status": 200,
+    "isHtmlShell": false,
+    "hasExport": true,
+    "hasSymbol": true,
+    "bodyLen": 14050,
+    "snippet": "export function resolveHrmCompanySlugForDisplay(companyId) {\n    const raw = companyId?.trim();\n    if (!raw) return null;\n    if (UUID_RE.test(raw)) {\n        return "
+  },
+  {
+    "url": "http://14.225.217.232:8080/hr/src/lib/hrmMetadataCompany.ts",
+    "status": 200,
+    "isHtmlShell": false,
+    "hasExport": true,
+    "hasSymbol": true,
+    "bodyLen": 14050,
+    "snippet": "export function resolveHrmCompanySlugForDisplay(companyId) {\n    const raw = companyId?.trim();\n    if (!raw) return null;\n    if (UUID_RE.test(raw)) {\n        return "
+  },
+  {
+    "url": "http://14.225.217.232:8088/",
+    "status": 200,
+    "isHtmlShell": true,
+    "hasExport": false,
+    "hasSymbol": false,
+    "bodyLen": 753,
+    "snippet": "<!DOCTYPE html> <html lang=\"vi\"> <head> <script type=\"module\">import { injectIntoGlobalHook } from \"/@react-refresh\"; injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; "
+  },
+  {
+    "url": "http://14.225.217.232:3001/api/hrm/metrics",
+    "status": 200,
+    "isHtmlShell": false,
+    "hasExport": false,
+    "hasSymbol": false,
+    "bodyLen": 339,
+    "snippet": "{\"success\":true,\"code\":\"HRM-METRICS-200\",\"message\":\"Runtime metrics snapshot\",\"data\":{\"process_uptime_sec\":3098,\"memory_rss_bytes\":137502720,\"memory_heap_used_bytes\":60659080,\"node"
+  }
+]

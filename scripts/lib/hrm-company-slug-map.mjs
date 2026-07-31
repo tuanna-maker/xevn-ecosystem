@@ -1,6 +1,7 @@
 /**
- * BA-D-01 §5 — GROUP_MEMBER_SLUG display_name bridge (G-INT-03 / PCOMP-W3-BE-04).
+ * BA-D-01 / BE-HRM-EMP-COMPANY-COL-01 — GROUP_MEMBER_SLUG display_name bridge.
  * Shared by seed script and verify-hrm-xbos-integrity.mjs.
+ * Display SoT = legal entity / ĐVTV names (org-seed), not legacy «Khối … X.E».
  */
 import { UAT_COMPANIES } from './uat-workforce.mjs';
 
@@ -18,13 +19,16 @@ export const HRM_COMPANY_UUID_BY_SLUG = {
   services: '10000000-0000-4000-8000-000000000005',
 };
 
-/** BA-D-01 §5 authoritative Vietnamese display names */
+/**
+ * Legal-entity / ĐVTV display names (org-seed-member-companies.json).
+ * Interim BR-INT-05 slug↔LE map until SA confirms.
+ */
 export const HRM_OPERATING_UNIT_DISPLAY_NAMES = {
   holding: 'Tập đoàn XeVN',
-  trsport: 'Khối Vận tải X.E',
-  logistics: 'Khối Logistics X.E',
-  finance: 'Khối Tài chính X.E',
-  services: 'Khối Dịch vụ X.E',
+  trsport: 'Công ty Cổ phần Thương mại và Dịch vụ X.E',
+  logistics: 'Công ty TNHH Du lịch Visun',
+  finance: 'Công ty TNHH Du lịch X.E Việt Nam',
+  services: 'Công ty TNHH X.E Việt Nam',
 };
 
 export function buildCompanySlugMapSeedRows() {

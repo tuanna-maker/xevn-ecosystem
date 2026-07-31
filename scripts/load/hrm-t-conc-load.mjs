@@ -15,6 +15,8 @@
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+const clientTimeoutMs = Number(process.env.T_CONC_CLIENT_TIMEOUT_MS || 30_000);
+
 const PORTAL = (process.env.PORTAL_DEV_URL || 'http://14.225.217.232:8088').replace(/\/+$/, '');
 const HRM_BASE = (process.env.HRM_API_BASE || `${PORTAL}/api/hrm`).replace(/\/+$/, '');
 const EMAIL = process.env.XEVN_PROBE_EMAIL || 'ceo@xe.vn';
@@ -123,7 +125,8 @@ async function oneRead(token, vu, iter) {
   const url = `${HRM_BASE}${path}`;
   const t0 = Date.now();
   try {
-    const r = await fetch(url, { headers, signal: AbortSignal.timeout(30_000) });
+    // Client timeout aligns with undici Agent bodyTimeout / nginx proxy_read_timeout.
+    const r = await fetch(url, { headers, signal: AbortSignal.timeout(clientTimeoutMs) });
     return { status: r.status, ms: Date.now() - t0, path };
   } catch (e) {
     return {

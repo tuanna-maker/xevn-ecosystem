@@ -519,7 +519,7 @@ export function buildDocInfoBlock() {
 
 | Mục | Giá trị |
 |-----|---------|
-| Mã tài liệu | UNICOM/SRS-XEVN-OS-001 |
+| Mã tài liệu | XEVN/SRS-XEVN-OS-001 |
 | Phiên bản | 1.3 |
 | Ngày hiệu lực | Tháng 5/2026 |
 | Loại | Software Requirements Specification (SRS) |

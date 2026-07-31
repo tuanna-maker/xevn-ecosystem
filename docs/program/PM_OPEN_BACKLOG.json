@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-09T11:51:42.998Z",
+  "generatedAt": "2026-07-25T10:10:33.283Z",
   "busPath": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\program\\AGENT_MESSAGE_BUS.md",
   "closedAcFid": [
     "AC-FID-03",
@@ -18,75 +18,96 @@
     "AC-FID-16"
   ],
   "nextFidelityWave": null,
-  "dispatchRequired": [],
+  "dispatchRequired": [
+    {
+      "priority": "P1",
+      "workItemId": "MOB-XEVN-BRAND-TOKENS-L1-01",
+      "role": "qc",
+      "reason": "Trạng thái cuối bus: qa->pm PASS_TO_PM chưa pm->qc DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-07-22T23:03:00+07:00"
+    },
+    {
+      "priority": "P1",
+      "workItemId": "MOB-XEVN-BRAND-PRIMITIVES-L2-01",
+      "role": "qc",
+      "reason": "Trạng thái cuối bus: qa->pm PASS_TO_PM chưa pm->qc DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-07-22T23:08:00+07:00"
+    },
+    {
+      "priority": "P1",
+      "workItemId": "HRM-EMP-COMPANY-COL-01",
+      "role": "qc",
+      "reason": "Trạng thái cuối bus: qa->pm PASS_TO_PM chưa pm->qc DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-07-23T14:27:35+07:00"
+    },
+    {
+      "priority": "P1",
+      "workItemId": "MOB-SPEC-ORPHAN-CODE-SAMPLE-01",
+      "role": "qa",
+      "reason": "Trạng thái cuối bus: dev-mobile->pm PASS_TO_PM chưa pm->qa DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-07-22T23:25:00+07:00"
+    },
+    {
+      "priority": "P1",
+      "workItemId": "P1-EX-QA-HTTPS-RESIDUAL-03-R3",
+      "role": "qc",
+      "reason": "Trạng thái cuối bus: qa->pm READY_FOR_QC chưa pm->qc DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-07-25T12:21:21+08:00"
+    },
+    {
+      "priority": "P1",
+      "workItemId": "HRM-SETTINGS-MASTER-DATA-01",
+      "role": "qa",
+      "reason": "Trạng thái cuối bus: ba-data->pm PASS_TO_PM chưa pm->qa DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-07-23T14:01:45+07:00"
+    }
+  ],
   "inFlight": [
     {
-      "workItemId": "P1-DEPLOY-NIPIO-R3",
-      "role": "devops",
-      "dispatchedAt": "2026-06-09T12:31:00+07:00",
-      "source": "bus-inflight",
-      "needsQa": false
-    },
-    {
-      "workItemId": "PCOMP-W7-BE-LEAVE-DOC",
-      "role": "dev-be",
-      "dispatchedAt": "2026-06-09T12:30:00+07:00",
-      "source": "bus-inflight",
-      "needsQa": false
-    },
-    {
-      "workItemId": "PCOMP-W7-MOB-BATCH-QA",
-      "role": "qa-device",
-      "dispatchedAt": "2026-06-09T12:30:00+07:00",
-      "source": "bus-inflight",
-      "needsQa": false
-    },
-    {
-      "workItemId": "PCOMP-W7-MOB-BATCH",
-      "role": "dev-mobile",
-      "dispatchedAt": "2026-06-09T12:02:00+07:00",
-      "source": "bus-inflight",
-      "needsQa": false
-    },
-    {
-      "workItemId": "P1-L0-W6-UAT-PACK",
-      "role": "devops",
-      "dispatchedAt": "2026-06-09T12:01:00+07:00",
-      "source": "bus-inflight",
-      "needsQa": false
-    },
-    {
-      "workItemId": "P1-G3-G6-ECOSYSTEM-R2",
+      "workItemId": "P1-EX-QA-HTTPS-RESIDUAL-03-R3",
       "role": "qa",
-      "dispatchedAt": "2026-06-09T12:01:00+07:00",
+      "dispatchedAt": "2026-07-25T12:07:49+08:00",
       "source": "bus-inflight",
       "needsQa": false
     },
     {
-      "workItemId": "MOB-UX-17-QA",
-      "role": "qa-device",
-      "dispatchedAt": "2026-06-09T11:06:00+07:00",
+      "workItemId": "HRM-REC-WF-OPTION-B-01",
+      "role": "qa",
+      "dispatchedAt": "2026-07-23T14:30:07+07:00",
       "source": "bus-inflight",
       "needsQa": false
     },
     {
-      "workItemId": "MOB-UX-16-QA-R2",
-      "role": "qa-device",
-      "dispatchedAt": "2026-06-09T10:36:00+07:00",
+      "workItemId": "HRM-EMP-COMPANY-COL-SYNC-01",
+      "role": "devops",
+      "dispatchedAt": "2026-07-23T14:27:35+07:00",
       "source": "bus-inflight",
       "needsQa": false
     },
     {
-      "workItemId": "MOB-UX-14-UNIFIED-QA-R6",
-      "role": "qa-device",
-      "dispatchedAt": "2026-06-09T10:03:00+07:00",
+      "workItemId": "HRM-SETTINGS-MD-CRUD-FE-01",
+      "role": "dev-fe",
+      "dispatchedAt": "2026-07-23T14:18:44+07:00",
       "source": "bus-inflight",
       "needsQa": false
     },
     {
-      "workItemId": "MOB-UX-16ABC",
-      "role": "dev-mobile",
-      "dispatchedAt": "2026-06-09T10:01:00+07:00",
+      "workItemId": "HRM-SETTINGS-MD-CRUD-BE-01",
+      "role": "dev-be",
+      "dispatchedAt": "2026-07-23T14:18:44+07:00",
+      "source": "bus-inflight",
+      "needsQa": false
+    },
+    {
+      "workItemId": "HRM-EMP-COMPANY-COL-FE-01",
+      "role": "dev-fe",
+      "dispatchedAt": "2026-07-22T23:15:00+07:00",
       "source": "bus-inflight",
       "needsQa": false
     }
@@ -105,5 +126,40 @@
       "trigger": "adb-available"
     }
   ],
-  "policy": "U37/U58 — PM chạy pm:idle:check (hoặc pm:scan:backlog) trước mỗi lượt; dispatchRequired>0 → Task ngay; exit 0 ≠ idle hợp lệ nếu bus INTAKE chưa DISPATCHED"
+  "policy": "U37/U58 — PM chạy pm:idle:check (hoặc pm:scan:backlog) trước mỗi lượt; dispatchRequired>0 → Task ngay; exit 0 ≠ idle hợp lệ nếu bus INTAKE chưa DISPATCHED",
+  "items": [
+    {
+      "id": "MOB-SPEC-ORPHAN-CODE-SAMPLE-01",
+      "priority": "P1",
+      "status": "qc-fail",
+      "verdict": "FAIL",
+      "reason": "PILOT_HRM_OPERATING_UNITS Khối hardcode remains in hrmOperatingUnits.ts; G-ORPH-MOB-01..03 still OPEN",
+      "qcEvidence": "docs/qa/evidence/qc-mob-spec-orphan-code-sample-01-20260729.md",
+      "owner": "frontend",
+      "nextAction": "frontend:remove pilot hardcode, close G-ORPH-MOB-01..03",
+      "updatedAt": "2026-07-29T09:45:00+07:00"
+    },
+    {
+      "id": "MOB-XEVN-BRAND-PRIMITIVES-L2-01",
+      "priority": "P1",
+      "status": "qc-fail",
+      "verdict": "FAIL",
+      "reason": "ADR §4.2 contains only token specs; no Button/Input/Card/Badge component spec table to verify against",
+      "qcEvidence": "docs/qa/evidence/qc-brand-primitives-l2-01-20260729.md",
+      "owner": "frontend",
+      "nextAction": "frontend: add ADR component spec table OR implement per token-resolution guidance",
+      "updatedAt": "2026-07-29T09:50:00+07:00"
+    },
+    {
+      "id": "HRM-SETTINGS-MASTER-DATA-01",
+      "priority": "P0",
+      "status": "qc-fail",
+      "verdict": "FAIL",
+      "reason": "Babel/Jest transformer misconfigured for .spec.ts — TypeScript syntax reaches Babel parser without TS plugin. All 8 test suites error at parse time (line 8 let controller: SettingsCatalogsController;). Build infra issue, not code logic.",
+      "qcEvidence": "docs/qa/evidence/qc-hrm-settings-master-data-01-20260729.md",
+      "owner": "qa-befix",
+      "nextAction": "Fix Jest/Babel transform config for apps/api/hrm-api to support TypeScript in .spec.ts files, then re-run QC",
+      "updatedAt": "2026-07-29T09:55:00+07:00"
+    }
+  ]
 }

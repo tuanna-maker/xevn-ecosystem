@@ -1,7 +1,8 @@
 # TechSpec — Định danh, vai trò và phạm vi dữ liệu toàn hệ sinh thái XeVN
 
 > **TechSpec tổng hợp (kiến trúc, API, dữ liệu, triển khai, ánh xạ SRS):** [`TECHSPEC_HE_SINH_THAI_XEVN.md`](./TECHSPEC_HE_SINH_THAI_XEVN.md)  
-> File này giữ **chi tiết phạm vi tenant**, iframe portal và business-master — được trích dẫn từ tài liệu tổng, không nhân bản.
+> File này giữ **chi tiết phạm vi tenant**, iframe portal và business-master — được trích dẫn từ tài liệu tổng, không nhân bản.  
+> **ref_srs (W1 XBOS spine):** khách `docs/client-delivery/xbos/SRS_XBOS_KHACH.md` §3.3 **FR-ECO-SCOPE-02** · dual-ref master `docs/xbos/TECHSPEC.md` §14.3 · evidence `docs/qa/evidence/sa-xbos-techspec-ref-srs-01-20260722.md`.
 
 ## 1. Mục tiêu kỹ thuật
 

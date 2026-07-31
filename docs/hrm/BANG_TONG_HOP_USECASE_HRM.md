@@ -8,10 +8,10 @@
 
 | Chỉ tiêu | Số lượng |
 |----------|----------|
-| **Tổng use case** | **119** |
+| **Tổng use case** | **120** |
 | Quản trị danh mục trên XBOS | 15 |
 | API / Web — nền tảng & đồng bộ | 8 |
-| API / Web — chấm công & đơn từ | 13 |
+| API / Web — chấm công & đơn từ | 14 |
 | API / Web — yêu cầu dịch vụ & thông báo | 8 |
 | API / Web — nhân sự, lương, tuyển dụng, hợp đồng | 24 |
 | API / Web — metadata, danh mục, import | 18 |
@@ -25,7 +25,7 @@
 |------|-------------|
 | Quản trị danh mục XBOS | 15 |
 | Nền tảng, quản trị, đồng bộ XBOS | 8 |
-| Chấm công và đơn từ | 13 |
+| Chấm công và đơn từ | 14 |
 | Yêu cầu dịch vụ nội bộ | 6 |
 | Hộp thư thông báo | 2 |
 | Quản lý nhân viên | 5 |
@@ -43,7 +43,7 @@
 
 ---
 
-## Bảng chung (119 use case)
+## Bảng chung (120 use case)
 
 | STT | Mã | Tên use case | Nhóm nghiệp vụ | Kênh |
 |-----|-----|--------------|----------------|------|
@@ -83,6 +83,7 @@
 | 34 | HRM-AT-11 | Xem danh sách đơn nghỉ phép | Chấm công và đơn từ | API / Web |
 | 35 | HRM-AT-12 | Phê duyệt đơn nghỉ phép | Chấm công và đơn từ | API / Web |
 | 36 | HRM-AT-13 | Từ chối đơn nghỉ phép | Chấm công và đơn từ | API / Web |
+| 36a | HRM-AT-14 | Tạo / xem / sửa / xoá bảng chấm công theo kỳ (sau tạo: danh sách + lưới kỳ; empty trung thực; không storm tải) | Chấm công và đơn từ | API / Web |
 | 37 | HRM-SV-01 | Tạo yêu cầu dịch vụ nội bộ | Yêu cầu dịch vụ nội bộ | API / Web |
 | 38 | HRM-SV-02 | Xem danh sách yêu cầu dịch vụ | Yêu cầu dịch vụ nội bộ | API / Web |
 | 39 | HRM-SV-03 | Cập nhật yêu cầu dịch vụ | Yêu cầu dịch vụ nội bộ | API / Web |
@@ -150,7 +151,7 @@
 | 101 | UC-HRM-24 | Embed — Lương | Embed Command Center | Web Portal |
 | 102 | UC-HRM-25 | Embed — Hợp đồng và bảo hiểm xã hội | Embed Command Center | Web Portal |
 | 103 | UC-HRM-26 | Embed — Hàng chờ duyệt metadata | Embed Command Center | Web Portal |
-| 104 | UC-HRM-27 | Embed — Quyết định và báo cáo (backlog) | Embed Command Center | Web Portal |
+| 104 | UC-HRM-27 | Embed — Quyết định nhân sự (Implemented-empty; fidelity open) | Embed Command Center | Web Portal |
 | 105 | UC-HRM-MOB-01 | Đăng nhập và thiết lập phiên an toàn | Mobile — nền tảng | Mobile |
 | 106 | UC-HRM-MOB-02 | Chọn và xác nhận phạm vi công ty | Mobile — nền tảng | Mobile |
 | 107 | UC-HRM-MOB-03 | Xem bảng điều khiển cá nhân | Mobile — nền tảng | Mobile |

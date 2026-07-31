@@ -77,7 +77,7 @@ Người đọc chính: lập trình viên, kiểm thử, vận hành hệ thố
 
 | Hạng mục | Giá trị |
 |----------|---------|
-| Môi trường chạy thử | https://14-225-217-232.nip.io |
+| Môi trường chạy thử | http://14.225.217.232:8088 |
 | Điểm chạm trong phạm vi | Command Center · nhúng HRM · HRM Mobile |
 | Ma trận Giai đoạn 1 | **245** UC (catalog đóng) |
 | Kiểm thử tích hợp API | PASS trên pilot |
@@ -253,7 +253,7 @@ export function buildChapter6Constraints() {
 
 ---
 
-*Tài liệu được duy trì bởi UNICOM Technology Solutions Co., Ltd. Mọi thay đổi phải được ghi lịch sử phiên bản và phê duyệt.*
+*Tài liệu được duy trì bởi XeVN Group. Mọi thay đổi phải được ghi lịch sử phiên bản và phê duyệt.*
 
 ---`;
 }
@@ -264,12 +264,12 @@ export function buildBatecoSrsMarkdown({ brd, ucRows }) {
 
 | Thuộc tính | Giá trị |
 |-----------|---------|
-| **Mã tài liệu** | UNICOM/SRS-XEVN-OS-001 |
+| **Mã tài liệu** | XEVN/SRS-XEVN-OS-001 |
 | **Phiên bản** | 2.2 |
 | **Ngày hiệu lực** | Tháng 6/2026 |
 | **Trạng thái** | Bản nghiệm thử Giai đoạn 1 (UAT) |
 | **Dựa trên** | BRD — XeVN Ecosystem OS |
-| **Tác giả** | UNICOM Technology Solutions Co., Ltd |
+| **Tác giả** | XeVN Group |
 
 ${buildChapter1Intro()}
 

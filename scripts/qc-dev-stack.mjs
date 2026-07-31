@@ -51,7 +51,7 @@ async function main() {
       console.log('• hrm-api :28001 down → portal `/api/hrm/*` trả 500 — chạy `pnpm run dev:hrm-api`');
     }
     if (!xbosOk) {
-      console.log('• xbos-api :28002 down → login 502 qua nip.io khi VPS xbos-be đang restart — `pnpm run dev:xbos-api`');
+      console.log('• xbos-api :28002 down → login 502 qua VPS DEV khi xbos-be đang restart — `pnpm run dev:xbos-api`');
     }
     console.log('• ECONNREFUSED / fetch failed: API chưa chạy → `pnpm dev:xbos-api` + `pnpm dev:hrm-api` (pnpm dev không gồm hrm-api)');
     console.log('• database "…" does not exist (3D000): tạo DB `xevn_xbos` hoặc đặt DATABASE_URL_XBOS / DB_HOST+DB_PORT+DB_USER+DB_NAME_XBOS');

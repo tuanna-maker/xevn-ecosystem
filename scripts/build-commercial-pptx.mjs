@@ -11,7 +11,7 @@ import pptxgen from 'pptxgenjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs/client-delivery/03_Thuong_mai_XeVN_OS.pptx');
 const ASSETS = path.join(ROOT, 'docs/ecosystem/assets');
-const LOGO = path.join(ROOT, 'docs/client-delivery/assets/logo-unicom.png');
+const LOGO = path.join(ROOT, 'docs/client-delivery/assets/xevn-logo.png');
 
 const BLUE = '3D7DE8';
 const CYAN = '0AB4D8';
@@ -250,7 +250,7 @@ function imageSlide(pres, title, imgPath, caption) {
 async function main() {
   const pres = new pptxgen();
   pres.layout = 'LAYOUT_16x9';
-  pres.author = 'UNICOM / XeVN';
+  pres.author = 'XeVN Group';
   pres.title = 'XeVN OS — Giới thiệu thương mại';
   pres.subject = 'Hệ sinh thái phần mềm đa công ty — vận tải & logistics';
 
@@ -616,7 +616,7 @@ async function main() {
     ],
     { x: 0.7, y: 1.35, w: 8.5, h: 2.5, fontSize: 18, color: TEXT },
   );
-  sEnd.addText('Liên hệ: UNICOM · XeVN Ecosystem OS', {
+  sEnd.addText('Liên hệ: XeVN Group · XeVN Ecosystem OS', {
     x: 0.7,
     y: 4.2,
     w: 8.5,

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Command Center — member unit legal-entity PUT (group CEO) — mirrors FE saveCompanySettings headers.
- * Usage: PORTAL_DEV_URL=https://14-225-217-232.nip.io node scripts/qa/xbos-cc-legal-entity-member-save-probe.mjs
+ * Usage: PORTAL_DEV_URL=http://14.225.217.232:8088 node scripts/qa/xbos-cc-legal-entity-member-save-probe.mjs
  */
 const PORTAL = (process.env.PORTAL_DEV_URL || 'http://127.0.0.1:5175').replace(/\/+$/, '');
 

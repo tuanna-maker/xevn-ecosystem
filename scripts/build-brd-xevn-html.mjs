@@ -13,7 +13,8 @@ import {
   extractTscairStyle,
   extractUcParts,
   injectSubsystemUcTables,
-  loadReferenceHtml,
+  loadStyleSourceHtml,
+  XEVN_COVER_BRAND_STYLES,
 } from './lib/doc-tscair-shell.mjs';
 import {
   embedImagePlaceholders,
@@ -24,12 +25,12 @@ import {
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs/client-delivery/01_BRD_XeVN_OS.html');
-const LOGO = path.join(ROOT, 'docs/client-delivery/assets/logo-unicom.png');
+const LOGO = path.join(ROOT, 'docs/client-delivery/assets/xevn-logo.png');
 const ASSETS = path.join(ROOT, 'docs/ecosystem/assets');
 const UC_MD = path.join(ROOT, 'docs/ecosystem/BANG_TONG_HOP_USECASE_XEVN.md');
 const BRD_MD = path.join(ROOT, 'docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md');
 
-const DOC_CODE = 'UNICOM/BRD-XEVN-OS-001';
+const DOC_CODE = 'XEVN/BRD-XEVN-OS-001';
 const VERSION_LINE =
   'Phiên bản 1.1 &nbsp;·&nbsp; Tháng 6/2026 &nbsp;·&nbsp; Giai đoạn 1 UAT';
 const FOOTER_PAGE = 'XeVN ECOSYSTEM OS — BRD v1.1';
@@ -89,14 +90,17 @@ ${ucParts.fullTable}
 }
 
 function main() {
-  const tscRef = loadReferenceHtml(DEFAULT_TSCAIR_REF);
-  const style = extractTscairStyle(tscRef);
+  if (!fs.existsSync(LOGO)) {
+    throw new Error(`Missing XeVN logo: ${LOGO} (copy from assets/brand/xevn-logo-master.png)`);
+  }
+  const { html: tscRef } = loadStyleSourceHtml(DEFAULT_TSCAIR_REF, OUT);
+  const style = extractTscairStyle(tscRef) + XEVN_COVER_BRAND_STYLES;
   const diagrams = loadDiagramBundle(ASSETS);
   const logoB64 = fs.readFileSync(LOGO).toString('base64');
   const mdRaw = buildBodyMarkdown();
 
   const html = buildTscairHtml({
-    title: 'BRD — XeVN Ecosystem OS | UNICOM',
+    title: 'BRD — XeVN Ecosystem OS | XeVN',
     style,
     coverHtml: buildTscairCover({
       logoB64,
@@ -108,7 +112,7 @@ function main() {
       subtitle:
         'Nền tảng đa công ty — Cổng Web · XBOS · HRM · HRM Mobile · Logistic',
       metaHtml: `<strong>Khách hàng:</strong> Tập đoàn XeVN Group<br>
-      <strong>Đơn vị phát triển:</strong> Unicom Technology Solutions Co., Ltd`,
+      <strong>Đơn vị phát triển:</strong> XeVN Group`,
     }),
     tocPageHtml: buildTocPage({ docCode: DOC_CODE, versionLine: VERSION_LINE, footerPage: FOOTER_PAGE }),
     mdRaw,
@@ -128,7 +132,12 @@ function main() {
     html.includes('"four-layer"') &&
     html.includes('architecture-figure') &&
     html.includes('mermaid.run') &&
-    !html.includes('hero-title');
+    !html.includes('hero-title') &&
+    html.includes('alt="XeVN"') &&
+    html.includes(DOC_CODE) &&
+    !html.includes('logo-unicom') &&
+    !html.includes('UNICOM | AI SOFTWARE FACTORY') &&
+    !/#3d7de8/i.test(html);
   console.log(`Wrote ${OUT} (${kb} KB) diagrams=${Object.keys(diagrams).length} ok=${ok}`);
   if (!ok) process.exit(1);
 }

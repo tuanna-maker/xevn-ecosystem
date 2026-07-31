@@ -21,7 +21,7 @@ const sdk = process.env.LOCALAPPDATA + '\\Android\\Sdk';
 const adb = path.join(sdk, 'platform-tools', 'adb.exe');
 const device = process.env.ADB_SERIAL || 'emulator-5554';
 const pkg = 'vn.xevn.hrm.mobile';
-const API_BASE = process.env.HRM_API_BASE || 'https://14-225-217-232.nip.io';
+const API_BASE = process.env.HRM_API_BASE || 'http://14.225.217.232:8088';
 const EMAIL = process.argv.includes('--email')
   ? process.argv[process.argv.indexOf('--email') + 1]
   : 'uat.nv0001@xe.vn';

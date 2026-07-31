@@ -4,7 +4,8 @@
 **Owner:** BA-Process  
 **Status:** **COMPLETE** — gate **G-FID-01**  
 **Program:** [`HRM_FULL_FIDELITY_PROGRAM.md`](../program/HRM_FULL_FIDELITY_PROGRAM.md)  
-**Related:** [`BANG_TONG_HOP_USECASE_HRM.md`](./BANG_TONG_HOP_USECASE_HRM.md) (119 UC) · [`DANH_MUC_XBOS_CHO_HRM.md`](./DANH_MUC_XBOS_CHO_HRM.md) (72 DM) · cardinality rules → `HRM_SEED_CARDINALITY_RULES.md` (BA-Data, pending)
+**Related:** [`BANG_TONG_HOP_USECASE_HRM.md`](./BANG_TONG_HOP_USECASE_HRM.md) (119 UC) · [`DANH_MUC_XBOS_CHO_HRM.md`](./DANH_MUC_XBOS_CHO_HRM.md) (72 DM) · cardinality rules → [`HRM_SEED_CARDINALITY_RULES.md`](./HRM_SEED_CARDINALITY_RULES.md)  
+**SRS khách FR ↔ FK spine (ADD 2026-07-21):** [`HRM_DATA_LINKAGE_SRS_TRACE.md`](./HRM_DATA_LINKAGE_SRS_TRACE.md) · `BA-HRM-DATA-LINKAGE-TRACE-01` · TechSpec §14/§16 · **§11** below
 
 ---
 
@@ -25,6 +26,7 @@ Khi pilot giả định **≥1000 nhân viên active** (`seed:hrm:1000-uat`), **
 |---------|-----------|
 | `N_EMP(c)` | `COUNT(*)` từ `employees` WHERE `company_id = c` AND `status = 'active'` AND `archived_at IS NULL` |
 | `N_EMP(*)` | Tổng active toàn tenant (rollup group CEO) |
+| `N_EMP_TOTAL(c)` | `COUNT(*)` non-archived (`archived_at IS NULL`) — **active + inactive**; dùng cho list `total`, không thay `N_EMP` fidelity |
 | `R_child(c)` | `COUNT(child rows scoped c)` / `N_EMP(c)` |
 | `R_distinct(c)` | `COUNT(DISTINCT child.employee_id WHERE company_id=c)` / `N_EMP(c)` |
 | Pilot companies | `holding`, `trsport`, `logistics`, `finance`, `services` (UAT workforce) |
@@ -71,13 +73,13 @@ Khi pilot giả định **≥1000 nhân viên active** (`seed:hrm:1000-uat`), **
 | `recruitment` | `…/recruitment` | P-CC-06 | UC-HRM-22 | HRM-RC-02, HRM-RC-04 | `GET /recruitment/requisitions`, `GET /recruitment/candidates` | `recruitment_candidates` (optional FK requisition); requisition không bắt buộc FK NV | `recruitment_channels` (DM §39), `job_grades` (DM §37–42) | ≥ **1** requisition open / company; ≥ **3** candidates / requisition |
 | `attendance` | `…/attendance` | P-CC-07 | UC-HRM-23 | HRM-AT-02, HRM-AT-11 | `GET /attendance/records`, `GET /attendance/leave-requests` | `attendance_records.employee_id`, `leave_requests.employee_id` | `shifts` (DM §31), `leave_types` (DM §30), workflow §55–56 | ≥ **15** record-days / NV / tháng rolling cho ≥ **80%** NV active / company **hoặc** ≥ **12 000** records group |
 | `payroll` | `…/payroll` | P-CC-08 | UC-HRM-24 | HRM-PR-02, HRM-PR-05 | `GET /payroll/payslips`, `GET /payroll/periods` | `payroll_payslips.employee_id → employees.id`; `payroll_periods` theo company | `salary_components` (DM §33–34), `payroll_templates`, `kpi_library` | ≥ **12** periods / company (12 tháng); payslip `R_distinct(c) ≥ 0.90` / kỳ closed gần nhất |
-| `decisions` | `…/decisions` | — | UC-HRM-27 | — (backlog) | Chưa có REST — mock embed | — | `decision_types` (DM §28) | Deferred G-FID; empty phải ghi «chưa triển khai API» |
+| `decisions` | `…/decisions` | — | UC-HRM-27 | UC-HRM-27 CRUD | `GET/POST/PATCH/DELETE /decisions` (`HRM-DEC-200`/`201`) | `hr_decisions` (`employee_id` UUID optional → `employees.id`) | `decision_types` (DM §28) | **Live-empty OK** «Không có quyết định nào» khi `total:0` — **cấm** copy «chưa triển khai API». G-FID density: ≥1 QSĐ / pilot company **chưa** bắt buộc đến khi AC-DEC-DENSITY closed; **không** claim menu DONE chỉ vì empty+200 |
 | `tasks` | `…/tasks` | — | HRM-OP-02 | HRM-OP-01 | `GET /operations/tasks` | `hrm_tasks` — **không** FK bắt buộc; `service_requests.employee_id` optional | `operations_request_types` (DM §35) | ≥ **5** tasks / company |
 | `internal_services` | `…/internal_services` | — | HRM-SV-02 | HRM-SV- pack | `GET /operations/service-requests` | `service_requests.employee_id` (nullable) + denormalized name/code | DM §35 | ≥ **10** requests / company; ≥ **50%** có `employee_id` hợp lệ |
-| `processes` | `…/processes` | — | XBOS-DM-HRM-14 | — | Workflow ref only (XBOS) | — | workflow codes §55–58 | Catalog synced; UI read-only OK |
+| `processes` | `…/processes` | — | **XBOS-DM-HRM-14** (SoT) · SRS §13 processes | — | **Read-only XBOS workflow/policy ref** — `GET` catalog-sync / settings-catalogs keys §55–58 (or empty honest). **Cấm** HRM REST CRUD `company_processes`. **Cấm** fake Add/Edit/Delete toast | — | workflow codes §55–58 · nhóm §59 | **AC-PROC-01..04**: catalog present **hoặc** live-empty; UI **read-only**; deep-link XBOS admin optional |
 | `hrm_ai` | `…/hrm_ai` | — | — | — | Không transactional | — | — | Out of fidelity density scope |
 | `tools_equipment` | `…/tools_equipment` | — | — | — | Mock / backlog | — | — | Deferred |
-| `company` | `…/company` | — | HRM-SC-01 | UC-HRM-03 | Portal tenant-scope + `GET /settings-catalogs` | Membership, không FK NV list | org tree DM §1–6 | ≥ 1 member unit visible group CEO |
+| `company` | `…/company` | — | HRM-SC-01 | **UC-HRM-CO-01** / **FR-HRM-CO-HC-01** · **FR-HRM-CO-IND-01** (SRS) · UC-HRM-03 admin CRUD tách · **AC-CO-EMP-*** · **AC-CO-IND-*** | XBOS `group-member-units` (**+** `business_lines`) **+** HRM headcount (`GET /employees/summary` / per-slug counts via bridge) | LE/tenant → `GROUP_MEMBER_SLUGS` (`company_slug_map` / `hrm-operating-unit-registry`) → `employees.company_id`; industry ← `business_lines` **không** `entity_type` | org tree DM §1–6 · BR-INT-05 · **BR-CO-HC-01** · **BR-CO-EMP-01..02** · **BR-CO-IND-01** · **BR-CO-LABEL-01** | ≥ 1 ĐVTV visible **và** card/cột NV = workforce truth (**AC-CO-EMP-01..06**) **và** «Ngành nghề» VI / «—» (**AC-CO-IND-01..04**) |
 | `reports` | `…/reports` | — | HRM-PR-06, HRM-OP-04 | — | `GET /payroll/reports/reconciliation`, `GET /operations/reports/summary` | Derived từ satellite | `kpi_library` | Report row > 0 khi payroll + attendance seeded |
 | `settings` | `…/settings` | — | HRM-SC-01..09 | UC-HRM-06..08 | `GET /settings-catalogs`, `POST …/sync-from-xbos` | `synced_catalogs`, extension tables | **All keys §4** | `COUNT(DISTINCT catalog_key) ≥ 8` / company sau full sync |
 | `guide` | `…/guide` | — | — | — | Static | — | — | N/A |
@@ -93,13 +95,13 @@ Khi pilot giả định **≥1000 nhân viên active** (`seed:hrm:1000-uat`), **
 | `/attendance` | Chấm công | HRM-AT-01..13 | `/attendance/records`, `/update-requests`, `/leave-requests` | all `employee_id` | shifts, leave_types | §2.1 attendance |
 | `/payroll` | Lương | HRM-PR-01..06 | `/payroll/periods`, `/payslips`, `/reports/reconciliation` | payslip → employee | salary components | §2.1 payroll |
 | `/performance` | Đánh giá | HRM-PF-01..04 | `GET/POST /performance/cycles`, `/evaluations` | `performance_evaluations.employee_id` | `kpi_library` | ≥ 1 cycle active / company; eval ≥ 30% NV / cycle |
-| `/company` | Công ty | UC-HRM-03 | Admin + settings | — | org DM §1–6 | Member units seeded |
+| `/company` | Công ty | **UC-HRM-CO-01** / **FR-HRM-CO-HC-01** · **FR-HRM-CO-IND-01** · **AC-CO-EMP-*** · **AC-CO-IND-*** | XBOS member-units (+ `business_lines`) + HRM employee counts (bridged) | LE ↔ slug → `employees.company_id`; industry ≠ `entity_type` | org DM §1–6 · industries catalog | ĐVTV list **+** headcount AC-CO-EMP **+** Ngành nghề AC-CO-IND (không PASS chỉ vì list visible) |
 | `/settings` | Cài đặt | HRM-SC-01..09 | `/settings-catalogs/*`, `/catalog-sync/*` | snapshots | full catalog set | §2.1 settings |
 | `/reports` | Báo cáo | HRM-PR-06, HRM-OP-04 | reconciliation + summary | derived | kpi | counters > 0 |
-| `/decisions` | Quyết định | UC-HRM-27 | **None** | — | decision_types | Deferred |
+| `/decisions` | Quyết định | UC-HRM-27 | `GET/POST/PATCH/DELETE /decisions` | `hr_decisions.employee_id` optional | `decision_types` | Live-empty OK; density/CRUD AC-DEC-* — **NOT DONE** until AC-DEC-DENSITY + AC-DEC-04 |
 | `/tasks` | Công việc | HRM-OP-01..04 | `/operations/tasks` | optional employee on SR | operations types | §2.1 tasks |
 | `/internal-services` | DVC nội bộ | HRM-SV-01..06 | `/operations/service-requests` | `employee_id` optional | §35 | §2.1 internal_services |
-| `/processes` | Quy trình | XBOS workflow | XBOS ref | — | §55–58 | catalog present |
+| `/processes` | Quy trình & quy định | **XBOS-DM-HRM-14** read-only | Catalog-sync / settings-catalogs §55–58 (no HRM mutate API) | — | §55–58 | **AC-PROC-*** — remove fake CRUD; empty OK; không claim HRM owns policies |
 | `/ai` | UniAI | — | — | — | — | N/A |
 | `/tools-equipment` | CCDC | — | backlog | — | — | Deferred |
 
@@ -156,6 +158,8 @@ Khi pilot giả định **≥1000 nhân viên active** (`seed:hrm:1000-uat`), **
 | `positions` / dept overlay | 3, 8–10 | employees | tenant-position-catalog + XBOS org | `settings-catalogs/seed/tenant-position-catalog` |
 
 **Full sync entry:** `POST /api/hrm/settings-catalogs/sync-from-xbos` (HRM-SC-02) phải pull **tất cả keys** trong cột trên cho mỗi `(tenant_id, company_id)` pilot trước khi chạy `seed:hrm:fidelity`.
+
+**FR SoT Settings (2026-07-23):** `catalog_key` → **FR-HRM-SC-POS-01 · SC-JT-01 · SC-LEAVE-01 · SC-DEC-01 · SC-PAY-01** (+ FL-02 / IM-02) — phụ lục `docs/qa/evidence/ba-hrm-settings-fr-align-01-20260723.md` (SC-MD-* = alias lịch sử). DANH_MUC STT map trong evidence §1.3.
 
 ---
 
@@ -272,8 +276,40 @@ Quy ước mã nhánh: `H-{menu}` happy · `A-{menu}` alternate · `E-{menu}-*` 
 | **AC-FID-14** | scope RBAC | Group CEO sees rollup; member CEO sees only own co; HRBP dept filter — **0** cross-company rows | QA persona matrix |
 | **AC-FID-15** | UI fidelity | No menu shows «empty OK» when API 4xx/5xx; no required `:54321` | L2 matrix + G-FID-06 |
 | **AC-FID-16** | catalog lineage | 100% transactional rows use catalog codes present in synced snapshot for all keys §3 |
+| **AC-PROC-01** (load) | `processes` | Menu load: không ERROR/Sync banner; không call HRM mutate; list từ XBOS catalog snapshot **hoặc** empty honest | Fake rows / toast «đã thêm» không persist |
+| **AC-PROC-02** (read-only) | `processes` | **Không** nút Thêm / Sửa / Xóa (hoặc disabled + copy «Quản trị trên XBOS»). View/detail read-only OK | Add/Edit/Delete mutation stub hoặc POST HRM |
+| **AC-PROC-03** (empty) | `processes` | `items.length===0` → «Chưa có quy trình/quy định» (hoặc tương đương); **không** «chưa triển khai API» | Mock fill để che empty |
+| **AC-PROC-04** (ownership) | `processes` | SoT = XBOS workflow definition + gán mã (XBOS-DM-HRM-14). HRM **không** sở hữu CRUD process/policy document store trên menu này | Wire HRM `company_processes` CRUD «cho đủ nút» |
+
+#### Company Management headcount (`company` / **UC-HRM-CO-01** · **FR-HRM-CO-HC-01**) — ADD `D-HRM-CO-EMP-COUNT-BA-01` + SRS lock `GOV-HRM-CO-EMP-SRS-01` (2026-07-27)
+
+> **Prior gap:** Matrix chỉ yêu cầu ≥1 member unit visible → QA có thể **PASS** khi mọi ô «Số nhân viên»=0. **Không đủ** so với Dashboard Nhân sự (`GET /employees/summary?company_id=main`). Evidence: `docs/qa/evidence/ba-hrm-co-emp-count-01-20260727.md` · SRS: `docs/hrm/SRS.md` UC-HRM-CO-01.
+
+| AC ID | Surface | Pass | Fail |
+|-------|---------|------|------|
+| **AC-CO-EMP-01** | Card «Tổng nhân viên» · Group CEO · `/command-center/hrm/company` | Giá trị = tổng workforce headcount trên các ĐVTV **visible** (rollup ≈ `GET /api/hrm/employees/summary?company_id=main` → `total`, cùng định nghĩa non-archived như Dashboard «Tổng nhân viên» / `HRM_DASHBOARD_DATA_QUALITY_RULES` AC-HC-03) | Card = `0` trong khi summary/`N_EMP` group > 0; hoặc chỉ bind XBOS mà không gọi HRM count |
+| **AC-CO-EMP-02** | Cột «Số nhân viên» mỗi dòng ĐVTV | = `COUNT` employees với `company_id` = **operating slug** đã bridge từ LE/tenant của dòng đó (`GROUP_MEMBER_SLUGS`) | Mọi dòng = `0` / `null\|\|0` khi slug có NV; hoặc đếm theo UUID LE thay vì slug |
+| **AC-CO-EMP-03** | Bridge LE/tenant → slug (registry) | Map đúng SoT `hrm-operating-unit-registry` / `company_slug_map` (holding→`holding`; Visun→`logistics`; X.E TMDV→`trsport`; …) | Map sai slug; orphan NV không thuộc slug nào của ĐVTV visible |
+| **AC-CO-EMP-04** | Empty / null display | API headcount **fail** (4xx/5xx/timeout) → hiển thị **«—»** (fail-closed); **cấm** ép `0` khi dữ liệu tồn tại hoặc khi lỗi | `employee_count: null` → UI `\|\| 0` che lỗi / che thiếu wire |
+| **AC-CO-EMP-05** | Parity Dashboard | Card tổng trên Company ≈ Dashboard «Tổng nhân viên» cùng persona/scope (±0 hoặc documented tolerance ≤1% nếu filter status khác — phải ghi evidence) | Company=0 / Dashboard≈1109 cùng session |
+| **AC-CO-EMP-06** | F5 / navigate lại | Cùng số sau reload; Network có HRM count (summary và/hoặc per-slug) **2xx** | F5 về toàn `0`; chỉ còn XBOS `group-member-units` |
 
 **Tolerance policy:** Ratio thresholds use **floor** (0.95 → pass at 0.950); counts use **≥** integer; waivers require PM + QC owner + expiry (Definition of Done gate).
+
+#### Company Management «Ngành nghề» (`company` / **FR-HRM-CO-IND-01**) — ADD `D-HRM-CO-INDUSTRY-BA-01` (2026-07-27)
+
+> **Incident:** Cột «Ngành nghề» hiện raw English `subsidiary` (ĐVTV); holding «—». Root: FE `mapGroupMemberUnitsToHrmCompanies` gán `industry: member.entity_type`. SoT đúng = `xbos_legal_entity.business_lines` (+ payload industry) → dictionary VI. **Không** đè AC-CO-EMP. Evidence: `docs/qa/evidence/ba-hrm-co-industry-01-20260727.md` · SRS: `docs/hrm/SRS.md` FR-HRM-CO-IND-01.
+
+| AC ID | Surface | Pass | Fail |
+|-------|---------|------|------|
+| **AC-CO-IND-01** | Cột «Ngành nghề» · list Company | Nhãn ngành/business line đọc được (VI) khi SoT có giá trị | Trống/sai khi API/DB đã có `business_lines` / industry |
+| **AC-CO-IND-02** | Cột «Ngành nghề» · anti org-class | **Không** hiện `subsidiary` / `holding` / raw `entity_type` | Bind `industry ← entity_type` |
+| **AC-CO-IND-03** | Catalog key → VI | `tourism`→«Du lịch - Khách sạn»; `logistics`→«Vận tải - Logistics»; … (SRS dictionary) | Raw untranslated key trên UI |
+| **AC-CO-IND-04** | Empty | Null/empty SoT → **«—»** | Fake từ `entity_type`; chuỗi rỗng |
+| **AC-CO-IND-05** | Optional «Loại đơn vị» | Cột riêng: holding→«Tập đoàn»; subsidiary→«Công ty thành viên» | Gộp vào «Ngành nghề» |
+| **AC-CO-IND-06** | F5 / API field | Cùng nhãn; XBOS expose `business_lines` khi DB có | F5 lại `subsidiary`; SELECT thiếu cột |
+
+**Anti-pattern (normative — BR-CO-LABEL-01):** Bind technical FK / enum / org-class code thẳng lên label UI **không** qua dictionary = **FAIL** nghiệm thu (áp dụng mọi cột Company và pattern tương tự HRM).
 
 ---
 
@@ -288,6 +324,16 @@ Quy ước mã nhánh: `H-{menu}` happy · `A-{menu}` alternate · `E-{menu}-*` 
 | **BR-LINK-05** | Catalog SoT | HRM không hardcode danh mục tập đoàn; read snapshot | ADR catalog |
 | **BR-LINK-06** | Attendance → Payroll | Cùng scope + kỳ; không FK trực tiếp nhưng **process checkpoint** cùng employee set | Reconciliation report |
 | **BR-LINK-07** | Insurance list gap (R-FID-01) | Until `GET /insurance`, fidelity SQL on table; UI may use expiring | BA-Data tracks |
+| **BR-INT-05** (company UI) | Màn Company Management hiển thị ĐVTV (Plane A) | Mỗi ĐVTV vận hành **phải** map tới đúng 1 slug ∈ `GROUP_MEMBER_SLUGS`; headcount dòng = NV của slug đó | Reconciliation XBOS↔HRM; gap có owner (SRS §15.4 · UC-HRM-CO-01) |
+| **BR-CO-HC-01** | Cần số NV trên Company | SoT = HRM `employees` theo operating slug; XBOS không sở hữu headcount | Derived projection (FR-HRM-CO-HC-01) |
+| **BR-CO-EMP-01** | NV trên master `tenant_id=xevn` | `employees.company_id` ∈ `GROUP_MEMBER_SLUGS` đã bridge tới ĐVTV XBOS; **cấm** orphan (slug lạ / null / không map LE) trên workforce pilot | Company + Dashboard cùng nguồn đếm; orphan = 0 (SQL probe) |
+| **BR-CO-EMP-02** | FE map `employee_count` từ XBOS-only DTO | **Không** `null \|\| 0` khi chưa có HRM count; bind count thật hoặc «—» khi fail | AC-CO-EMP-04 |
+| **BR-CO-IND-01** | Cột «Ngành nghề» Company Management | SoT = `business_lines` / industry catalog → VI dictionary; **cấm** `entity_type` | AC-CO-IND-01..04 · FR-HRM-CO-IND-01 |
+| **BR-CO-TYPE-01** | UI cần holding/subsidiary | Cột «Loại đơn vị» VI riêng — không ghi vào Ngành nghề | AC-CO-IND-05 |
+| **BR-CO-LABEL-01** | Field UI là nhãn người dùng | Mọi mã kỹ thuật (enum/FK/org class) **phải** dictionary trước render | Anti-pattern raw code on UI |
+| **BR-PROC-01** | Menu `processes` / `/processes` | HRM chỉ **tham chiếu** mã quy trình XBOS (DM §55–58); engine + định nghĩa SoT = XBOS | Không HRM CRUD |
+| **BR-PROC-02** | UI hiện Add/Edit/Delete trên processes | **REMOVE** fake mutations (`useProcesses` stub toast) — không wire HRM API mới cho CRUD | AC-PROC-02 PASS |
+| **BR-PROC-03** | Cần tạo/sửa mã quy trình hoặc gán loại đơn | Actor dùng **XBOS** (XBOS-DM-HRM-14); HRM deep-link/help copy tới XBOS OK | Không mở dialog mutate trên HRM |
 
 ---
 
@@ -344,7 +390,8 @@ SELECT COUNT(DISTINCT c.employee_id)::float / NULLIF(
 | ID | Risk | Owner | Trigger |
 |----|------|-------|---------|
 | R-FID-01 | No `GET /contracts-insurance/insurance` list | Dev-BE | AC-FID-04 UI block |
-| R-FID-02 | `decisions`, `tools_equipment` no API | PM | UC-HRM-27 scope |
+| R-FID-02 | `tools_equipment` no API; **decisions** REST live nhưng **AC-DEC-DENSITY / CRUD** chưa closed (empty hợp lệ) | PM / BA | UC-HRM-27 DONE gate |
+| R-FID-PROC-01 | `processes` UI fake Add/Edit/Delete vs matrix/SRS **read-only XBOS** (F-02) | Dev-FE (`P1-HRM-PROCESSES-FE-01`) | AC-PROC-01..04 · evidence `p1-hrm-processes-ba-01-20260717.md` |
 | R-FID-03 | Current DB ~9% contract coverage vs 95% target | Dev-BE + DevOps | Before QC GO |
 
 ---
@@ -369,8 +416,32 @@ SELECT COUNT(DISTINCT c.employee_id)::float / NULLIF(
 | UC-HRM-20..27 (8) | embed all views | §2.1 |
 | UC-HRM-MOB-01..15 (15) | mobile | §2.3 |
 
-**Coverage:** 119/119 UC mapped to ≥1 menu/module or platform block; menus deferred (`decisions`, `tools_equipment`, `hrm_ai`) flagged explicit.
+**Coverage:** 119/119 UC mapped to ≥1 menu/module or platform block; menus deferred (`tools_equipment`, `hrm_ai`) flagged explicit; `decisions` = **Implemented-empty** (REST live) — fidelity/CRUD density still open (SPEC-GAP-HRM-DEC-01); `processes` = **XBOS read-only ref** (P1-HRM-PROCESSES-BA-01) — **not** HRM CRUD.
 
 ---
 
-*Document version: 2026-05-24 · BA-Process · HRM-FIDELITY-BA-P · ack PASS_TO_PM*
+## 11. ADD — SRS khách FR spine ↔ entity `ref_srs` (`BA-HRM-DATA-LINKAGE-TRACE-01`)
+
+> **SoT chi tiết:** [`HRM_DATA_LINKAGE_SRS_TRACE.md`](./HRM_DATA_LINKAGE_SRS_TRACE.md) (44 FR · VAL-FK-* · scope_parity · gap §16.9).  
+> **Không** thay §2–§10 density/G-FID; **không** claim Phase1 DONE / 120 UC body.
+
+| Menu / module | Primary table(s) | ref_srs (khách FR) | TechSpec | FK spine (summary) |
+|---------------|------------------|--------------------|----------|--------------------|
+| `employees` | `employees` | FR-HRM-EM-01 · FR-HRM-21 | §14.1 · §16.3 | Master partition `company_id` slug |
+| `contracts` | `employee_contracts` | FR-HRM-CI-01 · **FR-HRM-INT-02** | §14.2 · §16.3 | `employee_id → employees` + same company |
+| `insurance` | `employee_insurance_records` | FR-HRM-CI-02 | §14.3 | `employee_id → employees` (GET list ALIGNED TS) |
+| `attendance` | `attendance_records` · `attendance_sheets` · `leave_requests` | FR-HRM-AT-01..03 · **AT-14** · AT-10/12/13 · FR-HRM-09 · FR-HRM-23 | §14.4–14.5 · §16.1 · §16.3 | Employee FK; sheet header-only; **J-HRM-06b** |
+| `payroll` | `payroll_periods` · `payroll_payslips` | FR-HRM-PR-01/03/04/**05** · **FR-HRM-INT-03** | §14.6 · §16.1 · §16.3 | Payslip → employee + period company |
+| `recruitment` | `job_requisitions` · candidates · interviews | FR-HRM-RC-01/03/05 · **FR-HRM-INT-01** | §14.7 · §16.1 · §16.3 | Hire ⇒ `employee_id` NOT NULL (G-INT-01) |
+| `performance` | cycles · evaluations | FR-HRM-PF-01 | §16.1 | Eval → `employee_id` |
+| `settings` / catalog | `synced_catalogs` | FR-HRM-SC-01 · FR-HRM-06/08 | §14.8 · §16.2 | XBOS SoT; no employee FK |
+| `internal_services` | `service_requests` | FR-HRM-11 | §16.3 | Optional `employee_id` |
+| Scope / embed | all lists | FR-HRM-SCOPE-01..03 · FR-HRM-20 | §16.2–16.3 | **scope_parity** list=get (G-SCOPE-01) |
+| Cross-module E2E | multi | **FR-HRM-INT-04** | §16.3 | One `employee_id` · **J-HRM-INT-04** |
+| Mobile ESS | shared tables | FR-HRM-MOB-01/04/06/08 | §16.3 | Self / manager scope on same FK |
+
+**R-FID-01 refresh:** TechSpec §14.3 documents `GET …/insurance` — list-existence gap **superseded**; keep AC-FID-04 density + UI bind as residual.
+
+---
+
+*Document version: 2026-07-27 · BA-Process + BA-Data §11 · P1-HRM-PROCESSES-BA-01 · BA-HRM-DATA-LINKAGE-TRACE-01 · **D-HRM-CO-EMP-COUNT-BA-01** · **GOV-HRM-CO-EMP-SRS-01** · **D-HRM-CO-INDUSTRY-BA-01** (FR-HRM-CO-IND-01 / AC-CO-IND / BR-CO-IND-01 / BR-CO-LABEL-01) · ack PASS_TO_PM*

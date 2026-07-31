@@ -85,7 +85,7 @@ curl http://14.225.217.232:8088/command-center   # → 200
 curl http://14.225.217.232:3001/api/hrm/metrics  # → 200
 curl http://14.225.217.232:28002/api/xbos/metrics # → 200
 # HTTPS login (không 502):
-curl -sk -o /dev/null -w "%{http_code}\n" -X POST https://14-225-217-232.nip.io/api/xbos/auth/login \
+curl -sk -o /dev/null -w "%{http_code}\n" -X POST http://14.225.217.232:8088/api/xbos/auth/login \
   -H "Content-Type: application/json" -d '{"email":"ceo@xe.vn","password":"Xevn@2026"}'
 ```
 

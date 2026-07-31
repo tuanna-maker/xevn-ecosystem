@@ -1,12 +1,23 @@
 openapi: 3.1.0
 info:
   title: XeVN XBOS API — M01 Hub Contract (Phase 1 S2)
-  version: 1.2.0-p1-s2
+  version: 1.2.8-p1-s2
   description: |
     Canonical contract for Phase 1 Module M01 (catalog, KPI, org, tenant scope, business master, workflow).
     U18 delta: docs/architecture/P1-TECHSPEC-OPENAPI-DELTA-U18-20260524.md
     Bounded-context rules: docs/decisions/ADR-XBOS-M01-OPENAPI-BOUNDARIES.md
     Scope ladder (holding vs main, multi-membership): docs/decisions/ADR-HRM-RBAC-SCOPE-LADDER.md
+    G-OA-02 / G-DTO-01: POST /auth/select-membership (BE-XBOS-OA-SELECT-MEMBERSHIP-01).
+    G-OA-04 (FR-CC-P0-01): legal-entity shareholders CRUD (BE-XBOS-OA-SHAREHOLDERS-01).
+    G-OA-03 / G-DTO-02 (FR-XBOS-ORG-03): legal-entity documents CRUD + upload + file stream (BE-XBOS-OA-LEGAL-DOCS-01).
+    G-OA-W2-RACI-01 / G-DTO-W2-RACI-01 (FR-XBOS-RACI-02): raci-governance catalog/matrix/cell (+ capabilities/coverage)
+      — F.1 deepen BE-XBOS-OA-RACI-CC-01 · Nest class-validator CLOSED BE-XBOS-OA-DTO-P2-01 (2026-07-27).
+    G-DTO-W2-POS-01 (FR-CC-P0-04): PermissionMatrixRow + SavePermissionMatrixRequest depth
+      — BE-XBOS-OA-DTO-P2-01 · API_DESIGN_XBOS_RACI_RBAC.md Endpoints E–F (2026-07-27).
+    G-OA-W2-CC-CAT-01 / G-DTO-W2-CC-CAT-01 (FR-CC-P0-05): business-master command_center_catalogs kinds + row schemas
+      — F.1 deepen BE-XBOS-OA-RACI-CC-01 · API_DESIGN Endpoints H–I (2026-07-27).
+    G-DTO-W2-KPI-01 (FR-XBOS-KPI-03): KpiRollupData series/points + evaluate/actuals/alerts F.1
+      — BE-XBOS-OA-KPI-DTO-01 · API_DESIGN_XBOS_KPI.md Endpoints A–E (2026-07-27).
 servers:
   - url: /api/xbos
 tags:
@@ -67,12 +78,45 @@ components:
       required: true
       schema:
         type: string
-        description: Whitelist — see BusinessMasterService.allowedDomains
+        description: |
+          Business-master domain whitelist (BusinessMasterService.allowedDomains).
+          FR-CC-P0-05 / UF-XBOS-14 Command Center catalogs use `command_center_catalogs`
+          (partition kinds regulations|measurements|pricing — see CommandCenterCatalogKind).
+        enum:
+          - companies
+          - kpi_metrics
+          - positions
+          - vendors
+          - expense_categories
+          - organizations
+          - customers
+          - partners
+          - dept_system_templates
+          - command_center_catalogs
+          - kpi_policies
+          - kpi_sparkline_snapshots
+          - department_catalog
+          - departments
+          - geographic_regions
+          - kpi_formulas
     ItemId:
       name: itemId
       in: path
       required: true
-      schema: { type: string }
+      schema:
+        type: string
+        description: |
+          Master entry key. For domain=`command_center_catalogs` (FR-CC-P0-05 /
+          API_DESIGN_XBOS_RACI_RBAC.md Endpoint I · CommandCenterCatalogKind):
+          - Partition autosave: `regulations` | `measurements` | `pricing` with body `{ rows: […] }`
+          - Flat row upsert: row business key (`code` / `key` / `priceCode`) + `category` kind
+        examples:
+          - regulations
+          - measurements
+          - pricing
+          - QD-2026-01
+          - REVENUE_YTD
+          - PRC-HOLDING-01
   headers:
     XTenantId:
       schema: { type: string }
@@ -102,15 +146,756 @@ components:
     KpiEvaluateBody:
       type: object
       required: [target, actual]
+      description: |
+        POST /kpi-engine/evaluate body — Nest KpiEvaluateInput · API_DESIGN Endpoint A · UC-XBOS-KPI-01.
+        Pure math; optional emitPortalAlert writes xbos_portal_alerts only (not xbos_kpi_actuals).
       properties:
-        target: { type: number }
-        actual: { type: number }
-        weight: { type: number }
-        warningThreshold: { type: number }
-        criticalThreshold: { type: number }
+        target:
+          type: number
+          description: Mục tiêu kỳ (plain number; FE nhóm nghìn khi hiển thị tiền)
+          examples: [100, 1000]
+        actual:
+          type: number
+          description: Thực tế kỳ
+          examples: [92, 780]
+        weight: { type: number, description: Hệ số trọng số (default 1) }
+        warningThreshold: { type: number, description: Ngưỡng warning (default 0.8×target) }
+        criticalThreshold: { type: number, description: Ngưỡng critical (default 0.6×target) }
+        metricCode:
+          type: string
+          description: Mã chỉ số khi emit alert (default kpi_metric)
+          examples: [otif, revenue_growth]
+        emitPortalAlert:
+          type: boolean
+          description: true → insert rail alert khi band warning|critical
+    KpiBand:
+      type: string
+      description: Band đánh giá KPI (evaluate)
+      enum: [excellent, warning, critical]
+    KpiEvaluateResult:
+      type: object
+      required: [score, band, rewardAmount, penaltyAmount, netAmount, ratio]
+      description: |
+        Computed evaluate payload (no actuals row) · API_DESIGN Endpoint A DTO↔DB computed.
+        G-DTO-W2-KPI-01 CLOSED (BE-XBOS-OA-KPI-DTO-01).
+      properties:
+        score: { type: number, description: Điểm 0..n (ratio×100×weight) }
+        band: { $ref: '#/components/schemas/KpiBand' }
+        rewardAmount: { type: number }
+        penaltyAmount: { type: number }
+        netAmount: { type: number }
+        ratio: { type: number, description: actual/target (0 nếu target≤0) }
+        alertId:
+          type: ['string', 'null']
+          description: xbos_portal_alerts.id khi emitPortalAlert
+    KpiEvaluateBatchRequest:
+      type: object
+      description: |
+        POST /kpi-engine/evaluate-batch · API_DESIGN Endpoint B · UC-XBOS-KPI-02.
+        Empty items → empty results (valid).
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/KpiEvaluateBody'
+        tenantId: { type: string }
+        companyId: { type: string }
+        emitPortalAlerts:
+          type: boolean
+          description: Batch emit alerts per warning/critical item
+    KpiEvaluateBatchData:
+      type: object
+      required: [results, alerts]
+      description: Envelope data XBOS-KPI-201
+      properties:
+        results:
+          type: array
+          items:
+            allOf:
+              - type: object
+                properties:
+                  index: { type: integer }
+              - $ref: '#/components/schemas/KpiEvaluateResult'
+        alerts:
+          type: array
+          items:
+            type: object
+            required: [index]
+            properties:
+              index: { type: integer }
+              alertId: { type: ['string', 'null'] }
+    KpiRollupPoint:
+      type: object
+      required: [period, actual]
+      description: |
+        One period point in rollup series — maps xbos_kpi_actuals (period_date / actual_value / target_value).
+        Group mode: SUM(actual) · AVG(target). Null target → FE «—».
+      properties:
+        period:
+          type: string
+          format: date
+          description: period_date ISO yyyy-MM-dd (FE display dd/MM/yyyy)
+          examples: ['2026-06-01', '2026-07-01']
+        actual:
+          type: number
+          description: actual_value (SUM if rollupMode=group)
+          examples: [920, 1500]
+        target:
+          type: ['number', 'null']
+          description: target_value (AVG if group; null ok)
+          examples: [1000, null]
+    KpiRollupSeries:
+      type: object
+      required: [metricCode, points]
+      description: |
+        One metric series for Command Center KPI widget — FR-XBOS-KPI-03 / UF-XBOS-10.
+        Empty points array inside series is rare; empty top-level series[] = Diễn biến #5.
+      properties:
+        metricCode:
+          type: string
+          description: xbos_kpi_actuals.metric_code
+          examples: [otif, on_time_delivery]
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/KpiRollupPoint'
+    KpiRollupData:
+      type: object
+      required: [tenantId, companyId, rollupMode, companyIds, from, to, series]
+      description: |
+        GET /kpi-engine/rollup success data — API_DESIGN Endpoint C · FR-XBOS-KPI-03 · G-DTO-W2-KPI-01 CLOSED.
+        Read-only; series: [] valid (U65 — không fake số).
+      properties:
+        tenantId:
+          type: string
+          examples: [xevn]
+        companyId:
+          type: string
+          description: Resolved scope slug (holding|main|member)
+          examples: [holding, main]
+        rollupMode:
+          type: string
+          enum: [group, single]
+          description: group when companyId ∈ {holding, all}
+        companyIds:
+          type: array
+          items: { type: string }
+          description: Expanded GROUP_ROLLUP_COMPANY_IDS or [companyId]
+        from:
+          type: string
+          format: date
+          description: Effective window start (default now−180d)
+        to:
+          type: string
+          format: date
+          description: Effective window end (default today)
+        series:
+          type: array
+          description: Multi-metric time series; empty = trung thực không có chỉ số kỳ
+          items:
+            $ref: '#/components/schemas/KpiRollupSeries'
+    KpiPortalAlertLevel:
+      type: string
+      enum: [info, warning, critical]
+    KpiPortalAlert:
+      type: object
+      required: [id, module_code, level, title, created_at]
+      description: |
+        Row from xbos_portal_alerts (list wire uses snake_case columns) · API_DESIGN Endpoint D.
+      properties:
+        id: { type: string, format: uuid }
+        tenant_id: { type: string }
+        company_id: { type: ['string', 'null'] }
+        module_code: { type: string, examples: [kpi-engine, system] }
+        level: { $ref: '#/components/schemas/KpiPortalAlertLevel' }
+        title: { type: string }
+        detail: { type: ['string', 'null'] }
+        source_system: { type: string }
+        source_id: { type: ['string', 'null'] }
+        created_at: { type: string, format: date-time }
+    KpiPortalAlertListData:
+      type: object
+      required: [items]
+      description: GET portal-alerts envelope data XBOS-KPI-203 · empty items valid
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/KpiPortalAlert'
+    PublishPortalAlertRequest:
+      type: object
+      required: [moduleCode, title]
+      description: |
+        POST /kpi-engine/portal-alerts body · API_DESIGN Endpoint E · UC-XBOS-KPI-04.
+      properties:
+        tenantId: { type: string }
+        companyId: { type: string }
+        moduleCode:
+          type: string
+          minLength: 1
+          examples: [kpi-engine]
+        level:
+          $ref: '#/components/schemas/KpiPortalAlertLevel'
+        title: { type: string, minLength: 1 }
+        detail: { type: string }
+        sourceSystem: { type: string }
+        sourceId: { type: string }
+    PublishPortalAlertData:
+      type: object
+      required: [id]
+      description: INSERT return · xbos_portal_alerts.id · XBOS-KPI-204
+      properties:
+        id: { type: string, format: uuid }
     PublishCatalogBody:
       type: object
       description: See PublishCatalogDto in config-sync module
+    ApplyCatalogToMembersBody:
+      type: object
+      required: [tenantId, companyId]
+      description: |
+        Option B fan-out (XBOS-DM-HRM-07 / G-BM-REC-01 / E-XBOS-CTRL-G1).
+        Source = tenantId+companyId (typically xevn/holding).
+        Provide targets[] (cross-tenant) and/or memberCompanyIds[] (same-tenant shorthand).
+        Allow-list catalogKey (P0): job_titles, recruitment_channels, job_grades,
+        departments, leave_types.
+        Allow-list catalogKey (P1): P0 ∪ contract_types, employment_types, pay_types,
+        shifts, decision_types.
+        Alias path hr_decision_types → decision_types for allow-list; write key follows source L0.
+      properties:
+        tenantId: { type: string }
+        companyId: { type: string }
+        targets:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [tenantId, companyId]
+            properties:
+              tenantId: { type: string }
+              companyId: { type: string }
+        memberCompanyIds:
+          type: array
+          minItems: 1
+          items: { type: string }
+        actor: { type: string }
+    SelectMembershipRequest:
+      type: object
+      required: [tenantId]
+      description: |
+        SelectMembershipDto (Nest). FR-XBOS-TENANT-01 / UC-HRM-SCOPE-04.
+        tenantId must match an active membership for the Bearer subject.
+      properties:
+        tenantId:
+          type: string
+          minLength: 1
+          description: Target tenant_id (case-insensitive match against memberships)
+          example: xe-du-lich
+    AccessibleTenantMembership:
+      type: object
+      required: [tenantId, companyId, roleCode]
+      description: AccessibleTenant row from tenant-scope.listAccessible
+      properties:
+        tenantId: { type: string }
+        name: { type: string }
+        shortName: { type: string }
+        tenantKind:
+          type: string
+          enum: [master, member]
+        roleCode: { type: string }
+        companyId: { type: string }
+        isMaster: { type: boolean }
+    SelectMembershipData:
+      type: object
+      required:
+        - accessToken
+        - expiresInSec
+        - membership
+        - memberships
+        - defaultTenantId
+        - defaultCompanyId
+      description: JWT re-issue payload after membership switch (envelope code XBOS-AUTH-201)
+      properties:
+        accessToken: { type: string, description: Portal JWT with selected tenantId/companyId/roleCode }
+        expiresInSec: { type: integer, minimum: 1 }
+        membership:
+          $ref: '#/components/schemas/AccessibleTenantMembership'
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessibleTenantMembership'
+        defaultTenantId: { type: string }
+        defaultCompanyId: { type: string }
+    CreateShareholderRequest:
+      type: object
+      required: [holderName]
+      description: |
+        ShareholderInput (Nest legal-entity-profile). camelCase body.
+        FR-CC-P0-01 / UC-CC-P0-01 · TechSpec §14.6 · CC P0 §2–4.
+      properties:
+        holderName:
+          type: string
+          minLength: 1
+          description: Required; trimmed; empty → XBOS-SHR-400
+        identityCode:
+          type: string
+          description: Optional CCCD/MST/identity
+        ratioPercent:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Ownership percent 0–100; default 0
+        contributedValue:
+          type: number
+          minimum: 0
+          description: Contributed capital amount (numeric; FE may format vi-VN)
+    UpdateShareholderRequest:
+      type: object
+      description: |
+        Partial ShareholderInput — COALESCE on update. At least one field typical for UF mutate.
+      properties:
+        holderName: { type: string, minLength: 1 }
+        identityCode: { type: string, nullable: true }
+        ratioPercent: { type: number, minimum: 0, maximum: 100 }
+        contributedValue: { type: number, minimum: 0 }
+    LegalEntityShareholder:
+      type: object
+      description: |
+        Row from public.xbos_legal_entity_shareholder (SELECT * — snake_case columns).
+        Active-only on list; soft-delete sets status=deleted.
+      required: [id, tenant_id, company_id, legal_entity_id, holder_name, status]
+      properties:
+        id: { type: string, format: uuid }
+        tenant_id: { type: string }
+        company_id: { type: string }
+        legal_entity_id: { type: string, format: uuid }
+        holder_name: { type: string }
+        identity_code: { type: string, nullable: true }
+        ratio_percent: { type: number }
+        contributed_value: { type: number }
+        status:
+          type: string
+          enum: [active, deleted]
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    ShareholderListData:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LegalEntityShareholder'
+    ShareholderDeletedData:
+      type: object
+      required: [deleted]
+      properties:
+        deleted: { type: boolean, const: true }
+    CreateDocumentRequest:
+      type: object
+      required: [documentName]
+      description: |
+        DocumentInput (Nest legal-entity-profile). camelCase body.
+        FR-XBOS-ORG-03 / UC-XBOS-ORG-03 · TechSpec §14.5 · §14.13 G-OA-03 / G-DTO-02 · CC P0 §2–4.
+      properties:
+        documentName:
+          type: string
+          minLength: 1
+          description: Required; trimmed; empty → XBOS-DOC-400
+        documentCode:
+          type: string
+          description: Optional document code / số hiệu
+        issuedDate:
+          type: string
+          format: date
+          description: Optional issued date (YYYY-MM-DD)
+        expiredDate:
+          type: string
+          format: date
+          description: Optional expiry date (YYYY-MM-DD)
+    UpdateDocumentRequest:
+      type: object
+      description: |
+        Partial DocumentInput — COALESCE on update. G-DTO-02 field↔column matrix.
+      properties:
+        documentName: { type: string, minLength: 1 }
+        documentCode: { type: string, nullable: true }
+        issuedDate: { type: string, format: date, nullable: true }
+        expiredDate: { type: string, format: date, nullable: true }
+    LegalEntityDocument:
+      type: object
+      description: |
+        Row from public.xbos_legal_entity_document (SELECT * — snake_case columns).
+        Active-only on list; soft-delete sets status=deleted.
+        G-DTO-02: request camelCase ↔ response snake_case.
+      required: [id, tenant_id, company_id, legal_entity_id, document_name, status]
+      properties:
+        id: { type: string, format: uuid }
+        tenant_id: { type: string }
+        company_id: { type: string }
+        legal_entity_id: { type: string, format: uuid }
+        document_code: { type: string, nullable: true }
+        document_name: { type: string }
+        issued_date: { type: string, format: date, nullable: true }
+        expired_date: { type: string, format: date, nullable: true }
+        file_url: { type: string, nullable: true, description: Public GET …/legal-documents/{id}/file URL after upload }
+        storage_path: { type: string, nullable: true, description: Relative storage key under XBOS_LEGAL_DOC_STORAGE_ROOT }
+        mime_type: { type: string, nullable: true }
+        file_size: { type: integer, nullable: true }
+        status:
+          type: string
+          enum: [active, deleted]
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    DocumentListData:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LegalEntityDocument'
+    DocumentDeletedData:
+      type: object
+      required: [deleted]
+      properties:
+        deleted: { type: boolean, const: true }
+    UpsertRaciMatrixCellRequest:
+      type: object
+      required: [activity_id, org_column_id]
+      description: |
+        Runtime body for PUT …/matrix/cell (snake_case). TechSpec §14.14 FR-XBOS-RACI-02 · G-DTO-W2-RACI-01 CLOSED.
+        Nest: UpsertRaciMatrixCellRequestDto (class-validator + ValidationPipe whitelist).
+        Letters pattern ^[RACI]*$ (empty string clears override). Edge invalid → XBOS-VAL-001; service letters → XBOS-RACI-400.
+      properties:
+        activity_id:
+          type: string
+          minLength: 1
+          description: Catalog activity UUID (not seed-* prefix — else XBOS-RACI-503)
+        org_column_id:
+          type: string
+          minLength: 1
+          description: Org column key (e.g. hdqt, ceo, hcns)
+        raci_letters:
+          type: string
+          pattern: '^[RACI]*$'
+          description: R/A/C/I combination; empty = clear override; whitespace stripped + uppercased at edge
+        actor_id:
+          type: string
+          description: Optional actor for audit / updated_by
+    PermissionDataScope:
+      type: string
+      description: FE Settings data-scope enum (UF-XBOS-13) · default personal
+      enum: [personal, department, legal_entity, group]
+      examples: [personal, department, legal_entity, group]
+    PermissionMatrixRow:
+      type: object
+      required: [rowId]
+      description: |
+        One Settings permission checkbox row — API_DESIGN Endpoint E/F · FR-CC-P0-04 · G-DTO-W2-POS-01 CLOSED.
+        Maps to xbos_cc_permission_matrix_cell (row_id + flags + data_scope). Empty rowId skipped on save.
+      properties:
+        rowId:
+          type: string
+          description: Stable row id (e.g. pm-org-1 … pm-sys-3)
+          examples: [pm-org-1, pm-hr-2, pm-sys-3]
+        view: { type: boolean, description: Quyền xem }
+        write: { type: boolean, description: Quyền ghi }
+        delete: { type: boolean, description: Quyền xóa }
+        approve: { type: boolean, description: Quyền duyệt }
+        dataScope:
+          $ref: '#/components/schemas/PermissionDataScope'
+    SavePermissionMatrixRequest:
+      type: object
+      required: [roleId, rows]
+      description: |
+        PUT /position-rbac/matrix body — Nest SavePermissionMatrixRequestDto · API_DESIGN Endpoint F.
+        Tenant-only scope; does not mutate other role_id partitions.
+      properties:
+        roleId:
+          type: string
+          minLength: 1
+          description: Chức danh / role id đang chọn trên Settings
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionMatrixRow'
+    PermissionMatrixData:
+      type: object
+      required: [roleId, rows]
+      description: GET/PUT matrix success data envelope (XBOS-POS-200 / XBOS-POS-201)
+      properties:
+        roleId: { type: string }
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionMatrixRow'
+    RaciDomainSummary:
+      type: object
+      required: [domain_code, domain_label, count]
+      properties:
+        domain_code: { type: string }
+        domain_label: { type: string }
+        count: { type: integer, minimum: 0 }
+    RaciActivityRow:
+      type: object
+      required: [id, activity_code, domain_code, domain_label, seq_no, name, default_matrix]
+      description: Row from raci_activity_catalog (merged with seed fallback when DB empty)
+      properties:
+        id: { type: string }
+        activity_code: { type: string }
+        domain_code: { type: string }
+        domain_label: { type: string }
+        seq_no: { type: integer }
+        name: { type: string }
+        default_matrix:
+          type: object
+          additionalProperties: { type: string }
+          description: Map org_column_id → default RACI letters
+    RaciCatalogData:
+      type: object
+      required: [domains, activities, total]
+      description: GET /raci-governance/catalog data envelope
+      properties:
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaciDomainSummary'
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaciActivityRow'
+        total: { type: integer, minimum: 0 }
+    RaciMatrixRow:
+      type: object
+      required: [activity_id, activity_code, domain_code, domain_label, seq_no, name, matrix]
+      description: Merged template + company_raci_matrix_cell overrides
+      properties:
+        activity_id: { type: string }
+        activity_code: { type: string }
+        domain_code: { type: string }
+        domain_label: { type: string }
+        seq_no: { type: integer }
+        name: { type: string }
+        matrix:
+          type: object
+          additionalProperties: { type: string }
+          description: Map org_column_id → effective RACI letters
+        has_override: { type: boolean }
+    RaciCompanyMatrixData:
+      type: object
+      required: [company_id, rows]
+      description: GET …/companies/{companyId}/matrix data
+      properties:
+        company_id:
+          type: string
+          description: Echo of path companyId (slug or legal-entity UUID)
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaciMatrixRow'
+    CompanyRaciMatrixCell:
+      type: object
+      description: |
+        RETURNING * from public.company_raci_matrix_cell after upsert (snake_case).
+        Envelope code XBOS-RACI-201 (HTTP 200 Nest PUT).
+      properties:
+        id: { type: string, format: uuid }
+        tenant_id: { type: string }
+        company_id: { type: string }
+        activity_id: { type: string, format: uuid }
+        org_column_id: { type: string }
+        raci_letters: { type: string }
+        source: { type: string }
+        updated_by: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    RaciCapabilityRow:
+      type: object
+      description: raci_ecosystem_capability join activity (or sample JSON fallback)
+      properties:
+        id: { type: string, format: uuid }
+        activity_code: { type: string }
+        activity_name: { type: string }
+        module_code: { type: string }
+        feature_code: { type: string }
+        permission_code: { type: string }
+        workflow_id: { type: string, nullable: true }
+        api_route: { type: string, nullable: true }
+        raci_letter_required: { type: string }
+        status: { type: string }
+    RaciCapabilityListData:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaciCapabilityRow'
+    RaciCoverageData:
+      type: object
+      required:
+        - company_id
+        - activities_total
+        - activities_with_capability_map
+        - activities_with_matrix_letters
+        - capability_coverage_pct
+      description: GET …/companies/{companyId}/coverage aggregate
+      properties:
+        company_id: { type: string }
+        activities_total: { type: integer, minimum: 0 }
+        activities_with_capability_map: { type: integer, minimum: 0 }
+        activities_with_matrix_letters: { type: integer, minimum: 0 }
+        capability_coverage_pct: { type: integer, minimum: 0, maximum: 100 }
+    CommandCenterCatalogKind:
+      type: string
+      description: |
+        FR-CC-P0-05 / UF-XBOS-14 / API_DESIGN Endpoint H–I — Command Center catalog partition kinds
+        (COMMAND_CENTER_CATALOG_KINDS). Stored as item_id under domain command_center_catalogs.
+        Diễn biến #2 list · #5 autosave partition/flat.
+      enum: [regulations, measurements, pricing]
+      examples: [regulations, measurements, pricing]
+    CcRegulationRow:
+      type: object
+      required: [code, title]
+      description: Văn bản / quy định row — TechSpec §14.16 FR-CC-P0-05 · G-DTO-W2-CC-CAT-01
+      properties:
+        code: { type: string, minLength: 1, description: Business key (also flat itemId) }
+        title: { type: string }
+        category:
+          type: string
+          enum: [regulations]
+          description: Required on flat upsert; optional inside partition rows
+        version: { type: string, description: Default v1.0 when omitted }
+        active: { type: boolean, description: Default true when omitted }
+    CcMeasurementRow:
+      type: object
+      required: [key, unit, currency, precision]
+      description: Đo lường row — TechSpec §14.16 · G-DTO-W2-CC-CAT-01
+      properties:
+        key: { type: string, minLength: 1, description: Business key (also flat itemId) }
+        unit: { type: string }
+        currency: { type: string, description: Default VND when omitted on FE }
+        precision: { type: number }
+        category:
+          type: string
+          enum: [measurements]
+    CcPricingRow:
+      type: object
+      required: [priceCode, label, amount]
+      description: |
+        Giá row — TechSpec §14.16 · G-DTO-W2-CC-CAT-01.
+        `amount` = plain number on wire (FE groups thousands for display only).
+      properties:
+        priceCode: { type: string, minLength: 1, description: Business key (also flat itemId) }
+        label: { type: string }
+        amount: { type: number, description: Plain numeric amount (not thousand-grouped string) }
+        category:
+          type: string
+          enum: [pricing]
+    CommandCenterCatalogPartitionBody:
+      type: object
+      required: [rows]
+      description: |
+        PUT …/business-master/command_center_catalogs/items/{kind} body when itemId ∈
+        regulations|measurements|pricing (partition autosave). FE commandCenterCatalogApi.saveCcCatalogRows.
+      properties:
+        rows:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/CcRegulationRow'
+              - $ref: '#/components/schemas/CcMeasurementRow'
+              - $ref: '#/components/schemas/CcPricingRow'
+      examples:
+        regulationsPartition:
+          summary: Autosave regulations partition
+          value:
+            rows:
+              - code: QD-2026-01
+                title: Quy chế quản trị nội bộ
+                version: v1.0
+                active: true
+        measurementsPartition:
+          summary: Autosave measurements partition
+          value:
+            rows:
+              - key: REVENUE_YTD
+                unit: VND
+                currency: VND
+                precision: 0
+        pricingPartition:
+          summary: Autosave pricing partition
+          value:
+            rows:
+              - priceCode: PRC-HOLDING-01
+                label: Phí dịch vụ tập đoàn
+                amount: 1500000
+    CommandCenterCatalogFlatUpsertBody:
+      type: object
+      description: |
+        Flat row PUT when itemId = business key (code|key|priceCode).
+        Runtime merges into category partition (BusinessMasterService upsert CC path).
+        Requires category ∈ regulations|measurements|pricing (or kind alias).
+      properties:
+        code: { type: string }
+        title: { type: string }
+        key: { type: string }
+        unit: { type: string }
+        currency: { type: string }
+        precision: { type: number }
+        priceCode: { type: string }
+        label: { type: string }
+        amount: { type: number }
+        version: { type: string }
+        active: { type: boolean }
+        category:
+          $ref: '#/components/schemas/CommandCenterCatalogKind'
+        kind:
+          $ref: '#/components/schemas/CommandCenterCatalogKind'
+          description: Alias accepted by runtime when category omitted
+      examples:
+        flatRegulation:
+          summary: Flat regulations row (UF-XBOS-14 mirror)
+          value:
+            code: QD-2026-01
+            title: Quy chế quản trị nội bộ
+            category: regulations
+            version: v1.0
+            active: true
+    CommandCenterCatalogListItem:
+      type: object
+      description: |
+        One list entry under domain command_center_catalogs.
+        Partition rows have id ∈ regulations|measurements|pricing and payload.rows;
+        flat rows may appear with category + business key fields (FE merges both).
+      properties:
+        id: { type: string }
+        status: { type: string }
+        rows:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/CcRegulationRow'
+              - $ref: '#/components/schemas/CcMeasurementRow'
+              - $ref: '#/components/schemas/CcPricingRow'
+        code: { type: string }
+        title: { type: string }
+        key: { type: string }
+        priceCode: { type: string }
+        label: { type: string }
+        amount: { type: number }
+        category:
+          $ref: '#/components/schemas/CommandCenterCatalogKind'
+    CommandCenterCatalogListData:
+      type: object
+      description: |
+        GET …/business-master/command_center_catalogs/items data — array of partition + flat items.
+        Envelope code XBOS-MASTER-200. Empty list is valid (UF-XBOS-14).
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandCenterCatalogListItem'
 security:
   - bearerAuth: []
   - internalApiKey: []
@@ -150,6 +935,59 @@ paths:
       responses:
         '200':
           description: XBOS-AUTH-200 envelope
+  /auth/select-membership:
+    post:
+      tags: [M01-Tenant]
+      operationId: xbosAuthSelectMembership
+      summary: FR-XBOS-TENANT-01 — chọn tư cách đơn vị và re-issue JWT
+      description: |
+        Runtime: AuthController.selectMembership → AuthService.selectMembership.
+        Requires Bearer JWT (login/me session). Body tenantId must be in caller's
+        accessible memberships; otherwise XBOS-AUTH-403.
+        Success envelope code: XBOS-AUTH-201 (Nest default POST status 201).
+        Spec: docs/xbos/TECHSPEC.md §14.2 · §14.13 G-OA-02 / G-DTO-01.
+        must_keep: UF-XBOS-01 / UF-XBOS green flows — documentation only, no behavior change.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectMembershipRequest'
+      responses:
+        '201':
+          description: XBOS-AUTH-201 — membership switched; new accessToken
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-AUTH-201
+                      data:
+                        $ref: '#/components/schemas/SelectMembershipData'
+        '400':
+          description: Validation failed (missing/empty tenantId — class-validator)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-401 — missing/invalid Bearer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '403':
+          description: XBOS-AUTH-403 — tenantId not in caller memberships
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
   /tenant-scope/accessible:
     get:
       tags: [M01-Tenant]
@@ -247,6 +1085,37 @@ paths:
       responses:
         '200':
           description: XBOS-CFG-203
+  /config-sync/catalog/{catalogKey}/apply-to-members:
+    post:
+      tags: [M01-Catalog]
+      operationId: configSyncApplyCatalogToMembers
+      summary: XBOS-DM-HRM-07 / G-BM-REC-01 — fan-out catalog to member partitions (Option B)
+      description: |
+        Copies source `(tenantId, companyId)` catalog snapshot to selected member partitions
+        via upsert (reuses publish semantics). Allow-list keys only (P0+P1 unlocked).
+        Does not replace single-company publish. WF definition bind = residual G-BM-REC-02.
+        Allow-list catalogKey (P0): job_titles, recruitment_channels, job_grades,
+        departments, leave_types.
+        Allow-list catalogKey (P1): P0 ∪ contract_types, employment_types, pay_types,
+        shifts, decision_types.
+        Alias path hr_decision_types → decision_types for allow-list; write key follows source L0.
+      parameters:
+        - $ref: '#/components/parameters/CatalogKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyCatalogToMembersBody'
+      responses:
+        '200':
+          description: XBOS-CFG-204 applied summary
+        '400':
+          description: XBOS-CFG-005 key not allowed · XBOS-VAL-011/012 targets
+        '401':
+          description: XBOS-AUTH-001
+        '404':
+          description: XBOS-CFG-001 source catalog missing
   /catalog-governance/extension-requests:
     get:
       tags: [M01-Catalog]
@@ -287,90 +1156,316 @@ paths:
     post:
       tags: [M01-KPI]
       operationId: kpiEngineEvaluate
-      summary: UC-XBOS-KPI-01 — single KPI evaluation
+      summary: UC-XBOS-KPI-01 — single KPI evaluation (server math)
+      description: |
+        API_DESIGN Endpoint A (F.1) · docs/xbos/API_DESIGN_XBOS_KPI.md §1 · DB_DESIGN_XBOS_KPI.md.
+        Mục đích: Tính điểm / band / thưởng-phạt phía server từ cặp target–actual (không ghi actuals).
+        Nghiệp vụ: Auth → validate numeric (XBOS-VAL-003) → pure math → optional emitPortalAlert → xbos_portal_alerts.
+        Bước SRS: UC-XBOS-KPI-01 · FR-XBOS-KPI-03 supporting (không thay rollup widget).
+        Runtime: KpiEngineController.evaluate → KpiEngineService.evaluate. Envelope: XBOS-KPI-200.
+        must_keep: UF-XBOS-10 🟢 · không seed actuals · RACI/WF/catalog-gov untouched.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/KpiEvaluateBody'
+            examples:
+              evaluateOtif:
+                summary: UC-XBOS-KPI-01 happy
+                value:
+                  target: 100
+                  actual: 92
+                  metricCode: otif
+                  emitPortalAlert: false
       responses:
         '200':
-          description: XBOS-KPI-200
+          description: XBOS-KPI-200 — KpiEvaluateResult (+ alertId?)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-KPI-200
+                      data:
+                        $ref: '#/components/schemas/KpiEvaluateResult'
+              examples:
+                evaluated:
+                  summary: Band excellent
+                  value:
+                    success: true
+                    code: XBOS-KPI-200
+                    message: KPI evaluated
+                    data:
+                      score: 92
+                      band: excellent
+                      rewardAmount: 0
+                      penaltyAmount: 0
+                      netAmount: 0
+                      ratio: 0.92
+                      alertId: null
+                    timestamp: '2026-07-27T10:00:00.000Z'
+        '400':
+          description: XBOS-VAL-003 missing numeric
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH when emitPortalAlert + scope drift
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
   /kpi-engine/evaluate-batch:
     post:
       tags: [M01-KPI]
       operationId: kpiEngineEvaluateBatch
-      summary: UC-XBOS-KPI-02
+      summary: UC-XBOS-KPI-02 — batch KPI evaluation
+      description: |
+        API_DESIGN Endpoint B (F.1) · API_DESIGN_XBOS_KPI.md §2.
+        Mục đích: Đánh giá nhiều chỉ số một lần (bảng KPI / Option B) — cùng công thức evaluate.
+        Nghiệp vụ: Auth → map items[] → evaluate từng phần tử (index ổn định); optional emitPortalAlerts.
+        Bước SRS: UC-XBOS-KPI-02 · consumer pattern với business-master kpi_metrics.
+        Envelope: XBOS-KPI-201. Empty items → empty results (valid).
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                items:
-                  type: array
+              $ref: '#/components/schemas/KpiEvaluateBatchRequest'
+            examples:
+              batchTwo:
+                summary: UC-XBOS-KPI-02
+                value:
                   items:
-                    $ref: '#/components/schemas/KpiEvaluateBody'
+                    - { target: 100, actual: 90, metricCode: otif }
+                    - { target: 10, actual: 2, criticalThreshold: 5, metricCode: nps }
+                  emitPortalAlerts: false
       responses:
         '200':
-          description: XBOS-KPI-201
+          description: XBOS-KPI-201 — KpiEvaluateBatchData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-KPI-201
+                      data:
+                        $ref: '#/components/schemas/KpiEvaluateBatchData'
+        '400':
+          description: XBOS-VAL-003 per-item invalid
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH on emit
   /kpi-engine/rollup:
     get:
       tags: [M01-KPI]
       operationId: kpiEngineRollup
-      summary: UC-XBOS-KPI-03 — multi-level rollup (JWT-aligned companyId)
+      summary: FR-XBOS-KPI-03 — multi-level KPI rollup (JWT-aligned)
+      description: |
+        API_DESIGN Endpoint C (F.1) · API_DESIGN_XBOS_KPI.md §3 · UF-XBOS-10 · DB_DESIGN xbos_kpi_actuals.
+        Mục đích: Cấp chuỗi chỉ số đa cấp (rollup) trong đúng phạm vi tư cách cho widget/rail Command Center.
+        Nghiệp vụ: Auth → resolveKpiRollupScopeContext → ensure actuals schema → window from/to (default 180d)
+          → group (holding|all): SUM actual / AVG target across GROUP_ROLLUP_COMPANY_IDS; else single filter
+          → project KpiRollupData.series; empty series[] trung thực (Diễn biến #5) — không seed (U65).
+        Bước SRS: FR-XBOS-KPI-03 Diễn biến #1 auth · #2 mở KPI · #3/#4 409 scope · #5 empty · #6 F5 · #7 XBOS-KPI-202.
+        Runtime: KpiEngineController.rollup → KpiEngineService.rollup. G-DTO-W2-KPI-01 CLOSED (series depth).
+        must_keep: UF-XBOS-10 🟢 · FR-ECO-SCOPE-02 · RACI/WF/catalog-gov · HOLD_DEPLOY.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       parameters:
         - $ref: '#/components/parameters/TenantIdQuery'
         - $ref: '#/components/parameters/CompanyIdQuery'
         - name: from
           in: query
           schema: { type: string, format: date }
+          description: Window start ISO yyyy-MM-dd (default now−180d)
+          examples: ['2026-01-01']
         - name: to
           in: query
           schema: { type: string, format: date }
+          description: Window end ISO yyyy-MM-dd (default today)
+          examples: ['2026-07-27']
       responses:
         '200':
-          description: XBOS-KPI-202
+          description: XBOS-KPI-202 — KpiRollupData (incl. empty series)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-KPI-202
+                      data:
+                        $ref: '#/components/schemas/KpiRollupData'
+              examples:
+                groupRollupWithSeries:
+                  summary: FR-XBOS-KPI-03 #2 group CEO holding
+                  value:
+                    success: true
+                    code: XBOS-KPI-202
+                    message: KPI rollup loaded
+                    data:
+                      tenantId: xevn
+                      companyId: holding
+                      rollupMode: group
+                      companyIds: [holding, main, xe-tmdv, xe-du-lich, xe-vietnam, visun]
+                      from: '2026-01-28'
+                      to: '2026-07-27'
+                      series:
+                        - metricCode: otif
+                          points:
+                            - { period: '2026-06-01', actual: 920, target: 1000 }
+                            - { period: '2026-07-01', actual: 950, target: 1000 }
+                    timestamp: '2026-07-27T10:00:00.000Z'
+                emptySeries:
+                  summary: FR-XBOS-KPI-03 #5 không có chỉ số kỳ
+                  value:
+                    success: true
+                    code: XBOS-KPI-202
+                    message: KPI rollup loaded
+                    data:
+                      tenantId: xevn
+                      companyId: main
+                      rollupMode: single
+                      companyIds: [main]
+                      from: '2026-01-28'
+                      to: '2026-07-27'
+                      series: []
+                    timestamp: '2026-07-27T10:00:00.000Z'
+        '401':
+          description: XBOS-AUTH-001 — FR-XBOS-KPI-03 Diễn biến #1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
         '409':
-          description: SCOPE_CONTEXT_MISMATCH
+          description: SCOPE_CONTEXT_MISMATCH — FR-XBOS-KPI-03 Diễn biến #3/#4
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
   /kpi-engine/portal-alerts:
     get:
       tags: [M01-KPI]
       operationId: kpiEnginePortalAlerts
-      summary: UC-XBOS-KPI-04 — tenant-level alerts (list)
+      summary: UC-XBOS-KPI-04 — list Command Center rail alerts
+      description: |
+        API_DESIGN Endpoint D (F.1) · API_DESIGN_XBOS_KPI.md §4 · DB xbos_portal_alerts.
+        Mục đích: Liệt kê cảnh báo rail chưa dismiss theo tenant (lọc company tùy chọn).
+        Nghiệp vụ: Auth → resolveTenantOnlyContext → SELECT dismissed_at IS NULL · ORDER created_at DESC · limit.
+        Bước SRS: UC-XBOS-KPI-04 list · FR-XBOS-KPI-03 #7 supporting «việc cần xử lý».
+        Envelope: XBOS-KPI-203. Empty items[] valid (U65).
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       parameters:
         - $ref: '#/components/parameters/TenantIdQuery'
         - $ref: '#/components/parameters/CompanyIdQuery'
         - name: limit
           in: query
-          schema: { type: integer, default: 50 }
+          schema: { type: integer, default: 50, minimum: 1 }
+          description: Max rows (default 50)
       responses:
         '200':
-          description: XBOS-KPI-203
+          description: XBOS-KPI-203 — KpiPortalAlertListData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-KPI-203
+                      data:
+                        $ref: '#/components/schemas/KpiPortalAlertListData'
+              examples:
+                emptyRail:
+                  summary: Empty rail valid
+                  value:
+                    success: true
+                    code: XBOS-KPI-203
+                    message: Portal alerts loaded
+                    data:
+                      items: []
+                    timestamp: '2026-07-27T10:00:00.000Z'
+        '401':
+          description: XBOS-AUTH-001
     post:
       tags: [M01-KPI]
       operationId: kpiEnginePublishPortalAlert
       summary: UC-XBOS-KPI-04 — publish alert to Command Center rail
+      description: |
+        API_DESIGN Endpoint E (F.1) · API_DESIGN_XBOS_KPI.md §5.
+        Mục đích: Ghi cảnh báo vào rail (manual/system) trong phạm vi JWT — cùng bảng emit từ evaluate.
+        Nghiệp vụ: Auth → require title+moduleCode (XBOS-VAL-003) → resolveScopeContext → INSERT xbos_portal_alerts.
+        Bước SRS: UC-XBOS-KPI-04 publish · FR-XBOS-KPI-03 supporting (không thay điều kiện thành công rollup).
+        Envelope: XBOS-KPI-204. FE after 2xx → GET list refresh; F5 còn alert chưa dismiss.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [moduleCode, title]
-              properties:
-                tenantId: { type: string }
-                companyId: { type: string }
-                moduleCode: { type: string }
-                level: { type: string, enum: [info, warning, critical] }
-                title: { type: string }
-                detail: { type: string }
-                sourceSystem: { type: string }
-                sourceId: { type: string }
+              $ref: '#/components/schemas/PublishPortalAlertRequest'
+            examples:
+              publishWarning:
+                summary: UC-XBOS-KPI-04 publish
+                value:
+                  tenantId: xevn
+                  companyId: main
+                  moduleCode: kpi-engine
+                  level: warning
+                  title: OTIF below target
+                  detail: Actual 78 vs target 100
       responses:
         '200':
-          description: XBOS-KPI-204
+          description: XBOS-KPI-204 — PublishPortalAlertData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-KPI-204
+                      data:
+                        $ref: '#/components/schemas/PublishPortalAlertData'
+        '400':
+          description: XBOS-VAL-003 missing title/moduleCode
+        '401':
+          description: XBOS-AUTH-001
         '409':
           description: SCOPE_CONTEXT_MISMATCH
   /org-foundation/legal-entities:
@@ -405,6 +1500,957 @@ paths:
       responses:
         '200':
           description: XBOS-ORG-201
+  /org-foundation/legal-entities/{entityId}/shareholders:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationListShareholders
+      summary: FR-CC-P0-01 — list active shareholders for legal entity
+      description: |
+        Runtime: LegalEntityProfileController.listShareholders.
+        Scope: resolveXbosGroupLegalReadScopeContext + x-tenant-id / x-company-id.
+        Envelope code: XBOS-SHR-200. Spec: TECHSPEC §14.6 · §14.13 G-OA-04 · CC P0 §4.
+        must_keep: UF-XBOS-04/05 🟢 — documentation only.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-SHR-200 — { items: LegalEntityShareholder[] }
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-SHR-200
+                      data:
+                        $ref: '#/components/schemas/ShareholderListData'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404 — legal entity not found (partition resolve)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    post:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationCreateShareholder
+      summary: FR-CC-P0-01 — create shareholder
+      description: |
+        Runtime: createShareholder. Mutation scope (group legal).
+        Nest default POST HTTP 201; envelope XBOS-SHR-201.
+        Validation: holderName required; ratioPercent 0–100 → XBOS-SHR-400.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateShareholderRequest'
+      responses:
+        '201':
+          description: XBOS-SHR-201 — created row (snake_case)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-SHR-201
+                      data:
+                        $ref: '#/components/schemas/LegalEntityShareholder'
+        '400':
+          description: XBOS-SHR-400 — validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404 — legal entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/legal-entities/{entityId}/shareholders/{shareholderId}:
+    put:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationUpdateShareholder
+      summary: FR-CC-P0-01 — update shareholder
+      description: |
+        Runtime: updateShareholder. HTTP 200 (Nest PUT); envelope code XBOS-SHR-201.
+        Missing active row → XBOS-SHR-404.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: shareholderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShareholderRequest'
+      responses:
+        '200':
+          description: XBOS-SHR-201 — updated row
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-SHR-201
+                      data:
+                        $ref: '#/components/schemas/LegalEntityShareholder'
+        '400':
+          description: XBOS-SHR-400
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-SHR-404 | XBOS-DOC-404
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    delete:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationDeleteShareholder
+      summary: FR-CC-P0-01 — soft-delete shareholder (status=deleted)
+      description: |
+        Runtime: deleteShareholder. HTTP 200; envelope XBOS-SHR-204; data { deleted: true }.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: shareholderId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-SHR-204 — soft deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-SHR-204
+                      data:
+                        $ref: '#/components/schemas/ShareholderDeletedData'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-SHR-404
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/legal-entities/{entityId}/documents:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationListDocuments
+      summary: FR-XBOS-ORG-03 — list active legal documents for entity
+      description: |
+        Runtime: LegalEntityProfileController.listDocuments.
+        Scope: resolveXbosGroupLegalReadScopeContext + x-tenant-id / x-company-id.
+        Envelope code: XBOS-DOC-200. Spec: TECHSPEC §14.5 · §14.13 G-OA-03 · CC P0 §4.
+        must_keep: UF-XBOS-03/06 🟢 — documentation only.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-DOC-200 — { items: LegalEntityDocument[] }
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-DOC-200
+                      data:
+                        $ref: '#/components/schemas/DocumentListData'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404 — legal entity not found (partition resolve)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    post:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationCreateDocument
+      summary: FR-XBOS-ORG-03 — create document metadata
+      description: |
+        Runtime: createDocument. Mutation scope (group legal).
+        Nest default POST HTTP 201; envelope XBOS-DOC-201.
+        Validation: documentName required → XBOS-DOC-400.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDocumentRequest'
+      responses:
+        '201':
+          description: XBOS-DOC-201 — created row (snake_case)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-DOC-201
+                      data:
+                        $ref: '#/components/schemas/LegalEntityDocument'
+        '400':
+          description: XBOS-DOC-400 — validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404 — legal entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/legal-entities/{entityId}/documents/{documentId}:
+    put:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationUpdateDocument
+      summary: FR-XBOS-ORG-03 — update document metadata
+      description: |
+        Runtime: updateDocument. HTTP 200 (Nest PUT); envelope code XBOS-DOC-201.
+        Missing active row → XBOS-DOC-404.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDocumentRequest'
+      responses:
+        '200':
+          description: XBOS-DOC-201 — updated row
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-DOC-201
+                      data:
+                        $ref: '#/components/schemas/LegalEntityDocument'
+        '400':
+          description: XBOS-DOC-400
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+    delete:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationDeleteDocument
+      summary: FR-XBOS-ORG-03 — soft-delete document (status=deleted)
+      description: |
+        Runtime: deleteDocument. HTTP 200; envelope XBOS-DOC-204; data { deleted: true }.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-DOC-204 — soft deleted
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-DOC-204
+                      data:
+                        $ref: '#/components/schemas/DocumentDeletedData'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /org-foundation/legal-entities/{entityId}/documents/{documentId}/upload:
+    post:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationUploadDocumentFile
+      summary: FR-XBOS-ORG-03 — upload file for existing document metadata
+      description: |
+        Runtime: uploadDocumentFile. multipart field name `file`.
+        Allowed extensions: pdf, doc, docx, xls, xlsx. Max size XBOS_LEGAL_DOC_MAX_BYTES (default 25MB).
+        Nest POST HTTP 201; envelope XBOS-DOC-201; updates storage_path, file_url, mime_type, file_size.
+        Errors: XBOS-DOC-400 (missing file), XBOS-DOC-413 (too large), XBOS-DOC-415 (MIME/ext), XBOS-DOC-404.
+        must_keep: UF-XBOS-06 🟢 — documentation only.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Document file (pdf|doc|docx|xls|xlsx)
+      responses:
+        '201':
+          description: XBOS-DOC-201 — document row with file_url after upload
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-DOC-201
+                      data:
+                        $ref: '#/components/schemas/LegalEntityDocument'
+        '400':
+          description: XBOS-DOC-400 — file required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-DOC-404
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+        '413':
+          description: XBOS-DOC-413 — file too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '415':
+          description: XBOS-DOC-415 — unsupported file type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+  /org-foundation/legal-documents/{documentId}/file:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: orgFoundationStreamDocumentFile
+      summary: FR-XBOS-ORG-03 — stream stored document bytes
+      description: |
+        Runtime: streamDocumentFile. Raw binary response (not ApiEnvelope).
+        Content-Type from mime_type; Content-Disposition inline.
+        Missing storage / disk → XBOS-DOC-404.
+        Note: controller does not require auth headers on this route (proxy/deploy checklist CC P0 §7).
+      security: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: File bytes streamed
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: XBOS-DOC-404 — File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+  /raci-governance/catalog:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: raciGovernanceListCatalog
+      summary: FR-XBOS-RACI-02 — list RACI activity catalog
+      description: |
+        API_DESIGN Endpoint A (F.1) · docs/xbos/API_DESIGN_XBOS_RACI_RBAC.md §1 · DB_DESIGN_XBOS_RACI_RBAC.md.
+        Mục đích: Cấp catalog hoạt động RACI hiệu lực (activities + default_matrix) để FE vẽ lưới / chọn activity_id.
+        Nghiệp vụ: Auth → resolveTenantOnlyContext → listCatalog; missing catalog → empty/not-ready — không invent (U65).
+        Bước SRS: FR-XBOS-RACI-02 Diễn biến #2 (catalog leg) · UC-RACI-02 điều kiện catalog hiệu lực.
+        Runtime: RaciGovernanceController.catalog → listCatalog. Envelope: XBOS-RACI-200.
+        must_keep: UF-XBOS-07 🟢 — OpenAPI deepen only; no runtime change.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: domain
+          in: query
+          schema: { type: string }
+          description: Optional domain_code filter
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-RACI-200 — RaciCatalogData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-RACI-200
+                      data:
+                        $ref: '#/components/schemas/RaciCatalogData'
+              examples:
+                catalogSnapshot:
+                  summary: FR-XBOS-RACI-02 #2 catalog leg
+                  value:
+                    success: true
+                    code: XBOS-RACI-200
+                    message: RACI catalog loaded
+                    data:
+                      domains:
+                        - domain_code: governance
+                          domain_label: Quản trị
+                          count: 1
+                      activities:
+                        - id: 11111111-1111-4111-8111-111111111111
+                          activity_code: RACI-GOV-01
+                          domain_code: governance
+                          domain_label: Quản trị
+                          seq_no: 1
+                          name: Phê duyệt ngân sách
+                          default_matrix:
+                            hdqt: A
+                            ceo: R
+                            hcns: C
+                      total: 1
+                    timestamp: '2026-07-27T08:00:00.000Z'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /raci-governance/companies/{companyId}/matrix:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: raciGovernanceGetCompanyMatrix
+      summary: FR-XBOS-RACI-02 — get company RACI matrix (template + overrides)
+      description: |
+        API_DESIGN Endpoint B (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §2.
+        Mục đích: Trả ma trận đã merge (mẫu tập đoàn ⊕ ghi đè pháp nhân) trước khi sửa ô.
+        Nghiệp vụ: resolveCompanyMatrixScope (slug hoặc LE UUID) — ngoài phạm vi 409/403; merge cells + template; optional domain filter.
+        Bước SRS: FR-XBOS-RACI-02 Diễn biến #2 hiện ma trận · #3 ngoài phạm vi · #7 tải lại sau mutate.
+        Runtime: matrix → getCompanyMatrix. Envelope: XBOS-RACI-200. Missing LE → XBOS-RACI-404.
+        Scope parity G-SCOPE-W2-RACI: cùng resolver với PUT cell. must_keep UF-XBOS-07 🟢.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string }
+          description: Company slug or legal-entity UUID
+          examples: [holding, main, 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee']
+        - name: domain
+          in: query
+          schema: { type: string }
+          description: Optional domain_code filter
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-RACI-200 — RaciCompanyMatrixData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-RACI-200
+                      data:
+                        $ref: '#/components/schemas/RaciCompanyMatrixData'
+              examples:
+                companyMatrix:
+                  summary: Merged template + overrides
+                  value:
+                    success: true
+                    code: XBOS-RACI-200
+                    message: Company RACI matrix loaded
+                    data:
+                      company_id: holding
+                      rows:
+                        - activity_id: 11111111-1111-4111-8111-111111111111
+                          activity_code: RACI-GOV-01
+                          domain_code: governance
+                          domain_label: Quản trị
+                          seq_no: 1
+                          name: Phê duyệt ngân sách
+                          matrix:
+                            hdqt: A
+                            ceo: RA
+                            hcns: C
+                          has_override: true
+                    timestamp: '2026-07-27T08:00:00.000Z'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-RACI-404 — legal entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /raci-governance/companies/{companyId}/matrix/cell:
+    put:
+      tags: [M01-Org, M01-CC]
+      operationId: raciGovernanceUpsertMatrixCell
+      summary: FR-XBOS-RACI-02 — upsert one RACI matrix cell
+      description: |
+        API_DESIGN Endpoint C (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §3 · UF-XBOS-07.
+        Mục đích: Lưu một ô RACI theo pháp nhân (hoặc xóa ghi đè khi raci_letters rỗng) — F5 còn; không lan pháp nhân khác.
+        Nghiệp vụ: cùng resolveCompanyMatrixScope với GET; validate activity_id/org_column_id + ^[RACI]*$; empty → clear override; else upsert + audit.
+        Bước SRS: FR-XBOS-RACI-02 Diễn biến #4 ký tự lạ · #5 lưu hợp lệ · #6 xóa ô · #7–#8 F5.
+        Runtime: upsertCell → UpsertRaciMatrixCellRequestDto → upsertMatrixCell. Nest PUT HTTP 200; envelope XBOS-RACI-201.
+        G-DTO-W2-RACI-01 CLOSED (BE-XBOS-OA-DTO-P2-01): Nest class-validator edge + OpenAPI schema.
+        must_keep: UF-XBOS-07 🟢 — merge/scope/clear-empty unchanged.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string }
+          description: Company slug or legal-entity UUID
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertRaciMatrixCellRequest'
+            examples:
+              upsertLetters:
+                summary: FR-XBOS-RACI-02 #5 lưu ô
+                value:
+                  activity_id: 11111111-1111-4111-8111-111111111111
+                  org_column_id: ceo
+                  raci_letters: RA
+                  actor_id: ceo@xe.vn
+              clearOverride:
+                summary: FR-XBOS-RACI-02 #6 xóa ghi đè
+                value:
+                  activity_id: 11111111-1111-4111-8111-111111111111
+                  org_column_id: ceo
+                  raci_letters: ''
+      responses:
+        '200':
+          description: XBOS-RACI-201 — saved company_raci_matrix_cell row
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-RACI-201
+                      data:
+                        $ref: '#/components/schemas/CompanyRaciMatrixCell'
+              examples:
+                cellSaved:
+                  summary: After upsert
+                  value:
+                    success: true
+                    code: XBOS-RACI-201
+                    message: Matrix cell saved
+                    data:
+                      id: 22222222-2222-4222-8222-222222222222
+                      tenant_id: xevn
+                      company_id: holding
+                      activity_id: 11111111-1111-4111-8111-111111111111
+                      org_column_id: ceo
+                      raci_letters: RA
+                      source: company_override
+                      updated_by: ceo@xe.vn
+                    timestamp: '2026-07-27T08:01:00.000Z'
+        '400':
+          description: XBOS-RACI-400 — validation (Diễn biến #4)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-RACI-404 — legal entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+        '503':
+          description: XBOS-RACI-503 — catalog not synced (seed-* activity)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+  /raci-governance/capabilities:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: raciGovernanceListCapabilities
+      summary: FR-XBOS-RACI-02 — list ecosystem capability maps for activities
+      description: |
+        API_DESIGN Endpoint D (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §4 — supporting read.
+        Mục đích: Coverage/capability map cho tab phụ FE — không thay mutate cell.
+        Nghiệp vụ: Auth + tenant scope → join raci_ecosystem_capability ↔ activities; empty valid.
+        Bước SRS: FR-XBOS-RACI-02 #2 mở rộng tab · RACI_GOVERNANCE_TECHSPEC §4 UI.
+        Runtime: capabilities → listCapabilities. Envelope: XBOS-RACI-200.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: activityCode
+          in: query
+          schema: { type: string }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-RACI-200 — RaciCapabilityListData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-RACI-200
+                      data:
+                        $ref: '#/components/schemas/RaciCapabilityListData'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
+  /raci-governance/companies/{companyId}/coverage:
+    get:
+      tags: [M01-Org, M01-CC]
+      operationId: raciGovernanceGetCoverage
+      summary: FR-XBOS-RACI-02 — coverage stats for company matrix
+      description: |
+        API_DESIGN Endpoint D (F.1) · coverage aggregate — same resolveCompanyMatrixScope as matrix GET.
+        Mục đích: Stats coverage cells vs template cho tab phụ.
+        Bước SRS: FR-XBOS-RACI-02 #2 supporting. Envelope: XBOS-RACI-200.
+        must_keep: scope parity with GET matrix / PUT cell.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      responses:
+        '200':
+          description: XBOS-RACI-200 — RaciCoverageData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-RACI-200
+                      data:
+                        $ref: '#/components/schemas/RaciCoverageData'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '404':
+          description: XBOS-RACI-404 — legal entity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
   /org-foundation/org-units/tree:
     get:
       tags: [M01-Org]
@@ -490,55 +2536,365 @@ paths:
           description: SCOPE_CONTEXT_MISMATCH
   /position-rbac/matrix:
     get:
-      tags: [M01-Org]
+      tags: [M01-Org, M01-CC]
       operationId: positionRbacGetMatrix
-      summary: UC-XBOS-11 — permission matrix (tenant-only)
+      summary: FR-CC-P0-04 — load permission matrix by role
+      description: |
+        API_DESIGN Endpoint E (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §5 · UF-XBOS-13.
+        Mục đích: Tải ma trận checkbox phân quyền theo chức danh (roleId) cho màn Settings.
+        Nghiệp vụ: Auth; tenant-only scope; require roleId; SELECT xbos_cc_permission_matrix_cell → PermissionMatrixRow[].
+        Bước SRS: FR-CC-P0-04 Diễn biến #2 hiện ma trận · #6 tải lại.
+        Envelope: XBOS-POS-200. Empty rows = unchecked defaults (valid). G-DTO-W2-POS-01 CLOSED.
+        must_keep: UF-XBOS-13 🟢 · không đụng catalog-gov / WF assignment soft.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       parameters:
         - name: roleId
           in: query
           required: true
+          schema: { type: string, minLength: 1 }
+          description: Chức danh / role id
+          examples: [role-ceo, role-hrbp]
+        - name: x-tenant-id
+          in: header
           schema: { type: string }
       responses:
         '200':
-          description: XBOS-POS-200
+          description: XBOS-POS-200 — PermissionMatrixData
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-POS-200
+                      data:
+                        $ref: '#/components/schemas/PermissionMatrixData'
+              examples:
+                matrixLoaded:
+                  summary: FR-CC-P0-04 #2
+                  value:
+                    success: true
+                    code: XBOS-POS-200
+                    message: Permission matrix loaded
+                    data:
+                      roleId: role-ceo
+                      rows:
+                        - rowId: pm-org-1
+                          view: true
+                          write: true
+                          delete: false
+                          approve: true
+                          dataScope: group
+                    timestamp: '2026-07-27T10:00:00.000Z'
         '400':
           description: XBOS-POS-400 roleId required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
     put:
-      tags: [M01-Org]
+      tags: [M01-Org, M01-CC]
       operationId: positionRbacSaveMatrix
+      summary: FR-CC-P0-04 — save permission matrix by role
+      description: |
+        API_DESIGN Endpoint F (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §6 · UF-XBOS-13.
+        Mục đích: Lưu gộp checkbox xem/ghi/xóa/duyệt (+ dataScope) theo đúng role đang chọn — F5 còn; không ghi đè role khác.
+        Nghiệp vụ: Auth + tenant-only; validate SavePermissionMatrixRequest; skip empty rowId; upsert ON CONFLICT PK.
+        Bước SRS: FR-CC-P0-04 Diễn biến #4 đổi checkbox · #5 Lưu · #6–#7 F5.
+        Nest: SavePermissionMatrixRequestDto / PermissionMatrixRowDto. Envelope XBOS-POS-201 (HTTP 200).
+        G-DTO-W2-POS-01 CLOSED (BE-XBOS-OA-DTO-P2-01). must_keep: UF-XBOS-13 🟢.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavePermissionMatrixRequest'
+            examples:
+              saveMatrix:
+                summary: FR-CC-P0-04 #5 Lưu
+                value:
+                  roleId: role-ceo
+                  rows:
+                    - rowId: pm-org-1
+                      view: true
+                      write: true
+                      delete: false
+                      approve: true
+                      dataScope: group
+                    - rowId: pm-sys-2
+                      view: true
+                      write: false
+                      delete: false
+                      approve: false
+                      dataScope: legal_entity
       responses:
         '200':
-          description: XBOS-POS-201
+          description: XBOS-POS-201 — saved matrix slice for roleId
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-POS-201
+                      data:
+                        $ref: '#/components/schemas/PermissionMatrixData'
+              examples:
+                matrixSaved:
+                  summary: After PUT
+                  value:
+                    success: true
+                    code: XBOS-POS-201
+                    message: Permission matrix saved
+                    data:
+                      roleId: role-ceo
+                      rows:
+                        - rowId: pm-org-1
+                          view: true
+                          write: true
+                          delete: false
+                          approve: true
+                          dataScope: group
+                    timestamp: '2026-07-27T10:01:00.000Z'
+        '400':
+          description: XBOS-POS-400 / XBOS-VAL-001 validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
   /business-master/{domain}/items:
     get:
-      tags: [M01-Master]
+      tags: [M01-Master, M01-CC]
       operationId: businessMasterListItems
-      summary: UC-XBOS-MD-* / UC-XBOS-08
+      summary: UC-XBOS-MD-* / UC-XBOS-08 / FR-CC-P0-05 list
+      description: |
+        Generic business-master list.
+        When `domain=command_center_catalogs` — API_DESIGN Endpoint H (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §8 · FR-CC-P0-05 / UF-XBOS-14:
+        Mục đích: Tải danh sách catalog CC (văn bản / đo lường / giá); empty hợp lệ.
+        Nghiệp vụ: Auth; JWT `main`→`holding` partition; whitelist domain; SELECT entries; flatten partitions + flat rows.
+        Bước SRS: FR-CC-P0-05 Diễn biến #2 list/empty · #3 ngoài phạm vi · #6 tải lại.
+        Envelope: `XBOS-MASTER-200`. Kinds: CommandCenterCatalogKind = regulations|measurements|pricing.
+        Not catalog-governance publish (must_keep L0 ≠ autosave). U65 — do not seed to pass UF.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       parameters:
         - $ref: '#/components/parameters/Domain'
         - $ref: '#/components/parameters/TenantIdQuery'
         - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
       responses:
         '200':
-          description: XBOS-MASTER-200
+          description: |
+            XBOS-MASTER-200 — for domain=command_center_catalogs see CommandCenterCatalogListData
+            (items may be returned as data array directly; FE tolerates both shapes).
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-MASTER-200
+                      data:
+                        oneOf:
+                          - type: array
+                            items:
+                              $ref: '#/components/schemas/CommandCenterCatalogListItem'
+                          - $ref: '#/components/schemas/CommandCenterCatalogListData'
+              examples:
+                commandCenterCatalogs:
+                  summary: FR-CC-P0-05 #2 partition snapshot (Endpoint H)
+                  value:
+                    success: true
+                    code: XBOS-MASTER-200
+                    message: ok
+                    data:
+                      - id: regulations
+                        status: active
+                        rows:
+                          - code: QD-2026-01
+                            title: Quy chế quản trị nội bộ
+                            version: v1.0
+                            active: true
+                      - id: measurements
+                        status: active
+                        rows: []
+                      - id: pricing
+                        status: active
+                        rows: []
+                    timestamp: '2026-07-22T10:00:00.000Z'
+                commandCenterCatalogsEmpty:
+                  summary: FR-CC-P0-05 empty valid (U65)
+                  value:
+                    success: true
+                    code: XBOS-MASTER-200
+                    message: ok
+                    data: []
+                    timestamp: '2026-07-27T08:00:00.000Z'
         '400':
-          description: Unknown domain
+          description: XBOS-MASTER-400 — unknown domain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
   /business-master/{domain}/items/{itemId}:
     put:
-      tags: [M01-Master]
+      tags: [M01-Master, M01-CC]
       operationId: businessMasterUpsertItem
+      summary: UC-XBOS-MD-* / FR-CC-P0-05 autosave upsert
+      description: |
+        Generic upsert.
+        When `domain=command_center_catalogs` — API_DESIGN Endpoint I (F.1) · API_DESIGN_XBOS_RACI_RBAC.md §9 · FR-CC-P0-05 / UF-XBOS-14:
+        Mục đích: Autosave partition hoặc một dòng catalog CC sau sửa ô — **không** đi qua catalog-governance publish.
+        Nghiệp vụ: Auth + write scope (`main`→`holding`); partition body `{ rows }` khi itemId ∈ regulations|measurements|pricing;
+          flat mode requires category kind; pricing `amount` = plain number; upsert PK + bump updated_at.
+        Bước SRS: FR-CC-P0-05 Diễn biến #4 sai định dạng · #5 autosave · #6–#7 F5 / khóa dòng.
+        Envelope: `XBOS-MASTER-201`. must_keep: UF-XBOS-14 🟢 — F5 retains; no publishVersionChange SoT.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
       parameters:
         - $ref: '#/components/parameters/Domain'
         - $ref: '#/components/parameters/ItemId'
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
+        - name: x-tenant-id
+          in: header
+          schema: { type: string }
+        - name: x-company-id
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CommandCenterCatalogPartitionBody'
+                - $ref: '#/components/schemas/CommandCenterCatalogFlatUpsertBody'
+                - type: object
+                  description: Other business-master domains — free-form payload
+                  additionalProperties: true
+            examples:
+              ccRegulationsPartition:
+                summary: Partition autosave regulations (Endpoint I)
+                value:
+                  rows:
+                    - code: QD-2026-01
+                      title: Quy chế quản trị nội bộ
+                      version: v1.0
+                      active: true
+              ccMeasurementsPartition:
+                summary: Partition autosave measurements
+                value:
+                  rows:
+                    - key: REVENUE_YTD
+                      unit: VND
+                      currency: VND
+                      precision: 0
+              ccPricingPartition:
+                summary: Partition autosave pricing (amount plain number)
+                value:
+                  rows:
+                    - priceCode: PRC-HOLDING-01
+                      label: Phí dịch vụ tập đoàn
+                      amount: 1500000
+              ccFlatRegulation:
+                summary: Flat row mirror (category required)
+                value:
+                  code: QD-2026-01
+                  title: Quy chế quản trị nội bộ
+                  category: regulations
+                  version: v1.0
+                  active: true
       responses:
         '200':
-          description: XBOS-MASTER-201
+          description: XBOS-MASTER-201 — upserted entry (HTTP 200 + success envelope)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiEnvelopeSuccess'
+                  - type: object
+                    properties:
+                      code:
+                        type: string
+                        const: XBOS-MASTER-201
+        '400':
+          description: |
+            XBOS-MASTER-400 — unknown domain, or command_center_catalogs row missing
+            category regulations|measurements|pricing (Diễn biến #4 — FE giữ cũ)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiEnvelopeError'
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
     delete:
-      tags: [M01-Master]
+      tags: [M01-Master, M01-CC]
       operationId: businessMasterDeleteItem
+      summary: Soft-delete business-master item (incl. CC catalog partition/flat)
+      description: |
+        When domain=command_center_catalogs, itemId may be a partition kind or flat row key.
+        Envelope: XBOS-MASTER-204.
+      security:
+        - bearerAuth: []
+        - internalApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/Domain'
+        - $ref: '#/components/parameters/ItemId'
+        - $ref: '#/components/parameters/TenantIdQuery'
+        - $ref: '#/components/parameters/CompanyIdQuery'
       responses:
         '200':
           description: XBOS-MASTER-204
+        '400':
+          description: XBOS-MASTER-400
+        '401':
+          description: XBOS-AUTH-001
+        '409':
+          description: SCOPE_CONTEXT_MISMATCH
   /command-center/workspace-meta:
     get:
       tags: [M01-CC]
@@ -655,6 +3011,19 @@ paths:
       tags: [M01-WF]
       operationId: wfStartInstance
       summary: UC-XBOS-WF-03 / UC-XBOS-14 — start workflow instance
+      description: |
+        Recruitment enums (ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE §5):
+        workflowCode ∈ {hrm_recruitment_plan_approval, hrm_requisition_approval, hrm_candidate_pipeline};
+        businessType ∈ {hrm_recruitment_plan, hrm_requisition, hrm_candidate}.
+        Idempotent: same (tenant, businessType, businessId) while active → 200 same instance id.
+        Canvas-only for UAT (U65) — no seed.
+        Option B (ADR-HRM-SETTINGS-SOT-REC-WF-COMPANY-20260723 §3): active definition resolve
+        prefers (tenant_id, workflow_code, company partition | applyingEntity) member override;
+        falls back to group-wide only when no member override. Pass context.memberCompanyId /
+        memberTenantId / entityCompanyId (and x-company-id) so spawn picks the correct graph.
+        Soft GROUP_APPROVER on REC resolver fail remains R2 gap (not Bay.vn UI parity).
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5
+      x-option-b-ref: docs/decisions/ADR-HRM-SETTINGS-SOT-REC-WF-COMPANY-20260723.md §3
       requestBody:
         required: true
         content:
@@ -662,9 +3031,41 @@ paths:
             schema:
               type: object
               properties:
-                workflowCode: { type: string }
-                businessType: { type: string }
+                workflowCode:
+                  type: string
+                  enum:
+                    - hrm_leave_approval
+                    - hrm_recruitment_plan_approval
+                    - hrm_requisition_approval
+                    - hrm_candidate_pipeline
+                    - wf_hrm_catalog_extension_xe_du_lich
+                businessType:
+                  type: string
+                  enum:
+                    - hrm_leave
+                    - hrm_recruitment_plan
+                    - hrm_requisition
+                    - hrm_candidate
+                    - hrm_catalog_extension
+                    - workflow_definition_review
                 businessId: { type: string }
+                submitter:
+                  type: object
+                  properties:
+                    userId: { type: string }
+                    employeeId: { type: string }
+                    companyId: { type: string }
+                    companySlug: { type: string }
+                context:
+                  type: object
+                  description: Option B partition keys for def resolve
+                  properties:
+                    memberTenantId: { type: string }
+                    memberCompanyId: { type: string }
+                    entityCompanyId: { type: string }
+                    member_tenant_id: { type: string }
+                    member_company_id: { type: string }
+                    entity_company_id: { type: string }
       responses:
         '200':
           description: XBOS-WF-201
@@ -715,6 +3116,10 @@ paths:
       tags: [M01-WF]
       operationId: wfCompleteTask
       summary: UC-XBOS-WF-04 / UC-XBOS-14 — approve workflow step
+      description: |
+        Side-effect for recruitment businessType: non-terminal complete → HRM POST /recruitment/workflow/step;
+        final complete → /recruitment/workflow/terminal. Leave notifyHrmLeaveTerminal path unchanged.
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5
       parameters:
         - name: taskId
           in: path
@@ -740,6 +3145,9 @@ paths:
       tags: [M01-WF]
       operationId: wfRejectTask
       summary: UC-XBOS-WF-06 — reject workflow step
+      description: |
+        Recruitment types notify HRM /recruitment/workflow/terminal. Leave terminal notify URL/contract unchanged.
+      x-adr-ref: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §5
       parameters:
         - name: taskId
           in: path

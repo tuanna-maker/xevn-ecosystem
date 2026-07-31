@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { scanOpenBacklog } from './lib/pm-backlog-scan.mjs';
+import { runPeerClaudeWatchdog } from './lib/pm-peer-claude-watchdog.mjs';
 import { scanPipelineRecovery } from './lib/pm-pipeline-recovery.mjs';
 import { scanSubagentStatus } from './lib/pm-subagent-status.mjs';
 import { planSubagentRecovery, writeSubagentRecoveryArtifact } from './lib/pm-subagent-recovery.mjs';
@@ -57,6 +58,7 @@ function busIntakeWithoutDispatch(scan) {
 }
 
 const scan = scanOpenBacklog();
+const peerClaude = runPeerClaudeWatchdog(root, { autoReclaim: true });
 const pipeline = scanPipelineRecovery(24);
 const sub = scanSubagentStatus();
 const recovery = planSubagentRecovery({ scan: sub });
@@ -73,7 +75,13 @@ const recoveryDispatch = (recovery.recoveryRequired || []).map((r) => ({
   model_hint: r.model_hint,
 }));
 
-const allRequired = [...pipeline.dispatchRequired, ...scan.dispatchRequired, ...intakeGaps, ...recoveryDispatch];
+const allRequired = [
+  ...pipeline.dispatchRequired,
+  ...scan.dispatchRequired,
+  ...intakeGaps,
+  ...recoveryDispatch,
+  ...(peerClaude.dispatchRequired || []),
+];
 const dedup = [];
 const keys = new Set();
 for (const item of allRequired.sort((a, b) => a.priority.localeCompare(b.priority))) {
@@ -85,7 +93,7 @@ for (const item of allRequired.sort((a, b) => a.priority.localeCompare(b.priorit
 
 const result = {
   checkedAt: new Date().toISOString(),
-  healthy: dedup.length === 0 && sub.healthy && recovery.healthy,
+  healthy: dedup.length === 0 && sub.healthy && recovery.healthy && peerClaude.healthy,
   dispatchRequired: dedup.slice(0, 8),
   subagentHealthy: sub.healthy,
   subagentIssues: sub.issues?.length ?? 0,
@@ -95,7 +103,12 @@ const result = {
   idleClasses: dedup.length > 0 ? ['C', 'G', 'H', 'K', 'L', 'M'] : [],
   followupSuppressedCount: pipeline.followupSuppressedCount,
   pendingPipelinePath: 'docs/program/PM_PENDING_PIPELINE.json',
-  policy: 'U58/U59 — exit 2 → PM must Task before user reply (incl. interrupt/quota/suppressed-followup)',
+  peerClaudeWatchdog: {
+    healthy: peerClaude.healthy,
+    reclaim: peerClaude.reclaim,
+    path: '.cursor/team/inbox/peer-claude-watchdog-state.json',
+  },
+  policy: 'U58/U59 — exit 2 → PM must Task before user reply (incl. interrupt/quota/suppressed-followup/peer-claude-reclaim)',
 };
 
 if (jsonOnly) {

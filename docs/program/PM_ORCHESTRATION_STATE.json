@@ -1,30 +1,17 @@
 {
-
-  "updated": "2026-06-08T13:16:00+07:00",
-
+  "idle_taxonomy_version": "U59",
+  "closed_work_items": [
+    "P1-EX-BE-HTTPS-P-CC-01-JWT-01",
+    "P1-EX-QA-HTTPS-P-CC-01-JWT-01",
+    "P1-EX-QC-HTTPS-P-CC-01-JWT-01",
+    "P1-EX-FE-BE-HTTPS-RESIDUAL-03-R4",
+    "P1-EX-QA-HTTPS-RESIDUAL-03-R4",
+    "P1-EX-QC-HTTPS-RESIDUAL-03-R4"
+  ],
   "last_pm_tool_proof": {
-
-    "turn": "2026-06-08T13:16",
-
-    "tasks_dispatched": [
-
-      "PCOMP-PROGRAM-GATE-01",
-
-      "D-MOB-UX09-IA-01",
-
-      "D-MOB-UX09-IA-01-QA",
-
-      "PCOMP-L0-STACK-01"
-
-    ],
-
-    "recovery_cmd": "pnpm run pm:recover:pipeline",
-
-    "idle_rule": "U59: interrupt/followup_suppressed/tool_proof_stale → recover → Task same turn"
-
+    "note": "R4-LOOP-BREAK — HTTPS RESIDUAL-03-R4 CLOSED since 2026-05-31; watchdog ~319p stale SUPERSEDE; Cursor HOLD for Claude ERP",
+    "tasks_dispatched": ["P1-EX-FE-BE-HTTPS-RESIDUAL-03-R4-NOOP", "R4-LOOP-BREAK"],
+    "turn": "2026-07-28T22:36:00+07:00"
   },
-
-  "idle_taxonomy_version": "U59"
-
+  "updated": "2026-07-28T22:36:00+07:00"
 }
-

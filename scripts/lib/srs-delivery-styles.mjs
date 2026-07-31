@@ -25,7 +25,7 @@ export const SRS_DELIVERY_STYLES = `
   min-width: 1.85em;
   text-align: center;
   font-weight: 700;
-  color: var(--cyan, #0ab4d8);
+  color: var(--cyan, #06B6D4);
   line-height: 1.55;
 }
 .content-area .flow-step > span:last-child { flex: 1; min-width: 0; }
@@ -60,7 +60,7 @@ export const SRS_DELIVERY_STYLES = `
 .content-area .callout {
   margin: 14px 0;
   padding: 12px 14px;
-  border-left: 4px solid var(--cyan, #0ab4d8);
+  border-left: 4px solid var(--cyan, #06B6D4);
   background: #f0f9fc;
   border-radius: 0 8px 8px 0;
 }

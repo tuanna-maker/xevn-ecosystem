@@ -62,6 +62,8 @@
 | **U64** | **Cấm seed/script fake inbox để pass Duyệt:** Không `seed:workflow:inbox`, không POST API tạo instance rồi claim browser PASS; UF-08/09 phải **tạo nguồn từ FE** (workflow canvas / catalog extension) → inbox → Duyệt; inbox trống = 🟡 BLOCKED, không seed | U63, `e2e-no-fake-db-production-guard.mdc`, `qa-fe-outside-browser-gate.mdc` |
 | **U65** | **Mặc định sponsor — zero seed · FE-only:** **Không bao giờ** seed bất cứ thứ gì (mọi `pnpm seed:*`, API/DB fake, inbox/catalog/workflow seed) trừ sponsor **nói rõ cùng message** «bootstrap dev»; mọi nghiệm thu/QA/QC **chạy hết luồng từ FE** (login→menu→click→Lưu→FE sau 2xx→F5); PM/DevOps/QA **cấm** dùng seed để pass UF 🟢 | `.cursor/rules/sponsor-zero-seed-fe-only-lock.mdc` (alwaysApply), U63, U64 |
 | **U66** | **Run Everything + deploy VPS:** Sponsor bật Run Mode **Run Everything** — PM/devops **được Shell deploy trực tiếp** trong Composer chat (pscp/plink `:8088`) thay vì chỉ Task sub-agent khi sub-agent vẫn bị card Allow; VPS `14.225.217.232` pre-approved | `docs/ops/CURSOR_AGENT_DEPLOY_AUTO_RUN.md` |
+| **U67** | **Biên bản khách B-Minutes = SoT sửa HRM:** PDF Desktop *B-Minutes AI - Trợ lý phòng họp thông minh.pdf* (rà soát HRM) — F3 role switch, F4 WF động (chức danh/cấp trên/song song), F5 HĐ tách lương-phụ cấp+lịch sử, F6 JD library+dashboard tuyển dụng, pilot Connect T8/T9; **cấm waive**; map `CUSTOMER_DEMO_HRM_DELTA_20260620.md` + `P1-CUSTOMER-DEMO-HRM-FEEDBACK-PROGRAM.md` | U40, memory `mem_mrrjw31u_5e0a9053eff7` |
+| **U68** | **Feature UPGRADE + CODE-MEMORY:** cải tiến = `change_mode: UPGRADE` — **không đè** nghiệp vụ/UF 🟢; mọi file business **bắt buộc** `@CODE-MEMORY` / `@CODE-MEMORY-CHANGE` cite SRS§ + TechSpec§; Dev handoff thiếu = INVALID; OS `_vibe-team-os/11` · `12` · case-studies/xevn-ecosystem | U61, U67, `XBOS_HRM_RECRUITMENT_WORKFLOW_BRIDGE_PROGRAM.md` |
 
 | Date | Yêu cầu | Áp dụng |
 |------|---------|---------|
@@ -108,3 +110,45 @@
 | 2026-05-23 | User **không** chạy terminal | Agent terminal rule |
 | 2026-05-23 | **1000+ NV** ⇒ mọi menu HRM phải có dữ liệu liên kết; catalog từ **XBOS**; RBAC tập đoàn→công ty→cấp dưới; kiêm nhiệm đa công ty | `HRM_FULL_FIDELITY_PROGRAM.md` |
 | 2026-05-23 | Không coi smoke 200 = test chuẩn; bắt buộc `verify:hrm:menu-density` PASS | `scripts/verify-hrm-menu-data-density.mjs` |
+| 2026-07-21 | **U69:** Task dài → **bóc sub-task** + **nhiều subagent song song** (không 1 Task monolith dễ interrupt) | `.cursor/rules/pm-parallel-subtask-decomposition.mdc` |
+
+## U70 — :8088 retest before partner/live (2026-07-27)
+Sau sponsor **confirm** local: bắt buộc đẩy http://14.225.217.232:8088/ và **test lại browser** trên :8088. Chỉ khi :8088 PASS mới là chuẩn đối tác kiểm / tiến tới live. Local PASS ≠ partner gate.
+
+## U71 — DB_DESIGN + API_DESIGN sau TechSpec (2026-07-27)
+Sau TechSpec confirm: **bắt buộc** có `DB_DESIGN_*.md` + `API_DESIGN_*.md` bám sát TechSpec và SRS **trước** Dev/migration. Mỗi function trong API_DESIGN phải có: **Mục đích** · **Nghiệp vụ xử lý** · **Tham chiếu bước Diễn biến SRS**. SoT: `_vibe-team-os/13` §3.4.11.F/F.1 · rule dự án `.cursor/rules/spec-db-api-design-gate.mdc` · OS rules `team-brd-srs-techspec-quality` + `team-spec-before-code-gate`.
+
+## U72 — Display label — cấm raw key UI (2026-07-27)
+Mọi trường user-facing: **label nghiệp vụ rõ ràng** (VI / catalog), **không** lộ enum key (`subsidiary`, `active`, …), UUID, slug kỹ thuật, `true/false`. BA mỗi FR phải định nghĩa 5 mục: nguồn · label VI · dạng nguồn · dạng UI · null→`—`. QA/QC: raw key trên screenshot = **NO-GO `label-leak`**. SoT: `.cursor/rules/display-label-no-raw-key.mdc` · `_vibe-team-os/22-DISPLAY-LABEL-RULE.md`.
+
+## U73 — Peer PM song song Cursor ↔ Claude (2026-07-27)
+Khi Claude Code (hoặc lead thứ 2) cùng phát triển: SoT ngang `docs/program/PEER_PM_COLLAB.md` + ping `.cursor/team/inbox/peer-pm.jsonl`. Claude = PM2 tự dựng team, nhận LANE B; Cursor giữ LANE A. Không trùng `work_item_id` / file đang sửa.
+
+## U74 — Peer division: góp ý → tổng hợp → sponsor chốt → mới làm (2026-07-28)
+**Roster:** CURSOR-PM = chủ trì · CLAUDE-PM = phó. Trước mọi chia lane / đổi WI / mở wave peer mới: (1) Cursor đề xuất trên `PEER_PM_COLLAB` → (2) Claude **bắt buộc** entry góp ý/phản biện/đề xuất đổi → (3) Cursor **tổng hợp** bảng đồng ý/lệch gửi sponsor → (4) sponsor chốt → (5) mới giao members. **Cấm** Cursor giao việc + kick execution trước bước 2–4. Ngoại lệ: hotfix P0 sponsor nói «làm ngay». Rule: `.cursor/rules/pm-peer-sponsor-chot-before-exec.mdc`.
+
+## U76 — Test browser bám HDSD (2026-08-01)
+
+**Sponsor:** Thao tác test phải đúng menu/màn/chức năng theo **HDSD**; mọi màn/nút/function HDSD liệt kê trong menu đang test → QA phải cover (hoặc 🟡 product_gap). Cấm happy-path lệch HDSD rồi claim 🟢.
+
+| | |
+|--|--|
+| Rule | `.cursor/rules/qa-hdsd-aligned-browser-test.mdc` |
+| Evidence | Bảng inventory menu×màn×nút trong mỗi evidence QA/E2E |
+| Liên quan | U63 · U65 · UF/J-* · client HDSD HTML/PDF |
+
+## U75 — Claude panel vs Claude CLI + relay qua Cursor (2026-07-29)
+- **Claude panel** (VS Code conversation) = phó PM + cố vấn tư duy — planning/audit/coordination; **không** báo code DONE khi không edit được file (tool fail ≠ thiếu quyền).
+- **Claude Code CLI** (`claude` @ `C:\xevn-ecosystem`) = đội code đầy đủ (Edit/Bash/test); Claude-PM **tự điều phối** team CLI.
+- Sponsor ↔ Claude: **chỉ qua Cursor-PM** (relay peer SoT + Telegram). Cursor thiếu quota subagent → **đẩy việc** cho Claude.
+- SoT: `docs/program/PEER_CLAUDE_RUNTIME_MODEL.md` · rule `.cursor/rules/pm-peer-claude-runtime.mdc`.
+
+## U76 — Test browser bám HDSD (2026-08-01)
+
+**Sponsor:** Thao tác test phải đúng menu/màn/chức năng theo **HDSD**; mọi màn/nút/function HDSD liệt kê trong menu đang test → QA phải cover (hoặc 🟡 product_gap). Cấm happy-path lệch HDSD rồi claim 🟢.
+
+| | |
+|--|--|
+| Rule | `.cursor/rules/qa-hdsd-aligned-browser-test.mdc` |
+| Evidence | Bảng inventory menu×màn×nút trong mỗi evidence QA/E2E |
+| Liên quan | U63 · U65 · UF/J-* · client HDSD HTML/PDF |

@@ -57,7 +57,7 @@ fi
 
 set_key NODE_ENV production
 set_key LOG_LEVEL info
-CORS_VAL="https://14-225-217-232.nip.io,http://127.0.0.1:8088,http://127.0.0.1:8080,http://localhost:8088"
+CORS_VAL="http://14.225.217.232:8088,http://127.0.0.1:8088,http://127.0.0.1:8080,http://localhost:8088"
 set_key CORS_ALLOWED_ORIGINS "$CORS_VAL"
 echo "CORS_ALLOWED_ORIGINS=set"
 
