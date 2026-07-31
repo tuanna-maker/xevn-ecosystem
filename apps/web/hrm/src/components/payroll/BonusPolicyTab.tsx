@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -799,14 +801,13 @@ export function BonusPolicyTab() {
               {policyForm.calculation_method === 'fixed' && (
                 <div className="space-y-2">
                   <Label>{t('bonus.fixedAmount')}</Label>
-                  <Input
-                    type="number"
-                    value={policyForm.base_value || 0}
-                    onChange={(e) => setPolicyForm({ ...policyForm, base_value: Number(e.target.value) })}
+                  <ViMoneyInput
+                    value={Number(policyForm.base_value) || 0}
+                    onValueChange={(n) => setPolicyForm({ ...policyForm, base_value: n })}
                   />
                 </div>
               )}
-              
+
               {policyForm.calculation_method === 'percentage' && (
                 <div className="space-y-2">
                   <Label>{t('bonus.percentageRate')}</Label>
@@ -858,18 +859,16 @@ export function BonusPolicyTab() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('bonus.effectiveDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={policyForm.effective_date || ''}
-                  onChange={(e) => setPolicyForm({ ...policyForm, effective_date: e.target.value })}
+                  onValueChange={(v) => setPolicyForm({ ...policyForm, effective_date: v })}
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('bonus.expiryDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={policyForm.expiry_date || ''}
-                  onChange={(e) => setPolicyForm({ ...policyForm, expiry_date: e.target.value })}
+                  onValueChange={(v) => setPolicyForm({ ...policyForm, expiry_date: v })}
                 />
               </div>
             </div>

@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -505,18 +507,16 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('training.startDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={form.start_date}
-                  onChange={(e) => setForm({ ...form, start_date: e.target.value })}
+                  onValueChange={(v) => setForm({ ...form, start_date: v })}
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('training.endDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={form.end_date}
-                  onChange={(e) => setForm({ ...form, end_date: e.target.value })}
+                  onValueChange={(v) => setForm({ ...form, end_date: v })}
                 />
               </div>
             </div>
@@ -598,10 +598,9 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('training.cost')}</Label>
-                <Input
-                  type="number"
-                  value={form.cost}
-                  onChange={(e) => setForm({ ...form, cost: Number(e.target.value) })}
+                <ViMoneyInput
+                  value={Number(form.cost) || 0}
+                  onValueChange={(n) => setForm({ ...form, cost: n })}
                 />
               </div>
               <div className="space-y-2">

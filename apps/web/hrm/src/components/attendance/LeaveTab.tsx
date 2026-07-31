@@ -1,4 +1,56 @@
-import { useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     Attendance → Leave tab → Tạo yêu cầu nghỉ (create dialog)
+ * UC:          UC-HRM-ATT-LEAVE-01 · J-HRM-06
+ * BR:          BR-LEAVE-01
+ * SRS:         docs/hrm/SRS.md § attendance leave requests
+ * TechSpec:    docs/hrm/TECHSPEC.md § leave + employee list keyword
+ * Purpose:     Leave request list/approve UI + create dialog. Employee pickers
+ *              use capped keyword typeahead (HLD-#### beyond first page).
+ * WorkItem:    CD-FB-07-FE-LEAVE-PICKER
+ * Coded:       2026-07-19
+ *
+ * Callers: Attendance page Leave tab
+ * Callees: useLeaveRequests · useEmployeePickerSearch → listEmployees
+ * must_keep: soft-nav Attendance; F4-01/02 product path; no listAllEmployees; U65 no seed
+ * SOLID: Picker read path = useEmployeePickerSearch (shared W2); leave mutate stays in useLeaveRequests
+ * LastVerified: apps/web/hrm/src/hooks/useEmployeePicker.test.ts (LeaveTab typeahead)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-07-FE-LEAVE-PICKER
+ *   C-CD-FB-07-01: replace useEmployees dump Select with deferred typeahead
+ *   (keyword → GET employees page=1) so HLD-0006 selectable beyond first ~50–100.
+ *   Snapshot selected employee for submit after keyword clear. Handover picker same pattern.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-23 D-HRM-SETTINGS-MD-CRUD-FE-01
+ * change_mode: ADD
+ * What: Leave type CatalogSearchPicker từ leave_types catalog (bootstrap discrete nếu empty)
+ * Why: FR-HRM-SC-LEAVE-01 · AC-HRM-PICKER-01 · BR-HRM-MD-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-25 D-HRM-SETTINGS-MD-LEAVE-FE-01
+ * change_mode: UPGRADE
+ * What: Gỡ bootstrap 8 loại nghỉ hardcode khi catalog trống — empty + CTA Cài đặt/sync
+ * Why: AC-SET-FS-05 · BR-SET-MD-03 · QA FAIL qa-hrm-settings-master-data-01-20260725
+ * must_keep: create/approve khi catalog có item; UF leave 🟢 với catalog thật; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-HRM-LEAVE-REQ-CREATE-FE-01
+ * change_mode: FIX
+ * What: Submit vẫn bind employee.company_id; hook maps UUID→TEXT slug holding (G-AT10-01)
+ * Why: QA P1 residual FE POST holding UUID; Settings catalog partition alignment
+ * must_keep: leave_type CatalogSearchPicker SoT; create dialog path; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-FE-U72-LEAVE-NOTE-HYGIENE-01
+ * change_mode: ADD
+ * What: Display lý do nghỉ qua sanitizeLeaveNoteDisplay — `seed:…` → «—»; form nhập không đụng
+ * Why: QC C-U72-LEAVE-NOTE-HYGIENE ENV residue trên PNG leave
+ * must_keep: C-U72-LEAVE-P3 leave-type unknown→—; soft P2 CLOSED; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-FE-09
+ * change_mode: FIX
+ * What: Prefill start/end qua pickNonOverlappingLeaveWindow khi mở dialog — tránh POST 409 overlap U65
+ * Why: QA R6 TC-HDSD-08-02-01 — 2027-05-05..07 trùng prior browser rows
+ * must_keep: U65 no seed; ViDateField dd/MM/yyyy; overview F5 marker path
+ */
+import { useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, parseISO, eachDayOfInterval, differenceInDays } from 'date-fns';
 import { vi, enUS } from 'date-fns/locale';
@@ -50,17 +102,63 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useEmployees } from '@/hooks/useEmployees';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  useDebouncedPickerKeyword,
+  useEmployeePickerSearch,
+} from '@/hooks/useEmployeePicker';
 import { useLeaveRequests, LeaveRequestFormData, LeaveRequest } from '@/hooks/useLeaveRequests';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import {
+  isCatalogPickerValueAllowed,
+  leaveTypeOptionsFromCatalog,
+  resolveLeaveTypeLabel,
+} from '@/lib/catalogSearchPicker';
+import { sanitizeLeaveNoteDisplay } from '@/lib/labelMaps';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
+import { pickNonOverlappingLeaveWindow } from '@/lib/leaveRequestDateWindow';
+import type { HrmEmployeeRecord } from '@/integrations/hrmApi';
 import { cn } from '@/lib/utils';
+
+function employeeDeptLabel(emp: HrmEmployeeRecord): string {
+  const fromCustom = emp.custom_fields?.department?.trim();
+  if (fromCustom) return fromCustom;
+  return emp.job_title_key?.trim() || '';
+}
+
+function employeePositionLabel(emp: HrmEmployeeRecord): string | undefined {
+  const fromCustom = emp.custom_fields?.position?.trim();
+  if (fromCustom) return fromCustom;
+  return emp.job_title_key?.trim() || undefined;
+}
+
+/** Neutral badge chrome — not a leave-type SoT palette (BR-SET-MD-03). */
+const LEAVE_TYPE_BADGE_CLASS = 'bg-slate-600';
+
+const EMPTY_LEAVE_FORM = {
+  employeeId: '',
+  leaveType: '',
+  startDate: '',
+  endDate: '',
+  reason: '',
+  handoverTo: '',
+  handoverTasks: '',
+} as const;
 
 export function LeaveTab() {
   const { t } = useTranslation();
-  const { employees, isLoading: isLoadingEmployees } = useEmployees();
+  const { currentCompanyId } = useAuth();
   const { requests, isLoading, createRequest, approveRequest, rejectRequest, deleteRequest } = useLeaveRequests();
-
+  /** Catalog for create picker + list filter + display labels (AC-SET-FS-04/05). */
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview();
   const currentLocale = i18n.language === 'vi' ? vi : enUS;
   
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -77,37 +175,89 @@ export function LeaveTab() {
   const [isApproving, setIsApproving] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
 
-  const [formData, setFormData] = useState({
-    employeeId: '',
-    leaveType: 'annual',
-    startDate: '',
-    endDate: '',
-    reason: '',
-    handoverTo: '',
-    handoverTasks: '',
+  /** CD-FB-07: keyword typeahead — never dump full roster into Select. */
+  const [employeeKeyword, setEmployeeKeyword] = useState('');
+  const [handoverKeyword, setHandoverKeyword] = useState('');
+  const debouncedEmployeeKeyword = useDebouncedPickerKeyword(employeeKeyword, 300);
+  const debouncedHandoverKeyword = useDebouncedPickerKeyword(handoverKeyword, 300);
+  const [selectedEmployee, setSelectedEmployee] = useState<HrmEmployeeRecord | null>(null);
+
+  const {
+    employees: pickerEmployees,
+    total: pickerTotal,
+    isCapped: pickerCapped,
+    isFetching: pickerFetching,
+  } = useEmployeePickerSearch({
+    companyId: currentCompanyId,
+    keyword: debouncedEmployeeKeyword,
+    enabled: Boolean(currentCompanyId) && isCreateOpen,
   });
 
-  const leaveTypeLabels: Record<string, string> = {
-    annual: t('leave.annual'),
-    sick: t('leave.sick'),
-    unpaid: t('leave.unpaid'),
-    maternity: t('leave.maternity'),
-    paternity: t('leave.paternity'),
-    marriage: t('leave.marriage'),
-    bereavement: t('leave.bereavement'),
-    other: t('leave.other'),
+  const {
+    employees: handoverEmployees,
+    total: handoverTotal,
+    isCapped: handoverCapped,
+    isFetching: handoverFetching,
+  } = useEmployeePickerSearch({
+    companyId: currentCompanyId,
+    keyword: debouncedHandoverKeyword,
+    enabled: Boolean(currentCompanyId) && isCreateOpen,
+  });
+
+  const [formData, setFormData] = useState({ ...EMPTY_LEAVE_FORM });
+  const reasonInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const resetCreateForm = () => {
+    setFormData({ ...EMPTY_LEAVE_FORM });
+    setEmployeeKeyword('');
+    setHandoverKeyword('');
+    setSelectedEmployee(null);
   };
 
-  const leaveTypeColors: Record<string, string> = {
-    annual: 'bg-blue-500',
-    sick: 'bg-red-500',
-    unpaid: 'bg-gray-500',
-    maternity: 'bg-pink-500',
-    paternity: 'bg-indigo-500',
-    marriage: 'bg-purple-500',
-    bereavement: 'bg-slate-600',
-    other: 'bg-teal-500',
+  const handleCreateOpenChange = (open: boolean) => {
+    setIsCreateOpen(open);
+    if (!open) {
+      resetCreateForm();
+    } else {
+      setEmployeeKeyword('');
+      setHandoverKeyword('');
+      const window = pickNonOverlappingLeaveWindow(
+        requests.map((r) => ({
+          start_date: r.start_date,
+          end_date: r.end_date,
+          status: r.status,
+        })),
+        Date.now(),
+      );
+      setFormData((prev) => ({
+        ...prev,
+        startDate: window.startIso,
+        endDate: window.endIso,
+      }));
+    }
   };
+
+  const handleEmployeeSelect = (employeeId: string) => {
+    const emp = pickerEmployees.find((e) => e.id === employeeId) ?? null;
+    setSelectedEmployee(emp);
+    setFormData((prev) => ({
+      ...prev,
+      employeeId,
+      // Clear handover if it pointed at the same person
+      handoverTo: prev.handoverTo && emp && prev.handoverTo === emp.full_name ? '' : prev.handoverTo,
+    }));
+  };
+
+  const leaveTypeOptions = useMemo(
+    () => leaveTypeOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+
+  const leaveTypeDisplayLabel = (code: string) =>
+    resolveLeaveTypeLabel(leaveTypeOptions, code);
+
+  const selectedReasonDisplay = sanitizeLeaveNoteDisplay(selectedRequest?.reason);
+  const selectedRejectDisplay = sanitizeLeaveNoteDisplay(selectedRequest?.rejected_reason);
 
   // Stats
   const totalRequests = requests.length;
@@ -197,8 +347,15 @@ export function LeaveTab() {
     if (!formData.employeeId || !formData.startDate || !formData.endDate) {
       return;
     }
+    if (!isCatalogPickerValueAllowed(leaveTypeOptions, formData.leaveType, { allowEmpty: false })) {
+      return;
+    }
 
-    const employee = employees.find(e => e.id === formData.employeeId);
+    // Prefer snapshot so submit works after keyword clear (selected may leave page-1 options)
+    const employee =
+      selectedEmployee?.id === formData.employeeId
+        ? selectedEmployee
+        : pickerEmployees.find((e) => e.id === formData.employeeId);
     if (!employee) return;
 
     const startDate = new Date(formData.startDate);
@@ -210,17 +367,20 @@ export function LeaveTab() {
     }
 
     setIsSubmitting(true);
+    const reasonText =
+      formData.reason.trim() || reasonInputRef.current?.value.trim() || '';
     const data: LeaveRequestFormData = {
+      company_id: employee.company_id,
       employee_id: employee.id,
       employee_code: employee.employee_code,
       employee_name: employee.full_name,
-      department: employee.department || undefined,
-      position: employee.position || undefined,
+      department: employeeDeptLabel(employee) || undefined,
+      position: employeePositionLabel(employee),
       leave_type: formData.leaveType,
       start_date: formData.startDate,
       end_date: formData.endDate,
       total_days: totalDays,
-      reason: formData.reason || undefined,
+      reason: reasonText || undefined,
       handover_to: formData.handoverTo || undefined,
       handover_tasks: formData.handoverTasks || undefined,
     };
@@ -229,16 +389,7 @@ export function LeaveTab() {
     setIsSubmitting(false);
     
     if (result) {
-      setIsCreateOpen(false);
-      setFormData({
-        employeeId: '',
-        leaveType: 'annual',
-        startDate: '',
-        endDate: '',
-        reason: '',
-        handoverTo: '',
-        handoverTasks: '',
-      });
+      handleCreateOpenChange(false);
     }
   };
 
@@ -258,7 +409,7 @@ export function LeaveTab() {
           <h2 className="text-xl font-semibold">{t('leave.title')}</h2>
           <p className="text-sm text-muted-foreground">{t('leave.subtitle')}</p>
         </div>
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <Dialog open={isCreateOpen} onOpenChange={handleCreateOpenChange}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -272,19 +423,51 @@ export function LeaveTab() {
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label>{t('leave.selectEmployee')}</Label>
-                <Select value={formData.employeeId} onValueChange={(v) => setFormData({...formData, employeeId: v})}>
+                <Input
+                  value={employeeKeyword}
+                  onChange={(e) => setEmployeeKeyword(e.target.value)}
+                  placeholder={t('leave.searchEmployee')}
+                  aria-label={t('leave.searchEmployee')}
+                />
+                {pickerCapped && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('leave.pickerCappedHint', {
+                      shown: pickerEmployees.length,
+                      total: pickerTotal,
+                    })}
+                  </p>
+                )}
+                <Select
+                  value={formData.employeeId || undefined}
+                  onValueChange={handleEmployeeSelect}
+                  disabled={pickerFetching && pickerEmployees.length === 0}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('leave.selectEmployee')} />
+                    <SelectValue
+                      placeholder={
+                        pickerFetching
+                          ? t('common.loading')
+                          : t('leave.selectEmployee')
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {isLoadingEmployees ? (
-                      <SelectItem value="" disabled>{t('common.loading')}</SelectItem>
-                    ) : employees.length === 0 ? (
-                      <SelectItem value="" disabled>{t('leave.noEmployees')}</SelectItem>
+                    {pickerFetching && pickerEmployees.length === 0 ? (
+                      <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {t('common.loading')}
+                      </div>
+                    ) : pickerEmployees.length === 0 ? (
+                      <div className="py-4 text-center text-sm text-muted-foreground">
+                        {t('leave.noEmployeesFound')}
+                      </div>
                     ) : (
-                      employees.map((emp) => (
+                      pickerEmployees.map((emp) => (
                         <SelectItem key={emp.id} value={emp.id}>
-                          {emp.full_name} - {emp.department || t('employeeProfile.noDepartment')}
+                          {emp.full_name} — {emp.employee_code}
+                          {employeeDeptLabel(emp)
+                            ? ` · ${employeeDeptLabel(emp)}`
+                            : ''}
                         </SelectItem>
                       ))
                     )}
@@ -293,57 +476,75 @@ export function LeaveTab() {
               </div>
               <div className="grid gap-2">
                 <Label>{t('leave.selectLeaveType')}</Label>
-                <Select value={formData.leaveType} onValueChange={(v) => setFormData({...formData, leaveType: v})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('leave.selectLeaveType')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="annual">{t('leave.annual')}</SelectItem>
-                    <SelectItem value="sick">{t('leave.sick')}</SelectItem>
-                    <SelectItem value="unpaid">{t('leave.unpaid')}</SelectItem>
-                    <SelectItem value="maternity">{t('leave.maternity')}</SelectItem>
-                    <SelectItem value="paternity">{t('leave.paternity')}</SelectItem>
-                    <SelectItem value="marriage">{t('leave.marriage')}</SelectItem>
-                    <SelectItem value="bereavement">{t('leave.bereavement')}</SelectItem>
-                    <SelectItem value="other">{t('leave.other')}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <CatalogSearchPicker
+                  options={leaveTypeOptions}
+                  value={formData.leaveType}
+                  onValueChange={(v) => setFormData({ ...formData, leaveType: v })}
+                  placeholder={t('leave.selectLeaveType')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ / Loại nghỉ
+                    </a>
+                  }
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>{t('leave.fromDate')}</Label>
-                  <Input 
-                    type="date" 
+                  <ViDateField
                     value={formData.startDate}
-                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                    onValueChange={(v) => setFormData({ ...formData, startDate: v })}
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label>{t('leave.toDate')}</Label>
-                  <Input 
-                    type="date"
+                  <ViDateField
                     value={formData.endDate}
-                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                    onValueChange={(v) => setFormData({ ...formData, endDate: v })}
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label>{t('leave.handoverTo')}</Label>
+                <Input
+                  value={handoverKeyword}
+                  onChange={(e) => setHandoverKeyword(e.target.value)}
+                  placeholder={t('leave.searchHandover')}
+                  aria-label={t('leave.searchHandover')}
+                />
+                {handoverCapped && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('leave.pickerCappedHint', {
+                      shown: handoverEmployees.filter((e) => e.id !== formData.employeeId).length,
+                      total: handoverTotal,
+                    })}
+                  </p>
+                )}
                 <Select 
-                  value={formData.handoverTo} 
+                  value={formData.handoverTo || undefined} 
                   onValueChange={(v) => setFormData({...formData, handoverTo: v})}
+                  disabled={handoverFetching && handoverEmployees.length === 0}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={t('leave.selectHandoverPerson')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {employees
-                      .filter(emp => emp.id !== formData.employeeId)
-                      .map((emp) => (
-                        <SelectItem key={emp.id} value={emp.full_name}>
-                          {emp.full_name} - {emp.department || t('common.noData')}
-                        </SelectItem>
-                      ))}
+                    {handoverFetching && handoverEmployees.length === 0 ? (
+                      <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {t('common.loading')}
+                      </div>
+                    ) : (
+                      handoverEmployees
+                        .filter((emp) => emp.id !== formData.employeeId)
+                        .map((emp) => (
+                          <SelectItem key={emp.id} value={emp.full_name}>
+                            {emp.full_name} — {emp.employee_code}
+                          </SelectItem>
+                        ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -358,19 +559,33 @@ export function LeaveTab() {
               </div>
               <div className="grid gap-2">
                 <Label>{t('leave.reason')}</Label>
-                <Textarea 
-                  placeholder={t('leave.enterReason')} 
+                <Textarea
+                  ref={reasonInputRef}
+                  data-testid={HDSD_MUTATE_TEST_IDS.leaveReasonInput}
+                  placeholder={t('leave.enterReason')}
                   rows={3}
                   value={formData.reason}
-                  onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                  onInput={(e) =>
+                    setFormData({ ...formData, reason: e.currentTarget.value })
+                  }
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
+              <Button variant="outline" onClick={() => handleCreateOpenChange(false)}>
                 {t('common.cancel')}
               </Button>
-              <Button onClick={handleSubmit} disabled={isSubmitting}>
+              <Button
+                onClick={handleSubmit}
+                disabled={
+                  isSubmitting ||
+                  leaveTypeOptions.length === 0 ||
+                  !isCatalogPickerValueAllowed(leaveTypeOptions, formData.leaveType, {
+                    allowEmpty: false,
+                  })
+                }
+              >
                 {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {t('leave.submitRequest')}
               </Button>
@@ -506,17 +721,17 @@ export function LeaveTab() {
                             variant="secondary"
                             className={cn(
                               'text-white',
-                              leaveTypeColors[leave.leave_type] || 'bg-gray-500'
+                              LEAVE_TYPE_BADGE_CLASS,
                             )}
                           >
-                            {leaveTypeLabels[leave.leave_type] || leave.leave_type}
+                            {leaveTypeDisplayLabel(leave.leave_type)}
                           </Badge>
                           <span className="text-sm text-muted-foreground">
                             {leave.total_days} {t('common.days')}
                           </span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-2">
-                          {leave.reason}
+                          {sanitizeLeaveNoteDisplay(leave.reason)}
                         </p>
                       </div>
                     ))}
@@ -552,10 +767,11 @@ export function LeaveTab() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">{t('common.all')}</SelectItem>
-                      <SelectItem value="annual">{t('leave.annual')}</SelectItem>
-                      <SelectItem value="sick">{t('leave.sick')}</SelectItem>
-                      <SelectItem value="unpaid">{t('leave.unpaid')}</SelectItem>
-                      <SelectItem value="maternity">{t('leave.maternity')}</SelectItem>
+                      {leaveTypeOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -595,16 +811,18 @@ export function LeaveTab() {
                             variant="secondary"
                             className={cn(
                               'text-white',
-                              leaveTypeColors[request.leave_type] || 'bg-gray-500'
+                              LEAVE_TYPE_BADGE_CLASS,
                             )}
                           >
-                            {leaveTypeLabels[request.leave_type] || request.leave_type}
+                            {leaveTypeDisplayLabel(request.leave_type)}
                           </Badge>
                         </td>
                         <td>{format(parseISO(request.start_date), 'dd/MM/yyyy')}</td>
                         <td>{format(parseISO(request.end_date), 'dd/MM/yyyy')}</td>
                         <td className="font-medium">{request.total_days}</td>
-                        <td className="max-w-[200px] truncate">{request.reason}</td>
+                        <td className="max-w-[200px] truncate">
+                          {sanitizeLeaveNoteDisplay(request.reason)}
+                        </td>
                         <td>
                           <StatusBadge status={request.status as 'pending' | 'approved' | 'rejected'} />
                         </td>
@@ -719,10 +937,10 @@ export function LeaveTab() {
                               variant="secondary"
                               className={cn(
                                 'ml-2 text-white',
-                                leaveTypeColors[request.leave_type] || 'bg-gray-500'
+                                LEAVE_TYPE_BADGE_CLASS,
                               )}
                             >
-                              {leaveTypeLabels[request.leave_type] || request.leave_type}
+                              {leaveTypeDisplayLabel(request.leave_type)}
                             </Badge>
                           </div>
                           <div>
@@ -744,14 +962,14 @@ export function LeaveTab() {
                             <span className="font-medium">{request.total_days}</span>
                           </div>
                         </div>
-                        {request.reason && (
+                        {sanitizeLeaveNoteDisplay(request.reason) ? (
                           <div className="mt-2 text-sm">
                             <span className="text-muted-foreground">
                               {t('leave.reason')}:
                             </span>{' '}
-                            {request.reason}
+                            {sanitizeLeaveNoteDisplay(request.reason)}
                           </div>
-                        )}
+                        ) : null}
                       </div>
                     ))}
                 </div>
@@ -847,10 +1065,10 @@ export function LeaveTab() {
                       variant="secondary"
                       className={cn(
                         'text-white',
-                        leaveTypeColors[selectedRequest.leave_type] || 'bg-gray-500'
+                        LEAVE_TYPE_BADGE_CLASS,
                       )}
                     >
-                      {leaveTypeLabels[selectedRequest.leave_type] || selectedRequest.leave_type}
+                      {leaveTypeDisplayLabel(selectedRequest.leave_type)}
                     </Badge>
                   </div>
                 </div>
@@ -868,12 +1086,12 @@ export function LeaveTab() {
                 </div>
               </div>
 
-              {selectedRequest.reason && (
+              {selectedReasonDisplay ? (
                 <div>
                   <Label className="text-muted-foreground">{t('leave.reason')}</Label>
-                  <p className="mt-1 p-3 bg-muted/50 rounded-lg">{selectedRequest.reason}</p>
+                  <p className="mt-1 p-3 bg-muted/50 rounded-lg">{selectedReasonDisplay}</p>
                 </div>
-              )}
+              ) : null}
 
               {selectedRequest.handover_to && (
                 <div className="grid grid-cols-2 gap-4">
@@ -890,14 +1108,14 @@ export function LeaveTab() {
                 </div>
               )}
 
-              {selectedRequest.rejected_reason && (
+              {selectedRejectDisplay ? (
                 <div>
                   <Label className="text-muted-foreground text-red-600">{t('leave.rejectReason')}</Label>
                   <p className="mt-1 p-3 bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 rounded-lg">
-                    {selectedRequest.rejected_reason}
+                    {selectedRejectDisplay}
                   </p>
                 </div>
-              )}
+              ) : null}
 
               <div className="text-xs text-muted-foreground border-t pt-4">
                 {t('leave.createdAt')}: {format(parseISO(selectedRequest.created_at), 'dd/MM/yyyy HH:mm')}

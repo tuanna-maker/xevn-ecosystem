@@ -3,6 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Search, ChevronDown, ChevronLeft, ChevronRight, Pencil, Trash2, Settings, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
+import {
+  ViMoneyInput,
+  amountStringToNumber,
+  numberToAmountString,
+} from '@/components/ui/ViMoneyInput';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -446,10 +452,9 @@ export function InsurancePolicyTab() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="relative">
-              <Input
-                type="date"
+              <ViDateField
                 value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
+                onValueChange={setDateFilter}
                 className="pr-10"
               />
             </div>
@@ -575,19 +580,17 @@ export function InsurancePolicyTab() {
             </div>
             <div>
               <Label>Ngày hiệu lực</Label>
-              <Input
-                type="date"
+              <ViDateField
                 value={addEffectiveDate}
-                onChange={(e) => setAddEffectiveDate(e.target.value)}
+                onValueChange={setAddEffectiveDate}
               />
             </div>
             <div>
               <Label>Mức đóng (VND)</Label>
-              <Input
-                type="number"
-                placeholder="15000000"
-                value={addBaseSalary}
-                onChange={(e) => setAddBaseSalary(e.target.value)}
+              <ViMoneyInput
+                placeholder="15.000.000"
+                value={amountStringToNumber(addBaseSalary)}
+                onValueChange={(n) => setAddBaseSalary(numberToAmountString(n))}
               />
             </div>
           </div>

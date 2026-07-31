@@ -1,17 +1,51 @@
-import { useEffect, useMemo, useState } from "react";
+/**
+ * @CODE-MEMORY
+ * Screen:     /settings — SettingsCatalogsTab (UF-HRM-10)
+ * UC:         UF-HRM-10
+ * BR:         XBOS publish → HRM pull catalogs
+ * SRS:        docs/hrm/SRS.md § settings catalogs
+ * TechSpec:   cd-fb-03 perf audit FE-03
+ * Purpose:    Catalog overview + sync/upsert; shares RQ key with Contracts/EmployeeForm.
+ * WorkItem:   CD-FB-04-PERF-FIX / P1-HRM-PERF-FE-03
+ * Coded:      2026-07-19
+ * must_keep:  UF-HRM-10 mutate ACs; invalidate SETTINGS_CATALOGS_QUERY_KEY only
+ * LastVerified: apps/web/hrm/src/hooks/p1-hrm-perf-fe-03.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-04-PERF-FIX
+ * what: Switch to useSettingsCatalogsOverview + shared invalidate key
+ * why: Eliminate duplicate GET /settings-catalogs across HRM screens (FE-03)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-SETTINGS-SYNC-ISO-FORMAT-01
+ * change_mode: FIX
+ * What: Humanize xbosSyncedAt via formatDisplayDate (dd/MM/yyyy HH:mm)
+ * Why: QA menu sweep — raw ISO-Z visible on Danh mục
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: item status qua resolveSettingsCatalogItemStatusDisplay (Đang dùng/Nháp; unknown→—)
+ * Why: BA F-12 / AC-FD-12 FAIL-LABEL-LEAK
+ * SRS/BR: docs/hrm/SRS_FIELD_DISPLAY.md §2 F-12 · FR-HRM-U72-LABEL-01
+ * must_keep: code cột mono cạnh label; UF-HRM-10 mutate
+ */
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  getSettingsCatalogsOverview,
   requestSettingsCatalogFieldRemoval,
   syncSettingsCatalogsFromXbos,
   upsertSettingsCatalogItem,
-  type HrmSpreadsheetScope,
 } from "@/integrations/hrmApi";
+import {
+  SETTINGS_CATALOGS_QUERY_KEY,
+  useSettingsCatalogsOverview,
+} from "@/hooks/useSettingsCatalogsOverview";
 import { ApiClientError } from "@/lib/apiError";
+import { formatDisplayDate } from "@/lib/formatDisplayDate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,36 +67,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { resolveCatalogKeyDisplayLabel } from "@/lib/catalogDisplayLabels";
-
-function resolveScope(currentCompanyId: string | null): HrmSpreadsheetScope | null {
-  if (!currentCompanyId) return null;
-  const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
-  return {
-    tenantId: tenantFromEnv && tenantFromEnv.length > 0 ? tenantFromEnv : currentCompanyId,
-    companyId: currentCompanyId,
-  };
-}
+import { resolveSettingsCatalogItemStatusDisplay } from "@/lib/labelMaps";
 
 export function SettingsCatalogsTab() {
   const { t } = useTranslation();
-  const { currentCompanyId, user } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
-  const scope = useMemo(() => resolveScope(currentCompanyId), [currentCompanyId]);
   const [catalogKeyInput, setCatalogKeyInput] = useState("");
   const [newCode, setNewCode] = useState("");
   const [newLabel, setNewLabel] = useState("");
 
-  const overviewQuery = useQuery({
-    queryKey: ["hrm-settings-catalogs", scope?.tenantId, scope?.companyId],
-    queryFn: () => getSettingsCatalogsOverview(scope!),
-    enabled: !!scope,
-  });
+  const overviewQuery = useSettingsCatalogsOverview();
+  const scope = overviewQuery.scope;
 
   const syncMutation = useMutation({
     mutationFn: () => syncSettingsCatalogsFromXbos(scope!),
     onSuccess: (data) => {
       toast.success(t("settings.catalogs.syncDone", { count: data.pulledKeys.length }));
-      void queryClient.invalidateQueries({ queryKey: ["hrm-settings-catalogs"] });
+      void queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
     },
     onError: (e: unknown) => {
       const msg = e instanceof ApiClientError ? e.message : t("common.error");
@@ -89,7 +111,7 @@ export function SettingsCatalogsTab() {
       toast.success(msg);
       setNewCode("");
       setNewLabel("");
-      void queryClient.invalidateQueries({ queryKey: ["hrm-settings-catalogs"] });
+      void queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
     },
     onError: (e: unknown) => {
       const msg = e instanceof ApiClientError ? e.message : t("common.error");
@@ -124,7 +146,7 @@ export function SettingsCatalogsTab() {
     },
   });
 
-  const catalogs = overviewQuery.data?.catalogs ?? [];
+  const catalogs = overviewQuery.catalogs;
 
   useEffect(() => {
     if (catalogs.length > 0 && !catalogKeyInput.trim()) {
@@ -180,10 +202,12 @@ export function SettingsCatalogsTab() {
                       <h3 className="font-semibold" title={cat.catalogKey}>
                         {catalogTitle}
                       </h3>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground" data-testid="catalog-sync-stamp">
                         {cat.domain ? `${cat.domain} · ` : ""}
                         {cat.xbosSyncedAt
-                          ? t("settings.catalogs.xbosSyncedAt", { time: cat.xbosSyncedAt })
+                          ? t("settings.catalogs.xbosSyncedAt", {
+                              time: formatDisplayDate(cat.xbosSyncedAt, "dd/MM/yyyy HH:mm"),
+                            })
                           : t("settings.catalogs.notSyncedYet")}
                       </p>
                     </div>
@@ -213,7 +237,7 @@ export function SettingsCatalogsTab() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <span>{row.status}</span>
+                              <span>{resolveSettingsCatalogItemStatusDisplay(row.status)}</span>
                               {row.origin === "hrm" && (
                                 <Button
                                   type="button"

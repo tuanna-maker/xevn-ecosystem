@@ -279,7 +279,7 @@ export default function InternalServices() {
             isLoading={isLoading}
             loadFailed={Boolean(fetchError)}
             errorMessage={fetchError}
-            loadingMessage="Đang tải yêu cầu dịch vụ nội bộ từ HRM API…"
+            loadingMessage="Đang tải yêu cầu dịch vụ nội bộ…"
           />
           {fetchError ? (
             <Button

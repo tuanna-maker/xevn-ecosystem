@@ -149,7 +149,7 @@ const getStatusConfig = (t: any) => ({
   completed: { label: t('recruitment.it.statuses.completed'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
   cancelled: { label: t('recruitment.it.statuses.cancelled'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
   rescheduled: { label: t('recruitment.it.statuses.rescheduled'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: AlertCircle },
-  no_show: { label: t('recruitment.it.statuses.no_show'), color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400', icon: XCircle },
+  no_show: { label: t('recruitment.it.statuses.no_show'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted', icon: XCircle },
 });
 
 const getTypeConfig = (t: any) => ({
@@ -159,7 +159,7 @@ const getTypeConfig = (t: any) => ({
 });
 
 const getResultConfig = (t: any) => ({
-  pending: { label: t('recruitment.it.results.pending'), color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400', icon: CircleDot },
+  pending: { label: t('recruitment.it.results.pending'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted', icon: CircleDot },
   pass: { label: t('recruitment.it.results.pass'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
   fail: { label: t('recruitment.it.results.fail'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
   hold: { label: t('recruitment.it.results.hold'), color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', icon: AlertCircle },

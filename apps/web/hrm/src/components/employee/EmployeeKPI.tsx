@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
@@ -438,18 +439,16 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('kpi.periodStart')} *</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={formData.period_start}
-                  onChange={(e) => setFormData({ ...formData, period_start: e.target.value })}
+                  onValueChange={(v) => setFormData({ ...formData, period_start: v })}
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('kpi.periodEnd')} *</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={formData.period_end}
-                  onChange={(e) => setFormData({ ...formData, period_end: e.target.value })}
+                  onValueChange={(v) => setFormData({ ...formData, period_end: v })}
                 />
               </div>
             </div>

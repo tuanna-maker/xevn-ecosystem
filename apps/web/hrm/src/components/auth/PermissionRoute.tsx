@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { usePermissions } from '@/hooks/usePermissions';
 import { ShieldX, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { shouldBypassHrmPermissionGate } from '@/components/auth/PermissionGate';
 
 interface PermissionRouteProps {
   children: ReactNode;
@@ -40,10 +40,8 @@ function AccessDeniedPage() {
 export function PermissionRoute({ children, module, action, redirect = false }: PermissionRouteProps) {
   const { hasPermission, hasAnyPermission, isLoading } = usePermissions();
   const location = useLocation();
-  const portalMode = getHrmPortalMode(location.search);
-
-  // Portal: không chờ Supabase permissions — tránh spinner/blank khi nhúng Command Center.
-  if (portalMode) return <>{children}</>;
+  // Portal embed + standalone mobile JWT: RBAC enforced on API; usePermissions is empty stub.
+  if (shouldBypassHrmPermissionGate(location.search)) return <>{children}</>;
 
   if (isLoading) {
     return (

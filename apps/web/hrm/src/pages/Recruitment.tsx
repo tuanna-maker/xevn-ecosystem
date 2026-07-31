@@ -1,4 +1,35 @@
-import { useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /recruitment — Tuyển dụng (HRBP / recruiter)
+ * UC:         UC-HRM-REC (menu tabs · dashboard · jobs · candidates)
+ * BR:         L-OPS · inventory HRM-REC
+ * SRS:        docs/hrm/SRS.md §14 tuyển dụng
+ * TechSpec:   docs/architecture/ADR-XEVN-THEME-SHARP-OPS-20260722.md §4.4 L-OPS
+ * Purpose:    Điều hướng module tuyển dụng và bề mặt dashboard/ops theo tab.
+ * WorkItem:   XEVN-THM-FE-W1-DENSITY-01
+ * Coded:      2026-07-22
+ * Callers:    App route /recruitment · portal embed
+ * Callees:    CandidatePipelineFunnel · recruitment tabs
+ * FE-Actions: | Click tab top-nav | setActiveTab | render panel |
+ * Impact:     Tab rainbow che CTA chính; sửa sai có thể mất deep-link tab id
+ * must_keep:  Tab ids (dashboard/jobs/candidates/…); dropdown submenu; PermissionGate create
+ * SOLID:      Page shell — tab chrome tách khỏi nghiệp vụ API
+ * LastVerified: docs/qa/evidence/xevn-thm-fe-w1-density-01-20260722.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: XEVN-THM-FE-W1-DENSITY-01
+ * change_mode: UPGRADE
+ * What: Tab top-nav + KPI/cost chrome → neutral primary (bỏ rainbow bg-*-500)
+ * Why: QC GWC C1 density · L-OPS ops-first
+ * must_keep: Pale gate CLOSED; OU/CO-REC token remaster; không đổi API
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-CREATE-GAPS-01
+ * change_mode: FIX
+ * What: Jobs/Candidates/Interviews — trigger click setActiveTab ngay; menu portalScope=iframe + data-testid menuitem
+ * Why: DEF-E1A-JP-NAV-01 — headless portal=1 không thấy menuitem → không mở JobPostingsTab create
+ * must_keep: Tab ids; submenu filter; PermissionGate; WH/DEC/Leave/EmployeeForm/JobTemplates/E1-B Settings
+ */
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -100,12 +131,21 @@ import { CandidateDetailView } from '@/components/recruitment/CandidateDetailVie
 import { HeadcountProposalTab } from '@/components/recruitment/HeadcountProposalTab';
 import { JobPostingsTab } from '@/components/recruitment/JobPostingsTab';
 import { JobRequisitionsTab } from '@/components/recruitment/JobRequisitionsTab';
+import { JobTemplatesTab } from '@/components/recruitment/JobTemplatesTab';
+import { useJobTemplates } from '@/hooks/useJobTemplates';
+import { CandidatePipelineFunnel } from '@/components/recruitment/CandidatePipelineFunnel';
+import { RecruitmentWfSpawnBanner } from '@/components/recruitment/RecruitmentWfSpawnBanner';
 import { CandidateSourceStats } from '@/components/recruitment/CandidateSourceStats';
 import { CandidatesTab } from '@/components/recruitment/CandidatesTab';
 import { InterviewsTab } from '@/components/recruitment/InterviewsTab';
 import { RecruitmentReportsTab } from '@/components/recruitment/RecruitmentReportsTab';
+import { HireEmployeeLinkDialog } from '@/components/recruitment/HireEmployeeLinkDialog';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { buildRecruitmentFunnelCounts, funnelStageToKanbanStage } from '@/lib/recruitmentFunnel';
+import type { RecruitmentFunnelStage } from '@/lib/recruitmentFunnel';
+import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
+import { needsHireEmployeePicker } from '@/lib/recruitmentHireLink';
 
 // Recruitment plan form schema
 const recruitmentPlanSchema = z.object({
@@ -147,19 +187,37 @@ const jobPostingSchema = z.object({
 
 type JobPostingFormValues = z.infer<typeof jobPostingSchema>;
 
-// Top navigation tabs with colored icons - now using translation function
+// Top navigation — L-OPS neutral chrome (no rainbow icon pills)
 const getTopNavTabs = (t: any) => [
-  { id: 'dashboard', label: t('recruitment.tabs.dashboard'), icon: LayoutDashboard, color: 'bg-blue-500' },
-  { id: 'requisitions', label: 'Yêu cầu tuyển dụng', icon: Briefcase, color: 'bg-violet-500' },
-  { id: 'jobs', label: t('recruitment.tabs.jobs'), icon: Briefcase, color: 'bg-orange-500', hasDropdown: true },
-  { id: 'candidates', label: t('recruitment.tabs.candidates'), icon: Users, color: 'bg-green-500', hasDropdown: true },
-  { id: 'proposals', label: t('recruitment.tabs.proposals'), icon: FileText, color: 'bg-purple-500' },
-  { id: 'campaigns', label: t('recruitment.tabs.campaigns'), icon: Megaphone, color: 'bg-pink-500' },
-  { id: 'interviews', label: t('recruitment.tabs.interviews'), icon: Video, color: 'bg-red-500', hasDropdown: true },
-  { id: 'evaluations', label: t('recruitment.tabs.evaluations'), icon: ClipboardCheck, color: 'bg-teal-500' },
-  { id: 'plans', label: t('recruitment.tabs.plans'), icon: CalendarClock, color: 'bg-indigo-500' },
-  { id: 'reports', label: t('recruitment.tabs.reports'), icon: BarChart3, color: 'bg-cyan-500' },
+  { id: 'dashboard', label: t('recruitment.tabs.dashboard'), icon: LayoutDashboard },
+  { id: 'requisitions', label: 'Yêu cầu tuyển dụng', icon: Briefcase },
+  { id: 'jd-library', label: 'Thư viện JD', icon: FileText },
+  { id: 'jobs', label: t('recruitment.tabs.jobs'), icon: Briefcase, hasDropdown: true },
+  { id: 'candidates', label: t('recruitment.tabs.candidates'), icon: Users, hasDropdown: true },
+  { id: 'proposals', label: t('recruitment.tabs.proposals'), icon: FileText },
+  { id: 'campaigns', label: t('recruitment.tabs.campaigns'), icon: Megaphone },
+  { id: 'interviews', label: t('recruitment.tabs.interviews'), icon: Video, hasDropdown: true },
+  { id: 'evaluations', label: t('recruitment.tabs.evaluations'), icon: ClipboardCheck },
+  { id: 'plans', label: t('recruitment.tabs.plans'), icon: CalendarClock },
+  { id: 'reports', label: t('recruitment.tabs.reports'), icon: BarChart3 },
 ];
+
+const recTabButtonClass = (isActive: boolean) =>
+  cn(
+    'px-2.5 md:px-4 py-2 text-sm font-medium transition-all rounded-lg flex items-center gap-1.5 md:gap-2 whitespace-nowrap group',
+    isActive
+      ? 'bg-primary text-primary-foreground shadow-sm'
+      : 'text-xevn-textSecondary hover:bg-muted hover:text-xevn-text',
+  );
+
+const recTabIconWrapClass = (isActive: boolean) =>
+  cn(
+    'w-5 h-5 rounded flex items-center justify-center transition-transform duration-200 group-hover:scale-110',
+    isActive ? 'bg-white/20' : 'bg-xevn-neutral/15',
+  );
+
+const recTabIconClass = (isActive: boolean) =>
+  cn('w-3 h-3', isActive ? 'text-white' : 'text-xevn-textSecondary');
 
 // Jobs submenu items
 const getJobsMenuItems = (t: any) => [
@@ -348,15 +406,47 @@ export default function Recruitment() {
   const [activeJobsType, setActiveJobsType] = useState('all');
   const [activeCandidatesType, setActiveCandidatesType] = useState('all');
   const [activeInterviewsType, setActiveInterviewsType] = useState('scheduled');
+  const recruitmentJobTemplatesState = useJobTemplates(true);
+
+  /** D-HDSD-MUTATE-FE-13/FE-14 — sync page-level templates when entering jd-library or requisitions. */
+  useEffect(() => {
+    if (activeTab === 'requisitions' || activeTab === 'jd-library') {
+      void recruitmentJobTemplatesState.refetch();
+    }
+  }, [activeTab, recruitmentJobTemplatesState.refetch]);
+
+  useEffect(() => {
+    const tab = new URLSearchParams(location.search).get('tab')?.trim();
+    if (!tab) return;
+    const allowed = new Set([
+      'dashboard',
+      'requisitions',
+      'jd-library',
+      'jobs',
+      'candidates',
+      'proposals',
+      'campaigns',
+      'interviews',
+      'evaluations',
+      'plans',
+      'reports',
+    ]);
+    if (allowed.has(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
   const [selectedCandidate, setSelectedCandidate] = useState<KanbanCandidate | null>(null);
   const [selectedProposal, setSelectedProposal] = useState<typeof staffingProposals[0] | null>(null);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<RecruitmentPlan | null>(null);
+  const [planSpawnMissing, setPlanSpawnMissing] = useState(false);
   const [isJobDialogOpen, setIsJobDialogOpen] = useState(false);
   const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState(false);
   const [evaluatingCandidate, setEvaluatingCandidate] = useState<KanbanCandidate | null>(null);
+  const [hirePendingKanban, setHirePendingKanban] = useState<KanbanCandidate | null>(null);
+  const [hireSubmitting, setHireSubmitting] = useState(false);
   const [planDepartments, setPlanDepartments] = useState<PlanDepartment[]>([
     {
       id: '1',
@@ -387,6 +477,7 @@ export default function Recruitment() {
     stats: planStats,
     createPlan,
     updatePlanStatus,
+    submitPlanWorkflow,
   } = useRecruitmentPlans();
 
   const evaluationsTabEnabled = activeTab === 'evaluations';
@@ -396,24 +487,39 @@ export default function Recruitment() {
     stats: evaluationStats,
   } = useCandidateEvaluations(evaluationsTabEnabled);
 
-  // Handle drag and drop
+  // Handle drag and drop — FR-HRM-INT-01: hired requires employee link picker
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
-    // Dropped outside a valid droppable
     if (!destination) return;
 
-    // Dropped in the same position
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return;
     }
 
-    // Find the candidate and update stage via Supabase
     const candidateId = draggableId;
     const newStage = destination.droppableId as KanbanCandidate['stage'];
+    const row = candidates.find((c) => c.id === candidateId);
 
-    // Update candidate stage in Supabase
-    updateCandidateStage(candidateId, newStage);
+    if (needsHireEmployeePicker(newStage, row?.employeeId)) {
+      if (row) setHirePendingKanban(row);
+      return;
+    }
+
+    void updateCandidateStage(candidateId, newStage, {
+      employeeId: row?.employeeId,
+    });
+  };
+
+  const handleConfirmKanbanHire = async (employeeId: string) => {
+    if (!hirePendingKanban) return;
+    setHireSubmitting(true);
+    try {
+      await updateCandidateStage(hirePendingKanban.id, 'hired', { employeeId });
+      setHirePendingKanban(null);
+    } finally {
+      setHireSubmitting(false);
+    }
   };
 
   const form = useForm<JobPostingFormValues>({
@@ -587,10 +693,20 @@ export default function Recruitment() {
     { id: 'interview', label: t('recruitment.interview'), color: 'bg-accent/20' },
     { id: 'offer', label: t('recruitment.offer'), color: 'bg-warning/20' },
     { id: 'hired', label: t('recruitment.hired'), color: 'bg-success/20' },
+    { id: 'rejected', label: t('recruitment.rejected', { defaultValue: 'Từ chối' }), color: 'bg-destructive/20' },
   ];
 
   const getCandidatesByStage = (stage: string) =>
     candidates.filter((c) => c.stage === stage);
+
+  const funnelCounts = buildRecruitmentFunnelCounts(
+    candidates.map((c) => ({ stage: c.stage })),
+  );
+
+  const onFunnelStageClick = (stage: RecruitmentFunnelStage) => {
+    setActiveTab('candidates');
+    setActiveCandidatesType(funnelStageToKanbanStage(stage) === 'applied' ? 'new' : funnelStageToKanbanStage(stage));
+  };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => (
@@ -615,52 +731,53 @@ export default function Recruitment() {
           : 'h-[calc(100vh-120px)]',
       )}
     >
-      {/* Top Navigation Bar with colored icons - Pill Style */}
+      {/* Top Navigation — L-OPS neutral (no rainbow pills) */}
       <div className="flex-shrink-0 border-b bg-background px-3 py-2 md:px-6 md:py-3">
         <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide pb-1">
           {topNavTabs.map((tab) => {
             const TabIcon = tab.icon;
             const isActive = activeTab === tab.id;
             
-            // Jobs dropdown
+            // Jobs dropdown — trigger activates tab even if menu dismisses (DEF-E1A-JP-NAV-01)
             if (tab.id === 'jobs') {
               return (
                 <DropdownMenu key={tab.id}>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className={cn(
-                        "px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium transition-all rounded-lg flex items-center gap-1.5 md:gap-2 whitespace-nowrap group",
-                        isActive 
-                          ? "bg-orange-500 text-white shadow-md" 
-                          : "text-muted-foreground hover:bg-muted"
-                      )}
+                      type="button"
+                      data-testid="recruitment-nav-jobs"
+                      className={recTabButtonClass(isActive)}
+                      onClick={() => setActiveTab('jobs')}
                     >
-                      <div className={cn(
-                        'w-5 h-5 rounded flex items-center justify-center transition-transform duration-200 group-hover:scale-110',
-                        isActive ? 'bg-white/20' : tab.color
-                      )}>
-                        <TabIcon className={cn('w-3 h-3', isActive ? 'text-white' : 'text-white')} />
+                      <div className={recTabIconWrapClass(isActive)}>
+                        <TabIcon className={recTabIconClass(isActive)} />
                       </div>
                       <span className="hidden sm:inline">{tab.label}</span>
                       <ChevronDown className="w-3.5 h-3.5 hidden sm:block" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56 bg-popover">
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-56 bg-popover"
+                    portalScope="iframe"
+                    data-testid="recruitment-jobs-menu"
+                  >
                     {jobsMenuItems.map((item) => (
                       <DropdownMenuItem
                         key={item.id}
+                        data-testid={`recruitment-jobs-menu-${item.id}`}
                         onClick={() => {
                           setActiveTab('jobs');
                           setActiveJobsType(item.id);
                         }}
                         className={cn(
                           "flex items-center justify-between cursor-pointer",
-                          activeJobsType === item.id && activeTab === 'jobs' && "text-orange-600"
+                          activeJobsType === item.id && activeTab === 'jobs' && "text-primary font-medium"
                         )}
                       >
                         {item.label}
                         {activeJobsType === item.id && activeTab === 'jobs' && (
-                          <Check className="w-4 h-4 text-orange-500" />
+                          <Check className="w-4 h-4 text-primary" />
                         )}
                       </DropdownMenuItem>
                     ))}
@@ -675,24 +792,23 @@ export default function Recruitment() {
                 <DropdownMenu key={tab.id}>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className={cn(
-                        "px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium transition-all rounded-lg flex items-center gap-1.5 md:gap-2 whitespace-nowrap group",
-                        isActive 
-                          ? "bg-green-500 text-white shadow-md" 
-                          : "text-muted-foreground hover:bg-muted"
-                      )}
+                      type="button"
+                      data-testid="recruitment-nav-candidates"
+                      className={recTabButtonClass(isActive)}
+                      onClick={() => setActiveTab('candidates')}
                     >
-                      <div className={cn(
-                        'w-5 h-5 rounded flex items-center justify-center transition-transform duration-200 group-hover:scale-110',
-                        isActive ? 'bg-white/20' : tab.color
-                      )}>
-                        <TabIcon className={cn('w-3 h-3', isActive ? 'text-white' : 'text-white')} />
+                      <div className={recTabIconWrapClass(isActive)}>
+                        <TabIcon className={recTabIconClass(isActive)} />
                       </div>
                       <span className="hidden sm:inline">{tab.label}</span>
                       <ChevronDown className="w-3.5 h-3.5 hidden sm:block" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56 bg-popover">
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-56 bg-popover"
+                    portalScope="iframe"
+                  >
                     {candidatesMenuItems.map((item) => (
                       <DropdownMenuItem
                         key={item.id}
@@ -702,12 +818,12 @@ export default function Recruitment() {
                         }}
                         className={cn(
                           "flex items-center justify-between cursor-pointer",
-                          activeCandidatesType === item.id && activeTab === 'candidates' && "text-green-600"
+                          activeCandidatesType === item.id && activeTab === 'candidates' && "text-primary font-medium"
                         )}
                       >
                         {item.label}
                         {activeCandidatesType === item.id && activeTab === 'candidates' && (
-                          <Check className="w-4 h-4 text-green-500" />
+                          <Check className="w-4 h-4 text-primary" />
                         )}
                       </DropdownMenuItem>
                     ))}
@@ -722,24 +838,23 @@ export default function Recruitment() {
                 <DropdownMenu key={tab.id}>
                   <DropdownMenuTrigger asChild>
                     <button
-                      className={cn(
-                        "px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium transition-all rounded-lg flex items-center gap-1.5 md:gap-2 whitespace-nowrap group",
-                        isActive 
-                          ? "bg-red-500 text-white shadow-md" 
-                          : "text-muted-foreground hover:bg-muted"
-                      )}
+                      type="button"
+                      data-testid="recruitment-nav-interviews"
+                      className={recTabButtonClass(isActive)}
+                      onClick={() => setActiveTab('interviews')}
                     >
-                      <div className={cn(
-                        'w-5 h-5 rounded flex items-center justify-center transition-transform duration-200 group-hover:scale-110',
-                        isActive ? 'bg-white/20' : tab.color
-                      )}>
-                        <TabIcon className={cn('w-3 h-3', isActive ? 'text-white' : 'text-white')} />
+                      <div className={recTabIconWrapClass(isActive)}>
+                        <TabIcon className={recTabIconClass(isActive)} />
                       </div>
                       <span className="hidden sm:inline">{tab.label}</span>
                       <ChevronDown className="w-3.5 h-3.5 hidden sm:block" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56 bg-popover">
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-56 bg-popover"
+                    portalScope="iframe"
+                  >
                     {interviewsMenuItems.map((item) => (
                       <DropdownMenuItem
                         key={item.id}
@@ -749,12 +864,12 @@ export default function Recruitment() {
                         }}
                         className={cn(
                           "flex items-center justify-between cursor-pointer",
-                          activeInterviewsType === item.id && activeTab === 'interviews' && "text-red-600"
+                          activeInterviewsType === item.id && activeTab === 'interviews' && "text-primary font-medium"
                         )}
                       >
                         {item.label}
                         {activeInterviewsType === item.id && activeTab === 'interviews' && (
-                          <Check className="w-4 h-4 text-red-500" />
+                          <Check className="w-4 h-4 text-primary" />
                         )}
                       </DropdownMenuItem>
                     ))}
@@ -763,39 +878,15 @@ export default function Recruitment() {
               );
             }
             
-            // Get active background color based on tab color
-            const getActiveBgColor = (color: string) => {
-              const colorMap: Record<string, string> = {
-                'bg-blue-500': 'bg-blue-500',
-                'bg-orange-500': 'bg-orange-500',
-                'bg-green-500': 'bg-green-500',
-                'bg-purple-500': 'bg-purple-500',
-                'bg-pink-500': 'bg-pink-500',
-                'bg-red-500': 'bg-red-500',
-                'bg-teal-500': 'bg-teal-500',
-                'bg-indigo-500': 'bg-indigo-500',
-                'bg-cyan-500': 'bg-cyan-500',
-              };
-              return colorMap[color] || 'bg-primary';
-            };
-            
             // Regular tabs without dropdown
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "px-2.5 md:px-4 py-2 text-xs md:text-sm font-medium transition-all rounded-lg flex items-center gap-1.5 md:gap-2 whitespace-nowrap group",
-                  isActive 
-                    ? `${getActiveBgColor(tab.color)} text-white shadow-md` 
-                    : "text-muted-foreground hover:bg-muted"
-                )}
+                className={recTabButtonClass(isActive)}
               >
-                <div className={cn(
-                  'w-5 h-5 rounded flex items-center justify-center transition-transform duration-200 group-hover:scale-110',
-                  isActive ? 'bg-white/20' : tab.color
-                )}>
-                  <TabIcon className={cn('w-3 h-3', isActive ? 'text-white' : 'text-white')} />
+                <div className={recTabIconWrapClass(isActive)}>
+                  <TabIcon className={recTabIconClass(isActive)} />
                 </div>
                 <span className="hidden sm:inline">{tab.label}</span>
               </button>
@@ -834,6 +925,13 @@ export default function Recruitment() {
               </TabsList>
 
               <TabsContent value="dashboard" className="mt-3 space-y-3">
+                <CandidatePipelineFunnel
+                  counts={funnelCounts}
+                  loading={dashboardLoading}
+                  title="Pipeline ứng viên (6 giai đoạn)"
+                  onStageClick={onFunnelStageClick}
+                />
+
                 {/*
                   Bố cục kiểu analytics (Stripe / GA): KPI = một dải mỏng; metric cần nhãn dài = full width;
                   biểu đồ cần chiều ngang (bar ngang) = full width; pie + feed = một hàng 2 cột.
@@ -846,46 +944,34 @@ export default function Recruitment() {
                           {
                             label: t('recruitment.target'),
                             value: targetHeadcount > 0 ? String(targetHeadcount) : t('common.noData'),
-                            bar: 'bg-blue-500',
-                            tint: 'bg-blue-500/[0.06]',
-                            valueClass: 'text-blue-600',
                           },
                           {
                             label: t('recruitment.cvApplied'),
                             value: String(candidateStats.total),
-                            bar: 'bg-purple-500',
-                            tint: 'bg-purple-500/[0.06]',
-                            valueClass: 'text-purple-600',
                           },
                           {
                             label: t('recruitment.interviewed'),
                             value: String(candidateStats.interview + candidateStats.offer + candidateStats.hired),
-                            bar: 'bg-orange-500',
-                            tint: 'bg-orange-500/[0.06]',
-                            valueClass: 'text-orange-600',
                           },
                           {
                             label: t('recruitment.hired'),
                             value: String(candidateStats.hired),
-                            bar: 'bg-green-500',
-                            tint: 'bg-green-500/[0.06]',
-                            valueClass: 'text-green-600',
                           },
                         ] as const
                       ).map((k) => (
                         <div
                           key={k.label}
-                          className={cn('relative min-w-0 px-2.5 py-2 sm:px-3 sm:py-2.5', k.tint)}
+                          className="relative min-w-0 px-2.5 py-2 sm:px-3 sm:py-2.5 bg-xevn-background"
                         >
                           <span
-                            className={cn('absolute left-0 top-2 bottom-2 w-0.5 rounded-full sm:top-2.5 sm:bottom-2.5', k.bar)}
+                            className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-primary sm:top-2.5 sm:bottom-2.5"
                             aria-hidden
                           />
                           <div className="pl-2">
-                            <p className="line-clamp-2 text-[10px] font-medium leading-tight text-muted-foreground sm:line-clamp-1 sm:text-xs">
+                            <p className="line-clamp-2 text-sm font-medium leading-tight text-xevn-textSecondary sm:line-clamp-1">
                               {k.label}
                             </p>
-                            <p className={cn('text-lg font-bold tabular-nums leading-tight sm:text-xl', k.valueClass)}>
+                            <p className="text-lg font-bold tabular-nums leading-tight text-xevn-text sm:text-xl">
                               {k.value}
                             </p>
                           </div>
@@ -899,41 +985,41 @@ export default function Recruitment() {
                   <Card className="shadow-sm">
                     <CardContent className="p-0">
                       <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-                        <div className="flex gap-3 px-4 py-3 bg-purple-500/[0.05]">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-500/15">
-                            <DollarSign className="h-4 w-4 text-purple-600" />
+                        <div className="flex gap-3 px-4 py-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-xevn-neutral/15">
+                            <DollarSign className="h-4 w-4 text-xevn-textSecondary" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium leading-snug text-muted-foreground">
+                            <p className="text-sm font-medium leading-snug text-xevn-textSecondary">
                               {t('recruitment.avgCostPerCandidate')}
                             </p>
-                            <p className="text-base font-bold tabular-nums text-purple-600 sm:text-lg">
+                            <p className="text-base font-bold tabular-nums text-xevn-text sm:text-lg">
                               {formatRecruitmentCostVnd(costSummary.avgCostPerCandidate) ?? t('common.noData')}
                             </p>
                           </div>
                         </div>
-                        <div className="flex gap-3 px-4 py-3 bg-orange-500/[0.05]">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500/15">
-                            <DollarSign className="h-4 w-4 text-orange-600" />
+                        <div className="flex gap-3 px-4 py-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-xevn-neutral/15">
+                            <DollarSign className="h-4 w-4 text-xevn-textSecondary" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium leading-snug text-muted-foreground">
+                            <p className="text-sm font-medium leading-snug text-xevn-textSecondary">
                               {t('recruitment.costTopCV')}
                             </p>
-                            <p className="text-base font-bold tabular-nums text-orange-600 sm:text-lg">
+                            <p className="text-base font-bold tabular-nums text-xevn-text sm:text-lg">
                               {formatRecruitmentCostVnd(costSummary.costTopCV) ?? t('common.noData')}
                             </p>
                           </div>
                         </div>
-                        <div className="flex gap-3 px-4 py-3 bg-cyan-500/[0.05]">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15">
-                            <DollarSign className="h-4 w-4 text-cyan-600" />
+                        <div className="flex gap-3 px-4 py-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-xevn-neutral/15">
+                            <DollarSign className="h-4 w-4 text-xevn-textSecondary" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium leading-snug text-muted-foreground">
+                            <p className="text-sm font-medium leading-snug text-xevn-textSecondary">
                               {t('recruitment.cost24h')}
                             </p>
-                            <p className="text-base font-bold tabular-nums text-cyan-600 sm:text-lg">
+                            <p className="text-base font-bold tabular-nums text-xevn-text sm:text-lg">
                               {formatRecruitmentCostVnd(costSummary.cost24h) ?? t('common.noData')}
                             </p>
                           </div>
@@ -1009,7 +1095,7 @@ export default function Recruitment() {
               <TabsContent value="board" className="mt-4">
                 {/* Kanban Board with Drag and Drop */}
                 <DragDropContext onDragEnd={handleDragEnd}>
-                  <div className="grid grid-cols-5 gap-4">
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
                     {stages.map((stage) => (
                       <div key={stage.id} className="kanban-column">
                         <div className="flex items-center justify-between mb-3">
@@ -1033,6 +1119,11 @@ export default function Recruitment() {
                                   key={candidate.id}
                                   draggableId={candidate.id}
                                   index={index}
+                                  isDragDisabled={isRecruitmentWorkflowLocked(
+                                    candidate.workflowInstanceId,
+                                    candidate.stage,
+                                    'candidate',
+                                  )}
                                 >
                                   {(provided, snapshot) => (
                                     <div
@@ -1083,7 +1174,19 @@ export default function Recruitment() {
           </div>
         )}
 
-        {activeTab === 'requisitions' && <JobRequisitionsTab />}
+        {activeTab === 'requisitions' && (
+          <JobRequisitionsTab
+            onOpenJdLibrary={() => setActiveTab('jd-library')}
+            jobTemplates={recruitmentJobTemplatesState.templates}
+            jobTemplatesLoading={recruitmentJobTemplatesState.loading}
+            refetchJobTemplates={recruitmentJobTemplatesState.refetch}
+            hydrateJobTemplates={recruitmentJobTemplatesState.hydrateTemplates}
+          />
+        )}
+
+        {activeTab === 'jd-library' && (
+          <JobTemplatesTab sharedTemplates={recruitmentJobTemplatesState} />
+        )}
 
         {/* Jobs Tab */}
         {activeTab === 'jobs' && (
@@ -1581,7 +1684,13 @@ export default function Recruitment() {
                             <TableCell>{plan.createdDate}</TableCell>
                             <TableCell>
                               <Badge variant={plan.status === 'approved' ? 'default' : 'secondary'}>
-                                {plan.status === 'approved' ? t('recruitment.statusApproved') : plan.status === 'draft' ? t('recruitment.statusDraft') : t('recruitment.statusPending')}
+                                {plan.status === 'approved'
+                                  ? t('recruitment.statusApproved')
+                                  : plan.status === 'draft'
+                                    ? t('recruitment.statusDraft')
+                                    : plan.status === 'pending_approval'
+                                      ? 'Chờ duyệt QT'
+                                      : t('recruitment.statusPending')}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
@@ -1709,28 +1818,60 @@ export default function Recruitment() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-4 border-t">
-                      <Button variant="outline">
-                        <Edit className="w-4 h-4 mr-2" />
-                        {t('common.edit')}
-                      </Button>
-                      {selectedPlan.status === 'pending' && (
-                        <>
+                    <div className="space-y-3 pt-4 border-t">
+                      <RecruitmentWfSpawnBanner visible={planSpawnMissing} />
+                      {selectedPlan.workflowInstanceId &&
+                      isRecruitmentWorkflowLocked(
+                        selectedPlan.workflowInstanceId,
+                        selectedPlan.status,
+                        'plan',
+                      ) ? (
+                        <p className="text-xs text-amber-800 dark:text-amber-200">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
+                      ) : null}
+                      <div className="flex justify-end gap-3">
+                        <Button variant="outline">
+                          <Edit className="w-4 h-4 mr-2" />
+                          {t('common.edit')}
+                        </Button>
+                        {!selectedPlan.workflowInstanceId &&
+                        (selectedPlan.status === 'pending' ||
+                          selectedPlan.status === 'draft' ||
+                          selectedPlan.status === 'pending_approval') ? (
                           <Button
-                            variant="outline"
-                            className="text-destructive border-destructive hover:bg-destructive/10"
-                            onClick={() => void updatePlanStatus(selectedPlan.id, 'rejected')}
+                            variant="secondary"
+                            onClick={() => {
+                              void (async () => {
+                                const res = await submitPlanWorkflow(selectedPlan.id);
+                                setPlanSpawnMissing(res.spawnMissing);
+                              })();
+                            }}
                           >
-                            {t('recruitment.reject')}
+                            Gửi duyệt QT
                           </Button>
-                          <Button
-                            className="bg-green-600 hover:bg-green-700"
-                            onClick={() => void updatePlanStatus(selectedPlan.id, 'approved')}
-                          >
-                            {t('recruitment.approvePlan')}
-                          </Button>
-                        </>
-                      )}
+                        ) : null}
+                        {(selectedPlan.status === 'pending' || selectedPlan.status === 'draft') &&
+                        !isRecruitmentWorkflowLocked(
+                          selectedPlan.workflowInstanceId,
+                          selectedPlan.status,
+                          'plan',
+                        ) ? (
+                          <>
+                            <Button
+                              variant="outline"
+                              className="text-destructive border-destructive hover:bg-destructive/10"
+                              onClick={() => void updatePlanStatus(selectedPlan.id, 'rejected')}
+                            >
+                              {t('recruitment.reject')}
+                            </Button>
+                            <Button
+                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => void updatePlanStatus(selectedPlan.id, 'approved')}
+                            >
+                              {t('recruitment.approvePlan')}
+                            </Button>
+                          </>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 </Card>
@@ -1763,6 +1904,17 @@ export default function Recruitment() {
       <CandidateComparisonDialog
         open={isComparisonDialogOpen}
         onOpenChange={setIsComparisonDialogOpen}
+      />
+
+      <HireEmployeeLinkDialog
+        open={!!hirePendingKanban}
+        onOpenChange={(open) => {
+          if (!open && !hireSubmitting) setHirePendingKanban(null);
+        }}
+        candidateName={hirePendingKanban?.fullName || 'ứng viên'}
+        initialEmployeeId={hirePendingKanban?.employeeId}
+        submitting={hireSubmitting}
+        onConfirm={handleConfirmKanbanHire}
       />
     </div>
   );

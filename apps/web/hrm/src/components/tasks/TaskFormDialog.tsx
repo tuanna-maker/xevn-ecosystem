@@ -1,7 +1,21 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /tasks — TaskFormDialog
+ * UC:         UC-HRM-TASK-01
+ * Purpose:    Create/edit task; employee/department pickers deferred until dialog open.
+ * WorkItem:   CD-FB-04-PERF-FIX / P1-HRM-PERF-FE-02
+ * Coded:      2026-07-19
+ * must_keep:  Task mutate ACs; no listAllEmployees
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-04-PERF-FIX
+ * what: Gate useEmployees + useDepartments with enabled: open
+ * why: Avoid satellite employee fetch when Tasks page mounts with closed dialog (FE-02)
+ */
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,8 +37,8 @@ interface TaskFormDialogProps {
 
 export function TaskFormDialog({ open, onOpenChange, task, onSubmit, isLoading, defaultDate }: TaskFormDialogProps) {
   const { t } = useTranslation();
-  const { employees } = useEmployees();
-  const { departments } = useDepartments();
+  const { employees } = useEmployees(false, undefined, { enabled: open });
+  const { departments } = useDepartments({ enabled: open });
   const [form, setForm] = useState<TaskFormData>({
     title: '', description: '', status: 'todo', priority: 'medium',
     progress: 0, work_mode: 'offline', department: '', start_date: '', due_date: '',
@@ -117,8 +131,8 @@ export function TaskFormDialog({ open, onOpenChange, task, onSubmit, isLoading, 
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div><Label>{t('taskManagement.form.startDate')}</Label><Input type="date" value={form.start_date || ''} onChange={e => setForm(p => ({ ...p, start_date: e.target.value }))} /></div>
-            <div><Label>{t('taskManagement.form.dueDate')}</Label><Input type="date" value={form.due_date || ''} onChange={e => setForm(p => ({ ...p, due_date: e.target.value }))} /></div>
+            <div><Label>{t('taskManagement.form.startDate')}</Label><ViDateField value={form.start_date || ''} onValueChange={(v) => setForm(p => ({ ...p, start_date: v }))} /></div>
+            <div><Label>{t('taskManagement.form.dueDate')}</Label><ViDateField value={form.due_date || ''} onValueChange={(v) => setForm(p => ({ ...p, due_date: v }))} /></div>
           </div>
 
           <div className="space-y-2 p-3 rounded-lg border border-border bg-muted/20">

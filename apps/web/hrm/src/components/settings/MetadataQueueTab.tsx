@@ -1,3 +1,39 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /hr/employee-metadata — Hàng chờ metadata nhân sự
+ * UC:         UC-HRM-26 · UF-HRM-11
+ * BR:         BRD §5.3 (workflow_code tham chiếu XBOS — UI chỉ nhãn nghiệp vụ)
+ * SRS:        docs/hrm/SRS.md §13 · UC-HRM-26
+ * TechSpec:   docs/hrm/TECHSPEC.md § metadata queue
+ * Purpose:    Bảng duyệt yêu cầu thay đổi metadata; gửi yêu cầu mới từ Cài đặt HRM.
+ * WorkItem:   D-HRM-METADATA-WORKFLOW-ID-HUMANIZE-01
+ * Coded:      2026-07-20
+ *
+ * Callers:
+ *   - pages/EmployeeMetadataPage.tsx → MetadataQueueTab
+ *
+ * Callees:
+ *   - useMetadataQueue → hrmApi employee-metadata/*
+ *   - formatMetadataWorkflowLabel → nhãn VI cột Quy trình
+ *
+ * FE-Actions:
+ *   | Thao tác | Handler | Lib |
+ *   |----------|---------|-----|
+ *   | Duyệt / Từ chối | onDecide | useMetadataQueue.decide |
+ *   | Gửi yêu cầu | onSubmitNew | useMetadataQueue.submit |
+ *
+ * Impact:     Hiện raw workflow_code → lộ mã kỹ thuật (QC C-HRM-MENU-SWEEP-01)
+ * must_keep:  Approve/reject + submit payloads; không seed; không hiện xbos.*
+ * SOLID:      Tab = presentation; label map tách lib
+ * LastVerified: lib/metadataWorkflowLabel.test.ts · d-hrm-metadata-workflow-id-humanize-01-fe-20260720.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-METADATA-WORKFLOW-ID-HUMANIZE-01
+ * change_mode: UPGRADE
+ * What: Cột Quy trình dùng formatMetadataWorkflowLabel; header VI (không "Workflow")
+ * Why: QC GWC P3 — humanize/hide xbos.employee_metadata.default
+ * must_keep: decide/submit flows; formatMetadataDisplayValue
+ */
 import { Loader2, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +52,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { listEmployees } from '@/integrations/hrmApi';
 import { normalizeHrmApiListCompanyId } from '@/lib/hrmListScope';
+import { formatMetadataWorkflowLabel } from '@/lib/metadataWorkflowLabel';
 import { formatMetadataDisplayValue, useMetadataQueue } from '@/hooks/useMetadataQueue';
 import type { HrmEmployeeMetadataChangeRequest } from '@/integrations/hrmApi';
 
@@ -53,7 +90,7 @@ export function MetadataQueueTab() {
         company_id: emp.company_id,
         field_key: fieldKey.trim(),
         requested_value: requestedValue.trim(),
-        reason: 'UF-HRM-11 — yêu cầu thay đổi metadata từ HRM Settings',
+        reason: 'Yêu cầu thay đổi metadata từ Cài đặt HRM',
       });
       toast.success('Đã gửi yêu cầu metadata — chờ duyệt');
       setRequestedValue('');
@@ -70,7 +107,7 @@ export function MetadataQueueTab() {
         <CardHeader>
           <CardTitle>Hàng chờ metadata</CardTitle>
           <CardDescription>
-            Chế độ API Nest (portal embed) chưa bật — bật VITE_HRM_USE_API và đăng nhập qua Command Center.
+            Chế độ kết nối chưa sẵn sàng — mở HRM từ Command Center để duyệt metadata.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -109,9 +146,7 @@ function MetadataQueueHeader({ total }: { total: number }) {
   return (
     <div>
       <CardTitle>Hàng chờ metadata nhân sự</CardTitle>
-      <CardDescription>
-        UC-HRM-26 — GET /api/hrm/employee-metadata/change-requests · {total} hồ sơ chờ duyệt
-      </CardDescription>
+      <CardDescription>{total} hồ sơ chờ duyệt</CardDescription>
     </div>
   );
 }
@@ -131,10 +166,10 @@ function MetadataQueueTable({
         <TableHeader>
           <TableRow>
             <TableHead>Nhân sự</TableHead>
-            <TableHead>Field</TableHead>
+            <TableHead>Trường dữ liệu</TableHead>
             <TableHead>Giá trị đề nghị</TableHead>
             <TableHead>Lý do</TableHead>
-            <TableHead>Workflow</TableHead>
+            <TableHead>Quy trình</TableHead>
             <TableHead className="text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
@@ -158,7 +193,9 @@ function MetadataQueueTable({
                 <TableCell className="font-mono text-xs">{row.field_key}</TableCell>
                 <TableCell>{formatMetadataDisplayValue(row.requested_value)}</TableCell>
                 <TableCell>{row.reason ?? '—'}</TableCell>
-                <TableCell>{row.workflow_code ?? 'Mặc định'}</TableCell>
+                <TableCell data-testid="metadata-workflow-label">
+                  {formatMetadataWorkflowLabel(row.workflow_code)}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button
@@ -205,10 +242,10 @@ function MetadataSubmitPanel({
 }) {
   return (
     <div className="rounded-lg border border-dashed p-4 space-y-3">
-      <p className="text-sm font-medium">Gửi yêu cầu metadata mới (UF-HRM-11)</p>
+      <p className="text-sm font-medium">Gửi yêu cầu metadata mới</p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="meta-field-key">Field key</Label>
+          <Label htmlFor="meta-field-key">Mã trường</Label>
           <Input
             id="meta-field-key"
             value={fieldKey}

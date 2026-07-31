@@ -33,6 +33,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { createEmployeeContract, listEmployees } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
+import { resolveContractTypeDisplayLabel } from '@/lib/labelMaps';
 
 interface ContractImportDialogProps {
   open: boolean;
@@ -459,7 +460,7 @@ export function ContractImportDialog({
                       <TableCell>{getStatusBadge(row.status)}</TableCell>
                       <TableCell>{row.data.contract_code}</TableCell>
                       <TableCell>{row.data.employee_name}</TableCell>
-                      <TableCell>{row.data.contract_type}</TableCell>
+                      <TableCell>{resolveContractTypeDisplayLabel(row.data.contract_type)}</TableCell>
                       <TableCell>{row.data.effective_date || '-'}</TableCell>
                       <TableCell>
                         <div className="text-xs space-y-1">

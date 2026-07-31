@@ -20,6 +20,7 @@ export function RecruitmentPieChart({ candidates }: RecruitmentPieChartProps) {
     interview: t('recruitment.interview'),
     offer: t('recruitment.offer'),
     hired: t('recruitment.hired'),
+    rejected: t('recruitment.rejected'),
   };
 
   const stageData = [
@@ -28,6 +29,7 @@ export function RecruitmentPieChart({ candidates }: RecruitmentPieChartProps) {
     { name: stageLabels.interview, value: candidates.filter(c => c.stage === 'interview').length, stage: 'interview' },
     { name: stageLabels.offer, value: candidates.filter(c => c.stage === 'offer').length, stage: 'offer' },
     { name: stageLabels.hired, value: candidates.filter(c => c.stage === 'hired').length, stage: 'hired' },
+    { name: stageLabels.rejected, value: candidates.filter(c => c.stage === 'rejected').length, stage: 'rejected' },
   ].filter(item => item.value > 0);
 
   return (

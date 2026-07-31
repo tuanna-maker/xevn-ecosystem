@@ -581,19 +581,19 @@ export function PayslipPrintDialog({
             <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border-t">
               <div className="grid grid-cols-3 gap-6 text-center">
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400">Người lập bảng</h4>
-                  <div className="h-16 border-b border-dashed border-gray-300 dark:border-gray-600 my-3" />
-                  <p className="text-xs text-muted-foreground">(Ký, ghi rõ họ tên)</p>
+                  <h4 className="text-sm font-semibold text-xevn-textSecondary">Người lập bảng</h4>
+                  <div className="h-16 border-b border-dashed border-xevn-border my-3" />
+                  <p className="text-sm text-xevn-textMuted">(Ký, ghi rõ họ tên)</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400">Kế toán trưởng</h4>
-                  <div className="h-16 border-b border-dashed border-gray-300 dark:border-gray-600 my-3" />
-                  <p className="text-xs text-muted-foreground">(Ký, ghi rõ họ tên)</p>
+                  <h4 className="text-sm font-semibold text-xevn-textSecondary">Kế toán trưởng</h4>
+                  <div className="h-16 border-b border-dashed border-xevn-border my-3" />
+                  <p className="text-sm text-xevn-textMuted">(Ký, ghi rõ họ tên)</p>
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400">Giám đốc</h4>
-                  <div className="h-16 border-b border-dashed border-gray-300 dark:border-gray-600 my-3" />
-                  <p className="text-xs text-muted-foreground">(Ký, đóng dấu)</p>
+                  <h4 className="text-sm font-semibold text-xevn-textSecondary">Giám đốc</h4>
+                  <div className="h-16 border-b border-dashed border-xevn-border my-3" />
+                  <p className="text-sm text-xevn-textMuted">(Ký, đóng dấu)</p>
                 </div>
               </div>
             </div>

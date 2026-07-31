@@ -1,31 +1,70 @@
-import { useState, useMemo } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /payroll · tab Thành phần lương
+ * UC:         UC-HRM-PAY · salary components
+ * BR:         L-OPS · zero-tolerance mã/tên/loại (compliance lương/thuế)
+ * SRS:        docs/hrm/SRS.md § lương
+ * TechSpec:   docs/program/UX-UI-ERP-ANALYSIS.md D5 Zod + RHF
+ * Purpose:    Tab live danh mục thành phần lương — list/filter + dialog Thêm/Sửa/Xóa.
+ * WorkItem:   D-UX-D5-ZOD-LIVE-WIRE-01
+ * Coded:      2026-07-28
+ * Callers:    pages/Payroll.tsx (tab Thành phần lương)
+ * Callees:    useSalaryComponents · createSalaryComponentFormSchema · FormulaInput
+ * FE-Actions: | Thêm mới | setShowAddDialog + RHF handleSubmit | createComponent |
+ *             | Sửa / Xóa | formData + validateEditForm | update/delete |
+ * Impact:     Zod không gắn dialog live → QA D5 FAIL (orphan Payroll Dialog);
+ *             message sai namespace → lệch payroll.salaryComponents.*
+ * must_keep:  taxSettlementFloatingUi C1 (Payroll); API create/update path;
+ *             không seed/deploy; UX-03 debounce không đụng
+ * SOLID:      Tab owns live Add dialog — schema factory inject messages từ useTranslation
+ * LastVerified: docs/qa/evidence/d-ux-d5-zod-live-wire-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-D5-ZOD-LIVE-WIRE-01
+ * change_mode: FIX
+ * What: Dialog Thêm — wire createSalaryComponentFormSchema + RHF FormMessage
+ *       (keys payroll.salaryComponents.*); bỏ validateForm thủ công trên Add;
+ *       map Zod values → SalaryComponentFormData (appliedUnits default ['all'] → applied_to)
+ * Why: QA-UX-D5-01 FAIL — Zod chỉ nằm Dialog orphan Payroll.tsx không setShow(true)
+ * must_keep: Edit/Delete dialogs; createComponent API; C1/Clock-In/UX-03 debounce ngoài scope
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-FE-ERP-E2-01
+ * change_mode: ADD
+ * What: Bản chất TP = CatalogSearchPicker pay_types (code); Zod allowed codes; U72 label
+ * Why: FR-HRM-PAY-CLEAN-E2-01 · AC-E2-PAY-NATURE-01 — cấm HARDCODE componentTypes SoT
+ * must_keep: nature accounting axis; createComponent API; E1-A/E1-B untouched
+ */
+import { useState, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  payTypeOptionsFromCatalog,
+  resolvePayTypeLabel,
+} from '@/lib/catalogSearchPicker';
 import {
   Search,
   Plus,
-  Download,
-  Upload,
   Pencil,
   Trash2,
   MoreHorizontal,
-  ChevronDown,
   ChevronRight,
   ChevronLeft,
   CheckCircle2,
-  Settings,
   AlertCircle,
   X,
-  Info,
-  Filter,
   ClipboardList,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import {
   Dialog,
   DialogContent,
@@ -46,14 +85,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { FormulaInput } from '@/components/payroll/FormulaInput';
+import {
+  createSalaryComponentFormSchema,
+  DEFAULT_SALARY_COMPONENT_FORM_VALUES,
+  type SalaryComponentFormMessages,
+  type SalaryComponentFormValues,
+} from '@/components/payroll/salaryComponentFormSchema';
 import {
   useSalaryComponents,
   SalaryComponent,
   SalaryComponentFormData,
   systemSalaryComponents,
-  componentTypes,
 } from '@/hooks/useSalaryComponents';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -72,6 +123,34 @@ const initialFormData: SalaryComponentFormData = {
   sort_order: 0,
 };
 
+/** Live tab defaults: schema requires appliedUnits min(1); API uses applied_to string. */
+const ADD_FORM_DEFAULTS: SalaryComponentFormValues = {
+  ...DEFAULT_SALARY_COMPONENT_FORM_VALUES,
+  appliedUnits: ['all'],
+};
+
+function mapZodValuesToFormData(values: SalaryComponentFormValues): SalaryComponentFormData {
+  const applied =
+    values.appliedUnits.length === 0 || values.appliedUnits.includes('all')
+      ? 'all'
+      : values.appliedUnits.join(',');
+  return {
+    code: values.code.trim(),
+    name: values.name.trim(),
+    component_type: values.componentType,
+    nature: values.nature,
+    value_type: values.valueType,
+    is_taxable: values.isTaxable,
+    is_insurance_base: false,
+    formula: values.formula || '',
+    default_value: 0,
+    description: values.description || undefined,
+    applied_to: applied,
+    is_active: true,
+    sort_order: 0,
+  };
+}
+
 export const SalaryComponentsTab = () => {
   const { t } = useTranslation();
   const {
@@ -83,8 +162,18 @@ export const SalaryComponentsTab = () => {
     toggleComponentStatus,
     initializeDefaultComponents,
   } = useSalaryComponents();
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview();
+  const payTypeOptions = useMemo(
+    () => payTypeOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const allowedPayTypeCodesRef = useRef<string[]>([]);
+  allowedPayTypeCodesRef.current = payTypeOptions.map((o) => o.value);
 
-  // State
   const [activeTab, setActiveTab] = useState<'custom' | 'system'>('custom');
   const [searchTerm, setSearchTerm] = useState('');
   const [componentTypeFilter, setComponentTypeFilter] = useState<string>('all');
@@ -92,7 +181,6 @@ export const SalaryComponentsTab = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(true);
 
-  // Dialog states
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -100,92 +188,130 @@ export const SalaryComponentsTab = () => {
   const [componentToDelete, setComponentToDelete] = useState<SalaryComponent | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form state
+  // Edit dialog — controlled form (Add uses RHF)
   const [formData, setFormData] = useState<SalaryComponentFormData>(initialFormData);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Filter components
+  const existingCodesRef = useRef<string[]>([]);
+  existingCodesRef.current = components.map((c) => c.code);
+
+  const salaryComponentFormMessages = useMemo(
+    (): SalaryComponentFormMessages => ({
+      codeRequired: t('payroll.salaryComponents.codeRequired'),
+      codeMinLength: t('payroll.salaryComponents.codeMinLength'),
+      codeFormat: t('payroll.salaryComponents.codeFormat'),
+      codeExists: t('payroll.salaryComponents.codeExists'),
+      nameRequired: t('payroll.salaryComponents.nameRequired'),
+      nameMinLength: t('payroll.salaryComponents.nameMinLength'),
+      nameMaxLength: t('payroll.salaryComponents.nameMaxLength'),
+      unitRequired: t('payroll.salaryComponents.unitRequired'),
+      typeRequired: t('payroll.salaryComponents.typeRequired'),
+      typeNotInCatalog: t(
+        'payroll.salaryComponents.typeNotInCatalog',
+        'Chọn bản chất từ danh mục pay_types (Cài đặt).',
+      ),
+    }),
+    [t],
+  );
+
+  const addFormSchema = useMemo(
+    () =>
+      createSalaryComponentFormSchema(
+        salaryComponentFormMessages,
+        () => existingCodesRef.current,
+        () => allowedPayTypeCodesRef.current,
+      ),
+    [salaryComponentFormMessages],
+  );
+
+  const addForm = useForm<SalaryComponentFormValues>({
+    resolver: zodResolver(addFormSchema),
+    defaultValues: ADD_FORM_DEFAULTS,
+    mode: 'onSubmit',
+  });
+
   const filteredComponents = useMemo(() => {
     return components.filter((comp) => {
       const matchesSearch =
         comp.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         comp.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = componentTypeFilter === 'all' || comp.component_type === componentTypeFilter;
+      const matchesType =
+        componentTypeFilter === 'all' || comp.component_type === componentTypeFilter;
       const matchesNature = natureFilter === 'all' || comp.nature === natureFilter;
-      const matchesStatus = statusFilter === 'all' || 
+      const matchesStatus =
+        statusFilter === 'all' ||
         (statusFilter === 'active' && comp.is_active) ||
         (statusFilter === 'inactive' && !comp.is_active);
       return matchesSearch && matchesType && matchesNature && matchesStatus;
     });
   }, [components, searchTerm, componentTypeFilter, natureFilter, statusFilter]);
 
-  // Filter system components
   const filteredSystemComponents = useMemo(() => {
     return systemSalaryComponents.filter((comp) => {
       const matchesSearch =
         comp.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         comp.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = componentTypeFilter === 'all' || comp.componentType === componentTypeFilter;
+      const matchesType =
+        componentTypeFilter === 'all' || comp.componentType === componentTypeFilter;
       const matchesNature = natureFilter === 'all' || comp.nature === natureFilter;
       return matchesSearch && matchesType && matchesNature;
     });
   }, [searchTerm, componentTypeFilter, natureFilter]);
 
-  // Available components for formula
   const formulaAvailableComponents = useMemo(() => {
     return [
-      ...components.map(c => ({ code: c.code, name: c.name })),
-      ...systemSalaryComponents.map(c => ({ code: c.code, name: c.name })),
+      ...components.map((c) => ({ code: c.code, name: c.name })),
+      ...systemSalaryComponents.map((c) => ({ code: c.code, name: c.name })),
     ];
   }, [components]);
 
-  // Stats
   const stats = useMemo(() => {
     const total = components.length;
-    const active = components.filter(c => c.is_active).length;
-    const income = components.filter(c => c.nature === 'income').length;
-    const deduction = components.filter(c => c.nature === 'deduction').length;
+    const active = components.filter((c) => c.is_active).length;
+    const income = components.filter((c) => c.nature === 'income').length;
+    const deduction = components.filter((c) => c.nature === 'deduction').length;
     return { total, active, income, deduction };
   }, [components]);
 
-  // Validate form
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
+  const openAddDialog = () => {
+    addForm.reset(ADD_FORM_DEFAULTS);
+    setShowAddDialog(true);
+  };
 
-    if (!formData.code.trim()) {
-      errors.code = t('salaryComponents.validation.codeRequired');
-    } else if (!/^[A-Z0-9_]+$/.test(formData.code)) {
-      errors.code = t('salaryComponents.validation.codeFormat');
+  const closeAddDialog = () => {
+    setShowAddDialog(false);
+    addForm.reset(ADD_FORM_DEFAULTS);
+  };
+
+  const handleAddSubmit = addForm.handleSubmit(async (values) => {
+    setIsSubmitting(true);
+    const result = await createComponent(mapZodValuesToFormData(values));
+    setIsSubmitting(false);
+    if (result) {
+      closeAddDialog();
     }
+  });
 
+  const validateEditForm = (): boolean => {
+    const errors: Record<string, string> = {};
     if (!formData.name.trim()) {
       errors.name = t('salaryComponents.validation.nameRequired');
     }
-
     if (!formData.component_type) {
       errors.component_type = t('salaryComponents.validation.typeRequired');
+    } else if (
+      payTypeOptions.length > 0 &&
+      !payTypeOptions.some((o) => o.value === formData.component_type)
+    ) {
+      errors.component_type = t(
+        'payroll.salaryComponents.typeNotInCatalog',
+        'Chọn bản chất từ danh mục pay_types (Cài đặt).',
+      );
     }
-
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Handle add
-  const handleAdd = async () => {
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-    const result = await createComponent(formData);
-    setIsSubmitting(false);
-
-    if (result) {
-      setShowAddDialog(false);
-      setFormData(initialFormData);
-      setFormErrors({});
-    }
-  };
-
-  // Handle edit
   const handleOpenEdit = (component: SalaryComponent) => {
     setComponentToEdit(component);
     setFormData({
@@ -206,11 +332,12 @@ export const SalaryComponentsTab = () => {
       is_active: component.is_active,
       sort_order: component.sort_order,
     });
+    setFormErrors({});
     setShowEditDialog(true);
   };
 
   const handleSaveEdit = async () => {
-    if (!componentToEdit || !validateForm()) return;
+    if (!componentToEdit || !validateEditForm()) return;
 
     setIsSubmitting(true);
     const success = await updateComponent(componentToEdit.id, formData);
@@ -224,7 +351,6 @@ export const SalaryComponentsTab = () => {
     }
   };
 
-  // Handle delete
   const handleOpenDelete = (component: SalaryComponent) => {
     setComponentToDelete(component);
     setShowDeleteDialog(true);
@@ -243,7 +369,6 @@ export const SalaryComponentsTab = () => {
     }
   };
 
-  // Handle initialize defaults
   const handleInitializeDefaults = async () => {
     if (components.length > 0) {
       if (!confirm(t('salaryComponents.dialogs.confirmInitialize'))) {
@@ -253,30 +378,36 @@ export const SalaryComponentsTab = () => {
     await initializeDefaultComponents();
   };
 
-  // Get nature badge
   const getNatureBadge = (nature: string) => {
     switch (nature) {
       case 'income':
-        return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200">{t('salaryComponents.nature.income')}</Badge>;
+        return (
+          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200">
+            {t('salaryComponents.nature.income')}
+          </Badge>
+        );
       case 'deduction':
-        return <Badge className="bg-rose-500/10 text-rose-600 border-rose-200">{t('salaryComponents.nature.deduction')}</Badge>;
+        return (
+          <Badge className="bg-rose-500/10 text-rose-600 border-rose-200">
+            {t('salaryComponents.nature.deduction')}
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{t('salaryComponents.nature.other')}</Badge>;
     }
   };
 
-  // Render loading skeleton
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
         <div className="flex gap-4">
-          {[1, 2, 3, 4].map(i => (
+          {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-24 flex-1" />
           ))}
         </div>
         <Skeleton className="h-12 w-full" />
         <div className="space-y-2">
-          {[1, 2, 3, 4, 5].map(i => (
+          {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
         </div>
@@ -286,9 +417,7 @@ export const SalaryComponentsTab = () => {
 
   return (
     <div className="flex h-[calc(100vh-120px)]">
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
         <div className="p-6 border-b">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">{t('salaryComponents.title')}</h1>
@@ -306,14 +435,13 @@ export const SalaryComponentsTab = () => {
                 <ClipboardList className="w-4 h-4 mr-2" />
                 {t('salaryComponents.initializeDefaults')}
               </Button>
-              <Button className="bg-primary gap-2" onClick={() => setShowAddDialog(true)}>
+              <Button className="bg-primary gap-2" onClick={openAddDialog}>
                 <Plus className="w-4 h-4" />
                 {t('salaryComponents.addNew')}
               </Button>
             </div>
           </div>
 
-          {/* Stats Cards */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             <Card>
               <CardContent className="p-4">
@@ -335,20 +463,21 @@ export const SalaryComponentsTab = () => {
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-sm text-muted-foreground">{t('salaryComponents.stats.deduction')}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('salaryComponents.stats.deduction')}
+                </p>
                 <p className="text-2xl font-bold text-rose-600">{stats.deduction}</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Tabs */}
           <div className="flex items-center gap-6 border-b -mx-6 px-6">
             <button
               className={cn(
-                "pb-3 text-sm font-medium border-b-2 transition-colors",
+                'pb-3 text-sm font-medium border-b-2 transition-colors',
                 activeTab === 'custom'
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground',
               )}
               onClick={() => setActiveTab('custom')}
             >
@@ -356,10 +485,10 @@ export const SalaryComponentsTab = () => {
             </button>
             <button
               className={cn(
-                "pb-3 text-sm font-medium border-b-2 transition-colors",
+                'pb-3 text-sm font-medium border-b-2 transition-colors',
                 activeTab === 'system'
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground',
               )}
               onClick={() => setActiveTab('system')}
             >
@@ -368,22 +497,35 @@ export const SalaryComponentsTab = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="flex-1 overflow-auto">
           <table className="w-full">
             <thead className="bg-muted/50 sticky top-0">
               <tr>
                 <th className="w-12 p-3 text-center text-xs font-medium text-muted-foreground">#</th>
-                <th className="p-3 text-left text-xs font-medium text-muted-foreground">{t('salaryComponents.table.code')}</th>
-                <th className="p-3 text-left text-xs font-medium text-muted-foreground">{t('salaryComponents.table.name')}</th>
-                <th className="p-3 text-left text-xs font-medium text-muted-foreground">{t('salaryComponents.table.type')}</th>
-                <th className="p-3 text-center text-xs font-medium text-muted-foreground">{t('salaryComponents.table.nature')}</th>
-                <th className="p-3 text-center text-xs font-medium text-muted-foreground">{t('salaryComponents.table.valueType')}</th>
-                <th className="p-3 text-center text-xs font-medium text-muted-foreground">{t('salaryComponents.table.taxable')}</th>
+                <th className="p-3 text-left text-xs font-medium text-muted-foreground">
+                  {t('salaryComponents.table.code')}
+                </th>
+                <th className="p-3 text-left text-xs font-medium text-muted-foreground">
+                  {t('salaryComponents.table.name')}
+                </th>
+                <th className="p-3 text-left text-xs font-medium text-muted-foreground">
+                  {t('salaryComponents.table.type')}
+                </th>
+                <th className="p-3 text-center text-xs font-medium text-muted-foreground">
+                  {t('salaryComponents.table.nature')}
+                </th>
+                <th className="p-3 text-center text-xs font-medium text-muted-foreground">
+                  {t('salaryComponents.table.valueType')}
+                </th>
+                <th className="p-3 text-center text-xs font-medium text-muted-foreground">
+                  {t('salaryComponents.table.taxable')}
+                </th>
                 {activeTab === 'custom' && (
                   <>
-                    <th className="p-3 text-center text-xs font-medium text-muted-foreground">{t('salaryComponents.table.status')}</th>
-                    <th className="p-3 text-center text-xs font-medium text-muted-foreground w-24"></th>
+                    <th className="p-3 text-center text-xs font-medium text-muted-foreground">
+                      {t('salaryComponents.table.status')}
+                    </th>
+                    <th className="p-3 text-center text-xs font-medium text-muted-foreground w-24" />
                   </>
                 )}
               </tr>
@@ -403,13 +545,20 @@ export const SalaryComponentsTab = () => {
                       </td>
                       <td className="p-3 font-medium">{component.name}</td>
                       <td className="p-3">
-                        <Badge variant="outline">{component.component_type}</Badge>
+                        <Badge variant="outline">
+                          {resolvePayTypeLabel(payTypeOptions, component.component_type) !== '—'
+                            ? resolvePayTypeLabel(payTypeOptions, component.component_type)
+                            : component.component_type}
+                        </Badge>
                       </td>
                       <td className="p-3 text-center">{getNatureBadge(component.nature)}</td>
                       <td className="p-3 text-center">
                         <span className="text-sm text-muted-foreground">
-                          {component.value_type === 'currency' ? t('salaryComponents.valueTypes.currency') : 
-                           component.value_type === 'number' ? t('salaryComponents.valueTypes.number') : t('salaryComponents.valueTypes.percentage')}
+                          {component.value_type === 'currency'
+                            ? t('salaryComponents.valueTypes.currency')
+                            : component.value_type === 'number'
+                              ? t('salaryComponents.valueTypes.number')
+                              : t('salaryComponents.valueTypes.percentage')}
                         </span>
                       </td>
                       <td className="p-3 text-center">
@@ -425,10 +574,12 @@ export const SalaryComponentsTab = () => {
                           className={cn(
                             component.is_active
                               ? 'bg-emerald-500/10 text-emerald-600'
-                              : 'bg-muted text-muted-foreground'
+                              : 'bg-muted text-muted-foreground',
                           )}
                         >
-                          {component.is_active ? t('salaryComponents.status.active') : t('salaryComponents.status.inactive')}
+                          {component.is_active
+                            ? t('salaryComponents.status.active')
+                            : t('salaryComponents.status.inactive')}
                         </Badge>
                       </td>
                       <td className="p-3">
@@ -444,9 +595,13 @@ export const SalaryComponentsTab = () => {
                               {t('salaryComponents.actions.edit')}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => toggleComponentStatus(component.id, !component.is_active)}
+                              onClick={() =>
+                                toggleComponentStatus(component.id, !component.is_active)
+                              }
                             >
-                              {component.is_active ? t('salaryComponents.actions.deactivate') : t('salaryComponents.actions.activate')}
+                              {component.is_active
+                                ? t('salaryComponents.actions.deactivate')
+                                : t('salaryComponents.actions.activate')}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive"
@@ -466,7 +621,7 @@ export const SalaryComponentsTab = () => {
                       <div className="flex flex-col items-center gap-2">
                         <ClipboardList className="w-12 h-12 text-muted-foreground/50" />
                         <p>{t('salaryComponents.empty.message')}</p>
-                        <Button size="sm" onClick={() => setShowAddDialog(true)}>
+                        <Button size="sm" onClick={openAddDialog}>
                           <Plus className="w-4 h-4 mr-2" />
                           {t('salaryComponents.empty.addFirst')}
                         </Button>
@@ -491,7 +646,9 @@ export const SalaryComponentsTab = () => {
                     </td>
                     <td className="p-3 text-center">{getNatureBadge(component.nature)}</td>
                     <td className="p-3 text-center">
-                      <span className="text-sm text-muted-foreground">{t('salaryComponents.valueTypes.currency')}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {t('salaryComponents.valueTypes.currency')}
+                      </span>
                     </td>
                     <td className="p-3 text-center">
                       {component.isTaxable ? (
@@ -507,7 +664,6 @@ export const SalaryComponentsTab = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between px-4 py-3 border-t bg-card">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
@@ -521,69 +677,96 @@ export const SalaryComponentsTab = () => {
             </Button>
           </div>
           <span className="text-sm text-muted-foreground">
-            {t('salaryComponents.showingResults', { count: activeTab === 'custom' ? filteredComponents.length : filteredSystemComponents.length })}
+            {t('salaryComponents.showingResults', {
+              count:
+                activeTab === 'custom'
+                  ? filteredComponents.length
+                  : filteredSystemComponents.length,
+            })}
           </span>
         </div>
       </div>
 
-      {/* Right Sidebar Filters */}
       <Collapsible open={showFilters} onOpenChange={setShowFilters}>
         <CollapsibleContent className="w-72 border-l p-4 bg-muted/30 overflow-y-auto">
-          {/* Component Type Filter */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium mb-3 text-muted-foreground">{t('salaryComponents.filters.componentType')}</h4>
+            <h4 className="text-sm font-medium mb-3 text-muted-foreground">
+              {t('salaryComponents.filters.componentType')}
+            </h4>
             <Select value={componentTypeFilter} onValueChange={setComponentTypeFilter}>
               <SelectTrigger>
                 <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.all')}</SelectItem>
-                {componentTypes.map((type) => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                {payTypeOptions.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* Nature Filter */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium mb-3 text-muted-foreground">{t('salaryComponents.filters.nature')}</h4>
+            <h4 className="text-sm font-medium mb-3 text-muted-foreground">
+              {t('salaryComponents.filters.nature')}
+            </h4>
             <RadioGroup value={natureFilter} onValueChange={setNatureFilter} className="space-y-2">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="all" id="nature-all" />
-                <Label htmlFor="nature-all" className="font-normal cursor-pointer text-sm">{t('common.all')}</Label>
+                <Label htmlFor="nature-all" className="font-normal cursor-pointer text-sm">
+                  {t('common.all')}
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="income" id="nature-income" />
-                <Label htmlFor="nature-income" className="font-normal cursor-pointer text-sm">{t('salaryComponents.nature.income')}</Label>
+                <Label htmlFor="nature-income" className="font-normal cursor-pointer text-sm">
+                  {t('salaryComponents.nature.income')}
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="deduction" id="nature-deduction" />
-                <Label htmlFor="nature-deduction" className="font-normal cursor-pointer text-sm">{t('salaryComponents.nature.deduction')}</Label>
+                <Label htmlFor="nature-deduction" className="font-normal cursor-pointer text-sm">
+                  {t('salaryComponents.nature.deduction')}
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="other" id="nature-other" />
-                <Label htmlFor="nature-other" className="font-normal cursor-pointer text-sm">{t('salaryComponents.nature.other')}</Label>
+                <Label htmlFor="nature-other" className="font-normal cursor-pointer text-sm">
+                  {t('salaryComponents.nature.other')}
+                </Label>
               </div>
             </RadioGroup>
           </div>
 
-          {/* Status Filter - only for custom tab */}
           {activeTab === 'custom' && (
             <div className="mb-6">
-              <h4 className="text-sm font-medium mb-3 text-muted-foreground">{t('salaryComponents.filters.status')}</h4>
-              <RadioGroup value={statusFilter} onValueChange={setStatusFilter} className="space-y-2">
+              <h4 className="text-sm font-medium mb-3 text-muted-foreground">
+                {t('salaryComponents.filters.status')}
+              </h4>
+              <RadioGroup
+                value={statusFilter}
+                onValueChange={setStatusFilter}
+                className="space-y-2"
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="all" id="status-all" />
-                  <Label htmlFor="status-all" className="font-normal cursor-pointer text-sm">{t('common.all')}</Label>
+                  <Label htmlFor="status-all" className="font-normal cursor-pointer text-sm">
+                    {t('common.all')}
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="active" id="status-active" />
-                  <Label htmlFor="status-active" className="font-normal cursor-pointer text-sm">{t('salaryComponents.filters.activeOnly')}</Label>
+                  <Label htmlFor="status-active" className="font-normal cursor-pointer text-sm">
+                    {t('salaryComponents.filters.activeOnly')}
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="inactive" id="status-inactive" />
-                  <Label htmlFor="status-inactive" className="font-normal cursor-pointer text-sm">{t('salaryComponents.filters.inactiveOnly')}</Label>
+                  <Label htmlFor="status-inactive" className="font-normal cursor-pointer text-sm">
+                    {t('salaryComponents.filters.inactiveOnly')}
+                  </Label>
                 </div>
               </RadioGroup>
             </div>
@@ -591,14 +774,14 @@ export const SalaryComponentsTab = () => {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Add Dialog */}
-      <Dialog open={showAddDialog} onOpenChange={(open) => {
-        setShowAddDialog(open);
-        if (!open) {
-          setFormData(initialFormData);
-          setFormErrors({});
-        }
-      }}>
+      {/* Add Dialog — Zod + RHF (D-UX-D5-ZOD-LIVE-WIRE-01) */}
+      <Dialog
+        open={showAddDialog}
+        onOpenChange={(open) => {
+          if (open) openAddDialog();
+          else closeAddDialog();
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -606,170 +789,265 @@ export const SalaryComponentsTab = () => {
               {t('salaryComponents.form.addTitle')}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* Code */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                {t('salaryComponents.form.code')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <Input
-                  value={formData.code}
-                  onChange={(e) => {
-                    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
-                    setFormData(prev => ({ ...prev, code: value }));
-                    if (formErrors.code) setFormErrors(prev => ({ ...prev, code: '' }));
-                  }}
-                  placeholder={t('salaryComponents.form.codePlaceholder')}
-                  className={formErrors.code ? 'border-destructive' : ''}
-                />
-                {formErrors.code && <p className="text-xs text-destructive">{formErrors.code}</p>}
-                <p className="text-xs text-muted-foreground">{t('salaryComponents.form.codeHint')}</p>
-              </div>
-            </div>
-
-            {/* Name */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                {t('salaryComponents.form.name')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <Input
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, name: e.target.value }));
-                    if (formErrors.name) setFormErrors(prev => ({ ...prev, name: '' }));
-                  }}
-                  placeholder={t('salaryComponents.form.namePlaceholder')}
-                  className={formErrors.name ? 'border-destructive' : ''}
-                />
-                {formErrors.name && <p className="text-xs text-destructive">{formErrors.name}</p>}
-              </div>
-            </div>
-
-            {/* Component Type */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                {t('salaryComponents.form.componentType')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <Select
-                  value={formData.component_type}
-                  onValueChange={(value) => {
-                    setFormData(prev => ({ ...prev, component_type: value }));
-                    if (formErrors.component_type) setFormErrors(prev => ({ ...prev, component_type: '' }));
-                  }}
-                >
-                  <SelectTrigger className={formErrors.component_type ? 'border-destructive' : ''}>
-                    <SelectValue placeholder={t('salaryComponents.form.selectType')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {componentTypes.map((type) => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formErrors.component_type && <p className="text-xs text-destructive">{formErrors.component_type}</p>}
-              </div>
-            </div>
-
-            {/* Nature + Taxable */}
-            <div className="grid grid-cols-[150px_1fr] items-center gap-4">
-              <Label className="text-right">{t('salaryComponents.form.nature')}</Label>
-              <div className="flex items-center gap-4">
-                <Select
-                  value={formData.nature}
-                  onValueChange={(value: 'income' | 'deduction' | 'other') => 
-                    setFormData(prev => ({ ...prev, nature: value }))
-                  }
-                >
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="income">{t('salaryComponents.nature.income')}</SelectItem>
-                    <SelectItem value="deduction">{t('salaryComponents.nature.deduction')}</SelectItem>
-                    <SelectItem value="other">{t('salaryComponents.nature.other')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <RadioGroup
-                  value={formData.is_taxable ? 'taxable' : 'nontaxable'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, is_taxable: value === 'taxable' }))}
-                  className="flex items-center gap-4"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="taxable" id="add-taxable" />
-                    <Label htmlFor="add-taxable" className="font-normal cursor-pointer">{t('salaryComponents.form.taxable')}</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="nontaxable" id="add-nontaxable" />
-                    <Label htmlFor="add-nontaxable" className="font-normal cursor-pointer">{t('salaryComponents.form.nonTaxable')}</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </div>
-
-            {/* Value Type */}
-            <div className="grid grid-cols-[150px_1fr] items-center gap-4">
-              <Label className="text-right">{t('salaryComponents.form.valueType')}</Label>
-              <Select
-                value={formData.value_type}
-                onValueChange={(value: 'currency' | 'number' | 'percentage') => 
-                  setFormData(prev => ({ ...prev, value_type: value }))
-                }
-              >
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="currency">{t('salaryComponents.valueTypes.currency')}</SelectItem>
-                  <SelectItem value="number">{t('salaryComponents.valueTypes.number')}</SelectItem>
-                  <SelectItem value="percentage">{t('salaryComponents.valueTypes.percentage')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Formula */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('salaryComponents.form.formula')}</Label>
-              <FormulaInput
-                value={formData.formula || ''}
-                onChange={(value) => setFormData(prev => ({ ...prev, formula: value }))}
-                availableComponents={formulaAvailableComponents}
-                placeholder={t('salaryComponents.form.formulaPlaceholder')}
+          <Form {...addForm}>
+            <form
+              className="space-y-4 py-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleAddSubmit();
+              }}
+            >
+              <FormField
+                control={addForm.control}
+                name="code"
+                render={({ field, fieldState }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-start gap-4 space-y-0">
+                    <Label className="text-right pt-2">
+                      {t('salaryComponents.form.code')} <span className="text-destructive">*</span>
+                    </Label>
+                    <div className="space-y-1">
+                      <FormControl>
+                        <Input
+                          {...field}
+                          onChange={(e) => {
+                            const value = e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+                            field.onChange(value);
+                          }}
+                          placeholder={t('salaryComponents.form.codePlaceholder')}
+                          className={fieldState.error ? 'border-destructive' : ''}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                      <p className="text-xs text-muted-foreground">
+                        {t('salaryComponents.form.codeHint')}
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {/* Description */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('salaryComponents.form.description')}</Label>
-              <Input
-                value={formData.description || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={t('salaryComponents.form.descriptionPlaceholder')}
+              <FormField
+                control={addForm.control}
+                name="name"
+                render={({ field, fieldState }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-start gap-4 space-y-0">
+                    <Label className="text-right pt-2">
+                      {t('salaryComponents.form.name')} <span className="text-destructive">*</span>
+                    </Label>
+                    <div className="space-y-1">
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('salaryComponents.form.namePlaceholder')}
+                          className={fieldState.error ? 'border-destructive' : ''}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </div>
+                  </FormItem>
+                )}
               />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-              {t('salaryComponents.dialogs.cancel')}
-            </Button>
-            <Button onClick={handleAdd} disabled={isSubmitting}>
-              {isSubmitting ? t('salaryComponents.dialogs.saving') : t('salaryComponents.dialogs.add')}
-            </Button>
-          </DialogFooter>
+
+              <FormField
+                control={addForm.control}
+                name="componentType"
+                render={({ field, fieldState }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-start gap-4 space-y-0">
+                    <Label className="text-right pt-2">
+                      {t('salaryComponents.form.componentType')}{' '}
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <div className="space-y-1">
+                      <FormControl>
+                        <CatalogSearchPicker
+                          options={payTypeOptions}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder={t('salaryComponents.form.selectType')}
+                          loading={catalogsLoading}
+                          errorText={
+                            catalogsError ? t('settings.catalogs.loadError') : undefined
+                          }
+                          emptyHint={
+                            <a
+                              href="/settings"
+                              className="text-primary underline text-xs font-medium"
+                            >
+                              Mở Cài đặt → Danh mục nghiệp vụ (pay_types)
+                            </a>
+                          }
+                          triggerClassName={
+                            fieldState.error ? 'border-destructive' : undefined
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addForm.control}
+                name="nature"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-center gap-4 space-y-0">
+                    <Label className="text-right">{t('salaryComponents.form.nature')}</Label>
+                    <div className="flex items-center gap-4">
+                      <Select
+                        value={field.value}
+                        onValueChange={(value: 'income' | 'deduction' | 'other') =>
+                          field.onChange(value)
+                        }
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-[150px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="income">
+                            {t('salaryComponents.nature.income')}
+                          </SelectItem>
+                          <SelectItem value="deduction">
+                            {t('salaryComponents.nature.deduction')}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t('salaryComponents.nature.other')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormField
+                        control={addForm.control}
+                        name="isTaxable"
+                        render={({ field: taxField }) => (
+                          <RadioGroup
+                            value={taxField.value ? 'taxable' : 'nontaxable'}
+                            onValueChange={(value) => taxField.onChange(value === 'taxable')}
+                            className="flex items-center gap-4"
+                          >
+                            <div className="flex items-center gap-2">
+                              <RadioGroupItem value="taxable" id="add-taxable" />
+                              <Label
+                                htmlFor="add-taxable"
+                                className="font-normal cursor-pointer"
+                              >
+                                {t('salaryComponents.form.taxable')}
+                              </Label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <RadioGroupItem value="nontaxable" id="add-nontaxable" />
+                              <Label
+                                htmlFor="add-nontaxable"
+                                className="font-normal cursor-pointer"
+                              >
+                                {t('salaryComponents.form.nonTaxable')}
+                              </Label>
+                            </div>
+                          </RadioGroup>
+                        )}
+                      />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addForm.control}
+                name="valueType"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-center gap-4 space-y-0">
+                    <Label className="text-right">{t('salaryComponents.form.valueType')}</Label>
+                    <Select
+                      value={field.value}
+                      onValueChange={(value: 'currency' | 'number' | 'percentage') =>
+                        field.onChange(value)
+                      }
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-[150px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="currency">
+                          {t('salaryComponents.valueTypes.currency')}
+                        </SelectItem>
+                        <SelectItem value="number">
+                          {t('salaryComponents.valueTypes.number')}
+                        </SelectItem>
+                        <SelectItem value="percentage">
+                          {t('salaryComponents.valueTypes.percentage')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addForm.control}
+                name="formula"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-start gap-4 space-y-0">
+                    <Label className="text-right pt-2">
+                      {t('salaryComponents.form.formula')}
+                    </Label>
+                    <FormulaInput
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      availableComponents={formulaAvailableComponents}
+                      placeholder={t('salaryComponents.form.formulaPlaceholder')}
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-[150px_1fr] items-start gap-4 space-y-0">
+                    <Label className="text-right pt-2">
+                      {t('salaryComponents.form.description')}
+                    </Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('salaryComponents.form.descriptionPlaceholder')}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter className="gap-2">
+                <Button type="button" variant="outline" onClick={closeAddDialog}>
+                  {t('salaryComponents.dialogs.cancel')}
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? t('salaryComponents.dialogs.saving')
+                    : t('salaryComponents.dialogs.add')}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 
       {/* Edit Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={(open) => {
-        setShowEditDialog(open);
-        if (!open) {
-          setComponentToEdit(null);
-          setFormData(initialFormData);
-          setFormErrors({});
-        }
-      }}>
+      <Dialog
+        open={showEditDialog}
+        onOpenChange={(open) => {
+          setShowEditDialog(open);
+          if (!open) {
+            setComponentToEdit(null);
+            setFormData(initialFormData);
+            setFormErrors({});
+          }
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -778,7 +1056,6 @@ export const SalaryComponentsTab = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Same form fields as Add Dialog */}
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
               <Label className="text-right pt-2">{t('salaryComponents.form.code')}</Label>
               <Input value={formData.code} disabled className="bg-muted" />
@@ -792,30 +1069,44 @@ export const SalaryComponentsTab = () => {
                 <Input
                   value={formData.name}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, name: e.target.value }));
-                    if (formErrors.name) setFormErrors(prev => ({ ...prev, name: '' }));
+                    setFormData((prev) => ({ ...prev, name: e.target.value }));
+                    if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: '' }));
                   }}
                   className={formErrors.name ? 'border-destructive' : ''}
                 />
-                {formErrors.name && <p className="text-xs text-destructive">{formErrors.name}</p>}
+                {formErrors.name && (
+                  <p className="text-xs text-destructive">{formErrors.name}</p>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('salaryComponents.form.componentType')}</Label>
-              <Select
-                value={formData.component_type}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, component_type: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {componentTypes.map((type) => (
-                    <SelectItem key={type} value={type}>{type}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="text-right pt-2">
+                {t('salaryComponents.form.componentType')}
+              </Label>
+              <div className="space-y-1">
+                <CatalogSearchPicker
+                  options={payTypeOptions}
+                  value={formData.component_type}
+                  onValueChange={(value) => {
+                    setFormData((prev) => ({ ...prev, component_type: value }));
+                    if (formErrors.component_type) {
+                      setFormErrors((prev) => ({ ...prev, component_type: '' }));
+                    }
+                  }}
+                  placeholder={t('salaryComponents.form.selectType')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ (pay_types)
+                    </a>
+                  }
+                />
+                {formErrors.component_type && (
+                  <p className="text-xs text-destructive">{formErrors.component_type}</p>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
@@ -823,8 +1114,8 @@ export const SalaryComponentsTab = () => {
               <div className="flex items-center gap-4">
                 <Select
                   value={formData.nature}
-                  onValueChange={(value: 'income' | 'deduction' | 'other') => 
-                    setFormData(prev => ({ ...prev, nature: value }))
+                  onValueChange={(value: 'income' | 'deduction' | 'other') =>
+                    setFormData((prev) => ({ ...prev, nature: value }))
                   }
                 >
                   <SelectTrigger className="w-[150px]">
@@ -832,22 +1123,30 @@ export const SalaryComponentsTab = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="income">{t('salaryComponents.nature.income')}</SelectItem>
-                    <SelectItem value="deduction">{t('salaryComponents.nature.deduction')}</SelectItem>
+                    <SelectItem value="deduction">
+                      {t('salaryComponents.nature.deduction')}
+                    </SelectItem>
                     <SelectItem value="other">{t('salaryComponents.nature.other')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <RadioGroup
                   value={formData.is_taxable ? 'taxable' : 'nontaxable'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, is_taxable: value === 'taxable' }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, is_taxable: value === 'taxable' }))
+                  }
                   className="flex items-center gap-4"
                 >
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="taxable" id="edit-taxable" />
-                    <Label htmlFor="edit-taxable" className="font-normal cursor-pointer">{t('salaryComponents.form.taxable')}</Label>
+                    <Label htmlFor="edit-taxable" className="font-normal cursor-pointer">
+                      {t('salaryComponents.form.taxable')}
+                    </Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="nontaxable" id="edit-nontaxable" />
-                    <Label htmlFor="edit-nontaxable" className="font-normal cursor-pointer">{t('salaryComponents.form.nonTaxable')}</Label>
+                    <Label htmlFor="edit-nontaxable" className="font-normal cursor-pointer">
+                      {t('salaryComponents.form.nonTaxable')}
+                    </Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -857,17 +1156,21 @@ export const SalaryComponentsTab = () => {
               <Label className="text-right">{t('salaryComponents.form.valueType')}</Label>
               <Select
                 value={formData.value_type}
-                onValueChange={(value: 'currency' | 'number' | 'percentage') => 
-                  setFormData(prev => ({ ...prev, value_type: value }))
+                onValueChange={(value: 'currency' | 'number' | 'percentage') =>
+                  setFormData((prev) => ({ ...prev, value_type: value }))
                 }
               >
                 <SelectTrigger className="w-[150px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="currency">{t('salaryComponents.valueTypes.currency')}</SelectItem>
+                  <SelectItem value="currency">
+                    {t('salaryComponents.valueTypes.currency')}
+                  </SelectItem>
                   <SelectItem value="number">{t('salaryComponents.valueTypes.number')}</SelectItem>
-                  <SelectItem value="percentage">{t('salaryComponents.valueTypes.percentage')}</SelectItem>
+                  <SelectItem value="percentage">
+                    {t('salaryComponents.valueTypes.percentage')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -876,17 +1179,21 @@ export const SalaryComponentsTab = () => {
               <Label className="text-right pt-2">{t('salaryComponents.form.formula')}</Label>
               <FormulaInput
                 value={formData.formula || ''}
-                onChange={(value) => setFormData(prev => ({ ...prev, formula: value }))}
+                onChange={(value) => setFormData((prev) => ({ ...prev, formula: value }))}
                 availableComponents={formulaAvailableComponents}
                 placeholder={t('salaryComponents.form.formulaPlaceholder')}
               />
             </div>
 
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('salaryComponents.form.description')}</Label>
+              <Label className="text-right pt-2">
+                {t('salaryComponents.form.description')}
+              </Label>
               <Input
                 value={formData.description || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, description: e.target.value }))
+                }
                 placeholder={t('salaryComponents.form.descriptionPlaceholder')}
               />
             </div>
@@ -896,7 +1203,9 @@ export const SalaryComponentsTab = () => {
               {t('salaryComponents.dialogs.cancel')}
             </Button>
             <Button onClick={handleSaveEdit} disabled={isSubmitting}>
-              {isSubmitting ? t('salaryComponents.dialogs.saving') : t('salaryComponents.dialogs.save')}
+              {isSubmitting
+                ? t('salaryComponents.dialogs.saving')
+                : t('salaryComponents.dialogs.save')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -920,11 +1229,17 @@ export const SalaryComponentsTab = () => {
             {componentToDelete && (
               <div className="space-y-2 bg-muted/50 rounded-lg p-4">
                 <div className="flex items-start gap-2">
-                  <span className="text-sm text-muted-foreground w-32 shrink-0">{t('salaryComponents.form.code')}:</span>
-                  <code className="text-sm font-medium text-primary">{componentToDelete.code}</code>
+                  <span className="text-sm text-muted-foreground w-32 shrink-0">
+                    {t('salaryComponents.form.code')}:
+                  </span>
+                  <code className="text-sm font-medium text-primary">
+                    {componentToDelete.code}
+                  </code>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-sm text-muted-foreground w-32 shrink-0">{t('salaryComponents.form.name')}:</span>
+                  <span className="text-sm text-muted-foreground w-32 shrink-0">
+                    {t('salaryComponents.form.name')}:
+                  </span>
                   <span className="text-sm font-medium">{componentToDelete.name}</span>
                 </div>
               </div>
@@ -934,9 +1249,15 @@ export const SalaryComponentsTab = () => {
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
               {t('salaryComponents.dialogs.cancel')}
             </Button>
-            <Button variant="destructive" onClick={handleConfirmDelete} disabled={isSubmitting}>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={isSubmitting}
+            >
               <Trash2 className="w-4 h-4 mr-2" />
-              {isSubmitting ? t('salaryComponents.dialogs.deleting') : t('salaryComponents.dialogs.confirmDelete')}
+              {isSubmitting
+                ? t('salaryComponents.dialogs.deleting')
+                : t('salaryComponents.dialogs.confirmDelete')}
             </Button>
           </DialogFooter>
         </DialogContent>

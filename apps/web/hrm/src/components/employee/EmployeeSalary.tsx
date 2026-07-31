@@ -1,3 +1,40 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Lương (UF-HRM-06 payroll)
+ * UC:         UF-HRM-06
+ * BR:         payslip period_label may be MM/yyyy — never Date-parse blindly
+ * SRS:        docs/hrm/SRS.md · payroll / employee salary tab
+ * TechSpec:   GET /api/hrm/payroll/payslips · HrmPayslipRow.period_label
+ * Purpose:    Hiển thị phiếu lương API + phụ cấp local; format ngày an toàn.
+ * WorkItem:   D-HRM-EMP-SALARY-INVALID-DATE-01
+ * Coded:      2026-07-20
+ * Callers:    Employee profile salary tab
+ * Callees:    listPayrollPayslips · formatDisplayDate · formatPayrollPayDateCell
+ * must_keep:  UF-HRM-06 payroll path; F5 compensation tab riêng không đụng
+ * LastVerified: formatDisplayDate.test.ts · employeeSalaryDialogA11y.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-EMP-SALARY-INVALID-DATE-01
+ * change_mode: FIX
+ * What: Guard payDate/effectiveDate null|invalid → «—» / period_label; DialogTitle bắt buộc trên mọi DialogContent
+ * Why: RangeError Invalid time value khi format(new Date(period_label MM/yyyy|null))
+ * must_keep: UF-HRM-06 payroll path; F5 compensation nếu tab riêng
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-EMP-SALARY-DIALOG-A11Y-01
+ * change_mode: FIX
+ * What: Add DialogDescription (sr-only) on add/edit allowance DialogContent
+ * Why: QA R1 — Missing Description / aria-describedby warn; Title warn fixed at dialog portal mirror
+ * must_keep: UF-HRM-06 payroll date formatting; do not reopen Invalid time fix
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-EMP-SALARY-GRADE-API-BADGE-01
+ * change_mode: FIX
+ * What: Drop hardcoded salaryGrade «API» badge; hide badge unless real grade label
+ * Why: QA menu sweep — tech chrome badge on Lương tab
+ * must_keep: UF-HRM-06 payslip path; Invalid time guards
+ */
+
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -33,8 +70,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  ViMoneyInput,
+  amountStringToNumber,
+  numberToAmountString,
+} from '@/components/ui/ViMoneyInput';
+import { ViDateField } from '@/components/ui/ViDateField';
+import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -64,7 +108,6 @@ import {
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
 import {
   ChartContainer,
   ChartTooltip,
@@ -74,6 +117,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarC
 import { useAuth } from '@/contexts/AuthContext';
 import { listPayrollPayslips, type HrmPayslipRow } from '@/integrations/hrmApi';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
+import { formatDisplayDate, formatPayrollPayDateCell } from '@/lib/formatDisplayDate';
 
 interface EmployeeSalaryProps {
   employeeId: string;
@@ -177,23 +221,25 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
       grossSalary: gross,
       netSalary: net,
       effectiveDate: latest.period_label,
-      salaryGrade: 'API',
+      // No grade field on payslip API yet — leave empty (do not render tech «API» badge)
+      salaryGrade: '',
       salaryCoefficient: 1,
     };
   }, [apiPayslips]);
 
   const monthlyPayroll = useMemo((): MonthlyPayrollRow[] => {
     if (!apiPayslips?.length) return [];
+    // Xử lý: period_label thường là MM/yyyy — lưu nguyên; UI dùng formatPayrollPayDateCell (không new Date).
     return apiPayslips.map((p) => ({
       id: p.id,
-      month: p.period_label,
+      month: p.period_label ?? '',
       baseSalary: Number(p.gross_amount),
       allowances: 0,
       bonus: 0,
       deductions: Number(p.deduction_amount),
       netSalary: Number(p.net_amount),
       status: p.status,
-      payDate: p.period_label,
+      payDate: p.period_label ?? '',
     }));
   }, [apiPayslips]);
 
@@ -295,11 +341,15 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
       </div>
       <div className="space-y-2">
         <Label>{t('salary.amount')}</Label>
-        <Input type="number" value={data.amount} onChange={(e) => onChange({ ...data, amount: e.target.value })} placeholder="2000000" />
+        <ViMoneyInput
+          value={amountStringToNumber(data.amount)}
+          onValueChange={(n) => onChange({ ...data, amount: numberToAmountString(n) })}
+          placeholder="2.000.000"
+        />
       </div>
       <div className="space-y-2">
         <Label>{t('salary.effectiveDate')}</Label>
-        <Input type="date" value={data.effectiveDate} onChange={(e) => onChange({ ...data, effectiveDate: e.target.value })} />
+        <ViDateField value={data.effectiveDate} onValueChange={(v) => onChange({ ...data, effectiveDate: v })} />
       </div>
       <div className="space-y-2">
         <Label>{t('salary.paymentType')}</Label>
@@ -325,7 +375,10 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
       ) : !hasPayslipData ? (
         <EmbedApiEmptyState
           title={t('salary.emptyTitle', 'Chưa có dữ liệu lương')}
-          body={t('salary.emptyBody', 'Phiếu lương từ hrm-api sẽ hiển thị tại đây khi có bản ghi cho nhân viên.')}
+          body={t(
+            'salary.emptyBody',
+            'Phiếu lương sẽ hiển thị tại đây khi có bản ghi cho nhân viên.',
+          )}
         />
       ) : (
         <>
@@ -338,7 +391,13 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                 <p className="text-sm text-muted-foreground font-medium">{t('salary.baseSalary')}</p>
                 <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{formatCurrency(salaryData.baseSalary)}</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="outline" className="text-xs">{salaryData.salaryGrade}</Badge>
+                  {salaryData.salaryGrade.trim() &&
+                  salaryData.salaryGrade !== '—' &&
+                  salaryData.salaryGrade.toUpperCase() !== 'API' ? (
+                    <Badge variant="outline" className="text-xs" data-testid="salary-grade-badge">
+                      {salaryData.salaryGrade}
+                    </Badge>
+                  ) : null}
                   <Badge variant="outline" className="text-xs">{t('salary.coefficient')}: {salaryData.salaryCoefficient}</Badge>
                 </div>
               </div>
@@ -413,7 +472,13 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>{t('salary.addNewAllowance')}</DialogTitle>
+                    <DialogTitle>{t('salary.addNewAllowance', 'Thêm phụ cấp mới')}</DialogTitle>
+                    <DialogDescription className="sr-only">
+                      {t(
+                        'salary.addAllowanceA11yDesc',
+                        'Biểu mẫu thêm phụ cấp mới cho nhân viên.',
+                      )}
+                    </DialogDescription>
                   </DialogHeader>
                   {renderAllowanceForm(newAllowance, setNewAllowance)}
                   <DialogFooter>
@@ -442,7 +507,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          {t('salary.effectiveFrom')}: {format(new Date(allowance.effectiveDate), 'dd/MM/yyyy', { locale: vi })}
+                          {t('salary.effectiveFrom')}: {formatDisplayDate(allowance.effectiveDate)}
                         </p>
                       </div>
                       <div className="text-right">
@@ -518,7 +583,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                         </div>
                         <p className="text-sm font-medium mt-1">{history.reason}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {format(new Date(history.effectiveDate), 'dd/MM/yyyy', { locale: vi })} • {history.approvedBy}
+                          {formatDisplayDate(history.effectiveDate)} • {history.approvedBy}
                         </p>
                       </div>
                     </div>
@@ -627,7 +692,8 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>{format(new Date(payroll.payDate), 'dd/MM/yyyy', { locale: vi })}</TableCell>
+                    {/* Safe format — period_label / null must never throw RangeError */}
+                    <TableCell>{formatPayrollPayDateCell(payroll.payDate)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -640,7 +706,13 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('salary.editAllowance')}</DialogTitle>
+            <DialogTitle>{t('salary.editAllowance', 'Sửa phụ cấp')}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t(
+                'salary.editAllowanceA11yDesc',
+                'Biểu mẫu chỉnh sửa phụ cấp hiện có.',
+              )}
+            </DialogDescription>
           </DialogHeader>
           {editingAllowance && renderAllowanceForm(editingAllowance, setEditingAllowance)}
           <DialogFooter>

@@ -1,4 +1,27 @@
-﻿import { useState, useRef } from 'react';
+﻿/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → Hồ sơ / Resume
+ * UC:         U72 F-01 · AC-FD-U02
+ * BR:         BR-CO-LABEL-01 · BR-U72-NULL-01
+ * Purpose:    Resume gender + chức vụ qua label maps (không raw male / job_title_key)
+ * WorkItem:   D-HRM-U72-LABEL-FE-01
+ * Coded:      2026-07-27
+ * must_keep:  resume file upload path; fail-closed «—»
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: gender InfoRow → resolveGenderDisplay (không raw male/female)
+ * Why: BA F-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-U72-LABEL-FE-02
+ * change_mode: FIX
+ * What: position via resolveJobTitleDisplayLabel (không bind raw job_title_key)
+ * Why: AC-FD-U02 parity with profile header
+ * must_keep: resume upload; gender map; U65 no seed
+ */
+import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
@@ -62,6 +85,7 @@ import {
 } from '@/integrations/hrmApi';
 import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 import { toErrorMessage } from '@/lib/apiError';
+import { resolveGenderDisplay, resolveJobTitleDisplayLabel } from '@/lib/labelMaps';
 
 interface EmployeeResumeProps {
   employeeId: string;
@@ -144,7 +168,12 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
           permanent_address: row.permanent_address,
           temporary_address: row.temporary_address,
           department: row.department,
-          position: row.job_title_key,
+          position: resolveJobTitleDisplayLabel({
+            job_title_key: row.job_title_key,
+            job_title_label: row.custom_fields?.job_title_label,
+            position: row.custom_fields?.position,
+            custom_fields: row.custom_fields,
+          }),
           start_date: row.start_date,
           status: row.status,
         } satisfies Employee;
@@ -291,7 +320,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
               <InfoRow icon={User} label={t('resume.fullName')} value={employee.full_name} />
               <InfoRow icon={CreditCard} label={t('resume.employeeCode')} value={employee.employee_code} />
               <InfoRow icon={Calendar} label={t('resume.birthDate')} value={formatDate(employee.birth_date)} />
-              <InfoRow icon={User} label={t('resume.gender')} value={employee.gender || ''} />
+              <InfoRow icon={User} label={t('resume.gender')} value={resolveGenderDisplay(employee.gender)} />
               <InfoRow icon={Phone} label={t('resume.phone')} value={employee.phone || ''} />
               <InfoRow icon={Mail} label={t('resume.email')} value={employee.email || ''} />
               <InfoRow icon={Home} label={t('resume.permanentAddress')} value={employee.permanent_address || ''} />

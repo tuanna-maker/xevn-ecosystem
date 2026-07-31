@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Card } from '@/components/ui/card';
 import {
   Select,
@@ -531,20 +532,18 @@ export function PayrollAttendanceTab() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="start-date">{p('fromDate')} *</Label>
-                <Input
+                <ViDateField
                   id="start-date"
-                  type="date"
                   value={newSheetStartDate}
-                  onChange={(e) => setNewSheetStartDate(e.target.value)}
+                  onValueChange={setNewSheetStartDate}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="end-date">{p('toDate')} *</Label>
-                <Input
+                <ViDateField
                   id="end-date"
-                  type="date"
                   value={newSheetEndDate}
-                  onChange={(e) => setNewSheetEndDate(e.target.value)}
+                  onValueChange={setNewSheetEndDate}
                 />
               </div>
             </div>

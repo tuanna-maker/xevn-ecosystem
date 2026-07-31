@@ -162,8 +162,8 @@ const roleColors: Record<string, string> = {
   accountant: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   recruiter: 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400',
   manager: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400',
-  employee: 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400',
-  viewer: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+  employee: 'bg-slate-100 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted',
+  viewer: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted',
   member: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
 };
 
@@ -598,7 +598,7 @@ export function CompanyMembersManagement() {
     const statusMap: Record<string, { labelKey: string; color: string }> = {
       active: { labelKey: 'common.status.active', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
       pending: { labelKey: 'common.status.pending', color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-      inactive: { labelKey: 'common.status.inactive', color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400' },
+      inactive: { labelKey: 'common.status.inactive', color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted' },
     };
     const config = statusMap[status] || statusMap.inactive;
     return (

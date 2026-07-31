@@ -25,8 +25,10 @@ import {
   BookOpen,
   ConciergeBell,
   Wrench,
+  Truck,
 } from 'lucide-react';
 import { usePermissions } from '@/hooks/usePermissions';
+import { shouldBypassHrmPermissionGate } from '@/components/auth/PermissionGate';
 
 interface BottomNavItem {
   titleKey: string;
@@ -54,6 +56,7 @@ const moreNavItems: BottomNavItem[] = [
   { titleKey: 'nav.processes', icon: BookOpen, path: '/processes', module: 'processes' },
   { titleKey: 'nav.services', icon: ConciergeBell, path: '/internal-services', module: 'services' },
   { titleKey: 'nav.tools', icon: Wrench, path: '/tools-equipment', module: 'tools' },
+  { titleKey: 'nav.fleet', icon: Truck, path: '/fleet' },
   { titleKey: 'nav.settings', icon: Settings, path: '/settings', module: 'settings' },
   { titleKey: 'guide.title', icon: HelpCircle, path: '/guide' },
 ];
@@ -63,6 +66,9 @@ export function MobileBottomNav() {
   const location = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
   const { hasAnyPermission } = usePermissions();
+  const permissionBypass = shouldBypassHrmPermissionGate(location.search);
+  const canAccessModule = (module?: string) =>
+    !module || permissionBypass || hasAnyPermission(module);
 
   const isActive = (path: string) => {
     const currentPath = location.pathname.replace(/^\/hrm?(?=\/|$)/, '');
@@ -72,8 +78,8 @@ export function MobileBottomNav() {
 
   const isMoreActive = moreNavItems.some(item => isActive(item.path));
 
-  const filteredPrimary = primaryNavItems.filter(i => !i.module || hasAnyPermission(i.module));
-  const filteredMore = moreNavItems.filter(i => !i.module || hasAnyPermission(i.module));
+  const filteredPrimary = primaryNavItems.filter((i) => canAccessModule(i.module));
+  const filteredMore = moreNavItems.filter((i) => canAccessModule(i.module));
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border safe-area-bottom">

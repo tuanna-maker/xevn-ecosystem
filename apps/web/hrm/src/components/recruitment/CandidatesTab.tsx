@@ -65,9 +65,19 @@ import { CandidateFormDialog } from './CandidateFormDialog';
 import { CandidateDetailView } from './CandidateDetailView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
 import { CandidateImportDialog } from './CandidateImportDialog';
+import { HireEmployeeLinkDialog } from './HireEmployeeLinkDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { deleteCandidatePool, listCandidatesPool, updateCandidatePoolStage } from '@/integrations/hrmApi';
+import { deleteCandidatePool, listCandidatesPool, startCandidatePipeline, updateCandidatePoolStage } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  detectRecruitmentSpawnMissing,
+  isRecruitmentWorkflowLocked,
+  RECRUITMENT_WF_LOCKED_HINT_VI,
+} from '@/lib/recruitmentWorkflowUi';
+import { mapRecruitmentFunnelStage, RECRUITMENT_FUNNEL_LABEL_VI } from '@/lib/recruitmentFunnel';
+import { needsHireEmployeePicker } from '@/lib/recruitmentHireLink';
+import { RecruitmentWfSpawnBanner } from '@/components/recruitment/RecruitmentWfSpawnBanner';
 
 interface Candidate {
   id: string;
@@ -86,10 +96,14 @@ interface Candidate {
   marital_status?: string | null;
   notes?: string | null;
   avatar_url?: string | null;
+  /** Soft hire link — FR-HRM-INT-01 / G-DB-01. */
+  employee_id?: string | null;
+  workflow_instance_id?: string | null;
   created_at: string;
 }
 
 const getStageConfig = (t: any): Record<string, { label: string; color: string; icon: React.ReactNode }> => ({
+  new: { label: RECRUITMENT_FUNNEL_LABEL_VI.new, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
   applied: { label: t('recruitment.ct.stages.applied'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
   screening: { label: t('recruitment.ct.stages.screening'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: <Clock className="w-4 h-4" /> },
   interview: { label: t('recruitment.ct.stages.interview'), color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', icon: <UserCheck className="w-4 h-4" /> },
@@ -97,6 +111,16 @@ const getStageConfig = (t: any): Record<string, { label: string; color: string; 
   hired: { label: t('recruitment.ct.stages.hired'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: <CheckCircle className="w-4 h-4" /> },
   rejected: { label: t('recruitment.ct.stages.rejected'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: <XCircle className="w-4 h-4" /> },
 });
+
+function displayStageKey(stage: string | null | undefined): string {
+  const mapped = mapRecruitmentFunnelStage(stage);
+  if (stage === 'applied') return 'applied';
+  return mapped;
+}
+
+function candidateStageLocked(c: Candidate): boolean {
+  return isRecruitmentWorkflowLocked(c.workflow_instance_id, c.stage, 'candidate');
+}
 
 const getSourceConfig = (source: string, t: any) => {
   const sourceConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
@@ -140,6 +164,10 @@ export function CandidatesTab() {
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [evaluatingCandidate, setEvaluatingCandidate] = useState<Candidate | null>(null);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [spawnMissingBanner, setSpawnMissingBanner] = useState(false);
+  const [pipelineSubmittingId, setPipelineSubmittingId] = useState<string | null>(null);
+  const [hirePending, setHirePending] = useState<Candidate | null>(null);
+  const [hireSubmitting, setHireSubmitting] = useState(false);
 
   const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) return;
@@ -201,23 +229,95 @@ export function CandidatesTab() {
     setIsScheduleDialogOpen(true);
   };
 
+  const applyCandidateStage = async (
+    candidateId: string,
+    newStage: string,
+    employeeId?: string | null,
+  ) => {
+    if (!currentCompanyId) throw new Error('No company selected');
+    await updateCandidatePoolStage(candidateId, currentCompanyId, newStage, employeeId);
+    toast({
+      title: t('common.success'),
+      description: t('recruitment.ct.stageUpdateSuccess'),
+    });
+    await fetchCandidates();
+  };
+
   const handleUpdateStage = async (candidateId: string, newStage: string) => {
     try {
       if (!currentCompanyId) throw new Error('No company selected');
-      await updateCandidatePoolStage(candidateId, currentCompanyId, newStage);
-      toast({
-        title: t('common.success'),
-        description: t('recruitment.ct.stageUpdateSuccess'),
-      });
-
-      fetchCandidates();
-    } catch (error: any) {
+      const row = candidates.find((c) => c.id === candidateId);
+      if (row && candidateStageLocked(row)) {
+        toast({
+          title: t('common.error'),
+          description: RECRUITMENT_WF_LOCKED_HINT_VI,
+          variant: 'destructive',
+        });
+        return;
+      }
+      // FR-HRM-INT-01 #3/#5 — chốt hired: gắn / xác nhận hồ sơ trước PATCH.
+      if (needsHireEmployeePicker(newStage, row?.employee_id)) {
+        setHirePending(row ?? { id: candidateId, company_id: currentCompanyId, full_name: '', email: '', created_at: '' });
+        return;
+      }
+      await applyCandidateStage(candidateId, newStage, row?.employee_id);
+    } catch (error: unknown) {
       console.error('Error updating stage:', error);
       toast({
         title: t('common.error'),
-        description: t('recruitment.ct.stageUpdateError'),
+        description: toErrorMessage(error, t('recruitment.ct.stageUpdateError')),
         variant: 'destructive',
       });
+    }
+  };
+
+  const handleConfirmHireLink = async (employeeId: string) => {
+    if (!hirePending) return;
+    setHireSubmitting(true);
+    try {
+      await applyCandidateStage(hirePending.id, 'hired', employeeId);
+      setHirePending(null);
+    } catch (error: unknown) {
+      console.error('Error confirming hire link:', error);
+      toast({
+        title: t('common.error'),
+        description: toErrorMessage(error, t('recruitment.ct.stageUpdateError')),
+        variant: 'destructive',
+      });
+    } finally {
+      setHireSubmitting(false);
+    }
+  };
+
+  const handleStartPipeline = async (candidate: Candidate) => {
+    if (!currentCompanyId) return;
+    setPipelineSubmittingId(candidate.id);
+    setSpawnMissingBanner(false);
+    try {
+      const result = await startCandidatePipeline(candidate.id, currentCompanyId);
+      const missing = detectRecruitmentSpawnMissing(result);
+      setSpawnMissingBanner(missing);
+      if (missing) {
+        toast({
+          title: 'Đã bắt đầu nhưng thiếu instance QT',
+          description: 'Chưa tạo được quy trình pipeline — kiểm tra mẫu QT ứng viên trên XBOS.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Đã bắt đầu quy trình ứng viên',
+          description: 'Ứng viên đã vào quy trình phê duyệt / pipeline.',
+        });
+      }
+      await fetchCandidates();
+    } catch (error: unknown) {
+      toast({
+        title: t('common.error'),
+        description: toErrorMessage(error, 'Không bắt đầu được pipeline QT'),
+        variant: 'destructive',
+      });
+    } finally {
+      setPipelineSubmittingId(null);
     }
   };
 
@@ -271,8 +371,14 @@ export function CandidatesTab() {
         candidate.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         candidate.position?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesStageTab = activeStageTab === 'all' || candidate.stage === activeStageTab;
-      const matchesStageFilter = stageFilter === 'all' || candidate.stage === stageFilter;
+      const matchesStageTab =
+        activeStageTab === 'all' ||
+        candidate.stage === activeStageTab ||
+        (activeStageTab === 'applied' && candidate.stage === 'new');
+      const matchesStageFilter =
+        stageFilter === 'all' ||
+        candidate.stage === stageFilter ||
+        (stageFilter === 'applied' && candidate.stage === 'new');
       const matchesSource = sourceFilter === 'all' || candidate.source === sourceFilter;
 
       return matchesSearch && matchesStageTab && matchesStageFilter && matchesSource;
@@ -282,7 +388,7 @@ export function CandidatesTab() {
   const stageStats = useMemo(() => {
     return {
       all: candidates.length,
-      applied: candidates.filter((c) => c.stage === 'applied').length,
+      applied: candidates.filter((c) => c.stage === 'applied' || c.stage === 'new').length,
       screening: candidates.filter((c) => c.stage === 'screening').length,
       interview: candidates.filter((c) => c.stage === 'interview').length,
       offer: candidates.filter((c) => c.stage === 'offer').length,
@@ -315,6 +421,7 @@ export function CandidatesTab() {
 
   return (
     <div className="space-y-4">
+      <RecruitmentWfSpawnBanner visible={spawnMissingBanner} />
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">{t('recruitment.ct.title')}</h2>
         <div className="flex items-center gap-2">
@@ -477,27 +584,56 @@ export function CandidatesTab() {
                             : '-'}
                         </TableCell>
                         <TableCell>
-                          <Select
-                            value={candidate.stage || 'applied'}
-                            onValueChange={(value) => handleUpdateStage(candidate.id, value)}
-                          >
-                            <SelectTrigger className="w-32 h-8">
-                              <Badge className={stageConfig[candidate.stage || 'applied']?.color || 'bg-gray-100'}>
-                                {stageConfig[candidate.stage || 'applied']?.label || candidate.stage}
+                          {candidateStageLocked(candidate) ? (
+                            <div className="space-y-1">
+                              <Badge className={stageConfig[displayStageKey(candidate.stage)]?.color || 'bg-gray-100'}>
+                                {stageConfig[displayStageKey(candidate.stage)]?.label ||
+                                  RECRUITMENT_FUNNEL_LABEL_VI[mapRecruitmentFunnelStage(candidate.stage)]}
                               </Badge>
-                            </SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(stageConfig).map(([key, config]) => (
-                                <SelectItem key={key} value={key}>
-                                  <Badge className={config.color}>{config.label}</Badge>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                              <p className="max-w-[8rem] text-[10px] leading-tight text-muted-foreground">
+                                QT XBOS · không đổi tay
+                              </p>
+                            </div>
+                          ) : (
+                            <Select
+                              value={candidate.stage === 'new' ? 'applied' : candidate.stage || 'applied'}
+                              onValueChange={(value) => handleUpdateStage(candidate.id, value)}
+                            >
+                              <SelectTrigger className="w-32 h-8">
+                                <Badge className={stageConfig[displayStageKey(candidate.stage)]?.color || 'bg-gray-100'}>
+                                  {stageConfig[displayStageKey(candidate.stage)]?.label || candidate.stage}
+                                </Badge>
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Object.entries(stageConfig)
+                                  .filter(([key]) => key !== 'new')
+                                  .map(([key, config]) => (
+                                    <SelectItem key={key} value={key}>
+                                      <Badge className={config.color}>{config.label}</Badge>
+                                    </SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
+                          )}
                         </TableCell>
                         <TableCell>{renderStars(candidate.rating)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
+                            {!candidate.workflow_instance_id ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={pipelineSubmittingId === candidate.id}
+                                    onClick={() => void handleStartPipeline(candidate)}
+                                  >
+                                    Bắt đầu QT
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Bắt đầu quy trình tuyển dụng cho ứng viên</TooltipContent>
+                              </Tooltip>
+                            ) : null}
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button variant="ghost" size="sm" onClick={() => setSelectedCandidateForDetail(candidate)}>
@@ -630,6 +766,17 @@ export function CandidatesTab() {
         onOpenChange={setIsImportDialogOpen}
         companyId={currentCompanyId || ''}
         onImportSuccess={fetchCandidates}
+      />
+
+      <HireEmployeeLinkDialog
+        open={!!hirePending}
+        onOpenChange={(open) => {
+          if (!open && !hireSubmitting) setHirePending(null);
+        }}
+        candidateName={hirePending?.full_name || 'ứng viên'}
+        initialEmployeeId={hirePending?.employee_id}
+        submitting={hireSubmitting}
+        onConfirm={handleConfirmHireLink}
       />
     </div>
   );

@@ -1,3 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /dashboard — Executive HRM dashboard
+ * UC:         UX-10 empty actionable
+ * BR:         Empty/loading có EmptyState + CTA — cấm bland text
+ * SRS:        docs/program/UX-UI-ERP-ANALYSIS.md §3 · UX-10
+ * Purpose:    Tổng hợp NV / chấm công / lương; empty chart & newest NV dùng EmptyState.
+ * WorkItem:   D-UX-EMPTY-STATE-FE-01
+ * Coded:      2026-07-28
+ * must_keep:  payroll chart empty testid; U65; không đụng Clock-In / Profile mount
+ * LastVerified: docs/qa/evidence/d-hrm-dash-net-01-20260730.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-EMPTY-STATE-FE-01
+ * change_mode: ADD
+ * What: Wire EmptyState mood=none + VI CTA cho payroll/dept chart & newest employees
+ * Why: UX-10 Wave B — bland common.noData → actionable next step
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-30
+ * WorkItem: D-HRM-DASH-NET-01
+ * change_mode: FIX
+ * What: Dashboard load gọi attendance/overview + payroll/payslips (thay attendance/records)
+ * Why: P-CC-HRM-DASH sponsor block · qa-hrm-embed-network-audit-20260730
+ * SRS/BR: UC-HRM-20 · PILOT_BUSINESS_FLOW_MATRIX P-CC-HRM-DASH
+ */
 import { useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -66,15 +91,13 @@ import { toast } from 'sonner';
 import { ExpiringContractsAlert } from '@/components/dashboard/ExpiringContractsAlert';
 import { HrmApiReminders } from '@/components/dashboard/HrmApiReminders';
 import { PortalOperationsSummary } from '@/components/dashboard/PortalOperationsSummary';
-import { useAuth } from '@/contexts/AuthContext';
-import { useQuery } from '@tanstack/react-query';
-import { listAttendanceRecords } from '@/integrations/hrmApi';
-import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
-import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import { useAttendanceOverview } from '@/hooks/useAttendanceOverview';
+import { usePayrollPayslips } from '@/hooks/usePayrollPayslips';
 import {
   DASHBOARD_PAYROLL_CHART_EMPTY_VI,
   hasEmployeeSalaryAggregate,
 } from '@/lib/dashboardPayrollChart';
+import { EmptyState } from '@/components/hrm/EmptyState';
 
 const SALARY_RANGE_LABEL_KEYS: Record<string, string> = {
   above_30m: 'dashboard2.salaryRanges.above30',
@@ -90,27 +113,15 @@ const SALARY_RANGE_FILLS: Record<string, string> = {
   below_15m: '#f59e0b',
 };
 
-// Hook to get attendance records for dashboard
-function useAttendanceDashboard() {
-  const { currentCompanyId } = useAuth();
-  return useQuery({
-    queryKey: ['attendance-dashboard', currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) return [];
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const toDate = new Date().toISOString().slice(0, 10);
-      const fromDate = thirtyDaysAgo.toISOString().slice(0, 10);
-      const res = await listAttendanceRecords({
-        company_id: coerceHrmListCompanyId(currentCompanyId),
-        from_date: fromDate,
-        to_date: toDate,
-        page_size: HRM_API_MAX_PAGE_SIZE,
-      });
-      return res.data ?? [];
-    },
-    enabled: !!currentCompanyId,
-  });
+/** Proxy tỷ lệ đi làm từ overview aggregate (không dùng attendance/records storm). */
+function attendanceRateFromOverview(
+  activeEmployees: number,
+  lateEarlyToday: number,
+  actualLeaveThisWeek: number,
+): number {
+  if (activeEmployees <= 0) return 0;
+  const disruption = lateEarlyToday + actualLeaveThisWeek;
+  return Math.max(0, Math.round((1 - disruption / activeEmployees) * 1000) / 10);
 }
 
 export default function Dashboard() {
@@ -128,7 +139,8 @@ export default function Dashboard() {
   const { leaveRequests } = useLeaveRequestsData();
   const { data: expiringContractRows = [] } = useExpiringContractsDashboard();
   const expiringContractsCount = expiringContractRows.length;
-  const { data: attendanceRecords = [] } = useAttendanceDashboard();
+  const { stats: attendanceOverviewStats } = useAttendanceOverview();
+  const { payslips: dashboardPayslips } = usePayrollPayslips();
 
   // Time period options
   const getTimePeriods = () => [
@@ -221,13 +233,6 @@ export default function Dashboard() {
     return months;
   }, [employeeSummary, hasPayrollAggregate, selectedPeriod]);
 
-  // Attendance rate computation
-  const attendanceRate = useMemo(() => {
-    if (attendanceRecords.length === 0) return 0;
-    const present = attendanceRecords.filter(r => r.status === 'present' || r.status === 'approved').length;
-    return Math.round((present / attendanceRecords.length) * 1000) / 10;
-  }, [attendanceRecords]);
-
   // Period-based filtering helper
   const getPeriodDates = (period: string) => {
     const now = new Date();
@@ -282,35 +287,41 @@ export default function Dashboard() {
       return d >= previousStart && d < currentStart;
     }).length;
 
-    // Attendance in periods
-    const currentAttendance = attendanceRecords.filter(r => new Date(r.attendance_date) >= currentStart);
-    const previousAttendance = attendanceRecords.filter(r => {
-      const d = new Date(r.attendance_date);
-      return d >= previousStart && d < currentStart;
-    });
-
-    const calcRate = (records: typeof attendanceRecords) => {
-      if (records.length === 0) return 0;
-      const present = records.filter(r => r.status === 'present' || r.status === 'approved').length;
-      return Math.round((present / records.length) * 1000) / 10;
-    };
+    const currentAttendanceRate = attendanceRateFromOverview(
+      activeEmployeesCount,
+      attendanceOverviewStats.lateEarlyToday,
+      attendanceOverviewStats.actualLeaveThisWeek,
+    );
+    const previousAttendanceRate = Math.max(
+      0,
+      Math.round((currentAttendanceRate - attendanceOverviewStats.lateEarlyChange) * 10) / 10,
+    );
 
     return {
       current: {
         employees: currentEmployees,
         salary: totalPayroll,
-        attendance: calcRate(currentAttendance),
+        attendance: currentAttendanceRate,
         leaves: currentLeaves,
       },
       previous: {
         employees: previousEmployees || currentEmployees,
         salary: Math.round(totalPayroll * 0.95), // Approximate previous (no historical payroll table yet)
-        attendance: calcRate(previousAttendance),
+        attendance: previousAttendanceRate,
         leaves: previousLeaves,
       },
       periodLabel: periodLabels[selectedPeriod] || periodLabels.month,
     };
-  }, [leaveRequests, attendanceRecords, totalPayroll, totalEmployees, newEmployeesCount, selectedPeriod, t]);
+  }, [
+    leaveRequests,
+    attendanceOverviewStats,
+    activeEmployeesCount,
+    totalPayroll,
+    totalEmployees,
+    newEmployeesCount,
+    selectedPeriod,
+    t,
+  ]);
 
   // Calculate percentage changes
   const calculateChange = (current: number, previous: number) => {
@@ -348,16 +359,18 @@ export default function Dashboard() {
   };
 
   const payrollEmptyNotice = (
-    <div
-      className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30 p-4 text-sm text-muted-foreground"
+    <EmptyState
+      mood="none"
+      compact
       data-testid="dashboard-payroll-chart-empty"
-    >
-      <p>{DASHBOARD_PAYROLL_CHART_EMPTY_VI}</p>
-      <Link to="/payroll" className="mt-2 inline-flex items-center gap-1 text-primary hover:underline">
-        {t('dashboard.payrollCalculation')}
-        <ExternalLink className="h-3.5 w-3.5" />
-      </Link>
-    </div>
+      title={DASHBOARD_PAYROLL_CHART_EMPTY_VI}
+      description={t(
+        'dashboard2.payrollEmptyHint',
+        'Chạy tính lương kỳ hiện tại hoặc mở module Lương để có dữ liệu biểu đồ.',
+      )}
+      actionLabel={t('dashboard.payrollCalculation')}
+      actionTo="/payroll"
+    />
   );
 
   const newestEmployees = useMemo(() => {
@@ -635,8 +648,19 @@ export default function Dashboard() {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-sm text-muted-foreground">
-                      {t('common.noData') || 'Chưa có dữ liệu'}
+                    <div className="h-full flex items-center justify-center p-2">
+                      <EmptyState
+                        mood="none"
+                        compact
+                        data-testid="dashboard-dept-salary-empty"
+                        title={t('common.noData', 'Chưa có dữ liệu')}
+                        description={t(
+                          'dashboard2.deptSalaryEmptyHint',
+                          'Chưa có thu nhập theo đơn vị trong kỳ này. Mở Lương để chạy kỳ hoặc chọn kỳ khác.',
+                        )}
+                        actionLabel={t('dashboard.payrollCalculation')}
+                        actionTo="/payroll"
+                      />
                     </div>
                   )}
                 </div>
@@ -819,7 +843,12 @@ export default function Dashboard() {
                 <p className="text-lg font-bold text-primary">
                   {new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(totalPayroll)} VNĐ
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{totalEmployees} {t('dashboard2.employeeCount')}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {totalEmployees} {t('dashboard2.employeeCount')}
+                  {dashboardPayslips.length > 0
+                    ? ` · ${dashboardPayslips.length} phiếu lương`
+                    : ''}
+                </p>
                 <Link to="/payroll" className="text-primary text-xs font-medium flex items-center gap-1 mt-3 hover:underline">
                   <ExternalLink className="w-3 h-3" />
                   {t('dashboard2.details')}
@@ -876,7 +905,18 @@ export default function Dashboard() {
                   </div>
                 ))}
                 {newestEmployees.length === 0 && (
-                  <p className="text-xs text-muted-foreground">{t('common.noData') || 'Chưa có dữ liệu'}</p>
+                  <EmptyState
+                    mood="none"
+                    compact
+                    data-testid="dashboard-newest-employees-empty"
+                    title={t('common.noData', 'Chưa có dữ liệu')}
+                    description={t(
+                      'dashboard2.newestEmployeesEmptyHint',
+                      'Chưa có nhân viên mới trong kỳ. Thêm hồ sơ NV hoặc mở danh sách nhân sự.',
+                    )}
+                    actionLabel={t('dashboard2.viewEmployees', 'Xem nhân sự')}
+                    actionTo="/employees"
+                  />
                 )}
               </div>
 

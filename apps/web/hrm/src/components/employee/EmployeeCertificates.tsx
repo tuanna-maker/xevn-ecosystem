@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import {
   Dialog,
@@ -365,18 +366,16 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>{t('certificates.issueDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={formData.issue_date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, issue_date: e.target.value }))}
+                  onValueChange={(v) => setFormData((prev) => ({ ...prev, issue_date: v }))}
                 />
               </div>
               <div className="grid gap-2">
                 <Label>{t('certificates.expiryDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
                   value={formData.expiry_date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, expiry_date: e.target.value }))}
+                  onValueChange={(v) => setFormData((prev) => ({ ...prev, expiry_date: v }))}
                 />
               </div>
             </div>

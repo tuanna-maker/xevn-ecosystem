@@ -1,10 +1,15 @@
 /**
  * @CODE-MEMORY
  * Screen:      PortalEmbedRouterSync (unit)
- * UC:          J-HRM-02 soft-nav leave Attendance
- * WorkItem:    D-HRM-ATT-NAV-STALL-01
+ * UC:          J-HRM-02 / C-CD-FB-09-01 soft-nav leave Attendance
+ * WorkItem:    D-HRM-ATT-NAV-STALL-01 / CD-FB-09-SOFT-NAV
  * Purpose:     Regression — postMessage soft-nav preserves embed QS and navigates away from attendance
  * LastVerified: vitest this file
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * work_item: CD-FB-09-SOFT-NAV
+ * what: Add Attendance → /recruitment soft-nav case (C-CD-FB-09-01)
+ * why: QC GWC condition — soft click Tuyển dụng must leave Attendance without F5
  */
 import React from 'react';
 import { describe, expect, it, beforeEach, afterEach } from 'vitest';
@@ -12,6 +17,9 @@ import { render, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { PortalEmbedRouterSync } from '@/components/layout/PortalEmbedRouterSync';
 import { PORTAL_EMBED_NAVIGATE } from '@/lib/portalEmbedNavBridge';
+
+/** Match App.tsx RR v7 future flags — silence Future Flag Warning in unit runs. */
+const RR_V7_FUTURE = { v7_startTransition: true, v7_relativeSplatPath: true } as const;
 
 function LocationProbe({ onLocation }: { onLocation: (path: string, search: string) => void }) {
   const location = useLocation();
@@ -36,7 +44,7 @@ describe('PortalEmbedRouterSync soft-nav', () => {
     render(
       React.createElement(
         MemoryRouter,
-        { initialEntries: [`/attendance${embedSearch}`] },
+        { initialEntries: [`/attendance${embedSearch}`], future: RR_V7_FUTURE },
         React.createElement(PortalEmbedRouterSync),
         React.createElement(
           Routes,
@@ -55,6 +63,12 @@ describe('PortalEmbedRouterSync soft-nav', () => {
           }),
           React.createElement(Route, {
             path: '/contracts',
+            element: React.createElement(LocationProbe, {
+              onLocation: (p, s) => seen.push({ path: p, search: s }),
+            }),
+          }),
+          React.createElement(Route, {
+            path: '/recruitment',
             element: React.createElement(LocationProbe, {
               onLocation: (p, s) => seen.push({ path: p, search: s }),
             }),
@@ -86,6 +100,48 @@ describe('PortalEmbedRouterSync soft-nav', () => {
     await waitFor(() => {
       const last = seen[seen.length - 1];
       expect(last?.path).toBe('/contracts');
+      expect(last?.search).toBe(embedSearch);
+    });
+  });
+
+  it('leaves /attendance for /recruitment and keeps embed search (CD-FB-09-SOFT-NAV)', async () => {
+    const seen: Array<{ path: string; search: string }> = [];
+    const embedSearch = '?portal=1&tenantId=xevn&companyId=main&_v=99';
+
+    render(
+      React.createElement(
+        MemoryRouter,
+        { initialEntries: [`/attendance${embedSearch}`], future: RR_V7_FUTURE },
+        React.createElement(PortalEmbedRouterSync),
+        React.createElement(
+          Routes,
+          null,
+          React.createElement(Route, {
+            path: '/attendance',
+            element: React.createElement(LocationProbe, {
+              onLocation: (p, s) => seen.push({ path: p, search: s }),
+            }),
+          }),
+          React.createElement(Route, {
+            path: '/recruitment',
+            element: React.createElement(LocationProbe, {
+              onLocation: (p, s) => seen.push({ path: p, search: s }),
+            }),
+          }),
+        ),
+      ),
+    );
+
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        origin: window.location.origin,
+        data: { type: PORTAL_EMBED_NAVIGATE, v: 1, path: '/recruitment' },
+      }),
+    );
+
+    await waitFor(() => {
+      const last = seen[seen.length - 1];
+      expect(last?.path).toBe('/recruitment');
       expect(last?.search).toBe(embedSearch);
     });
   });

@@ -65,6 +65,9 @@ import {
   updateCandidateApplicationStage,
   type HrmCandidateApplicationEnriched,
 } from '@/integrations/hrmApi';
+import { HireEmployeeLinkDialog } from './HireEmployeeLinkDialog';
+import { toErrorMessage } from '@/lib/apiError';
+import { needsHireEmployeePicker } from '@/lib/recruitmentHireLink';
 
 interface Candidate {
   id: string;
@@ -77,6 +80,7 @@ interface Candidate {
   avatar_url: string | null;
   applied_date: string | null;
   source: string | null;
+  employee_id?: string | null;
 }
 
 interface CandidateApplication {
@@ -127,17 +131,34 @@ export function JobCandidatesDialog({
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<CandidateApplication | null>(null);
   const [candidateSearchQuery, setCandidateSearchQuery] = useState('');
+  const [hirePendingApp, setHirePendingApp] = useState<CandidateApplication | null>(null);
+  const [hireSubmitting, setHireSubmitting] = useState(false);
 
-  // Fetch applications for this job posting
+  // Fetch applications for this job posting (+ soft employee_id from pool for hire bind)
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ['candidate_applications', jobPostingId, currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [] as CandidateApplication[];
-      const result = await listCandidateApplications({
-        company_id: currentCompanyId,
-        job_posting_id: jobPostingId,
-      });
-      return (result.data ?? []) as unknown as HrmCandidateApplicationEnriched[] as CandidateApplication[];
+      const [result, pool] = await Promise.all([
+        listCandidateApplications({
+          company_id: currentCompanyId,
+          job_posting_id: jobPostingId,
+        }),
+        listCandidatesPool({ company_id: currentCompanyId }),
+      ]);
+      const employeeByCandidateId = new Map(
+        (pool.data ?? []).map((c) => [c.id, c.employee_id?.trim() || null] as const),
+      );
+      return ((result.data ?? []) as unknown as HrmCandidateApplicationEnriched[]).map((app) => ({
+        ...app,
+        candidates: {
+          ...app.candidates,
+          employee_id:
+            app.candidates?.employee_id?.trim() ||
+            employeeByCandidateId.get(app.candidate_id) ||
+            null,
+        },
+      })) as CandidateApplication[];
     },
     enabled: open && !!jobPostingId && !!currentCompanyId,
   });
@@ -192,20 +213,57 @@ export function JobCandidatesDialog({
     },
   });
 
-  // Update application stage
+  // Update application stage — FR-HRM-INT-01 hire requires employee_id when hired
   const updateStageMutation = useMutation({
-    mutationFn: async ({ id, stage }: { id: string; stage: string }) => {
+    mutationFn: async ({
+      id,
+      stage,
+      employeeId,
+    }: {
+      id: string;
+      stage: string;
+      employeeId?: string | null;
+    }) => {
       if (!currentCompanyId) throw new Error('Missing company');
-      await updateCandidateApplicationStage(id, currentCompanyId, stage);
+      await updateCandidateApplicationStage(id, currentCompanyId, stage, employeeId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
       toast.success(t('jobCand.stageUpdated'));
     },
-    onError: (error) => {
-      toast.error(t('common.error') + ': ' + error.message);
+    onError: (error: unknown) => {
+      toast.error(t('common.error') + ': ' + toErrorMessage(error, (error as Error)?.message || 'Lỗi'));
     },
   });
+
+  const requestStageChange = (app: CandidateApplication, stage: string) => {
+    if (needsHireEmployeePicker(stage, app.candidates?.employee_id)) {
+      setHirePendingApp(app);
+      return;
+    }
+    updateStageMutation.mutate({
+      id: app.id,
+      stage,
+      employeeId: app.candidates?.employee_id,
+    });
+  };
+
+  const handleConfirmHireLink = async (employeeId: string) => {
+    if (!hirePendingApp) return;
+    setHireSubmitting(true);
+    try {
+      await updateStageMutation.mutateAsync({
+        id: hirePendingApp.id,
+        stage: 'hired',
+        employeeId,
+      });
+      setHirePendingApp(null);
+    } catch {
+      // onError toast already shown
+    } finally {
+      setHireSubmitting(false);
+    }
+  };
 
   // Remove candidate from job
   const removeCandidateMutation = useMutation({
@@ -384,7 +442,7 @@ export function JobCandidatesDialog({
                         <TableCell>
                           <Select
                             value={app.stage || 'applied'}
-                            onValueChange={(value) => updateStageMutation.mutate({ id: app.id, stage: value })}
+                            onValueChange={(value) => requestStageChange(app, value)}
                           >
                             <SelectTrigger className="w-[130px] h-8">
                               <SelectValue />
@@ -496,6 +554,17 @@ export function JobCandidatesDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <HireEmployeeLinkDialog
+        open={!!hirePendingApp}
+        onOpenChange={(open) => {
+          if (!open && !hireSubmitting) setHirePendingApp(null);
+        }}
+        candidateName={hirePendingApp?.candidates?.full_name || 'ứng viên'}
+        initialEmployeeId={hirePendingApp?.candidates?.employee_id}
+        submitting={hireSubmitting}
+        onConfirm={handleConfirmHireLink}
+      />
     </>
   );
 }

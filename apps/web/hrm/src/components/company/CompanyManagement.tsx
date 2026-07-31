@@ -68,11 +68,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -82,11 +77,66 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Calendar } from '@/components/ui/calendar';
+import { ViDatePickerField } from '@/components/ui/ViDatePickerField';
+import { formatIsoDateToViDisplay } from '@xevn/ui';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
-import { fetchGroupMemberUnitsForHrm } from '@/integrations/tenantScopeApi';
+import {
+  fetchGroupMemberUnitsForHrm,
+  resolveIndustryDisplay,
+} from '@/integrations/tenantScopeApi';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import {
+  enrichHrmCompaniesWithWorkforceCounts,
+  formatHrmEmployeeCount,
+  sumKnownEmployeeCounts,
+} from '@/lib/hrmCompanyEmployeeCount';
+
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Công ty / CompanyManagement
+ * UC:         UC-HRM-ORG-COMPANY (settings company CRUD) · UC-HRM-03
+ * BR:         BR-UX-DATE-02 · VAL-CO-FOUND-01..02 · AC-FID-CO-D01 · BR-INT-05
+ * SRS:        docs/program/UX_VI_DATE_NUMBER_FORMAT_AC.md §3 · HRM_MENU_DATA_LINKAGE_MATRIX §2.2 `/company`
+ * TechSpec:   company founded_date alias ↔ XBOS established_at DATE (ADR) · GET /employees/summary
+ * ADR:        docs/architecture/ADR-HRM-DATE-WIRE-YYYY-MM-DD-20260722.md
+ * BA-D:       docs/qa/evidence/fid-p0-ba-data-01-20260722.md (founded SoT = legal entity)
+ * Purpose:    Quản lý hồ sơ công ty — Ngày thành lập nhập/hiển thị dd/MM/yyyy + Calendar mở trong Dialog;
+ *             headcount theo operating slug (không LE UUID).
+ * WorkItem:   FID-P0-FE-DATE-01
+ * Coded:      2026-07-22
+ * Callers:    Settings / Companies route
+ * Callees:    ViDatePickerField · fetchGroupMemberUnitsForHrm · enrichHrmCompaniesWithWorkforceCounts
+ * must_keep:  Form founded_date = ISO yyyy-MM-dd hoặc ''; không timezone shift new Date(iso);
+ *             Persist legal PUT = FID-P0-FE-CO-BIND-01 — cấm toast giả «đã lưu» khi chưa API;
+ *             CO-BIND tax/MST; OU filter JWT không mutate; dashboard summary path unchanged
+ * SOLID:      Form field dùng SoT date picker — không Popover ad-hoc trong Dialog
+ * LastVerified: docs/qa/evidence/dev-fe-hrm-co-emp-count-01-20260727.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: FID-P0-FE-DATE-01
+ * change_mode: FIX
+ * What: founded_date → ViDatePickerField (ISO + Calendar modal); display formatIsoDateToViDisplay;
+ *       onSubmit không toast success giả — defer persist sang FID-P0-FE-CO-BIND-01
+ * Why: Sponsor picker khó mở; BA-D H1 bind null + toast-only save
+ * must_keep: Payload alias founded_date = YYYY-MM-DD; MST/email/phone rebind = CO-BIND parallel
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-CO-EMP-COUNT-FE-01
+ * change_mode: FIX
+ * What: Sau group-member-units, enrich employee_count từ employees/summary theo operating slug;
+ *       UI «—» khi null; card Tổng NV = sumKnown (không `|| 0` trên unknown).
+ * Why: Mapper hard-null + `|| 0` → luôn 0; dashboard đúng ~1100 qua summary
+ * must_keep: CO-BIND legal enrich; không dùng LE UUID làm company_id count
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-CO-INDUSTRY-FE-01
+ * change_mode: FIX
+ * What: Cột/badge Ngành nghề dùng resolveIndustryDisplay — chặn raw holding/subsidiary;
+ *       SoT industry từ tenantScopeApi (business_lines), không entity_type.
+ * Why: UI hiện `subsidiary` trong cột ngành nghề
+ * must_keep: CO-EMP-COUNT enrich; CO-BIND tax/founded; OU filter
+ */
 
 interface Company {
   id: string;
@@ -118,7 +168,12 @@ const companyFormSchema = z.object({
   website: z.string().url().optional().or(z.literal('')),
   industry: z.string().max(100).optional(),
   employee_count: z.number().min(0).optional(),
-  founded_date: z.date().optional(),
+  /** ISO yyyy-MM-dd — ViDatePickerField; empty = unset */
+  founded_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date')
+    .optional()
+    .or(z.literal('')),
   description: z.string().max(2000).optional(),
   status: z.enum(['active', 'inactive', 'suspended']),
 });
@@ -157,6 +212,7 @@ export function CompanyManagement() {
       website: '',
       industry: '',
       employee_count: 0,
+      founded_date: '',
       description: '',
       status: 'active',
     },
@@ -168,8 +224,10 @@ export function CompanyManagement() {
       const portalEmbed =
         typeof window !== 'undefined' && getHrmPortalMode(window.location.search);
       if (portalEmbed) {
+        // CO-BIND legal profile first; workforce counts by operating slug (not LE UUID).
         const rows = await fetchGroupMemberUnitsForHrm();
-        setCompanies(rows);
+        const withCounts = await enrichHrmCompaniesWithWorkforceCounts(rows);
+        setCompanies(withCounts);
         return;
       }
       setCompanies([]);
@@ -202,7 +260,8 @@ export function CompanyManagement() {
     total: companies.length,
     active: companies.filter((c) => c.status === 'active').length,
     inactive: companies.filter((c) => c.status === 'inactive').length,
-    totalEmployees: companies.reduce((acc, c) => acc + (c.employee_count || 0), 0),
+    /** null when all unknown — show «—», not silent 0 */
+    totalEmployees: sumKnownEmployeeCounts(companies),
   };
 
   const handleAddCompany = () => {
@@ -218,6 +277,7 @@ export function CompanyManagement() {
       website: '',
       industry: '',
       employee_count: 0,
+      founded_date: '',
       description: '',
       status: 'active',
     });
@@ -237,7 +297,9 @@ export function CompanyManagement() {
       website: company.website || '',
       industry: company.industry || '',
       employee_count: company.employee_count || 0,
-      founded_date: company.founded_date ? new Date(company.founded_date) : undefined,
+      founded_date: company.founded_date
+        ? String(company.founded_date).slice(0, 10)
+        : '',
       description: company.description || '',
       status: company.status as 'active' | 'inactive' | 'suspended',
     });
@@ -278,32 +340,33 @@ export function CompanyManagement() {
 
   const onSubmit = async (values: CompanyFormValues) => {
     try {
-      const companyData = {
-        name: values.name,
-        code: values.code || null,
-        logo_url: values.logo_url || null,
-        address: values.address || null,
-        phone: values.phone || null,
-        email: values.email || null,
-        tax_code: values.tax_code || null,
-        website: values.website || null,
-        industry: values.industry || null,
-        employee_count: values.employee_count || 0,
-        founded_date: values.founded_date ? format(values.founded_date, 'yyyy-MM-dd') : null,
-        description: values.description || null,
-        status: values.status,
-      };
-
-      if (editingCompany) {
+      // ISO zero-pad from ViDatePickerField — alias founded_date ↔ established_at (ADR).
+      // Persist legal-entity PUT = FID-P0-FE-CO-BIND-01 (cấm toast-only «đã lưu»).
+      const foundedIso = values.founded_date?.trim() || '';
+      if (foundedIso && !/^\d{4}-\d{2}-\d{2}$/.test(foundedIso)) {
         toast({
-          title: t('common.success'),
-          description: t('company.companyUpdated'),
+          title: t('common.error'),
+          description: t(
+            'company.foundedDateInvalid',
+            'Ngày thành lập không hợp lệ — dùng dd/MM/yyyy hoặc chọn trên lịch.',
+          ),
+          variant: 'destructive',
         });
+        return;
       }
 
-      await fetchCompanies();
+      toast({
+        title: t('common.warning', 'Chưa lưu lên máy chủ'),
+        description: t(
+          'company.foundedPersistDeferred',
+          foundedIso
+            ? `Ngày thành lập form = ${foundedIso} (ISO). Ghi pháp nhân (founded/MST/email/phone) chờ FID-P0-FE-CO-BIND-01 — không toast giả thành công.`
+            : 'Ghi pháp nhân (founded/MST/email/phone) chờ FID-P0-FE-CO-BIND-01 — không toast giả thành công.',
+        ),
+        variant: 'destructive',
+      });
+
       setIsDialogOpen(false);
-      form.reset();
     } catch (error) {
       console.error('Error saving company:', error);
       toast({
@@ -317,7 +380,7 @@ export function CompanyManagement() {
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { labelKey: string; color: string }> = {
       active: { labelKey: 'common.status.active', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-      inactive: { labelKey: 'common.status.inactive', color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400' },
+      inactive: { labelKey: 'common.status.inactive', color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted' },
       suspended: { labelKey: 'company.suspended', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
     };
     const config = statusMap[status] || statusMap.inactive;
@@ -378,7 +441,9 @@ export function CompanyManagement() {
                 <Users className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.totalEmployees}</p>
+                <p className="text-2xl font-bold">
+                  {formatHrmEmployeeCount(stats.totalEmployees)}
+                </p>
                 <p className="text-xs text-muted-foreground">{t('company.totalEmployees')}</p>
               </div>
             </div>
@@ -481,11 +546,13 @@ export function CompanyManagement() {
                           {company.code || '-'}
                         </code>
                       </TableCell>
-                      <TableCell>{company.industry || '-'}</TableCell>
+                      <TableCell>
+                        {resolveIndustryDisplay(company.industry) || '-'}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4 text-muted-foreground" />
-                          {company.employee_count || 0}
+                          {formatHrmEmployeeCount(company.employee_count)}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(company.status)}</TableCell>
@@ -676,35 +743,15 @@ export function CompanyManagement() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('company.foundedDate')}</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, 'dd/MM/yyyy')
-                              ) : (
-                                <span>{t('common.selectDate')}</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date > new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <FormControl>
+                        <ViDatePickerField
+                          value={field.value ?? ''}
+                          onValueChange={field.onChange}
+                          onBlur={field.onBlur}
+                          disableFuture
+                          calendarAriaLabel={t('company.foundedDate')}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -819,8 +866,10 @@ export function CompanyManagement() {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 {getStatusBadge(viewingCompany.status)}
-                {viewingCompany.industry && (
-                  <Badge variant="outline">{viewingCompany.industry}</Badge>
+                {resolveIndustryDisplay(viewingCompany.industry) && (
+                  <Badge variant="outline">
+                    {resolveIndustryDisplay(viewingCompany.industry)}
+                  </Badge>
                 )}
               </div>
 
@@ -854,14 +903,18 @@ export function CompanyManagement() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Users className="w-4 h-4 text-muted-foreground" />
-                  <span>{viewingCompany.employee_count || 0} {t('company.employeeUnit')}</span>
+                  <span>
+                    {formatHrmEmployeeCount(viewingCompany.employee_count)}{' '}
+                    {t('company.employeeUnit')}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CalendarIcon className="w-4 h-4 text-muted-foreground" />
                   <span>
                     {t('company.foundedDate')}:{' '}
                     {viewingCompany.founded_date
-                      ? format(new Date(viewingCompany.founded_date), 'dd/MM/yyyy')
+                      ? formatIsoDateToViDisplay(String(viewingCompany.founded_date).slice(0, 10)) ||
+                        '-'
                       : '-'}
                   </span>
                 </div>

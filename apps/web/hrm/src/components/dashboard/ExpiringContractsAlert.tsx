@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
 import { differenceInDays } from 'date-fns';
 import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
+import { resolveContractTypeDisplayLabel } from '@/lib/labelMaps';
 
 interface ExpiringContract {
   id: string;
@@ -133,7 +134,7 @@ export function ExpiringContractsAlert() {
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                       <FileText className="w-3 h-3" />
-                      <span>{contract.contract_type}</span>
+                      <span>{resolveContractTypeDisplayLabel(contract.contract_type)}</span>
                       {contract.department && (
                         <>
                           <span className="text-muted-foreground/50">•</span>

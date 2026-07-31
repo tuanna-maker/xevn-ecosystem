@@ -1,11 +1,75 @@
-import { useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /decisions — Quản lý quyết định nhân sự (embed HRM)
+ * UC:          UC-HRM-27 / FR-HRM-27
+ * BR:          BR-DEC-03 · BR-DEC-06 · AC-DEC-02 · AC-DEC-04 · AC-DEC-DENSITY
+ * SRS:         docs/hrm/SRS.md § UC-HRM-27 · docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.50
+ * TechSpec:    docs/hrm/TECHSPEC.md §16.5 #50 · §16.9 G-DEC-01
+ * Purpose:     List/create/edit/delete QSĐ qua REST; empty live «Không có quyết định nào»;
+ *              sau tạo reset filter để dòng hiện (create→list→F5 U65).
+ * WorkItem:    FE-HRM-G-DEC-01-DENSITY-01
+ * Coded:       2026-07-22
+ *
+ * Callers:
+ *   - apps/web/hrm/src/App.tsx → Route /decisions
+ *
+ * Callees:
+ *   - useDecisions → list/create/update/deleteHrDecision → /api/hrm/decisions
+ *   - decisionListUi → resolveListVisibilityAfterCreate / resolveCreateDialogDecisionType
+ *
+ * FE-Actions:
+ *   | Thao tác người dùng | Handler              | Lib / API                |
+ *   |---------------------|----------------------|--------------------------|
+ *   | Mở list             | useDecisions query   | GET /api/hrm/decisions   |
+ *   | Thêm / empty CTA    | handleOpenCreate     | dialog + prefill type    |
+ *   | Lưu tạo             | handleSubmit         | POST + list visibility   |
+ *   | F5                  | browser reload       | GET lại row đã persist   |
+ *
+ * BE-Chain: GET/POST/PATCH/DELETE /api/hrm/decisions → hr_decisions
+ * Impact:      Copy stub hoặc filter type sau create → list trống dù API 201 (G-DEC-01).
+ * must_keep:   decisions.noData «Không có quyết định nào» · cấm «chưa triển khai» · AC-ATT-SHEET · U65
+ * SOLID:       Page UI; server state ở hook; pure visibility ở decisionListUi.
+ * @CODE-MEMORY-CHANGE 2026-07-23 D-HRM-SETTINGS-MD-CRUD-FE-01
+ * change_mode: ADD
+ * What: decision_type CatalogSearchPicker từ decision_types catalog
+ * Why: FR-HRM-SC-DEC-01 · AC-HRM-PICKER-01
+ * LastVerified: catalogSearchPicker.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-PICKER-01
+ * change_mode: ADD
+ * What: position / signer_position / department → CatalogSearchPicker; Network *_key + snapshot
+ * Why: AC-E1A-DEC-POS-01 · FR-HRM-MD-BIND-E1A-01 · U72 labels
+ * must_keep: decision_type picker; EmployeeForm JT/dept; LeaveTab; JobTemplates; U65; defer A9
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1B-MD-PANEL-01
+ * change_mode: ADD
+ * What: decision_type options merge hr_decision_types ∪ decision_types (alias — không MISS live)
+ * Why: AC-SC-DEC-ALIAS-02 · AC-SET-UI-05
+ * must_keep: hardcode DECISION_TYPES chỉ khi catalog empty
+ */
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useQueryClient } from '@tanstack/react-query';
-import { useDecisions, type DecisionRecord } from '@/hooks/useDecisions';
+import { useDecisions } from '@/hooks/useDecisions';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import {
+  buildDepartmentKeyFields,
+  buildPositionKeyFields,
+  departmentOptionsFromCatalog,
+  HRM_MASTER_DATA_CATALOG_KEYS,
+  jobTitleOptionsFromCatalog,
+  mergeEffectiveItemsByKeys,
+  resolveDepartmentLabel,
+  resolvePositionDisplayLabel,
+  toCatalogPickerOptions,
+  type CatalogPickerOption,
+} from '@/lib/catalogSearchPicker';
 import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
-import { useDepartments } from '@/hooks/useDepartments';
-import { useAuth } from '@/contexts/AuthContext';
+import {
+  resolveCreateDialogDecisionType,
+  resolveListVisibilityAfterCreate,
+} from '@/lib/decisionListUi';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -90,11 +154,14 @@ interface Decision {
   employee_name: string;
   employee_code: string | null;
   department: string | null;
+  department_key?: string | null;
   position: string | null;
+  position_key?: string | null;
   effective_date: string | null;
   expiry_date: string | null;
   signer_name: string | null;
   signer_position: string | null;
+  signer_position_key?: string | null;
   signing_date: string | null;
   file_url: string | null;
   status: string;
@@ -111,12 +178,12 @@ interface FormData {
   employee_id: string;
   employee_name: string;
   employee_code: string;
-  department: string;
-  position: string;
+  department_key: string;
+  position_key: string;
   effective_date: Date | undefined;
   expiry_date: Date | undefined;
   signer_name: string;
-  signer_position: string;
+  signer_position_key: string;
   signing_date: Date | undefined;
   file_url: string;
   status: string;
@@ -131,12 +198,12 @@ const initialFormData: FormData = {
   employee_id: '',
   employee_name: '',
   employee_code: '',
-  department: '',
-  position: '',
+  department_key: '',
+  position_key: '',
   effective_date: undefined,
   expiry_date: undefined,
   signer_name: '',
-  signer_position: '',
+  signer_position_key: '',
   signing_date: undefined,
   file_url: '',
   status: 'draft',
@@ -164,14 +231,44 @@ const getStatusOptions = (t: any) => [
   { value: 'cancelled', label: t('decisions.statuses.cancelled') },
 ];
 
+const settingsCatalogCta = (
+  <a href="/settings" className="text-primary underline text-xs font-medium">
+    Mở Cài đặt → Danh mục nghiệp vụ
+  </a>
+);
+
 export default function Decisions() {
   const { t, i18n } = useTranslation();
-  const { user, currentCompanyId } = useAuth();
-  const { departments } = useDepartments();
-  const queryClient = useQueryClient();
   const DECISION_TYPES = getDecisionTypes(t);
   const STATUS_OPTIONS = getStatusOptions(t);
   const calendarLocale = i18n.language === 'vi' ? vi : i18n.language === 'zh' ? zhCN : enUS;
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview();
+
+  const positionOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const departmentOptions = useMemo(
+    () => departmentOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+
+  const decisionTypeOptions = useMemo((): CatalogPickerOption[] => {
+    // E1-B: dual-read hr_decision_types ∪ decision_types — không MISS khi chỉ live key có items
+    const fromCatalog = toCatalogPickerOptions(
+      mergeEffectiveItemsByKeys(catalogs, HRM_MASTER_DATA_CATALOG_KEYS.decisionTypes),
+    );
+    if (fromCatalog.length > 0) return fromCatalog;
+    return DECISION_TYPES.filter((dt) => dt.key !== 'all').map((dt) => ({
+      value: dt.key,
+      label: t(dt.labelKey),
+      code: dt.key,
+    }));
+  }, [catalogs, DECISION_TYPES, t]);
 
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -207,25 +304,37 @@ export default function Decisions() {
 
   const decisions = decisionsFromApi as Decision[];
 
-  const toDecisionPayload = (data: FormData) => ({
-    decision_code: data.decision_code,
-    decision_type: data.decision_type,
-    title: data.title,
-    content: data.content,
-    employee_id: data.employee_id,
-    employee_name: data.employee_name,
-    employee_code: data.employee_code,
-    department: data.department,
-    position: data.position,
-    effective_date: data.effective_date,
-    expiry_date: data.expiry_date,
-    signer_name: data.signer_name,
-    signer_position: data.signer_position,
-    signing_date: data.signing_date,
-    file_url: data.file_url,
-    status: data.status,
-    notes: data.notes,
-  });
+  const toDecisionPayload = (data: FormData) => {
+    const pos = buildPositionKeyFields(data.position_key, positionOptions);
+    const dept = data.department_key.trim()
+      ? buildDepartmentKeyFields(data.department_key, departmentOptions)
+      : null;
+    const signerPos = data.signer_position_key.trim()
+      ? buildPositionKeyFields(data.signer_position_key, positionOptions)
+      : null;
+    return {
+      decision_code: data.decision_code,
+      decision_type: data.decision_type,
+      title: data.title,
+      content: data.content,
+      employee_id: data.employee_id,
+      employee_name: data.employee_name,
+      employee_code: data.employee_code,
+      department: dept?.department ?? '',
+      department_key: dept?.department_key ?? '',
+      position: pos?.position ?? '',
+      position_key: pos?.position_key ?? '',
+      effective_date: data.effective_date,
+      expiry_date: data.expiry_date,
+      signer_name: data.signer_name,
+      signer_position: signerPos?.position ?? '',
+      signer_position_key: signerPos?.position_key ?? '',
+      signing_date: data.signing_date,
+      file_url: data.file_url,
+      status: data.status,
+      notes: data.notes,
+    };
+  };
 
   const createMutation = {
     mutateAsync: async (data: FormData) => {
@@ -325,9 +434,22 @@ export default function Decisions() {
   };
 
   const handleOpenCreate = () => {
-    setFormData(initialFormData);
+    // Prefill loại theo tab đang chọn để create→list khớp filter type (AC-DEC-DENSITY).
+    setFormData({
+      ...initialFormData,
+      decision_type: resolveCreateDialogDecisionType(selectedType),
+    });
     setEditingDecision(null);
     setDialogOpen(true);
+  };
+
+  const applyListVisibilityAfterCreate = (createdDecisionType: string) => {
+    const next = resolveListVisibilityAfterCreate(createdDecisionType);
+    setSelectedType(next.selectedType);
+    setSearchQuery(next.searchQuery);
+    setFilterStatus(next.filterStatus);
+    setCurrentPage(next.currentPage);
+    setSelectedDecisions([]);
   };
 
   const handleOpenEdit = (decision: Decision) => {
@@ -340,12 +462,12 @@ export default function Decisions() {
       employee_id: decision.employee_id || '',
       employee_name: decision.employee_name,
       employee_code: decision.employee_code || '',
-      department: decision.department || '',
-      position: decision.position || '',
+      department_key: decision.department_key?.trim() || '',
+      position_key: decision.position_key?.trim() || '',
       effective_date: decision.effective_date ? new Date(decision.effective_date) : undefined,
       expiry_date: decision.expiry_date ? new Date(decision.expiry_date) : undefined,
       signer_name: decision.signer_name || '',
-      signer_position: decision.signer_position || '',
+      signer_position_key: decision.signer_position_key?.trim() || '',
       signing_date: decision.signing_date ? new Date(decision.signing_date) : undefined,
       file_url: decision.file_url || '',
       status: decision.status,
@@ -377,21 +499,38 @@ export default function Decisions() {
       toast.error(t('decisions.requiredFields'));
       return;
     }
+    if (!buildPositionKeyFields(formData.position_key, positionOptions)) {
+      toast.error('Chọn vị trí từ danh mục (không nhập tự do).');
+      return;
+    }
+    if (
+      formData.department_key.trim() &&
+      !buildDepartmentKeyFields(formData.department_key, departmentOptions)
+    ) {
+      toast.error('Chọn phòng ban từ danh mục.');
+      return;
+    }
+    if (
+      formData.signer_position_key.trim() &&
+      !buildPositionKeyFields(formData.signer_position_key, positionOptions)
+    ) {
+      toast.error('Chọn chức danh người ký từ danh mục.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       if (editingDecision) {
+        // Toast success/error do useDecisions (tránh double toast).
         await updateMutation.mutateAsync({ id: editingDecision.id, data: formData });
-        toast.success(t('decisions.updateSuccess'));
       } else {
         await createMutation.mutateAsync(formData);
-        toast.success(t('decisions.createSuccess'));
+        // Sau POST 2xx: về tab Tất cả + clear filter để dòng mới hiện (AC-DEC-04).
+        applyListVisibilityAfterCreate(formData.decision_type);
       }
       handleCloseDialog();
-    } catch (error: unknown) {
-      toast.error(
-        editingDecision ? t('decisions.updateError') : t('decisions.createError'),
-      );
+    } catch {
+      // Hook đã toast lỗi API; không toast thêm.
     } finally {
       setIsSubmitting(false);
     }
@@ -400,13 +539,22 @@ export default function Decisions() {
   const handleEmployeeSelect = (employeeId: string) => {
     const employee = employees.find(e => e.id === employeeId);
     if (employee) {
+      // employee.position may already be job_title_key from useDecisions map
+      const posKey =
+        positionOptions.find((o) => o.value === employee.position)?.value ||
+        positionOptions.find((o) => o.label === employee.position)?.value ||
+        '';
+      const deptKey =
+        departmentOptions.find((o) => o.value === employee.department)?.value ||
+        departmentOptions.find((o) => o.label === employee.department)?.value ||
+        '';
       setFormData({
         ...formData,
         employee_id: employee.id,
         employee_name: employee.full_name,
         employee_code: employee.employee_code || '',
-        department: employee.department || '',
-        position: employee.position || '',
+        department_key: deptKey,
+        position_key: posKey,
       });
     }
   };
@@ -694,7 +842,19 @@ export default function Decisions() {
             ) : paginatedDecisions.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="text-center py-10">
-                  {t('decisions.noData')}
+                  <div className="flex flex-col items-center gap-3">
+                    {/* Live-empty honesty — AC-DEC-02: cấm «chưa triển khai». */}
+                    <p className="text-muted-foreground">{t('decisions.noData')}</p>
+                    {!searchQuery && filterStatus.length === 0 ? (
+                      <>
+                        <p className="text-sm text-muted-foreground">{t('decisions.emptyHint')}</p>
+                        <Button size="sm" className="gap-2" onClick={handleOpenCreate}>
+                          <Plus className="w-4 h-4" />
+                          {t('decisions.addNew')}
+                        </Button>
+                      </>
+                    ) : null}
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
@@ -863,21 +1023,19 @@ export default function Decisions() {
               </div>
               <div className="space-y-2">
                 <Label>{t('decisions.decisionTypeLabel')} <span className="text-destructive">*</span></Label>
-                <Select
+                <CatalogSearchPicker
+                  options={decisionTypeOptions}
                   value={formData.decision_type}
                   onValueChange={(value) => setFormData({ ...formData, decision_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('decisions.selectType')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DECISION_TYPES.filter(dt => dt.key !== 'all').map((dtype) => (
-                      <SelectItem key={dtype.key} value={dtype.key}>
-                        {t(dtype.labelKey)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t('decisions.selectType')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <Link to="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ / Loại quyết định
+                    </Link>
+                  }
+                />
               </div>
             </div>
 
@@ -926,25 +1084,28 @@ export default function Decisions() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('decisions.departmentLabel')}</Label>
-                <Select
-                  value={formData.department}
-                  onValueChange={(value) => setFormData({ ...formData, department: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('decisions.departmentLabel')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CatalogSearchPicker
+                  options={departmentOptions}
+                  value={formData.department_key}
+                  onValueChange={(value) => setFormData({ ...formData, department_key: value })}
+                  placeholder={t('decisions.departmentLabel')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={settingsCatalogCta}
+                  aria-label={t('decisions.departmentLabel')}
+                />
               </div>
               <div className="space-y-2">
-                <Label>{t('decisions.positionLabel')}</Label>
-                <Input
-                  value={formData.position}
-                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                <Label>{t('decisions.positionLabel')} *</Label>
+                <CatalogSearchPicker
+                  options={positionOptions}
+                  value={formData.position_key}
+                  onValueChange={(value) => setFormData({ ...formData, position_key: value })}
+                  placeholder={t('decisions.positionLabel')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={settingsCatalogCta}
+                  aria-label={t('decisions.positionLabel')}
                 />
               </div>
             </div>
@@ -1014,9 +1175,15 @@ export default function Decisions() {
               </div>
               <div className="space-y-2">
                 <Label>{t('decisions.signerPositionLabel')}</Label>
-                <Input
-                  value={formData.signer_position}
-                  onChange={(e) => setFormData({ ...formData, signer_position: e.target.value })}
+                <CatalogSearchPicker
+                  options={positionOptions}
+                  value={formData.signer_position_key}
+                  onValueChange={(value) => setFormData({ ...formData, signer_position_key: value })}
+                  placeholder={t('decisions.signerPositionLabel')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={settingsCatalogCta}
+                  aria-label={t('decisions.signerPositionLabel')}
                 />
               </div>
               <div className="space-y-2">
@@ -1194,11 +1361,21 @@ export default function Decisions() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-muted-foreground">{t('decisions.departmentLabel')}</Label>
-                  <p className="font-medium">{viewingDecision.department || '-'}</p>
+                  <p className="font-medium">
+                    {viewingDecision.department_key
+                      ? resolveDepartmentLabel(departmentOptions, viewingDecision.department_key)
+                      : viewingDecision.department || '—'}
+                  </p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">{t('decisions.positionLabel')}</Label>
-                  <p className="font-medium">{viewingDecision.position || '-'}</p>
+                  <p className="font-medium">
+                    {resolvePositionDisplayLabel(
+                      positionOptions,
+                      viewingDecision.position_key,
+                      viewingDecision.position,
+                    )}
+                  </p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -1226,7 +1403,13 @@ export default function Decisions() {
                 </div>
                 <div>
                   <Label className="text-muted-foreground">{t('decisions.signerPositionLabel')}</Label>
-                  <p className="font-medium">{viewingDecision.signer_position || '-'}</p>
+                  <p className="font-medium">
+                    {resolvePositionDisplayLabel(
+                      positionOptions,
+                      viewingDecision.signer_position_key,
+                      viewingDecision.signer_position,
+                    )}
+                  </p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">{t('decisions.signingDateLabel')}</Label>

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -838,18 +839,16 @@ export function SalesDataTab() {
             </div>
             <div className="space-y-2">
               <Label>{s('col.target')}</Label>
-              <Input
-                type="number"
-                value={formData.sales_target}
-                onChange={(e) => setFormData(p => ({ ...p, sales_target: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.sales_target) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, sales_target: n }))}
               />
             </div>
             <div className="space-y-2">
               <Label>{s('lbl.actualSales')}</Label>
-              <Input
-                type="number"
-                value={formData.actual_sales}
-                onChange={(e) => setFormData(p => ({ ...p, actual_sales: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.actual_sales) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, actual_sales: n }))}
               />
             </div>
             <div className="space-y-2">
@@ -863,18 +862,16 @@ export function SalesDataTab() {
             </div>
             <div className="space-y-2">
               <Label>{s('lbl.commissionAmount')}</Label>
-              <Input
-                type="number"
-                value={formData.commission_amount}
-                onChange={(e) => setFormData(p => ({ ...p, commission_amount: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.commission_amount) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, commission_amount: n }))}
               />
             </div>
             <div className="space-y-2">
               <Label>{s('lbl.bonusAmount')}</Label>
-              <Input
-                type="number"
-                value={formData.bonus_amount}
-                onChange={(e) => setFormData(p => ({ ...p, bonus_amount: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.bonus_amount) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, bonus_amount: n }))}
               />
             </div>
             <div className="space-y-2">
@@ -965,18 +962,16 @@ export function SalesDataTab() {
             </div>
             <div className="space-y-2">
               <Label>{s('col.target')}</Label>
-              <Input
-                type="number"
-                value={formData.sales_target}
-                onChange={(e) => setFormData(p => ({ ...p, sales_target: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.sales_target) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, sales_target: n }))}
               />
             </div>
             <div className="space-y-2">
               <Label>{s('lbl.actualSales')}</Label>
-              <Input
-                type="number"
-                value={formData.actual_sales}
-                onChange={(e) => setFormData(p => ({ ...p, actual_sales: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.actual_sales) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, actual_sales: n }))}
               />
             </div>
             <div className="space-y-2">
@@ -990,18 +985,16 @@ export function SalesDataTab() {
             </div>
             <div className="space-y-2">
               <Label>{s('lbl.commissionAmount')}</Label>
-              <Input
-                type="number"
-                value={formData.commission_amount}
-                onChange={(e) => setFormData(p => ({ ...p, commission_amount: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.commission_amount) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, commission_amount: n }))}
               />
             </div>
             <div className="space-y-2">
               <Label>{s('lbl.bonusAmount')}</Label>
-              <Input
-                type="number"
-                value={formData.bonus_amount}
-                onChange={(e) => setFormData(p => ({ ...p, bonus_amount: Number(e.target.value) }))}
+              <ViMoneyInput
+                value={Number(formData.bonus_amount) || 0}
+                onValueChange={(n) => setFormData((p) => ({ ...p, bonus_amount: n }))}
               />
             </div>
             <div className="space-y-2">

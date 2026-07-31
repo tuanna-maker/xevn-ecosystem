@@ -103,7 +103,7 @@ interface CandidateEvaluationDialogProps {
 const scoreOptions = [1, 2, 3, 4, 5];
 
 const getResultConfig = (r: (key: string) => string): Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> => ({
-  pending: { label: r('results.pending'), color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400', icon: AlertCircle },
+  pending: { label: r('results.pending'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted', icon: AlertCircle },
   pass: { label: r('results.pass'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
   fail: { label: r('results.fail'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
   hold: { label: r('results.hold'), color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', icon: AlertCircle },

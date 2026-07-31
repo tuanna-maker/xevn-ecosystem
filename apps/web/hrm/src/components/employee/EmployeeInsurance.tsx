@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -412,21 +414,29 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ei.startDate')}</Label>
-                <Input type="date" value={insuranceForm.start_date} onChange={(e) => setInsuranceForm({ ...insuranceForm, start_date: e.target.value })} />
+                <ViDateField value={insuranceForm.start_date} onValueChange={(v) => setInsuranceForm({ ...insuranceForm, start_date: v })} />
               </div>
               <div className="space-y-2">
                 <Label>{t('ei.endDate')}</Label>
-                <Input type="date" value={insuranceForm.end_date} onChange={(e) => setInsuranceForm({ ...insuranceForm, end_date: e.target.value })} />
+                <ViDateField value={insuranceForm.end_date} onValueChange={(v) => setInsuranceForm({ ...insuranceForm, end_date: v })} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ei.employeeContribLabel')}</Label>
-                <Input type="number" value={insuranceForm.contribution} onChange={(e) => setInsuranceForm({ ...insuranceForm, contribution: Number(e.target.value) })} />
+                <ViMoneyInput
+                  value={Number(insuranceForm.contribution) || 0}
+                  onValueChange={(n) => setInsuranceForm({ ...insuranceForm, contribution: n })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>{t('ei.employerContribLabel')}</Label>
-                <Input type="number" value={insuranceForm.employer_contribution} onChange={(e) => setInsuranceForm({ ...insuranceForm, employer_contribution: Number(e.target.value) })} />
+                <ViMoneyInput
+                  value={Number(insuranceForm.employer_contribution) || 0}
+                  onValueChange={(n) =>
+                    setInsuranceForm({ ...insuranceForm, employer_contribution: n })
+                  }
+                />
               </div>
             </div>
             <div className="space-y-2">
@@ -479,7 +489,10 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ei.value')}</Label>
-                <Input type="number" value={benefitForm.value} onChange={(e) => setBenefitForm({ ...benefitForm, value: Number(e.target.value) })} />
+                <ViMoneyInput
+                  value={Number(benefitForm.value) || 0}
+                  onValueChange={(n) => setBenefitForm({ ...benefitForm, value: n })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>{t('ei.unit')}</Label>
@@ -489,7 +502,7 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ei.startDate')}</Label>
-                <Input type="date" value={benefitForm.start_date} onChange={(e) => setBenefitForm({ ...benefitForm, start_date: e.target.value })} />
+                <ViDateField value={benefitForm.start_date} onValueChange={(v) => setBenefitForm({ ...benefitForm, start_date: v })} />
               </div>
               <div className="space-y-2">
                 <Label>{t('ei.status')}</Label>

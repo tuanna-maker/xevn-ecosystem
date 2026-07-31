@@ -14,7 +14,7 @@ export function HrmListLoadBanner({
   isLoading = false,
   loadFailed = false,
   errorMessage,
-  loadingMessage = 'Đang tải dữ liệu từ HRM API…',
+  loadingMessage = 'Đang tải dữ liệu…',
   className,
 }: HrmListLoadBannerProps) {
   if (!isLoading && !loadFailed) return null;
@@ -36,7 +36,7 @@ export function HrmListLoadBanner({
 
   const message =
     errorMessage?.trim() ||
-    'Không tải được dữ liệu. Kiểm tra HRM API (cổng 28001), phiên portal và phạm vi company_id.';
+    'Không tải được dữ liệu. Kiểm tra kết nối HRM, phiên đăng nhập và phạm vi công ty.';
 
   return (
     <div

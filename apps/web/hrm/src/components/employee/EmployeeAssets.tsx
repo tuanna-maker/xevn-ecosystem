@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,7 +45,7 @@ const categoryColors: Record<string, string> = {
   card: 'bg-cyan-100 dark:bg-cyan-900 text-cyan-600 dark:text-cyan-400',
   key: 'bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-400',
   equipment: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400',
-  other: 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400'
+  other: 'bg-xevn-neutral/15 dark:bg-slate-800 text-xevn-textSecondary dark:text-xevn-textMuted'
 };
 
 const statusIcons: Record<string, React.ReactNode> = {
@@ -424,18 +426,16 @@ export const EmployeeAssets = ({ employeeId }: EmployeeAssetsProps) => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('assets.assignedDate')}</Label>
-                <Input 
-                  type="date"
-                  value={form.assigned_date} 
-                  onChange={(e) => setForm({ ...form, assigned_date: e.target.value })}
+                <ViDateField
+                  value={form.assigned_date}
+                  onValueChange={(v) => setForm({ ...form, assigned_date: v })}
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('assets.returnDate')}</Label>
-                <Input 
-                  type="date"
-                  value={form.return_date} 
-                  onChange={(e) => setForm({ ...form, return_date: e.target.value })}
+                <ViDateField
+                  value={form.return_date}
+                  onValueChange={(v) => setForm({ ...form, return_date: v })}
                 />
               </div>
             </div>
@@ -465,10 +465,9 @@ export const EmployeeAssets = ({ employeeId }: EmployeeAssetsProps) => {
               </div>
               <div className="space-y-2">
                 <Label>{t('assets.valueLabel')}</Label>
-                <Input 
-                  type="number"
-                  value={form.value} 
-                  onChange={(e) => setForm({ ...form, value: parseInt(e.target.value) || 0 })}
+                <ViMoneyInput
+                  value={Number(form.value) || 0}
+                  onValueChange={(n) => setForm({ ...form, value: n })}
                 />
               </div>
             </div>

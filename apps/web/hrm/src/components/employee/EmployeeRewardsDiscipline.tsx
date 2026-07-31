@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -483,7 +485,7 @@ export const EmployeeRewardsDiscipline = ({ employeeId }: EmployeeRewardsDiscipl
               </div>
               <div className="space-y-2">
                 <Label>{t('rewards.rewardDate')} *</Label>
-                <Input type="date" value={rewardForm.reward_date} onChange={(e) => setRewardForm({...rewardForm, reward_date: e.target.value})} />
+                <ViDateField value={rewardForm.reward_date} onValueChange={(v) => setRewardForm({ ...rewardForm, reward_date: v })} />
               </div>
             </div>
             <div className="space-y-2">
@@ -501,7 +503,10 @@ export const EmployeeRewardsDiscipline = ({ employeeId }: EmployeeRewardsDiscipl
               </div>
               <div className="space-y-2">
                 <Label>{t('rewards.amount')}</Label>
-                <Input type="number" value={rewardForm.amount} onChange={(e) => setRewardForm({...rewardForm, amount: parseInt(e.target.value) || 0})} />
+                <ViMoneyInput
+                  value={Number(rewardForm.amount) || 0}
+                  onValueChange={(n) => setRewardForm({ ...rewardForm, amount: n })}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -550,7 +555,7 @@ export const EmployeeRewardsDiscipline = ({ employeeId }: EmployeeRewardsDiscipl
               </div>
               <div className="space-y-2">
                 <Label>{t('discipline.disciplineDate')} *</Label>
-                <Input type="date" value={disciplineForm.discipline_date} onChange={(e) => setDisciplineForm({...disciplineForm, discipline_date: e.target.value})} />
+                <ViDateField value={disciplineForm.discipline_date} onValueChange={(v) => setDisciplineForm({ ...disciplineForm, discipline_date: v })} />
               </div>
             </div>
             <div className="space-y-2">
@@ -568,17 +573,22 @@ export const EmployeeRewardsDiscipline = ({ employeeId }: EmployeeRewardsDiscipl
               </div>
               <div className="space-y-2">
                 <Label>{t('discipline.penaltyAmount')}</Label>
-                <Input type="number" value={disciplineForm.penalty_amount} onChange={(e) => setDisciplineForm({...disciplineForm, penalty_amount: parseInt(e.target.value) || 0})} />
+                <ViMoneyInput
+                  value={Number(disciplineForm.penalty_amount) || 0}
+                  onValueChange={(n) =>
+                    setDisciplineForm({ ...disciplineForm, penalty_amount: n })
+                  }
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('discipline.effectiveFrom')}</Label>
-                <Input type="date" value={disciplineForm.effective_from} onChange={(e) => setDisciplineForm({...disciplineForm, effective_from: e.target.value})} />
+                <ViDateField value={disciplineForm.effective_from} onValueChange={(v) => setDisciplineForm({ ...disciplineForm, effective_from: v })} />
               </div>
               <div className="space-y-2">
                 <Label>{t('discipline.effectiveTo')}</Label>
-                <Input type="date" value={disciplineForm.effective_to} onChange={(e) => setDisciplineForm({...disciplineForm, effective_to: e.target.value})} />
+                <ViDateField value={disciplineForm.effective_to} onValueChange={(v) => setDisciplineForm({ ...disciplineForm, effective_to: v })} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

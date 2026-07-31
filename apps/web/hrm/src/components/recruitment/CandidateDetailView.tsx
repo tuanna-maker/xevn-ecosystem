@@ -22,6 +22,18 @@ import { useToast } from '@/hooks/use-toast';
 import { listCandidateEvaluations } from '@/integrations/hrmApi';
 import { isAbortLikeError } from '@/lib/apiError';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
+import {
+  mapRecruitmentFunnelStage,
+  RECRUITMENT_FUNNEL_LABEL_VI,
+  RECRUITMENT_FUNNEL_STAGES,
+} from '@/lib/recruitmentFunnel';
+import { resolveMaritalStatusDisplay } from '@/lib/labelMaps';
+import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
+
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-19 XHRM-REC-WF-FE-01
+ * Roadmap chips bind API stage via F6 map (applied→new); show LOCKED hint when instance active.
+ */
 
 interface Candidate {
   id: string;
@@ -40,6 +52,7 @@ interface Candidate {
   marital_status?: string | null;
   notes?: string | null;
   avatar_url?: string | null;
+  workflow_instance_id?: string | null;
   height?: string | null;
   weight?: string | null;
   ethnicity?: string | null;
@@ -88,16 +101,19 @@ interface CandidateDetailViewProps {
   onEdit?: () => void;
 }
 
-// Map candidate stage to timeline index
+// Map candidate stage to timeline index (F6 — applied/new alias → 0)
 const stageToIndex: Record<string, number> = {
+  new: 0,
   applied: 0,
   screening: 1,
   interview: 2,
   offer: 3,
   hired: 4,
+  rejected: 5,
 };
 
 const getStageConfig = (r: (key: string) => string) => ({
+  new: { label: RECRUITMENT_FUNNEL_LABEL_VI.new, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
   applied: { label: r('stages.applied'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
   screening: { label: r('stages.screening'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: <Clock className="w-4 h-4" /> },
   interview: { label: r('stages.interview'), color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', icon: <UserCheck className="w-4 h-4" /> },
@@ -147,17 +163,20 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
     skill: item.subject,
     value: Math.round((item.actual / item.fullMark) * 100),
   }));
-  const currentStageIndex = stageToIndex[candidate.stage || 'applied'] ?? 0;
+  const funnelStage = mapRecruitmentFunnelStage(candidate.stage);
+  const currentStageIndex = stageToIndex[candidate.stage || 'applied'] ?? stageToIndex[funnelStage] ?? 0;
   const stageConfig = getStageConfig(r);
   const interviewStatusConfig = getInterviewStatusConfig(r);
+  const wfLocked = isRecruitmentWorkflowLocked(
+    candidate.workflow_instance_id,
+    candidate.stage,
+    'candidate',
+  );
 
-  const recruitmentStages = [
-    { id: 'applied', label: r('stages.applied') },
-    { id: 'screening', label: r('stages.screening') },
-    { id: 'interview', label: r('stages.interview') },
-    { id: 'offer', label: r('stages.offer') },
-    { id: 'hired', label: r('stages.hired') },
-  ];
+  const recruitmentStages = RECRUITMENT_FUNNEL_STAGES.filter((s) => s !== 'rejected').map((id) => ({
+    id,
+    label: id === 'new' ? r('stages.applied') : RECRUITMENT_FUNNEL_LABEL_VI[id],
+  }));
 
   // Fetch interviews for this candidate
   useEffect(() => {
@@ -318,9 +337,12 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-medium">{r('recruitmentProcess')}</CardTitle>
+                {wfLocked ? (
+                  <p className="text-xs text-amber-800 dark:text-amber-200">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
+                ) : null}
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between" data-rec-wf-roadmap="api-stage">
                   {recruitmentStages.map((stage, index) => (
                     <div key={stage.id} className="flex flex-col items-center flex-1">
                       <div className="flex items-center w-full">
@@ -383,7 +405,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
                     } 
                   />
                   <InfoItem icon={Briefcase} label={r('militaryService')} value={candidate.military_service || r('defaultMilitary')} />
-                  <InfoItem icon={User} label={r('maritalStatus')} value={candidate.marital_status || r('notDetermined')} />
+                  <InfoItem icon={User} label={r('maritalStatus')} value={resolveMaritalStatusDisplay(candidate.marital_status)} />
                   <InfoItem icon={MapPin} label={r('hometown')} value={candidate.hometown || r('notDetermined')} />
                 </div>
               </CardContent>
@@ -477,7 +499,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
             <CardContent className="space-y-4">
               <InfoItem icon={Globe} label={r('nationality')} value={candidate.nationality || r('defaultNationality')} />
               <InfoItem icon={MapPin} label={r('hometown')} value={candidate.hometown || r('notDetermined')} />
-              <InfoItem icon={User} label={r('maritalStatus')} value={candidate.marital_status || r('notDetermined')} />
+              <InfoItem icon={User} label={r('maritalStatus')} value={resolveMaritalStatusDisplay(candidate.marital_status)} />
               <InfoItem icon={User} label={r('ethnicity')} value={candidate.ethnicity || r('defaultEthnicity')} />
               <InfoItem icon={Building2} label={r('religion')} value={candidate.religion || r('defaultReligion')} />
             </CardContent>

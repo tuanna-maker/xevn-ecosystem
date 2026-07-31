@@ -56,7 +56,16 @@ import {
 import { usePayrollBatches, PayrollBatch, PayrollRecord } from '@/hooks/usePayrollBatches';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useSalaryTemplates } from '@/hooks/useSalaryTemplates';
+import { parsePayrollPeriodForm } from '@/components/payroll/payrollPeriodFormSchema';
 import { toast } from 'sonner';
+
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E2-01
+ * change_mode: ADD
+ * What: Zod parsePayrollPeriodForm trước createBatch (name + month/year)
+ * Why: AC-E2-ZOD-01 · VAL-E2-03 — FE chặn trước Network
+ * must_keep: createPayrollPeriod API path; U65 no seed
+ */
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('vi-VN', {
@@ -160,17 +169,34 @@ export function PayrollBatchesTab() {
   };
 
   const handleCreateBatch = async () => {
-    if (!formData.name || !formData.salary_period) {
-      toast.error(t('common.fillAllFields'));
+    const parsed = parsePayrollPeriodForm(
+      {
+        name: formData.name,
+        period_month: formData.period_month,
+        period_year: formData.period_year,
+      },
+      {
+        nameRequired: t('common.fillAllFields'),
+        monthInvalid: t('common.fillAllFields'),
+        yearInvalid: t('common.fillAllFields'),
+      },
+    );
+    if (!parsed.success) {
+      const first =
+        parsed.error.flatten().fieldErrors.name?.[0] ||
+        parsed.error.flatten().fieldErrors.period_month?.[0] ||
+        parsed.error.flatten().fieldErrors.period_year?.[0] ||
+        t('common.fillAllFields');
+      toast.error(first);
       return;
     }
 
     try {
       await createBatch({
-        name: formData.name,
-        salary_period: formData.salary_period,
-        period_month: formData.period_month,
-        period_year: formData.period_year,
+        name: parsed.data.name,
+        salary_period: formData.salary_period || `Tháng ${parsed.data.period_month}/${parsed.data.period_year}`,
+        period_month: parsed.data.period_month,
+        period_year: parsed.data.period_year,
         department: formData.department || undefined,
         position: formData.position || undefined,
         template_id: formData.template_id || undefined,

@@ -1,3 +1,48 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /payroll ? B?ng l??ng (HR / payroll ops)
+ * UC:         UC-HRM-PAY
+ * Purpose:    Shell tab l??ng; live Th�nh ph?n l??ng = SalaryComponentsTab;
+ *             quy?t to�n thu? edit NV d�ng taxSettlementFloatingUi (C1).
+ * WorkItem:   D-UX-P0C-PAYROLL-REDUCER-01 � D-UX-D5-ZOD-LIVE-WIRE-01 � D-UX-C1-PAYROLL-FE-01
+ * Callers:    App route /payroll � portal embed
+ * Callees:    SalaryComponentsTab � taxSettlementFloatingUi � usePayrollDomainUi
+ * must_keep:  taxSettlementFloatingUi C1; SalaryComponentsTab mount; kh�ng seed/deploy
+ * LastVerified: docs/qa/evidence/d-ux-p0c-payroll-reducer-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-D5-ZOD-LIVE-WIRE-01
+ * change_mode: FIX
+ * What: G? orphan Dialog Th�m th�nh ph?n l??ng kh?i Payroll ? Zod+RHF live ?
+ *       SalaryComponentsTab; gi? wire taxSettlementFloatingUi C1
+ * Why: QA-UX-D5-01 ? Zod kh�ng n?m user-reachable path
+ * must_keep: taxSettlementFloatingUi; Payroll mount; UX-03 debounce kh�ng ??ng
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-P0C-PAYROLL-REDUCER-01
+ * change_mode: FIX/ADD
+ * What: Gom race-prone tab/modal/form useState ? useReducer domain slices
+ *       (shell/advance/taxUi/salaryComponent/batch) qua usePayrollDomainUi;
+ *       atomic open/close; gi? taxSettlementFloatingUi C1 + SalaryComponentsTab D5
+ * Why: UX-UI-ERP-ANALYSIS P0-c / UX-06 ? state proliferation ? race nested modal
+ * must_keep: taxSettlementFloatingUi; SalaryComponentsTab Zod+RHF; Clock-In untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-FE-ERP-E2-01
+ * change_mode: ADD
+ * What: X�a mock tax/insurance/advance islands; HIDE quy?t to�n thu? invent UI (AC-E2-P3-02);
+ *       live Insurance/TaxPolicyTab API; nature SoT ? SalaryComponentsTab pay_types
+ * Why: FR-HRM-PAY-CLEAN-E2-01 � sa-erp-e2-ack-01 tax HIDE � AC-E2-NOMOCK-01
+ * must_keep: SalaryComponentsTab; E1-A/E1-B; taxSettlementFloatingUi module (kh�ng expose invent)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-FE-ERP-E2-01-R2
+ * change_mode: FIX
+ * What: Khôi phục `const availableTaxPolicyEmployees = []` ra ngoài comment (DEF-E2-PAYROLL-CRASH);
+ *       giữ mảng rỗng — không mock NV; tax settlement HIDE giữ nguyên
+ * Why: QA-ERP-E2-01 — comment nuốt declaration → ReferenceError white-screen /hr/payroll
+ * must_keep: E1 pickers; AC-E2-NOMOCK-01 empty array; AC-E2-P3-02 tax HIDE; SalaryComponentsTab
+ */
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -39,8 +84,21 @@ import {
   Send,
 } from 'lucide-react';
 import { StatusBadge } from '@/components/common/StatusBadge';
+import {
+  applyTaxEditDialogOpenChange,
+  closeTaxEmployeeEditFloatingUi,
+  createEmptyTaxSettlementFloatingUiState,
+  employeeAvatarInitial,
+  formatPayrollMoney,
+  matchesTaxSettlementEmployeeSearch,
+  normalizeTaxSettlementEmployee,
+  openTaxEmployeeEditFloatingUi,
+  patchTaxEmployeeEditForm,
+  type TaxSettlementEmployeeRow,
+} from '@/components/payroll/taxSettlementFloatingUi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -86,6 +144,7 @@ import { PayrollAttendanceTab } from '@/components/payroll/PayrollAttendanceTab'
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 import { TaxPolicyTab } from '@/components/payroll/TaxPolicyTab';
 import { InsurancePolicyTab } from '@/components/payroll/InsurancePolicyTab';
+import { usePayrollDomainUi } from '@/hooks/usePayrollDomainUi';
 import {
   PieChart,
   Pie,
@@ -214,7 +273,7 @@ interface SalaryComponent {
   formula?: string; // Excel-like formula, e.g., "=SUM(LUONG_THEO_CA,LUONG_THEO_GIO)"
 }
 
-// System salary components data (Danh mục hệ thống)
+// System salary components data (Danh m?c h? th?ng)
 interface SystemSalaryComponent {
   id: string;
   code: string;
@@ -224,72 +283,13 @@ interface SystemSalaryComponent {
   isTaxable: boolean;
 }
 
-const systemSalaryComponentsData: SystemSalaryComponent[] = [
-  { id: 's1', code: 'SO_NGAY_NGHI_BU', name: 'Số ngày nghỉ bù', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's2', code: 'SO_NGAY_NGHI_KHONG_LUONG', name: 'Số ngày nghỉ không lương', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's3', code: 'SO_GIO_NGHI_LE', name: 'Số giờ nghỉ lễ', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's4', code: 'SO_GIO_NGHI_BU', name: 'Số giờ nghỉ bù', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's5', code: 'SO_GIO_DI_CONG_TAC', name: 'Số giờ đi công tác', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's6', code: 'SO_GIO_NGHI_KHONG_LUONG', name: 'Số giờ nghỉ không lương', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's7', code: 'SO_CA_NGHI_PHEP', name: 'Số ca nghỉ phép', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's8', code: 'SO_CA_NGHI_LE', name: 'Số ca nghỉ lễ', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's9', code: 'SO_CA_NGHI_BU', name: 'Số ca nghỉ bù', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's10', code: 'SO_CA_DI_CONG_TAC', name: 'Số ca đi công tác', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's11', code: 'SO_NGAY_LAM_VIEC', name: 'Số ngày làm việc thực tế', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's12', code: 'SO_GIO_LAM_THEM', name: 'Số giờ làm thêm', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's13', code: 'SO_GIO_LAM_DEM', name: 'Số giờ làm đêm', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's14', code: 'SO_NGAY_CONG_CHUAN', name: 'Số ngày công chuẩn', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's15', code: 'SO_GIO_CONG_CHUAN', name: 'Số giờ công chuẩn', componentType: 'Chấm công', nature: 'other', isTaxable: false },
-  { id: 's16', code: 'LUONG_CO_BAN', name: 'Lương cơ bản', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's17', code: 'LUONG_NGAY_CONG', name: 'Lương ngày công', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's18', code: 'LUONG_THEO_GIO_HT', name: 'Lương theo giờ', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's19', code: 'LUONG_LAM_THEM_HT', name: 'Lương làm thêm giờ', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's20', code: 'LUONG_LAM_DEM', name: 'Lương làm đêm', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's21', code: 'LUONG_KPI_HT', name: 'Lương KPI', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's22', code: 'LUONG_DOANH_SO', name: 'Lương doanh số', componentType: 'Lương', nature: 'income', isTaxable: true },
-  { id: 's23', code: 'BHXH_NV', name: 'BHXH nhân viên', componentType: 'Bảo hiểm - Công đoàn', nature: 'deduction', isTaxable: false },
-  { id: 's24', code: 'BHYT_NV', name: 'BHYT nhân viên', componentType: 'Bảo hiểm - Công đoàn', nature: 'deduction', isTaxable: false },
-  { id: 's25', code: 'BHTN_NV', name: 'BHTN nhân viên', componentType: 'Bảo hiểm - Công đoàn', nature: 'deduction', isTaxable: false },
-  { id: 's26', code: 'PHI_CONG_DOAN_NV', name: 'Phí công đoàn nhân viên', componentType: 'Bảo hiểm - Công đoàn', nature: 'deduction', isTaxable: false },
-  { id: 's27', code: 'BHXH_DN', name: 'BHXH doanh nghiệp', componentType: 'Bảo hiểm - Công đoàn', nature: 'other', isTaxable: false },
-  { id: 's28', code: 'BHYT_DN', name: 'BHYT doanh nghiệp', componentType: 'Bảo hiểm - Công đoàn', nature: 'other', isTaxable: false },
-  { id: 's29', code: 'BHTN_DN', name: 'BHTN doanh nghiệp', componentType: 'Bảo hiểm - Công đoàn', nature: 'other', isTaxable: false },
-  { id: 's30', code: 'PHU_CAP_AN_CA', name: 'Phụ cấp ăn ca', componentType: 'Phụ cấp', nature: 'income', isTaxable: false },
-  { id: 's31', code: 'PHU_CAP_XANG_XE', name: 'Phụ cấp xăng xe', componentType: 'Phụ cấp', nature: 'income', isTaxable: false },
-  { id: 's32', code: 'PHU_CAP_DIEN_THOAI_HT', name: 'Phụ cấp điện thoại', componentType: 'Phụ cấp', nature: 'income', isTaxable: false },
-  { id: 's33', code: 'PHU_CAP_NHA_O', name: 'Phụ cấp nhà ở', componentType: 'Phụ cấp', nature: 'income', isTaxable: false },
-  { id: 's34', code: 'PHU_CAP_TRACH_NHIEM', name: 'Phụ cấp trách nhiệm', componentType: 'Phụ cấp', nature: 'income', isTaxable: true },
-  { id: 's35', code: 'PHU_CAP_CHUYEN_CAN', name: 'Phụ cấp chuyên cần', componentType: 'Phụ cấp', nature: 'income', isTaxable: true },
-  { id: 's36', code: 'THUONG_THANG_HT', name: 'Thưởng tháng', componentType: 'Thưởng', nature: 'income', isTaxable: true },
-  { id: 's37', code: 'THUONG_QUY_HT', name: 'Thưởng quý', componentType: 'Thưởng', nature: 'income', isTaxable: true },
-  { id: 's38', code: 'THUONG_NAM', name: 'Thưởng năm', componentType: 'Thưởng', nature: 'income', isTaxable: true },
-  { id: 's39', code: 'THUONG_LE_TET', name: 'Thưởng lễ tết', componentType: 'Thưởng', nature: 'income', isTaxable: true },
-  { id: 's40', code: 'THUONG_NHAN_VIEN_XUAT_SAC', name: 'Thưởng nhân viên xuất sắc', componentType: 'Thưởng', nature: 'income', isTaxable: true },
-  { id: 's41', code: 'THUONG_HIEU_HI_SINH_NHAT', name: 'Hiếu/Hỉ/Sinh nhật', componentType: 'Thưởng', nature: 'income', isTaxable: false },
-  { id: 's42', code: 'THUE_TNCN_HT', name: 'Thuế TNCN', componentType: 'Thuế', nature: 'deduction', isTaxable: false },
-  { id: 's43', code: 'GIAM_TRU_GIA_CANH', name: 'Giảm trừ gia cảnh', componentType: 'Thuế', nature: 'other', isTaxable: false },
-  { id: 's44', code: 'GIAM_TRU_BAN_THAN', name: 'Giảm trừ bản thân', componentType: 'Thuế', nature: 'other', isTaxable: false },
-  { id: 's45', code: 'SO_NGUOI_PHU_THUOC', name: 'Số người phụ thuộc', componentType: 'Thuế', nature: 'other', isTaxable: false },
-  { id: 's46', code: 'TAM_UNG', name: 'Tạm ứng', componentType: 'Khấu trừ', nature: 'deduction', isTaxable: false },
-  { id: 's47', code: 'KHAU_TRU_KHAC', name: 'Khấu trừ khác', componentType: 'Khấu trừ', nature: 'deduction', isTaxable: false },
-  { id: 's48', code: 'THU_NHAP_KHAC', name: 'Thu nhập khác', componentType: 'Thu nhập khác', nature: 'income', isTaxable: true },
-  { id: 's49', code: 'TRO_CAP_THAI_SAN', name: 'Trợ cấp thai sản', componentType: 'Trợ cấp', nature: 'income', isTaxable: false },
-  { id: 's50', code: 'TRO_CAP_THAT_NGHIEP', name: 'Trợ cấp thất nghiệp', componentType: 'Trợ cấp', nature: 'income', isTaxable: false },
-  { id: 's51', code: 'TRO_CAP_OM_DAU', name: 'Trợ cấp ốm đau', componentType: 'Trợ cấp', nature: 'income', isTaxable: false },
-  { id: 's52', code: 'HOA_HONG', name: 'Hoa hồng', componentType: 'Doanh số', nature: 'income', isTaxable: true },
-  { id: 's53', code: 'DOANH_SO_BAN_HANG', name: 'Doanh số bán hàng', componentType: 'Doanh số', nature: 'other', isTaxable: false },
-  { id: 's54', code: 'DIEM_KPI', name: 'Điểm KPI', componentType: 'KPI', nature: 'other', isTaxable: false },
-  { id: 's55', code: 'TY_LE_HOAN_THANH_KPI', name: 'Tỷ lệ hoàn thành KPI', componentType: 'KPI', nature: 'other', isTaxable: false },
-  { id: 's56', code: 'SO_SAN_PHAM', name: 'Số sản phẩm', componentType: 'Sản phẩm', nature: 'other', isTaxable: false },
-  { id: 's57', code: 'LUONG_SAN_PHAM', name: 'Lương sản phẩm', componentType: 'Sản phẩm', nature: 'income', isTaxable: true },
-  { id: 's58', code: 'TONG_LUONG_GROSS', name: 'Tổng lương Gross', componentType: 'Tổng hợp', nature: 'other', isTaxable: false },
-];
+const systemSalaryComponentsData: SystemSalaryComponent[] = [];
 
-// Salary components — API via SalaryComponentsTab (BR-EXEC-01)
+// Salary components ? API via SalaryComponentsTab (BR-EXEC-01)
 const salaryComponentsData: SalaryComponent[] = [];
 
 
-// Advance batch interface (Bảng tạm ứng)
+// Advance batch interface (B?ng t?m ?ng)
 interface ApprovalStep {
   level: number;
   title: string;
@@ -328,17 +328,8 @@ interface AdvanceEmployee {
 const advanceBatchesData: AdvanceBatch[] = [];
 
 
-// Mock data for advance employees detail
-const advanceEmployeesData: AdvanceEmployee[] = [
-  { id: '1', code: 'NV001', name: 'Đoàn Văn Đức', department: 'Phòng Kỹ thuật', position: 'Lập trình viên', advanceAmount: 5000000, note: '' },
-  { id: '2', code: 'NV002', name: 'Nguyễn Thị Hồng', department: 'Phòng Nhân sự', position: 'Chuyên viên', advanceAmount: 4000000, note: '' },
-  { id: '3', code: 'NV003', name: 'Nguyễn Diệu Quỳnh', department: 'Phòng Marketing', position: 'Trưởng phòng', advanceAmount: 8000000, note: 'Tạm ứng khẩn cấp' },
-  { id: '4', code: 'NV004', name: 'Trần Văn Minh', department: 'Phòng Kế toán', position: 'Kế toán trưởng', advanceAmount: 6000000, note: '' },
-  { id: '5', code: 'NV005', name: 'Nguyễn Hoàn Lan Anh', department: 'Phòng Kinh doanh', position: 'Nhân viên', advanceAmount: 3000000, note: '' },
-  { id: '6', code: 'NV006', name: 'Nguyễn Đức Quảng', department: 'Phòng Kỹ thuật', position: 'Quản lý', advanceAmount: 10000000, note: '' },
-  { id: '7', code: 'NV007', name: 'Nguyễn Quang Hoàng', department: 'Phòng Hành chính', position: 'Nhân viên', advanceAmount: 2500000, note: '' },
-  { id: '8', code: 'NV008', name: 'Hoàng Minh Bảo', department: 'Phòng Kỹ thuật', position: 'Lập trình viên', advanceAmount: 4500000, note: '' },
-];
+/** E2 ? advance employee mock removed (AC-E2-NOMOCK-01); live AdvanceRequestsTab. */
+const advanceEmployeesData: AdvanceEmployee[] = [];
 
 // Payroll summary batch interface
 interface PayrollSummaryBatch {
@@ -366,10 +357,10 @@ interface PayrollSummaryEmployee {
   netSalary: number;
 }
 
-// Payroll summary employee placeholders (legacy — empty; live payslips via API)
+// Payroll summary employee placeholders (legacy ? empty; live payslips via API)
 const payrollSummaryEmployeesData: PayrollSummaryEmployee[] = [];
 
-// Payroll summary batch placeholders (legacy dialogs — live tab uses PayrollBatchesTab)
+// Payroll summary batch placeholders (legacy dialogs ? live tab uses PayrollBatchesTab)
 const payrollSummaryBatches: PayrollSummaryBatch[] = [];
 
 
@@ -388,31 +379,16 @@ const taxSettlementsData: TaxSettlement[] = [];
 
 // Available units for tax settlement
 const availableUnits = [
-  'Văn phòng Tổng công ty',
-  'Văn phòng Hà Nội',
-  'Văn phòng Đà Nẵng',
-  'Văn phòng TP.HCM',
-  'Văn phòng Cần Thơ',
-  'Trung tâm Tư vấn & Hỗ trợ khách hàng',
+  'V?n ph�ng T?ng c�ng ty',
+  'V?n ph�ng H� N?i',
+  'V?n ph�ng ?� N?ng',
+  'V?n ph�ng TP.HCM',
+  'V?n ph�ng C?n Th?',
+  'Trung t�m T? v?n & H? tr? kh�ch h�ng',
 ];
 
-// Tax settlement employee interface for detail view
-interface TaxSettlementEmployee {
-  id: string;
-  code: string;
-  name: string;
-  avatar?: string;
-  totalTaxableIncome: number;
-  dependents: number;
-  familyDeduction: number;
-  unemploymentInsurance: number; // BHTN 1.0%
-  socialInsurance: number; // BHXH 8.0%
-  healthInsurance: number; // BHYT 1.5%
-  totalDeduction: number;
-  taxableIncomeAfterDeduction: number;
-  taxPayable: number;
-  taxPaid: number;
-}
+// Tax settlement employee row ? type + null-guards in taxSettlementFloatingUi (P0-b)
+type TaxSettlementEmployee = TaxSettlementEmployeeRow;
 
 // Tax settlement employees data (empty - loaded from database)
 const taxSettlementEmployeesData: TaxSettlementEmployee[] = [];
@@ -424,23 +400,16 @@ interface TaxPolicyParticipant {
   name: string;
   avatar?: string;
   position: string;
-  policyType: 'progressive' | 'flat'; // Thuế theo biểu lũy tiến / Thuế theo hệ số phần trăm cố định
+  policyType: 'progressive' | 'flat'; // Thu? theo bi?u l?y ti?n / Thu? theo h? s? ph?n tr?m c? ??nh
   policyName: string;
   effectiveDate: string;
-  status: 'active' | 'inactive'; // Khả dụng / Không khả dụng
+  status: 'active' | 'inactive'; // Kh? d?ng / Kh�ng kh? d?ng
   createdBy: string;
   createdByPosition: string;
 }
 
-// Mock data for tax policy participants
-const taxPolicyParticipantsData: TaxPolicyParticipant[] = [
-  { id: '1', code: 'BASE-069', name: 'Nguyễn Tuấn Dương', position: 'Trưởng phòng', policyType: 'progressive', policyName: 'Thuế theo biểu lũy tiến', effectiveDate: '01/07/2022', status: 'active', createdBy: 'Nguyễn Tuấn Dương', createdByPosition: 'Trưởng phòng' },
-  { id: '2', code: 'BASE-069', name: 'Nguyễn Tuấn Dương', position: 'Trưởng phòng', policyType: 'flat', policyName: 'Thuế theo hệ số phần trăm cố định', effectiveDate: '01/05/2022', status: 'inactive', createdBy: 'Nguyễn Tuấn Dương', createdByPosition: 'Trưởng phòng' },
-  { id: '3', code: 'BASE-0266', name: 'Trịnh Thảo', position: 'Nhân viên', policyType: 'progressive', policyName: 'Thuế theo biểu lũy tiến', effectiveDate: '01/03/2022', status: 'active', createdBy: 'Trịnh Thảo', createdByPosition: 'Nhân viên Hành chính' },
-  { id: '4', code: 'BASE-9999', name: 'Hoàng Nguyễn', position: 'Chuyên viên', policyType: 'progressive', policyName: 'Thuế theo biểu lũy tiến', effectiveDate: '14/03/2020', status: 'active', createdBy: 'Hoàng Thanh Tùng', createdByPosition: 'Chuyên viên kỹ thuật' },
-  { id: '5', code: 'MV009', name: 'Đình Tấn Cường', position: 'Trưởng Phòng', policyType: 'progressive', policyName: 'Thuế theo biểu lũy tiến', effectiveDate: '01/01/2021', status: 'active', createdBy: 'Hoàng Thanh Tùng', createdByPosition: 'Chuyên viên kỹ thuật' },
-  { id: '6', code: 'MV009', name: 'Đình Tấn Cường', position: 'Trưởng Phòng', policyType: 'flat', policyName: 'Thuế theo hệ số phần trăm cố định', effectiveDate: '01/01/2021', status: 'inactive', createdBy: 'Hoàng Thanh Tùng', createdByPosition: 'Chuyên viên kỹ thuật' },
-];
+/** E2 ? tax policy mock removed; live path = TaxPolicyTab + API. */
+const taxPolicyParticipantsData: TaxPolicyParticipant[] = [];
 
 // Insurance policy participant interface
 interface InsurancePolicyParticipant {
@@ -449,7 +418,7 @@ interface InsurancePolicyParticipant {
   name: string;
   avatar?: string;
   position: string;
-  insuranceType: 'social' | 'health' | 'unemployment' | 'all'; // BHXH / BHYT / BHTN / Tất cả
+  insuranceType: 'social' | 'health' | 'unemployment' | 'all'; // BHXH / BHYT / BHTN / T?t c?
   insuranceName: string;
   effectiveDate: string;
   expiryDate?: string;
@@ -461,17 +430,8 @@ interface InsurancePolicyParticipant {
   createdByPosition: string;
 }
 
-// Mock data for insurance policy participants
-const insurancePolicyParticipantsData: InsurancePolicyParticipant[] = [
-  { id: 'ins1', code: 'NV001', name: 'Nguyễn Văn An', position: 'Lập trình viên', insuranceType: 'all', insuranceName: 'Bảo hiểm đầy đủ', effectiveDate: '01/01/2023', status: 'active', socialInsuranceNumber: 'SN123456789', healthInsuranceNumber: 'HN123456789', baseSalary: 15000000, createdBy: 'Trần Thị Bình', createdByPosition: 'HR Manager' },
-  { id: 'ins2', code: 'NV002', name: 'Trần Thị Bình', position: 'Kế toán trưởng', insuranceType: 'all', insuranceName: 'Bảo hiểm đầy đủ', effectiveDate: '01/02/2023', status: 'active', socialInsuranceNumber: 'SN234567890', healthInsuranceNumber: 'HN234567890', baseSalary: 25000000, createdBy: 'Nguyễn Văn An', createdByPosition: 'Admin' },
-  { id: 'ins3', code: 'NV003', name: 'Lê Văn Cường', position: 'Nhân viên kinh doanh', insuranceType: 'social', insuranceName: 'BHXH', effectiveDate: '15/03/2023', status: 'active', socialInsuranceNumber: 'SN345678901', baseSalary: 12000000, createdBy: 'Trần Thị Bình', createdByPosition: 'HR Manager' },
-  { id: 'ins4', code: 'NV004', name: 'Phạm Thị Dung', position: 'Nhân viên nhân sự', insuranceType: 'all', insuranceName: 'Bảo hiểm đầy đủ', effectiveDate: '01/01/2022', expiryDate: '31/12/2023', status: 'expired', socialInsuranceNumber: 'SN456789012', healthInsuranceNumber: 'HN456789012', baseSalary: 14000000, createdBy: 'Nguyễn Văn An', createdByPosition: 'Admin' },
-  { id: 'ins5', code: 'NV005', name: 'Hoàng Văn Em', position: 'Quản lý', insuranceType: 'health', insuranceName: 'BHYT', effectiveDate: '01/06/2023', status: 'active', healthInsuranceNumber: 'HN567890123', baseSalary: 30000000, createdBy: 'Trần Thị Bình', createdByPosition: 'HR Manager' },
-  { id: 'ins6', code: 'NV006', name: 'Ngô Thị Phương', position: 'Marketing', insuranceType: 'all', insuranceName: 'Bảo hiểm đầy đủ', effectiveDate: '01/04/2023', status: 'active', socialInsuranceNumber: 'SN678901234', healthInsuranceNumber: 'HN678901234', baseSalary: 16000000, createdBy: 'Phạm Thị Dung', createdByPosition: 'Nhân sự' },
-  { id: 'ins7', code: 'NV007', name: 'Đỗ Minh Quân', position: 'Lập trình viên Senior', insuranceType: 'unemployment', insuranceName: 'BHTN', effectiveDate: '01/05/2023', status: 'inactive', baseSalary: 35000000, createdBy: 'Trần Thị Bình', createdByPosition: 'HR Manager' },
-  { id: 'ins8', code: 'NV008', name: 'Vũ Thị Hồng', position: 'Chuyên viên', insuranceType: 'all', insuranceName: 'Bảo hiểm đầy đủ', effectiveDate: '01/07/2023', status: 'active', socialInsuranceNumber: 'SN890123456', healthInsuranceNumber: 'HN890123456', baseSalary: 18000000, createdBy: 'Phạm Thị Dung', createdByPosition: 'Nhân sự' },
-];
+/** E2 ? insurance mock removed; live path = InsurancePolicyTab + API. */
+const insurancePolicyParticipantsData: InsurancePolicyParticipant[] = [];
 
 // Payment batch type
 interface PaymentBatch {
@@ -490,120 +450,199 @@ const paymentBatchesData: PaymentBatch[] = [];
 export default function Payroll() {
   const { t } = useTranslation();
   const { payslips: livePayslips, isLoading: livePayslipsLoading } = usePayrollPayslips();
-  const [payrollLiveBootstrapped, setPayrollLiveBootstrapped] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPayroll, setSelectedPayroll] = useState<any | null>(null);
-  const [monthFilter, setMonthFilter] = useState('2024-01');
-  const [selectedPaymentBatch, setSelectedPaymentBatch] = useState<PaymentBatch | null>(null);
-  const [showAddPaymentDialog, setShowAddPaymentDialog] = useState(false);
-  const [selectedEmployeesToAdd, setSelectedEmployeesToAdd] = useState<string[]>([]);
-  const [showAddPayrollSummaryDialog, setShowAddPayrollSummaryDialog] = useState(false);
-  const [showDeletePayrollBatchDialog, setShowDeletePayrollBatchDialog] = useState(false);
-  const [payrollBatchToDelete, setPayrollBatchToDelete] = useState<PayrollSummaryBatch | null>(null);
-  const [selectedPayrollSummaryBatch, setSelectedPayrollSummaryBatch] = useState<PayrollSummaryBatch | null>(null);
-  const [showPayslipPrintDialog, setShowPayslipPrintDialog] = useState(false);
-  const [printEmployeeIndex, setPrintEmployeeIndex] = useState(0);
+
+  /** P0-c: race-prone tab/modal/form ? domain useReducer (shell/advance/taxUi/salary/batch). */
+  const {
+    payrollLiveBootstrapped,
+    activeTab,
+    setActiveTab,
+    searchQuery,
+    setSearchQuery,
+    selectedPayroll,
+    setSelectedPayroll,
+    monthFilter,
+    setMonthFilter,
+    selectedPaymentBatch,
+    setSelectedPaymentBatch,
+    showAddPaymentDialog,
+    setShowAddPaymentDialog,
+    selectedEmployeesToAdd,
+    setSelectedEmployeesToAdd,
+    showAddPayrollSummaryDialog,
+    setShowAddPayrollSummaryDialog,
+    showDeletePayrollBatchDialog,
+    setShowDeletePayrollBatchDialog,
+    payrollBatchToDelete,
+    setPayrollBatchToDelete,
+    selectedPayrollSummaryBatch,
+    setSelectedPayrollSummaryBatch,
+    showPayslipPrintDialog,
+    setShowPayslipPrintDialog,
+    printEmployeeIndex,
+    setPrintEmployeeIndex,
+    sortField,
+    setSortField,
+    sortDirection,
+    setSortDirection,
+    payrollDepartmentFilter,
+    setPayrollDepartmentFilter,
+    showAddAdvanceDialog,
+    setShowAddAdvanceDialog,
+    advanceFormData,
+    setAdvanceFormData,
+    selectedAdvanceBatch,
+    setSelectedAdvanceBatch,
+    selectedAdvanceBatches,
+    setSelectedAdvanceBatches,
+    showDeleteAdvanceDialog,
+    setShowDeleteAdvanceDialog,
+    advanceToDelete,
+    setAdvanceToDelete,
+    showEditAdvanceDialog,
+    setShowEditAdvanceDialog,
+    advanceToEdit,
+    setAdvanceToEdit,
+    showApprovalDialog,
+    setShowApprovalDialog,
+    approvalAction,
+    setApprovalAction,
+    approvalNote,
+    setApprovalNote,
+    taxSettlementSearch,
+    setTaxSettlementSearch,
+    taxSettlementUnitFilter,
+    setTaxSettlementUnitFilter,
+    selectedTaxSettlements,
+    setSelectedTaxSettlements,
+    showAddTaxSettlementDialog,
+    setShowAddTaxSettlementDialog,
+    taxSettlementFormData,
+    setTaxSettlementFormData,
+    selectedTaxSettlement,
+    setSelectedTaxSettlement,
+    taxSettlementDetailSearch,
+    setTaxSettlementDetailSearch,
+    taxSettlementDetailStatusFilter,
+    setTaxSettlementDetailStatusFilter,
+    taxSettlementDetailUnitFilter,
+    setTaxSettlementDetailUnitFilter,
+    selectedTaxSettlementEmployees,
+    setSelectedTaxSettlementEmployees,
+    showTaxRefundDialog,
+    setShowTaxRefundDialog,
+    taxRefundFormData,
+    setTaxRefundFormData,
+    showTaxDeductionDialog,
+    setShowTaxDeductionDialog,
+    taxDeductionFormData,
+    setTaxDeductionFormData,
+    showDeleteTaxEmployeeDialog,
+    setShowDeleteTaxEmployeeDialog,
+    taxEmployeeToDelete,
+    setTaxEmployeeToDelete,
+    showBulkDeleteTaxEmployeeDialog,
+    setShowBulkDeleteTaxEmployeeDialog,
+    activeDataSubTab,
+    setActiveDataSubTab,
+    activeCalcSubTab,
+    setActiveCalcSubTab,
+    activePolicySubTab,
+    setActivePolicySubTab,
+    selectedPayrollBatches,
+    setSelectedPayrollBatches,
+    selectedSalaryComponents,
+    setSelectedSalaryComponents,
+    salaryComponentStatusFilter,
+    setSalaryComponentStatusFilter,
+    salaryComponentUnitFilter,
+    setSalaryComponentUnitFilter,
+    salaryComponentsPage,
+    setSalaryComponentsPage,
+    showEditSalaryComponentDialog,
+    setShowEditSalaryComponentDialog,
+    showDeleteSalaryComponentDialog,
+    setShowDeleteSalaryComponentDialog,
+    salaryComponentToEdit,
+    setSalaryComponentToEdit,
+    salaryComponentToDelete,
+    setSalaryComponentToDelete,
+    editSalaryComponentForm,
+    setEditSalaryComponentForm,
+    showSystemComponentsDialog,
+    setShowSystemComponentsDialog,
+    systemComponentsSearch,
+    setSystemComponentsSearch,
+    systemComponentsTypeFilter,
+    setSystemComponentsTypeFilter,
+    selectedSystemComponents,
+    setSelectedSystemComponents,
+    systemComponentsPage,
+    setSystemComponentsPage,
+    bootstrapLivePayslips,
+    openEditSalaryComponent,
+    closeEditSalaryComponent,
+    onEditSalaryComponentOpenChange,
+    openDeleteSalaryComponent,
+    closeDeleteSalaryComponent,
+    onDeleteSalaryComponentOpenChange,
+    closeSystemComponents,
+    onSystemComponentsOpenChange,
+    openAddTaxSettlement,
+    closeAddTaxSettlement,
+    onAddTaxSettlementOpenChange,
+    openTaxRefund,
+    closeTaxRefund,
+    onTaxRefundOpenChange,
+    openTaxDeduction,
+    closeTaxDeduction,
+    onTaxDeductionOpenChange,
+    openDeleteTaxEmployee,
+    closeDeleteTaxEmployee,
+    onDeleteTaxEmployeeOpenChange,
+    openBulkDeleteTaxEmployee,
+    closeBulkDeleteTaxEmployee,
+    onBulkDeleteTaxEmployeeOpenChange,
+    closeAddAdvance,
+    onAddAdvanceOpenChange,
+    closeEditAdvance,
+    onEditAdvanceOpenChange,
+    closeDeleteAdvance,
+    onDeleteAdvanceOpenChange,
+    closeApproval,
+    onApprovalOpenChange,
+    closeAddPayment,
+    onAddPaymentOpenChange,
+    closeDeletePayrollBatch,
+    onDeletePayrollBatchOpenChange,
+    onPayslipPrintOpenChange,
+  } = usePayrollDomainUi<
+    AdvanceBatch,
+    TaxSettlement,
+    TaxSettlementEmployee,
+    SalaryComponent,
+    PaymentBatch,
+    PayrollSummaryBatch
+  >();
 
   useEffect(() => {
     if (payrollLiveBootstrapped || livePayslipsLoading) return;
     if (livePayslips.length > 0) {
-      setActiveTab('calculate');
-      setActiveCalcSubTab('calc-list');
-      setPayrollLiveBootstrapped(true);
+      bootstrapLivePayslips();
     }
-  }, [livePayslips.length, livePayslipsLoading, payrollLiveBootstrapped]);
-  
-  // Sorting state for payroll summary detail
-  const [sortField, setSortField] = useState<'name' | 'department' | 'baseSalary' | 'netSalary' | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  
-  // Department filter for payroll summary detail
-  const [payrollDepartmentFilter, setPayrollDepartmentFilter] = useState('all');
-  
-  // Advance (Tạm ứng) state
-  const [showAddAdvanceDialog, setShowAddAdvanceDialog] = useState(false);
-  const [advanceFormData, setAdvanceFormData] = useState({
-    payrollBatch: '',
-    department: '',
-    position: 'all',
-    employeeType: 'all', // 'all' | 'selected'
-    advanceName: '',
-    description: ''
-  });
-  
-  // Advance management states
-  const [selectedAdvanceBatch, setSelectedAdvanceBatch] = useState<AdvanceBatch | null>(null);
-  const [selectedAdvanceBatches, setSelectedAdvanceBatches] = useState<string[]>([]);
-  const [showDeleteAdvanceDialog, setShowDeleteAdvanceDialog] = useState(false);
-  const [advanceToDelete, setAdvanceToDelete] = useState<AdvanceBatch | null>(null);
-  const [showEditAdvanceDialog, setShowEditAdvanceDialog] = useState(false);
-  const [advanceToEdit, setAdvanceToEdit] = useState<AdvanceBatch | null>(null);
-  
-  // Approval workflow states
-  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
-  const [approvalAction, setApprovalAction] = useState<'approve' | 'reject'>('approve');
-  const [approvalNote, setApprovalNote] = useState('');
-  
-  // Tax settlement states
+  }, [livePayslips.length, livePayslipsLoading, payrollLiveBootstrapped, bootstrapLivePayslips]);
+
+  // Tax settlement data (list) ? kh�ng g?p v�o UI reducer
   const [taxSettlements, setTaxSettlements] = useState<TaxSettlement[]>(taxSettlementsData);
-  const [taxSettlementSearch, setTaxSettlementSearch] = useState('');
-  const [taxSettlementUnitFilter, setTaxSettlementUnitFilter] = useState('all');
-  const [selectedTaxSettlements, setSelectedTaxSettlements] = useState<string[]>([]);
-  const [showAddTaxSettlementDialog, setShowAddTaxSettlementDialog] = useState(false);
-  const [taxSettlementFormData, setTaxSettlementFormData] = useState({
-    year: new Date().getFullYear(),
-    appliedUnits: [] as string[],
-    name: '',
-    monthlyTaxTables: {} as Record<number, string>,
-  });
-  const [selectedTaxSettlement, setSelectedTaxSettlement] = useState<TaxSettlement | null>(null);
-  const [taxSettlementDetailSearch, setTaxSettlementDetailSearch] = useState('');
-  const [taxSettlementDetailStatusFilter, setTaxSettlementDetailStatusFilter] = useState('all');
-  const [taxSettlementDetailUnitFilter, setTaxSettlementDetailUnitFilter] = useState('all');
-  const [selectedTaxSettlementEmployees, setSelectedTaxSettlementEmployees] = useState<string[]>([]);
-  const [showEditTaxEmployeeDialog, setShowEditTaxEmployeeDialog] = useState(false);
-  const [taxEmployeeToEdit, setTaxEmployeeToEdit] = useState<TaxSettlementEmployee | null>(null);
-  const [taxEmployeeEditForm, setTaxEmployeeEditForm] = useState({
-    totalTaxableIncome: 0,
-    dependents: 0,
-    familyDeduction: 0,
-    unemploymentInsurance: 0,
-    socialInsurance: 0,
-    healthInsurance: 0,
-    taxPayable: 0,
-    taxPaid: 0,
-  });
+  /** Floating UI dialog s?a NV quy?t to�n thu? ? lu�n init object (UX-02 / P0-b / C1 must_keep). */
+  const [taxSettlementFloatingUi, setTaxSettlementFloatingUi] = useState(
+    createEmptyTaxSettlementFloatingUiState,
+  );
+  const showEditTaxEmployeeDialog = taxSettlementFloatingUi?.showEditDialog === true;
+  const taxEmployeeToEdit = taxSettlementFloatingUi?.employeeToEdit ?? null;
+  const taxEmployeeEditForm = taxSettlementFloatingUi?.editForm ?? createEmptyTaxSettlementFloatingUiState().editForm;
   const [taxSettlementEmployees, setTaxSettlementEmployees] = useState<TaxSettlementEmployee[]>(taxSettlementEmployeesData);
-  
-  // Tax refund (Hoàn thuế) states
-  const [showTaxRefundDialog, setShowTaxRefundDialog] = useState(false);
-  const [taxRefundFormData, setTaxRefundFormData] = useState({
-    date: new Date(),
-    appliedUnits: [] as string[],
-    position: 'all',
-    employeeType: 'all' as 'all' | 'selected',
-    name: '',
-    incomeType: 'Thuế TNCN được hoàn',
-  });
-  
-  // Tax deduction (Khấu trừ thuế) states
-  const [showTaxDeductionDialog, setShowTaxDeductionDialog] = useState(false);
-  const [taxDeductionFormData, setTaxDeductionFormData] = useState({
-    date: new Date(),
-    appliedUnits: [] as string[],
-    position: 'all',
-    employeeType: 'all' as 'all' | 'selected',
-    name: '',
-    deductionType: 'Thuế TNCN khấu trừ',
-  });
-  
-  // Delete tax settlement employee states
-  const [showDeleteTaxEmployeeDialog, setShowDeleteTaxEmployeeDialog] = useState(false);
-  const [taxEmployeeToDelete, setTaxEmployeeToDelete] = useState<TaxSettlementEmployee | null>(null);
-  const [showBulkDeleteTaxEmployeeDialog, setShowBulkDeleteTaxEmployeeDialog] = useState(false);
-  
-  // Advance dialog unit options (API-backed list deferred — empty until wired)
+
+  // Advance dialog unit options (API-backed list deferred ? empty until wired)
   const payrollDepartments = [...new Set(payrollSummaryEmployeesData.map((emp) => emp.department))];
 
   const filteredRecords: any[] = []; // Payroll records now managed via PayrollBatchesTab / live payslips API
@@ -623,19 +662,7 @@ export default function Payroll() {
       batch.department.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
-  // Active data sub-tab
-
-  // Active data sub-tab
-  const [activeDataSubTab, setActiveDataSubTab] = useState('data-attendance');
-  
-  // Active calculate sub-tab
-  const [activeCalcSubTab, setActiveCalcSubTab] = useState('calc-list');
-  
-  // Active policy sub-tab
-  const [activePolicySubTab, setActivePolicySubTab] = useState('tax');
-  
-  // Tax policy states
+  // Tax policy states (mock policy tabs ? outside P0-c race clusters)
   const [taxPolicyTab, setTaxPolicyTab] = useState<'participants' | 'pending' | 'settings'>('participants');
   const [taxPolicySearch, setTaxPolicySearch] = useState('');
   const [taxPolicyDateFilter, setTaxPolicyDateFilter] = useState('');
@@ -644,7 +671,7 @@ export default function Payroll() {
   const [taxPolicyStatusFilter, setTaxPolicyStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [taxPolicyTypeFilter, setTaxPolicyTypeFilter] = useState<'all' | 'progressive' | 'flat'>('all');
   const [selectedTaxPolicyEmployees, setSelectedTaxPolicyEmployees] = useState<string[]>([]);
-  
+
   // Insurance policy states
   const [insurancePolicyTab, setInsurancePolicyTab] = useState<'participants' | 'pending' | 'settings'>('participants');
   const [insurancePolicySearch, setInsurancePolicySearch] = useState('');
@@ -666,21 +693,17 @@ export default function Payroll() {
   const [taxPolicyParticipantDepartmentFilter, setTaxPolicyParticipantDepartmentFilter] = useState('all');
   const [taxPolicyParticipantPolicyType, setTaxPolicyParticipantPolicyType] = useState<'progressive' | 'flat'>('progressive');
   const [taxPolicyParticipantEffectiveDate, setTaxPolicyParticipantEffectiveDate] = useState('');
-  
-  // Available employees for adding to tax policy (mock data)
-  const availableTaxPolicyEmployees = [
-    { id: 'tp1', code: 'NV001', name: 'Nguyễn Văn An', position: 'Lập trình viên', department: 'Phòng Kỹ thuật', avatar: '' },
-    { id: 'tp2', code: 'NV002', name: 'Trần Thị Bình', position: 'Kế toán trưởng', department: 'Phòng Kế toán', avatar: '' },
-    { id: 'tp3', code: 'NV003', name: 'Lê Văn Cường', position: 'Nhân viên kinh doanh', department: 'Phòng Kinh doanh', avatar: '' },
-    { id: 'tp4', code: 'NV004', name: 'Phạm Thị Dung', position: 'Nhân viên nhân sự', department: 'Phòng Nhân sự', avatar: '' },
-    { id: 'tp5', code: 'NV005', name: 'Hoàng Văn Em', position: 'Quản lý', department: 'Phòng Hành chính', avatar: '' },
-    { id: 'tp6', code: 'NV006', name: 'Ngô Thị Phương', position: 'Marketing', department: 'Phòng Marketing', avatar: '' },
-    { id: 'tp7', code: 'NV007', name: 'Đỗ Minh Quân', position: 'Lập trình viên Senior', department: 'Phòng Kỹ thuật', avatar: '' },
-    { id: 'tp8', code: 'NV008', name: 'Vũ Thị Hồng', position: 'Chuyên viên', department: 'Phòng Kế toán', avatar: '' },
-    { id: 'tp9', code: 'NV009', name: 'Bùi Văn Tuấn', position: 'Trưởng nhóm', department: 'Phòng Kinh doanh', avatar: '' },
-    { id: 'tp10', code: 'NV010', name: 'Mai Thị Lan', position: 'Thư ký', department: 'Phòng Hành chính', avatar: '' },
-  ];
-  
+
+  // E2 — orphan dialog mock emptied; live TaxPolicyTab uses useEmployees (no mock NV islands)
+  const availableTaxPolicyEmployees: {
+    id: string;
+    code: string;
+    name: string;
+    position: string;
+    department: string;
+    avatar: string;
+  }[] = [];
+
   // Filter available employees for tax policy
   const filteredTaxPolicyEmployeesToAdd = availableTaxPolicyEmployees.filter((emp) => {
     const matchesSearch = emp.name.toLowerCase().includes(taxPolicyParticipantSearch.toLowerCase()) ||
@@ -688,16 +711,16 @@ export default function Payroll() {
     const matchesDepartment = taxPolicyParticipantDepartmentFilter === 'all' || emp.department === taxPolicyParticipantDepartmentFilter;
     return matchesSearch && matchesDepartment;
   });
-  
+
   // Toggle tax policy employee selection
   const toggleTaxPolicyParticipantToAddSelection = (empId: string) => {
-    setSelectedTaxPolicyParticipantsToAdd(prev => 
-      prev.includes(empId) 
+    setSelectedTaxPolicyParticipantsToAdd(prev =>
+      prev.includes(empId)
         ? prev.filter(id => id !== empId)
         : [...prev, empId]
     );
   };
-  
+
   // Toggle select all tax policy employees
   const toggleSelectAllTaxPolicyParticipantsToAdd = () => {
     if (selectedTaxPolicyParticipantsToAdd.length === filteredTaxPolicyEmployeesToAdd.length) {
@@ -706,7 +729,7 @@ export default function Payroll() {
       setSelectedTaxPolicyParticipantsToAdd(filteredTaxPolicyEmployeesToAdd.map(emp => emp.id));
     }
   };
-  
+
   // Confirm add tax policy participants
   const confirmAddTaxPolicyParticipants = () => {
     // In real app, this would call API to add selected employees to tax policy
@@ -718,13 +741,9 @@ export default function Payroll() {
     setTaxPolicyParticipantPolicyType('progressive');
     setTaxPolicyParticipantEffectiveDate('');
   };
-  
+
   // Get unique departments from available employees
   const taxPolicyDepartments = [...new Set(availableTaxPolicyEmployees.map(emp => emp.department))];
-  
-  // Selected payroll summary batches for bulk actions
-  const [selectedPayrollBatches, setSelectedPayrollBatches] = useState<string[]>([]);
-  
 
   const filteredPayrollSummaryBatches = payrollSummaryBatches.filter(
     (batch) =>
@@ -859,7 +878,7 @@ export default function Payroll() {
              </Button>
            </div>
 
-          {/* Step Cards — hide onboarding wizard when live payslips exist (D-HRM-PAY-EMPTY-01) */}
+          {/* Step Cards ? hide onboarding wizard when live payslips exist (D-HRM-PAY-EMPTY-01) */}
           {livePayslips.length === 0 ? (
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
             {stepCards.map((step) => {
@@ -889,7 +908,7 @@ export default function Payroll() {
           </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              {livePayslips.length} {t('payroll.payslipCount', 'phiếu lương')} —{' '}
+              {livePayslips.length} {t('payroll.payslipCount', 'phi?u l??ng')} ?{' '}
               <button
                 type="button"
                 className="text-primary underline-offset-2 hover:underline"
@@ -898,7 +917,7 @@ export default function Payroll() {
                   setActiveCalcSubTab('calc-list');
                 }}
               >
-                {t('payroll.viewPayrollList', 'Xem danh sách')}
+                {t('payroll.viewPayrollList', 'Xem danh s�ch')}
               </button>
             </p>
           )}
@@ -955,8 +974,8 @@ export default function Payroll() {
               </CardHeader>
               <CardContent>
                 <EmbedApiEmptyState
-                  title={t('payroll.feedback.emptyTitle', 'Chưa có phản hồi bảng lương')}
-                  body={t('payroll.feedback.emptyBody', 'Phản hồi nhân viên sẽ hiển thị khi có dữ liệu từ hrm-api.')}
+                  title={t('payroll.feedback.emptyTitle', 'Ch?a c� ph?n h?i b?ng l??ng')}
+                  body={t('payroll.feedback.emptyBody', 'Ph?n h?i nh�n vi�n s? hi?n th? khi c� d? li?u t? hrm-api.')}
                 />
               </CardContent>
             </Card>
@@ -1077,67 +1096,18 @@ export default function Payroll() {
     );
   };
 
-  // Legacy salary-component dialogs (SalaryComponentsTab owns the live tab)
-  const [selectedSalaryComponents, setSelectedSalaryComponents] = useState<string[]>([]);
-  const [salaryComponentStatusFilter, setSalaryComponentStatusFilter] = useState('all');
-  const [salaryComponentUnitFilter, setSalaryComponentUnitFilter] = useState('all');
-  const [salaryComponentsPage, setSalaryComponentsPage] = useState(1);
+  // Legacy salary-component dialogs ? state t? usePayrollDomainUi (SalaryComponentsTab = live Add D5)
   const salaryComponentsPerPage = 25;
-  
-  // Salary component edit/delete states
-  const [showEditSalaryComponentDialog, setShowEditSalaryComponentDialog] = useState(false);
-  const [showDeleteSalaryComponentDialog, setShowDeleteSalaryComponentDialog] = useState(false);
-  const [showAddSalaryComponentDialog, setShowAddSalaryComponentDialog] = useState(false);
-  const [salaryComponentToEdit, setSalaryComponentToEdit] = useState<SalaryComponent | null>(null);
-  const [salaryComponentToDelete, setSalaryComponentToDelete] = useState<SalaryComponent | null>(null);
-  const [editSalaryComponentForm, setEditSalaryComponentForm] = useState({
-    code: '',
-    name: '',
-    appliedUnit: '',
-    componentType: '',
-    nature: 'other' as SalaryComponent['nature'],
-    valueType: 'number' as SalaryComponent['valueType'],
-    formula: '',
-  });
-  
-  // Add salary component form state
-  const [addSalaryComponentForm, setAddSalaryComponentForm] = useState({
-    code: '',
-    name: '',
-    appliedUnits: [] as string[],
-    componentType: '',
-    nature: 'income' as SalaryComponent['nature'],
-    valueType: 'currency' as SalaryComponent['valueType'],
-    isTaxable: true,
-    quota: '',
-    allowExceedQuota: false,
-    formula: '',
-    description: '',
-  });
-  
-  // Add salary component form errors
-  const [addSalaryComponentErrors, setAddSalaryComponentErrors] = useState<{
-    code?: string;
-    name?: string;
-    appliedUnits?: string;
-    componentType?: string;
-  }>({});
-  
-  // Available units for multi-select
+
+  // Available units for multi-select (tax settlement / filters)
   const availableUnits = [
-    'Văn phòng Hà Nội',
-    'Văn phòng Cà Mau',
-    'Văn phòng TP.HCM',
-    'Văn phòng Đà Nẵng',
-    'Công ty TNHH Đại Thành',
+    'V?n ph�ng H� N?i',
+    'V?n ph�ng C� Mau',
+    'V?n ph�ng TP.HCM',
+    'V?n ph�ng ?� N?ng',
+    'C�ng ty TNHH ??i Th�nh',
   ];
-  
-  // System components dialog state
-  const [showSystemComponentsDialog, setShowSystemComponentsDialog] = useState(false);
-  const [systemComponentsSearch, setSystemComponentsSearch] = useState('');
-  const [systemComponentsTypeFilter, setSystemComponentsTypeFilter] = useState('all');
-  const [selectedSystemComponents, setSelectedSystemComponents] = useState<string[]>([]);
-  const [systemComponentsPage, setSystemComponentsPage] = useState(1);
+
   const systemComponentsPerPage = 25;
   
   // Filtered system components
@@ -1178,11 +1148,7 @@ export default function Payroll() {
   const confirmAddSystemComponents = () => {
     // In real app, this would call API to add selected components
     console.log('Adding system components:', selectedSystemComponents);
-    setShowSystemComponentsDialog(false);
-    setSelectedSystemComponents([]);
-    setSystemComponentsSearch('');
-    setSystemComponentsTypeFilter('all');
-    setSystemComponentsPage(1);
+    closeSystemComponents();
   };
   
   // Get unique component types for filter
@@ -1251,10 +1217,9 @@ export default function Payroll() {
     }
   };
 
-  // Handle edit salary component
+  // Handle edit salary component ? atomic OPEN (P0-c race fix)
   const handleEditSalaryComponent = (component: SalaryComponent) => {
-    setSalaryComponentToEdit(component);
-    setEditSalaryComponentForm({
+    openEditSalaryComponent(component, {
       code: component.code,
       name: component.name,
       appliedUnit: component.appliedUnit,
@@ -1263,127 +1228,25 @@ export default function Payroll() {
       valueType: component.valueType,
       formula: component.formula || '',
     });
-    setShowEditSalaryComponentDialog(true);
   };
 
-  // Handle delete salary component
+  // Handle delete salary component ? atomic OPEN
   const handleDeleteSalaryComponent = (component: SalaryComponent) => {
-    setSalaryComponentToDelete(component);
-    setShowDeleteSalaryComponentDialog(true);
+    openDeleteSalaryComponent(component);
   };
 
-  // Confirm delete salary component
+  // Confirm delete salary component ? atomic CLOSE
   const confirmDeleteSalaryComponent = () => {
     // In real app, this would call API to delete
     console.log('Deleting salary component:', salaryComponentToDelete?.id);
-    setShowDeleteSalaryComponentDialog(false);
-    setSalaryComponentToDelete(null);
+    closeDeleteSalaryComponent();
   };
 
-  // Save edited salary component
+  // Save edited salary component ? atomic CLOSE (reset form)
   const saveEditedSalaryComponent = () => {
     // In real app, this would call API to update
     console.log('Saving salary component:', salaryComponentToEdit?.id, editSalaryComponentForm);
-    setShowEditSalaryComponentDialog(false);
-    setSalaryComponentToEdit(null);
-  };
-
-  // Validate add salary component form
-  const validateAddSalaryComponentForm = () => {
-    const errors: typeof addSalaryComponentErrors = {};
-    
-    if (!addSalaryComponentForm.code.trim()) {
-      errors.code = t('payroll.salaryComponents.codeRequired');
-    } else if (addSalaryComponentForm.code.length < 3) {
-      errors.code = t('payroll.salaryComponents.codeMinLength');
-    } else if (!/^[A-Z0-9_]+$/.test(addSalaryComponentForm.code)) {
-      errors.code = t('payroll.salaryComponents.codeFormat');
-    } else if (salaryComponentsData.some(c => c.code === addSalaryComponentForm.code)) {
-      errors.code = t('payroll.salaryComponents.codeExists');
-    }
-    
-    if (!addSalaryComponentForm.name.trim()) {
-      errors.name = t('payroll.salaryComponents.nameRequired');
-    } else if (addSalaryComponentForm.name.length < 3) {
-      errors.name = t('payroll.salaryComponents.nameMinLength');
-    } else if (addSalaryComponentForm.name.length > 100) {
-      errors.name = t('payroll.salaryComponents.nameMaxLength');
-    }
-    
-    if (addSalaryComponentForm.appliedUnits.length === 0) {
-      errors.appliedUnits = t('payroll.salaryComponents.unitRequired');
-    }
-    
-    if (!addSalaryComponentForm.componentType) {
-      errors.componentType = t('payroll.salaryComponents.typeRequired');
-    }
-    
-    setAddSalaryComponentErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  // Reset add form
-  const resetAddSalaryComponentForm = () => {
-    setAddSalaryComponentForm({
-      code: '',
-      name: '',
-      appliedUnits: [],
-      componentType: '',
-      nature: 'income',
-      valueType: 'currency',
-      isTaxable: true,
-      quota: '',
-      allowExceedQuota: false,
-      formula: '',
-      description: '',
-    });
-    setAddSalaryComponentErrors({});
-  };
-
-  // Toggle unit selection
-  const toggleUnitSelection = (unit: string) => {
-    setAddSalaryComponentForm(prev => ({
-      ...prev,
-      appliedUnits: prev.appliedUnits.includes(unit)
-        ? prev.appliedUnits.filter(u => u !== unit)
-        : [...prev.appliedUnits, unit]
-    }));
-    if (addSalaryComponentErrors.appliedUnits) {
-      setAddSalaryComponentErrors(prev => ({ ...prev, appliedUnits: undefined }));
-    }
-  };
-
-  // Remove unit from selection
-  const removeUnitFromSelection = (unit: string) => {
-    setAddSalaryComponentForm(prev => ({
-      ...prev,
-      appliedUnits: prev.appliedUnits.filter(u => u !== unit)
-    }));
-  };
-
-  // Save new salary component
-  const saveNewSalaryComponent = (): boolean => {
-    if (!validateAddSalaryComponentForm()) {
-      return false;
-    }
-    
-    // In real app, this would call API to create
-    console.log('Creating salary component:', addSalaryComponentForm);
-    setShowAddSalaryComponentDialog(false);
-    resetAddSalaryComponentForm();
-    return true;
-  };
-  
-  // Save and add another salary component
-  const saveAndAddAnotherSalaryComponent = () => {
-    if (!validateAddSalaryComponentForm()) {
-      return;
-    }
-    
-    // In real app, this would call API to create
-    console.log('Creating salary component:', addSalaryComponentForm);
-    // Reset form but keep dialog open
-    resetAddSalaryComponentForm();
+    closeEditSalaryComponent();
   };
 
   const renderDataContent = () => {
@@ -1455,13 +1318,7 @@ export default function Payroll() {
       setTaxSettlements(prev => [newSettlement, ...prev]);
     });
 
-    setShowAddTaxSettlementDialog(false);
-    setTaxSettlementFormData({
-      year: new Date().getFullYear(),
-      appliedUnits: [],
-      name: '',
-      monthlyTaxTables: {},
-    });
+    closeAddTaxSettlement();
   };
 
   // Remove unit from selection
@@ -1482,7 +1339,7 @@ export default function Payroll() {
              <h2 className="text-lg font-semibold">{t('payroll.taxSettlement.title')}</h2>
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => setShowAddTaxSettlementDialog(true)}
+              onClick={() => openAddTaxSettlement()}
             >
               <Plus className="w-4 h-4 mr-2" />
               {t('payroll.common.addNew')}
@@ -1592,7 +1449,7 @@ export default function Payroll() {
         </Card>
 
         {/* Add Tax Settlement Dialog */}
-        <Dialog open={showAddTaxSettlementDialog} onOpenChange={setShowAddTaxSettlementDialog}>
+        <Dialog open={showAddTaxSettlementDialog} onOpenChange={onAddTaxSettlementOpenChange}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t('payroll.taxSettlement.addTitle')}</DialogTitle>
@@ -1724,7 +1581,7 @@ export default function Payroll() {
               </div>
             </div>
             <DialogFooter>
-               <Button variant="outline" onClick={() => setShowAddTaxSettlementDialog(false)}>
+               <Button variant="outline" onClick={() => closeAddTaxSettlement()}>
                 {t('payroll.common.cancel')}
               </Button>
               <Button
@@ -1740,12 +1597,11 @@ export default function Payroll() {
     );
   };
 
-  // Filter tax settlement employees for detail view
-  const filteredTaxSettlementEmployees = taxSettlementEmployees.filter(emp => {
-    const matchesSearch = emp.name.toLowerCase().includes(taxSettlementDetailSearch.toLowerCase()) ||
-      emp.code.toLowerCase().includes(taxSettlementDetailSearch.toLowerCase());
-    return matchesSearch;
-  });
+  // Filter tax settlement employees for detail view (null-safe ? UX-02)
+  const filteredTaxSettlementEmployees = taxSettlementEmployees
+    .map((emp) => normalizeTaxSettlementEmployee(emp))
+    .filter((emp): emp is TaxSettlementEmployee => emp != null)
+    .filter((emp) => matchesTaxSettlementEmployeeSearch(emp, taxSettlementDetailSearch));
 
   // Toggle tax settlement employee selection
   const toggleTaxSettlementEmployeeSelection = (id: string) => {
@@ -1763,46 +1619,38 @@ export default function Payroll() {
     }
   };
 
-  // Open edit tax employee dialog
-  const openEditTaxEmployeeDialog = (employee: TaxSettlementEmployee) => {
-    setTaxEmployeeToEdit(employee);
-    setTaxEmployeeEditForm({
-      totalTaxableIncome: employee.totalTaxableIncome,
-      dependents: employee.dependents,
-      familyDeduction: employee.familyDeduction,
-      unemploymentInsurance: employee.unemploymentInsurance,
-      socialInsurance: employee.socialInsurance,
-      healthInsurance: employee.healthInsurance,
-      taxPayable: employee.taxPayable,
-      taxPaid: employee.taxPaid,
-    });
-    setShowEditTaxEmployeeDialog(true);
+  // Open edit tax employee dialog (safe init ? kh�ng crash khi row thi?u field)
+  const openEditTaxEmployeeDialog = (employee: TaxSettlementEmployee | null | undefined) => {
+    setTaxSettlementFloatingUi((prev) => openTaxEmployeeEditFloatingUi(prev, employee));
   };
 
   // Handle save tax employee edit
   const handleSaveTaxEmployeeEdit = () => {
     if (!taxEmployeeToEdit) return;
 
-    const totalDeduction = taxEmployeeEditForm.familyDeduction + 
-      taxEmployeeEditForm.unemploymentInsurance + 
-      taxEmployeeEditForm.socialInsurance + 
-      taxEmployeeEditForm.healthInsurance;
-    
-    const taxableIncomeAfterDeduction = Math.max(0, taxEmployeeEditForm.totalTaxableIncome - totalDeduction);
+    const form = taxEmployeeEditForm;
+    const totalDeduction =
+      form.familyDeduction +
+      form.unemploymentInsurance +
+      form.socialInsurance +
+      form.healthInsurance;
 
-    setTaxSettlementEmployees(prev => prev.map(emp => 
-      emp.id === taxEmployeeToEdit.id 
-        ? {
-            ...emp,
-            ...taxEmployeeEditForm,
-            totalDeduction,
-            taxableIncomeAfterDeduction,
-          }
-        : emp
-    ));
+    const taxableIncomeAfterDeduction = Math.max(0, form.totalTaxableIncome - totalDeduction);
 
-    setShowEditTaxEmployeeDialog(false);
-    setTaxEmployeeToEdit(null);
+    setTaxSettlementEmployees((prev) =>
+      prev.map((emp) =>
+        emp.id === taxEmployeeToEdit.id
+          ? {
+              ...emp,
+              ...form,
+              totalDeduction,
+              taxableIncomeAfterDeduction,
+            }
+          : emp,
+      ),
+    );
+
+    setTaxSettlementFloatingUi(closeTaxEmployeeEditFloatingUi());
   };
 
   // Calculate totals for tax settlement detail
@@ -1854,7 +1702,7 @@ export default function Payroll() {
                 </Button>
               </div>
               <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                Chưa chuyển
+                Ch?a chuy?n
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -1873,11 +1721,11 @@ export default function Payroll() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => setShowTaxRefundDialog(true)}>
+                  <DropdownMenuItem onClick={() => openTaxRefund()}>
                     <CheckCircle2 className="w-4 h-4 mr-2" />
                     {t('payroll.taxSettlement.taxRefund')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowTaxDeductionDialog(true)}>
+                  <DropdownMenuItem onClick={() => openTaxDeduction()}>
                     <CheckCircle2 className="w-4 h-4 mr-2" />
                     {t('payroll.taxSettlement.taxDeduction')}
                   </DropdownMenuItem>
@@ -1917,7 +1765,7 @@ export default function Payroll() {
                 variant="outline" 
                 size="sm" 
                 className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground gap-1"
-                onClick={() => setShowBulkDeleteTaxEmployeeDialog(true)}
+                onClick={() => openBulkDeleteTaxEmployee()}
               >
                 <Trash2 className="w-4 h-4" />
                 {t('payroll.common.delete')} ({selectedTaxSettlementEmployees.length})
@@ -2027,27 +1875,27 @@ export default function Payroll() {
                       />
                     </td>
                     <td className="p-3 text-center">{index + 1}</td>
-                    <td className="p-3">{employee.code}</td>
+                    <td className="p-3">{employee.code || '?'}</td>
                     <td className="p-3">
                       <div className="flex items-center gap-2">
                         <Avatar className="h-7 w-7">
                           <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                            {employee.name.split(' ').pop()?.charAt(0)}
+                            {employeeAvatarInitial(employee.name)}
                           </AvatarFallback>
                         </Avatar>
                         <span>{employee.name}</span>
                       </div>
                     </td>
-                    <td className="p-3 text-right font-mono">{employee.totalTaxableIncome.toLocaleString('vi-VN')}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.totalTaxableIncome)}</td>
                     <td className="p-3 text-center">{employee.dependents}</td>
-                    <td className="p-3 text-right font-mono">{employee.familyDeduction.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.unemploymentInsurance.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.socialInsurance.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.healthInsurance.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.totalDeduction.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.taxableIncomeAfterDeduction.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.taxPayable.toLocaleString('vi-VN')}</td>
-                    <td className="p-3 text-right font-mono">{employee.taxPaid.toLocaleString('vi-VN')}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.familyDeduction)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.unemploymentInsurance)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.socialInsurance)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.healthInsurance)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.totalDeduction)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.taxableIncomeAfterDeduction)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.taxPayable)}</td>
+                    <td className="p-3 text-right font-mono">{formatPayrollMoney(employee.taxPaid)}</td>
                     <td className="p-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Button
@@ -2062,10 +1910,7 @@ export default function Payroll() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => {
-                            setTaxEmployeeToDelete(employee);
-                            setShowDeleteTaxEmployeeDialog(true);
-                          }}
+                          onClick={() => openDeleteTaxEmployee(employee)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -2082,16 +1927,16 @@ export default function Payroll() {
                     </div>
                   </td>
                   <td className="p-3" colSpan={2}></td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.totalTaxableIncome.toLocaleString('vi-VN')}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.totalTaxableIncome)}</td>
                   <td className="p-3"></td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.familyDeduction.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.unemploymentInsurance.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.socialInsurance.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.healthInsurance.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.totalDeduction.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.taxableIncomeAfterDeduction.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.taxPayable.toLocaleString('vi-VN')}</td>
-                  <td className="p-3 text-right font-mono">{taxSettlementTotals.taxPaid.toLocaleString('vi-VN')}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.familyDeduction)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.unemploymentInsurance)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.socialInsurance)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.healthInsurance)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.totalDeduction)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.taxableIncomeAfterDeduction)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.taxPayable)}</td>
+                  <td className="p-3 text-right font-mono">{formatPayrollMoney(taxSettlementTotals.taxPaid)}</td>
                   <td className="p-3"></td>
                 </tr>
               </tbody>
@@ -2128,24 +1973,29 @@ export default function Payroll() {
           </div>
         </Card>
 
-        {/* Edit Tax Employee Dialog */}
-        <Dialog open={showEditTaxEmployeeDialog} onOpenChange={setShowEditTaxEmployeeDialog}>
+        {/* Edit Tax Employee Dialog ? floatingUiState null-guarded (P0-b) */}
+        <Dialog
+          open={showEditTaxEmployeeDialog}
+          onOpenChange={(open) =>
+            setTaxSettlementFloatingUi((prev) => applyTaxEditDialogOpenChange(prev, open))
+          }
+        >
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>{t('payroll.taxSettlement.editTaxInfo')}</DialogTitle>
             </DialogHeader>
-            {taxEmployeeToEdit && (
+            {taxEmployeeToEdit ? (
               <div className="space-y-4 py-4">
                 {/* Employee Info */}
                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {taxEmployeeToEdit.name.split(' ').pop()?.charAt(0)}
+                      {employeeAvatarInitial(taxEmployeeToEdit.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">{taxEmployeeToEdit.name}</p>
-                    <p className="text-sm text-muted-foreground">{taxEmployeeToEdit.code}</p>
+                    <p className="text-sm text-muted-foreground">{taxEmployeeToEdit.code || '?'}</p>
                   </div>
                 </div>
 
@@ -2154,10 +2004,13 @@ export default function Payroll() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label>{t('payroll.taxSettlement.totalTaxableIncome')}</Label>
-                      <Input
-                        type="number"
+                      <ViMoneyInput
                         value={taxEmployeeEditForm.totalTaxableIncome}
-                        onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, totalTaxableIncome: parseFloat(e.target.value) || 0 }))}
+                        onValueChange={(n) =>
+                          setTaxSettlementFloatingUi((prev) =>
+                            patchTaxEmployeeEditForm(prev, { totalTaxableIncome: n }),
+                          )
+                        }
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -2165,7 +2018,13 @@ export default function Payroll() {
                       <Input
                         type="number"
                         value={taxEmployeeEditForm.dependents}
-                        onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, dependents: parseInt(e.target.value) || 0 }))}
+                        onChange={(e) =>
+                          setTaxSettlementFloatingUi((prev) =>
+                            patchTaxEmployeeEditForm(prev, {
+                              dependents: Number.parseInt(e.target.value, 10) || 0,
+                            }),
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -2175,113 +2034,138 @@ export default function Payroll() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label>{t('payroll.taxSettlement.familyDeduction')}</Label>
-                        <Input
-                          type="number"
+                        <ViMoneyInput
                           value={taxEmployeeEditForm.familyDeduction}
-                          onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, familyDeduction: parseFloat(e.target.value) || 0 }))}
+                          onValueChange={(n) =>
+                            setTaxSettlementFloatingUi((prev) =>
+                              patchTaxEmployeeEditForm(prev, { familyDeduction: n }),
+                            )
+                          }
                         />
                       </div>
                       <div className="space-y-1.5">
                         <Label>BHTN (1.0%)</Label>
-                        <Input
-                          type="number"
+                        <ViMoneyInput
                           value={taxEmployeeEditForm.unemploymentInsurance}
-                          onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, unemploymentInsurance: parseFloat(e.target.value) || 0 }))}
+                          onValueChange={(n) =>
+                            setTaxSettlementFloatingUi((prev) =>
+                              patchTaxEmployeeEditForm(prev, { unemploymentInsurance: n }),
+                            )
+                          }
                         />
                       </div>
                       <div className="space-y-1.5">
                         <Label>BHXH (8.0%)</Label>
-                        <Input
-                          type="number"
+                        <ViMoneyInput
                           value={taxEmployeeEditForm.socialInsurance}
-                          onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, socialInsurance: parseFloat(e.target.value) || 0 }))}
+                          onValueChange={(n) =>
+                            setTaxSettlementFloatingUi((prev) =>
+                              patchTaxEmployeeEditForm(prev, { socialInsurance: n }),
+                            )
+                          }
                         />
                       </div>
                       <div className="space-y-1.5">
                         <Label>BHYT (1.5%)</Label>
-                        <Input
-                          type="number"
+                        <ViMoneyInput
                           value={taxEmployeeEditForm.healthInsurance}
-                          onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, healthInsurance: parseFloat(e.target.value) || 0 }))}
+                          onValueChange={(n) =>
+                            setTaxSettlementFloatingUi((prev) =>
+                              patchTaxEmployeeEditForm(prev, { healthInsurance: n }),
+                            )
+                          }
                         />
                       </div>
                     </div>
                   </div>
 
                   <div className="border-t pt-3">
-                    <p className="text-sm font-medium text-muted-foreground mb-3">Thuế TNCN</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-3">Thu? TNCN</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                        <Label>{t('payroll.taxSettlement.taxPayable')}</Label>
-                      <Input
-                          type="number"
+                      <ViMoneyInput
                           value={taxEmployeeEditForm.taxPayable}
-                          onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, taxPayable: parseFloat(e.target.value) || 0 }))}
+                          onValueChange={(n) =>
+                            setTaxSettlementFloatingUi((prev) =>
+                              patchTaxEmployeeEditForm(prev, { taxPayable: n }),
+                            )
+                          }
                         />
                       </div>
                       <div className="space-y-1.5">
                        <Label>{t('payroll.taxSettlement.taxPaid')}</Label>
-                      <Input
-                          type="number"
+                      <ViMoneyInput
                           value={taxEmployeeEditForm.taxPaid}
-                          onChange={(e) => setTaxEmployeeEditForm(prev => ({ ...prev, taxPaid: parseFloat(e.target.value) || 0 }))}
+                          onValueChange={(n) =>
+                            setTaxSettlementFloatingUi((prev) =>
+                              patchTaxEmployeeEditForm(prev, { taxPaid: n }),
+                            )
+                          }
                         />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+            ) : (
+              <p className="py-4 text-sm text-muted-foreground">
+                Kh�ng c� nh�n vi�n ?? s?a. ?�ng h?p tho?i v� ch?n l?i t? b?ng.
+              </p>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowEditTaxEmployeeDialog(false)}>
-                Hủy bỏ
+              <Button
+                variant="outline"
+                onClick={() => setTaxSettlementFloatingUi(closeTaxEmployeeEditFloatingUi())}
+              >
+                H?y b?
               </Button>
-              <Button onClick={handleSaveTaxEmployeeEdit}>
-                Lưu thay đổi
+              <Button onClick={handleSaveTaxEmployeeEdit} disabled={!taxEmployeeToEdit}>
+                L?u thay ??i
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Delete Tax Employee Confirmation Dialog */}
-        <Dialog open={showDeleteTaxEmployeeDialog} onOpenChange={setShowDeleteTaxEmployeeDialog}>
+        <Dialog open={showDeleteTaxEmployeeDialog} onOpenChange={onDeleteTaxEmployeeOpenChange}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Xác nhận xóa nhân viên</DialogTitle>
+              <DialogTitle>X�c nh?n x�a nh�n vi�n</DialogTitle>
             </DialogHeader>
             {taxEmployeeToDelete && (
               <div className="py-4">
                 <div className="flex items-center gap-3 p-4 bg-destructive/10 rounded-lg mb-4">
                   <AlertCircle className="w-6 h-6 text-destructive" />
                   <div>
-                    <p className="font-medium text-destructive">Cảnh báo</p>
+                    <p className="font-medium text-destructive">C?nh b�o</p>
                     <p className="text-sm text-muted-foreground">
-                      Hành động này không thể hoàn tác
+                      H�nh ??ng n�y kh�ng th? ho�n t�c
                     </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Bạn có chắc chắn muốn xóa nhân viên sau khỏi bảng quyết toán thuế?
+                  B?n c� ch?c ch?n mu?n x�a nh�n vi�n sau kh?i b?ng quy?t to�n thu??
                 </p>
                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {taxEmployeeToDelete.name.split(' ').pop()?.charAt(0)}
+                      {employeeAvatarInitial(taxEmployeeToDelete.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{taxEmployeeToDelete.name}</p>
-                    <p className="text-sm text-muted-foreground">{taxEmployeeToDelete.code}</p>
+                    <p className="font-medium">{taxEmployeeToDelete.name || '?'}</p>
+                    <p className="text-sm text-muted-foreground">{taxEmployeeToDelete.code || '?'}</p>
                   </div>
                 </div>
               </div>
             )}
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => {
-                setShowDeleteTaxEmployeeDialog(false);
+                closeDeleteTaxEmployee();
                 setTaxEmployeeToDelete(null);
               }}>
-                Hủy bỏ
+                H?y b?
               </Button>
               <Button 
                 variant="destructive"
@@ -2289,38 +2173,38 @@ export default function Payroll() {
                   if (taxEmployeeToDelete) {
                     setTaxSettlementEmployees(prev => prev.filter(emp => emp.id !== taxEmployeeToDelete.id));
                     setSelectedTaxSettlementEmployees(prev => prev.filter(id => id !== taxEmployeeToDelete.id));
-                    setShowDeleteTaxEmployeeDialog(false);
+                    closeDeleteTaxEmployee();
                     setTaxEmployeeToDelete(null);
                   }
                 }}
               >
-                Xóa nhân viên
+                X�a nh�n vi�n
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Bulk Delete Tax Employees Confirmation Dialog */}
-        <Dialog open={showBulkDeleteTaxEmployeeDialog} onOpenChange={setShowBulkDeleteTaxEmployeeDialog}>
+        <Dialog open={showBulkDeleteTaxEmployeeDialog} onOpenChange={onBulkDeleteTaxEmployeeOpenChange}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-destructive">
                 <Trash2 className="w-5 h-5" />
-                Xác nhận xóa nhiều nhân viên
+                X�c nh?n x�a nhi?u nh�n vi�n
               </DialogTitle>
             </DialogHeader>
             <div className="py-4 space-y-4">
               <div className="flex items-center gap-3 p-4 bg-destructive/10 rounded-lg">
                 <AlertCircle className="w-6 h-6 text-destructive" />
                 <div>
-                  <p className="font-medium text-destructive">Cảnh báo</p>
+                  <p className="font-medium text-destructive">C?nh b�o</p>
                   <p className="text-sm text-muted-foreground">
-                    Hành động này không thể hoàn tác
+                    H�nh ??ng n�y kh�ng th? ho�n t�c
                   </p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">
-                Bạn có chắc chắn muốn xóa <span className="font-semibold text-foreground">{selectedTaxSettlementEmployees.length}</span> nhân viên đã chọn khỏi bảng quyết toán thuế?
+                B?n c� ch?c ch?n mu?n x�a <span className="font-semibold text-foreground">{selectedTaxSettlementEmployees.length}</span> nh�n vi�n ?� ch?n kh?i b?ng quy?t to�n thu??
               </p>
               <div className="bg-muted/50 rounded-lg p-4 max-h-48 overflow-y-auto space-y-2">
                 {selectedTaxSettlementEmployees.map(empId => {
@@ -2342,40 +2226,40 @@ export default function Payroll() {
               </div>
             </div>
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setShowBulkDeleteTaxEmployeeDialog(false)}>
-                Hủy bỏ
+              <Button variant="outline" onClick={() => closeBulkDeleteTaxEmployee()}>
+                H?y b?
               </Button>
               <Button 
                 variant="destructive"
                 onClick={() => {
                   setTaxSettlementEmployees(prev => prev.filter(emp => !selectedTaxSettlementEmployees.includes(emp.id)));
                   setSelectedTaxSettlementEmployees([]);
-                  setShowBulkDeleteTaxEmployeeDialog(false);
+                  closeBulkDeleteTaxEmployee();
                 }}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Xóa {selectedTaxSettlementEmployees.length} nhân viên
+                X�a {selectedTaxSettlementEmployees.length} nh�n vi�n
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        {/* Tax Refund Dialog (Hoàn thuế) */}
-        <Dialog open={showTaxRefundDialog} onOpenChange={setShowTaxRefundDialog}>
+        {/* Tax Refund Dialog (Ho�n thu?) */}
+        <Dialog open={showTaxRefundDialog} onOpenChange={onTaxRefundOpenChange}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Thêm bảng thu nhập khác</DialogTitle>
+              <DialogTitle>Th�m b?ng thu nh?p kh�c</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               {/* Time */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Thời gian <span className="text-destructive">*</span>
+                  Th?i gian <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative w-48">
                   <Input
                     type="text"
-                    value={`Tháng ${String(taxRefundFormData.date.getMonth() + 1).padStart(2, '0')}, ${taxRefundFormData.date.getFullYear()}`}
+                    value={`Th�ng ${String(taxRefundFormData.date.getMonth() + 1).padStart(2, '0')}, ${taxRefundFormData.date.getFullYear()}`}
                     readOnly
                     className="pr-10"
                   />
@@ -2386,7 +2270,7 @@ export default function Payroll() {
               {/* Applied Units */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Đơn vị áp dụng <span className="text-destructive">*</span>
+                  ??n v? �p d?ng <span className="text-destructive">*</span>
                 </Label>
                 <div className="flex flex-wrap items-center gap-2">
                   {taxRefundFormData.appliedUnits.length > 0 ? (
@@ -2410,13 +2294,13 @@ export default function Payroll() {
                         setTaxRefundFormData(prev => ({
                           ...prev,
                           appliedUnits: [...prev.appliedUnits, value],
-                          name: `Bảng thu nhập khác tháng ${prev.date.getMonth() + 1}/${prev.date.getFullYear()} - ${[...prev.appliedUnits, value].join(', ')}`
+                          name: `B?ng thu nh?p kh�c th�ng ${prev.date.getMonth() + 1}/${prev.date.getFullYear()} - ${[...prev.appliedUnits, value].join(', ')}`
                         }));
                       }
                     }}
                   >
                     <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Chọn đơn vị" />
+                      <SelectValue placeholder="Ch?n ??n v?" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableUnits.filter(u => !taxRefundFormData.appliedUnits.includes(u)).map(unit => (
@@ -2429,9 +2313,9 @@ export default function Payroll() {
 
               {/* Position */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
-                <Label className="text-right">Vị trí áp dụng</Label>
+                <Label className="text-right">V? tr� �p d?ng</Label>
                 <Input
-                  value="Tất cả các vị trí trong đơn vị"
+                  value="T?t c? c�c v? tr� trong ??n v?"
                   readOnly
                   className="bg-muted/50"
                 />
@@ -2439,7 +2323,7 @@ export default function Payroll() {
 
               {/* Employees */}
               <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-                <Label className="text-right pt-2">Nhân viên áp dụng</Label>
+                <Label className="text-right pt-2">Nh�n vi�n �p d?ng</Label>
                 <RadioGroup 
                   value={taxRefundFormData.employeeType}
                   onValueChange={(value: 'all' | 'selected') => setTaxRefundFormData(prev => ({ ...prev, employeeType: value }))}
@@ -2448,13 +2332,13 @@ export default function Payroll() {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="all" id="tax-refund-all-employees" />
                     <Label htmlFor="tax-refund-all-employees" className="font-normal cursor-pointer">
-                      Tất cả nhân viên
+                      T?t c? nh�n vi�n
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="selected" id="tax-refund-selected-employees" />
                     <Label htmlFor="tax-refund-selected-employees" className="font-normal cursor-pointer">
-                      Nhân viên được chọn
+                      Nh�n vi�n ???c ch?n
                     </Label>
                   </div>
                 </RadioGroup>
@@ -2463,19 +2347,19 @@ export default function Payroll() {
               {/* Name */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Tên bảng thu nhập khác <span className="text-destructive">*</span>
+                  T�n b?ng thu nh?p kh�c <span className="text-destructive">*</span>
                 </Label>
                 <Input
-                  value={taxRefundFormData.name || `Bảng thu nhập khác tháng ${taxRefundFormData.date.getMonth() + 1}/${taxRefundFormData.date.getFullYear()}${taxRefundFormData.appliedUnits.length > 0 ? ` - ${taxRefundFormData.appliedUnits.join(', ')}` : ''}`}
+                  value={taxRefundFormData.name || `B?ng thu nh?p kh�c th�ng ${taxRefundFormData.date.getMonth() + 1}/${taxRefundFormData.date.getFullYear()}${taxRefundFormData.appliedUnits.length > 0 ? ` - ${taxRefundFormData.appliedUnits.join(', ')}` : ''}`}
                   onChange={(e) => setTaxRefundFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Tên bảng thu nhập khác"
+                  placeholder="T�n b?ng thu nh?p kh�c"
                 />
               </div>
 
               {/* Income Type */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Khoản thu nhập khác <span className="text-destructive">*</span>
+                  Kho?n thu nh?p kh�c <span className="text-destructive">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="flex items-center gap-1">
@@ -2490,56 +2374,56 @@ export default function Payroll() {
             </div>
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => {
-                setShowTaxRefundDialog(false);
+                closeTaxRefund();
                 setTaxRefundFormData({
                   date: new Date(),
                   appliedUnits: [],
                   position: 'all',
                   employeeType: 'all',
                   name: '',
-                  incomeType: 'Thuế TNCN được hoàn',
+                  incomeType: 'Thu? TNCN ???c ho�n',
                 });
               }}>
-                Hủy bỏ
+                H?y b?
               </Button>
               <Button 
                 className="bg-primary"
                 onClick={() => {
                   // Handle save logic here
-                  setShowTaxRefundDialog(false);
+                  closeTaxRefund();
                   setTaxRefundFormData({
                     date: new Date(),
                     appliedUnits: [],
                     position: 'all',
                     employeeType: 'all',
                     name: '',
-                    incomeType: 'Thuế TNCN được hoàn',
+                    incomeType: 'Thu? TNCN ???c ho�n',
                   });
                 }}
                 disabled={taxRefundFormData.appliedUnits.length === 0}
               >
-                Lưu
+                L?u
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Tax Deduction Dialog */}
-        <Dialog open={showTaxDeductionDialog} onOpenChange={setShowTaxDeductionDialog}>
+        <Dialog open={showTaxDeductionDialog} onOpenChange={onTaxDeductionOpenChange}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Thêm bảng khấu trừ khác</DialogTitle>
+              <DialogTitle>Th�m b?ng kh?u tr? kh�c</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               {/* Time */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Thời gian <span className="text-destructive">*</span>
+                  Th?i gian <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative w-48">
                   <Input
                     type="text"
-                    value={`Tháng ${String(taxDeductionFormData.date.getMonth() + 1).padStart(2, '0')}, ${taxDeductionFormData.date.getFullYear()}`}
+                    value={`Th�ng ${String(taxDeductionFormData.date.getMonth() + 1).padStart(2, '0')}, ${taxDeductionFormData.date.getFullYear()}`}
                     readOnly
                     className="pr-10"
                   />
@@ -2550,7 +2434,7 @@ export default function Payroll() {
               {/* Applied Units */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Đơn vị áp dụng <span className="text-destructive">*</span>
+                  ??n v? �p d?ng <span className="text-destructive">*</span>
                 </Label>
                 <div className="flex flex-wrap items-center gap-2">
                   {taxDeductionFormData.appliedUnits.length > 0 ? (
@@ -2574,13 +2458,13 @@ export default function Payroll() {
                         setTaxDeductionFormData(prev => ({
                           ...prev,
                           appliedUnits: [...prev.appliedUnits, value],
-                          name: `Bảng khấu trừ khác tháng ${prev.date.getMonth() + 1}/${prev.date.getFullYear()} - ${[...prev.appliedUnits, value].join(', ')}`
+                          name: `B?ng kh?u tr? kh�c th�ng ${prev.date.getMonth() + 1}/${prev.date.getFullYear()} - ${[...prev.appliedUnits, value].join(', ')}`
                         }));
                       }
                     }}
                   >
                     <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="Chọn đơn vị" />
+                      <SelectValue placeholder="Ch?n ??n v?" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableUnits.filter(u => !taxDeductionFormData.appliedUnits.includes(u)).map(unit => (
@@ -2593,9 +2477,9 @@ export default function Payroll() {
 
               {/* Position */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
-                <Label className="text-right">Vị trí áp dụng</Label>
+                <Label className="text-right">V? tr� �p d?ng</Label>
                 <Input
-                  value="Tất cả các vị trí trong đơn vị"
+                  value="T?t c? c�c v? tr� trong ??n v?"
                   readOnly
                   className="bg-muted/50"
                 />
@@ -2603,7 +2487,7 @@ export default function Payroll() {
 
               {/* Employees */}
               <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-                <Label className="text-right pt-2">Nhân viên áp dụng</Label>
+                <Label className="text-right pt-2">Nh�n vi�n �p d?ng</Label>
                 <RadioGroup 
                   value={taxDeductionFormData.employeeType}
                   onValueChange={(value: 'all' | 'selected') => setTaxDeductionFormData(prev => ({ ...prev, employeeType: value }))}
@@ -2612,13 +2496,13 @@ export default function Payroll() {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="all" id="tax-deduction-all-employees" />
                     <Label htmlFor="tax-deduction-all-employees" className="font-normal cursor-pointer">
-                      Tất cả nhân viên
+                      T?t c? nh�n vi�n
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="selected" id="tax-deduction-selected-employees" />
                     <Label htmlFor="tax-deduction-selected-employees" className="font-normal cursor-pointer">
-                      Nhân viên được chọn
+                      Nh�n vi�n ???c ch?n
                     </Label>
                   </div>
                 </RadioGroup>
@@ -2627,19 +2511,19 @@ export default function Payroll() {
               {/* Name */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Tên bảng khấu trừ khác <span className="text-destructive">*</span>
+                  T�n b?ng kh?u tr? kh�c <span className="text-destructive">*</span>
                 </Label>
                 <Input
-                  value={taxDeductionFormData.name || `Bảng khấu trừ khác tháng ${taxDeductionFormData.date.getMonth() + 1}/${taxDeductionFormData.date.getFullYear()}${taxDeductionFormData.appliedUnits.length > 0 ? ` - ${taxDeductionFormData.appliedUnits.join(', ')}` : ''}`}
+                  value={taxDeductionFormData.name || `B?ng kh?u tr? kh�c th�ng ${taxDeductionFormData.date.getMonth() + 1}/${taxDeductionFormData.date.getFullYear()}${taxDeductionFormData.appliedUnits.length > 0 ? ` - ${taxDeductionFormData.appliedUnits.join(', ')}` : ''}`}
                   onChange={(e) => setTaxDeductionFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Tên bảng khấu trừ khác"
+                  placeholder="T�n b?ng kh?u tr? kh�c"
                 />
               </div>
 
               {/* Deduction Type */}
               <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                 <Label className="text-right">
-                  Khoản khấu trừ khác <span className="text-destructive">*</span>
+                  Kho?n kh?u tr? kh�c <span className="text-destructive">*</span>
                 </Label>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="flex items-center gap-1">
@@ -2654,35 +2538,35 @@ export default function Payroll() {
             </div>
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => {
-                setShowTaxDeductionDialog(false);
+                closeTaxDeduction();
                 setTaxDeductionFormData({
                   date: new Date(),
                   appliedUnits: [],
                   position: 'all',
                   employeeType: 'all',
                   name: '',
-                  deductionType: 'Thuế TNCN khấu trừ',
+                  deductionType: 'Thu? TNCN kh?u tr?',
                 });
               }}>
-                Hủy bỏ
+                H?y b?
               </Button>
               <Button 
                 className="bg-primary"
                 onClick={() => {
                   // Handle save logic here
-                  setShowTaxDeductionDialog(false);
+                  closeTaxDeduction();
                   setTaxDeductionFormData({
                     date: new Date(),
                     appliedUnits: [],
                     position: 'all',
                     employeeType: 'all',
                     name: '',
-                    deductionType: 'Thuế TNCN khấu trừ',
+                    deductionType: 'Thu? TNCN kh?u tr?',
                   });
                 }}
                 disabled={taxDeductionFormData.appliedUnits.length === 0}
               >
-                Lưu
+                L?u
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -2759,10 +2643,18 @@ export default function Payroll() {
       case 'calc-advance':
         return <AdvanceRequestsTab />;
       case 'calc-tax-settlement':
-        if (selectedTaxSettlement) {
-          return renderTaxSettlementDetail();
-        }
-        return renderTaxSettlementList();
+        // E2 AC-E2-P3-02 / SA Q1 ? no tax-settlement BE ? HIDE invent mutate UI
+        return (
+          <div className="p-6">
+            <Card className="p-8 text-center space-y-2">
+              <h2 className="text-lg font-semibold">{t('payroll.taxSettlement.title')}</h2>
+              <p className="text-muted-foreground text-sm max-w-lg mx-auto">
+                Quy?t to�n thu? ch?a c� API ? kh�ng t?o d? li?u gi? tr�n m�n h�nh n�y.
+                Khi c� endpoint, s? m? l?i form theo API_DESIGN (kh�ng invent).
+              </p>
+            </Card>
+          </div>
+        );
       default:
         return (
           <div className="p-6">
@@ -2917,13 +2809,13 @@ export default function Payroll() {
       </Dialog>
 
       {/* Add Payment Batch Dialog */}
-      <Dialog open={showAddPaymentDialog} onOpenChange={setShowAddPaymentDialog}>
+      <Dialog open={showAddPaymentDialog} onOpenChange={onAddPaymentOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('payroll.paymentForm.title')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-5 py-4">
-            {/* Bảng lương */}
+            {/* B?ng l??ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.paymentForm.payrollTable')} <span className="text-destructive">*</span>
@@ -2934,22 +2826,22 @@ export default function Payroll() {
                     <SelectValue placeholder={t('payroll.paymentForm.selectPayroll')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="salary-09-2021">Bảng lương tháng 9/2021 - VP Hà Nội</SelectItem>
-                    <SelectItem value="salary-08-2021">Bảng lương tháng 8/2021 - VP Hà Nội</SelectItem>
-                    <SelectItem value="salary-07-2021">Bảng lương tháng 7/2021 - VP Hà Nội</SelectItem>
+                    <SelectItem value="salary-09-2021">B?ng l??ng th�ng 9/2021 - VP H� N?i</SelectItem>
+                    <SelectItem value="salary-08-2021">B?ng l??ng th�ng 8/2021 - VP H� N?i</SelectItem>
+                    <SelectItem value="salary-07-2021">B?ng l??ng th�ng 7/2021 - VP H� N?i</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="col-span-3">
                 <Input 
-                  value="Tháng 09/2021" 
+                  value="Th�ng 09/2021" 
                   readOnly 
                   className="bg-muted text-muted-foreground"
                 />
               </div>
             </div>
 
-            {/* Đơn vị áp dụng */}
+            {/* ??n v? �p d?ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.common.appliedUnit')}
@@ -2957,7 +2849,7 @@ export default function Payroll() {
               <div className="col-span-9">
                 <div className="flex flex-wrap items-center gap-2 p-2 border rounded-md min-h-[40px] bg-background">
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    Văn phòng Hà Nội
+                    V?n ph�ng H� N?i
                     <button className="hover:bg-muted rounded-full p-0.5">
                       <X className="w-3 h-3" />
                     </button>
@@ -2966,7 +2858,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Vị trí áp dụng */}
+            {/* V? tr� �p d?ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.common.appliedPosition')}
@@ -2980,7 +2872,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Nhân viên áp dụng */}
+            {/* Nh�n vi�n �p d?ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.common.appliedEmployee')}
@@ -2999,20 +2891,20 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Tên bảng chi trả lương */}
+            {/* T�n b?ng chi tr? l??ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                 {t('payroll.paymentForm.paymentBatchName')} <span className="text-destructive">*</span>
               </Label>
               <div className="col-span-9">
                 <Input 
-                   defaultValue="Bảng chi trả lương Kỳ 1 - tháng 09/2021 lần 2 - Văn phòng Hà Nội"
+                   defaultValue="B?ng chi tr? l??ng K? 1 - th�ng 09/2021 l?n 2 - V?n ph�ng H� N?i"
                    placeholder={t('payroll.paymentForm.paymentBatchNamePlaceholder')}
                 />
               </div>
             </div>
 
-            {/* Kỳ chi trả */}
+            {/* K? chi tr? */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                 {t('payroll.paymentForm.paymentPeriod')} <span className="text-destructive">*</span>
@@ -3020,7 +2912,7 @@ export default function Payroll() {
               <div className="col-span-4">
                 <Select defaultValue="ky-2">
                   <SelectTrigger className="bg-primary text-primary-foreground border-primary">
-                    <SelectValue placeholder="Chọn kỳ" />
+                    <SelectValue placeholder="Ch?n k?" />
                   </SelectTrigger>
                   <SelectContent>
                      <SelectItem value="ky-1">{t('payroll.paymentForm.time1')}</SelectItem>
@@ -3040,7 +2932,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Trả lương theo */}
+            {/* Tr? l??ng theo */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.paymentForm.payBy')}
@@ -3048,7 +2940,7 @@ export default function Payroll() {
               <div className="col-span-4">
                 <Select defaultValue="percent">
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn loại" />
+                    <SelectValue placeholder="Ch?n lo?i" />
                   </SelectTrigger>
                   <SelectContent>
                      <SelectItem value="percent">{t('payroll.paymentForm.ratio')}</SelectItem>
@@ -3068,7 +2960,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Hình thức thanh toán */}
+            {/* H�nh th?c thanh to�n */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.paymentForm.paymentMethodLabel')}
@@ -3076,7 +2968,7 @@ export default function Payroll() {
               <div className="col-span-9">
                 <Select defaultValue="cash">
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn hình thức" />
+                    <SelectValue placeholder="Ch?n h�nh th?c" />
                   </SelectTrigger>
                   <SelectContent>
                      <SelectItem value="cash">{t('payroll.paymentForm.cash')}</SelectItem>
@@ -3089,12 +2981,12 @@ export default function Payroll() {
           </div>
 
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setShowAddPaymentDialog(false)}>
+            <Button variant="outline" onClick={() => closeAddPayment()}>
                {t('payroll.common.cancel')}
             </Button>
             <Button 
               className="bg-emerald-500 hover:bg-emerald-600"
-              onClick={() => setShowAddPaymentDialog(false)}
+              onClick={() => closeAddPayment()}
             >
                {t('payroll.agree')}
             </Button>
@@ -3110,7 +3002,7 @@ export default function Payroll() {
             <DialogTitle>{t('payroll.summaryForm.addTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-5 py-4">
-            {/* Kỳ lương */}
+            {/* K? l??ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                 {t('payroll.salaryPeriod')} <span className="text-destructive">*</span>
@@ -3126,7 +3018,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Bảng lương */}
+            {/* B?ng l??ng */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.summaryForm.payrollTable')} <span className="text-destructive">*</span>
@@ -3139,7 +3031,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Đơn vị */}
+            {/* ??n v? */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.summaryForm.unit')}
@@ -3147,7 +3039,7 @@ export default function Payroll() {
               <div className="col-span-9">
                 <div className="flex flex-wrap items-center gap-2 p-2 border rounded-md min-h-[40px] bg-background">
                   <Badge variant="secondary" className="flex items-center gap-1">
-                    Công ty thành viên
+                    C�ng ty th�nh vi�n
                     <button className="hover:bg-muted rounded-full p-0.5">
                       <X className="w-3 h-3" />
                     </button>
@@ -3156,7 +3048,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Vị trí */}
+            {/* V? tr� */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.summaryForm.position')}
@@ -3176,20 +3068,20 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Tên bảng tổng hợp */}
+            {/* T�n b?ng t?ng h?p */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                 {t('payroll.summaryForm.summaryName')} <span className="text-destructive">*</span>
               </Label>
               <div className="col-span-9">
                 <Input 
-                  defaultValue="Bảng tổng hợp lương Tháng 5/2022 - Công ty thành viên"
+                  defaultValue="B?ng t?ng h?p l??ng Th�ng 5/2022 - C�ng ty th�nh vi�n"
                   placeholder={t('payroll.summaryForm.summaryNamePlaceholder')}
                 />
               </div>
             </div>
 
-            {/* Ngày tổng hợp */}
+            {/* Ng�y t?ng h?p */}
             <div className="grid grid-cols-12 gap-4 items-start">
               <Label className="col-span-3 text-sm font-medium pt-2">
                  {t('payroll.summaryForm.summaryDate')}
@@ -3221,7 +3113,7 @@ export default function Payroll() {
       </Dialog>
 
       {/* Delete Payroll Batch Confirmation Dialog */}
-      <Dialog open={showDeletePayrollBatchDialog} onOpenChange={setShowDeletePayrollBatchDialog}>
+      <Dialog open={showDeletePayrollBatchDialog} onOpenChange={onDeletePayrollBatchOpenChange}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-destructive flex items-center gap-2">
@@ -3289,7 +3181,7 @@ export default function Payroll() {
             <Button 
               variant="outline" 
               onClick={() => {
-                setShowDeletePayrollBatchDialog(false);
+                closeDeletePayrollBatch();
                 setPayrollBatchToDelete(null);
               }}
             >
@@ -3299,7 +3191,7 @@ export default function Payroll() {
               variant="destructive"
               onClick={() => {
                 // Handle delete logic here
-                setShowDeletePayrollBatchDialog(false);
+                closeDeletePayrollBatch();
                 setPayrollBatchToDelete(null);
                 setSelectedPayrollBatches([]);
               }}
@@ -3315,7 +3207,7 @@ export default function Payroll() {
       {selectedPayrollSummaryBatch && (
         <PayslipPrintDialog
           open={showPayslipPrintDialog}
-          onOpenChange={setShowPayslipPrintDialog}
+          onOpenChange={onPayslipPrintOpenChange}
           employees={payrollSummaryEmployeesData}
           batchName={selectedPayrollSummaryBatch.name}
           salaryPeriod={selectedPayrollSummaryBatch.salaryPeriod}
@@ -3324,14 +3216,14 @@ export default function Payroll() {
         />
       )}
 
-      {/* Add Advance Dialog (Thêm bảng tạm ứng) */}
-      <Dialog open={showAddAdvanceDialog} onOpenChange={setShowAddAdvanceDialog}>
+      {/* Add Advance Dialog (Th�m b?ng t?m ?ng) */}
+      <Dialog open={showAddAdvanceDialog} onOpenChange={onAddAdvanceOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('payroll.advanceForm.addTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Bảng lương */}
+            {/* B?ng l??ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">
                 {t('payroll.advanceForm.payrollTable')} <span className="text-destructive">*</span>
@@ -3349,7 +3241,7 @@ export default function Payroll() {
               </div>
             </div>
 
-            {/* Đơn vị áp dụng */}
+            {/* ??n v? �p d?ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                <Label className="text-right">{t('payroll.common.appliedUnit')}</Label>
               <Select 
@@ -3367,7 +3259,7 @@ export default function Payroll() {
               </Select>
             </div>
 
-            {/* Vị trí áp dụng */}
+            {/* V? tr� �p d?ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                <Label className="text-right">{t('payroll.common.appliedPosition')}</Label>
               <Input
@@ -3377,7 +3269,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Nhân viên áp dụng */}
+            {/* Nh�n vi�n �p d?ng */}
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
                <Label className="text-right pt-2">{t('payroll.common.appliedEmployee')}</Label>
               <RadioGroup 
@@ -3400,7 +3292,7 @@ export default function Payroll() {
               </RadioGroup>
             </div>
 
-            {/* Tên bảng tạm ứng */}
+            {/* T�n b?ng t?m ?ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">
                  {t('payroll.advanceForm.advanceName')} <span className="text-destructive">*</span>
@@ -3412,7 +3304,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Diễn giải */}
+            {/* Di?n gi?i */}
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
               <Label className="text-right pt-2">{t('payroll.advanceForm.description')}</Label>
               <textarea
@@ -3424,14 +3316,14 @@ export default function Payroll() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-             <Button variant="outline" onClick={() => setShowAddAdvanceDialog(false)}>
+             <Button variant="outline" onClick={() => closeAddAdvance()}>
                {t('payroll.common.cancel')}
              </Button>
             <Button 
               className="bg-emerald-500 hover:bg-emerald-600 text-white"
               onClick={() => {
                 // Handle create advance logic here
-                setShowAddAdvanceDialog(false);
+                closeAddAdvance();
               }}
             >
                {t('payroll.agree')}
@@ -3441,7 +3333,7 @@ export default function Payroll() {
       </Dialog>
 
       {/* Delete Advance Batch Confirmation Dialog */}
-      <Dialog open={showDeleteAdvanceDialog} onOpenChange={setShowDeleteAdvanceDialog}>
+      <Dialog open={showDeleteAdvanceDialog} onOpenChange={onDeleteAdvanceOpenChange}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-destructive flex items-center gap-2">
@@ -3503,7 +3395,7 @@ export default function Payroll() {
             <Button 
               variant="outline" 
               onClick={() => {
-                setShowDeleteAdvanceDialog(false);
+                closeDeleteAdvance();
                 setAdvanceToDelete(null);
               }}
             >
@@ -3512,7 +3404,7 @@ export default function Payroll() {
             <Button 
               variant="destructive"
               onClick={() => {
-                setShowDeleteAdvanceDialog(false);
+                closeDeleteAdvance();
                 setAdvanceToDelete(null);
                 setSelectedAdvanceBatches([]);
               }}
@@ -3525,13 +3417,13 @@ export default function Payroll() {
       </Dialog>
 
       {/* Edit Advance Batch Dialog */}
-      <Dialog open={showEditAdvanceDialog} onOpenChange={setShowEditAdvanceDialog}>
+      <Dialog open={showEditAdvanceDialog} onOpenChange={onEditAdvanceOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('payroll.advanceForm.editTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Tên bảng tạm ứng */}
+            {/* T�n b?ng t?m ?ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">
                 {t('payroll.advanceForm.advanceName')} <span className="text-destructive">*</span>
@@ -3543,7 +3435,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Đơn vị */}
+            {/* ??n v? */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">{t('payroll.summaryForm.unit')}</Label>
               <Input
@@ -3553,7 +3445,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Kỳ lương */}
+            {/* K? l??ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">{t('payroll.salaryPeriod')}</Label>
               <Input
@@ -3563,7 +3455,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Trạng thái */}
+            {/* Tr?ng th�i */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">{t('payroll.advanceDetail.statusLabel')}</Label>
               <Select 
@@ -3585,7 +3477,7 @@ export default function Payroll() {
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => {
-              setShowEditAdvanceDialog(false);
+              closeEditAdvance();
               setAdvanceToEdit(null);
             }}>
                {t('payroll.common.cancel')}
@@ -3594,7 +3486,7 @@ export default function Payroll() {
               className="bg-emerald-500 hover:bg-emerald-600 text-white"
               onClick={() => {
                 // Handle update advance logic here
-                setShowEditAdvanceDialog(false);
+                closeEditAdvance();
                 setAdvanceToEdit(null);
               }}
             >
@@ -3605,7 +3497,7 @@ export default function Payroll() {
       </Dialog>
 
       {/* Approval Dialog */}
-      <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
+      <Dialog open={showApprovalDialog} onOpenChange={onApprovalOpenChange}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className={cn(
@@ -3684,7 +3576,7 @@ export default function Payroll() {
             <Button 
               variant="outline" 
               onClick={() => {
-                setShowApprovalDialog(false);
+                closeApproval();
                 setApprovalNote('');
               }}
             >
@@ -3699,7 +3591,7 @@ export default function Payroll() {
               disabled={approvalAction === 'reject' && !approvalNote.trim()}
               onClick={() => {
                 // Handle approval/rejection logic here
-                setShowApprovalDialog(false);
+                closeApproval();
                 setApprovalNote('');
               }}
             >
@@ -3720,13 +3612,16 @@ export default function Payroll() {
       </Dialog>
 
       {/* Edit Salary Component Dialog */}
-      <Dialog open={showEditSalaryComponentDialog} onOpenChange={setShowEditSalaryComponentDialog}>
+      <Dialog
+        open={showEditSalaryComponentDialog}
+        onOpenChange={onEditSalaryComponentOpenChange}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t('payroll.componentForm.editTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Mã thành phần */}
+            {/* M� th�nh ph?n */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">
                  {t('payroll.componentForm.componentCode')} <span className="text-destructive">*</span>
@@ -3738,7 +3633,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Tên thành phần */}
+            {/* T�n th�nh ph?n */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">
                  {t('payroll.componentForm.componentName')} <span className="text-destructive">*</span>
@@ -3750,7 +3645,7 @@ export default function Payroll() {
               />
             </div>
 
-            {/* Đơn vị áp dụng */}
+            {/* ??n v? �p d?ng */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">{t('payroll.common.appliedUnit')}</Label>
               <Select 
@@ -3761,14 +3656,14 @@ export default function Payroll() {
                      <SelectValue placeholder={t('payroll.common.selectUnit')} />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border shadow-lg z-50">
-                  <SelectItem value="Công ty TNHH Đại Thành">Công ty TNHH Đại Thành</SelectItem>
-                  <SelectItem value="Công ty ABC">Công ty ABC</SelectItem>
-                  <SelectItem value="Công ty XYZ">Công ty XYZ</SelectItem>
+                  <SelectItem value="C�ng ty TNHH ??i Th�nh">C�ng ty TNHH ??i Th�nh</SelectItem>
+                  <SelectItem value="C�ng ty ABC">C�ng ty ABC</SelectItem>
+                  <SelectItem value="C�ng ty XYZ">C�ng ty XYZ</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Loại thành phần */}
+            {/* Lo?i th�nh ph?n */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">{t('payroll.componentForm.componentType')}</Label>
               <Select 
@@ -3779,17 +3674,14 @@ export default function Payroll() {
                      <SelectValue placeholder={t('payroll.componentForm.selectType')} />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border shadow-lg z-50">
-                     <SelectItem value="Chấm công">{t('payroll.componentForm.attendance')}</SelectItem>
-                     <SelectItem value="Lương">{t('payroll.componentForm.salary')}</SelectItem>
-                     <SelectItem value="Bảo hiểm - Công đoàn">{t('payroll.componentForm.insuranceUnion')}</SelectItem>
-                     <SelectItem value="Phụ cấp">{t('payroll.componentForm.allowance')}</SelectItem>
-                     <SelectItem value="Thưởng">{t('payroll.componentForm.reward')}</SelectItem>
-                     <SelectItem value="Thuế">{t('payroll.componentForm.taxType')}</SelectItem>
+                  <SelectItem value="__use_live_tab__" disabled>
+                    D�ng tab Th�nh ph?n l??ng (pay_types catalog)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Tính chất */}
+            {/* T�nh ch?t */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
                <Label className="text-right">{t('payroll.componentForm.nature')}</Label>
               <Select 
@@ -3807,7 +3699,7 @@ export default function Payroll() {
               </Select>
             </div>
 
-            {/* Kiểu giá trị */}
+            {/* Ki?u gi� tr? */}
             <div className="grid grid-cols-[150px_1fr] items-center gap-4">
               <Label className="text-right">{t('payroll.componentForm.valueType')}</Label>
               <Select 
@@ -3825,7 +3717,7 @@ export default function Payroll() {
               </Select>
             </div>
 
-            {/* Giá trị (Công thức) */}
+            {/* Gi� tr? (C�ng th?c) */}
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
               <Label className="text-right pt-2">{t('payroll.componentForm.formula')}</Label>
               <FormulaInput
@@ -3837,10 +3729,7 @@ export default function Payroll() {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => {
-              setShowEditSalaryComponentDialog(false);
-              setSalaryComponentToEdit(null);
-            }}>
+            <Button variant="outline" onClick={() => closeEditSalaryComponent()}>
                {t('payroll.common.cancel')}
             </Button>
             <Button 
@@ -3855,7 +3744,10 @@ export default function Payroll() {
       </Dialog>
 
       {/* Delete Salary Component Confirmation Dialog */}
-      <Dialog open={showDeleteSalaryComponentDialog} onOpenChange={setShowDeleteSalaryComponentDialog}>
+      <Dialog
+        open={showDeleteSalaryComponentDialog}
+        onOpenChange={onDeleteSalaryComponentOpenChange}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
@@ -3893,10 +3785,7 @@ export default function Payroll() {
           <DialogFooter className="gap-2">
             <Button 
               variant="outline" 
-              onClick={() => {
-                setShowDeleteSalaryComponentDialog(false);
-                setSalaryComponentToDelete(null);
-              }}
+              onClick={() => closeDeleteSalaryComponent()}
             >
                {t('payroll.common.cancel')}
             </Button>
@@ -3911,302 +3800,10 @@ export default function Payroll() {
         </DialogContent>
       </Dialog>
 
-      {/* Add Salary Component Dialog */}
-      <Dialog open={showAddSalaryComponentDialog} onOpenChange={(open) => {
-        setShowAddSalaryComponentDialog(open);
-        if (!open) resetAddSalaryComponentForm();
-      }}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5 text-emerald-500" />
-              {t('payroll.componentForm.addTitle')}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* Mã thành phần */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                {t('payroll.componentForm.componentCode')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <Input
-                  value={addSalaryComponentForm.code}
-                  onChange={(e) => {
-                    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
-                    setAddSalaryComponentForm(prev => ({ ...prev, code: value }));
-                    if (addSalaryComponentErrors.code) {
-                      setAddSalaryComponentErrors(prev => ({ ...prev, code: undefined }));
-                    }
-                  }}
-                  placeholder="VD: LUONG_CO_BAN"
-                  className={addSalaryComponentErrors.code ? 'border-destructive' : ''}
-                />
-                {addSalaryComponentErrors.code && (
-                  <p className="text-xs text-destructive">{addSalaryComponentErrors.code}</p>
-                )}
-                 <p className="text-xs text-muted-foreground">
-                   {t('payroll.componentForm.codeHint')}
-                </p>
-              </div>
-            </div>
-
-            {/* Tên thành phần */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                {t('payroll.componentForm.componentName')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <Input
-                  value={addSalaryComponentForm.name}
-                  onChange={(e) => {
-                    setAddSalaryComponentForm(prev => ({ ...prev, name: e.target.value }));
-                    if (addSalaryComponentErrors.name) {
-                      setAddSalaryComponentErrors(prev => ({ ...prev, name: undefined }));
-                    }
-                  }}
-                  placeholder="VD: Lương cơ bản"
-                  className={addSalaryComponentErrors.name ? 'border-destructive' : ''}
-                />
-                {addSalaryComponentErrors.name && (
-                  <p className="text-xs text-destructive">{addSalaryComponentErrors.name}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Loại thành phần */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                {t('payroll.componentForm.componentType')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <Select 
-                  value={addSalaryComponentForm.componentType} 
-                  onValueChange={(value) => {
-                    setAddSalaryComponentForm(prev => ({ ...prev, componentType: value }));
-                    if (addSalaryComponentErrors.componentType) {
-                      setAddSalaryComponentErrors(prev => ({ ...prev, componentType: undefined }));
-                    }
-                  }}
-                >
-                  <SelectTrigger className={addSalaryComponentErrors.componentType ? 'border-destructive' : ''}>
-                    <SelectValue placeholder={t('payroll.componentForm.selectType')} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                     <SelectItem value="Chấm công">{t('payroll.componentForm.attendance')}</SelectItem>
-                     <SelectItem value="Lương">{t('payroll.componentForm.salary')}</SelectItem>
-                     <SelectItem value="Bảo hiểm - Công đoàn">{t('payroll.componentForm.insuranceUnion')}</SelectItem>
-                     <SelectItem value="Phụ cấp">{t('payroll.componentForm.allowance')}</SelectItem>
-                     <SelectItem value="Thưởng">{t('payroll.componentForm.reward')}</SelectItem>
-                     <SelectItem value="Thuế">{t('payroll.componentForm.taxType')}</SelectItem>
-                     <SelectItem value="Khấu trừ khác">{t('payroll.componentForm.otherDeduction')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                {addSalaryComponentErrors.componentType && (
-                  <p className="text-xs text-destructive">{addSalaryComponentErrors.componentType}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Đơn vị áp dụng - Multi-select with tags */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">
-                 {t('payroll.common.appliedUnit')} <span className="text-destructive">*</span>
-              </Label>
-              <div className="space-y-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <div className={cn(
-                      "flex min-h-10 w-full flex-wrap items-center gap-1 rounded-md border border-input bg-background px-3 py-2 text-sm cursor-pointer",
-                      addSalaryComponentErrors.appliedUnits && "border-destructive"
-                    )}>
-                      {addSalaryComponentForm.appliedUnits.length > 0 ? (
-                        addSalaryComponentForm.appliedUnits.map((unit) => (
-                          <Badge 
-                            key={unit} 
-                            variant="secondary" 
-                            className="gap-1 pr-1"
-                          >
-                            {unit}
-                            <button
-                              type="button"
-                              className="ml-1 rounded-full hover:bg-muted-foreground/20"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeUnitFromSelection(unit);
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </Badge>
-                        ))
-                      ) : (
-                        <span className="text-muted-foreground">{t('payroll.componentForm.selectAppliedUnit')}</span>
-                      )}
-                      <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[400px] bg-popover border shadow-lg z-50">
-                    {availableUnits.map((unit) => (
-                      <DropdownMenuItem
-                        key={unit}
-                        onClick={() => toggleUnitSelection(unit)}
-                        className="flex items-center gap-2"
-                      >
-                        <div className={cn(
-                          "h-4 w-4 rounded border flex items-center justify-center",
-                          addSalaryComponentForm.appliedUnits.includes(unit) 
-                            ? "bg-primary border-primary" 
-                            : "border-input"
-                        )}>
-                          {addSalaryComponentForm.appliedUnits.includes(unit) && (
-                            <CheckCircle2 className="h-3 w-3 text-primary-foreground" />
-                          )}
-                        </div>
-                        {unit}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {addSalaryComponentErrors.appliedUnits && (
-                  <p className="text-xs text-destructive">{addSalaryComponentErrors.appliedUnits}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Tính chất + Chịu thuế */}
-            <div className="grid grid-cols-[150px_1fr] items-center gap-4">
-              <Label className="text-right">{t('payroll.componentForm.nature')}</Label>
-              <div className="flex items-center gap-4">
-                <Select 
-                  value={addSalaryComponentForm.nature} 
-                  onValueChange={(value: SalaryComponent['nature']) => setAddSalaryComponentForm(prev => ({ ...prev, nature: value }))}
-                >
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                     <SelectItem value="income">{t('payroll.salaryComponents.income')}</SelectItem>
-                     <SelectItem value="deduction">{t('payroll.salaryComponents.deduction')}</SelectItem>
-                     <SelectItem value="other">{t('payroll.salaryComponents.other')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <RadioGroup 
-                  value={addSalaryComponentForm.isTaxable ? 'taxable' : 'nontaxable'}
-                  onValueChange={(value) => setAddSalaryComponentForm(prev => ({ ...prev, isTaxable: value === 'taxable' }))}
-                  className="flex items-center gap-4"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="taxable" id="taxable" />
-                    <Label htmlFor="taxable" className="font-normal cursor-pointer">{t('payroll.componentForm.taxable')}</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="nontaxable" id="nontaxable" />
-                    <Label htmlFor="nontaxable" className="font-normal cursor-pointer">{t('payroll.componentForm.nonTaxable')}</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </div>
-
-            {/* Định mức + Cho phép vượt */}
-            <div className="grid grid-cols-[150px_1fr] items-center gap-4">
-              <Label className="text-right">{t('payroll.componentForm.quota')}</Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  value={addSalaryComponentForm.quota}
-                  onChange={(e) => setAddSalaryComponentForm(prev => ({ ...prev, quota: e.target.value }))}
-                  placeholder={t('payroll.componentForm.quotaPlaceholder')}
-                  className="w-[150px]"
-                />
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="allowExceedQuota"
-                    checked={addSalaryComponentForm.allowExceedQuota}
-                    onChange={(e) => setAddSalaryComponentForm(prev => ({ ...prev, allowExceedQuota: e.target.checked }))}
-                    className="rounded border-gray-300"
-                  />
-                  <Label htmlFor="allowExceedQuota" className="font-normal cursor-pointer flex items-center gap-1">
-                    {t('payroll.componentForm.allowExceedQuota')}
-                    <Info className="w-3.5 h-3.5 text-muted-foreground" />
-                  </Label>
-                </div>
-              </div>
-            </div>
-
-            {/* Kiểu giá trị */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('payroll.componentForm.valueType')}</Label>
-              <div className="space-y-2">
-                <Select 
-                  value={addSalaryComponentForm.valueType} 
-                  onValueChange={(value: SalaryComponent['valueType']) => setAddSalaryComponentForm(prev => ({ ...prev, valueType: value }))}
-                >
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                     <SelectItem value="currency">{t('payroll.salaryComponents.currency')}</SelectItem>
-                     <SelectItem value="number">{t('payroll.salaryComponents.number')}</SelectItem>
-                     <SelectItem value="percentage">{t('payroll.salaryComponents.percentage')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                {/* Formula input with autocomplete */}
-                <FormulaInput
-                  value={addSalaryComponentForm.formula}
-                  onChange={(value) => setAddSalaryComponentForm(prev => ({ ...prev, formula: value }))}
-                  availableComponents={formulaAvailableComponents}
-                  placeholder="VD: =SUM(LUONG_CO_BAN,PHU_CAP)"
-                />
-              </div>
-            </div>
-
-            {/* Mô tả */}
-            <div className="grid grid-cols-[150px_1fr] items-start gap-4">
-              <Label className="text-right pt-2">{t('payroll.componentForm.descriptionLabel')}</Label>
-              <textarea
-                value={addSalaryComponentForm.description}
-                onChange={(e) => setAddSalaryComponentForm(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={t('payroll.componentForm.descriptionPlaceholder')}
-                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => {
-              setShowAddSalaryComponentDialog(false);
-              resetAddSalaryComponentForm();
-            }}>
-               {t('payroll.common.cancel')}
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={saveAndAddAnotherSalaryComponent}
-            >
-              {t('payroll.componentForm.saveAndAdd')}
-            </Button>
-            <Button 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
-              onClick={saveNewSalaryComponent}
-            >
-               {t('payroll.common.save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* System Salary Components Dialog */}
       <Dialog 
         open={showSystemComponentsDialog} 
-        onOpenChange={(open) => {
-          setShowSystemComponentsDialog(open);
-          if (!open) {
-            setSelectedSystemComponents([]);
-            setSystemComponentsSearch('');
-            setSystemComponentsTypeFilter('all');
-            setSystemComponentsPage(1);
-          }
-        }}
+        onOpenChange={onSystemComponentsOpenChange}
       >
         <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
           <DialogHeader>
@@ -4367,7 +3964,7 @@ export default function Payroll() {
             <Button 
               variant="outline" 
               onClick={() => {
-                setShowSystemComponentsDialog(false);
+                closeSystemComponents();
                 setSelectedSystemComponents([]);
                 setSystemComponentsSearch('');
                 setSystemComponentsTypeFilter('all');

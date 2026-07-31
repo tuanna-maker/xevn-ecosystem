@@ -66,6 +66,7 @@ import { cn } from '@/lib/utils';
 import { AddInsuranceDialog } from '@/components/insurance/AddInsuranceDialog';
 import { InsuranceImportDialog } from '@/components/insurance/InsuranceImportDialog';
 import { ExpiringInsuranceAlert } from '@/components/insurance/ExpiringInsuranceAlert';
+import { InsurancePolicyMasterPanel } from '@/components/insurance/InsurancePolicyMasterPanel';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
@@ -437,6 +438,11 @@ export default function Insurance() {
         </div>
       </div>
 
+      {/* E3 — policy master CRUD + insurer/type pickers (AC-INS-*) */}
+      <div className="px-4 md:px-6 pt-4">
+        <InsurancePolicyMasterPanel />
+      </div>
+
       {/* D-HRM-INS-EMPTY-MASK-01: error / retry — never silent empty on non-2xx */}
       {(fetchError || isLoading || isLoadingMore) && (
         <div className="px-4 md:px-6 pt-4 space-y-2">
@@ -447,7 +453,7 @@ export default function Insurance() {
             loadingMessage={
               isLoadingMore && !isLoading
                 ? t('insurance.loadingMore', 'Đang tải thêm bản ghi bảo hiểm…')
-                : t('insurance.loadingApi', 'Đang tải dữ liệu bảo hiểm từ HRM API…')
+                : t('insurance.loadingApi', 'Đang tải dữ liệu bảo hiểm…')
             }
           />
           {fetchError ? (

@@ -1,4 +1,33 @@
-import { useState, useEffect } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /payroll · Tính lương → Tạm ứng
+ * UC:         UC-HRM-PAY · advance requests
+ * BR:         UX-PRODUCT-RULES §3.4 modal+form atomic reset (UX-06)
+ * SRS:        docs/program/UX-UI-ERP-ANALYSIS.md §5 P0-c
+ * TechSpec:   _vibe-team-os/UX-PRODUCT-RULES.md §3.4
+ * Purpose:    Tab live bảng tạm ứng — list/detail + dialog Tạo/Xóa/Duyệt/Thêm NV.
+ * WorkItem:   D-UX-P0C-ADVANCE-LIVE-WIRE-01
+ * Coded:      2026-07-28
+ * Callers:    pages/Payroll.tsx (calc-advance)
+ * Callees:    useAdvanceRequests · advanceRequestFormUi · useEmployees
+ * FE-Actions: | Tạo bảng tạm ứng | openAddDialog / onAddOpenChange | createRequest |
+ *             | Hủy/Esc | closeAddDialog → form empty | —
+ * Impact:     onOpenChange chỉ set boolean → stale name/period sau Cancel (DEF-P0C-ADV-01)
+ * must_keep:  taxSettlementFloatingUi C1; SalaryComponentsTab Zod+RHF D5; Clock-In;
+ *             createRequest API shape; không seed/deploy
+ * SOLID:      Form empty/openChange thuần trong advanceRequestFormUi — tab chỉ wire UI
+ * LastVerified: docs/qa/evidence/d-ux-p0c-advance-live-wire-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-P0C-ADVANCE-LIVE-WIRE-01
+ * change_mode: FIX
+ * What: Atomic onOpenChange + CTA/Hủy dùng openAddDialog/closeAddDialog
+ *       (mirror SalaryComponentsTab / tax OPEN-CLOSE); reset qua advanceRequestFormUi
+ * Why: QA-UX-P0C-01 FAIL — live CTA giữ QA_P0C_ADV_STALE sau Hủy→reopen;
+ *      Payroll.tsx reducer Advance Dialog orphan (không set(true) từ UI)
+ * must_keep: Detail/approval/add-employee paths; C1 tax; D5 Zod; Clock-In
+ */
+import { useState, useEffect, useCallback } from 'react';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,6 +47,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -56,6 +86,10 @@ import {
 import { useAdvanceRequests, AdvanceRequest, AdvanceRequestEmployee, ApprovalStep } from '@/hooks/useAdvanceRequests';
 import { useEmployees } from '@/hooks/useEmployees';
 import { toast } from 'sonner';
+import {
+  createEmptyAdvanceRequestFormData,
+  resolveAdvanceAddDialogOpenChange,
+} from '@/components/payroll/advanceRequestFormUi';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('vi-VN', {
@@ -70,6 +104,7 @@ const formatDate = (dateString: string) => {
 export function AdvanceRequestsTab() {
   const { t } = useTranslation();
   const a = (key: string, opts?: Record<string, unknown>) => t(`advance.${key}`, opts);
+  const monthPrefix = a('monthPrefix');
   const { departments } = useDepartments();
   const {
     requests,
@@ -103,13 +138,32 @@ export function AdvanceRequestsTab() {
   const [approvalNote, setApprovalNote] = useState('');
   const [approvalLevel, setApprovalLevel] = useState(1);
   
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    salary_period: `${a('monthPrefix')}${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-    department: '',
-    position: '',
-  });
+  // Form state — empty defaults từ advanceRequestFormUi (UX-06)
+  const [formData, setFormData] = useState(() =>
+    createEmptyAdvanceRequestFormData(monthPrefix),
+  );
+
+  /** UX-06: mở Add luôn form sạch (mirror SalaryComponentsTab openAddDialog). */
+  const openAddDialog = useCallback(() => {
+    const next = resolveAdvanceAddDialogOpenChange(true, monthPrefix);
+    setFormData(next.formData);
+    setShowAddDialog(true);
+  }, [monthPrefix]);
+
+  /** UX-06: đóng (Hủy/Esc/overlay) atomic reset — không giữ stale. */
+  const closeAddDialog = useCallback(() => {
+    const next = resolveAdvanceAddDialogOpenChange(false, monthPrefix);
+    setShowAddDialog(false);
+    setFormData(next.formData);
+  }, [monthPrefix]);
+
+  const onAddOpenChange = useCallback(
+    (open: boolean) => {
+      if (open) openAddDialog();
+      else closeAddDialog();
+    },
+    [openAddDialog, closeAddDialog],
+  );
 
   // Add employee state
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
@@ -179,13 +233,7 @@ export function AdvanceRequestsTab() {
         ...formData,
         approval_steps: defaultApprovalSteps,
       });
-      setShowAddDialog(false);
-      setFormData({
-        name: '',
-        salary_period: `${a('monthPrefix')}${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-        department: '',
-        position: '',
-      });
+      closeAddDialog();
     } catch (error) {
       console.error(error);
     }
@@ -505,14 +553,15 @@ export function AdvanceRequestsTab() {
                       </p>
                     </div>
                     <div className="w-40">
-                      <Input
-                        type="number"
+                      <ViMoneyInput
                         placeholder={a('amountPlaceholder')}
-                        value={advanceAmounts[emp.id] || ''}
-                        onChange={(e) => setAdvanceAmounts(prev => ({
-                          ...prev,
-                          [emp.id]: parseFloat(e.target.value) || 0
-                        }))}
+                        value={Number(advanceAmounts[emp.id]) || 0}
+                        onValueChange={(n) =>
+                          setAdvanceAmounts((prev) => ({
+                            ...prev,
+                            [emp.id]: n,
+                          }))
+                        }
                         disabled={!selectedEmployeesToAdd.includes(emp.id)}
                       />
                     </div>
@@ -659,7 +708,7 @@ export function AdvanceRequestsTab() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={() => setShowAddDialog(true)}>
+        <Button onClick={openAddDialog}>
           <Plus className="w-4 h-4 mr-2" />
           {a('createAdvance')}
         </Button>
@@ -772,8 +821,8 @@ export function AdvanceRequestsTab() {
         </CardContent>
       </Card>
 
-      {/* Add Dialog */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      {/* Add Dialog — UX-06 atomic reset (D-UX-P0C-ADVANCE-LIVE-WIRE-01) */}
+      <Dialog open={showAddDialog} onOpenChange={onAddOpenChange}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>{a('createNewAdvance')}</DialogTitle>
@@ -813,7 +862,7 @@ export function AdvanceRequestsTab() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+            <Button variant="outline" onClick={closeAddDialog}>
               {t('common.cancel')}
             </Button>
             <Button onClick={handleCreateRequest} disabled={isCreating}>

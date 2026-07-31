@@ -1,10 +1,102 @@
-import { useState, useRef } from 'react';
-import { useDepartments } from '@/hooks/useDepartments';
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Hợp đồng (HĐ / Đãi ngộ / Lịch sử)
+ * UC:         UC-HRM-CI-01..11 · UC-HRM-25 · AC-CD-F5-01..04
+ * BR:         BR-CD-F5-01..05
+ * SRS:        docs/program/deltas/CUSTOMER_DEMO_HRM_DELTA_20260620.md §5
+ *             docs/hrm/SRS.md §13 UC-HRM-25
+ * TechSpec:   docs/api/openapi/hrm-api.yaml contracts + compensation-*
+ * Purpose:    Labor contract term CRUD + compensation package tabs. Salary is
+ *             NOT required on HĐ form — lives on tab Đãi ngộ (versioned packages).
+ * WorkItem:   CD-FB-08-CONTRACT
+ * Coded:      2026-07-19
+ * change_mode: UPGRADE
+ *
+ * Callers:
+ *   - pages/EmployeeProfile.tsx → activeTab === 'contract'
+ *
+ * Callees:
+ *   - useEmployeeContracts → Nest contracts API
+ *   - EmployeeCompensationPanel / HistoryPanel → compensation APIs
+ *
+ * FE-Actions:
+ *   | User action           | Handler              | API / module                     |
+ *   |-----------------------|----------------------|----------------------------------|
+ *   | Tab HĐ → Lưu          | handleSubmit         | create/updateEmployeeContract    |
+ *   | Tab Đãi ngộ → Lưu     | EmployeeCompensation | POST compensation-packages       |
+ *   | Tab Lịch sử           | HistoryPanel         | GET compensation-history         |
+ *
+ * Impact:     Inventing salary on contract body breaks F5 AC; U65 needs F5 persist
+ * must_keep:  Existing renew/history-renewal dialogs; list→detail J-HRM-01/03
+ * SOLID:      Term UI in this file; compensation SRP in panel components
+ * LastVerified: compensationLines.test.ts · useEmployeeContracts.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-08-CONTRACT
+ * What: Tabs HĐ + Đãi ngộ + Lịch sử; remove salary required/display on HĐ body
+ * Why: Customer demo F5 / AC-CD-F5-01..04
+ * SRS/BR: CUSTOMER_DEMO_HRM_DELTA §5 · BR-CD-F5-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: FE-HRM-G-CI-01
+ * What: Open-ended types may omit expiry_date before POST; fixed-term still required
+ * Why: QA residual — toast blocked indefinite create; align BE G-CI-01 / FR-HRM-CI-01
+ * SRS/BR: FR-HRM-CI-01 · TechSpec G-CI-01 · docs/qa/evidence/qa-hrm-g-ci-01-20260722.md
+ * must_keep: Fixed-term toast «ngày hiệu lực và ngày hết hạn»; F5 salary off body
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: View/history contract_type + status via labelMaps (no raw enum / no || raw)
+ * Why: BA F-04/F-05 U72 display-label
+ * SRS/BR: SRS_FIELD_DISPLAY.md AC-FD-04/05 · FR-HRM-U72-LABEL-01 · BR-CO-LABEL-01
+ * must_keep: renew/history dialogs; F5 salary off body
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-PICKER-01
+ * change_mode: ADD
+ * What: position/dept/signer_position CatalogSearchPicker; Network position_key (+dept/signer keys)
+ * Why: AC-E1A-CI-POS-01 · FR-HRM-MD-BIND-E1A-01 · U72
+ * must_keep: F5 salary off body; open-ended expiry; CONTRACT_TYPES fallback when catalog empty; defer A9
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-CREATE-GAPS-01
+ * change_mode: FIX
+ * What: Create auto mã HĐ + default ngày hiệu lực/ký ISO; bỏ HTML required; data-testid ViDateField
+ * Why: DEF-E1A-CI-DATE-01 — HTML required mã trống + dates gate chặn submit → không Network
+ * must_keep: F5 salary off body; open-ended expiry policy; position_key picker; A8 type residual E2
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E2-01
+ * change_mode: ADD
+ * What: Loại HĐ = CatalogSearchPicker contract_types (persist code); đóng R-E1A-A8-CTYPE
+ * Why: FR-HRM-CI-TYPE-E2-01 · AC-E2-CI-TYPE-01 — cấm HARDCODE khi items>0
+ * must_keep: position_key E1-A; F5 salary off body; open-ended expiry policy
+ */
+import { useMemo, useState, useRef } from 'react';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  buildDepartmentKeyFields,
+  buildPositionKeyFields,
+  contractTypeOptionsFromCatalog,
+  departmentOptionsFromCatalog,
+  jobTitleOptionsFromCatalog,
+  resolveContractTypeCatalogLabel,
+} from '@/lib/catalogSearchPicker';
 
 import { useTranslation } from 'react-i18next';
-import { useQueryClient } from '@tanstack/react-query';
 import { useEmployeeContracts } from '@/hooks/useEmployeeContracts';
+import { EmployeeCompensationPanel } from '@/components/employee/EmployeeCompensationPanel';
+import { EmployeeCompensationHistoryPanel } from '@/components/employee/EmployeeCompensationHistoryPanel';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
+import {
+  EM_DASH,
+  resolveContractStatusDisplay,
+  resolveContractTypeDisplayLabel,
+} from '@/lib/labelMaps';
+import {
+  isOpenEndedContractType,
+  validateContractDatesForSubmit,
+} from '@/lib/contractEndDatePolicy';
 import { format, differenceInDays, addDays, addYears, addMonths } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
@@ -27,6 +119,7 @@ import {
   Edit,
   RefreshCcw,
   History,
+  Wallet,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,6 +139,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { ViDateField } from '@/components/ui/ViDateField';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -74,15 +168,20 @@ interface EmployeeContract {
   contract_type: string;
   effective_date: string | null;
   expiry_date: string | null;
+  /** @deprecated F5 — do not invent; compensation tab owns pay */
   salary: number | null;
+  compensation_package_id?: string | null;
   position: string | null;
+  position_key?: string | null;
   department: string | null;
+  department_key?: string | null;
   work_location: string | null;
   probation_period: number | null;
   probation_end_date: string | null;
   signing_date: string | null;
   signer_name: string | null;
   signer_position: string | null;
+  signer_position_key?: string | null;
   status: string;
   file_url: string | null;
   notes: string | null;
@@ -91,26 +190,21 @@ interface EmployeeContract {
   renewed_from_id: string | null;
 }
 
-const CONTRACT_TYPES_KEYS = [
-  { value: 'Hợp đồng thử việc', key: 'ec.types.probation' },
-  { value: 'Hợp đồng 1 năm', key: 'ec.types.oneYear' },
-  { value: 'Hợp đồng 2 năm', key: 'ec.types.twoYear' },
-  { value: 'Hợp đồng 3 năm', key: 'ec.types.threeYear' },
-  { value: 'Hợp đồng không thời hạn', key: 'ec.types.indefinite' },
-];
-
-const getStatusConfig = (status: string, t: any) => {
-  switch (status) {
+/** F-05 / AC-FD-05 — badge VI từ labelMaps (cùng dictionary list); unknown → «—». */
+const getStatusConfig = (status: string, _t?: unknown) => {
+  const label = resolveContractStatusDisplay(status);
+  switch ((status ?? '').trim().toLowerCase()) {
     case 'active':
-      return { label: t('ec.statuses.active'), color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', icon: CheckCircle };
+      return { label, color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', icon: CheckCircle };
     case 'pending':
-      return { label: t('ec.statuses.pending'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300', icon: Clock };
+      return { label, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300', icon: Clock };
     case 'expired':
-      return { label: t('ec.statuses.expired'), color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300', icon: XCircle };
+      return { label, color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300', icon: XCircle };
     case 'terminated':
-      return { label: t('ec.statuses.terminated'), color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: AlertCircle };
+      return { label, color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: AlertCircle };
     default:
-      return { label: status, color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: FileText };
+      // U72 fail-closed: never render raw status slug
+      return { label: EM_DASH, color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: FileText };
   }
 };
 
@@ -119,33 +213,31 @@ interface FormData {
   contract_type: string;
   effective_date: string;
   expiry_date: string;
-  salary: string;
-  position: string;
-  department: string;
+  position_key: string;
+  department_key: string;
   work_location: string;
   probation_period: string;
   probation_end_date: string;
   signing_date: string;
   signer_name: string;
-  signer_position: string;
+  signer_position_key: string;
   status: string;
   notes: string;
 }
 
 const initialFormData: FormData = {
   contract_code: '',
-  contract_type: 'Hợp đồng 1 năm',
+  contract_type: '',
   effective_date: '',
   expiry_date: '',
-  salary: '',
-  position: '',
-  department: '',
+  position_key: '',
+  department_key: '',
   work_location: '',
   probation_period: '',
   probation_end_date: '',
   signing_date: '',
   signer_name: '',
-  signer_position: '',
+  signer_position_key: '',
   status: 'pending',
   notes: '',
 };
@@ -157,10 +249,30 @@ export function EmployeeContracts({
   department 
 }: EmployeeContractsProps) {
   const { t } = useTranslation();
-  const { departments } = useDepartments();
   const { currentCompanyId } = useAuth();
-  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview();
+  const positionOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const departmentOptions = useMemo(
+    () => departmentOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const contractTypeOptions = useMemo(
+    () => contractTypeOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const displayContractType = (code: string | null | undefined) => {
+    const fromCatalog = resolveContractTypeCatalogLabel(contractTypeOptions, code);
+    if (fromCatalog !== '—') return fromCatalog;
+    return resolveContractTypeDisplayLabel(code);
+  };
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
@@ -172,7 +284,8 @@ export function EmployeeContracts({
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
   // Auto-update expired contracts and fetch
-  const { contracts, isLoading, refetch } = useEmployeeContracts(employeeId);
+  const { contracts, isLoading, refetch, createContract, updateContract, deleteContract } =
+    useEmployeeContracts(employeeId);
 
   const uploadFile = async (file: File): Promise<string | null> => {
     return hrmStorageUploadStub(file, 'employee-contracts-file');
@@ -200,6 +313,12 @@ export function EmployeeContracts({
     }
   };
 
+  const buildCreateContractCode = () => {
+    const stamp = format(new Date(), 'yyyyMMdd');
+    const suffix = Date.now().toString().slice(-4);
+    return `HD-${stamp}-${suffix}`;
+  };
+
   const handleOpenDialog = (contract?: EmployeeContract) => {
     if (contract) {
       setSelectedContract(contract);
@@ -208,21 +327,34 @@ export function EmployeeContracts({
         contract_type: contract.contract_type,
         effective_date: contract.effective_date || '',
         expiry_date: contract.expiry_date || '',
-        salary: contract.salary?.toString() || '',
-        position: contract.position || '',
-        department: contract.department || department || '',
+        position_key: (contract as EmployeeContract & { position_key?: string }).position_key?.trim() || '',
+        department_key: (contract as EmployeeContract & { department_key?: string }).department_key?.trim() || '',
         work_location: contract.work_location || '',
         probation_period: contract.probation_period?.toString() || '',
         probation_end_date: contract.probation_end_date || '',
         signing_date: contract.signing_date || '',
         signer_name: contract.signer_name || '',
-        signer_position: contract.signer_position || '',
+        signer_position_key:
+          (contract as EmployeeContract & { signer_position_key?: string }).signer_position_key?.trim() || '',
         status: contract.status,
         notes: contract.notes || '',
       });
     } else {
+      // Create: prefill code + ISO dates so ViDateField shows dd/MM/yyyy and HTML5/dates gate không chặn trống
+      const todayIso = format(new Date(), 'yyyy-MM-dd');
+      const preferredType =
+        contractTypeOptions.find((o) => isOpenEndedContractType(o.value))?.value ??
+        contractTypeOptions[0]?.value ??
+        '';
       setSelectedContract(null);
-      setFormData({ ...initialFormData, department: department || '' });
+      setFormData({
+        ...initialFormData,
+        contract_code: buildCreateContractCode(),
+        contract_type: preferredType,
+        effective_date: todayIso,
+        signing_date: todayIso,
+        expiry_date: '',
+      });
     }
     setSelectedFile(null);
     setIsDialogOpen(true);
@@ -243,50 +375,106 @@ export function EmployeeContracts({
       return;
     }
     if (!formData.contract_code.trim()) {
-      toast.error(t('ec.enterContractCode'));
+      toast.error(`${t('ec.contractCode')} bắt buộc`);
+      return;
+    }
+    if (!formData.contract_type.trim()) {
+      toast.error(`${t('ec.contractType')} bắt buộc`);
+      return;
+    }
+    if (
+      contractTypeOptions.length > 0 &&
+      !contractTypeOptions.some((o) => o.value === formData.contract_type)
+    ) {
+      toast.error('Chọn loại hợp đồng từ danh mục (Cài đặt → Loại HĐ).');
+      return;
+    }
+    if (contractTypeOptions.length === 0) {
+      toast.error('Danh mục loại hợp đồng trống — mở Cài đặt → Danh mục nghiệp vụ.');
+      return;
+    }
+    // G-CI-01 / FE-HRM-G-CI-01 — open-ended may omit expiry; fixed-term still required
+    const datesGate = validateContractDatesForSubmit({
+      contractType: formData.contract_type,
+      effectiveDate: formData.effective_date,
+      expiryDate: formData.expiry_date,
+    });
+    if (!datesGate.ok) {
+      toast.error(datesGate.message);
+      return;
+    }
+
+    const pos = formData.position_key.trim()
+      ? buildPositionKeyFields(formData.position_key, positionOptions)
+      : null;
+    if (formData.position_key.trim() && !pos) {
+      toast.error('Chọn vị trí từ danh mục (không nhập tự do).');
+      return;
+    }
+    const dept = formData.department_key.trim()
+      ? buildDepartmentKeyFields(formData.department_key, departmentOptions)
+      : null;
+    if (formData.department_key.trim() && !dept) {
+      toast.error('Chọn phòng ban từ danh mục.');
+      return;
+    }
+    const signerPos = formData.signer_position_key.trim()
+      ? buildPositionKeyFields(formData.signer_position_key, positionOptions)
+      : null;
+    if (formData.signer_position_key.trim() && !signerPos) {
+      toast.error('Chọn chức danh người ký từ danh mục.');
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      let fileUrl = selectedContract?.file_url || null;
-      
       if (selectedFile) {
-        fileUrl = await uploadFile(selectedFile);
+        await uploadFile(selectedFile);
       }
 
-      const contractData = {
-        employee_id: employeeId,
-        company_id: currentCompanyId,
-        contract_code: formData.contract_code.trim(),
-        contract_type: formData.contract_type,
-        effective_date: formData.effective_date || null,
-        expiry_date: formData.expiry_date || null,
-        salary: formData.salary ? parseFloat(formData.salary) : null,
-        position: formData.position.trim() || null,
-        department: formData.department.trim() || null,
-        work_location: formData.work_location.trim() || null,
-        probation_period: formData.probation_period ? parseInt(formData.probation_period) : null,
-        probation_end_date: formData.probation_end_date || null,
-        signing_date: formData.signing_date || null,
-        signer_name: formData.signer_name.trim() || null,
-        signer_position: formData.signer_position.trim() || null,
-        status: formData.status,
-        file_url: fileUrl,
-        notes: formData.notes.trim() || null,
-        renewed_from_id: renewingFromContract?.id || null,
+      const expiryForApi = formData.expiry_date.trim() || undefined;
+      const catalogPayload = {
+        ...(pos
+          ? { position_key: pos.position_key, position: pos.position }
+          : {}),
+        ...(dept
+          ? { department_key: dept.department_key, department: dept.department }
+          : {}),
+        ...(signerPos
+          ? {
+              signer_position_key: signerPos.position_key,
+              signer_position: signerPos.position,
+            }
+          : {}),
+        ...(formData.signer_name.trim()
+          ? { signer_name: formData.signer_name.trim() }
+          : {}),
       };
 
+      // F5: contract body = term only — do NOT send salary (AC-CD-F5-01)
       if (selectedContract) {
-        toast.success(t('ec.updated'));
+        const ok = await updateContract(selectedContract.id, {
+          contract_type: formData.contract_type,
+          effective_date: formData.effective_date,
+          expiry_date: expiryForApi,
+          status: formData.status,
+          ...catalogPayload,
+        });
+        if (ok) handleCloseDialog();
+      } else {
+        const ok = await createContract({
+          contract_type: formData.contract_type,
+          effective_date: formData.effective_date,
+          expiry_date: expiryForApi,
+          status: formData.status,
+          ...catalogPayload,
+        });
+        if (ok) handleCloseDialog();
       }
-
-      handleCloseDialog();
-      refetch();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error saving contract:', error);
-      toast.error(error.message || 'Có lỗi xảy ra');
+      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra');
     } finally {
       setIsSubmitting(false);
     }
@@ -296,15 +484,10 @@ export function EmployeeContracts({
     if (!confirm(t('ec.confirmDelete'))) return;
 
     try {
-      if (contract.file_url) {
-        const filePath = contract.file_url.split('/contract-files/')[1];
-        if (filePath) {
-        }
-      }
-      toast.success(t('ec.deleted'));
-      refetch();
-    } catch (error: any) {
-      toast.error(error.message || 'Có lỗi xảy ra');
+      const ok = await deleteContract(contract.id);
+      if (!ok) return;
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra');
     }
   };
 
@@ -313,22 +496,22 @@ export function EmployeeContracts({
     setIsViewOpen(true);
   };
 
-  // Function to calculate new expiry date based on contract type
+  // Function to calculate new expiry date based on contract type (code or legacy label)
   const calculateNewExpiryDate = (effectiveDate: Date, contractType: string): Date => {
-    switch (contractType) {
-      case 'Hợp đồng thử việc':
-        return addMonths(effectiveDate, 2);
-      case 'Hợp đồng 1 năm':
-        return addYears(effectiveDate, 1);
-      case 'Hợp đồng 2 năm':
-        return addYears(effectiveDate, 2);
-      case 'Hợp đồng 3 năm':
-        return addYears(effectiveDate, 3);
-      case 'Hợp đồng không thời hạn':
-        return addYears(effectiveDate, 100); // Set a very far future date
-      default:
-        return addYears(effectiveDate, 1);
+    if (isOpenEndedContractType(contractType)) {
+      return addYears(effectiveDate, 100);
     }
+    const key = contractType.trim().toLowerCase();
+    if (key.includes('thử việc') || key.includes('probation') || key === 'probation') {
+      return addMonths(effectiveDate, 2);
+    }
+    if (key.includes('3 năm') || key.includes('3y') || key.includes('3_year')) {
+      return addYears(effectiveDate, 3);
+    }
+    if (key.includes('2 năm') || key.includes('2y') || key.includes('2_year')) {
+      return addYears(effectiveDate, 2);
+    }
+    return addYears(effectiveDate, 1);
   };
 
   // Function to generate new contract code
@@ -357,15 +540,15 @@ export function EmployeeContracts({
       contract_type: contract.contract_type,
       effective_date: format(newEffectiveDate, 'yyyy-MM-dd'),
       expiry_date: format(newExpiryDate, 'yyyy-MM-dd'),
-      salary: contract.salary?.toString() || '',
-      position: contract.position || '',
-      department: contract.department || department || '',
+      position_key: (contract as EmployeeContract & { position_key?: string }).position_key?.trim() || '',
+      department_key: (contract as EmployeeContract & { department_key?: string }).department_key?.trim() || '',
       work_location: contract.work_location || '',
       probation_period: '',
       probation_end_date: '',
       signing_date: format(today, 'yyyy-MM-dd'),
       signer_name: contract.signer_name || '',
-      signer_position: contract.signer_position || '',
+      signer_position_key:
+        (contract as EmployeeContract & { signer_position_key?: string }).signer_position_key?.trim() || '',
       status: 'pending',
       notes: t('ec.renewNote', { code: contract.contract_code }),
     });
@@ -429,11 +612,6 @@ export function EmployeeContracts({
     }
   };
 
-  const formatCurrency = (amount: number | null) => {
-    if (!amount) return '-';
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
-
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -455,6 +633,23 @@ export function EmployeeContracts({
 
   return (
     <div className="space-y-6">
+      <Tabs defaultValue="hop-dong" className="space-y-4">
+        <TabsList className="grid w-full max-w-xl grid-cols-3">
+          <TabsTrigger value="hop-dong" className="gap-1.5">
+            <FileSignature className="h-4 w-4" />
+            Hợp đồng
+          </TabsTrigger>
+          <TabsTrigger value="dai-ngo" className="gap-1.5">
+            <Wallet className="h-4 w-4" />
+            Đãi ngộ
+          </TabsTrigger>
+          <TabsTrigger value="lich-su" className="gap-1.5">
+            <History className="h-4 w-4" />
+            Lịch sử
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="hop-dong" className="space-y-6">
       {/* Expiring Contracts Alert */}
       {expiringContracts.length > 0 && (
         <Alert className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/30">
@@ -469,7 +664,7 @@ export function EmployeeContracts({
                 return (
                   <div key={contract.id} className="flex items-center justify-between text-sm gap-2">
                     <span className="font-medium">
-                      {contract.contract_code} - {contract.contract_type}
+                      {contract.contract_code} - {displayContractType(contract.contract_type)}
                     </span>
                     <div className="flex items-center gap-2">
                       <Badge 
@@ -598,7 +793,6 @@ export function EmployeeContracts({
                   <TableHead>{t('ec.contractType')}</TableHead>
                   <TableHead>{t('ec.effectiveDate')}</TableHead>
                   <TableHead>{t('ec.expiryDate')}</TableHead>
-                  <TableHead>{t('ec.salary')}</TableHead>
                   <TableHead>{t('ec.file')}</TableHead>
                   <TableHead>{t('ec.status')}</TableHead>
                   <TableHead className="text-right">{t('ec.actions')}</TableHead>
@@ -612,10 +806,9 @@ export function EmployeeContracts({
                   return (
                     <TableRow key={contract.id}>
                       <TableCell className="font-medium">{contract.contract_code}</TableCell>
-                      <TableCell>{contract.contract_type}</TableCell>
+                      <TableCell>{displayContractType(contract.contract_type)}</TableCell>
                       <TableCell>{formatDate(contract.effective_date)}</TableCell>
                       <TableCell>{formatDate(contract.expiry_date)}</TableCell>
-                      <TableCell>{formatCurrency(contract.salary)}</TableCell>
                       <TableCell>
                         {contract.file_url ? (
                           <Button
@@ -712,39 +905,37 @@ export function EmployeeContracts({
               <div className="space-y-2">
                 <Label>{t('ec.contractCode')} *</Label>
                 <Input
+                  data-testid="contract-code"
                   value={formData.contract_code}
                   onChange={(e) => setFormData({ ...formData, contract_code: e.target.value })}
                   placeholder="HD-2024-001"
-                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('ec.contractType')}</Label>
-                <Select
+                <Label>{t('ec.contractType')} *</Label>
+                <CatalogSearchPicker
+                  options={contractTypeOptions}
                   value={formData.contract_type}
                   onValueChange={(value) => setFormData({ ...formData, contract_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CONTRACT_TYPES_KEYS.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {t(type.key)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t('ec.contractType')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ (contract_types)
+                    </a>
+                  }
+                />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ec.signingDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
+                  data-testid="contract-signing-date"
                   value={formData.signing_date}
-                  onChange={(e) => setFormData({ ...formData, signing_date: e.target.value })}
+                  onValueChange={(v) => setFormData({ ...formData, signing_date: v })}
                 />
               </div>
               <div className="space-y-2">
@@ -769,59 +960,67 @@ export function EmployeeContracts({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ec.effectiveDate')}</Label>
-                <Input
-                  type="date"
+                <ViDateField
+                  data-testid="contract-effective-date"
                   value={formData.effective_date}
-                  onChange={(e) => setFormData({ ...formData, effective_date: e.target.value })}
+                  onValueChange={(v) => setFormData({ ...formData, effective_date: v })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('ec.expiryDate')}</Label>
-                <Input
-                  type="date"
+                <Label>
+                  {t('ec.expiryDate')}
+                  {isOpenEndedContractType(formData.contract_type)
+                    ? ' (không bắt buộc)'
+                    : ''}
+                </Label>
+                <ViDateField
+                  data-testid="contract-expiry-date"
                   value={formData.expiry_date}
-                  onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
+                  onValueChange={(v) => setFormData({ ...formData, expiry_date: v })}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>{t('ec.salary')}</Label>
-                <Input
-                  type="number"
-                  value={formData.salary}
-                  onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                  placeholder="15000000"
-                />
-              </div>
               <div className="space-y-2">
                 <Label>{t('ec.position')}</Label>
-                <Input
-                  value={formData.position}
-                  onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                  placeholder="Nhân viên IT"
+                <CatalogSearchPicker
+                  options={positionOptions}
+                  value={formData.position_key}
+                  onValueChange={(value) => setFormData({ ...formData, position_key: value })}
+                  placeholder={t('ec.position')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ
+                    </a>
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('ec.department')}</Label>
+                <CatalogSearchPicker
+                  options={departmentOptions}
+                  value={formData.department_key}
+                  onValueChange={(value) => setFormData({ ...formData, department_key: value })}
+                  placeholder={t('ec.department')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ
+                    </a>
+                  }
                 />
               </div>
             </div>
 
+            <p className="text-xs text-muted-foreground rounded-input border bg-muted/40 px-3 py-2">
+              Lương / phụ cấp không nhập trên form HĐ — dùng tab «Đãi ngộ».
+            </p>
+
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>{t('ec.department')}</Label>
-                <Select
-                  value={formData.department}
-                  onValueChange={(value) => setFormData({ ...formData, department: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('ec.department')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="space-y-2">
                 <Label>{t('ec.workLocation')}</Label>
                 <Input
@@ -830,9 +1029,6 @@ export function EmployeeContracts({
                   placeholder="Hà Nội"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ec.probationPeriod')}</Label>
                 <Input
@@ -842,17 +1038,16 @@ export function EmployeeContracts({
                   placeholder="60"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>{t('ec.probationEndDate')}</Label>
-                <Input
-                  type="date"
-                  value={formData.probation_end_date}
-                  onChange={(e) => setFormData({ ...formData, probation_end_date: e.target.value })}
-                />
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>{t('ec.probationEndDate')}</Label>
+                <ViDateField
+                  value={formData.probation_end_date}
+                  onValueChange={(v) => setFormData({ ...formData, probation_end_date: v })}
+                />
+              </div>
               <div className="space-y-2">
                 <Label>{t('ec.signerName')}</Label>
                 <Input
@@ -861,12 +1056,25 @@ export function EmployeeContracts({
                   placeholder="Nguyễn Văn A"
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ec.signerPosition')}</Label>
-                <Input
-                  value={formData.signer_position}
-                  onChange={(e) => setFormData({ ...formData, signer_position: e.target.value })}
-                  placeholder="Giám đốc"
+                <CatalogSearchPicker
+                  options={positionOptions}
+                  value={formData.signer_position_key}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, signer_position_key: value })
+                  }
+                  placeholder={t('ec.signerPosition')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ
+                    </a>
+                  }
                 />
               </div>
             </div>
@@ -971,7 +1179,7 @@ export function EmployeeContracts({
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('ec.contractType')}</p>
-                  <p className="font-medium">{selectedContract.contract_type}</p>
+                  <p className="font-medium">{displayContractType(selectedContract.contract_type)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('ec.signingDate')}</p>
@@ -990,10 +1198,6 @@ export function EmployeeContracts({
                 <div>
                   <p className="text-sm text-muted-foreground">{t('ec.expiryDate')}</p>
                   <p className="font-medium">{formatDate(selectedContract.expiry_date)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.salary')}</p>
-                  <p className="font-medium">{formatCurrency(selectedContract.salary)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{t('ec.position')}</p>
@@ -1142,7 +1346,9 @@ export function EmployeeContracts({
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                                   <div>
                                     <span className="text-muted-foreground">Loại:</span>
-                                    <p className="font-medium">{contract.contract_type}</p>
+                                    <p className="font-medium">
+                                      {displayContractType(contract.contract_type)}
+                                    </p>
                                   </div>
                                   <div>
                                     <span className="text-muted-foreground">Hiệu lực:</span>
@@ -1153,8 +1359,11 @@ export function EmployeeContracts({
                                     <p className="font-medium">{formatDate(contract.expiry_date)}</p>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground">Lương:</span>
-                                    <p className="font-medium">{formatCurrency(contract.salary)}</p>
+                                    <span className="text-muted-foreground">Trạng thái:</span>
+                                    <Badge className={statusConfig.color}>
+                                      <StatusIcon className="w-3 h-3 mr-1" />
+                                      {statusConfig.label}
+                                    </Badge>
                                   </div>
                                 </div>
                                 
@@ -1204,6 +1413,16 @@ export function EmployeeContracts({
           )}
         </DialogContent>
       </Dialog>
+        </TabsContent>
+
+        <TabsContent value="dai-ngo">
+          <EmployeeCompensationPanel employeeId={employeeId} contracts={contracts ?? []} />
+        </TabsContent>
+
+        <TabsContent value="lich-su">
+          <EmployeeCompensationHistoryPanel employeeId={employeeId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

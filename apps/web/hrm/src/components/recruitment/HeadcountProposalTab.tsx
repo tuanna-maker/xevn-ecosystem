@@ -1,3 +1,16 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-PICKER-01
+ * change_mode: ADD
+ * What: position_key + department_key CatalogSearchPicker; Network keys + snapshots
+ * Why: AC-E1A-HC-01 · FR-HRM-MD-BIND-E1A-01 · U72
+ * must_keep: JobRequisitions; JobTemplates; U65; HOLD_DEPLOY; not FR-RC-01 SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-CREATE-GAPS-01
+ * change_mode: FIX
+ * What: Create dialog default requested_by từ profile; label Số lượng đề xuất; data-testid submit
+ * Why: DEF-E1A-HCP-SUBMIT-01 — Zod chặn submit (requested_by rỗng) → không có Network mutate
+ * must_keep: position_key/department_key picker; U65; HOLD_DEPLOY; JobTemplates/EmployeeForm/Leave
+ */
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -28,8 +41,19 @@ import * as XLSX from 'xlsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  buildDepartmentKeyFields,
+  buildPositionKeyFields,
+  departmentOptionsFromCatalog,
+  jobTitleOptionsFromCatalog,
+  resolveDepartmentLabel,
+  resolvePositionDisplayLabel,
+} from '@/lib/catalogSearchPicker';
 import {
   Table,
   TableBody,
@@ -87,6 +111,8 @@ import { isAbortLikeError, toErrorMessage } from '@/lib/apiError';
 interface HeadcountProposal {
   id: string;
   title: string;
+  position_key?: string | null;
+  department_key?: string | null;
   department: string;
   position_name: string;
   current_headcount: number;
@@ -113,7 +139,7 @@ const statusConfig = {
   pending: { labelKey: 'status.pending', icon: Clock, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
   approved: { labelKey: 'status.approved', icon: CheckCircle, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
   rejected: { labelKey: 'status.rejected', icon: XCircle, color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-  cancelled: { labelKey: 'status.cancelled', icon: AlertCircle, color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400' },
+  cancelled: { labelKey: 'status.cancelled', icon: AlertCircle, color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted' },
 };
 
 const priorityConfig = {
@@ -313,11 +339,24 @@ export function HeadcountProposalTab() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [editingProposal, setEditingProposal] = useState<HeadcountProposal | null>(null);
   const [viewingProposal, setViewingProposal] = useState<HeadcountProposal | null>(null);
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview();
+  const positionOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const departmentOptions = useMemo(
+    () => departmentOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
 
   const proposalFormSchema = useMemo(() => z.object({
     title: z.string().min(1, hp('validation.titleRequired')).max(200),
-    department: z.string().min(1, hp('validation.departmentRequired')).max(100),
-    position_name: z.string().min(1, hp('validation.positionRequired')).max(100),
+    department_key: z.string().min(1, hp('validation.departmentRequired')).max(100),
+    position_key: z.string().min(1, hp('validation.positionRequired')).max(100),
     current_headcount: z.number().min(0),
     requested_headcount: z.number().min(1, hp('validation.requestedHeadcountMin')),
     proposal_type: z.enum(['new', 'replacement', 'expansion']),
@@ -338,8 +377,8 @@ export function HeadcountProposalTab() {
     resolver: zodResolver(proposalFormSchema),
     defaultValues: {
       title: '',
-      department: '',
-      position_name: '',
+      department_key: '',
+      position_key: '',
       current_headcount: 0,
       requested_headcount: 1,
       proposal_type: 'new',
@@ -366,10 +405,17 @@ export function HeadcountProposalTab() {
     return new Intl.NumberFormat(i18n.language).format(value);
   };
 
-  const { currentCompanyId } = useAuth();
+  const { currentCompanyId, profile, user } = useAuth();
   const { listCompanyId } = useHrmOperatingUnitFilter();
   const queryClient = useQueryClient();
   const effectiveCompanyId = listCompanyId || currentCompanyId;
+  const defaultRequestedBy = useMemo(
+    () =>
+      (profile?.full_name || '').trim() ||
+      (user?.email || '').trim() ||
+      'CEO Tập đoàn',
+    [profile?.full_name, user?.email],
+  );
 
   const proposalsQuery = useQuery({
     queryKey: ['headcount-proposals', effectiveCompanyId],
@@ -581,14 +627,14 @@ export function HeadcountProposalTab() {
     setEditingProposal(null);
     form.reset({
       title: '',
-      department: '',
-      position_name: '',
+      department_key: '',
+      position_key: '',
       current_headcount: 0,
       requested_headcount: 1,
       proposal_type: 'new',
       priority: 'medium',
       justification: '',
-      requested_by: '',
+      requested_by: defaultRequestedBy,
       notes: '',
     });
     setIsDialogOpen(true);
@@ -598,8 +644,8 @@ export function HeadcountProposalTab() {
     setEditingProposal(proposal);
     form.reset({
       title: proposal.title,
-      department: proposal.department,
-      position_name: proposal.position_name,
+      department_key: proposal.department_key?.trim() || '',
+      position_key: proposal.position_key?.trim() || '',
       current_headcount: proposal.current_headcount,
       requested_headcount: proposal.requested_headcount,
       proposal_type: proposal.proposal_type,
@@ -695,11 +741,23 @@ export function HeadcountProposalTab() {
       return;
     }
     try {
+      const pos = buildPositionKeyFields(values.position_key, positionOptions);
+      const dept = buildDepartmentKeyFields(values.department_key, departmentOptions);
+      if (!pos || !dept) {
+        toast({
+          title: 'Thiếu danh mục',
+          description: 'Chọn vị trí và phòng ban từ danh mục (không nhập tự do).',
+          variant: 'destructive',
+        });
+        return;
+      }
       const proposalData = {
         company_id: effectiveCompanyId,
         title: values.title,
-        department: values.department,
-        position_name: values.position_name,
+        department_key: dept.department_key,
+        department: dept.department,
+        position_key: pos.position_key,
+        position_name: pos.position,
         current_headcount: values.current_headcount,
         requested_headcount: values.requested_headcount,
         proposal_type: values.proposal_type,
@@ -718,7 +776,7 @@ export function HeadcountProposalTab() {
       await createHeadcountProposal(proposalData);
       toast({
         title: 'Thành công',
-        description: 'Đã tạo đề xuất ngoài định biên — POST headcount-proposals',
+        description: 'Đã tạo đề xuất ngoài định biên.',
       });
 
       await refetchProposals();
@@ -896,10 +954,18 @@ export function HeadcountProposalTab() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Building2 className="w-4 h-4 text-muted-foreground" />
-                            {proposal.department}
+                            {proposal.department_key
+                              ? resolveDepartmentLabel(departmentOptions, proposal.department_key)
+                              : proposal.department}
                           </div>
                         </TableCell>
-                        <TableCell>{proposal.position_name}</TableCell>
+                        <TableCell>
+                          {resolvePositionDisplayLabel(
+                            positionOptions,
+                            proposal.position_key,
+                            proposal.position_name,
+                          )}
+                        </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <span className="font-medium text-primary">+{proposal.requested_headcount}</span>
@@ -937,7 +1003,7 @@ export function HeadcountProposalTab() {
                                 <Briefcase className="w-4 h-4 text-blue-600" />
                                 <Badge className={cn('text-xs',
                                   linkedJobPostings[proposal.id].status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                                  linkedJobPostings[proposal.id].status === 'closed' ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400' :
+                                  linkedJobPostings[proposal.id].status === 'closed' ? 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted' :
                                   'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                                 )}>
                                   {linkedJobPostings[proposal.id].status === 'active' ? 'Đang tuyển' :
@@ -1040,12 +1106,24 @@ export function HeadcountProposalTab() {
 
                 <FormField
                   control={form.control}
-                  name="department"
+                  name="department_key"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Phòng ban *</FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: Phòng Kinh doanh" {...field} />
+                        <CatalogSearchPicker
+                          options={departmentOptions}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Chọn phòng ban từ danh mục"
+                          loading={catalogsLoading}
+                          errorText={catalogsError ? 'Không tải được danh mục' : undefined}
+                          emptyHint={
+                            <a href="/settings" className="text-primary underline text-xs font-medium">
+                              Mở Cài đặt → Danh mục nghiệp vụ
+                            </a>
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1054,12 +1132,24 @@ export function HeadcountProposalTab() {
 
                 <FormField
                   control={form.control}
-                  name="position_name"
+                  name="position_key"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Vị trí tuyển dụng *</FormLabel>
                       <FormControl>
-                        <Input placeholder="VD: Nhân viên kinh doanh" {...field} />
+                        <CatalogSearchPicker
+                          options={positionOptions}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder="Chọn vị trí từ danh mục"
+                          loading={catalogsLoading}
+                          errorText={catalogsError ? 'Không tải được danh mục' : undefined}
+                          emptyHint={
+                            <a href="/settings" className="text-primary underline text-xs font-medium">
+                              Mở Cài đặt → Danh mục nghiệp vụ
+                            </a>
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1091,13 +1181,14 @@ export function HeadcountProposalTab() {
                   name="requested_headcount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số lượng tuyển thêm (ngoài định biên) *</FormLabel>
+                      <FormLabel>Số lượng đề xuất (tuyển thêm ngoài định biên) *</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
+                        <Input
+                          type="number"
                           min={1}
+                          data-testid="hcp-requested-headcount"
                           placeholder="Số người cần tuyển thêm"
-                          {...field} 
+                          {...field}
                           onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
                         />
                       </FormControl>
@@ -1194,7 +1285,11 @@ export function HeadcountProposalTab() {
                     <FormItem>
                       <FormLabel>Người đề xuất *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Tên người đề xuất" {...field} />
+                        <Input
+                          data-testid="hcp-requested-by"
+                          placeholder="Tên người đề xuất"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1208,11 +1303,12 @@ export function HeadcountProposalTab() {
                     <FormItem>
                       <FormLabel>Ngân sách lương (tối thiểu)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="VD: 10000000"
-                          {...field} 
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                        <ViMoneyInput
+                          placeholder="VD: 10.000.000"
+                          value={Number(field.value) || 0}
+                          onValueChange={(n) => field.onChange(n === 0 ? undefined : n)}
+                          onBlur={field.onBlur}
+                          name={field.name}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1227,11 +1323,12 @@ export function HeadcountProposalTab() {
                     <FormItem>
                       <FormLabel>Ngân sách lương (tối đa)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="VD: 20000000"
-                          {...field} 
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                        <ViMoneyInput
+                          placeholder="VD: 20.000.000"
+                          value={Number(field.value) || 0}
+                          onValueChange={(n) => field.onChange(n === 0 ? undefined : n)}
+                          onBlur={field.onBlur}
+                          name={field.name}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1315,7 +1412,7 @@ export function HeadcountProposalTab() {
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Hủy
                 </Button>
-                <Button type="submit">
+                <Button type="submit" data-testid="hcp-submit">
                   {editingProposal ? 'Cập nhật' : 'Tạo đề xuất'}
                 </Button>
               </DialogFooter>
@@ -1351,7 +1448,13 @@ export function HeadcountProposalTab() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Vị trí</p>
-                  <p className="font-medium">{viewingProposal.position_name}</p>
+                  <p className="font-medium">
+                    {resolvePositionDisplayLabel(
+                      positionOptions,
+                      viewingProposal.position_key,
+                      viewingProposal.position_name,
+                    )}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Số lượng đề xuất</p>

@@ -74,8 +74,8 @@ export function PayrollPayslipsApiTab() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold">{t('payroll.payrollList', 'Danh sách phiếu lương')}</h2>
-          <p className="text-sm text-muted-foreground">
-            {filtered.length} / {payslips.length} {t('common.records', 'bản ghi')} — hrm-api
+          <p className="text-sm text-muted-foreground" data-testid="payroll-payslips-count">
+            {filtered.length} / {payslips.length} {t('common.records', 'bản ghi')}
           </p>
         </div>
         <div className="relative w-full sm:w-72">

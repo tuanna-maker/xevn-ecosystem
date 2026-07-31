@@ -1,3 +1,17 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /hr/recruitment — form tạo/sửa ứng viên pool
+ * UC:         UC-HRM-REC-* · UC-HRM-INT-01
+ * BR:         G-DB-01 hire link
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.33 FR-HRM-INT-01
+ * TechSpec:   docs/hrm/TECHSPEC.md §17.3 G-DB-01
+ * Purpose:    CRUD candidates-pool; ADD employee_id bắt buộc khi stage=hired.
+ * WorkItem:   FE-HRM-G-DB-01-HIRE-BIND-01
+ * Coded:      2026-07-21
+ * must_keep:  G-RC-01 · leave CREATE · U65
+ * change_mode: ADD
+ * LastVerified: recruitmentHireLink.test.ts
+ */
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,24 +50,40 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createCandidatePool, updateCandidatePool } from '@/integrations/hrmApi';
+import { useEmployees } from '@/hooks/useEmployees';
+import { toErrorMessage } from '@/lib/apiError';
+import { HRM_REC_HIRE_400_VI, isHiredStage } from '@/lib/recruitmentHireLink';
 
 type CandidateFormValues = z.infer<ReturnType<typeof createCandidateSchema>>;
 
-const createCandidateSchema = (r: (key: string) => string) => z.object({
-  full_name: z.string().min(1, r('formValName')).max(100, r('formValNameMax')),
-  email: z.string().email(r('formValEmail')),
-  phone: z.string().optional(),
-  position: z.string().optional(),
-  source: z.string().optional(),
-  stage: z.string().min(1, r('formValStage')),
-  rating: z.coerce.number().min(0).max(5).optional(),
-  applied_date: z.date().optional().nullable(),
-  expected_start_date: z.date().optional().nullable(),
-  nationality: z.string().optional(),
-  hometown: z.string().optional(),
-  marital_status: z.string().optional(),
-  notes: z.string().optional(),
-});
+const createCandidateSchema = (r: (key: string) => string) =>
+  z
+    .object({
+      full_name: z.string().min(1, r('formValName')).max(100, r('formValNameMax')),
+      email: z.string().email(r('formValEmail')),
+      phone: z.string().optional(),
+      position: z.string().optional(),
+      source: z.string().optional(),
+      stage: z.string().min(1, r('formValStage')),
+      employee_id: z.string().optional(),
+      rating: z.coerce.number().min(0).max(5).optional(),
+      applied_date: z.date().optional().nullable(),
+      expected_start_date: z.date().optional().nullable(),
+      nationality: z.string().optional(),
+      hometown: z.string().optional(),
+      marital_status: z.string().optional(),
+      notes: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      // FR-HRM-INT-01 #5 — hired bắt buộc mã hồ sơ trước khi Lưu.
+      if (isHiredStage(data.stage) && !data.employee_id?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: HRM_REC_HIRE_400_VI,
+          path: ['employee_id'],
+        });
+      }
+    });
 
 interface Candidate {
   id: string;
@@ -64,6 +94,7 @@ interface Candidate {
   position?: string | null;
   source?: string | null;
   stage?: string | null;
+  employee_id?: string | null;
   rating?: number | null;
   applied_date?: string | null;
   expected_start_date?: string | null;
@@ -121,6 +152,7 @@ export function CandidateFormDialog({
   const r = (key: string) => t(`rc.${key}`);
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { employees, isLoading: employeesLoading } = useEmployees(false, undefined, { enabled: open });
 
   const candidateSchema = createCandidateSchema(r);
   const sourceOptions = getSourceOptions(r);
@@ -136,6 +168,7 @@ export function CandidateFormDialog({
       position: '',
       source: '',
       stage: 'applied',
+      employee_id: '',
       rating: 0,
       applied_date: new Date(),
       expected_start_date: null,
@@ -146,6 +179,8 @@ export function CandidateFormDialog({
     },
   });
 
+  const watchedStage = form.watch('stage');
+
   useEffect(() => {
     if (candidate) {
       form.reset({
@@ -155,6 +190,7 @@ export function CandidateFormDialog({
         position: candidate.position || '',
         source: candidate.source || '',
         stage: candidate.stage || 'applied',
+        employee_id: candidate.employee_id || '',
         rating: candidate.rating || 0,
         applied_date: candidate.applied_date ? new Date(candidate.applied_date) : null,
         expected_start_date: candidate.expected_start_date ? new Date(candidate.expected_start_date) : null,
@@ -171,6 +207,7 @@ export function CandidateFormDialog({
         position: '',
         source: '',
         stage: 'applied',
+        employee_id: '',
         rating: 0,
         applied_date: new Date(),
         expected_start_date: null,
@@ -195,11 +232,16 @@ export function CandidateFormDialog({
         stage: data.stage,
         rating: data.rating || 0,
         applied_date: data.applied_date ? format(data.applied_date, 'yyyy-MM-dd') : null,
-        expected_start_date: data.expected_start_date ? format(data.expected_start_date, 'yyyy-MM-dd') : null,
+        expected_start_date: data.expected_start_date
+          ? format(data.expected_start_date, 'yyyy-MM-dd')
+          : null,
         nationality: data.nationality || null,
         hometown: data.hometown || null,
         marital_status: data.marital_status || null,
         notes: data.notes || null,
+        ...(isHiredStage(data.stage) && data.employee_id?.trim()
+          ? { employee_id: data.employee_id.trim() }
+          : {}),
       };
 
       if (candidate) {
@@ -218,11 +260,11 @@ export function CandidateFormDialog({
 
       onSuccess();
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error saving candidate:', error);
       toast({
         title: t('common.error'),
-        description: error.message || r('formSaveError'),
+        description: toErrorMessage(error, r('formSaveError')),
         variant: 'destructive',
       });
     } finally {
@@ -376,6 +418,44 @@ export function CandidateFormDialog({
                     )}
                   />
                 </div>
+
+                {isHiredStage(watchedStage) ? (
+                  <FormField
+                    control={form.control}
+                    name="employee_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Hồ sơ nhân viên *</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value || undefined}
+                          disabled={employeesLoading}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={
+                                  employeesLoading
+                                    ? 'Đang tải hồ sơ…'
+                                    : '— Chọn hồ sơ nhân viên cùng đơn vị —'
+                                }
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {employees.map((emp) => (
+                              <SelectItem key={emp.id} value={emp.id}>
+                                {emp.employee_code} — {emp.full_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">{HRM_REC_HIRE_400_VI}</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : null}
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField

@@ -358,7 +358,7 @@ export function DepartmentManagement() {
                 isLoading={loading}
                 loadFailed={Boolean(fetchError)}
                 errorMessage={fetchError}
-                loadingMessage="Đang tải danh sách phòng ban từ HRM API…"
+                loadingMessage="Đang tải danh sách phòng ban…"
               />
               {fetchError ? (
                 <Button

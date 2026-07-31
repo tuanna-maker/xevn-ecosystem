@@ -4,6 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -938,12 +939,13 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>Giá trị mặc định</Label>
-                      <Input
-                        type="number"
-                        value={selectedComponent.default_value || 0}
-                        onChange={(e) => handleUpdateComponent(selectedComponent.component_id, { 
-                          default_value: parseFloat(e.target.value) || 0 
-                        })}
+                      <ViMoneyInput
+                        value={Number(selectedComponent.default_value) || 0}
+                        onValueChange={(n) =>
+                          handleUpdateComponent(selectedComponent.component_id, {
+                            default_value: n,
+                          })
+                        }
                       />
                     </div>
 
@@ -970,23 +972,25 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Giá trị tối thiểu</Label>
-                        <Input
-                          type="number"
-                          value={selectedComponent.min_value ?? ''}
-                          onChange={(e) => handleUpdateComponent(selectedComponent.component_id, { 
-                            min_value: e.target.value ? parseFloat(e.target.value) : null 
-                          })}
+                        <ViMoneyInput
+                          value={selectedComponent.min_value ?? 0}
+                          onValueChange={(n) =>
+                            handleUpdateComponent(selectedComponent.component_id, {
+                              min_value: n === 0 ? null : n,
+                            })
+                          }
                           placeholder="Không giới hạn"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label>Giá trị tối đa</Label>
-                        <Input
-                          type="number"
-                          value={selectedComponent.max_value ?? ''}
-                          onChange={(e) => handleUpdateComponent(selectedComponent.component_id, { 
-                            max_value: e.target.value ? parseFloat(e.target.value) : null 
-                          })}
+                        <ViMoneyInput
+                          value={selectedComponent.max_value ?? 0}
+                          onValueChange={(n) =>
+                            handleUpdateComponent(selectedComponent.component_id, {
+                              max_value: n === 0 ? null : n,
+                            })
+                          }
                           placeholder="Không giới hạn"
                         />
                       </div>

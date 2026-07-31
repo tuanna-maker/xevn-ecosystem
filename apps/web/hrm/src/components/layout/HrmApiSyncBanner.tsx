@@ -6,24 +6,24 @@ import { useAuth } from '@/contexts/AuthContext';
 export function HrmApiSyncBanner() {
   const { currentCompanyId } = useAuth();
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
-  const [message, setMessage] = useState('Chưa kiểm tra kết nối HRM API.');
+  const [message, setMessage] = useState('Chưa kiểm tra đồng bộ danh mục.');
 
   const check = async () => {
     try {
       setStatus('loading');
       const result = await listSyncedCatalogs();
       setStatus('ok');
-      setMessage(`Đã kết nối HRM API. Có ${result.total} danh mục đã sync từ XBOS.`);
+      setMessage(`Đã kết nối. Có ${result.total} danh mục đã đồng bộ từ XBOS.`);
     } catch (error) {
       setStatus('error');
-      setMessage(toErrorMessage(error, 'Không thể kết nối HRM API'));
+      setMessage(toErrorMessage(error, 'Không thể kết nối dịch vụ HRM'));
     }
   };
 
   useEffect(() => {
     if (!currentCompanyId) {
       setStatus('idle');
-      setMessage('Thiếu company context để kiểm tra HRM API.');
+      setMessage('Thiếu phạm vi công ty để kiểm tra đồng bộ danh mục.');
       return;
     }
     void check();
@@ -33,9 +33,15 @@ export function HrmApiSyncBanner() {
     <div className="mb-4 rounded-xl border border-border bg-card px-4 py-3 text-sm">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <span className="font-medium">HRM API Sync</span>
+          <span className="font-medium">Đồng bộ danh mục</span>
           <span className="ml-2 text-xs text-muted-foreground">
-            {status === 'ok' ? 'CONNECTED' : status === 'loading' ? 'CHECKING' : status === 'error' ? 'ERROR' : 'IDLE'}
+            {status === 'ok'
+              ? 'Đã kết nối'
+              : status === 'loading'
+                ? 'Đang kiểm tra'
+                : status === 'error'
+                  ? 'Lỗi'
+                  : 'Chưa kiểm tra'}
           </span>
           <div className="text-xs text-muted-foreground mt-1">{message}</div>
         </div>

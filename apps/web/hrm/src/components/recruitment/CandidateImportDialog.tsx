@@ -33,6 +33,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { resolveRecruitmentFunnelStageDisplay } from '@/lib/labelMaps';
 
 interface CandidateImportDialogProps {
   open: boolean;
@@ -486,7 +487,7 @@ export function CandidateImportDialog({
                         <TableCell>{row.source || '-'}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs">
-                            {row.stage}
+                            {resolveRecruitmentFunnelStageDisplay(row.stage)}
                           </Badge>
                         </TableCell>
                         <TableCell>

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Card } from '@/components/ui/card';
 import {
   Select,
@@ -457,7 +458,10 @@ export function BusinessTripRequestTab() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>{t('businessTrip.estimatedCost')}</Label>
-                <Input type="number" value={formData.estimatedCost} onChange={(e) => setFormData({ ...formData, estimatedCost: Number(e.target.value) })} />
+                <ViMoneyInput
+                  value={Number(formData.estimatedCost) || 0}
+                  onValueChange={(n) => setFormData({ ...formData, estimatedCost: n })}
+                />
               </div>
               <div className="flex items-center gap-4 pt-6">
                 <Switch checked={formData.hasAdvance} onCheckedChange={(v) => setFormData({ ...formData, hasAdvance: v })} />
@@ -467,7 +471,10 @@ export function BusinessTripRequestTab() {
             {formData.hasAdvance && (
               <div>
                 <Label>{t('businessTrip.advanceAmount')}</Label>
-                <Input type="number" value={formData.advanceAmount} onChange={(e) => setFormData({ ...formData, advanceAmount: Number(e.target.value) })} />
+                <ViMoneyInput
+                  value={Number(formData.advanceAmount) || 0}
+                  onValueChange={(n) => setFormData({ ...formData, advanceAmount: n })}
+                />
               </div>
             )}
             <div>

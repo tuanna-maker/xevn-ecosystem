@@ -35,6 +35,7 @@ import { BrandingSettings } from '@/components/settings/BrandingSettings';
 import { RolesPermissionsTab } from '@/components/settings/RolesPermissionsTab';
 import { SubscriptionManagement } from '@/components/settings/SubscriptionManagement';
 import { SettingsCatalogsTab } from '@/components/settings/SettingsCatalogsTab';
+import { MasterDataSettingsPanel } from '@/components/settings/MasterDataSettingsPanel';
 
 const currencies = [
   { code: 'VND', name: 'Việt Nam Đồng', symbol: '₫', flag: '🇻🇳' },
@@ -105,6 +106,10 @@ export default function Settings() {
           <TabsTrigger value="catalogs" className="gap-1.5 text-xs sm:text-sm">
             <Layers className="w-4 h-4" />
             <span className="hidden sm:inline">{t('settings.catalogs.title')}</span>
+          </TabsTrigger>
+          <TabsTrigger value="master-data" className="gap-1.5 text-xs sm:text-sm">
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">Danh mục nghiệp vụ</span>
           </TabsTrigger>
         </TabsList>
 
@@ -370,6 +375,10 @@ export default function Settings() {
 
         <TabsContent value="catalogs" className="space-y-4">
           <SettingsCatalogsTab />
+        </TabsContent>
+
+        <TabsContent value="master-data" className="space-y-4">
+          <MasterDataSettingsPanel />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,6 +23,7 @@ import {
   BookOpen,
   ConciergeBell,
   Wrench,
+  Truck,
   TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePermissions } from '@/hooks/usePermissions';
+import { shouldBypassHrmPermissionGate } from '@/components/auth/PermissionGate';
 
 interface BrandingConfig {
   logoUrl: string | null;
@@ -91,6 +93,7 @@ const mainNavItems: NavItemWithChildren[] = [
   { titleKey: 'nav.processes', icon: BookOpen, path: '/processes', module: 'processes' },
   { titleKey: 'nav.services', icon: ConciergeBell, path: '/internal-services', module: 'services' },
   { titleKey: 'nav.tools', icon: Wrench, path: '/tools-equipment', module: 'tools' },
+  { titleKey: 'nav.fleet', icon: Truck, path: '/fleet' },
 ];
 
 const settingsNavItems: NavItem[] = [
@@ -98,6 +101,40 @@ const settingsNavItems: NavItem[] = [
   { titleKey: 'nav.reports', icon: BarChart3, path: '/reports', module: 'reports' },
   { titleKey: 'nav.settings', icon: Settings, path: '/settings', module: 'settings' },
 ];
+
+function filterNavByModule<T extends { module?: string }>(
+  items: T[],
+  canAccessModule: (module?: string) => boolean,
+): T[] {
+  return items.filter((item) => canAccessModule(item.module));
+}
+
+function filterMainNavItems(
+  items: NavItemWithChildren[],
+  canAccessModule: (module?: string) => boolean,
+): NavItemWithChildren[] {
+  return items
+    .map((item) => {
+      if (item.children) {
+        const filteredChildren = filterNavByModule(item.children, canAccessModule);
+        if (filteredChildren.length === 0) return null;
+        return { ...item, children: filteredChildren };
+      }
+      return canAccessModule(item.module) ? item : null;
+    })
+    .filter(Boolean) as NavItemWithChildren[];
+}
+
+function useHrmNavModuleAccess() {
+  const location = useLocation();
+  const { hasAnyPermission } = usePermissions();
+  const permissionBypass = shouldBypassHrmPermissionGate(location.search);
+  const canAccessModule = useCallback(
+    (module?: string) => !module || permissionBypass || hasAnyPermission(module),
+    [permissionBypass, hasAnyPermission],
+  );
+  return { canAccessModule };
+}
 
 // Mobile sidebar trigger component for header
 export function MobileSidebarTrigger() {
@@ -121,7 +158,7 @@ function MobileSidebarContent({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const location = useLocation();
   const [openPopover, setOpenPopover] = useState<string | null>(null);
-  const { hasAnyPermission } = usePermissions();
+  const { canAccessModule } = useHrmNavModuleAccess();
   
   const [branding, setBranding] = useState<BrandingConfig>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -135,18 +172,15 @@ function MobileSidebarContent({ onClose }: { onClose: () => void }) {
     return getDefaultBranding();
   });
 
-  const filteredMainNav = useMemo(() => mainNavItems.map(item => {
-    if (item.children) {
-      const filteredChildren = item.children.filter(c => !c.module || hasAnyPermission(c.module));
-      if (filteredChildren.length === 0) return null;
-      return { ...item, children: filteredChildren };
-    }
-    return !item.module || hasAnyPermission(item.module) ? item : null;
-  }).filter(Boolean) as NavItemWithChildren[], [hasAnyPermission]);
+  const filteredMainNav = useMemo(
+    () => filterMainNavItems(mainNavItems, canAccessModule),
+    [canAccessModule],
+  );
 
-  const filteredSettingsNav = useMemo(() => 
-    settingsNavItems.filter(item => !item.module || hasAnyPermission(item.module)),
-  [hasAnyPermission]);
+  const filteredSettingsNav = useMemo(
+    () => filterNavByModule(settingsNavItems, canAccessModule),
+    [canAccessModule],
+  );
 
   const isActive = (path: string) => {
     const currentPath = location.pathname.replace(/^\/hrm?(?=\/|$)/, '');
@@ -301,7 +335,7 @@ export function AppSidebar() {
   const [openPopover, setOpenPopover] = useState<string | null>(null);
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { hasAnyPermission } = usePermissions();
+  const { canAccessModule } = useHrmNavModuleAccess();
   
   const [branding, setBranding] = useState<BrandingConfig>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -315,18 +349,15 @@ export function AppSidebar() {
     return getDefaultBranding();
   });
 
-  const filteredMainNav = useMemo(() => mainNavItems.map(item => {
-    if (item.children) {
-      const filteredChildren = item.children.filter(c => !c.module || hasAnyPermission(c.module));
-      if (filteredChildren.length === 0) return null;
-      return { ...item, children: filteredChildren };
-    }
-    return !item.module || hasAnyPermission(item.module) ? item : null;
-  }).filter(Boolean) as NavItemWithChildren[], [hasAnyPermission]);
+  const filteredMainNav = useMemo(
+    () => filterMainNavItems(mainNavItems, canAccessModule),
+    [canAccessModule],
+  );
 
-  const filteredSettingsNav = useMemo(() => 
-    settingsNavItems.filter(item => !item.module || hasAnyPermission(item.module)),
-  [hasAnyPermission]);
+  const filteredSettingsNav = useMemo(
+    () => filterNavByModule(settingsNavItems, canAccessModule),
+    [canAccessModule],
+  );
 
   useEffect(() => {
     const handleBrandingUpdate = (e: CustomEvent<BrandingConfig>) => {

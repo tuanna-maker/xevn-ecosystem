@@ -7,7 +7,7 @@ export default function SettingsCatalogsPage() {
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Danh mục cài đặt</h1>
         <p className="text-sm text-muted-foreground">
-          Đồng bộ danh mục từ XBOS và quản lý mục cài đặt HRM (UF-HRM-10).
+          Đồng bộ danh mục từ XBOS và quản lý mục cài đặt HRM.
         </p>
       </div>
       <SettingsCatalogsTab />

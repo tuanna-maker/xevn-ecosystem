@@ -1,13 +1,89 @@
-import { useMemo, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /contracts — danh sách + tạo/sửa HĐ
+ * UC:         UF-HRM-08 / AC-CD-F5
+ * BR:         Contract form fields from settings-catalogs; no salary on body (F5)
+ * SRS:        docs/hrm/SRS.md § contracts
+ * TechSpec:   CUSTOMER_DEMO_HRM_DELTA F5; cd-fb-03 perf audit FE-03
+ * Purpose:    Contracts list/CRUD; form catalogs via shared RQ settings-catalogs cache.
+ * WorkItem:   CD-FB-04-PERF-FIX / P1-HRM-PERF-FE-03
+ * Coded:      2026-07-19
+ * must_keep:  F5 HĐ/Đãi ngộ tabs ACs; dialog-deferred catalog fetch; U65 no seed
+ * LastVerified: apps/web/hrm/src/hooks/p1-hrm-perf-fe-03.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-04-PERF-FIX
+ * what: Replace contracts-settings-catalogs key with useSettingsCatalogsOverview
+ * why: Deduplicate GET /settings-catalogs vs Settings + EmployeeForm (FE-03)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-UX03-DEBOUNCE-01
+ * change_mode: FIX
+ * What: List search đã có onChange — thêm debounce 300ms (useDebouncedValue) khi lọc bảng
+ * Why: UX-03 — cùng pattern Shifts; giảm filter thrash khi gõ
+ * Spec: docs/program/UX-UI-ERP-ANALYSIS.md UX-03
+ * must_keep: F5 HĐ/Đãi ngộ; dialog-deferred catalog; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-EMPTY-STATE-FE-01
+ * change_mode: ADD
+ * What: Wire EmptyState mood none/error vào list empty + load-fail (CTA VI)
+ * Why: UX-10 Wave B — cấm bland «Không có dữ liệu» không actionable
+ * Spec: docs/program/UX-UI-ERP-ANALYSIS.md § Wave B EmptyState
+ * must_keep: F5 HĐ; U65; không đụng Payroll/Attendance/Profile
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-FE-ERP-E2-01
+ * change_mode: ADD
+ * What: Loại HĐ picker = contract_types code (CatalogSearchPicker); cấm HARDCODE fallback khi items>0
+ * Why: FR-HRM-CI-TYPE-E2-01 · AC-E2-CI-PARITY-01 — parity Profile EmployeeContracts
+ * must_keep: F5 salary off body; EmptyState; position_key E1-A ngoài page này
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01
+ * WorkItem: D-HDSD-MUTATE-FE-07
+ * change_mode: FIX
+ * What: ensureContractCreateDates on dialog open + resolved type for hidden date fields gate
+ * Why: QA RET-03-HRM-R4 — hdsd-contracts-form-ready timeout when catalog omits date columns
+ * must_keep: TC-HDSD-08-02-01 leave 🟢; regression TC 04/05/10; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-FE-08
+ * change_mode: FIX
+ * What: POST payload includes contract_code + position_key (E1-A); position resolved at submit
+ * Why: QA RET-03-HRM-R5 — hdsd-contracts-form-ready 🟢 but POST 400 missing position_key
+ * must_keep: FE-07 date prefill; TC-HDSD-08-02-01 leave 🟢
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-FE-09
+ * change_mode: FIX
+ * What: isCreateFormReady cấm gate position_key — chỉ dates/employee/type; position_key vẫn trên POST
+ * Why: QA R6 regression — position catalog chưa load trong 22s chặn hdsd-contracts-form-ready
+ * must_keep: resolveContractCreatePositionKey on submit; FE-07 date prefill
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-FE-10
+ * change_mode: FIX
+ * What: resolveContractCreatePositionKey at submit with department snapshot; pass-through empKey when catalog miss
+ * Why: QA R7 — form-ready 🟢 but no POST (position resolver returned null before API)
+ * must_keep: FE-09 form-ready gate; FE-07 date prefill; TC-HDSD-08-02-01 leave 🟢
+ */
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useContracts, type Contract } from '@/hooks/useContracts';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { hrmStorageUploadStub, hrmStorageRemoveStub } from '@/lib/hrmStorageUploadStub';
 import { PermissionGate } from '@/components/auth/PermissionGate';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
+import { EmptyState } from '@/components/hrm/EmptyState';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import {
+  contractTypeOptionsFromCatalog,
+  jobTitleOptionsFromCatalog,
+  resolveContractTypeCatalogLabel,
+} from '@/lib/catalogSearchPicker';
+import { resolveContractCreatePositionKey } from '@/lib/contractCreatePayload';
 import {
   HRM_LIST_LOAD_FAILED_SHORT,
   isListFetchFailureEmpty,
@@ -79,6 +155,11 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import {
+  ensureContractCreateDates,
+  resolveContractTypeForDatePolicy,
+  validateContractDatesForSubmit,
+} from '@/lib/contractEndDatePolicy';
 import { vi } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
@@ -86,11 +167,10 @@ import { ContractImportDialog } from '@/components/contract/ContractImportDialog
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
-  getSettingsCatalogsOverview,
   listEmployees,
   type HrmSettingsCatalogOverviewRow,
-  type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
+import { EM_DASH, resolveContractStatusDisplay, resolveContractTypeDisplayLabel } from '@/lib/labelMaps';
 
 interface FormData {
   contract_code: string;
@@ -111,7 +191,7 @@ const initialFormData: FormData = {
   employee_name: '',
   employee_avatar: '',
   department: '',
-  contract_type: 'Hợp đồng 1 năm',
+  contract_type: '',
   effective_date: undefined,
   expiry_date: undefined,
   status: 'pending',
@@ -119,22 +199,14 @@ const initialFormData: FormData = {
   file_url: '',
 };
 
-const getContractTypes = (t: any) => [
-  { key: 'all', label: t('contracts.types.all'), icon: LayoutDashboard, color: 'bg-blue-500', textColor: 'text-blue-600' },
-  { key: 'Hợp đồng 1 năm', label: t('contracts.types.oneYear'), icon: FileText, color: 'bg-indigo-500', textColor: 'text-indigo-600' },
-  { key: 'Hợp đồng 3 năm', label: t('contracts.types.threeYear'), icon: FileSignature, color: 'bg-emerald-500', textColor: 'text-emerald-600' },
-  { key: 'Hợp đồng 6 tháng', label: t('contracts.types.sixMonth'), icon: Clock, color: 'bg-amber-500', textColor: 'text-amber-600' },
-  { key: 'Hợp đồng học việc', label: t('contracts.types.apprentice'), icon: GraduationCap, color: 'bg-cyan-500', textColor: 'text-cyan-600' },
-  { key: 'Hợp đồng thử việc', label: t('contracts.types.probation'), icon: UserCheck, color: 'bg-purple-500', textColor: 'text-purple-600' },
-];
-
-const CONTRACT_TYPE_OPTIONS = [
-  'Hợp đồng 1 năm',
-  'Hợp đồng 3 năm',
-  'Hợp đồng 6 tháng',
-  'Hợp đồng học việc',
-  'Hợp đồng thử việc',
-];
+const FILTER_TYPE_ICONS = [FileText, FileSignature, Clock, GraduationCap, UserCheck] as const;
+const FILTER_TYPE_COLORS = [
+  { color: 'bg-indigo-500', textColor: 'text-indigo-600' },
+  { color: 'bg-emerald-500', textColor: 'text-emerald-600' },
+  { color: 'bg-amber-500', textColor: 'text-amber-600' },
+  { color: 'bg-cyan-500', textColor: 'text-cyan-600' },
+  { color: 'bg-purple-500', textColor: 'text-purple-600' },
+] as const;
 
 type ContractFormFieldKey =
   | 'contract_code'
@@ -159,15 +231,6 @@ const DEFAULT_CONTRACT_FORM_FIELDS: ContractFormFieldKey[] = [
   'file_url',
 ];
 
-function resolveCatalogScope(currentCompanyId: string | null): HrmSpreadsheetScope | null {
-  if (!currentCompanyId) return null;
-  const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
-  return {
-    tenantId: tenantFromEnv && tenantFromEnv.length > 0 ? tenantFromEnv : currentCompanyId,
-    companyId: currentCompanyId,
-  };
-}
-
 function findCatalog(catalogs: HrmSettingsCatalogOverviewRow[], keys: string[]) {
   return catalogs.find((c) => keys.includes(c.catalogKey.toLowerCase()));
 }
@@ -183,19 +246,22 @@ const getStatusBadge = (status: string, t: any) => {
     active: { labelKey: 'contracts.statuses.active', className: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0' },
     pending: { labelKey: 'contracts.statuses.pending', className: 'bg-amber-100 text-amber-700 hover:bg-amber-100 border-0' },
     expired: { labelKey: 'contracts.statuses.expired', className: 'bg-rose-100 text-rose-700 hover:bg-rose-100 border-0' },
+    terminated: { labelKey: 'contracts.statuses.terminated', className: 'bg-gray-100 text-gray-700 hover:bg-gray-100 border-0' },
   };
-  const { labelKey, className } = config[status] || { labelKey: '', className: 'bg-gray-100 text-gray-700 hover:bg-gray-100 border-0' };
-  return <Badge className={className}>{labelKey ? t(labelKey) : status}</Badge>;
+  const hit = config[status];
+  // U72 fail-closed: unknown status → «—», never raw slug
+  const label = hit ? t(hit.labelKey) : resolveContractStatusDisplay(status);
+  const className = hit?.className ?? 'bg-gray-100 text-gray-700 hover:bg-gray-100 border-0';
+  return <Badge className={className}>{label || EM_DASH}</Badge>;
 };
 
 export default function Contracts() {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
-  const scope = useMemo(() => resolveCatalogScope(currentCompanyId), [currentCompanyId]);
-  const contractTypes = getContractTypes(t);
   const STATUS_OPTIONS = getStatusOptions(t);
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
   const [selectedContracts, setSelectedContracts] = useState<string[]>([]);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
@@ -245,15 +311,14 @@ export default function Contracts() {
     staleTime: 60_000,
   });
 
-  const contractCatalogQuery = useQuery({
-    queryKey: ['contracts-settings-catalogs', scope?.tenantId, scope?.companyId],
-    queryFn: () => getSettingsCatalogsOverview(scope!),
-    enabled: !!scope && needsFormLookups,
-    staleTime: 60_000,
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview({
+    enabled: true, // filter chips + form need contract_types (E2 parity)
   });
-  const catalogs = contractCatalogQuery.data?.catalogs ?? [];
   const formFieldsCatalog = findCatalog(catalogs, ['hrm_contract_form_fields', 'contract_form_fields']);
-  const contractTypesCatalog = findCatalog(catalogs, ['contract_types', 'hrm_contract_types']);
   const contractStatusesCatalog = findCatalog(catalogs, ['contract_statuses', 'hrm_contract_statuses']);
   const departmentCatalog = findCatalog(catalogs, ['departments', 'department_catalog', 'org_departments']);
 
@@ -270,14 +335,44 @@ export default function Contracts() {
   }, [formFieldsCatalog]);
   const hasContractField = (field: ContractFormFieldKey) => activeFormFields.has(field);
 
-  const contractTypeOptions = useMemo(() => {
-    const fromCatalog = (contractTypesCatalog?.effectiveItems ?? [])
-      .filter((item) => item.status === 'active')
-      .map((item) => item.label.trim())
-      .filter((item) => item.length > 0);
-    return fromCatalog.length > 0 ? fromCatalog : CONTRACT_TYPE_OPTIONS;
-  }, [contractTypesCatalog]);
+  /** Persist code — AC-E2-CI-PARITY-01; empty catalog → [] (no HARDCODE SoT). */
+  const contractTypePickerOptions = useMemo(
+    () => contractTypeOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
 
+  const positionPickerOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+
+  const contractTypes = useMemo(() => {
+    const all = {
+      key: 'all',
+      label: t('contracts.types.all'),
+      icon: LayoutDashboard,
+      color: 'bg-blue-500',
+      textColor: 'text-blue-600',
+    };
+    const fromCatalog = contractTypePickerOptions.map((opt, idx) => {
+      const style = FILTER_TYPE_COLORS[idx % FILTER_TYPE_COLORS.length];
+      const Icon = FILTER_TYPE_ICONS[idx % FILTER_TYPE_ICONS.length];
+      return {
+        key: opt.value,
+        label: opt.label,
+        icon: Icon,
+        color: style.color,
+        textColor: style.textColor,
+      };
+    });
+    return [all, ...fromCatalog];
+  }, [contractTypePickerOptions, t]);
+
+  const displayContractType = (code: string | null | undefined) => {
+    const fromCatalog = resolveContractTypeCatalogLabel(contractTypePickerOptions, code);
+    if (fromCatalog !== '—') return fromCatalog;
+    return resolveContractTypeDisplayLabel(code);
+  };
   const statusOptions = useMemo(() => {
     const fromCatalog = (contractStatusesCatalog?.effectiveItems ?? [])
       .filter((item) => item.status === 'active')
@@ -311,6 +406,103 @@ export default function Contracts() {
     }
   };
 
+  /** D-HDSD-MUTATE-FE-02 — employee picker loads after dialog open; prefill first NV when list arrives. */
+  useEffect(() => {
+    if (!dialogOpen || editingContract || formData.employee_id) return;
+    const firstEmp = employeesList[0];
+    if (!firstEmp) return;
+    setFormData((prev) => ({
+      ...prev,
+      employee_id: firstEmp.id,
+      employee_name: firstEmp.full_name,
+      employee_avatar: (firstEmp as { avatar_url?: string }).avatar_url || '',
+      department:
+        (firstEmp.custom_fields as { department?: string } | undefined)?.department ||
+        firstEmp.job_title_key ||
+        prev.department,
+    }));
+  }, [dialogOpen, editingContract, employeesList, formData.employee_id]);
+
+  /** D-HDSD-MUTATE-FE-04 — contract_types catalog may load after dialog open; prefill first type. */
+  useEffect(() => {
+    if (!dialogOpen || editingContract || !activeFormFields.has('contract_type')) return;
+    if (formData.contract_type.trim()) return;
+    const firstType = contractTypePickerOptions[0]?.value;
+    if (!firstType) return;
+    setFormData((prev) => ({ ...prev, contract_type: firstType }));
+  }, [
+    dialogOpen,
+    editingContract,
+    contractTypePickerOptions,
+    formData.contract_type,
+    activeFormFields,
+  ]);
+
+  /** D-HDSD-MUTATE-FE-07 — always prefill dates on open; do not wait for contract_type catalog. */
+  useEffect(() => {
+    if (!dialogOpen || editingContract) return;
+
+    setFormData((prev) => {
+      const pickerValues = contractTypePickerOptions.map((o) => o.value);
+      const { effective_date, expiry_date } = ensureContractCreateDates({
+        effectiveDate: prev.effective_date,
+        expiryDate: prev.expiry_date,
+        contractType: prev.contract_type,
+        pickerOptionValues: pickerValues,
+      });
+      if (
+        prev.effective_date === effective_date &&
+        prev.expiry_date === expiry_date
+      ) {
+        return prev;
+      }
+      return {
+        ...prev,
+        effective_date,
+        expiry_date,
+      };
+    });
+  }, [dialogOpen, editingContract, formData.contract_type, contractTypePickerOptions]);
+
+  const isCreateFormReady = useMemo(() => {
+    if (editingContract) return true;
+    if (!formData.employee_id || !formData.contract_code.trim() || !formData.employee_name.trim()) {
+      return false;
+    }
+    if (hasContractField('contract_type')) {
+      const type = formData.contract_type.trim();
+      if (
+        type.length === 0 ||
+        contractTypePickerOptions.length === 0 ||
+        !contractTypePickerOptions.some((o) => o.value === type)
+      ) {
+        return false;
+      }
+    }
+    const typeForDates = resolveContractTypeForDatePolicy(
+      formData.contract_type,
+      contractTypePickerOptions.map((o) => o.value),
+    );
+    const datesGate = validateContractDatesForSubmit({
+      contractType: typeForDates,
+      effectiveDate: formData.effective_date,
+      expiryDate: formData.expiry_date,
+    });
+    if (!datesGate.ok) return false;
+    // position_key resolved at submit — cấm chặn hdsd-contracts-form-ready khi catalog chưa load (FE-09)
+    return true;
+  }, [
+    editingContract,
+    formData.contract_type,
+    formData.contract_code,
+    formData.employee_id,
+    formData.employee_name,
+    formData.effective_date,
+    formData.expiry_date,
+    contractTypePickerOptions,
+    hasContractField,
+  ]);
+
   const {
     contracts,
     totalCount,
@@ -328,8 +520,41 @@ export default function Contracts() {
 
   const handleOpenCreate = () => {
     setEditingContract(null);
-    setFormData(initialFormData);
     setSelectedFile(null);
+    const stamp = `HD-${Date.now().toString(36).slice(-5).toUpperCase()}`;
+    const defaultContractType = contractTypePickerOptions[0]?.value ?? '';
+    const pickerValues = contractTypePickerOptions.map((o) => o.value);
+    const { effective_date: effectiveDate, expiry_date: expiryDate } = ensureContractCreateDates({
+      effectiveDate: new Date(),
+      expiryDate: undefined,
+      contractType: defaultContractType,
+      pickerOptionValues: pickerValues,
+    });
+    const firstEmp = employeesList[0];
+    if (firstEmp) {
+      setFormData({
+        ...initialFormData,
+        contract_code: stamp,
+        contract_type: defaultContractType,
+        effective_date: effectiveDate,
+        expiry_date: expiryDate,
+        employee_id: firstEmp.id,
+        employee_name: firstEmp.full_name,
+        employee_avatar: (firstEmp as { avatar_url?: string }).avatar_url || '',
+        department:
+          (firstEmp.custom_fields as { department?: string } | undefined)?.department ||
+          firstEmp.job_title_key ||
+          '',
+      });
+    } else {
+      setFormData({
+        ...initialFormData,
+        contract_code: stamp,
+        contract_type: defaultContractType,
+        effective_date: effectiveDate,
+        expiry_date: expiryDate,
+      });
+    }
     setDialogOpen(true);
   };
 
@@ -402,6 +627,23 @@ export default function Contracts() {
       toast.error(t('contracts.requiredFields'));
       return;
     }
+    if (hasContractField('contract_type')) {
+      if (!formData.contract_type.trim()) {
+        toast.error(t('contracts.selectType'));
+        return;
+      }
+      if (
+        contractTypePickerOptions.length > 0 &&
+        !contractTypePickerOptions.some((o) => o.value === formData.contract_type)
+      ) {
+        toast.error('Chọn loại hợp đồng từ danh mục (Cài đặt → Loại HĐ).');
+        return;
+      }
+      if (contractTypePickerOptions.length === 0) {
+        toast.error('Danh mục loại hợp đồng trống — mở Cài đặt → Danh mục nghiệp vụ.');
+        return;
+      }
+    }
 
     setIsSubmitting(true);
     try {
@@ -426,7 +668,38 @@ export default function Contracts() {
         setIsUploading(false);
       }
 
-      const dataWithFile = { ...formData, file_url: fileUrl };
+      const pickerValues = contractTypePickerOptions.map((o) => o.value);
+      const resolvedType = resolveContractTypeForDatePolicy(
+        formData.contract_type,
+        pickerValues,
+      );
+      const { effective_date, expiry_date } = ensureContractCreateDates({
+        effectiveDate: formData.effective_date,
+        expiryDate: formData.expiry_date,
+        contractType: resolvedType,
+        pickerOptionValues: pickerValues,
+      });
+      const selectedEmp = employeesList.find((e) => e.id === formData.employee_id);
+      const posResolved = resolveContractCreatePositionKey({
+        employeeJobTitleKey: selectedEmp?.job_title_key,
+        positionOptions: positionPickerOptions,
+        departmentSnapshot: formData.department || selectedEmp?.job_title_key,
+        employeeCodeSnapshot: selectedEmp?.employee_code,
+      });
+      if (!posResolved) {
+        toast.error('Chọn vị trí từ danh mục chức danh (Cài đặt → Danh mục nghiệp vụ).');
+        setIsSubmitting(false);
+        return;
+      }
+      const dataWithFile = {
+        ...formData,
+        file_url: fileUrl,
+        contract_type: formData.contract_type.trim() || resolvedType,
+        effective_date,
+        expiry_date,
+        position_key: posResolved.position_key,
+        position: posResolved.position,
+      };
 
       if (editingContract) {
         const ok = await updateContract(editingContract, dataWithFile);
@@ -464,10 +737,11 @@ export default function Contracts() {
   };
 
   const filteredContracts = contracts.filter((contract) => {
-    // Search filter
-    const matchesSearch = contract.employee_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      contract.contract_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (contract.department?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+    // Search filter (debounced — Input value vẫn tức thì)
+    const q = debouncedSearchQuery.toLowerCase();
+    const matchesSearch = contract.employee_name.toLowerCase().includes(q) ||
+      contract.contract_code.toLowerCase().includes(q) ||
+      (contract.department?.toLowerCase().includes(q) ?? false);
     
     if (!matchesSearch) return false;
 
@@ -580,7 +854,12 @@ export default function Contracts() {
   };
 
   const getStatusLabel = (status: string) => {
-    return t(`contracts.statuses.${status}`) || status;
+    const mapped = resolveContractStatusDisplay(status);
+    if (mapped !== EM_DASH) return mapped;
+    const i18n = t(`contracts.statuses.${status}`);
+    // i18n miss often echoes key path — fail-closed to «—»
+    if (!i18n || i18n === `contracts.statuses.${status}`) return EM_DASH;
+    return i18n;
   };
 
   const handleExportExcel = () => {
@@ -594,7 +873,7 @@ export default function Contracts() {
       [t('contracts.exCode')]: contract.contract_code,
       [t('contracts.exEmployee')]: contract.employee_name,
       [t('contracts.exDepartment')]: contract.department || '',
-      [t('contracts.exType')]: contract.contract_type,
+      [t('contracts.exType')]: displayContractType(contract.contract_type),
       [t('contracts.exEffective')]: contract.effective_date 
         ? format(new Date(contract.effective_date), 'dd/MM/yyyy') 
         : '',
@@ -629,10 +908,15 @@ export default function Contracts() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 border-b bg-card">
         <div className="flex items-center gap-2">
           <PermissionGate module="contracts" action="create">
-            <Button size="sm" className="gap-2" onClick={handleOpenCreate}>
+            <Button
+              size="sm"
+              className="gap-2"
+              data-testid={HDSD_MUTATE_TEST_IDS.contractsCreateBtn}
+              aria-label="Thêm hợp đồng"
+              onClick={handleOpenCreate}
+            >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('contracts.addContract')}</span>
-              <span className="sm:hidden">+</span>
+              <span>{t('contracts.addContract', 'Thêm hợp đồng')}</span>
             </Button>
           </PermissionGate>
         </div>
@@ -838,7 +1122,7 @@ export default function Contracts() {
             loadingMessage={
               isLoadingMore && !isLoading
                 ? t('contracts.loadingMore', 'Đang tải thêm hợp đồng…')
-                : t('contracts.loadingApi', 'Đang tải danh sách hợp đồng từ HRM API…')
+                : t('contracts.loadingApi', 'Đang tải danh sách hợp đồng…')
             }
           />
           {fetchError ? (
@@ -924,15 +1208,58 @@ export default function Contracts() {
               </TableRow>
             ) : loadFailedEmpty ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-10 text-amber-900">
-                  {fetchError ||
-                    t('contracts.loadFailed', 'Không tải được danh sách hợp đồng')}
+                <TableCell colSpan={9} className="py-6">
+                  <EmptyState
+                    mood="error"
+                    data-testid="contracts-list-empty-error"
+                    title={t(
+                      'contracts.loadFailed',
+                      'Không tải được danh sách hợp đồng',
+                    )}
+                    description={
+                      fetchError ||
+                      t(
+                        'contracts.loadFailedHint',
+                        'Kiểm tra kết nối hoặc thử lại. Nếu vẫn lỗi, liên hệ hỗ trợ.',
+                      )
+                    }
+                    actionLabel={t('common.retry', 'Thử lại')}
+                    onAction={() => void refetch()}
+                  />
                 </TableCell>
               </TableRow>
             ) : paginatedContracts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-10">
-                  {t('contracts.noData')}
+                <TableCell colSpan={9} className="py-6">
+                  <EmptyState
+                    mood="none"
+                    data-testid="contracts-list-empty"
+                    title={t('contracts.noData', 'Chưa có hợp đồng')}
+                    description={
+                      hasActiveFilters || debouncedSearchQuery
+                        ? t(
+                            'contracts.emptyFilteredHint',
+                            'Không có hợp đồng khớp bộ lọc. Xóa bộ lọc hoặc đổi từ khóa tìm kiếm.',
+                          )
+                        : t(
+                            'contracts.emptyHint',
+                            'Thêm hợp đồng đầu tiên để bắt đầu quản lý lao động.',
+                          )
+                    }
+                    actionLabel={
+                      hasActiveFilters || debouncedSearchQuery
+                        ? t('contracts.clearFilters', 'Xóa bộ lọc')
+                        : t('contracts.addContract', 'Thêm hợp đồng')
+                    }
+                    onAction={
+                      hasActiveFilters || debouncedSearchQuery
+                        ? () => {
+                            setSearchQuery('');
+                            clearAllFilters();
+                          }
+                        : handleOpenCreate
+                    }
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -989,7 +1316,7 @@ export default function Contracts() {
                   <TableCell className="text-muted-foreground">
                     {contract.department || '-'}
                   </TableCell>
-                  <TableCell>{contract.contract_type}</TableCell>
+                  <TableCell>{displayContractType(contract.contract_type)}</TableCell>
                   <TableCell>
                     {contract.effective_date
                       ? format(new Date(contract.effective_date), 'dd/MM/yyyy')
@@ -1109,7 +1436,10 @@ export default function Contracts() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          className="max-w-2xl max-h-[90vh] overflow-y-auto"
+          data-testid={HDSD_MUTATE_TEST_IDS.contractsFormDialog}
+        >
           <DialogHeader>
             <DialogTitle>
               {editingContract ? t('contracts.editTitle') : t('contracts.createTitle')}
@@ -1120,12 +1450,24 @@ export default function Contracts() {
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
+            {isCreateFormReady ? (
+              <span
+                data-testid={HDSD_MUTATE_TEST_IDS.contractsFormReady}
+                className="sr-only"
+                aria-hidden
+              >
+                Form ready
+              </span>
+            ) : null}
             {/* Employee Selection */}
             {!editingContract && employeesList.length > 0 && (
               <div className="space-y-2">
                 <Label>{t('contracts.selectEmployee')}</Label>
-                <Select onValueChange={handleEmployeeSelect}>
-                  <SelectTrigger>
+                <Select
+                  value={formData.employee_id ?? ''}
+                  onValueChange={handleEmployeeSelect}
+                >
+                  <SelectTrigger data-testid={HDSD_MUTATE_TEST_IDS.contractsFormEmployee}>
                     <SelectValue placeholder={t('contracts.selectEmployeePlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -1186,21 +1528,20 @@ export default function Contracts() {
               {hasContractField('contract_type') && (
               <div className="space-y-2">
                 <Label htmlFor="contract_type">{t('contracts.contractType')}</Label>
-                <Select
+                <CatalogSearchPicker
+                  options={contractTypePickerOptions}
                   value={formData.contract_type}
                   onValueChange={(value) => setFormData({ ...formData, contract_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('contracts.selectType')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {contractTypeOptions.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t('contracts.selectType')}
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  data-testid={HDSD_MUTATE_TEST_IDS.contractsFormContractType}
+                  emptyHint={
+                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                      Mở Cài đặt → Danh mục nghiệp vụ (contract_types)
+                    </a>
+                  }
+                />
               </div>
               )}
             </div>
@@ -1398,8 +1739,19 @@ export default function Contracts() {
             <Button variant="outline" onClick={handleCloseDialog}>
               {t('contracts.cancel')}
             </Button>
-            <Button onClick={handleSubmit} disabled={isSubmitting || isUploading}>
-              {isUploading ? t('contracts.uploading') : isSubmitting ? t('contracts.saving') : editingContract ? t('contracts.updateBtn') : t('contracts.addNew')}
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting || isUploading}
+              data-testid={HDSD_MUTATE_TEST_IDS.contractsFormSubmit}
+              aria-label="Lưu"
+            >
+              {isUploading
+                ? t('contracts.uploading')
+                : isSubmitting
+                  ? t('contracts.saving')
+                  : editingContract
+                    ? t('contracts.updateBtn')
+                    : 'Lưu'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1430,7 +1782,7 @@ export default function Contracts() {
                 </div>
                 <div>
                   <Label className="text-muted-foreground">{t('contracts.contractType')}</Label>
-                  <p className="font-medium">{viewingContract.contract_type}</p>
+                  <p className="font-medium">{displayContractType(viewingContract.contract_type)}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">

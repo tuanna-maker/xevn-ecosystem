@@ -1,4 +1,64 @@
-import { lazy, Suspense, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /attendance — Chấm công (bảng theo kỳ + leave + weekly)
+ * UC:         UC-HRM-23 · UC-HRM-32 · FR-HRM-AT-14
+ * BR:         BR-ATT-SHEET-01..07 · AC-ATT-SHEET-01..06 · BR-UX-DATE-02
+ * SRS:        docs/hrm/SRS.md AC-ATT-SHEET · docs/program/UX_VI_DATE_NUMBER_FORMAT_AC.md §3
+ * TechSpec:   docs/hrm/TECHSPEC.md §12.1 · §14.4 · CreateAttendanceSheetDto @IsDateString
+ * Purpose:    Tab bảng chấm công — tạo header kỳ (POST sheets) + xem lưới; ngày kỳ dd/MM/yyyy.
+ * WorkItem:   FID-P0-FE-DATE-01
+ * Coded:      2026-07-22
+ * must_keep:  POST start_date/end_date = yyyy-MM-dd; không auto roster; empty honesty AC-ATT-SHEET
+ * SOLID:      Sheet form dùng ViDatePickerField SoT — không parse split('/') ad-hoc
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-ATT-INVALID-DATE-01
+ * change_mode: UPGRADE
+ * What: Weekly title/period labels via formatWeeklyRangeTitleLabels + formatDisplayDate; leave Calendar format gated by isValid
+ * Why: Sponsor crash RangeError Invalid time value at renderWeeklyAttendance (~1926)
+ * must_keep: Do not call date-fns format() on API-derived strings without formatDisplayDate/isValid
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: D-HRM-ATT-SHEET-EMPTY-RELOAD-LOOP-01
+ * change_mode: UPGRADE
+ * What: Memoize weekly sheet context; show settled empty/error (no forever spinner); reload button uses isFetching only
+ * Why: Inline sheet object + useEffect fetch thrash → «Tải lại» spin forever on create/open sheet
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: FID-P0-FE-DATE-01
+ * change_mode: FIX
+ * What: Modal tạo bảng — ViDatePickerField (text + Calendar mở được); state ISO padded; timePreset đổi kỳ; chặn start>end
+ * Why: Sponsor + SA/BA — icon lịch pointer-events-none; split('/') → 2026-7-1 fail @IsDateString
+ * Spec: FR-HRM-AT-14 · ADR-HRM-DATE-WIRE-YYYY-MM-DD-20260722 · UX_VI_DATE · fid-p0-ba-data/ba-date/sa-date
+ * must_keep: Wire chỉ YYYY-MM-DD (ADR — cấm dual wire); header-only AC-ATT-SHEET; không nới DTO; không seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-C1-ATTENDANCE-FE-01
+ * change_mode: UPGRADE
+ * What: Gộp submenu checkinout/qrcode/faceid/gps → task «clock-in» + ClockInMethodSelector;
+ *       tab Chấm công 1-click mở wizard (method manual sẵn); CTA overview «Chấm công ngay»
+ * Why: UX P0-a / UX-01 — proxy click depth ≤2 cho task chấm công chính; IA task-based
+ * Spec: docs/program/UX-UI-ERP-ANALYSIS.md P0-a · UX-UI-ERP-PEER-DIVISION-PLAN C1
+ * must_keep: Widget CheckInOut/QR/Face/GPS + API calls không đổi; sheets/records/weekly còn trong dropdown
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-UX03-DEBOUNCE-01
+ * change_mode: FIX
+ * What: Shifts search — wire value/onChange + debounce 300ms (useDebouncedValue); lọc code/name/unit
+ * Why: UX-03 — Input chỉ placeholder → user tưởng search hỏng (recognition)
+ * Spec: docs/program/UX-UI-ERP-ANALYSIS.md UX-03 · patch ux03-shifts-search
+ * must_keep: Clock-In wizard C1; không đụng sheets/weekly placeholder search; taxSettlementFloatingUi ngoài file
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-UX-UX09-SHIFTS-BULK-01
+ * change_mode: ADD
+ * What: Shifts — wire checkbox chọn dòng + toolbar bulk (Xóa/Bỏ chọn) + AlertDialog xác nhận;
+ *       bulkDeleteShifts qua useWorkShifts; footer đếm theo filteredShiftsData
+ * Why: UX-09 — checkbox không có action bar = flexibility giả, mất tin UI
+ * Spec: docs/program/UX-UI-ERP-ANALYSIS.md UX-09 · UX-UI-ERP-REMAINING-SYNTHESIS R2
+ * must_keep: Clock-In C1; UX-03 search debounce; không đụng Payroll / taxSettlementFloatingUi
+ */
+import { lazy, Suspense, useMemo, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -43,14 +103,27 @@ import {
   Loader2,
 } from 'lucide-react';
 import { LeaveTab } from '@/components/attendance/LeaveTab';
+import { LeaveOverviewRecentPanel } from '@/components/attendance/LeaveOverviewRecentPanel';
 import { OvertimeRequestTab } from '@/components/attendance/OvertimeRequestTab';
 import { BusinessTripRequestTab } from '@/components/attendance/BusinessTripRequestTab';
 import { LateEarlyRequestTab } from '@/components/attendance/LateEarlyRequestTab';
 import { AttendanceUpdateRequestTab } from '@/components/attendance/AttendanceUpdateRequestTab';
 import { ShiftChangeRequestTab } from '@/components/attendance/ShiftChangeRequestTab';
 import { CheckInOutWidget } from '@/components/attendance/CheckInOutWidget';
+import { ClockInMethodSelector } from '@/components/attendance/ClockInMethodSelector';
 import { AttendanceRecordsTable } from '@/components/attendance/AttendanceRecordsTable';
 import { EmployeeQRCard } from '@/components/attendance/EmployeeQRCard';
+import {
+  CLOCK_IN_ATTENDANCE_TYPE,
+  isClockInAttendanceType,
+  resolveClockInMethod,
+  type ClockInMethod,
+} from '@/lib/clockInMethods';
+import {
+  isAllVisibleSelected,
+  selectAllOrClear,
+  toggleIdInSelection,
+} from '@/lib/shiftSelection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,6 +138,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useEmployees } from '@/hooks/useEmployees';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { cn } from '@/lib/utils';
 import { useAttendanceSheets } from '@/hooks/useAttendanceSheets';
 import { useWorkShifts } from '@/hooks/useWorkShifts';
@@ -72,11 +146,14 @@ import { useAttendanceRules } from '@/hooks/useAttendanceRules';
 import { useAttendanceOverview } from '@/hooks/useAttendanceOverview';
 import { useWeeklyAttendanceSummary } from '@/hooks/useWeeklyAttendanceSummary';
 import {
+  buildWeeklyDayHeaderFallback,
   formatOverviewYearSubtitle,
   formatWeeklyRangeSubtitle,
+  formatWeeklyRangeTitleLabels,
   sumLeaveTypeValues,
   type AttendanceRecordTableRow,
 } from '@/lib/attendanceDashboardAggregator';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import {
   Dialog,
   DialogContent,
@@ -123,8 +200,15 @@ import {
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
+import { ViDatePickerField } from '@/components/ui/ViDatePickerField';
+import { formatIsoDateToViDisplay, parseViDisplayToIsoDate } from '@xevn/ui';
 import { vi } from 'date-fns/locale';
+
+function formatSafeCalendarDate(value: Date | undefined): string | null {
+  if (!value || !isValid(value)) return null;
+  return format(value, 'dd/MM/yyyy', { locale: vi });
+}
 
 const QRCodeScanner = lazy(() =>
   import('@/components/attendance/QRCodeScanner').then((module) => ({ default: module.QRCodeScanner })),
@@ -196,12 +280,9 @@ const getTopTabs = (t: any) => [
   { id: 'settings', label: t('attendance.tabs.settings'), icon: Settings, color: 'bg-gray-500' },
 ];
 
-// Attendance submenu items
+// Attendance submenu — Clock-In hub (methods in-page) + admin/list tasks
 const getAttendanceMenuItems = (t: any) => [
-  { id: 'checkinout', label: t('attendance.attendanceMenu.checkinout') },
-  { id: 'qrcode', label: t('attendance.attendanceMenu.qrcode') },
-  { id: 'faceid', label: t('attendance.attendanceMenu.faceid') },
-  { id: 'gps', label: t('attendance.attendanceMenu.gps') },
+  { id: CLOCK_IN_ATTENDANCE_TYPE, label: t('attendance.attendanceMenu.clockIn', 'Chấm công vào/ra') },
   { id: 'sheets', label: t('attendance.attendanceMenu.sheets') },
   { id: 'records', label: t('attendance.attendanceMenu.records') },
   { id: 'weekly', label: t('attendance.attendanceMenu.weekly') },
@@ -250,7 +331,7 @@ export default function Attendance() {
   // Load data from database hooks
   const { sheets: attendanceSheetsDB, isLoading: isLoadingSheets, createSheet, deleteSheet: deleteSheetDB } =
     useAttendanceSheets({ enabled: activeTab === 'attendance' });
-  const { shifts: workShiftsDB, isLoading: isLoadingShifts, createShift, updateShift, deleteShift: deleteShiftDB } =
+  const { shifts: workShiftsDB, isLoading: isLoadingShifts, createShift, updateShift, deleteShift: deleteShiftDB, bulkDeleteShifts } =
     useWorkShifts({ enabled: activeTab === 'shifts' || activeTab === 'settings' });
   const { rules: attendanceRulesDB, isLoading: isLoadingRules, saveRules } = useAttendanceRules();
   const { 
@@ -262,8 +343,15 @@ export default function Attendance() {
     isLoading: isLoadingOverview 
   } = useAttendanceOverview(undefined, { enabled: activeTab === 'overview' });
 
-  const [activeAttendanceType, setActiveAttendanceType] = useState('sheets');
+  const [activeAttendanceType, setActiveAttendanceType] = useState<string>(CLOCK_IN_ATTENDANCE_TYPE);
+  const [clockInMethod, setClockInMethod] = useState<ClockInMethod>('manual');
   const [activeShiftType, setActiveShiftType] = useState('list');
+
+  const openClockInWizard = (method: ClockInMethod = 'manual') => {
+    setActiveTab('attendance');
+    setActiveAttendanceType(CLOCK_IN_ATTENDANCE_TYPE);
+    setClockInMethod(method);
+  };
   const [activeSidebarItem, setActiveSidebarItem] = useState('employees');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
@@ -286,6 +374,12 @@ export default function Attendance() {
   } | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const [shiftsSearchQuery, setShiftsSearchQuery] = useState('');
+  const debouncedShiftsSearch = useDebouncedValue(shiftsSearchQuery, 300);
+  const [selectedShifts, setSelectedShifts] = useState<string[]>([]);
+  const [bulkDeleteShiftsDialogOpen, setBulkDeleteShiftsDialogOpen] = useState(false);
+  const [shiftPendingDelete, setShiftPendingDelete] = useState<{ id: string; name: string } | null>(null);
+  const [isBulkDeletingShifts, setIsBulkDeletingShifts] = useState(false);
 
   // Transform DB data to display format
   const shiftsData = workShiftsDB.map(s => ({
@@ -299,6 +393,20 @@ export default function Attendance() {
     hours: s.work_hours || 8,
     status: s.status,
   }));
+
+  const filteredShiftsData = useMemo(() => {
+    const q = debouncedShiftsSearch.trim().toLowerCase();
+    if (!q) return shiftsData;
+    return shiftsData.filter(
+      (s) =>
+        s.code.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q) ||
+        s.unit.toLowerCase().includes(q),
+    );
+  }, [shiftsData, debouncedShiftsSearch]);
+
+  const filteredShiftIds = useMemo(() => filteredShiftsData.map((s) => s.id), [filteredShiftsData]);
+  const allFilteredShiftsSelected = isAllVisibleSelected(selectedShifts, filteredShiftIds);
 
   // Add default colors for leave types
   const LEAVE_TYPE_COLORS: Record<string, string> = {
@@ -384,56 +492,116 @@ export default function Attendance() {
 
   const selectedSheet = attendanceSheetsDB.find((sheet) => sheet.id === selectedSheetId) ?? null;
   const weeklyAttendanceEnabled = activeTab === 'attendance' && attendanceViewMode === 'weekly';
+  // Stabilize sheet identity — new object every render was thrashing weekly fetch.
+  const weeklySheetContext = useMemo(
+    () =>
+      selectedSheet
+        ? {
+            start_date: selectedSheet.start_date,
+            end_date: selectedSheet.end_date,
+            name: selectedSheet.name,
+          }
+        : null,
+    [
+      selectedSheet?.id,
+      selectedSheet?.start_date,
+      selectedSheet?.end_date,
+      selectedSheet?.name,
+    ],
+  );
   const {
     weeklyRows: weeklyAttendanceData,
     range: weeklyRange,
     departmentOptions: weeklyDepartmentOptions,
     isLoading: isLoadingWeeklyAttendance,
+    isFetching: isFetchingWeeklyAttendance,
+    loadError: weeklyAttendanceLoadError,
     refetch: refetchWeeklyAttendance,
   } = useWeeklyAttendanceSummary({
     enabled: weeklyAttendanceEnabled,
-    sheet: selectedSheet
-      ? {
-          start_date: selectedSheet.start_date,
-          end_date: selectedSheet.end_date,
-          name: selectedSheet.name,
-        }
-      : null,
+    sheet: weeklySheetContext,
     employees,
   });
   const weeklyRangeSubtitle = formatWeeklyRangeSubtitle(weeklyRange.from, weeklyRange.to);
 
-  // Add sheet modal state
+  // Add sheet modal state — startDate/endDate = ISO yyyy-MM-dd (API @IsDateString)
+  const sheetMonthRangeIso = (monthOffset: number) => {
+    const base = new Date();
+    const start = new Date(base.getFullYear(), base.getMonth() + monthOffset, 1);
+    const end = new Date(base.getFullYear(), base.getMonth() + monthOffset + 1, 0);
+    return {
+      startDate: format(start, 'yyyy-MM-dd'),
+      endDate: format(end, 'yyyy-MM-dd'),
+    };
+  };
   const [addSheetModalOpen, setAddSheetModalOpen] = useState(false);
-  const [newSheetForm, setNewSheetForm] = useState({
+  const [newSheetForm, setNewSheetForm] = useState(() => ({
     unit: '',
     positions: 'all',
     name: '',
     timePreset: 'this-month',
-    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-GB'),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toLocaleDateString('en-GB'),
+    ...sheetMonthRangeIso(0),
     attendanceType: 'daily',
     standardType: 'fixed',
-  });
+  }));
 
   const handleOpenSheet = (sheetId: string) => {
     setSelectedSheetId(sheetId);
     setAttendanceViewMode('weekly');
   };
 
+  const handleSheetTimePreset = (preset: string) => {
+    if (preset === 'this-month') {
+      setNewSheetForm((prev) => ({ ...prev, timePreset: preset, ...sheetMonthRangeIso(0) }));
+      return;
+    }
+    if (preset === 'last-month') {
+      setNewSheetForm((prev) => ({ ...prev, timePreset: preset, ...sheetMonthRangeIso(-1) }));
+      return;
+    }
+    setNewSheetForm((prev) => ({ ...prev, timePreset: preset }));
+  };
+
   const handleAddSheet = async () => {
-    // Parse dates from form
-    const [startDay, startMonth, startYear] = newSheetForm.startDate.split('/');
-    const [endDay, endMonth, endYear] = newSheetForm.endDate.split('/');
-    
+    // Defensive: if draft still vi display, pad via SoT (ADR — wire YYYY-MM-DD only)
+    const startParsed = parseViDisplayToIsoDate(newSheetForm.startDate.trim());
+    const endParsed = parseViDisplayToIsoDate(newSheetForm.endDate.trim());
+    const startIso = startParsed === null || startParsed === '' ? '' : startParsed;
+    const endIso = endParsed === null || endParsed === '' ? '' : endParsed;
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startIso) || !/^\d{4}-\d{2}-\d{2}$/.test(endIso)) {
+      toast({
+        title: t('messages.error'),
+        description: t(
+          'attPage.invalidSheetDates',
+          'Ngày kỳ không hợp lệ — dùng dd/MM/yyyy (vd. 01/07/2026 hoặc 1/7/2026) hoặc chọn trên lịch.',
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (startIso > endIso) {
+      toast({
+        title: t('messages.error'),
+        description: t(
+          'attPage.sheetDateOrder',
+          'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc (BR-ATT-SHEET-04).',
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const startLabel = formatIsoDateToViDisplay(startIso);
+    const endLabel = formatIsoDateToViDisplay(endIso);
     const result = await createSheet({
-      name: newSheetForm.name || `Bảng chấm công từ ${newSheetForm.startDate} đến ${newSheetForm.endDate}`,
-      start_date: `${startYear}-${startMonth}-${startDay}`,
-      end_date: `${endYear}-${endMonth}-${endDay}`,
+      name: newSheetForm.name || `Bảng chấm công từ ${startLabel} đến ${endLabel}`,
+      start_date: startIso,
+      end_date: endIso,
       attendance_type: newSheetForm.attendanceType,
       standard_type: newSheetForm.standardType,
-      department: newSheetForm.unit || null,
-      positions: newSheetForm.positions === 'all' ? null : newSheetForm.positions,
+      department: newSheetForm.unit || undefined,
+      positions: newSheetForm.positions === 'all' ? undefined : newSheetForm.positions,
     });
 
     if (result) {
@@ -627,6 +795,37 @@ export default function Attendance() {
     setShiftModalOpen(true);
   };
 
+  const toggleSelectShift = (id: string) => {
+    setSelectedShifts((prev) => toggleIdInSelection(prev, id));
+  };
+
+  const toggleSelectAllShifts = () => {
+    setSelectedShifts((prev) => selectAllOrClear(prev, filteredShiftIds));
+  };
+
+  const handleConfirmBulkDeleteShifts = async () => {
+    if (selectedShifts.length === 0) return;
+    setIsBulkDeletingShifts(true);
+    try {
+      const ok = await bulkDeleteShifts(selectedShifts);
+      if (ok) {
+        setSelectedShifts([]);
+        setBulkDeleteShiftsDialogOpen(false);
+      }
+    } finally {
+      setIsBulkDeletingShifts(false);
+    }
+  };
+
+  const handleConfirmSingleDeleteShift = async () => {
+    if (!shiftPendingDelete) return;
+    const ok = await deleteShiftDB(shiftPendingDelete.id);
+    if (ok) {
+      setSelectedShifts((prev) => prev.filter((id) => id !== shiftPendingDelete.id));
+      setShiftPendingDelete(null);
+    }
+  };
+
   const handleSaveShift = async () => {
     if (!editingShift?.code || !editingShift?.name) {
       toast({
@@ -715,6 +914,15 @@ export default function Attendance() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h2 className="text-lg md:text-xl font-semibold">{t('attendance.overview.title')}</h2>
           <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+            <Button
+              type="button"
+              className="gap-2 bg-orange-500 hover:bg-orange-600 text-white"
+              data-testid="overview-clock-in-cta"
+              onClick={() => openClockInWizard('manual')}
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              {t('attendance.overview.clockInCta', 'Chấm công ngay')}
+            </Button>
             <Select value={overviewTimeFilter} onValueChange={setOverviewTimeFilter}>
               <SelectTrigger className="w-[150px] md:w-[180px]">
                 <Calendar className="w-4 h-4 mr-2" />
@@ -969,32 +1177,8 @@ export default function Attendance() {
                 </CardContent>
               </Card>
 
-              {/* Late/Early Frequency */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-semibold">{t('attendance.overview.lateEarlyFrequency')}</CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    {t('attendance.overview.allUnits')}<br />
-                    {overviewYearSubtitle}
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
-                    <div className="w-20 h-20 mb-4 opacity-30">
-                      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="10" y="20" width="60" height="50" rx="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                        <path d="M10 35 L70 35" stroke="currentColor" strokeWidth="2"/>
-                        <circle cx="25" cy="27" r="3" fill="currentColor" opacity="0.5"/>
-                        <circle cx="40" cy="27" r="3" fill="currentColor" opacity="0.5"/>
-                        <circle cx="55" cy="27" r="3" fill="currentColor" opacity="0.5"/>
-                        <rect x="20" y="45" width="15" height="15" rx="2" fill="currentColor" opacity="0.2"/>
-                        <rect x="45" y="45" width="15" height="15" rx="2" fill="currentColor" opacity="0.2"/>
-                      </svg>
-                    </div>
-                    <p className="text-sm">{t('attendance.overview.noData')}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Recent leave requests — overview F5 marker (D-HDSD-MUTATE-FE-04) */}
+              <LeaveOverviewRecentPanel />
             </div>
           </div>
         </div>
@@ -1786,7 +1970,7 @@ export default function Attendance() {
     // Transform DB data to display format
     const sheetsDisplayData = attendanceSheetsDB.map(sheet => ({
       id: sheet.id,
-      period: `${new Date(sheet.start_date).toLocaleDateString('vi-VN')} - ${new Date(sheet.end_date).toLocaleDateString('vi-VN')}`,
+      period: `${formatDisplayDate(sheet.start_date)} - ${formatDisplayDate(sheet.end_date)}`,
       name: sheet.name,
       type: sheet.attendance_type === 'hourly' ? t('attPage.byHour') : t('attPage.byDay'),
       unit: sheet.department || t('attPage.allUnits'),
@@ -1919,12 +2103,12 @@ export default function Attendance() {
 
   // Render weekly attendance summary
   const renderWeeklyAttendance = () => {
-    const weekHeader = weeklyAttendanceData[0]?.days ?? weeklyRange.days.map((day) => ({
-      dayLabel: format(day, 'EEEE', { locale: vi }),
-      date: format(day, 'dd'),
-    }));
-    const weeklyStartLabel = format(new Date(`${weeklyRange.from}T00:00:00`), 'dd/MM/yyyy');
-    const weeklyEndLabel = format(new Date(`${weeklyRange.to}T00:00:00`), 'dd/MM/yyyy');
+    const weekHeader =
+      weeklyAttendanceData[0]?.days ?? buildWeeklyDayHeaderFallback(weeklyRange.days);
+    const { start: weeklyStartLabel, end: weeklyEndLabel } = formatWeeklyRangeTitleLabels(
+      weeklyRange.from,
+      weeklyRange.to,
+    );
 
     return (
       <div className="space-y-4 p-6">
@@ -1961,9 +2145,9 @@ export default function Attendance() {
             <Button
               className="gap-2 bg-orange-500 hover:bg-orange-600 text-white"
               onClick={() => void refetchWeeklyAttendance()}
-              disabled={isLoadingWeeklyAttendance}
+              disabled={isFetchingWeeklyAttendance}
             >
-              <RotateCcw className={cn('w-4 h-4', isLoadingWeeklyAttendance && 'animate-spin')} />
+              <RotateCcw className={cn('w-4 h-4', isFetchingWeeklyAttendance && 'animate-spin')} />
               {t('attPage.reload')}
             </Button>
             <Button variant="ghost" size="icon">
@@ -1996,10 +2180,10 @@ export default function Attendance() {
           </div>
         </div>
 
-        {/* Weekly Table */}
+        {/* Weekly Table — spinner only on initial load; settled empty/error stops reload storm */}
         <Card>
           {isLoadingWeeklyAttendance ? (
-            <div className="flex items-center justify-center p-12">
+            <div className="flex items-center justify-center p-12" role="status" aria-live="polite">
               <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
             </div>
           ) : (
@@ -2023,7 +2207,9 @@ export default function Attendance() {
                 {weeklyAttendanceData.length === 0 ? (
                   <tr>
                     <td colSpan={weekHeader.length + 2} className="p-8 text-center text-muted-foreground">
-                      {t('attendance.overview.noData')}
+                      {weeklyAttendanceLoadError
+                        ? weeklyAttendanceLoadError
+                        : t('attendance.overview.noData')}
                     </td>
                   </tr>
                 ) : weeklyAttendanceData.map((employee) => (
@@ -2128,13 +2314,10 @@ export default function Attendance() {
     );
   };
 
-  // Render attendance content (Chấm công tab)
-  const renderAttendanceContent = () => {
-    // Show Check-in/Check-out widget
-    if (activeAttendanceType === 'checkinout') {
+  const renderClockInMethodPanel = (method: ClockInMethod) => {
+    if (method === 'manual') {
       return (
-        <div className="space-y-6 p-6">
-          <h2 className="text-xl font-semibold">{t('attPage.checkinTitle')}</h2>
+        <div className="space-y-6" data-testid="clock-in-panel-manual">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CheckInOutWidget />
             <Card className="p-6">
@@ -2148,77 +2331,85 @@ export default function Attendance() {
               </ul>
             </Card>
           </div>
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4">{t('attPage.todayData')}</h3>
-            <AttendanceRecordsTable />
-          </div>
         </div>
       );
     }
-
-    // Show QR Code Scanner
-    if (activeAttendanceType === 'qrcode') {
+    if (method === 'qrcode') {
       return (
-        <div className="space-y-6 p-6">
-          <h2 className="text-xl font-semibold">{t('attPage.qrTitle')}</h2>
+        <div className="space-y-6" data-testid="clock-in-panel-qrcode">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {lazyBlock(<QRCodeScanner />)}
             <EmployeeQRCard />
           </div>
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4">{t('attPage.todayData')}</h3>
-            <AttendanceRecordsTable />
-          </div>
         </div>
       );
     }
-
-    // Show Face ID Scanner
-    if (activeAttendanceType === 'faceid') {
+    if (method === 'faceid') {
       return (
-        <div className="space-y-6 p-6">
-          <h2 className="text-xl font-semibold">{t('attPage.faceTitle')}</h2>
+        <div className="space-y-6" data-testid="clock-in-panel-faceid">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {lazyBlock(<FaceIDScanner />)}
             {lazyBlock(<FaceRegistration />)}
           </div>
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4">{t('attPage.todayData')}</h3>
-            <AttendanceRecordsTable />
-          </div>
         </div>
       );
     }
-
-    // Show GPS Attendance
-    if (activeAttendanceType === 'gps') {
-      return (
-        <div className="space-y-6 p-6">
-          <h2 className="text-xl font-semibold">{t('attPage.gpsTitle')}</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {lazyBlock(<GPSAttendance />)}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">{t('attPage.gpsGuide')}</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• {t('attPage.gpsGuide1')}</li>
-                <li>• {t('attPage.gpsGuide2')}</li>
-                <li>• {t('attPage.gpsGuide3')}</li>
-                <li>• {t('attPage.gpsGuide4')}</li>
-                <li>• {t('attPage.gpsGuide5')}</li>
-                <li>• {t('attPage.gpsGuide6')}</li>
+    return (
+      <div className="space-y-6" data-testid="clock-in-panel-gps">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {lazyBlock(<GPSAttendance />)}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">{t('attPage.gpsGuide')}</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• {t('attPage.gpsGuide1')}</li>
+              <li>• {t('attPage.gpsGuide2')}</li>
+              <li>• {t('attPage.gpsGuide3')}</li>
+              <li>• {t('attPage.gpsGuide4')}</li>
+              <li>• {t('attPage.gpsGuide5')}</li>
+              <li>• {t('attPage.gpsGuide6')}</li>
+            </ul>
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+              <h4 className="font-medium text-blue-700 dark:text-blue-300 mb-2">{t('attPage.accuracyNote')}</h4>
+              <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                <li>• &lt;10m: {t('attPage.accuracyVeryHigh', 'Rất chính xác (GPS mạnh)')}</li>
+                <li>• 10-50m: {t('attPage.accuracyHigh', 'Chính xác (GPS tốt)')}</li>
+                <li>• 50-100m: {t('attPage.accuracyMedium', 'Trung bình (có thể dùng)')}</li>
+                <li>• &gt;100m: {t('attPage.accuracyLow', 'Kém (nên thử lại)')}</li>
               </ul>
-              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
-                <h4 className="font-medium text-blue-700 dark:text-blue-300 mb-2">{t('attPage.accuracyNote')}</h4>
-                <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
-                  <li>• &lt;10m: {t('attPage.accuracyVeryHigh', 'Rất chính xác (GPS mạnh)')}</li>
-                  <li>• 10-50m: {t('attPage.accuracyHigh', 'Chính xác (GPS tốt)')}</li>
-                  <li>• 50-100m: {t('attPage.accuracyMedium', 'Trung bình (có thể dùng)')}</li>
-                  <li>• &gt;100m: {t('attPage.accuracyLow', 'Kém (nên thử lại)')}</li>
-                </ul>
-              </div>
-            </Card>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  };
+
+  // Render attendance content (Chấm công tab)
+  const renderAttendanceContent = () => {
+    // Task-based Clock-In wizard (collapsed checkinout/qr/face/gps)
+    if (isClockInAttendanceType(activeAttendanceType)) {
+      const method = resolveClockInMethod(activeAttendanceType, clockInMethod);
+      return (
+        <div className="space-y-6 p-6" data-testid="clock-in-wizard">
+          <div className="space-y-1">
+            <h2 className="text-xl font-semibold">
+              {t('attPage.clockInTitle', 'Chấm công / Clock-In')}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t(
+                'attPage.clockInSubtitle',
+                'Chọn phương thức chấm công để bắt đầu — thao tác chính trong tối đa 2 bước.',
+              )}
+            </p>
           </div>
-          <div className="mt-6">
+          <ClockInMethodSelector
+            value={method}
+            onChange={(next) => {
+              setActiveAttendanceType(CLOCK_IN_ATTENDANCE_TYPE);
+              setClockInMethod(next);
+            }}
+          />
+          {renderClockInMethodPanel(method)}
+          <div className="mt-2">
             <h3 className="text-lg font-semibold mb-4">{t('attPage.todayData')}</h3>
             <AttendanceRecordsTable />
           </div>
@@ -2268,12 +2459,39 @@ export default function Attendance() {
 
   // Render shifts content
   const renderShiftsContent = () => {
+    const shiftTotal = filteredShiftsData.length;
     return (
       <div className="space-y-4 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">{t('attPage.shiftsTitle')}</h2>
           <div className="flex items-center gap-2">
+            {selectedShifts.length > 0 && (
+              <>
+                <span className="text-sm text-muted-foreground" data-testid="shifts-bulk-count">
+                  {t('attPage.shiftsSelectedCount', { count: selectedShifts.length })}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedShifts([])}
+                >
+                  {t('attPage.shiftsClearSelection')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="gap-2"
+                  data-testid="shifts-bulk-delete"
+                  onClick={() => setBulkDeleteShiftsDialogOpen(true)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {t('attPage.shiftsBulkDelete', { count: selectedShifts.length })}
+                </Button>
+              </>
+            )}
             <Button onClick={openAddShiftModal} className="gap-2 bg-orange-500 hover:bg-orange-600 text-white">
               <Plus className="w-4 h-4" />
               {t('attPage.add')}
@@ -2291,6 +2509,8 @@ export default function Attendance() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder={t('attPage.search')}
+                value={shiftsSearchQuery}
+                onChange={(e) => setShiftsSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -2334,11 +2554,16 @@ export default function Attendance() {
         {/* Data Table */}
         <Card>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full" data-testid="shifts-table">
               <thead>
                 <tr className="border-b bg-muted/30">
                   <th className="p-3 text-left w-10">
-                    <Checkbox />
+                    <Checkbox
+                      checked={allFilteredShiftsSelected}
+                      onCheckedChange={toggleSelectAllShifts}
+                      aria-label={t('attPage.shiftsSelectedCount', { count: filteredShiftIds.length })}
+                      disabled={filteredShiftIds.length === 0}
+                    />
                   </th>
                    <th className="p-3 text-left font-medium text-sm">{t('attPage.shiftCode')}</th>
                   <th className="p-3 text-left font-medium text-sm">{t('attPage.shiftName')}</th>
@@ -2351,16 +2576,20 @@ export default function Attendance() {
                 </tr>
               </thead>
               <tbody>
-                {shiftsData.map((shift, index) => (
+                {filteredShiftsData.map((shift) => (
                   <tr 
                     key={shift.id} 
                     className={cn(
                       "border-b hover:bg-muted/20 transition-colors group",
-                      index === 2 && "bg-orange-50"
+                      selectedShifts.includes(shift.id) && "bg-primary/5"
                     )}
                   >
                     <td className="p-3">
-                      <Checkbox />
+                      <Checkbox
+                        checked={selectedShifts.includes(shift.id)}
+                        onCheckedChange={() => toggleSelectShift(shift.id)}
+                        aria-label={shift.code}
+                      />
                     </td>
                     <td className="p-3 text-sm font-medium">{shift.code}</td>
                     <td className="p-3 text-sm">{shift.name}</td>
@@ -2388,7 +2617,12 @@ export default function Attendance() {
                           <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Copy className="w-4 h-4 text-muted-foreground" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setShiftPendingDelete({ id: shift.id, name: shift.name })}
+                          >
                             <Trash2 className="w-4 h-4 text-muted-foreground" />
                           </Button>
                         </div>
@@ -2403,7 +2637,7 @@ export default function Attendance() {
           {/* Pagination */}
           <div className="flex items-center justify-between p-4 border-t">
             <div className="text-sm text-muted-foreground">
-              {t('attPage.total')}: <span className="font-medium text-foreground">120 {t('attPage.records', 'bản ghi')}</span>
+              {t('attPage.total')}: <span className="font-medium text-foreground">{shiftTotal} {t('attPage.records', 'bản ghi')}</span>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -2419,12 +2653,17 @@ export default function Attendance() {
                   </SelectContent>
                 </Select>
               </div>
-              <span className="text-sm text-muted-foreground">{t('attPage.fromTo', { from: 1, to: 50 })}</span>
+              <span className="text-sm text-muted-foreground">
+                {t('attPage.fromTo', {
+                  from: shiftTotal === 0 ? 0 : 1,
+                  to: shiftTotal,
+                })}
+              </span>
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="w-8 h-8" disabled>
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
+                <Button variant="ghost" size="icon" className="w-8 h-8" disabled>
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -2551,38 +2790,72 @@ export default function Attendance() {
               </div>
             );
             
-            // Attendance dropdown
+            // Attendance: primary click → Clock-In wizard (≤1 click); chevron → sheets/records/…
             if (tab.id === 'attendance') {
+              const clockInActive =
+                activeTab === 'attendance' && isClockInAttendanceType(activeAttendanceType);
               return (
-                <DropdownMenu key={tab.id}>
-                  <DropdownMenuTrigger asChild>
-                    <button className={tabButtonClass}>
-                      {iconBlock}
-                      <span className="hidden sm:inline">{tab.label}</span>
-                      <ChevronDown className="w-3 h-3 hidden sm:block" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56 bg-popover">
-                    {attendanceMenuItems.map((item) => (
-                      <DropdownMenuItem
-                        key={item.id}
-                        onClick={() => {
-                          setActiveTab('attendance');
-                          setActiveAttendanceType(item.id);
-                        }}
+                <div key={tab.id} className="flex items-stretch">
+                  <button
+                    type="button"
+                    data-testid="attendance-tab-clock-in"
+                    onClick={() => openClockInWizard(clockInMethod)}
+                    className={cn(tabButtonClass, 'rounded-r-none')}
+                  >
+                    {iconBlock}
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label={t('attendance.attendanceMenu.more', 'Thêm mục chấm công')}
+                        data-testid="attendance-tab-menu"
                         className={cn(
-                          "flex items-center justify-between cursor-pointer",
-                          activeAttendanceType === item.id && activeTab === 'attendance' && "text-orange-600"
+                          tabButtonClass,
+                          'rounded-l-none border-l border-white/20 px-1.5 md:px-2',
+                          !isActive && 'border-l-border',
                         )}
                       >
-                        {item.label}
-                        {activeAttendanceType === item.id && activeTab === 'attendance' && (
-                          <Check className="w-4 h-4 text-orange-500" />
-                        )}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56 bg-popover">
+                      {attendanceMenuItems.map((item) => {
+                        const itemActive =
+                          activeTab === 'attendance' &&
+                          (item.id === CLOCK_IN_ATTENDANCE_TYPE
+                            ? clockInActive
+                            : activeAttendanceType === item.id);
+                        return (
+                          <DropdownMenuItem
+                            key={item.id}
+                            onClick={() => {
+                              if (item.id === CLOCK_IN_ATTENDANCE_TYPE) {
+                                openClockInWizard(clockInMethod);
+                                return;
+                              }
+                              setActiveTab('attendance');
+                              setActiveAttendanceType(item.id);
+                              if (item.id === 'weekly') setAttendanceViewMode('weekly');
+                              if (item.id === 'sheets') setAttendanceViewMode('list');
+                              if (item.id === 'records' || item.id === 'summary') {
+                                setAttendanceViewMode('data');
+                              }
+                            }}
+                            className={cn(
+                              'flex items-center justify-between cursor-pointer',
+                              itemActive && 'text-orange-600',
+                            )}
+                          >
+                            {item.label}
+                            {itemActive && <Check className="w-4 h-4 text-orange-500" />}
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               );
             }
             
@@ -3032,7 +3305,7 @@ export default function Attendance() {
               <div className="col-span-2 space-y-3">
                 <Select 
                   value={newSheetForm.timePreset}
-                  onValueChange={(v) => setNewSheetForm(prev => ({...prev, timePreset: v}))}
+                  onValueChange={handleSheetTimePreset}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -3044,23 +3317,31 @@ export default function Attendance() {
                   </SelectContent>
                 </Select>
                 <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Input 
+                  <div className="flex-1 min-w-0">
+                    <ViDatePickerField
                       value={newSheetForm.startDate}
-                      onChange={(e) => setNewSheetForm(prev => ({...prev, startDate: e.target.value}))}
-                      placeholder="DD/MM/YYYY"
-                      className="pr-10"
+                      onValueChange={(v) =>
+                        setNewSheetForm((prev) => ({
+                          ...prev,
+                          startDate: v,
+                          timePreset: 'custom',
+                        }))
+                      }
+                      calendarAriaLabel={t('attPage.startDate')}
                     />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   </div>
-                  <div className="relative flex-1">
-                    <Input 
+                  <div className="flex-1 min-w-0">
+                    <ViDatePickerField
                       value={newSheetForm.endDate}
-                      onChange={(e) => setNewSheetForm(prev => ({...prev, endDate: e.target.value}))}
-                      placeholder="DD/MM/YYYY"
-                      className="pr-10"
+                      onValueChange={(v) =>
+                        setNewSheetForm((prev) => ({
+                          ...prev,
+                          endDate: v,
+                          timePreset: 'custom',
+                        }))
+                      }
+                      calendarAriaLabel={t('attPage.endDate')}
                     />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -3149,6 +3430,64 @@ export default function Attendance() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* UX-09 — Shifts bulk delete confirm */}
+      <AlertDialog open={bulkDeleteShiftsDialogOpen} onOpenChange={setBulkDeleteShiftsDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('attPage.shiftsConfirmBulkDelete')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('attPage.shiftsConfirmBulkDeleteDesc', { count: selectedShifts.length })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isBulkDeletingShifts}>{t('attPage.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isBulkDeletingShifts || selectedShifts.length === 0}
+              onClick={(e) => {
+                e.preventDefault();
+                void handleConfirmBulkDeleteShifts();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isBulkDeletingShifts ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                t('attPage.shiftsBulkDelete', { count: selectedShifts.length })
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* UX-09 — Shifts single row delete confirm */}
+      <AlertDialog
+        open={shiftPendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setShiftPendingDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('attPage.confirmDelete')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('attPage.shiftsConfirmDeleteDesc', { name: shiftPendingDelete?.name ?? '' })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('attPage.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                void handleConfirmSingleDeleteShift();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('attPage.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Leave Request Modal */}
       <Dialog open={leaveRequestModalOpen} onOpenChange={setLeaveRequestModalOpen}>
         <DialogContent className="max-w-xl">
@@ -3213,9 +3552,7 @@ export default function Attendance() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {leaveRequestForm.startDate ? (
-                        format(leaveRequestForm.startDate, "dd/MM/yyyy", { locale: vi })
-                      ) : (
+                      {formatSafeCalendarDate(leaveRequestForm.startDate) ?? (
                         <span>{t('attPage.selectDay', 'Chọn ngày')}</span>
                       )}
                     </Button>
@@ -3243,9 +3580,7 @@ export default function Attendance() {
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {leaveRequestForm.endDate ? (
-                        format(leaveRequestForm.endDate, "dd/MM/yyyy", { locale: vi })
-                      ) : (
+                      {formatSafeCalendarDate(leaveRequestForm.endDate) ?? (
                         <span>{t('attPage.selectDay', 'Chọn ngày')}</span>
                       )}
                     </Button>
@@ -3389,9 +3724,7 @@ export default function Attendance() {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {editLeaveForm.startDate ? (
-                            format(editLeaveForm.startDate, "dd/MM/yyyy", { locale: vi })
-                          ) : (
+                          {formatSafeCalendarDate(editLeaveForm.startDate) ?? (
                             <span>{t('attPage.selectDay', 'Chọn ngày')}</span>
                           )}
                         </Button>
@@ -3419,9 +3752,7 @@ export default function Attendance() {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {editLeaveForm.endDate ? (
-                            format(editLeaveForm.endDate, "dd/MM/yyyy", { locale: vi })
-                          ) : (
+                          {formatSafeCalendarDate(editLeaveForm.endDate) ?? (
                             <span>{t('attPage.selectDay', 'Chọn ngày')}</span>
                           )}
                         </Button>

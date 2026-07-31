@@ -1,4 +1,11 @@
-﻿import { useState } from 'react';
+﻿/**
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-PICKER-01
+ * change_mode: ADD
+ * What: position/department CatalogSearchPicker; Network position_key + department_key + snapshots
+ * Why: AC-E1A-JP-01 · FR-HRM-MD-BIND-E1A-01 · U72
+ * must_keep: JobRequisitions JD picker; JobTemplates; U65; HOLD_DEPLOY; not FR-RC-01 SoT
+ */
+import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,6 +15,21 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  buildDepartmentKeyFields,
+  buildPositionKeyFields,
+  departmentOptionsFromCatalog,
+  jobTitleOptionsFromCatalog,
+  resolveDepartmentLabel,
+  resolvePositionDisplayLabel,
+} from '@/lib/catalogSearchPicker';
+import {
+  ViMoneyInput,
+  amountStringToNumber,
+  numberToAmountString,
+} from '@/components/ui/ViMoneyInput';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -80,6 +102,7 @@ import {
   updateJobPosting,
 } from '@/integrations/hrmApi';
 import { cn } from '@/lib/utils';
+import { resolveEmploymentTypeDisplay } from '@/lib/labelMaps';
 import { JobCandidatesDialog } from './JobCandidatesDialog';
 
 interface JobPosting {
@@ -87,7 +110,9 @@ interface JobPosting {
   company_id: string;
   title: string;
   department: string | null;
+  department_key?: string | null;
   position: string;
+  position_key?: string | null;
   employment_type: string;
   work_location: string | null;
   salary_min: number | null;
@@ -131,6 +156,20 @@ export function JobPostingsTab() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview();
+  const positionOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const departmentOptions = useMemo(
+    () => departmentOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
 
   const statusOptions = [
     { value: 'all', label: t('recruitment.jt.statuses.all') },
@@ -177,8 +216,8 @@ export function JobPostingsTab() {
 
   const jobPostingSchema = z.object({
     title: z.string().min(1, t('recruitment.form.titleRequired')).max(200, t('recruitment.form.titleMax')),
-    department: z.string().optional(),
-    position: z.string().min(1, t('recruitment.form.typeRequired')),
+    department_key: z.string().optional(),
+    position_key: z.string().min(1, t('recruitment.form.typeRequired')),
     employment_type: z.string().min(1, t('recruitment.form.typeRequired')),
     work_location: z.string().optional(),
     salary_min: z.string().optional(),
@@ -199,8 +238,8 @@ export function JobPostingsTab() {
     resolver: zodResolver(jobPostingSchema),
     defaultValues: {
       title: '',
-      department: '',
-      position: '',
+      department_key: '',
+      position_key: '',
       employment_type: 'full-time',
       work_location: '',
       salary_min: '',
@@ -229,7 +268,9 @@ export function JobPostingsTab() {
         id: job.id,
         title: job.title,
         department: job.department,
+        department_key: job.department_key ?? null,
         position: job.position,
+        position_key: job.position_key ?? null,
         employment_type: job.employment_type,
         work_location: job.work_location,
         salary_min: job.salary_min,
@@ -252,17 +293,24 @@ export function JobPostingsTab() {
 
   const parseOptionalNumber = (value: string | undefined): number | undefined => {
     if (value == null || value.trim() === '') return undefined;
-    const n = Number(value);
+    const n = amountStringToNumber(value);
     return Number.isFinite(n) ? n : undefined;
   };
 
   const buildCreatePayload = (values: JobPostingFormValues) => {
     if (!currentCompanyId) throw new Error('Missing company scope');
+    const pos = buildPositionKeyFields(values.position_key, positionOptions);
+    if (!pos) throw new Error('Chọn vị trí từ danh mục');
+    const dept = values.department_key?.trim()
+      ? buildDepartmentKeyFields(values.department_key, departmentOptions)
+      : null;
     return {
       company_id: currentCompanyId,
       title: values.title,
-      position: values.position,
-      department: values.department || undefined,
+      position_key: pos.position_key,
+      position: pos.position,
+      department_key: dept?.department_key,
+      department: dept?.department,
       employment_type: values.employment_type,
       work_location: values.work_location || undefined,
       salary_min: parseOptionalNumber(values.salary_min),
@@ -366,8 +414,8 @@ export function JobPostingsTab() {
     setEditingJob(null);
     form.reset({
       title: '',
-      department: '',
-      position: '',
+      department_key: '',
+      position_key: '',
       employment_type: 'full-time',
       work_location: '',
       salary_min: '',
@@ -387,8 +435,8 @@ export function JobPostingsTab() {
     setEditingJob(job);
     form.reset({
       title: job.title,
-      department: job.department || '',
-      position: job.position,
+      department_key: job.department_key?.trim() || '',
+      position_key: job.position_key?.trim() || '',
       employment_type: job.employment_type,
       work_location: job.work_location || '',
       salary_min: job.salary_min?.toString() || '',
@@ -613,12 +661,19 @@ export function JobPostingsTab() {
                     </TableCell>
                     <TableCell onClick={() => handleOpenView(job)}>
                       <div className="font-medium">{job.title}</div>
-                      <div className="text-xs text-muted-foreground">{job.position}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {resolvePositionDisplayLabel(positionOptions, job.position_key, job.position)}
+                      </div>
                     </TableCell>
-                    <TableCell>{job.department || '-'}</TableCell>
+                    <TableCell>
+                      {job.department_key
+                        ? resolveDepartmentLabel(departmentOptions, job.department_key)
+                        : job.department || '—'}
+                    </TableCell>
                     <TableCell>{job.work_location || '-'}</TableCell>
                     <TableCell>
-                      {employmentTypes.find(t => t.value === job.employment_type)?.label || job.employment_type}
+                      {employmentTypes.find(t => t.value === job.employment_type)?.label
+                        ?? resolveEmploymentTypeDisplay(job.employment_type)}
                     </TableCell>
                     <TableCell className="text-center">{job.headcount}</TableCell>
                     <TableCell className="text-center">
@@ -683,12 +738,18 @@ export function JobPostingsTab() {
                   </div>
                 </div>
                 <h3 className="font-semibold mb-1">{job.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{job.position}</p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {resolvePositionDisplayLabel(positionOptions, job.position_key, job.position)}
+                </p>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  {job.department && (
+                  {(job.department_key || job.department) && (
                     <div className="flex items-center gap-2">
                       <Building2 className="w-4 h-4" />
-                      <span>{job.department}</span>
+                      <span>
+                        {job.department_key
+                          ? resolveDepartmentLabel(departmentOptions, job.department_key)
+                          : job.department}
+                      </span>
                     </div>
                   )}
                   {job.work_location && (
@@ -807,12 +868,24 @@ export function JobPostingsTab() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="position"
+                    name="position_key"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('recruitment.jt.positionLabel')} <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input placeholder={t('recruitment.jt.positionPlaceholder')} {...field} />
+                          <CatalogSearchPicker
+                            options={positionOptions}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder={t('recruitment.jt.positionPlaceholder')}
+                            loading={catalogsLoading}
+                            errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                            emptyHint={
+                              <a href="/settings" className="text-primary underline text-xs font-medium">
+                                Mở Cài đặt → Danh mục nghiệp vụ
+                              </a>
+                            }
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -821,12 +894,24 @@ export function JobPostingsTab() {
 
                   <FormField
                     control={form.control}
-                    name="department"
+                    name="department_key"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('recruitment.jt.departmentLabel')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('recruitment.jt.departmentPlaceholder')} {...field} />
+                          <CatalogSearchPicker
+                            options={departmentOptions}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            placeholder={t('recruitment.jt.departmentPlaceholder')}
+                            loading={catalogsLoading}
+                            errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                            emptyHint={
+                              <a href="/settings" className="text-primary underline text-xs font-medium">
+                                Mở Cài đặt → Danh mục nghiệp vụ
+                              </a>
+                            }
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -899,8 +984,15 @@ export function JobPostingsTab() {
                         <FormLabel>{t('recruitment.jt.salaryMin')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input placeholder="VD: 15000000" className="pl-10" {...field} />
+                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                            <ViMoneyInput
+                              placeholder="VD: 15.000.000"
+                              className="pl-10"
+                              value={amountStringToNumber(field.value)}
+                              onValueChange={(n) => field.onChange(numberToAmountString(n))}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                            />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -916,8 +1008,15 @@ export function JobPostingsTab() {
                         <FormLabel>{t('recruitment.jt.salaryMax')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input placeholder="VD: 25000000" className="pl-10" {...field} />
+                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                            <ViMoneyInput
+                              placeholder="VD: 25.000.000"
+                              className="pl-10"
+                              value={amountStringToNumber(field.value)}
+                              onValueChange={(n) => field.onChange(numberToAmountString(n))}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                            />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -1082,7 +1181,13 @@ export function JobPostingsTab() {
                   </div>
                   <div>
                     <h2 className="text-xl">{selectedJob.title}</h2>
-                    <p className="text-sm text-muted-foreground font-normal">{selectedJob.position}</p>
+                    <p className="text-sm text-muted-foreground font-normal">
+                      {resolvePositionDisplayLabel(
+                        positionOptions,
+                        selectedJob.position_key,
+                        selectedJob.position,
+                      )}
+                    </p>
                   </div>
                 </DialogTitle>
               </DialogHeader>
@@ -1092,7 +1197,8 @@ export function JobPostingsTab() {
                   {getStatusBadge(selectedJob.status)}
                   {getPriorityBadge(selectedJob.priority)}
                   <Badge variant="outline">
-                    {employmentTypes.find(et => et.value === selectedJob.employment_type)?.label}
+                    {employmentTypes.find(et => et.value === selectedJob.employment_type)?.label
+                      ?? resolveEmploymentTypeDisplay(selectedJob.employment_type)}
                   </Badge>
                 </div>
 
@@ -1127,7 +1233,11 @@ export function JobPostingsTab() {
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{t('recruitment.jt.departmentInfo')}</span>
-                    <span>{selectedJob.department || '-'}</span>
+                    <span>
+                      {selectedJob.department_key
+                        ? resolveDepartmentLabel(departmentOptions, selectedJob.department_key)
+                        : selectedJob.department || '—'}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-muted-foreground" />

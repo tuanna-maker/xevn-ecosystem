@@ -9,7 +9,13 @@ import { syncHrmLocationToPortalParent } from '@/lib/hrmPortalUrlSync';
  * Portal embed: parent postMessage nav + iframe→parent URL sync for F5 deep links.
  *
  * D-HRM-ATT-NAV-STALL-01: soft-nav must flushSync + keep embed search so
- * `v7_startTransition` cannot leave Attendance painted after the URL moved.
+ * `v7_startTransition: true` (D-FE-CONSOLE-A11Y-DIALOG-RR-01) cannot leave
+ * Attendance painted after the URL moved.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * work_item: CD-FB-09-SOFT-NAV
+ * what: Unchanged bridge wiring; paired with AppLayout Outlet key + portal src fallback
+ * why: C-CD-FB-09-01 Attendance → Tuyển dụng soft-nav
  */
 export function PortalEmbedRouterSync() {
   const location = useLocation();
