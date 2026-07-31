@@ -16,7 +16,7 @@
  * Impact:     Sai map → lộ raw key hoặc «—» sai cho nhãn VI đã lưu (vd. «Hợp đồng 1 năm»)
  * must_keep:  resolveIndustryDisplay (tenantScopeApi — không đụng); fail-closed EM_DASH; U65 no seed
  * SOLID:      Pure resolvers — UI chỉ gọi, không nhúng dictionary rải rác
- * LastVerified: labelMaps.test.ts
+ * LastVerified: labelMaps.encoding.test.ts + labelMaps.test.ts
  *
  * @CODE-MEMORY-CHANGE 2026-07-28
  * WorkItem: D-MOB-UUID-BPRIME-FE-01
@@ -71,6 +71,16 @@
  * SRS/BR: AC-U72-GLOBAL · hygiene only (không đổi leave-type map CLOSED)
  * must_keep: C-U72-LEAVE-P3 unknown→— · C-XBOS-U72-P2 · F-09/F-10/U02 · U65 no seed
  */
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-01 — D-REC-13-S2-LABELMAPS-UTF8-01
+ * change_mode: FIX
+ * What: Ensure labelMaps.ts on-disk bytes are UTF-8 (no UTF-16 LE BOM FF FE / NUL pairs).
+ * Why: QA-REC-13-S2-SUBMIT-INBOX-RET-01 FAIL — Vite Unexpected character → /hr/recruitment whitescreen; JobRequisitionsTab unreachable.
+ * must_keep: VI semantic label maps; Gửi duyệt QT wire untouched; UF-HRM-12 historic not demoted; U65 no seed
+ * LastVerified: labelMaps.encoding.test.ts + Vite GET :8080/hr/src/lib/labelMaps.ts 200
+ */
+
+
 
 import type { CatalogPickerOption } from '@/lib/catalogSearchPicker';
 import { resolveCatalogPickerSelection } from '@/lib/catalogSearchPicker';
