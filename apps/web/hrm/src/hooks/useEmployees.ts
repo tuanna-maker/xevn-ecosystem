@@ -8,7 +8,8 @@
  * Purpose:     Capped employee collection for satellite pickers (attendance, payroll, …).
  *              Single page via listEmployees — never listAllEmployees (ADR W2).
  *              Employees **table** must use useEmployeesPage (RQ server page) — W1.
- * WorkItem:    P1-HRM-EMP-DUP-KEY-FE
+ *              Callers should pass `{ enabled }` to defer fetch until dialog/tab needs data.
+ * WorkItem:    P1-HRM-EMP-DUP-KEY-FE / P1-HRM-PERF-FE-02
  * Coded:       2026-07-16
  *
  * @CODE-MEMORY-CHANGE 2026-07-17 P1-HRM-SCALE-FE-W1
@@ -20,9 +21,14 @@
  *   Wire React Query so attendance/payroll tabs share one in-flight GET.
  *   Export total/isCapped for explicit truncated-picker UX.
  *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-04-PERF-FIX / P1-HRM-PERF-FE-02
+ *   Document enabled-gate pattern for dialog consumers (TaskFormDialog, InternalServices).
+ *   Profile must not import this hook for list — useEmployeeMutations only.
+ *
  * Callers:
- *   - Satellite pickers (attendance/payroll/tasks) → useEmployees()
+ *   - Satellite pickers (attendance/payroll/tasks) → useEmployees(..., { enabled })
  *   - NOT Employees.tsx table (use useEmployeesPage)
+ *   - NOT EmployeeProfile list mount
  *
  * Callees:
  *   - fetchEmployeePickerPage → listEmployees (single page)
@@ -59,12 +65,16 @@ import {
 export interface Employee {
   id: string;
   company_id: string;
+  /** Legal-entity / ĐVTV label from API when present (AC-EMP-COL-01). */
+  company_display_name?: string | null;
   employee_code: string;
   full_name: string;
   email: string | null;
   phone: string | null;
   department: string | null;
   position: string | null;
+  /** API job_title_key — display only via resolveJobTitleDisplayLabel (never raw on UI). */
+  job_title_key?: string | null;
   start_date: string | null;
   end_date: string | null;
   status: string;

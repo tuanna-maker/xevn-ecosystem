@@ -32,6 +32,18 @@
  * must_keep: J-HRM-03 detail from list row; UF-HRM-02 PATCH; fetchError ≠ noData.
  * SOLID:     Progressive loader pure fn testable; hook owns React state only.
  * LastVerified: apps/web/hrm/src/hooks/useContracts.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-08-CONTRACT
+ * What: Confirm list create path never sends salary (term-only); F5 compensation on profile tabs
+ * Why: AC-CD-F5-01 — salary deprecated on contract body
+ * SRS/BR: CUSTOMER_DEMO_HRM_DELTA §5 · BR-CD-F5-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-FE-08
+ * change_mode: FIX
+ * What: createContract sends contract_code + position_key (E1-A required) + department snapshot
+ * Why: QA RET-03-HRM-R5 — form-ready 🟢 but POST 400 missing position_key
+ * must_keep: G-CI-01 open-ended expiry omit; F5 salary off body
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,6 +52,7 @@ import { toErrorMessage } from '@/lib/apiError';
 import { shouldSkipSupabaseDataFetches, HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { isListFetchFailureEmpty } from '@/lib/hrmListLoadFailure';
+import { validateContractDatesForSubmit } from '@/lib/contractEndDatePolicy';
 import {
   createEmployeeContract,
   deleteEmployeeContract,
@@ -82,6 +95,9 @@ export interface ContractFormData {
   notes: string;
   file_url: string;
   employee_id?: string;
+  /** E1-A — required on POST /contracts-insurance/contracts (D-HDSD-MUTATE-FE-08). */
+  position_key?: string;
+  position?: string;
 }
 
 /** Nest @Max(100) — one page per request; progressive append for remainder. */
@@ -309,16 +325,31 @@ export function useContracts(selectedType: string = 'all') {
           toast.error('Vui lòng chọn nhân viên');
           return false;
         }
-        if (!data.effective_date || !data.expiry_date) {
-          toast.error('Vui lòng nhập ngày hiệu lực và ngày hết hạn');
+        // G-CI-01 — open-ended may omit expiry_date; fixed-term still blocked client-side
+        const datesGate = validateContractDatesForSubmit({
+          contractType: data.contract_type,
+          effectiveDate: data.effective_date,
+          expiryDate: data.expiry_date,
+        });
+        if (!datesGate.ok) {
+          toast.error(datesGate.message);
+          return false;
+        }
+        const positionKey = data.position_key?.trim();
+        if (!positionKey) {
+          toast.error('Chọn vị trí từ danh mục chức danh (Cài đặt → Danh mục nghiệp vụ).');
           return false;
         }
         await createEmployeeContract({
           company_id: currentCompanyId,
           employee_id: data.employee_id,
+          contract_code: data.contract_code.trim() || undefined,
           contract_type: data.contract_type,
-          start_date: formatDate(data.effective_date),
-          end_date: formatDate(data.expiry_date),
+          start_date: formatDate(data.effective_date!),
+          ...(data.expiry_date ? { end_date: formatDate(data.expiry_date) } : {}),
+          position_key: positionKey,
+          ...(data.position?.trim() ? { position: data.position.trim() } : {}),
+          ...(data.department?.trim() ? { department: data.department.trim() } : {}),
         });
       }
       toast.success('Thêm hợp đồng thành công');

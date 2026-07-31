@@ -24,9 +24,25 @@
  *   | Open Nghỉ phép  | useQuery       | listLeaveRequests      |
  *   | Create / approve| mutation + inv | create/approve/reject  |
  *
- * must_keep:   mapApiLeaveRequestToUi; portal Nest API (no Supabase)
+ * must_keep:   mapApiLeaveRequestToUi; portal Nest API (no Supabase);
+ *              soft-nav; leave picker typeahead HLD-0006 (CD-FB-07)
  * SOLID:       RQ read path; mutations invalidate shared key (singleflight)
  * LastVerified: apps/web/hrm/src/hooks/useLeaveRequests.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-07-LEAVE-CREATE-COMPANY-UUID
+ *   POST leave-requests requires @IsUUID() company_id — map employee/OU slug
+ *   (holding|main) → UUID via resolveHrmMetadataCompanyUuid before create.
+ *   Prefer employee.company_id over portal rollup slug. Do not reopen TEXT resolver.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21 FE-HRM-G-AT10-02-TOAST-01
+ *   Map HRM-LEAVE-VAL-OVERLAP (409) + HRM-LEAVE-VAL-BALANCE (400) via toErrorMessage
+ *   on create toast (FR-HRM-AT-10 #5/#6). Happy create path unchanged.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-HRM-LEAVE-REQ-CREATE-FE-01
+ * change_mode: FIX
+ * What: POST company_id = TEXT slug (holding/main partition) via resolveHrmLeaveCreateCompanyId
+ * Why: G-AT10-01 + Settings catalog partition; QA residual P1 UUID body while BE accepts slug
+ * must_keep: leave_type catalog SoT; create→201 path; VAL toast codes; no Settings MD reopen
  */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -40,7 +56,9 @@ import {
   rejectLeaveRequest,
   type HrmLeaveRequest,
 } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import { resolveHrmLeaveCreateCompanyId } from '@/lib/hrmMetadataCompany';
 
 export interface LeaveRequest {
   id: string; company_id: string; employee_id: string; employee_code: string; employee_name: string;
@@ -52,9 +70,40 @@ export interface LeaveRequest {
 }
 
 export interface LeaveRequestFormData {
+  /** Employee's company slug or UUID — preferred over portal rollup `main`; payload maps to TEXT slug. */
+  company_id?: string;
   employee_id: string; employee_code: string; employee_name: string; department?: string; position?: string;
   leave_type: string; start_date: string; end_date: string; total_days: number; reason?: string;
   handover_to?: string; handover_tasks?: string; approver_name?: string;
+}
+
+/**
+ * Build Nest POST body for leave create (G-AT10-01).
+ * Prefer employee company_id (OU/home company), then portal scope — TEXT slug for Settings partition.
+ */
+export function buildLeaveCreatePayload(
+  data: LeaveRequestFormData,
+  scopeCompanyId: string | null | undefined,
+): Record<string, unknown> | null {
+  const companyId = resolveHrmLeaveCreateCompanyId(
+    data.company_id?.trim() || scopeCompanyId,
+  );
+  if (!companyId) return null;
+  return {
+    company_id: companyId,
+    employee_id: data.employee_id,
+    employee_code: data.employee_code,
+    employee_name: data.employee_name,
+    department: data.department,
+    position: data.position,
+    leave_type: data.leave_type,
+    start_date: data.start_date,
+    end_date: data.end_date,
+    total_days: data.total_days,
+    reason: data.reason,
+    handover_to: data.handover_to,
+    handover_tasks: data.handover_tasks,
+  };
 }
 
 export const LEAVE_REQUESTS_QUERY_KEY = 'leave-requests' as const;
@@ -160,29 +209,28 @@ export function useLeaveRequests(opts?: { enabled?: boolean; statusFilter?: stri
 
   const createRequest = async (data: LeaveRequestFormData): Promise<LeaveRequest | null> => {
     if (!currentCompanyId) return null;
-    try {
-      const created = await createLeaveRequest({
-        company_id: currentCompanyId,
-        employee_id: data.employee_id,
-        employee_code: data.employee_code,
-        employee_name: data.employee_name,
-        department: data.department,
-        position: data.position,
-        leave_type: data.leave_type,
-        start_date: data.start_date,
-        end_date: data.end_date,
-        total_days: data.total_days,
-        reason: data.reason,
-        handover_to: data.handover_to,
-        handover_tasks: data.handover_tasks,
+    const payload = buildLeaveCreatePayload(data, currentCompanyId);
+    if (!payload) {
+      toast({
+        title: t('messages.error'),
+        description: t('hk.leave.createError'),
+        variant: 'destructive',
       });
+      return null;
+    }
+    try {
+      const created = await createLeaveRequest(payload);
       const mapped = mapApiLeaveRequestToUi(created);
       await invalidateLeaveRequests();
       toast({ title: t('messages.success'), description: t('hk.leave.createSuccess') });
       return mapped;
     } catch (error: unknown) {
       console.error('Error creating leave request:', error);
-      toast({ title: t('messages.error'), description: t('hk.leave.createError'), variant: 'destructive' });
+      toast({
+        title: t('messages.error'),
+        description: toErrorMessage(error, t('hk.leave.createError')),
+        variant: 'destructive',
+      });
       return null;
     }
   };

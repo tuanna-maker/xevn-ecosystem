@@ -93,7 +93,7 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
       return { rows: hrmRows, fetchError: null };
     }
   } catch (error) {
-    hrmError = toErrorMessage(error, 'Không tải được danh sách phòng ban từ HRM API.');
+    hrmError = toErrorMessage(error, 'Không tải được danh sách phòng ban.');
   }
 
   try {

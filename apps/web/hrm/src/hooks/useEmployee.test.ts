@@ -51,6 +51,44 @@ describe('mapHrmEmployeeRecord', () => {
     expect(mapped.id).toBe('emp-uuid-1');
     expect(mapped.full_name).toBe('Nguyen Van A');
     expect(mapped.avatar_url).toBeNull();
+    expect(mapped.position).toBeNull();
+    expect(mapped.job_title_key).toBe('staff');
+    expect(mapped.department).toBeNull();
+    expect(mapped.company_display_name).toBeNull();
+  });
+
+  it('maps job_title_label from custom_fields for AC-FD-U02 (never raw LEGAL_SPECIALIST)', () => {
+    const mapped = mapHrmEmployeeRecord({
+      ...sampleRow,
+      job_title_key: 'LEGAL_SPECIALIST',
+      custom_fields: { job_title_label: 'Chuyên viên Pháp chế' },
+    });
+    expect(mapped.position).toBe('Chuyên viên Pháp chế');
+    expect(mapped.job_title_key).toBe('LEGAL_SPECIALIST');
+  });
+
+  it('passes through company_display_name for employees company column', () => {
+    const mapped = mapHrmEmployeeRecord({
+      ...sampleRow,
+      company_display_name: 'Công ty TNHH Du lịch Visun',
+    });
+    expect(mapped.company_display_name).toBe('Công ty TNHH Du lịch Visun');
+    expect(
+      mapHrmEmployeeRecord({
+        ...sampleRow,
+        company_name: 'Công ty TNHH X.E Việt Nam',
+      }).company_display_name,
+    ).toBe('Công ty TNHH X.E Việt Nam');
+  });
+
+  it('maps department/position from custom_fields without nulling title', () => {
+    const mapped = mapHrmEmployeeRecord({
+      ...sampleRow,
+      job_title_key: 'ceo',
+      custom_fields: { department: 'Ban điều hành', position: 'Tổng Giám đốc' },
+    });
+    expect(mapped.department).toBe('Ban điều hành');
+    expect(mapped.position).toBe('Tổng Giám đốc');
   });
 
   it('reads avatar_url from API field or custom_fields fallback', () => {

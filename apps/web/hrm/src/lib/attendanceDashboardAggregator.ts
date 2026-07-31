@@ -1,12 +1,51 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM /hr/... Chấm công — weekly summary + records table
+ * Purpose:    Aggregate attendance API rows into weekly grid / table; safe VI date labels.
+ * WorkItem:   D-HRM-ATT-INVALID-DATE-01
+ * Coded:      2026-07-20
+ * SRS:        docs/program/UX_VI_DATE_NUMBER_FORMAT_AC.md · BR-UX-DATE-*
+ * must_keep:  null/invalid sheet/API dates → «—» / fallback week; never format() on Invalid Date
+ * LastVerified: attendanceDashboardAggregator.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-ATT-INVALID-DATE-01
+ * change_mode: UPGRADE
+ * What: Guard resolveWeeklyDateRange, formatWeeklyRangeSubtitle, weekly title labels, table date cells
+ * Why: Sponsor RangeError Invalid time value at Attendance renderWeeklyAttendance (format on bad from/to)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: D-HRM-ATT-SHEET-EMPTY-RELOAD-LOOP-01
+ * change_mode: UPGRADE
+ * What: resolveWeeklyDateRange — prefer current week clipped to sheet; align from/to with displayed days
+ * Why: Month sheet fetched full period but grid only first 7 days → empty grid despite records 200
+ */
+
 import {
   eachDayOfInterval,
   endOfWeek,
   format,
+  isValid,
   parseISO,
   startOfWeek,
 } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
 import type { HrmAttendanceRecord } from '@/integrations/hrmApi';
+
+function isValidDate(value: Date): boolean {
+  return isValid(value) && !Number.isNaN(value.getTime());
+}
+
+function parseSheetBoundary(raw: string): Date | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  // Prefer ISO date-only; parseISO('yyyy-MM-dd') is local midnight in date-fns
+  const parsed = /^\d{4}-\d{2}-\d{2}/.test(trimmed)
+    ? parseISO(trimmed.slice(0, 10))
+    : new Date(trimmed);
+  return isValidDate(parsed) ? parsed : null;
+}
 
 export type WeeklyShiftCell = {
   shift?: string;
@@ -68,21 +107,7 @@ function buildTimeRange(checkIn?: string | null, checkOut?: string | null): stri
   return '';
 }
 
-export function resolveWeeklyDateRange(
-  sheet?: { start_date: string; end_date: string } | null,
-  anchor = new Date(),
-): { from: string; to: string; days: Date[] } {
-  if (sheet?.start_date && sheet?.end_date) {
-    const start = parseISO(sheet.start_date);
-    const end = parseISO(sheet.end_date);
-    const days = eachDayOfInterval({ start, end }).slice(0, 7);
-    return {
-      from: sheet.start_date,
-      to: sheet.end_date,
-      days,
-    };
-  }
-
+function currentWeekRange(anchor = new Date()): { from: string; to: string; days: Date[] } {
   const weekStart = startOfWeek(anchor, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: weekStart, end: weekEnd }).slice(0, 7);
@@ -93,10 +118,82 @@ export function resolveWeeklyDateRange(
   };
 }
 
+function buildRangeFromDays(days: Date[]): { from: string; to: string; days: Date[] } | null {
+  if (days.length === 0 || !days.every(isValidDate)) return null;
+  const first = days[0]!;
+  const last = days[days.length - 1]!;
+  return {
+    from: format(first, 'yyyy-MM-dd'),
+    to: format(last, 'yyyy-MM-dd'),
+    days,
+  };
+}
+
+/**
+ * Resolve the ≤7-day window for weekly grid + records GET.
+ * Prefer the current calendar week clipped into the sheet period so mid-month
+ * sheets are not stuck on the first week (empty grid while API returns later days).
+ * When the anchor week is outside the sheet, fall back to the first ≤7 days of the sheet.
+ * `from`/`to` always match displayed `days` (API filter aligned with columns).
+ */
+export function resolveWeeklyDateRange(
+  sheet?: { start_date: string; end_date: string } | null,
+  anchor = new Date(),
+): { from: string; to: string; days: Date[] } {
+  if (sheet?.start_date && sheet?.end_date) {
+    const start = parseSheetBoundary(sheet.start_date);
+    const end = parseSheetBoundary(sheet.end_date);
+    if (start && end && start.getTime() <= end.getTime()) {
+      try {
+        const weekStart = startOfWeek(anchor, { weekStartsOn: 1 });
+        const weekEnd = endOfWeek(anchor, { weekStartsOn: 1 });
+        const clippedStart = weekStart < start ? start : weekStart;
+        const clippedEnd = weekEnd > end ? end : weekEnd;
+
+        if (clippedStart.getTime() <= clippedEnd.getTime()) {
+          const clipped = buildRangeFromDays(
+            eachDayOfInterval({ start: clippedStart, end: clippedEnd }).slice(0, 7),
+          );
+          if (clipped) return clipped;
+        }
+
+        const firstWeek = buildRangeFromDays(
+          eachDayOfInterval({ start, end }).slice(0, 7),
+        );
+        if (firstWeek) return firstWeek;
+      } catch {
+        // fall through to current week
+      }
+    }
+  }
+
+  return currentWeekRange(anchor);
+}
+
+/** Title labels for weekly view — never throws on bad API/period strings. */
+export function formatWeeklyRangeTitleLabels(
+  from: string | null | undefined,
+  to: string | null | undefined,
+): { start: string; end: string } {
+  return {
+    start: formatDisplayDate(from),
+    end: formatDisplayDate(to),
+  };
+}
+
 export function formatWeeklyRangeSubtitle(from: string, to: string): string {
-  const start = parseISO(from);
-  const end = parseISO(to);
-  return `(${format(start, 'dd/MM/yyyy')} - ${format(end, 'dd/MM/yyyy')})`;
+  const { start, end } = formatWeeklyRangeTitleLabels(from, to);
+  return `(${start} - ${end})`;
+}
+
+/** Fallback column headers when weekly API rows are empty — skip Invalid Date days. */
+export function buildWeeklyDayHeaderFallback(
+  days: Date[],
+): Array<{ dayLabel: string; date: string }> {
+  return days.filter(isValidDate).map((day) => ({
+    dayLabel: format(day, 'EEEE', { locale: vi }),
+    date: format(day, 'dd'),
+  }));
 }
 
 export function formatOverviewYearSubtitle(year: number): string {
@@ -120,6 +217,7 @@ export function resolveAttendanceUnitLabel(
 }
 
 function dayLabelFor(date: Date, t?: (key: string, fallback?: string) => string): string {
+  if (!isValidDate(date)) return '—';
   const key = DAY_LABEL_KEYS[date.getDay()];
   const fallback = format(date, 'EEEE', { locale: vi });
   return t ? t(`common.weekDays.${key}`, fallback) : fallback;
@@ -160,7 +258,8 @@ export function buildWeeklyAttendanceRows(
   t?: (key: string, fallback?: string) => string,
   operatingUnitLabels?: Map<string, string>,
 ): WeeklyAttendanceRow[] {
-  const dayKeys = range.days.map((day) => format(day, 'yyyy-MM-dd'));
+  const validDays = range.days.filter(isValidDate);
+  const dayKeys = validDays.map((day) => format(day, 'yyyy-MM-dd'));
   const rowsByEmployee = new Map<string, WeeklyAttendanceRow>();
 
   for (const record of records) {
@@ -174,7 +273,7 @@ export function buildWeeklyAttendanceRows(
         name: employee?.full_name ?? record.employee_id,
         code: employee?.employee_code ?? '—',
         department: resolveAttendanceUnitLabel(employee?.department, operatingUnitLabels),
-        days: range.days.map((day) => ({
+        days: validDays.map((day) => ({
           dayLabel: dayLabelFor(day, t),
           date: format(day, 'dd'),
           dateIso: format(day, 'yyyy-MM-dd'),
@@ -210,7 +309,7 @@ export function mapAttendanceRecordsToTableRows(
       name: employee?.full_name ?? record.employee_id,
       position: employee?.position ?? '—',
       unit: resolveAttendanceUnitLabel(employee?.department, operatingUnitLabels) ?? '—',
-      date: format(parseISO(record.attendance_date), 'dd/MM/yyyy'),
+      date: formatDisplayDate(record.attendance_date),
       time,
     };
   });

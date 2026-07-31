@@ -1,6 +1,23 @@
 /**
- * HRM operating unit registry (workforce partition slugs) — U39 / G-INT-02.
- * BE SoT: GET /api/hrm/operating-units — no static runtime fallback.
+ * @CODE-MEMORY
+ * Screen:     HRM operating unit filter + company label map
+ * UC:         UC-HRM-SCOPE-03 · UC-HRM-21 · AC-EMP-COL-07
+ * BR:         BR-EMP-COL-01 · BR-EMP-COL-03
+ * SRS:        docs/qa/evidence/ba-hrm-emp-company-col-01-20260722.md
+ * TechSpec:   GET /api/hrm/operating-units — display_name_vi = LE / ĐVTV SoT
+ * Purpose:    Fetch OU filter rows; build slug→label map for charts + company column.
+ * WorkItem:   D-HRM-EMP-COMPANY-COL-FE-01
+ * Coded:      2026-07-22
+ * Callers:    HrmOperatingUnitFilterContext · Employees (via label map)
+ * Callees:    GET /api/hrm/operating-units
+ * Impact:     Khối fixture → company column FAIL AC-EMP-COL-01
+ * must_keep:  No static Khối runtime fallback; vitest fixture = LE names
+ * SOLID:      Transport + pure map helpers only
+ * LastVerified: hrmOperatingUnits.test.ts · employeeCompanyDisplayName.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22 D-HRM-EMP-COMPANY-COL-FE-01
+ * what: TEST_FIXTURE LE/ĐVTV names (not Khối); company column uses separate resolve helper
+ * why: Sponsor + BA — cột Thông tin công ty = Plane A
  */
 import { getPortalAccessToken } from '@/lib/portalAuthBridge';
 import { safeRandomUuid } from '@/lib/safeRandomUuid';
@@ -30,13 +47,21 @@ export type HrmOperatingUnitRow = {
 
 export const HRM_OPERATING_UNIT_FILTER_STORAGE_KEY = 'hrm:operating-unit-filter';
 
-/** Vitest-only fixture — not used at runtime (G-INT-02). */
+/** Vitest-only fixture — LE/ĐVTV SoT aligned with BE registry (not Khối). */
 export const HRM_OPERATING_UNIT_TEST_FIXTURE: HrmOperatingUnitRow[] = [
   { operating_slug: 'holding', display_name_vi: 'Tập đoàn XeVN', rollup_order: 1 },
-  { operating_slug: 'trsport', display_name_vi: 'Khối Vận tải X.E', rollup_order: 2 },
-  { operating_slug: 'logistics', display_name_vi: 'Khối Logistics X.E', rollup_order: 3 },
-  { operating_slug: 'finance', display_name_vi: 'Khối Tài chính X.E', rollup_order: 4 },
-  { operating_slug: 'services', display_name_vi: 'Khối Dịch vụ X.E', rollup_order: 5 },
+  {
+    operating_slug: 'trsport',
+    display_name_vi: 'Công ty Cổ phần Thương mại và Dịch vụ X.E',
+    rollup_order: 2,
+  },
+  { operating_slug: 'logistics', display_name_vi: 'Công ty TNHH Du lịch Visun', rollup_order: 3 },
+  {
+    operating_slug: 'finance',
+    display_name_vi: 'Công ty TNHH Du lịch X.E Việt Nam',
+    rollup_order: 4,
+  },
+  { operating_slug: 'services', display_name_vi: 'Công ty TNHH X.E Việt Nam', rollup_order: 5 },
 ];
 
 export function resolveOperatingUnitDisplayName(

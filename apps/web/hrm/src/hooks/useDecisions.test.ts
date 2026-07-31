@@ -20,4 +20,10 @@ describe('useDecisions request lifecycle', () => {
       'useDecisions(selectedType, { loadEmployees: dialogOpen })',
     );
   });
+
+  it('refreshes list after create so density create→list path works', () => {
+    expect(hookSource).toContain('await createHrDecision');
+    expect(hookSource).toContain('await refreshDecisions()');
+    expect(pageSource).toContain('resolveListVisibilityAfterCreate');
+  });
 });

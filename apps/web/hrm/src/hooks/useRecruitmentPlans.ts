@@ -7,11 +7,18 @@ import {
   createRecruitmentPlan,
   deleteRecruitmentPlan,
   listRecruitmentPlans,
+  submitRecruitmentPlanWorkflow,
   updateRecruitmentPlanStatus,
   type HrmRecruitmentPlanDepartmentRow,
   type HrmRecruitmentPlanPositionRow,
   type HrmRecruitmentPlanRow,
+  type HrmRecruitmentPlanWfSubmitResult,
 } from '@/integrations/hrmApi';
+import {
+  detectRecruitmentSpawnMissing,
+  isRecruitmentWorkflowLocked,
+  RECRUITMENT_WF_LOCKED_HINT_VI,
+} from '@/lib/recruitmentWorkflowUi';
 
 interface MonthData {
   ns: number;
@@ -36,12 +43,13 @@ export interface RecruitmentPlan {
   period: string;
   creator: string;
   createdDate: string;
-  status: 'pending' | 'approved' | 'rejected' | 'draft';
+  status: 'pending' | 'approved' | 'rejected' | 'draft' | 'pending_approval';
   startMonth: number;
   endMonth: number;
   year: number;
   note?: string;
   departments: PlanDepartment[];
+  workflowInstanceId: string | null;
 }
 
 interface CreatePlanData {
@@ -91,24 +99,26 @@ function mapDepartment(row: HrmRecruitmentPlanDepartmentRow): PlanDepartment {
 }
 
 function mapRecruitmentPlan(row: HrmRecruitmentPlanRow): RecruitmentPlan {
-  const status = row.status as RecruitmentPlan['status'];
-  const safeStatus: RecruitmentPlan['status'] = ['pending', 'approved', 'rejected', 'draft'].includes(
-    status,
-  )
-    ? status
-    : 'pending';
+  const rawStatus = (row.status ?? '').toLowerCase();
+  const status: RecruitmentPlan['status'] =
+    rawStatus === 'pending_approval'
+      ? 'pending_approval'
+      : (['pending', 'approved', 'rejected', 'draft'].includes(rawStatus)
+          ? (rawStatus as RecruitmentPlan['status'])
+          : 'pending');
   return {
     id: row.id,
     title: row.title,
     period: `T${row.start_month}–T${row.end_month}/${row.year}`,
     creator: row.creator_name ?? '',
     createdDate: row.created_at?.split('T')[0] ?? '',
-    status: safeStatus,
+    status,
     startMonth: row.start_month,
     endMonth: row.end_month,
     year: row.year,
     note: row.note ?? undefined,
     departments: (row.departments ?? []).map(mapDepartment),
+    workflowInstanceId: row.workflow_instance_id?.trim() || null,
   };
 }
 
@@ -185,6 +195,15 @@ export function useRecruitmentPlans() {
     status: RecruitmentPlan['status'],
   ): Promise<boolean> => {
     if (!currentCompanyId) return false;
+    const plan = plans.find((p) => p.id === planId);
+    if (plan && isRecruitmentWorkflowLocked(plan.workflowInstanceId, plan.status, 'plan')) {
+      toast({
+        title: h('statusUpdateError') || 'Lỗi',
+        description: RECRUITMENT_WF_LOCKED_HINT_VI,
+        variant: 'destructive',
+      });
+      return false;
+    }
     try {
       await updateRecruitmentPlanStatus(planId, currentCompanyId, status);
       await fetchPlans();
@@ -197,6 +216,37 @@ export function useRecruitmentPlans() {
         variant: 'destructive',
       });
       return false;
+    }
+  };
+
+  const submitPlanWorkflow = async (
+    planId: string,
+  ): Promise<{ ok: boolean; spawnMissing: boolean; result?: HrmRecruitmentPlanWfSubmitResult }> => {
+    if (!currentCompanyId) return { ok: false, spawnMissing: false };
+    try {
+      const result = await submitRecruitmentPlanWorkflow(planId, currentCompanyId);
+      const spawnMissing = detectRecruitmentSpawnMissing(result);
+      await fetchPlans();
+      if (spawnMissing) {
+        toast({
+          title: 'Đã gửi nhưng thiếu instance QT',
+          description: 'Chưa tạo được quy trình phê duyệt — kiểm tra mẫu QT kế hoạch trên XBOS.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Đã gửi duyệt kế hoạch',
+          description: 'Kế hoạch đã gửi vào Inbox phê duyệt.',
+        });
+      }
+      return { ok: true, spawnMissing, result };
+    } catch (error: unknown) {
+      toast({
+        title: h('statusUpdateError') || 'Lỗi',
+        description: toErrorMessage(error, 'Không gửi được quy trình kế hoạch'),
+        variant: 'destructive',
+      });
+      return { ok: false, spawnMissing: false };
     }
   };
 
@@ -220,7 +270,7 @@ export function useRecruitmentPlans() {
   const stats = {
     total: plans.length,
     approved: plans.filter((p) => p.status === 'approved').length,
-    pending: plans.filter((p) => p.status === 'pending').length,
+    pending: plans.filter((p) => p.status === 'pending' || p.status === 'pending_approval').length,
     draft: plans.filter((p) => p.status === 'draft').length,
     rejected: plans.filter((p) => p.status === 'rejected').length,
   };
@@ -232,6 +282,7 @@ export function useRecruitmentPlans() {
     stats,
     createPlan,
     updatePlanStatus,
+    submitPlanWorkflow,
     deletePlan,
     refetch: fetchPlans,
   };

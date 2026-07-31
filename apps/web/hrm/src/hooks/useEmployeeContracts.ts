@@ -1,4 +1,37 @@
-import { useCallback, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → Hợp đồng tab (list/create term)
+ * UC:         UC-HRM-CI-01..05 · UC-HRM-25
+ * BR:         BR-CD-F5-01 (salary not on contract body)
+ * SRS:        docs/program/deltas/CUSTOMER_DEMO_HRM_DELTA_20260620.md §5
+ * TechSpec:   docs/api/openapi/hrm-api.yaml contracts-insurance/contracts
+ * Purpose:    Employee-scoped labor contract CRUD via Nest API (term only).
+ * WorkItem:   CD-FB-08-CONTRACT
+ * Coded:      2026-07-19
+ * Callers:    EmployeeContracts.tsx
+ * Callees:    list/create/update/deleteEmployeeContract
+ * must_keep:  salary always null on mapped row; compensation via separate APIs
+ * LastVerified: useEmployeeContracts.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-08-CONTRACT
+ * What: Map compensation_package_id; drop inventing salary on contract body
+ * Why: F5 / AC-CD-F5-01 — salary lives on compensation packages
+ * SRS/BR: BR-CD-F5-01 · AC-CD-F5-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: FE-HRM-G-CI-01
+ * What: create/update omit end_date when expiry empty (open-ended G-CI-01)
+ * Why: Align Nest optional end_date; avoid empty-string VAL-001
+ * SRS/BR: FR-HRM-CI-01 · TechSpec G-CI-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-PICKER-01
+ * change_mode: ADD
+ * What: Pass position_key / department_key / signer_position_key on create/update; map from API
+ * Why: AC-E1A-CI-POS-01 · API_DESIGN_HRM_MD_BIND_E1A
+ * must_keep: F5 salary null; open-ended end_date omit
+ */
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toErrorMessage } from '@/lib/apiError';
 import { shouldSkipSupabaseDataFetches } from '@/lib/hrmDataMode';
@@ -19,15 +52,20 @@ export interface EmployeeContractRow {
   contract_type: string;
   effective_date: string | null;
   expiry_date: string | null;
+  /** @deprecated F5 — always null; use compensation package APIs */
   salary: number | null;
+  compensation_package_id: string | null;
   position: string | null;
+  position_key: string | null;
   department: string | null;
+  department_key: string | null;
   work_location: string | null;
   probation_period: number | null;
   probation_end_date: string | null;
   signing_date: string | null;
   signer_name: string | null;
   signer_position: string | null;
+  signer_position_key: string | null;
   status: string;
   file_url: string | null;
   notes: string | null;
@@ -48,14 +86,18 @@ export function mapApiContractToProfileRow(row: HrmContractRecord): EmployeeCont
     effective_date: row.start_date,
     expiry_date: row.end_date,
     salary: null,
-    position: null,
-    department: null,
+    compensation_package_id: row.compensation_package_id ?? null,
+    position: row.position ?? null,
+    position_key: row.position_key ?? null,
+    department: row.department ?? null,
+    department_key: row.department_key ?? null,
     work_location: null,
     probation_period: null,
     probation_end_date: null,
     signing_date: null,
     signer_name: null,
-    signer_position: null,
+    signer_position: row.signer_position ?? null,
+    signer_position_key: row.signer_position_key ?? null,
     status,
     file_url: null,
     notes: null,
@@ -105,12 +147,23 @@ export function useEmployeeContracts(employeeId: string | undefined) {
     }
   }, [employeeId, currentCompanyId, useApi]);
 
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
   const createContract = useCallback(
     async (payload: {
       contract_type: string;
       effective_date: string;
-      expiry_date: string;
+      expiry_date?: string;
       status?: string;
+      position_key?: string;
+      position?: string;
+      department_key?: string;
+      department?: string;
+      signer_position_key?: string;
+      signer_position?: string;
+      signer_name?: string;
     }): Promise<boolean> => {
       if (!employeeId || !currentCompanyId) return false;
 
@@ -121,7 +174,16 @@ export function useEmployeeContracts(employeeId: string | undefined) {
             employee_id: employeeId,
             contract_type: payload.contract_type,
             start_date: payload.effective_date,
-            end_date: payload.expiry_date,
+            ...(payload.expiry_date?.trim()
+              ? { end_date: payload.expiry_date.trim() }
+              : {}),
+            position_key: payload.position_key,
+            position: payload.position,
+            department_key: payload.department_key,
+            department: payload.department,
+            signer_position_key: payload.signer_position_key,
+            signer_position: payload.signer_position,
+            signer_name: payload.signer_name,
           });
           toast.success('Đã thêm hợp đồng');
           await refetch();
@@ -145,6 +207,13 @@ export function useEmployeeContracts(employeeId: string | undefined) {
         effective_date: string;
         expiry_date: string;
         status: string;
+        position_key?: string;
+        position?: string;
+        department_key?: string;
+        department?: string;
+        signer_position_key?: string;
+        signer_position?: string;
+        signer_name?: string;
       }>,
     ): Promise<boolean> => {
       if (useApi) {
@@ -158,8 +227,17 @@ export function useEmployeeContracts(employeeId: string | undefined) {
           await updateEmployeeContract(contractId, {
             contract_type: payload.contract_type,
             start_date: payload.effective_date,
-            end_date: payload.expiry_date,
+            ...(payload.expiry_date?.trim()
+              ? { end_date: payload.expiry_date.trim() }
+              : {}),
             status: apiStatus,
+            position_key: payload.position_key,
+            position: payload.position,
+            department_key: payload.department_key,
+            department: payload.department,
+            signer_position_key: payload.signer_position_key,
+            signer_position: payload.signer_position,
+            signer_name: payload.signer_name,
           });
           toast.success('Đã cập nhật hợp đồng');
           await refetch();

@@ -1,3 +1,25 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM embed — Đơn vị thành viên filter state
+ * UC:         BM-AC-02 · AC-CD-F3-03 · U39 operating units
+ * BR:         BR-CD-F3-03 — OU filter ≠ JWT company mutate
+ * SRS:        docs/decisions/ADR-HRM-RBAC-SCOPE-LADDER.md §3 / U39
+ * TechSpec:   HrmOperatingUnitFilter.tsx BM-AC-02 / AC-CD-F3-03
+ * Purpose:    Group CEO OU selection for list query scope; fetch operating-units;
+ *             keepPreviousData + scoped invalidate so embed dropdown không fail-closed [].
+ * WorkItem:   D-HRM-OU-FILTER-EMBED-01
+ * Coded:      2026-07-27
+ * Callers:    HrmOperatingUnitFilter · list hooks via listCompanyId / Auth currentCompanyId
+ * Callees:    fetchHrmOperatingUnits · portalAuthBridge · react-query
+ * must_keep:  Không mutate JWT companyId; chỉ setCurrentCompanyId query scope
+ * SOLID:      Context owns filter state; presentational chip in HrmOperatingUnitFilter
+ * LastVerified: HrmOperatingUnitFilterContext.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-HRM-OU-FILTER-EMBED-01
+ * what: keepPreviousData, refetchOnWindowFocus false, portal session gate, scoped invalidate, coerce slug
+ * why: CC embed — invalidateQueries() + fail-closed [] làm Select chỉ còn «Tất cả»
+ * must_keep: member compact chip; OU không đụng JWT
+ */
 import React, {
   createContext,
   useCallback,
@@ -7,7 +29,7 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
@@ -20,8 +42,12 @@ import {
   type HrmOperatingUnitRow,
   type HrmOperatingUnitSlug,
 } from '@/lib/hrmOperatingUnits';
-import { HRM_LIST_DEFAULT_COMPANY_ID, HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';
+import { HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';
 import { getPortalJwtTenantId } from '@/lib/hrmSpreadsheetScope';
+import {
+  hasPortalSession,
+  PORTAL_SESSION_READY_EVENT,
+} from '@/lib/portalAuthBridge';
 
 export type OperatingUnitFilterSelection = 'all' | HrmOperatingUnitSlug;
 
@@ -40,6 +66,23 @@ const HrmOperatingUnitFilterContext = createContext<HrmOperatingUnitFilterContex
 );
 
 const FILTER_HIDDEN_PATH_PREFIXES = ['/settings', '/company'];
+
+export const HRM_OPERATING_UNITS_QUERY_KEY = ['hrm-operating-units'] as const;
+
+/** Pure — coerce stale slug not present in loaded units to rollup `all`. */
+export function coerceOperatingUnitSelection(
+  selected: OperatingUnitFilterSelection,
+  units: HrmOperatingUnitRow[],
+): OperatingUnitFilterSelection {
+  if (selected === 'all') return 'all';
+  if (units.some((unit) => unit.operating_slug === selected)) return selected;
+  return 'all';
+}
+
+/** Pure — OU change must refresh list queries but never wipe operating-units cache. */
+export function shouldInvalidateQueryOnOuChange(queryKey: readonly unknown[]): boolean {
+  return queryKey[0] !== HRM_OPERATING_UNITS_QUERY_KEY[0];
+}
 
 function isFilterHiddenPath(pathname: string): boolean {
   const normalized = pathname.replace(/^\/hr/, '').replace(/\/+$/, '') || '/';
@@ -61,23 +104,63 @@ export function HrmOperatingUnitFilterProvider({ children }: { children: ReactNo
   const [selectedSlug, setSelectedSlugState] = useState<OperatingUnitFilterSelection>(() =>
     readStoredOperatingUnitFilter(),
   );
+  const [portalSessionReady, setPortalSessionReady] = useState(() => hasPortalSession());
 
   const showFilter =
     portalEmbed && isGroupCeoMasterTenant() && !isFilterHiddenPath(location.pathname);
 
   const shouldFetchOperatingUnits = portalEmbed && isGroupCeoMasterTenant();
 
+  useEffect(() => {
+    if (hasPortalSession()) {
+      setPortalSessionReady(true);
+      return;
+    }
+    const onReady = () => setPortalSessionReady(true);
+    window.addEventListener(PORTAL_SESSION_READY_EVENT, onReady);
+    return () => window.removeEventListener(PORTAL_SESSION_READY_EVENT, onReady);
+  }, []);
+
   const unitsQuery = useQuery({
-    queryKey: ['hrm-operating-units'],
+    queryKey: HRM_OPERATING_UNITS_QUERY_KEY,
     queryFn: fetchHrmOperatingUnits,
-    enabled: shouldFetchOperatingUnits,
+    enabled: shouldFetchOperatingUnits && portalSessionReady,
     staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+    retry: 2,
   });
 
-  const operatingUnitLabelMap = useMemo(
-    () => buildOperatingUnitLabelMap(unitsQuery.data ?? []),
-    [unitsQuery.data],
-  );
+  useEffect(() => {
+    if (!shouldFetchOperatingUnits || !portalSessionReady) return;
+    const onReady = () => {
+      void queryClient.invalidateQueries({ queryKey: HRM_OPERATING_UNITS_QUERY_KEY });
+    };
+    window.addEventListener(PORTAL_SESSION_READY_EVENT, onReady);
+    return () => window.removeEventListener(PORTAL_SESSION_READY_EVENT, onReady);
+  }, [shouldFetchOperatingUnits, portalSessionReady, queryClient]);
+
+  const units = unitsQuery.data ?? [];
+
+  useEffect(() => {
+    if (!shouldFetchOperatingUnits || !portalSessionReady) return;
+    if (unitsQuery.isLoading || unitsQuery.isPending) return;
+    const coerced = coerceOperatingUnitSelection(selectedSlug, units);
+    if (coerced === selectedSlug) return;
+    setSelectedSlugState(coerced);
+    writeStoredOperatingUnitFilter(coerced);
+    setCurrentCompanyId(resolveHrmOperatingUnitQueryCompanyId(coerced));
+  }, [
+    units,
+    unitsQuery.isLoading,
+    unitsQuery.isPending,
+    selectedSlug,
+    setCurrentCompanyId,
+    shouldFetchOperatingUnits,
+    portalSessionReady,
+  ]);
+
+  const operatingUnitLabelMap = useMemo(() => buildOperatingUnitLabelMap(units), [units]);
 
   const listCompanyId = useMemo(
     () => resolveHrmOperatingUnitQueryCompanyId(selectedSlug),
@@ -90,7 +173,9 @@ export function HrmOperatingUnitFilterProvider({ children }: { children: ReactNo
       writeStoredOperatingUnitFilter(slug);
       const queryId = resolveHrmOperatingUnitQueryCompanyId(slug);
       setCurrentCompanyId(queryId);
-      void queryClient.invalidateQueries();
+      void queryClient.invalidateQueries({
+        predicate: (query) => shouldInvalidateQueryOnOuChange(query.queryKey),
+      });
     },
     [queryClient, setCurrentCompanyId],
   );
@@ -114,7 +199,7 @@ export function HrmOperatingUnitFilterProvider({ children }: { children: ReactNo
   const value = useMemo<HrmOperatingUnitFilterContextValue>(
     () => ({
       showFilter,
-      units: unitsQuery.data ?? [],
+      units,
       unitsLoading: unitsQuery.isLoading,
       operatingUnitLabelMap,
       selectedSlug,
@@ -123,7 +208,7 @@ export function HrmOperatingUnitFilterProvider({ children }: { children: ReactNo
     }),
     [
       showFilter,
-      unitsQuery.data,
+      units,
       unitsQuery.isLoading,
       operatingUnitLabelMap,
       selectedSlug,

@@ -58,6 +58,26 @@ describe('P1-HRM-SCALE-FE-W2 — employee picker cap', () => {
     expect(src).toContain('useDebouncedPickerKeyword');
   });
 
+  it('LeaveTab create dialog uses typeahead picker (C-CD-FB-07-01 / CD-FB-07-FE-LEAVE-PICKER)', () => {
+    const src = readFileSync(
+      resolve(__dirname, '../components/attendance/LeaveTab.tsx'),
+      'utf8',
+    );
+    expect(src).not.toMatch(/listAllEmployees\(/);
+    expect(src).not.toContain("from '@/hooks/useEmployees'");
+    expect(src).toContain('useEmployeePickerSearch');
+    expect(src).toContain('useDebouncedPickerKeyword');
+    expect(src).toContain('leave.searchEmployee');
+    expect(src).toContain('employeeKeyword');
+    expect(src).toContain('selectedEmployee');
+    expect(src).toContain('CD-FB-07-FE-LEAVE-PICKER');
+    // Deferred load — only when create dialog open
+    expect(src).toContain('isCreateOpen');
+    // CD-FB-07-LEAVE-CREATE-COMPANY-UUID: employee OU company on create payload
+    expect(src).toContain('company_id: employee.company_id');
+    expect(src).toContain('CD-FB-07-LEAVE-CREATE-COMPANY-UUID');
+  });
+
   it('CompanyMembersManagement uses capped listEmployees (no listAllEmployees call)', () => {
     const src = readFileSync(
       resolve(__dirname, '../components/company/CompanyMembersManagement.tsx'),

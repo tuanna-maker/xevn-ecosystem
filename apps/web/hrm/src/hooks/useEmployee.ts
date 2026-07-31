@@ -8,6 +8,43 @@ import { resolveHrmSpreadsheetScope } from '@/lib/hrmSpreadsheetScope';
 import { hasPortalSession } from '@/lib/portalAuthBridge';
 import { getEmployeeById, type HrmEmployeeRecord } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
+import {
+  resolveEmployeeDepartmentLabel,
+  resolveEmployeePositionLabel,
+} from '@/lib/employeePickerLabel';
+
+/**
+ * @CODE-MEMORY
+ * Screen:     Employee detail + satellite pickers (map Nest → UI Employee)
+ * UC:         UC-HRM-EM-01 · UC-HRM-INT-01 · UC/FR-HRM-U72-LABEL-01 · AC-FD-U02
+ * BR:         BM-AC-07 chức vụ trên picker · BR-CO-LABEL-01 · BR-U72-NULL-01
+ * SRS:        docs/hrm/SRS.md · FR-HRM-EM-01 · FR-HRM-INT-01
+ *             docs/hrm/SRS_FIELD_DISPLAY.md §3 U-02
+ * TechSpec:   CreateEmployee job_title_key + custom_fields
+ * Purpose:    Map HrmEmployeeRecord → Employee; dept/position từ job_title_label / custom_fields;
+ *             cấm map raw job_title_key vào position (unknown → null → UI «—»).
+ * WorkItem:   BM-FE-HIRE-TITLE-01
+ * Coded:      2026-07-21
+ * Callers:    useEmployees · loadEmployee · useEmployeeMutations
+ * Callees:    employeePickerLabel resolve* · hrmApi getEmployeeById
+ * must_keep:  G-DB-01 hire bind · avatar custom_fields fallback · U65 · never || raw key
+ * LastVerified: docs/qa/evidence/d-hrm-u72-label-fe-02-20260727.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21 BM-FE-HIRE-TITLE-01
+ *   department/position: đọc custom_fields + job_title_key thay vì department:null cứng.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22 D-HRM-EMP-COMPANY-COL-FE-01
+ * what: Pass-through company_display_name / company_name for employees list column
+ * why: AC-EMP-COL-01 — cột Thông tin công ty = Plane A LE SoT, not Khối
+ * must_keep: hire title/dept mapping; avatar custom_fields fallback
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-HRM-U72-LABEL-FE-02
+ * change_mode: FIX
+ * What: position via resolveEmployeePositionLabel (job_title_label first); keep job_title_key for catalog resolve only
+ * Why: QA AC-FD-U02 — LEGAL_SPECIALIST leaked on profile header / Chức vụ
+ * SRS/BR: SRS_FIELD_DISPLAY.md AC-FD-U02 · display-label-no-raw-key.mdc
+ * must_keep: F-01..F-13; resolveIndustryDisplay; company_display_name; U65 no seed
+ */
 
 /** Top-level BE field when merged; interim fallback via custom_fields.avatar_url. */
 export function resolveEmployeeAvatarUrl(row: HrmEmployeeRecord): string | null {
@@ -44,12 +81,14 @@ export function mapHrmEmployeeRecord(row: HrmEmployeeRecord): Employee {
   return {
     id: row.id,
     company_id: row.company_id,
+    company_display_name: row.company_display_name ?? row.company_name ?? null,
     employee_code: row.employee_code,
     full_name: row.full_name,
     email: row.email,
     phone: null,
-    department: null,
-    position: row.job_title_key,
+    department: resolveEmployeeDepartmentLabel(row),
+    position: resolveEmployeePositionLabel(row),
+    job_title_key: row.job_title_key,
     start_date: row.hired_at,
     end_date: null,
     status: row.status,

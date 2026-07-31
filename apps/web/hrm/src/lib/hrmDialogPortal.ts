@@ -42,12 +42,23 @@ export function getDialogPortalContainer(): HTMLElement | null {
 /**
  * Container mặc định cho mọi Radix Portal (Select, Popover, Dropdown…):
  * cùng document với Dialog khi nhúng portal; nếu không thì `document.body` iframe.
+ *
+ * @param portalScope `'iframe'` — luôn gắn vào iframe body (top-level chrome như OU filter).
+ *   `'parent'` / omit — parent body khi embed portal (Select trong Dialog/Sheet đã portal).
  */
-export function getRadixPortalContainer(): HTMLElement {
+export function getRadixPortalContainer(
+  portalScope?: 'iframe' | 'parent',
+): HTMLElement {
+  if (portalScope === 'iframe') {
+    return document.body;
+  }
   return getDialogPortalContainer() ?? document.body;
 }
 
-export function isHrmDialogMountedToPortalParent(): boolean {
+export function isHrmDialogMountedToPortalParent(
+  portalScope?: 'iframe' | 'parent',
+): boolean {
+  if (portalScope === 'iframe') return false;
   return getDialogPortalContainer() != null;
 }
 

@@ -5,7 +5,12 @@ vi.mock("@/lib/hrmPortalMode", () => ({
 }));
 
 import { getHrmPortalMode } from "@/lib/hrmPortalMode";
-import { getDialogPortalContainer, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
+import {
+  getDialogPortalContainer,
+  getRadixPortalContainer,
+  isHrmDialogMountedToPortalParent,
+  syncHrmStylesheetsToParentForPortalDialogs,
+} from "@/lib/hrmDialogPortal";
 
 describe("getDialogPortalContainer", () => {
   let parentRef: Window;
@@ -47,6 +52,36 @@ describe("getDialogPortalContainer", () => {
     } as Window;
     Object.defineProperty(window, "parent", { value: fakeParent, configurable: true });
     expect(getDialogPortalContainer()).toBeNull();
+  });
+});
+
+describe("getRadixPortalContainer portalScope (D-HRM-OU-FILTER-EMBED-01)", () => {
+  beforeEach(() => {
+    vi.mocked(getHrmPortalMode).mockReset();
+    Object.defineProperty(window, "parent", {
+      value: window,
+      configurable: true,
+    });
+  });
+
+  it("portalScope=iframe always returns iframe document.body even when parent portal available", () => {
+    vi.mocked(getHrmPortalMode).mockReturnValue(true);
+    const parentDoc = document.implementation.createHTMLDocument("portal");
+    const fakeParent = { document: parentDoc } as Window;
+    Object.defineProperty(window, "parent", { value: fakeParent, configurable: true });
+    expect(getRadixPortalContainer("iframe")).toBe(document.body);
+    expect(isHrmDialogMountedToPortalParent("iframe")).toBe(false);
+  });
+
+  it("default / parent scope uses parent body when embed portal available", () => {
+    vi.mocked(getHrmPortalMode).mockReturnValue(true);
+    const parentDoc = document.implementation.createHTMLDocument("portal");
+    const body = parentDoc.body;
+    const fakeParent = { document: parentDoc } as Window;
+    Object.defineProperty(window, "parent", { value: fakeParent, configurable: true });
+    expect(getRadixPortalContainer()).toBe(body);
+    expect(getRadixPortalContainer("parent")).toBe(body);
+    expect(isHrmDialogMountedToPortalParent()).toBe(true);
   });
 });
 

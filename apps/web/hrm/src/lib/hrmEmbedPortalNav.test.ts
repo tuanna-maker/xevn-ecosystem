@@ -7,5 +7,6 @@ describe('PORTAL_HRM_MENU_PATH', () => {
     expect(PORTAL_HRM_MENU_PATH.recruitment).toBe('/command-center/hrm/recruitment');
     expect(PORTAL_HRM_MENU_PATH.attendance).toBe('/command-center/hrm/attendance');
     expect(PORTAL_HRM_MENU_PATH.payroll).toBe('/command-center/hrm/payroll');
+    expect(PORTAL_HRM_MENU_PATH.fleet).toBe('/command-center/hrm/fleet');
   });
 });

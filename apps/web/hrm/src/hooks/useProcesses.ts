@@ -42,9 +42,12 @@ export interface CompanyProcess {
   updated_at: string;
 }
 
-/** Honest copy when user expects CRUD — XBOS-DM-HRM-14 is read-only in HRM. */
+/**
+ * Honest copy when user expects CRUD — processes are read-only in HRM
+ * (UC XBOS-DM-HRM-14 stays in CODE-MEMORY only — never render DM codes to end users).
+ */
 export const PROCESSES_MUTATION_UNSUPPORTED_VI =
-  'Thêm/sửa/xóa quy trình chưa hỗ trợ trên HRM — cấu hình mã quy trình nằm ở XBOS (XBOS-DM-HRM-14).';
+  'Thêm/sửa/xóa quy trình chưa hỗ trợ trên HRM. Cấu hình mã quy trình được quản lý tại Command Center.';
 
 export const PROCESSES_READ_ONLY = true as const;
 

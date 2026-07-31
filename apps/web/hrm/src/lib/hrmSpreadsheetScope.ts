@@ -47,6 +47,12 @@ export function getPortalJwtTenantId(): string | null {
   return pickClaim(claims, ['tenantId', 'tenant_id', 'tid']);
 }
 
+/** Portal JWT role for context chips (UC-HRM-SCOPE-05 / AC-CD-F3-01). */
+export function getPortalJwtRoleCode(): string | null {
+  const claims = parseJwtClaims(getPortalAccessToken() ?? undefined);
+  return pickClaim(claims, ['roleCode', 'role_code', 'role']);
+}
+
 /**
  * Spreadsheet / settings-catalog scope aligned with portal JWT (e.g. companyId=main).
  * Prevents SCOPE_CONTEXT_MISMATCH (409) when iframe query companyId ≠ token.

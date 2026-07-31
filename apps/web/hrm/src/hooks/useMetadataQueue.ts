@@ -1,3 +1,30 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /hr/employee-metadata — Hàng chờ metadata
+ * UC:         UC-HRM-26
+ * BR:         BRD §5.3
+ * SRS:        docs/hrm/SRS.md §13 · UC-HRM-26
+ * TechSpec:   docs/hrm/TECHSPEC.md § metadata queue
+ * Purpose:    Hook tải / duyệt / gửi yêu cầu thay đổi metadata nhân sự qua hrm-api.
+ * WorkItem:   UF-HRM-11 / UC-HRM-26
+ * Coded:      2026-06 (baseline)
+ *
+ * Callers:
+ *   - components/settings/MetadataQueueTab.tsx → useMetadataQueue()
+ *
+ * Callees:
+ *   - list/approve/reject/submitEmployeeMetadataChangeRequest → /api/hrm/employee-metadata/*
+ *
+ * must_keep:  scope UUID + decide payloads; không seed
+ * LastVerified: hooks/useMetadataQueue.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-METADATA-WORKFLOW-ID-HUMANIZE-01
+ * change_mode: ADD
+ * What: Re-export formatMetadataWorkflowLabel từ lib (UI humanize workflow_code)
+ * Why: QC C-HRM-MENU-SWEEP-01 — cấm hiện xbos.employee_metadata.* trên UI
+ * must_keep: formatMetadataDisplayValue + approve/reject contract
+ */
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toErrorMessage } from '@/lib/apiError';
@@ -12,6 +39,8 @@ import {
   submitEmployeeMetadataChangeRequest,
   type HrmEmployeeMetadataChangeRequest,
 } from '@/integrations/hrmApi';
+
+export { formatMetadataWorkflowLabel } from '@/lib/metadataWorkflowLabel';
 
 export function formatMetadataDisplayValue(value: unknown): string {
   if (value == null || value === '') return '—';

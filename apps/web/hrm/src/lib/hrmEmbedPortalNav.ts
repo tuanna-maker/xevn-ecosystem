@@ -10,7 +10,8 @@ export type PortalHrmNavKey =
   | 'attendance'
   | 'payroll'
   | 'tasks'
-  | 'tools_equipment';
+  | 'tools_equipment'
+  | 'fleet';
 
 export const PORTAL_HRM_MENU_PATH: Record<PortalHrmNavKey, string> = {
   employees: '/command-center/hrm/employees',
@@ -21,6 +22,7 @@ export const PORTAL_HRM_MENU_PATH: Record<PortalHrmNavKey, string> = {
   payroll: '/command-center/hrm/payroll',
   tasks: '/command-center/hrm/tasks',
   tools_equipment: '/command-center/hrm/tools_equipment',
+  fleet: '/command-center/hrm/fleet',
 };
 
 export function navigatePortalHrmMenu(key: PortalHrmNavKey): void {

@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM Drawer primitive (vaul)
+ * UC:         Bottom sheet mobile
+ * BR:         AC-BRAND-DNA-02 — card radius top + token border + overlay shadow
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L2
+ * Purpose:    DrawerContent rounded-t-card + border-xevn-border + shadow-overlay.
+ * WorkItem:   FE-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ * Callers:    mobile action sheets
+ * Callees:    hrmDialogPortal · Tailwind xevn.*
+ * must_keep:  parent portal; border-xevn-border; rounded-t-card
+ * SOLID:      Chrome only
+ * LastVerified: brandPrimitivesL2.test.ts
+ */
+
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
@@ -38,7 +55,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-card border border-xevn-border bg-background shadow-overlay",
         useParentPortal && "z-[100000]",
         className,
       )}
@@ -78,7 +95,7 @@ const DrawerDescription = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Description ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+  <DrawerPrimitive.Description ref={ref} className={cn("text-sm text-xevn-textSecondary", className)} {...props} />
 ));
 DrawerDescription.displayName = DrawerPrimitive.Description.displayName;
 

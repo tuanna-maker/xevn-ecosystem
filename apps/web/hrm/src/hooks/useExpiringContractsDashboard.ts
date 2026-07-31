@@ -12,7 +12,7 @@ import { filterUpcomingExpiringContracts } from '@/lib/formatHrmDate';
  *              `GET /contracts-insurance/contracts/expiring` aggregate endpoint.
  *              Shared React Query key so the Dashboard count and
  *              ExpiringContractsAlert coalesce to a single fetch.
- * WorkItem:    D-DASH-FE-STORM
+ * WorkItem:    D-DASH-FE-STORM / P1-HRM-PERF-FE-04
  * Coded:       2026-07-17
  * Impact:      Previous impl paginated the full active-contract collection
  *              (listAllEmployeeContracts → contracts×N storm, 23 requests on
@@ -20,6 +20,10 @@ import { filterUpcomingExpiringContracts } from '@/lib/formatHrmDate';
  *              in one call. filterUpcomingExpiringContracts stays as a safety
  *              net (drops overdue/stale rows + deterministic sort).
  * LastVerified: docs/qa/evidence/d-dash-fe-storm-20260717.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-04-PERF-FIX / P1-HRM-PERF-FE-04
+ * what: Reconfirm shared EXPIRING_CONTRACTS_DASHBOARD_QUERY_KEY + 60s staleTime
+ * why: Dashboard mount must stay ≤1 contracts-expiring call (no listAll fan-out)
  */
 export const EXPIRING_CONTRACTS_DASHBOARD_QUERY_KEY = 'expiring-contracts-dashboard';
 

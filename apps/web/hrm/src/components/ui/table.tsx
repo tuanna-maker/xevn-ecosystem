@@ -1,3 +1,21 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM Table primitive
+ * UC:         List / data grids
+ * BR:         AC-BRAND-DNA-01 — header textSecondary; row border token
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L2
+ * Purpose:    TableHead dùng text-xevn-textSecondary; borders border-xevn-border
+ *             (parity với .saas-table trong index.css).
+ * WorkItem:   FE-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ * Callers:    employees · contracts · attendance tables
+ * Callees:    @/lib/utils cn
+ * must_keep:  text-xevn-textSecondary on TableHead; no pale muted body headers
+ * SOLID:      Presentational compound
+ * LastVerified: brandPrimitivesL2.test.ts
+ */
+
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -12,7 +30,9 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
-  ({ className, ...props }, ref) => <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />,
+  ({ className, ...props }, ref) => (
+    <thead ref={ref} className={cn("[&_tr]:border-b [&_tr]:border-xevn-border", className)} {...props} />
+  ),
 );
 TableHeader.displayName = "TableHeader";
 
@@ -25,7 +45,11 @@ TableBody.displayName = "TableBody";
 
 const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tfoot ref={ref} className={cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)} {...props} />
+    <tfoot
+      ref={ref}
+      className={cn("border-t border-xevn-border bg-muted/50 font-medium [&>tr]:last:border-b-0", className)}
+      {...props}
+    />
   ),
 );
 TableFooter.displayName = "TableFooter";
@@ -35,7 +59,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "border-b border-border transition-colors data-[state=selected]:bg-muted hover:bg-muted/30",
+        "border-b border-xevn-border transition-colors data-[state=selected]:bg-muted hover:bg-muted/30",
         className,
       )}
       {...props}
@@ -49,7 +73,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
     <th
       ref={ref}
       className={cn(
-        "h-10 px-2 py-2 text-left align-middle font-medium text-muted-foreground text-[13px] [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 py-2 text-left align-middle font-medium text-xevn-textSecondary text-[13px] [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}
@@ -71,7 +95,7 @@ TableCell.displayName = "TableCell";
 
 const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttributes<HTMLTableCaptionElement>>(
   ({ className, ...props }, ref) => (
-    <caption ref={ref} className={cn("mt-4 text-sm text-muted-foreground", className)} {...props} />
+    <caption ref={ref} className={cn("mt-4 text-sm text-xevn-textSecondary", className)} {...props} />
   ),
 );
 TableCaption.displayName = "TableCaption";

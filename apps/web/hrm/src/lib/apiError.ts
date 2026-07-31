@@ -23,11 +23,28 @@ const friendlyByCode: Record<string, string> = {
   "SHEET-413": "File hoặc dữ liệu vượt quá giới hạn kích thước/số dòng.",
   "SHEET-415": "Định dạng file không được hỗ trợ cho import.",
   "SHEET-422": "Dữ liệu import không thỏa điều kiện nghiệp vụ (xem chi tiết từng dòng).",
-  "SCOPE_TENANT_REQUIRED": "Thiếu tenant trong phạm vi yêu cầu (x-tenant-id hoặc JWT).",
-  "SCOPE_COMPANY_REQUIRED": "Thiếu công ty trong phạm vi yêu cầu (x-company-id hoặc JWT).",
+  "SCOPE_TENANT_REQUIRED": "Thiếu tenant trong phạm vi yêu cầu.",
+  "SCOPE_COMPANY_REQUIRED": "Thiếu công ty trong phạm vi yêu cầu.",
   "SCOPE_TENANT_INVALID": "Tenant không hợp lệ.",
   "SCOPE_COMPANY_INVALID": "Công ty không hợp lệ.",
-  "SCOPE_CONTEXT_MISMATCH": "Phạm vi tenant/công ty không khớp với token.",
+  "SCOPE_CONTEXT_MISMATCH": "Phạm vi tenant/công ty không khớp phiên đăng nhập.",
+  "HRM-REC-WF-LOCKED":
+    "Đang chạy quy trình phê duyệt — duyệt trên Inbox; không đổi giai đoạn/trạng thái trực tiếp.",
+  "HRM-REC-WF-SPAWN-MISSING":
+    "Không tạo được quy trình phê duyệt. Kiểm tra mẫu QT trên XBOS rồi gửi lại.",
+  "HRM-REC-WF-STAGE-UNMAPPED": "Bước quy trình chưa gắn với giai đoạn tuyển dụng.",
+  /** FR-HRM-INT-01 Diễn biến #5 — chốt hired thiếu mã hồ sơ. */
+  "HRM-REC-HIRE-400":
+    "Chốt tuyển cần gắn hồ sơ nhân viên. Chọn hoặc tạo hồ sơ cùng đơn vị rồi thử lại.",
+  /** FR-HRM-INT-01 Diễn biến #4 — hồ sơ khác đơn vị. */
+  "HRM-REC-HIRE-409":
+    "Hồ sơ nhân viên và ứng viên không cùng đơn vị — không thể chốt tuyển.",
+  /** FR-HRM-AT-10 Diễn biến #5 — chồng lịch nghỉ (409). */
+  "HRM-LEAVE-VAL-OVERLAP":
+    "Khoảng ngày trùng với đơn nghỉ đang chờ duyệt hoặc đã duyệt. Chọn ngày khác rồi gửi lại.",
+  /** FR-HRM-AT-10 Diễn biến #6 — hết phép khi theo dõi số dư (400). */
+  "HRM-LEAVE-VAL-BALANCE":
+    "Không đủ số dư phép cho loại nghỉ này. Giảm số ngày hoặc chọn loại khác.",
 };
 
 export class ApiClientError extends Error {
@@ -56,15 +73,38 @@ export function isAbortLikeError(error: unknown): boolean {
   return false;
 }
 
+/** Enrich BALANCE toast with available/requested days when BE returns details. */
+function leaveBalanceMessage(details: unknown): string | null {
+  if (!details || typeof details !== "object") return null;
+  const d = details as { available_days?: unknown; requested_days?: unknown };
+  const available = Number(d.available_days);
+  const requested = Number(d.requested_days);
+  if (!Number.isFinite(available) || !Number.isFinite(requested)) return null;
+  return `Không đủ số dư phép. Còn ${available} ngày, yêu cầu ${requested} ngày.`;
+}
+
 export function toErrorMessage(error: unknown, fallback: string) {
   if (error instanceof ApiClientError) {
+    if (error.code === "HRM-LEAVE-VAL-BALANCE") {
+      const enriched = leaveBalanceMessage(error.details);
+      if (enriched) return enriched;
+    }
     if (error.code && friendlyByCode[error.code]) return friendlyByCode[error.code];
     if (error.status === 429) return friendlyByCode["RATE-429"];
     return error.message || fallback;
   }
 
   if (typeof error === "object" && error !== null) {
-    const candidate = error as { message?: string; code?: string; status?: number };
+    const candidate = error as {
+      message?: string;
+      code?: string;
+      status?: number;
+      details?: unknown;
+    };
+    if (candidate.code === "HRM-LEAVE-VAL-BALANCE") {
+      const enriched = leaveBalanceMessage(candidate.details);
+      if (enriched) return enriched;
+    }
     if (candidate.code && friendlyByCode[candidate.code]) return friendlyByCode[candidate.code];
     if (candidate.status === 429) return friendlyByCode["RATE-429"];
     if (candidate.message) return candidate.message;

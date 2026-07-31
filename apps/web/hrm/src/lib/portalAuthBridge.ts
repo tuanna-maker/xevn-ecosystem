@@ -117,3 +117,20 @@ export function clearPortalSession(): void {
     storage.removeItem(STORAGE_TOKEN_EXPIRES);
   }
 }
+
+/** Persist master-tenant rollup scope after mobile standalone login (ADR main bucket). */
+export function applyStandaloneSessionScope(input: {
+  tenantId?: string | null;
+  companyId?: string | null;
+}): void {
+  if (typeof window === 'undefined') return;
+  const tenantId = input.tenantId?.trim() || 'xevn';
+  const companyId = input.companyId?.trim() || 'main';
+  const targets: Storage[] = [];
+  if (typeof sessionStorage !== 'undefined') targets.push(sessionStorage);
+  if (typeof localStorage !== 'undefined') targets.push(localStorage);
+  for (const storage of targets) {
+    storage.setItem('hrm_current_tenant_id', tenantId);
+    storage.setItem('hrm_current_company_id', companyId);
+  }
+}

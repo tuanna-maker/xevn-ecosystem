@@ -14,6 +14,7 @@
  *   - useEmployees (capped default page)
  *   - AddInsuranceDialog typeahead
  *   - CompanyMembersManagement invite/link pickers
+ *   - LeaveTab create/handover typeahead (CD-FB-07-FE-LEAVE-PICKER)
  *
  * Callees:
  *   - listEmployees → GET /api/hrm/employees (single page, optional keyword)
@@ -28,6 +29,9 @@
  * must_keep:   Cap ≤ Nest @Max(100); keyword search; W1 Employees page untouched.
  * SOLID:       Picker read path separate from useEmployeesPage table.
  * LastVerified: apps/web/hrm/src/hooks/useEmployeePicker.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 CD-FB-07-FE-LEAVE-PICKER
+ *   LeaveTab create dialog wired to useEmployeePickerSearch (C-CD-FB-07-01).
  */
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';

@@ -1,34 +1,36 @@
-import { format, isValid, parseISO } from 'date-fns';
-import { vi } from 'date-fns/locale';
+/**
+ * @CODE-MEMORY
+ * Screen:     Shared date display (EmployeeSalary payDate + HRM lists)
+ * Purpose:    Dual-export SoT from `@xevn/ui` + payroll-specific helpers.
+ * WorkItem:   D-UX-VI-FORMAT-SHARED-01 (lift) · D-HRM-EMP-SALARY-INVALID-DATE-01
+ * Coded:      2026-07-20
+ * must_keep:  null/invalid → «—»; period_label MM/yyyy giữ nguyên văn
+ * LastVerified: formatDisplayDate.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-UX-VI-FORMAT-SHARED-01
+ * change_mode: ADD
+ * What: Re-export formatDisplayDate from packages/ui; keep payslip helpers local
+ * Why: Project-wide VI date SoT without breaking EmployeeSalary payDate path
+ */
 
-/** Safe date format — never throws RangeError on bad API/mock values. */
-export function formatDisplayDate(
-  value: string | null | undefined,
-  pattern = 'dd/MM/yyyy',
-): string {
-  if (value == null || value === '') return '—';
-  const trimmed = String(value).trim();
-  if (!trimmed) return '—';
+export {
+  formatDisplayDate,
+  VI_DATE_DISPLAY_PATTERN,
+  VI_DATETIME_DISPLAY_PATTERN,
+} from '@xevn/ui';
 
-  const isoTry = parseISO(trimmed);
-  if (isValid(isoTry)) {
-    return format(isoTry, pattern, { locale: vi });
-  }
+import { formatDisplayDate } from '@xevn/ui';
 
-  const native = new Date(trimmed);
-  if (isValid(native)) {
-    return format(native, pattern, { locale: vi });
-  }
-
-  // period_label dạng MM/yyyy hoặc yyyy-MM — hiển thị nguyên văn, không parse thành ngày
-  if (/^\d{1,2}\/\d{4}$/.test(trimmed) || /^\d{4}-\d{2}$/.test(trimmed)) {
-    return trimmed;
-  }
-
-  return '—';
-}
-
-/** Chọn ngày chi trả từ payslip row (ưu tiên trường ISO nếu API bổ sung sau). */
+/**
+ * Nhãn cột «Ngày chi trả» trên EmployeeSalary — map từ payslip.period_label.
+ * Không gọi format(new Date(...)) trực tiếp.
+ */
 export function payslipPayDateLabel(periodLabel: string | null | undefined): string {
   return formatDisplayDate(periodLabel);
+}
+
+/** Pure row mapper for payroll history cell — used by vitest + EmployeeSalary. */
+export function formatPayrollPayDateCell(payDate: string | null | undefined): string {
+  return payslipPayDateLabel(payDate);
 }

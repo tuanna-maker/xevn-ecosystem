@@ -1,3 +1,26 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM DropdownMenu primitive
+ * UC:         Context / overflow menus
+ * BR:         AC-BRAND-DNA-02 — rounded-card + border token
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L2
+ * Purpose:    DropdownMenuContent/SubContent dùng border-xevn-border + rounded-card + shadow-soft.
+ * WorkItem:   FE-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ * Callers:    row actions · profile menus
+ * Callees:    hrmDialogPortal · Tailwind xevn.*
+ * must_keep:  parent portal default; border-xevn-border; rounded-card
+ * SOLID:      Chrome only
+ * LastVerified: brandPrimitivesL2.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-CREATE-GAPS-01
+ * change_mode: ADD
+ * What: DropdownMenuContent nhận portalScope ('iframe'|'parent') giống Select
+ * Why: DEF-E1A-JP-NAV-01 — top-nav Jobs menuitem portal parent → headless 0 menuitem trong iframe
+ * must_keep: Default parent khi embed Dialog; iframe scope chỉ khi caller truyền
+ */
+
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
@@ -49,7 +72,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 min-w-[8rem] overflow-hidden rounded-card border border-xevn-border bg-popover p-1 text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className,
     )}
     {...props}
@@ -57,12 +80,19 @@ const DropdownMenuSubContent = React.forwardRef<
 ));
 DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
 
+type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.Content
+> & {
+  /** `'iframe'` = mount in iframe body (top-nav chrome). Default = parent when CC embed. */
+  portalScope?: 'iframe' | 'parent';
+};
+
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => {
-  const mount = getRadixPortalContainer();
-  const useParent = isHrmDialogMountedToPortalParent();
+  DropdownMenuContentProps
+>(({ className, sideOffset = 4, portalScope, ...props }, ref) => {
+  const mount = getRadixPortalContainer(portalScope);
+  const useParent = isHrmDialogMountedToPortalParent(portalScope);
   if (useParent) {
     syncHrmStylesheetsToParentForPortalDialogs();
   }
@@ -72,7 +102,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "z-50 min-w-[8rem] overflow-hidden rounded-card border border-xevn-border bg-popover p-1 text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         useParent && "z-[100010]",
         className,
       )}

@@ -72,4 +72,19 @@ describe('applyPortalEmbedSoftNavigate', () => {
       { flushSync: true },
     );
   });
+
+  it('navigates attendance → recruitment (CD-FB-09-SOFT-NAV / C-CD-FB-09-01)', () => {
+    const navigate = vi.fn();
+    applyPortalEmbedSoftNavigate(navigate, '/recruitment', {
+      pathname: '/attendance',
+      search: '?portal=1&tenantId=xevn&companyId=main&_v=1',
+    });
+    expect(navigate).toHaveBeenCalledWith(
+      {
+        pathname: '/recruitment',
+        search: '?portal=1&tenantId=xevn&companyId=main&_v=1',
+      },
+      { flushSync: true },
+    );
+  });
 });

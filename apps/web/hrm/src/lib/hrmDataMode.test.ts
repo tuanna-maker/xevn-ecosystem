@@ -158,10 +158,11 @@ describe('isRemoteLocalhostSupabaseMisconfig', () => {
     window.history.replaceState({}, '', '/');
   });
 
-  it('returns true on remote host when Supabase URL points to 127.0.0.1', () => {
+  it('returns true on Docker sibling host when Supabase URL points to 127.0.0.1', () => {
     vi.stubEnv('VITE_SUPABASE_URL', 'http://127.0.0.1:54321');
+    // Docker local/dev Host `hrm-fe` (not localhost) — perimeter host removed from FE source.
     Object.defineProperty(window, 'location', {
-      value: new URL('https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main'),
+      value: new URL('http://hrm-fe:8080/hr/attendance?portal=1&companyId=main'),
       writable: true,
     });
     expect(isRemoteLocalhostSupabaseMisconfig()).toBe(true);

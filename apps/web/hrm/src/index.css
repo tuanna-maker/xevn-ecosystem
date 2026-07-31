@@ -11,67 +11,102 @@
   }
 
   :root {
-    /* Professional SaaS Blue Theme */
+    /**
+     * XeVN Precision Motion — CSS vars + shadcn HSL bridge (proposal §3.1).
+     * Class SoT remains Tailwind `xevn.*` (same hex as portal).
+     * Light `--primary: 226 71% 40%` ≡ #1E40AF.
+     * L2: `.dark --primary` / `--ring` / `--sidebar-primary` aligned to brand HSL
+     * (was 221 83% 60% blue-600 drift — FE-XEVN-BRAND-PRIMITIVES-L2-01).
+     */
+    --xevn-color-primary: #1e40af;
+    --xevn-color-primary-pressed: #1e3a8a;
+    --xevn-color-accent: #06b6d4;
+    --xevn-color-success: #10b981;
+    --xevn-color-warning: #f59e0b;
+    --xevn-color-danger: #ef4444;
+    --xevn-color-info: #3b82f6;
+    --xevn-color-surface: #ffffff;
+    --xevn-color-background: #f9fafb;
+    --xevn-color-text: #111827;
+    --xevn-color-text-secondary: #4b5563;
+    --xevn-color-text-muted: #6b7280;
+    --xevn-color-border: #e5e7eb;
+    --xevn-color-brand-shell: #000000;
+    --xevn-radius-input: 8px;
+    --xevn-radius-card: 12px;
+    --xevn-shadow-soft: 0 4px 24px -4px rgba(15, 23, 42, 0.08);
+    --xevn-shadow-overlay: 0 25px 50px -12px rgba(15, 23, 42, 0.18);
+    --xevn-space-xs: 0.25rem;
+    --xevn-space-sm: 0.5rem;
+    --xevn-space-md: 1rem;
+    --xevn-space-lg: 1.5rem;
+    --xevn-space-xl: 2rem;
+    --xevn-space-2xl: 3rem;
+    --xevn-space-3xl: 4rem;
+    --xevn-type-body-min: 0.9375rem;
+    --xevn-type-table-min: 0.875rem;
+    --xevn-type-title-min: 1.25rem;
+    --xevn-type-label-min: 0.875rem;
+
+    /* Canvas #F9FAFB → HSL */
     --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    /* Text #111827 */
+    --foreground: 220 39% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 220 39% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 220 39% 11%;
 
-    /* Deep professional blue */
-    --primary: 221 83% 53%;
+    /* Primary #1E40AF (was blue-600 221 83% 53%) */
+    --primary: 226 71% 40%;
     --primary-foreground: 210 40% 98%;
 
-    /* Light gray-blue for secondary */
     --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary-foreground: 220 39% 11%;
 
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Secondary readable #4B5563 — not pale slate-400 */
+    --muted-foreground: 215 14% 34%;
 
-    /* Teal accent for highlights */
-    --accent: 173 80% 40%;
+    /* Accent #06B6D4 */
+    --accent: 189 94% 43%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Success, Warning states */
-    --success: 142 76% 36%;
+    --success: 160 84% 39%;
     --success-foreground: 210 40% 98%;
     --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 11%;
+    --warning-foreground: 220 39% 11%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 189 94% 43%;
 
     --radius: 0.5rem;
 
-    /* Sidebar - Professional dark blue */
-    --sidebar-background: 222 47% 11%;
+    /* Sidebar — near brand shell */
+    --sidebar-background: 220 39% 11%;
     --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary: 226 71% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222 47% 18%;
+    --sidebar-accent: 220 30% 16%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222 47% 20%;
-    --sidebar-ring: 221 83% 53%;
-    --sidebar-muted: 215 16% 60%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 189 94% 43%;
+    --sidebar-muted: 220 9% 46%;
 
-    /* Custom HRM colors */
     --hrm-recruitment: 280 65% 60%;
     --hrm-attendance: 173 80% 40%;
     --hrm-payroll: 38 92% 50%;
-    --hrm-employee: 221 83% 53%;
+    --hrm-employee: 226 71% 40%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 40%));
-    --gradient-accent: linear-gradient(135deg, hsl(173 80% 40%), hsl(173 80% 30%));
-    --gradient-sidebar: linear-gradient(180deg, hsl(222 47% 11%), hsl(222 47% 8%));
+    --gradient-primary: linear-gradient(135deg, hsl(226 71% 40%), hsl(226 71% 32%));
+    --gradient-accent: linear-gradient(135deg, hsl(189 94% 43%), hsl(189 94% 32%));
+    --gradient-sidebar: linear-gradient(180deg, hsl(220 39% 11%), hsl(220 39% 6%));
   }
 
   .dark {
@@ -84,16 +119,17 @@
     --popover: 222 47% 8%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 221 83% 60%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 226 71% 40%;
+    --primary-foreground: 210 40% 98%;
 
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    /* Sharper than slate-400 (~65%) — dark secondary readable (FE-W1-HRM) */
+    --muted-foreground: 215 14% 72%;
 
-    --accent: 173 80% 45%;
+    --accent: 189 94% 43%;
     --accent-foreground: 222 47% 11%;
 
     --destructive: 0 63% 31%;
@@ -106,16 +142,17 @@
 
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 221 83% 60%;
+    /* Accent cyan focus ring — lockstep light (L2 brand align) */
+    --ring: 189 94% 43%;
 
     --sidebar-background: 222 47% 5%;
     --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 221 83% 60%;
+    --sidebar-primary: 226 71% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 47% 12%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 222 47% 15%;
-    --sidebar-ring: 221 83% 60%;
+    --sidebar-ring: 189 94% 43%;
     --sidebar-muted: 215 16% 50%;
   }
 }
@@ -128,6 +165,8 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: max(1rem, var(--xevn-type-body-min));
+    color: var(--xevn-color-text);
   }
 
   /* Custom scrollbar */
@@ -156,11 +195,11 @@
   }
 
   .saas-table th {
-    @apply bg-muted/50 font-semibold text-left px-2 md:px-3 py-2 border-b text-muted-foreground uppercase text-xs tracking-wider;
+    @apply bg-muted/50 font-semibold text-left px-2 md:px-3 py-2 border-b border-xevn-border text-xevn-textSecondary uppercase text-sm tracking-wider;
   }
 
   .saas-table td {
-    @apply px-2 md:px-3 py-2 border-b border-border/50;
+    @apply px-2 md:px-3 py-2 border-b border-xevn-border/60;
   }
 
   .saas-table tr:hover td {
@@ -222,7 +261,8 @@
   }
 
   .page-title {
-    @apply text-xl md:text-2xl font-bold text-foreground;
+    @apply font-bold text-foreground;
+    font-size: max(1.25rem, var(--xevn-type-title-min));
   }
 
   /* Action bar */
@@ -285,6 +325,23 @@
 }
 
 @layer utilities {
+  .xevn-border {
+    border-color: var(--xevn-color-border);
+  }
+
+  .xevn-focus-ring:focus-visible {
+    outline: 2px solid var(--xevn-color-accent);
+    outline-offset: 2px;
+  }
+
+  .xevn-dialog-surface {
+    border-radius: var(--xevn-radius-card);
+    border: 1px solid var(--xevn-color-border);
+    background-color: var(--xevn-color-surface);
+    box-shadow: var(--xevn-shadow-overlay);
+    color: var(--xevn-color-text);
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
   }
@@ -338,6 +395,37 @@
 
 /* XeVN Shared Utilities (port from portal unified) */
 @layer utilities {
+  .xevn-type-body {
+    font-size: max(1rem, var(--xevn-type-body-min));
+    line-height: 1.5;
+    color: var(--xevn-color-text);
+  }
+
+  .xevn-type-table {
+    font-size: max(0.875rem, var(--xevn-type-table-min));
+    line-height: 1.4;
+    color: var(--xevn-color-text);
+  }
+
+  .xevn-type-title {
+    font-size: max(1.25rem, var(--xevn-type-title-min));
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--xevn-color-text);
+  }
+
+  .xevn-type-label {
+    font-size: max(0.875rem, var(--xevn-type-label-min));
+    font-weight: 500;
+    line-height: 1.375;
+    color: var(--xevn-color-text-secondary);
+  }
+
+  .xevn-brand-shell {
+    background-color: var(--xevn-color-brand-shell);
+    color: #f9fafb;
+  }
+
   /**
    * X-BOS Safe Area — đối xứng tuyệt đối hai rìa (Bộ luật đối xứng V2).
    * Trục px-8 (32px) → px-12 (48px); không kéo vượt 3rem.

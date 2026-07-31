@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /payroll · tab Thành phần lương (API hook)
+ * UC:         UC-HRM-28 · FR-HRM-SC-PAY-01
+ * Purpose:    CRUD salary_components TX qua Nest payroll API.
+ * WorkItem:   D-FE-ERP-E2-01
+ * Coded:      2026-07-28
+ * Callers:    SalaryComponentsTab
+ * Callees:    hrmApi list/create/update/delete salary-components
+ * must_keep:  component_type = pay_types code (FE picker); không HARDCODE SoT
+ * LastVerified: docs/qa/evidence/d-fe-erp-e2-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E2-01
+ * change_mode: ADD
+ * What: componentTypes export → [] (nature SoT chuyển CatalogSearchPicker pay_types)
+ * Why: AC-E2-PAY-NATURE-01 · key lock pay_types ≠ TX rows
+ */
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -81,21 +98,8 @@ export const systemSalaryComponents = [
   { code: 'THUE_TNCN_HT', name: 'Thuế TNCN', componentType: 'Thuế', nature: 'deduction' as const, isTaxable: false },
 ];
 
-export const componentTypes = [
-  'Chấm công',
-  'Lương',
-  'Bảo hiểm - Công đoàn',
-  'Phụ cấp',
-  'Thưởng',
-  'Thuế',
-  'Khấu trừ',
-  'Thu nhập khác',
-  'Trợ cấp',
-  'Doanh số',
-  'KPI',
-  'Sản phẩm',
-  'Tổng hợp',
-];
+/** @deprecated E2 — nature SoT = Settings `pay_types` via payTypeOptionsFromCatalog. Kept empty export for grep-safe removal. */
+export const componentTypes: readonly string[] = [];
 
 function mapComponent(row: Record<string, unknown>): SalaryComponent {
   const category = row.category as SalaryComponentCategory | null | undefined;

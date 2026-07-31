@@ -17,4 +17,20 @@ describe('hrmSettingsCatalogItem', () => {
       item_name: 'QA Chức danh',
     });
   });
+
+  it('includes status when soft-stop / ngưng (AC-SET-UI-03)', () => {
+    expect(
+      buildSettingsCatalogItemPayload({
+        companyId: 'main',
+        catalogKey: 'hr_decision_types',
+        code: 'transfer',
+        label: 'Điều động',
+        status: 'draft',
+      }),
+    ).toMatchObject({
+      category_key: 'hr_decision_types',
+      item_key: 'transfer',
+      status: 'draft',
+    });
+  });
 });

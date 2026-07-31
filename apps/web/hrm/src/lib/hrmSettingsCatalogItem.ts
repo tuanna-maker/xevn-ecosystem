@@ -6,6 +6,8 @@ export type SettingsCatalogItemWriteInput = {
   code: string;
   label: string;
   itemValue?: string;
+  /** active = in picker; draft = soft-stop / ngưng (AC-SET-UI-03). */
+  status?: 'active' | 'draft';
 };
 
 /** POST /api/hrm/settings-catalogs/items — UF-HRM-10 contract (category_key + item_key + item_name). */
@@ -19,5 +21,6 @@ export function buildSettingsCatalogItemPayload(input: SettingsCatalogItemWriteI
     item_key: code,
     item_name: label,
     ...(input.itemValue?.trim() ? { item_value: input.itemValue.trim() } : {}),
+    ...(input.status === 'draft' || input.status === 'active' ? { status: input.status } : {}),
   };
 }

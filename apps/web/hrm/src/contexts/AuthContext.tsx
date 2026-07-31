@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
-import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
+import { coerceHrmListCompanyId, HRM_LIST_DEFAULT_COMPANY_ID, HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';
 import {
+  applyStandaloneSessionScope,
   clearPortalSession,
   getPortalAccessToken,
   getPortalSessionUser,
@@ -148,7 +149,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('hrm_current_company_id', currentCompanyId);
       sessionStorage.setItem('hrm_current_company_id', currentCompanyId);
     }
-    const tenant = tenantIdFromQuery || currentCompanyId;
+    const storedTenant =
+      localStorage.getItem('hrm_current_tenant_id') ||
+      sessionStorage.getItem('hrm_current_tenant_id');
+    const tenant = tenantIdFromQuery?.trim() || storedTenant;
     if (tenant) {
       localStorage.setItem('hrm_current_tenant_id', tenant);
       sessionStorage.setItem('hrm_current_tenant_id', tenant);
@@ -194,9 +198,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       hydrateFromPortalToken();
       if (result.memberships?.length) {
         const primary =
+          result.memberships.find((m) => m.is_primary)?.company_id ??
           result.memberships.find((m) => m.company_id)?.company_id ??
-          coerceHrmListCompanyId('main');
-        setCurrentCompanyId(coerceHrmListCompanyId(primary));
+          HRM_LIST_DEFAULT_COMPANY_ID;
+        const tenantId =
+          result.memberships.find((m) => m.is_primary)?.tenant_id ??
+          result.memberships.find((m) => m.tenant_id)?.tenant_id ??
+          result.default_tenant_id ??
+          HRM_MASTER_TENANT_ID;
+        const companyId = coerceHrmListCompanyId(primary);
+        setCurrentCompanyId(companyId);
+        applyStandaloneSessionScope({ tenantId, companyId });
         setMemberships(
           result.memberships.map((m, i) => ({
             id: `mobile-${i}`,

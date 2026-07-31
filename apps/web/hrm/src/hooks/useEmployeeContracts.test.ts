@@ -18,10 +18,13 @@ describe('mapApiContractToProfileRow', () => {
       status: 'active',
       created_at: '2025-01-01T00:00:00Z',
       updated_at: '2025-01-02T00:00:00Z',
+      compensation_package_id: 'pkg-1',
     });
     expect(row.contract_code).toContain('HD-');
     expect(row.effective_date).toBe('2025-01-01');
     expect(row.status).toBe('active');
+    expect(row.salary).toBeNull();
+    expect(row.compensation_package_id).toBe('pkg-1');
   });
 
   it('maps terminated status for profile badge', () => {
@@ -37,5 +40,6 @@ describe('mapApiContractToProfileRow', () => {
       updated_at: '2024-06-01T00:00:00Z',
     });
     expect(row.status).toBe('terminated');
+    expect(row.salary).toBeNull();
   });
 });

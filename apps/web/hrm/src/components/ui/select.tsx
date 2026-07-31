@@ -1,3 +1,26 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM Select primitive (Radix)
+ * UC:         Dropdown fields across HRM
+ * BR:         AC-BRAND-DNA-01 — trigger rounded-input + content rounded-card border
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L2
+ * Purpose:    SelectTrigger/Content dùng border-xevn-border + focus ring accent;
+ *             portal parent mount giữ nguyên cho Select trong Dialog embed.
+ * WorkItem:   FE-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ * Callers:    forms · filters · dialogs
+ * Callees:    hrmDialogPortal · Tailwind xevn.*
+ * must_keep:  parent portal container; border-xevn-border; ring-xevn-accent
+ * SOLID:      Chrome only
+ * LastVerified: brandPrimitivesL2.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27 D-HRM-OU-FILTER-EMBED-01
+ * what: SelectContent `portalScope` — OU filter dùng iframe body, tránh detach CC embed
+ * why: getRadixPortalContainer() mặc định parent body làm dropdown biến mất sau relayout
+ * must_keep: Dialog/Sheet vẫn portal parent; default Select (omit) giữ parent khi embed
+ */
+
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
@@ -22,7 +45,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-input border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-10 w-full items-center justify-between rounded-input border border-xevn-border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-xevn-textMuted focus:outline-none focus:ring-2 focus:ring-xevn-accent focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className,
     )}
     {...props}
@@ -63,12 +86,17 @@ const SelectScrollDownButton = React.forwardRef<
 ));
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
 
+type SelectContentProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
+  /** `'iframe'` = mount in iframe body (top-level chrome). Default = parent when CC embed. */
+  portalScope?: 'iframe' | 'parent';
+};
+
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => {
-  const mount = getRadixPortalContainer();
-  const useParent = isHrmDialogMountedToPortalParent();
+  SelectContentProps
+>(({ className, children, position = "popper", portalScope, ...props }, ref) => {
+  const mount = getRadixPortalContainer(portalScope);
+  const useParent = isHrmDialogMountedToPortalParent(portalScope);
   if (useParent) {
     syncHrmStylesheetsToParentForPortalDialogs();
   }
@@ -77,7 +105,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-input border bg-popover text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-card border border-xevn-border bg-popover text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         useParent && "z-[100010]",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",

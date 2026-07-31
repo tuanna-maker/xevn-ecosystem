@@ -160,6 +160,40 @@ export function useWorkShifts(opts?: { enabled?: boolean }) {
     [currentCompanyId, fetchShifts, toast, t, h],
   );
 
+  /** UX-09: bulk delete selected shifts (sequential API; one toast). */
+  const bulkDeleteShifts = useCallback(
+    async (ids: string[]): Promise<boolean> => {
+      if (!currentCompanyId || ids.length === 0) return false;
+      let failed = 0;
+      for (const id of ids) {
+        try {
+          await deleteWorkShift(id, currentCompanyId);
+        } catch (error: unknown) {
+          failed += 1;
+          console.error('Error bulk-deleting work shift:', id, error);
+        }
+      }
+      await fetchShifts();
+      if (failed > 0) {
+        toast({
+          title: t('messages.error'),
+          description: h('bulkDeletePartial', {
+            ok: String(ids.length - failed),
+            fail: String(failed),
+          }),
+          variant: 'destructive',
+        });
+        return failed < ids.length;
+      }
+      toast({
+        title: t('messages.success'),
+        description: h('bulkDeleteSuccess', { count: String(ids.length) }),
+      });
+      return true;
+    },
+    [currentCompanyId, fetchShifts, toast, t, h],
+  );
+
   useEffect(() => {
     if (!enabled) {
       setIsLoading(false);
@@ -174,6 +208,7 @@ export function useWorkShifts(opts?: { enabled?: boolean }) {
     createShift,
     updateShift,
     deleteShift,
+    bulkDeleteShifts,
     refetch: fetchShifts,
   };
 }

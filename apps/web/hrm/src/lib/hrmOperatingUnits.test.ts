@@ -37,9 +37,15 @@ describe('hrmOperatingUnits (U39 / G-INT-02)', () => {
   });
 
   it('resolves display labels from live label map only (no static fallback)', () => {
-    expect(resolveOperatingUnitDisplayName('trsport', liveLabels)).toContain('Vận tải');
+    expect(resolveOperatingUnitDisplayName('trsport', liveLabels)).toContain('Thương mại');
     expect(resolveOperatingUnitDisplayName('trsport')).toBeNull();
     expect(resolveOperatingUnitDisplayName('unknown', liveLabels)).toBeNull();
+  });
+
+  it('test fixture uses LE/ĐVTV names — never Khối (AC-EMP-COL-01)', () => {
+    for (const row of HRM_OPERATING_UNIT_TEST_FIXTURE) {
+      expect(row.display_name_vi).not.toMatch(/^Khối\s+/u);
+    }
   });
 
   it('buildOperatingUnitLabelMap requires explicit units array', () => {
@@ -63,7 +69,7 @@ describe('hrmOperatingUnits (U39 / G-INT-02)', () => {
         json: async () => ({
           success: true,
           data: [
-            { operating_slug: 'trsport', display_name_vi: 'Khối Vận tải X.E', rollup_order: 2 },
+            { operating_slug: 'trsport', display_name_vi: 'Công ty Cổ phần Thương mại và Dịch vụ X.E', rollup_order: 2 },
             { operating_slug: 'holding', display_name_vi: 'Tập đoàn XeVN', rollup_order: 1 },
           ],
         }),

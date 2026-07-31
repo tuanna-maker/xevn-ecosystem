@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM Card primitive
+ * UC:         Panel / KPI / section cards
+ * BR:         AC-BRAND-DNA-01 — rounded-card 12 + border-xevn-border
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L2
+ * Purpose:    Card surface khóa border token + shadow-soft; description dùng textSecondary.
+ * WorkItem:   FE-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ * Callers:    dashboard · list shells · settings panels
+ * Callees:    @/lib/utils cn
+ * must_keep:  rounded-card; border-xevn-border; shadow-soft
+ * SOLID:      Presentational compound
+ * LastVerified: brandPrimitivesL2.test.ts
+ */
+
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -6,7 +23,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("rounded-card border bg-card text-card-foreground shadow-soft", className)}
+      className={cn("rounded-card border border-xevn-border bg-card text-card-foreground shadow-soft", className)}
       {...props}
     />
   ),
@@ -29,7 +46,7 @@ CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+    <p ref={ref} className={cn("text-sm text-xevn-textSecondary", className)} {...props} />
   ),
 );
 CardDescription.displayName = "CardDescription";

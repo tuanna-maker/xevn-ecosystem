@@ -1,11 +1,19 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { getPortalJwtCompanyId, resolveHrmSpreadsheetScope } from './hrmSpreadsheetScope';
+import {
+  getPortalJwtCompanyId,
+  getPortalJwtRoleCode,
+  resolveHrmSpreadsheetScope,
+} from './hrmSpreadsheetScope';
 
 const STORAGE_TOKEN = 'xevn.portal.accessToken';
 
 /** JWT payload: { companyId: "main", tenantId: "xevn" } */
 const JWT_MAIN =
   'eyJhbGciOiJub25lIn0.eyJjb21wYW55SWQiOiJtYWluIiwidGVuYW50SWQiOiJ4ZXZuIn0.';
+
+/** JWT payload: { companyId: "main", tenantId: "xevn", roleCode: "group_ceo" } */
+const JWT_ROLE =
+  'eyJhbGciOiJub25lIn0.eyJjb21wYW55SWQiOiJtYWluIiwidGVuYW50SWQiOiJ4ZXZuIiwicm9sZUNvZGUiOiJncm91cF9jZW8ifQ.';
 
 describe('hrmSpreadsheetScope', () => {
   afterEach(() => {
@@ -28,5 +36,10 @@ describe('hrmSpreadsheetScope', () => {
     sessionStorage.setItem(STORAGE_TOKEN, JWT_MAIN);
     const scope = resolveHrmSpreadsheetScope('holding', '?portal=1&tenantId=xevn&companyId=holding');
     expect(scope?.companyId).toBe('main');
+  });
+
+  it('AC-CD-F3-01: reads roleCode from portal JWT for context chip', () => {
+    sessionStorage.setItem(STORAGE_TOKEN, JWT_ROLE);
+    expect(getPortalJwtRoleCode()).toBe('group_ceo');
   });
 });

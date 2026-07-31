@@ -25,7 +25,7 @@ export function usePayrollPayslips(periodId?: string) {
     }
     if (!useApi) {
       setPayslips([]);
-      setFetchError('Payroll API mode is required (VITE_HRM_USE_API=true).');
+      setFetchError('Chế độ bảng lương chưa sẵn sàng — mở HRM từ Command Center.');
       setIsLoading(false);
       return;
     }

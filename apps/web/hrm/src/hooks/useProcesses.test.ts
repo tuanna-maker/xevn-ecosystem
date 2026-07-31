@@ -7,10 +7,11 @@ import {
 } from '@/hooks/useProcesses';
 
 describe('P1-HRM-PROCESSES-FE-01 — useProcesses read-only (no fake success)', () => {
-  it('exports read-only flag and honest unsupported copy', () => {
+  it('exports read-only flag and honest unsupported copy (no DM code chrome)', () => {
     expect(PROCESSES_READ_ONLY).toBe(true);
     expect(PROCESSES_MUTATION_UNSUPPORTED_VI).toMatch(/chưa hỗ trợ/i);
-    expect(PROCESSES_MUTATION_UNSUPPORTED_VI).toContain('XBOS-DM-HRM-14');
+    expect(PROCESSES_MUTATION_UNSUPPORTED_VI).toMatch(/Command Center/i);
+    expect(PROCESSES_MUTATION_UNSUPPORTED_VI).not.toMatch(/XBOS-DM-/i);
   });
 
   it('hook source has no toast/mutation stubs in executable code', () => {

@@ -1,12 +1,12 @@
 /**
  * @CODE-MEMORY
- * Screen:     /decisions — Quyết định nhân sự list/create dialog
- * UC:          UC-HRM-27
- * BR:          BR-DEC-01, BR-DEC-03, BR-DEC-06
- * SRS:         docs/hrm/SRS.md § UC-HRM-27
- * TechSpec:    docs/hrm/TECHSPEC.md §11.2–11.4
- * Purpose:     Owns the live HRM decisions list and employee picker data used by the
- *              create/edit dialog, with request coalescing and dialog-gated picker loading.
+ * Screen:     /decisions — list/create dialog quyết định nhân sự
+ * UC:          UC-HRM-27 / FR-HRM-27
+ * BR:          BR-DEC-01 · BR-DEC-03 · BR-DEC-06
+ * SRS:         docs/hrm/SRS.md § UC-HRM-27 · docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.50
+ * TechSpec:    docs/hrm/TECHSPEC.md §16.5 #50 · §11.2–11.4
+ * Purpose:     Sở hữu list QSĐ live + picker NV cho dialog; coalesce GET; load NV chỉ khi mở dialog;
+ *              sau ghi invalidate list để create→list thấy dòng mới.
  * WorkItem:    PERF-HRM-DEC-01
  * Coded:       2026-07-17
  *
@@ -19,18 +19,27 @@
  *   - mutations → create/update/deleteHrDecision() → HRM decisions APIs
  *
  * FE-Actions:
- *   | User action        | Handler              | Lib / API                     |
- *   |--------------------|----------------------|-------------------------------|
- *   | Open decisions     | useDecisions query   | listHrDecisions               |
- *   | Open create/edit   | employee query       | listEmployees                 |
- *   | Save/delete        | mutation methods     | HRM decision write APIs       |
+ *   | Thao tác người dùng | Handler              | Lib / API                     |
+ *   |---------------------|----------------------|-------------------------------|
+ *   | Mở quyết định       | useDecisions query   | listHrDecisions               |
+ *   | Mở tạo/sửa          | employee query       | listEmployees                 |
+ *   | Lưu/xóa             | mutation methods     | HRM decision write APIs       |
  *
  * BE-Chain: GET/POST/PATCH/DELETE /api/hrm/decisions → hr_decisions;
  *           GET /api/hrm/employees → employees
- * Impact:      Duplicate mount requests and eager employee loading delay the embedded menu.
- * must_keep:   Live-empty behavior, scope-aware company_id, no mock fallback, post-write refresh.
- * SOLID:       This hook isolates decisions server state and dialog-only picker state from page UI.
- * LastVerified: apps/web/hrm/src/hooks/useDecisions.test.ts
+ * Impact:      Bỏ invalidate sau create → list không cập nhật (AC-DEC-04 FAIL).
+ * must_keep:   Live-empty · company_id scope · không mock fallback · refresh sau ghi · U65
+ * SOLID:       Hook tách server state khỏi page UI; picker NV chỉ khi dialog mở.
+ * LastVerified: apps/web/hrm/src/hooks/useDecisions.test.ts · lib/decisionListUi.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: FE-HRM-G-DEC-01-DENSITY-01
+ * change_mode: UPGRADE
+ * What: CODE-MEMORY VI; giữ invalidate sau create/update/delete cho density create→list.
+ * Why: G-DEC-01 / AC-DEC-DENSITY — FE phải tạo được QSĐ và thấy trên list + F5 (không seed).
+ * SRS: docs/hrm/SRS.md UC-HRM-27 · AC-DEC-04 · AC-DEC-DENSITY
+ * TechSpec: docs/hrm/TECHSPEC.md §16.5 #50 · §16.9 G-DEC-01
+ * must_keep: queryKey coalesce · dialog-gated employees · live-empty honesty
  */
 import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -58,11 +67,14 @@ export type DecisionRecord = {
   employee_name: string;
   employee_code: string | null;
   department: string | null;
+  department_key?: string | null;
   position: string | null;
+  position_key?: string | null;
   effective_date: string | null;
   expiry_date: string | null;
   signer_name: string | null;
   signer_position: string | null;
+  signer_position_key?: string | null;
   signing_date: string | null;
   file_url: string | null;
   status: string;
@@ -80,11 +92,14 @@ export type DecisionFormPayload = {
   employee_name: string;
   employee_code: string;
   department: string;
+  department_key: string;
   position: string;
+  position_key: string;
   effective_date: Date | undefined;
   expiry_date: Date | undefined;
   signer_name: string;
   signer_position: string;
+  signer_position_key: string;
   signing_date: Date | undefined;
   file_url: string;
   status: string;
@@ -111,11 +126,14 @@ function mapApiRow(row: HrmDecisionRecord): DecisionRecord {
     employee_name: row.employee_name,
     employee_code: row.employee_code,
     department: row.department,
+    department_key: row.department_key ?? null,
     position: row.position,
+    position_key: row.position_key ?? null,
     effective_date: row.effective_date,
     expiry_date: row.expiry_date,
     signer_name: row.signer_name,
     signer_position: row.signer_position,
+    signer_position_key: row.signer_position_key ?? null,
     signing_date: row.signing_date,
     file_url: row.file_url,
     status: row.status,
@@ -140,11 +158,14 @@ function toApiPayload(companyId: string, data: DecisionFormPayload) {
     employee_name: data.employee_name,
     employee_code: data.employee_code || undefined,
     department: data.department || undefined,
+    department_key: data.department_key || undefined,
     position: data.position || undefined,
+    position_key: data.position_key || undefined,
     effective_date: fmtDate(data.effective_date) ?? undefined,
     expiry_date: fmtDate(data.expiry_date) ?? undefined,
     signer_name: data.signer_name || undefined,
     signer_position: data.signer_position || undefined,
+    signer_position_key: data.signer_position_key || undefined,
     signing_date: fmtDate(data.signing_date) ?? undefined,
     file_url: data.file_url || undefined,
     status: data.status,

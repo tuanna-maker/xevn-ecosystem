@@ -1,4 +1,35 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+/**
+ * @CODE-MEMORY
+ * Screen:     /attendance — Bảng chấm công · weekly grid
+ * UC:         UC-HRM-23 · UF-HRM-05
+ * BR:         BR-ATT-SHEET-01
+ * SRS:        docs/hrm/SRS.md UC-HRM-23
+ * TechSpec:   docs/hrm/TECHSPEC.md attendance sheets / records
+ * Purpose:    Load attendance records for selected sheet week; aggregate into weekly grid.
+ * WorkItem:   D-HRM-ATT-SHEET-EMPTY-RELOAD-LOOP-01
+ * Coded:      2026-07-21
+ *
+ * Callers:
+ *   - pages/Attendance.tsx → useWeeklyAttendanceSummary({ enabled, sheet, employees })
+ *
+ * Callees:
+ *   - listAttendanceRecords · buildWeeklyAttendanceRows · mapAttendanceRecordsToTableRows
+ *
+ * must_keep:
+ *   - React Query singleflight (no useEffect→fetch on unstable object deps)
+ *   - Manual refetch only (no refetchInterval / window-focus storm)
+ *   - formatDisplayDate path via aggregator (Invalid time closed)
+ * SOLID: RQ read + memoized aggregate (employees Map change does not re-hit API)
+ * LastVerified: apps/web/hrm/src/hooks/useWeeklyAttendanceSummary.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: D-HRM-ATT-SHEET-EMPTY-RELOAD-LOOP-01
+ * change_mode: UPGRADE
+ * What: Replace useEffect(fetchWeeklyData) thrash with RQ; stabilize sheet range on primitives
+ * Why: Sponsor :8088 create sheet → weekly spinner forever + «Tải lại» auto-spin (0 console)
+ */
+import { useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
@@ -12,13 +43,23 @@ import {
   type EmployeeLookup,
   type WeeklyAttendanceRow,
 } from '@/lib/attendanceDashboardAggregator';
-import { listAttendanceRecords } from '@/integrations/hrmApi';
+import { listAttendanceRecords, type HrmAttendanceRecord } from '@/integrations/hrmApi';
 
-type WeeklySheetContext = {
+export type WeeklySheetContext = {
   start_date: string;
   end_date: string;
   name: string;
 } | null;
+
+export const WEEKLY_ATTENDANCE_QUERY_KEY = 'weekly-attendance-summary' as const;
+
+export function buildWeeklyAttendanceQueryKey(
+  companyId: string | null | undefined,
+  from: string,
+  to: string,
+): readonly unknown[] {
+  return [WEEKLY_ATTENDANCE_QUERY_KEY, companyId ?? null, from, to] as const;
+}
 
 export function useWeeklyAttendanceSummary(opts: {
   enabled: boolean;
@@ -35,12 +76,18 @@ export function useWeeklyAttendanceSummary(opts: {
   const { currentCompanyId } = useAuth();
   const { operatingUnitLabelMap } = useHrmOperatingUnitFilter();
   const { t } = useTranslation();
-  const [weeklyRows, setWeeklyRows] = useState<WeeklyAttendanceRow[]>([]);
-  const [recordRows, setRecordRows] = useState<AttendanceRecordTableRow[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const range = useMemo(() => resolveWeeklyDateRange(sheet), [sheet]);
+  // Primitive deps only — inline `{ start_date, end_date }` from parent must not thrash.
+  const sheetStart = sheet?.start_date ?? null;
+  const sheetEnd = sheet?.end_date ?? null;
+
+  const range = useMemo(
+    () =>
+      resolveWeeklyDateRange(
+        sheetStart && sheetEnd ? { start_date: sheetStart, end_date: sheetEnd } : null,
+      ),
+    [sheetStart, sheetEnd],
+  );
 
   const employeesById = useMemo(() => {
     const map = new Map<string, EmployeeLookup>();
@@ -64,18 +111,12 @@ export function useWeeklyAttendanceSummary(opts: {
     return Array.from(names).sort((a, b) => a.localeCompare(b, 'vi'));
   }, [employees, operatingUnitLabelMap]);
 
-  const fetchWeeklyData = useCallback(async () => {
-    if (!enabled || !currentCompanyId) {
-      setWeeklyRows([]);
-      setRecordRows([]);
-      setLoadError(null);
-      setIsLoading(false);
-      return;
-    }
+  const queryKey = buildWeeklyAttendanceQueryKey(currentCompanyId, range.from, range.to);
 
-    try {
-      setIsLoading(true);
-      setLoadError(null);
+  const query = useQuery({
+    queryKey,
+    queryFn: async (): Promise<HrmAttendanceRecord[]> => {
+      if (!currentCompanyId) return [];
       const response = await listAttendanceRecords({
         company_id: currentCompanyId,
         from_date: range.from,
@@ -83,26 +124,48 @@ export function useWeeklyAttendanceSummary(opts: {
         page: 1,
         page_size: clampHrmPageSize(500),
       });
-      const apiRecords = response.data ?? [];
-      setWeeklyRows(
-        buildWeeklyAttendanceRows(apiRecords, employeesById, range, (key, fallback) =>
-          t(key, fallback ?? key),
-        operatingUnitLabelMap),
-      );
-      setRecordRows(mapAttendanceRecordsToTableRows(apiRecords, employeesById, operatingUnitLabelMap));
-    } catch (error) {
-      console.error('Error fetching weekly attendance summary:', error);
-      setWeeklyRows([]);
-      setRecordRows([]);
-      setLoadError(error instanceof Error ? error.message : 'Failed to load attendance data');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentCompanyId, enabled, employeesById, operatingUnitLabelMap, range, t]);
+      return response.data ?? [];
+    },
+    enabled: enabled && !!currentCompanyId,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
 
-  useEffect(() => {
-    void fetchWeeklyData();
-  }, [fetchWeeklyData]);
+  const weeklyRows: WeeklyAttendanceRow[] = useMemo(() => {
+    if (!enabled) return [];
+    return buildWeeklyAttendanceRows(
+      query.data ?? [],
+      employeesById,
+      range,
+      (key, fallback) => t(key, fallback ?? key),
+      operatingUnitLabelMap,
+    );
+  }, [enabled, employeesById, operatingUnitLabelMap, query.data, range, t]);
+
+  const recordRows: AttendanceRecordTableRow[] = useMemo(() => {
+    if (!enabled) return [];
+    return mapAttendanceRecordsToTableRows(
+      query.data ?? [],
+      employeesById,
+      operatingUnitLabelMap,
+    );
+  }, [enabled, employeesById, operatingUnitLabelMap, query.data]);
+
+  const refetch = useCallback(async () => {
+    if (!enabled) return;
+    await query.refetch();
+  }, [enabled, query]);
+
+  const loadError =
+    query.isError && query.error
+      ? query.error instanceof Error
+        ? query.error.message
+        : 'Failed to load attendance data'
+      : null;
+
+  // Initial load only — keep table/empty visible during manual refetch (button spin).
+  const isLoading = enabled && query.isLoading && !query.data;
 
   return {
     weeklyRows,
@@ -110,7 +173,9 @@ export function useWeeklyAttendanceSummary(opts: {
     range,
     departmentOptions,
     isLoading,
+    isFetching: query.isFetching,
     loadError,
-    refetch: fetchWeeklyData,
+    refetch,
+    queryKey,
   };
 }
