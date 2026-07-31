@@ -66,6 +66,48 @@ describe('KpiEngineService', () => {
         ['xevn', 'main', expect.any(String), expect.any(String)],
       );
     });
+
+    it('projects KpiRollupData series/points shape (G-DTO-W2-KPI-01 / FR-XBOS-KPI-03)', async () => {
+      dbMock.query
+        .mockResolvedValueOnce({ rows: [] }) // ensureKpiActualsSchema
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              metric_code: 'otif',
+              period_date: '2026-06-01',
+              actual_value: '920',
+              target_value: '1000',
+            },
+            {
+              metric_code: 'otif',
+              period_date: '2026-07-01',
+              actual_value: '950',
+              target_value: null,
+            },
+          ],
+        });
+      const data = await service.rollup('xevn', 'main', '2026-01-01', '2026-07-27');
+      expect(data.rollupMode).toBe('single');
+      expect(data.companyIds).toEqual(['main']);
+      expect(data.from).toBe('2026-01-01');
+      expect(data.to).toBe('2026-07-27');
+      expect(data.series).toEqual([
+        {
+          metricCode: 'otif',
+          points: [
+            { period: '2026-06-01', actual: 920, target: 1000 },
+            { period: '2026-07-01', actual: 950, target: null },
+          ],
+        },
+      ]);
+    });
+
+    it('returns empty series when no actuals (Diễn biến #5 / U65)', async () => {
+      dbMock.query.mockResolvedValue({ rows: [] });
+      const data = await service.rollup('xevn', 'holding');
+      expect(data.rollupMode).toBe('group');
+      expect(data.series).toEqual([]);
+    });
   });
 
   describe('publishPortalAlert (UC-XBOS-KPI-04)', () => {

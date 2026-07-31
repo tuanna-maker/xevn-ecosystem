@@ -223,7 +223,7 @@ export const CatalogGovernancePanel: React.FC<CatalogGovernancePanelProps> = ({ 
               >
                 <p className={`font-medium text-xevn-text ${SETTINGS_CONTROL_TEXT}`}>{t.workflow_name}</p>
                 <p
-                  className="mt-1 text-xs text-slate-400"
+                  className="mt-1 text-sm text-xevn-textSecondary"
                   title={t.business_id}
                 >
                   Mã lô: {shortenUuidForDisplay(t.business_id)}

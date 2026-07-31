@@ -175,12 +175,21 @@ export type HrmFleetVehicleRow = {
   status: string;
 };
 
-export async function listHrmFleetVehicles(scope: IdentityScopeContext, limit = 500) {
-  const q = new URLSearchParams({ limit: String(limit) });
+export async function listHrmFleetVehicles(
+  scope: IdentityScopeContext,
+  opts?: { limit?: number; q?: string; keyword?: string },
+) {
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({
+    company_id: listScope.companyId,
+    limit: String(opts?.limit ?? 500),
+  });
+  const term = (opts?.q ?? opts?.keyword ?? '').trim();
+  if (term) q.set('q', term.slice(0, 100));
   return request<{ total: number; data: HrmFleetVehicleRow[] }>(
     `/api/hrm/fleet/vehicles?${q.toString()}`,
     { method: 'GET' },
-    scope,
+    listScope,
   );
 }
 
@@ -229,6 +238,24 @@ export async function listHrmJobRequisitions(scope: IdentityScopeContext) {
   const q = new URLSearchParams({ company_id: listScope.companyId });
   return request<{ total: number; data: HrmJobRequisitionRow[] }>(
     `/api/hrm/recruitment/requisitions?${q.toString()}`,
+    { method: 'GET' },
+    listScope,
+  );
+}
+
+export type HrmCandidatePoolEmbedRow = {
+  id: string;
+  company_id: string;
+  full_name: string;
+  stage: string;
+};
+
+/** UC-HRM-22 / F6 — candidate stages for embed funnel (BR-DQ-01: live API only). */
+export async function listHrmCandidatesPool(scope: IdentityScopeContext) {
+  const listScope = hrmListScope(scope);
+  const q = new URLSearchParams({ company_id: listScope.companyId });
+  return request<{ total: number; data: HrmCandidatePoolEmbedRow[] }>(
+    `/api/hrm/recruitment/candidates-pool?${q.toString()}`,
     { method: 'GET' },
     listScope,
   );

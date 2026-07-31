@@ -12,6 +12,25 @@ import {
 } from '../common/tenant.constants';
 import { XbosDbService } from '../db/xbos-db.service';
 
+/**
+ * @CODE-MEMORY
+ * Screen: `/command-center/hrm/company` - màn Công ty / Company Management
+ * UC: UC-HRM-CO-01
+ * BR: BR-CO-LABEL-01
+ * SRS: `docs/hrm/SRS.md` § UC-HRM-CO-01 · Data Interaction danh sách ĐVTV và hồ sơ pháp nhân
+ * TechSpec: `docs/hrm/TECHSPEC.md` §20 · TS ngành nghề Company bind từ `business_lines`
+ * Purpose: Service này chịu trách nhiệm đọc SoT pháp nhân XBOS cho các màn Command Center và HRM embed. Với luồng Company Management, dữ liệu `members[]` phải mang đủ tín hiệu hồ sơ pháp nhân để FE không suy diễn sai ngành nghề từ `entity_type`. Phần sửa của work item này chỉ bổ sung contract đọc `business_lines` cho danh sách ĐVTV, không đụng logic headcount Plane B.
+ * WorkItem: D-HRM-CO-INDUSTRY-BE-01
+ * Coded: 2026-07-27
+ * Callers: `src/tenant-scope/tenant-scope.service.ts` -> `groupMemberUnits()`; `src/org-foundation/org-foundation.controller.ts`
+ * Callees: `public.xbos_tenant_registry`; `public.xbos_legal_entity`
+ * FEActions: Mở menu Công ty -> FE gọi `GET /api/xbos/tenant-scope/group-member-units` -> mapper dựng `members[]` -> bind cột "Ngành nghề"
+ * BEChain: `TenantScopeController` -> `TenantScopeService.groupMemberUnits()` -> `OrgFoundationService.listGroupMemberUnits()` -> `xbos_tenant_registry` join `xbos_legal_entity`
+ * Impact: Nếu bind sai sang `entity_type`, UI sẽ hiện `subsidiary` hoặc `holding` ở cột "Ngành nghề", làm sai nghiệp vụ và đánh lạc hướng QA. Nếu payload thiếu `business_lines`, FE buộc phải phụ thuộc vào enrich call thứ hai mới hiển thị đúng.
+ * must_keep: Giữ nguyên contract hiện có của `holding`, `entity_type`, `payload` và không trộn với headcount `employee_count`. Không đổi semantics `entity_type`; chỉ dùng field đó cho phân loại pháp nhân.
+ * SOLID: Tách responsibility đọc dữ liệu pháp nhân vào service XBOS để FE nhận contract rõ ràng, giảm logic suy diễn ở lớp trình bày.
+ * LastVerified: `docs/qa/evidence/be-hrm-co-industry-01-20260727.md`
+ */
 export type LegalEntityPartition = { tenantId: string; companyId: string };
 
 export interface LegalEntityInput {
@@ -644,6 +663,7 @@ export class OrgFoundationService {
       id: string;
       code: string;
       name: string;
+      business_lines: string | null;
       entity_type: string;
       payload: Record<string, unknown> | null;
     }>(
@@ -653,6 +673,7 @@ export class OrgFoundationService {
               le.id::text AS id,
               le.code,
               le.name,
+              le.business_lines,
               le.entity_type,
               le.payload
        FROM public.xbos_tenant_registry t

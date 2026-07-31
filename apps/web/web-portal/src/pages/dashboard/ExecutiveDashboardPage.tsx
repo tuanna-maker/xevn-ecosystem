@@ -181,7 +181,7 @@ const ExecutiveDashboardPage: React.FC = () => {
                     <p className="text-sm font-semibold text-slate-800">Admin</p>
                     <p className="text-xs text-slate-500">Super Admin</p>
                   </div>
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                  <ChevronDown className="w-4 h-4 text-xevn-textMuted" />
                 </div>
               </div>
             </div>
@@ -466,13 +466,13 @@ const ModuleCard: React.FC<{ card: typeof mockModuleCards[0] }> = ({ card }) => 
 
         {/* Title */}
         <h3 className="text-xl font-bold mb-2 truncate">{card.title}</h3>
-        <p className="text-sm text-slate-300 mb-4 truncate">{card.subtitle}</p>
+        <p className="mb-4 truncate text-sm text-xevn-textSecondary">{card.subtitle}</p>
 
         {/* KPIs */}
         <div className="space-y-3 mb-6">
           {card.stats.map((kpi, idx) => (
             <div key={idx} className="flex items-center justify-between text-sm">
-              <span className="text-slate-300 truncate">{kpi.label}</span>
+              <span className="truncate text-xevn-textSecondary">{kpi.label}</span>
               <span className="font-bold text-white">{kpi.value}</span>
             </div>
           ))}

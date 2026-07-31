@@ -212,7 +212,7 @@ export const AssetRequestPanel: React.FC<AssetRequestPanelProps> = ({ onStatusMe
                             → {ASSET_REQUEST_STATUS_LABELS[next] ?? next}
                           </button>
                         ) : (
-                          <span className="text-xs text-slate-400">Hoàn tất</span>
+                          <span className="text-sm text-xevn-textSecondary">Hoàn tất</span>
                         )}
                       </td>
                     </tr>

@@ -117,4 +117,46 @@ describe('PositionRbacController (UC-XBOS-11/12, ADR scope)', () => {
     });
     expect(serviceMock.getPermissionMatrix).not.toHaveBeenCalled();
   });
+
+  it('UC-CC-P0-04: saves permission matrix via SavePermissionMatrixRequestDto shape', async () => {
+    serviceMock.savePermissionMatrix.mockResolvedValueOnce([
+      {
+        rowId: 'pm-org-1',
+        view: true,
+        write: true,
+        delete: false,
+        approve: true,
+        dataScope: 'group',
+      },
+    ]);
+    const result = await controller.saveMatrix(
+      {
+        roleId: 'role-ceo',
+        rows: [
+          {
+            rowId: 'pm-org-1',
+            view: true,
+            write: true,
+            delete: false,
+            approve: true,
+            dataScope: 'group',
+          },
+        ],
+      },
+      'xevn',
+      undefined,
+      'test-key',
+    );
+    expect(result.code).toBe('XBOS-POS-201');
+    expect(serviceMock.savePermissionMatrix).toHaveBeenCalledWith('xevn', 'role-ceo', [
+      {
+        rowId: 'pm-org-1',
+        view: true,
+        write: true,
+        delete: false,
+        approve: true,
+        dataScope: 'group',
+      },
+    ]);
+  });
 });

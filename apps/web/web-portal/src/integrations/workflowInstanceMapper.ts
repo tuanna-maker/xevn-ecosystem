@@ -100,6 +100,7 @@ export function workflowInstanceStatusLabelVi(status: string): string {
     case 'running':
       return 'Đang chạy';
     default:
-      return status || '—';
+      // Fail-closed: unknown workflow status must not leak raw keys.
+      return '—';
   }
 }

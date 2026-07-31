@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   hrmAppPath,
+  hrmAppRelPathFromPortalSuffix,
   hrmPortalPath,
   hrmProxyPath,
   hrmProxyPathFromSuffix,
@@ -107,6 +108,11 @@ describe('hrmProxyPath (Command Center embed)', () => {
     expect(
       hrmProxyPathFromSuffix('tools_equipment', { portal: true, companyId: 'main' }),
     ).toBe('/hr/tools-equipment?portal=1&companyId=main');
+  });
+
+  it('maps legacy underscore portal suffix to hyphenated app path (D-HDSD-MUTATE-FE-01)', () => {
+    expect(hrmAppRelPathFromPortalSuffix('internal_services')).toBe('/internal-services');
+    expect(hrmAppRelPathFromPortalSuffix('tools_equipment')).toBe('/tools-equipment');
   });
 
   it('maps performance portal suffix to /hr/performance embed (COND-PF-PORTAL-01)', () => {

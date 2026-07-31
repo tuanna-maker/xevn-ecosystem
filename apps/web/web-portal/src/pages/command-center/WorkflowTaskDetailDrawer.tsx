@@ -4,6 +4,7 @@ import { CapabilityActionButton } from '../../components/command-center/Capabili
 import type { UnifiedTask } from '../../data/command-center-mock';
 import type { WorkflowInstanceDetailPayload } from '../../integrations/workflowInstanceMapper';
 import { workflowInstanceStatusLabelVi } from '../../integrations/workflowInstanceMapper';
+import { isActionableWorkflowInboxTask } from '../../modules/hrm/inboxDeepLink';
 
 type WorkflowTaskDetailDrawerProps = {
   open: boolean;
@@ -41,12 +42,15 @@ export function WorkflowTaskDetailDrawer({
 
   const instance = detail?.instance;
   const steps = detail?.tasks ?? [];
+  const actionable = isActionableWorkflowInboxTask(task);
   const completeRuntime = {
     busy,
-    blocked: loading || !inboxFromApi,
+    blocked: loading || !inboxFromApi || !actionable,
     blockedReasonVi: !inboxFromApi
       ? 'Hộp thư chưa tải từ workflow-engine — kiểm tra XBOS API (28002) hoặc bật mock dev.'
-      : undefined,
+      : !actionable
+        ? 'Đang gắn mã nhiệm vụ (task id) — không dùng instance id để Xử lý.'
+        : undefined,
   };
 
   return (
@@ -108,7 +112,7 @@ export function WorkflowTaskDetailDrawer({
                         <span className="font-medium">{stepLabel(row, i)}</span>
                         <span className="ml-2 text-slate-500">{workflowInstanceStatusLabelVi(status)}</span>
                         {row.assignee_user_id ? (
-                          <span className="mt-1 block text-xs text-slate-400">
+                          <span className="mt-1 block text-xs text-xevn-textMuted">
                             Gán: {String(row.assignee_user_id)}
                           </span>
                         ) : null}

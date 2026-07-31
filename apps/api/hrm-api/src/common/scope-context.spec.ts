@@ -152,4 +152,38 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
     });
     expect(scope).toEqual({ tenantId: 'xevn', companyId: 'main' });
   });
+
+  it('accepts mobile standalone group CEO JWT holding + request main (D-HRM-W2A-SCOPE-PARITY-01)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: '85945933-632a-4bca-8fe9-3bbe8bc9294b',
+      employee_id: 'portal-gceo-uuid',
+      roles: ['employee', 'manager', 'hr_manager'],
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'main' });
+  });
+
+  it('rejects holding JWT + main request for non-group mobile user', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: '85945933-632a-4bca-8fe9-3bbe8bc9294b',
+      employee_id: 'emp-1',
+      roles: ['employee'],
+    });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'main' }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+      }),
+    );
+  });
 });

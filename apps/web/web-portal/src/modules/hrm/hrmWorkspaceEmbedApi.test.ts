@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { mapHrmDashboardStats, mapHrmInsuranceEmbedRows, shouldLoadMetadataQueue } from './hrmWorkspaceEmbedApi';
+import {
+  isHrmCockpitApiDeferredView,
+  mapHrmDashboardPayrollSummary,
+  mapHrmDashboardStats,
+  mapHrmInsuranceEmbedRows,
+  mapHrmRecruitmentFunnelCounts,
+  shouldLoadMetadataQueue,
+} from './hrmWorkspaceEmbedApi';
 
 describe('hrmWorkspaceEmbedApi (UC-HRM-20/26)', () => {
   it('maps operations summary and employee counts for dashboard', () => {
@@ -41,5 +48,73 @@ describe('hrmWorkspaceEmbedApi (UC-HRM-20/26)', () => {
     expect(shouldLoadMetadataQueue('employees')).toBe(true);
     expect(shouldLoadMetadataQueue('decisions')).toBe(true);
     expect(shouldLoadMetadataQueue('payroll')).toBe(false);
+  });
+
+  it('aggregates payslips for dashboard payroll card (BR-MOCK-01 / PCOMP-W2-FE-01)', () => {
+    const empty = mapHrmDashboardPayrollSummary(null);
+    expect(empty.hasData).toBe(false);
+    expect(empty.grossFormatted).toBe('—');
+    expect(empty.statusLabel).toBe('Chưa có phiếu lương');
+
+    const emptyArr = mapHrmDashboardPayrollSummary([]);
+    expect(emptyArr.hasData).toBe(false);
+
+    const summary = mapHrmDashboardPayrollSummary([
+      {
+        id: 'p1',
+        employee_code: 'NV001',
+        employee_name: 'A',
+        period_label: '2026-03',
+        gross_amount: 10_000_000,
+        deduction_amount: 1_000_000,
+        net_amount: 9_000_000,
+        status: 'processed',
+      },
+      {
+        id: 'p2',
+        employee_code: 'NV002',
+        employee_name: 'B',
+        period_label: '2026-03',
+        gross_amount: 5_000_000,
+        deduction_amount: 500_000,
+        net_amount: 4_500_000,
+        status: 'processed',
+      },
+    ]);
+    expect(summary.hasData).toBe(true);
+    expect(summary.periodLabel).toBe('2026-03');
+    expect(summary.statusLabel).toBe('processed');
+    expect(summary.payslipCount).toBe(2);
+    expect(summary.grossFormatted).toContain('15');
+    expect(summary.deductionsFormatted).toContain('1');
+    expect(summary.netFormatted).toContain('13');
+  });
+
+  it('marks only deferred cockpit views as API-unavailable (M-CC-01 residual)', () => {
+    expect(isHrmCockpitApiDeferredView('hrm_ai')).toBe(true);
+    expect(isHrmCockpitApiDeferredView('processes')).toBe(true);
+    expect(isHrmCockpitApiDeferredView('tasks')).toBe(false);
+    expect(isHrmCockpitApiDeferredView('decisions')).toBe(false);
+    expect(isHrmCockpitApiDeferredView('internal_services')).toBe(false);
+    expect(isHrmCockpitApiDeferredView('dashboard')).toBe(false);
+  });
+
+  it('aggregates F6 recruitment funnel from live candidate stages (AC-CD-F6-03)', () => {
+    const counts = mapHrmRecruitmentFunnelCounts([
+      { stage: 'applied' },
+      { stage: 'new' },
+      { stage: 'screening' },
+      { stage: 'interview' },
+      { stage: 'offer' },
+      { stage: 'hired' },
+      { stage: 'rejected' },
+    ]);
+    expect(counts.new).toBe(2);
+    expect(counts.screening).toBe(1);
+    expect(counts.interview).toBe(1);
+    expect(counts.offer).toBe(1);
+    expect(counts.hired).toBe(1);
+    expect(counts.rejected).toBe(1);
+    expect(counts.total).toBe(7);
   });
 });

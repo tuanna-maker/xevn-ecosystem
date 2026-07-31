@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createHmac } from 'node:crypto';
-import { StreamableFile } from '@nestjs/common';
+import { HttpStatus, StreamableFile } from '@nestjs/common';
+import { HTTP_CODE_METADATA } from '@nestjs/common/constants';
 import { SpreadsheetController } from './spreadsheet.controller';
 import { SpreadsheetService } from './spreadsheet.service';
 
@@ -63,6 +64,30 @@ describe('SpreadsheetController', () => {
     await expect(controller.downloadTemplate('unknown', 'csv', undefined, 'test-key')).rejects.toThrow(
       'No template available for kind',
     );
+  });
+
+  it('HRM-IM-01 preview declares HTTP 200 (not Nest POST default 201)', async () => {
+    const httpCode = Reflect.getMetadata(
+      HTTP_CODE_METADATA,
+      SpreadsheetController.prototype.importPreview,
+    );
+    expect(httpCode).toBe(HttpStatus.OK);
+    const file = {
+      buffer: Buffer.from('employee_code,email,full_name\nE1,a@xe.vn,A'),
+      mimetype: 'text/csv',
+      originalname: 'x.csv',
+    } as Parameters<SpreadsheetController['importPreview']>[0];
+    const res = await controller.importPreview(
+      file,
+      { kind: 'employee_import', dryRun: 'true' },
+      'xevn',
+      'vtc',
+      undefined,
+      'test-key',
+    );
+    expect(res.success).toBe(true);
+    expect(res.code).toBe('SHEET-200');
+    expect(spreadsheetMock.previewEmployeeImport).toHaveBeenCalled();
   });
 
   it('HRM-IM-01 preview rejects scope mismatch before service', async () => {

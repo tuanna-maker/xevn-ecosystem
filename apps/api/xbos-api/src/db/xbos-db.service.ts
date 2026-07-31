@@ -29,6 +29,7 @@ export class XbosDbService implements OnModuleDestroy {
     const connectionString = resolveDatabaseUrl();
     if (connectionString) {
       this.pool = new Pool({ connectionString, ssl: false, ...poolEnv });
+      this.attachPoolErrorGuard(this.pool);
       return;
     }
 
@@ -47,6 +48,7 @@ export class XbosDbService implements OnModuleDestroy {
         ssl: process.env.DB_SSL === 'true',
         ...poolEnv,
       });
+      this.attachPoolErrorGuard(this.pool);
       return;
     }
 
@@ -65,6 +67,14 @@ export class XbosDbService implements OnModuleDestroy {
       database: dbName,
       ssl: process.env.DB_SSL === 'true',
       ...poolEnv,
+    });
+    this.attachPoolErrorGuard(this.pool);
+  }
+
+  /** PgBouncer idle disconnect must not crash the Nest process (ECONNRESET). */
+  private attachPoolErrorGuard(pool: Pool): void {
+    pool.on('error', (err: Error) => {
+      console.error(`[${XBOS_SERVICE_NAME}] pg pool idle client error: ${err.message}`);
     });
   }
 

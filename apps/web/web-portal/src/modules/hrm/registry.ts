@@ -19,6 +19,7 @@ export const HRM_ALL_VIEWS = [
   'processes',
   'internal_services',
   'tools_equipment',
+  'fleet',
   'company',
   'reports',
   'settings',

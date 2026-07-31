@@ -17,7 +17,7 @@ export function UnifiedPortalRedirect() {
 
   return (
     <p className="p-6 text-sm text-slate-600" role="status">
-      Đang chuyển sang X-BOS Unified Portal (Command Center)…
+      Đang chuyển sang XeVN OS (Command Center)…
     </p>
   );
 }

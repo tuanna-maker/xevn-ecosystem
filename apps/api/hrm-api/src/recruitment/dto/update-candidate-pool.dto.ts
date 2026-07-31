@@ -1,4 +1,4 @@
-import { IsDateString, IsEmail, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDateString, IsEmail, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class UpdateCandidatePoolDto {
   @IsOptional()
@@ -25,6 +25,11 @@ export class UpdateCandidatePoolDto {
   @IsString()
   @MaxLength(30)
   stage?: string;
+
+  /** FR-HRM-INT-01 / G-DB-01 — bắt buộc khi stage=hired (hoặc reverse employees.candidate_id). */
+  @IsOptional()
+  @IsUUID()
+  employee_id?: string;
 
   @IsOptional()
   @IsDateString()

@@ -60,4 +60,37 @@ describe('HrmInboxService listInbox SQL', () => {
     );
     expect(out.total).toBe(1);
   });
+
+  it('D-HRM-LEAVE-REQ-CREATE-BE-01: persistAttendanceEnvelope maps holding slug → pilot UUID (no slug::uuid)', async () => {
+    const queryMock = jest.fn().mockResolvedValue({ rows: [] });
+    const svc = new HrmInboxService({ query: queryMock } as never);
+    await svc.persistAttendanceEnvelope({
+      type: 'leave_request.created',
+      at: '2026-07-27T00:00:00.000Z',
+      request: {
+        id: 'lr-1',
+        company_id: 'holding',
+        employee_id: employeeId,
+        employee_code: 'NV0001',
+        employee_name: 'A',
+        leave_type: 'LVT_01',
+        start_date: '2026-11-12',
+        end_date: '2026-11-12',
+        total_days: 1,
+        reason: null,
+        status: 'pending',
+        requested_at: '2026-11-12T00:00:00.000Z',
+        reviewed_at: null,
+        reviewed_by: null,
+        rejected_reason: null,
+      },
+    });
+    const insertCall = queryMock.mock.calls.find(
+      ([sql]) => String(sql).includes('INSERT INTO public.hrm_inbox_notifications'),
+    );
+    expect(insertCall).toBeDefined();
+    const [, params] = insertCall as [string, unknown[]];
+    expect(params[1]).toBe('10000000-0000-4000-8000-000000000001');
+    expect(params[1]).not.toBe('holding');
+  });
 });

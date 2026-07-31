@@ -21,6 +21,9 @@ const CATALOG_KEY_LABELS: Record<string, string> = {
   work_locations: 'Địa điểm làm việc',
   employee_statuses: 'Trạng thái nhân viên',
   recruitment_sources: 'Nguồn tuyển dụng',
+  job_titles: 'Chức danh',
+  recruitment_channels: 'Nguồn ứng viên',
+  job_grades: 'Ngạch bậc chức danh',
 };
 
 const HAT_KEY_LABELS: Record<string, string> = {

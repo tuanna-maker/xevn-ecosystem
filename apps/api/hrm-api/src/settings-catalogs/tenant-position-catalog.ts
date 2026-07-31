@@ -1,12 +1,25 @@
 /**
- * Danh mục chức danh theo từng tenant — nguồn sự thật từ:
- *   docs/danh sách công ty và vai trò.md
- *   apps/api/xbos-api/data/org-seed-member-companies.json
+ * @CODE-MEMORY
+ * Screen:     HRM Settings — chức danh / phòng ban (legacy hardcode registry)
+ * UC:         FR-HRM-SC-MD-01 · FR-HRM-SC-MD-02 · FR-HRM-SC-POS-01
+ * BR:         BR-SET-MD-01/03 · GAP-MD-01 · G-ORPH-BE-03 retired as production SoT
+ * SRS:        docs/qa/evidence/ba-hrm-settings-master-data-01-20260723.md §3.1
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.8 · §18.1
+ * Purpose:    **BOOTSTRAP-ONLY** hardcode map phòng→chức danh theo tenant member.
+ *   Production SoT = XBOS pull `job_titles` + `departments|department_catalog|org_departments|positions`
+ *   + Settings sync / company extension — **không** dùng registry này làm SoT runtime.
+ * WorkItem:   D-HRM-SETTINGS-MD-POS-SEED-BE-01
+ * Coded:      2026-07-25
+ * Callers:    settings-catalogs.service seedTenantPositionCatalog* (gated)
+ * Callees:    —
+ * must_keep:  U65 cấm seed UAT; LE company-col; RBAC scope; empty honesty khi chưa sync
+ * SOLID:      Data constant tách khỏi merge/SQL Settings
+ * LastVerified: be-hrm-settings-md-pos-seed-01.spec.ts
  *
- * Cấu trúc:
- *   - departments: danh sách phòng ban → dùng cho `select` field "Phòng ban"
- *   - positionsByDept: map phòng → danh sách chức danh → cascading select FE
- *   - toCatalogItems(): trả CatalogExtensionItemDto[] để ghi vào hrm_employee_basic_fields
+ * @CODE-MEMORY-CHANGE 2026-07-25
+ * WorkItem: D-HRM-SETTINGS-MD-POS-SEED-BE-01
+ * change_mode: UPGRADE
+ * What: Document BOOTSTRAP-ONLY; export env allow helper; registry no longer runtime SoT
  */
 
 import type { CatalogExtensionItemDto } from './dto/append-extension-items.dto';
@@ -19,6 +32,17 @@ export type TenantPositionCatalog = {
   positionsByDept: DepartmentPositionMap;
 };
 
+/**
+ * Explicit bootstrap-dev gate (sponsor «bootstrap môi trường dev»).
+ * Default OFF — production / UAT must use XBOS pull + Settings.
+ */
+export function isTenantPositionSeedEnvAllowed(
+  env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  const raw = env.HRM_ALLOW_TENANT_POSITION_SEED?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
 /** Trích toàn bộ chức danh từ map thành mảng phẳng, loại trùng, sắp xếp. */
 function allPositions(map: DepartmentPositionMap): string[] {
   return [...new Set(Object.values(map).flat())].sort((a, b) =>
@@ -26,7 +50,10 @@ function allPositions(map: DepartmentPositionMap): string[] {
   );
 }
 
-/** Xây CatalogExtensionItemDto[] cho 2 field department + position của catalog `hrm_employee_basic_fields`. */
+/**
+ * Xây CatalogExtensionItemDto[] cho 2 field department + position của catalog `hrm_employee_basic_fields`.
+ * Chỉ dùng khi seed bootstrap được phép và Settings/XBOS POS catalogs còn trống.
+ */
 export function buildPositionCatalogItems(catalog: TenantPositionCatalog): CatalogExtensionItemDto[] {
   const deptSelect = catalog.departments.join('|');
   const posSelect = allPositions(catalog.positionsByDept).join('|');
@@ -46,9 +73,18 @@ export function buildPositionCatalogItems(catalog: TenantPositionCatalog): Catal
   ];
 }
 
+/** Empty field defs — honest empty until XBOS/Settings POS catalogs are synced (BR-SET-MD-03). */
+export function buildEmptyPositionFieldDefs(): CatalogExtensionItemDto[] {
+  return [
+    { code: 'department', label: 'Phòng ban', unit: 'select:', status: 'active' },
+    { code: 'position', label: 'Chức danh', unit: 'select:', status: 'active' },
+  ];
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. Công ty Cổ phần Thương mại và Dịch vụ X.E  (tenant: xe-tmdv)
+// Bootstrap-only member maps (NOT production SoT — prefer XBOS job_titles / departments)
 // ─────────────────────────────────────────────────────────────────────────────
+
 const XE_TMDV: TenantPositionCatalog = {
   tenantId: 'xe-tmdv',
   departments: ['Ban Giám đốc', 'Xưởng dịch vụ'],
@@ -70,9 +106,6 @@ const XE_TMDV: TenantPositionCatalog = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2. Công ty TNHH Du lịch Visun  (tenant: visun)
-// ─────────────────────────────────────────────────────────────────────────────
 const VISUN: TenantPositionCatalog = {
   tenantId: 'visun',
   departments: ['Ban Giám đốc', 'Phòng TCKT', 'Phòng VTHK'],
@@ -83,9 +116,6 @@ const VISUN: TenantPositionCatalog = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 3. Công ty TNHH Du lịch X.E Việt Nam  (tenant: xe-du-lich)
-// ─────────────────────────────────────────────────────────────────────────────
 const XE_DU_LICH: TenantPositionCatalog = {
   tenantId: 'xe-du-lich',
   departments: [
@@ -124,9 +154,6 @@ const XE_DU_LICH: TenantPositionCatalog = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 4. Công ty TNHH X.E Việt Nam  (tenant: xe-vietnam)
-// ─────────────────────────────────────────────────────────────────────────────
 const XE_VIETNAM: TenantPositionCatalog = {
   tenantId: 'xe-vietnam',
   departments: [
@@ -214,10 +241,6 @@ const XE_VIETNAM: TenantPositionCatalog = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Bảng tra cứu theo tenantId
-// ─────────────────────────────────────────────────────────────────────────────
-
 export const TENANT_POSITION_CATALOGS: Record<string, TenantPositionCatalog> = {
   'xe-tmdv': XE_TMDV,
   visun: VISUN,
@@ -226,8 +249,7 @@ export const TENANT_POSITION_CATALOGS: Record<string, TenantPositionCatalog> = {
 };
 
 /**
- * Trả catalog cho tenantId. Nếu không có → trả về catalog trống để tránh crash.
- * Service layer nên log warning khi tenantId không tìm thấy.
+ * Bootstrap lookup only. Runtime pickers/asserts use Settings effectiveItems (XBOS + extension).
  */
 export function getTenantPositionCatalog(tenantId: string): TenantPositionCatalog | undefined {
   return TENANT_POSITION_CATALOGS[tenantId.toLowerCase().trim()];

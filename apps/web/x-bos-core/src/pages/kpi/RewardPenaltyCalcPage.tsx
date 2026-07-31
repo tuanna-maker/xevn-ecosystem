@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Play, RotateCcw, Save, Wrench } from 'lucide-react';
 import { useXbosStore } from '@/store/useXbosStore';
 import type { PolicyDefinition } from '@/types';
+import { resolveRewardPenaltyRunStatusLabel } from '@/utils/xbosCoreLabelMaps';
 
 const DEFAULT_TENANT = 'tenant-xevn-holding';
 
@@ -358,7 +359,7 @@ export function RewardPenaltyCalcPage() {
                 {runsForPeriod.length === 0 && <option value="">Chưa có kết quả</option>}
                 {runsForPeriod.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.status} · {r.createdAt.slice(0, 19).replace('T', ' ')}
+                    {resolveRewardPenaltyRunStatusLabel(r.status)} · {r.createdAt.slice(0, 19).replace('T', ' ')}
                   </option>
                 ))}
               </select>

@@ -142,6 +142,34 @@ describe('PerformanceService', () => {
     );
   });
 
+  it('listEvaluations ensureSchema repairs invalid status without DROP CONSTRAINT', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const schemaSql: string[] = [];
+    db.query.mockImplementation(async (sql: string) => {
+      if (
+        sql.includes('performance_evaluations') &&
+        (sql.includes('NOT IN') || sql.includes('chk_performance_evaluation_status'))
+      ) {
+        schemaSql.push(sql);
+      }
+      if (sql.includes('FROM public.performance_evaluations')) {
+        return { rows: [] } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    await service.listEvaluations({ company_id: 'main' }, `Bearer ${token}`);
+
+    expect(schemaSql.some((s) => s.includes('NOT IN'))).toBe(true);
+    expect(schemaSql.some((s) => s.includes('DO $$'))).toBe(true);
+    expect(schemaSql.some((s) => s.includes('DROP CONSTRAINT'))).toBe(false);
+  });
+
   it('throws deterministic not-found when performance cycle missing', async () => {
     db.query
       .mockResolvedValueOnce({ rows: [] } as never)

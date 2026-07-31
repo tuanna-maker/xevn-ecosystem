@@ -1,3 +1,50 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Danh mục cấu hình (service overview/merge)
+ * UC:         HRM-SC-01..03
+ * BR:         main→holding catalog partition · empty chưa đồng bộ trung thực
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.8 · FR-HRM-SC-01
+ * SRS bước:   Diễn biến #2/#3/#4 — tổng quan nhóm / empty / có dữ liệu
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.8 (ref_srs: FR-HRM-SC-01)
+ * Purpose:    Merge XBOS snapshot + HRM extension; không fake items khi chưa sync.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ * Callers:    settings-catalogs.controller.ts → getOverview / upsert / delete
+ * Callees:    CatalogSyncService · HrmDbService · XbosCatalogWorkflowBridge
+ * must_keep:  empty honesty; seed endpoints không dùng evidence U65
+ * SOLID:      Service owns merge SQL
+ * LastVerified: settings-catalogs.service.spec.ts · d-hrm-set-item-persist-01.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: CODE-MEMORY map Diễn biến SC-01 (không đổi logic)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-23
+ * WorkItem: D-HRM-SETTINGS-MD-CRUD-BE-01
+ * change_mode: ADD
+ * What: Picker list (q/active/company) + assertCodeInEffectiveCatalog (BR-HRM-MD-01);
+ *   soft-deactivate delete; upsert status; FR-HRM-SC-POS/LEAVE/DEC/PAY/JT consumers.
+ * SRS: delta Cài đặt SC-POS/LEAVE/DEC/PAY · ADR §5 S1/S3 · TechSpec §18.1
+ * must_keep: empty honesty; no XBOS SoT fork; seed endpoints not U65 evidence
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-25
+ * WorkItem: D-HRM-SETTINGS-MD-POS-SEED-BE-01
+ * change_mode: UPGRADE
+ * What: Retire G-ORPH-BE-03 — tenant-position hardcode seed is bootstrap-only;
+ *   refuse when XBOS/Settings POS catalogs have items; profile template no longer embeds hardcode.
+ * SRS: FR-HRM-SC-MD-01/02 · BA matrix · GAP-MD-01
+ * must_keep: job_titles/departments SoT via effectiveItems; U65 no seed UAT; LE company-col; RBAC
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-BE-ERP-E1B-ALIAS-KEYS-01
+ * change_mode: ADD
+ * What: Family-aware getEffectiveItems / picker / assert / overview DEC merge;
+ *   write storageKey prefer hr_decision_types; resolveCatalogFamily on mutate.
+ * SRS: BA_ERP_E1B_SRS_01 · FR-HRM-SC-DEC-01 alias · AC-SC-DEC-ALIAS-*
+ * DB/API: DB_DESIGN_HRM_SETTINGS_E1B §3.2 · API_DESIGN_HRM_SETTINGS_E1B §0–§2
+ * must_keep: empty honesty; no invent L0; no work_shifts dual-write; POS/LEAVE paths
+ */
 import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
@@ -18,8 +65,16 @@ import {
   TOURISM_TENANT_ID,
 } from './tourism-fleet-catalog';
 import {
+  HRM_SC_POS_KEYS,
+  catalogAliasTryList,
+  isE1bMasterCatalogKey,
+  resolveCatalogFamily,
+} from './hrm-settings-master-keys';
+import {
+  buildEmptyPositionFieldDefs,
   buildPositionCatalogItems,
   getTenantPositionCatalog,
+  isTenantPositionSeedEnvAllowed,
 } from './tenant-position-catalog';
 import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
 import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
@@ -49,6 +104,9 @@ export type SettingsCatalogOverviewRow = {
   extensionItems: SettingsCatalogItem[];
   items: SettingsCatalogItem[];
   effectiveItems: SettingsCatalogItem[];
+  /** E1-B family aliases (same logical catalog). */
+  aliases?: string[];
+  familyId?: string;
 };
 
 @Injectable()
@@ -204,9 +262,88 @@ export class SettingsCatalogsService {
     return [...byCode.values()].sort((a, b) => a.code.localeCompare(b.code));
   }
 
+  /** VAL-E1B-DEC-05 — dedupe by code; keep first (prefer storageKey / XBOS order). */
+  private mergeByCodePreferFirst(
+    primary: SettingsCatalogItem[],
+    secondary: SettingsCatalogItem[],
+  ): SettingsCatalogItem[] {
+    const byCode = new Map<string, SettingsCatalogItem>();
+    for (const row of primary) {
+      byCode.set(row.code.toLowerCase(), row);
+    }
+    for (const row of secondary) {
+      const k = row.code.toLowerCase();
+      if (!byCode.has(k)) {
+        byCode.set(k, row);
+      }
+    }
+    return [...byCode.values()].sort((a, b) => a.code.localeCompare(b.code));
+  }
+
+  /** Exact L1 row for one key — null when missing (never throws). */
+  private async loadSyncedExact(
+    catalogKey: string,
+    tenantId: string,
+    companyId: string,
+  ): Promise<{ key: string; payload: unknown } | null> {
+    const exact = this.catalogSync.getSyncedCatalogExact;
+    if (typeof exact === 'function') {
+      return exact.call(this.catalogSync, catalogKey, tenantId, companyId);
+    }
+    const get = this.catalogSync.getSyncedCatalog;
+    if (typeof get === 'function') {
+      return get.call(this.catalogSync, catalogKey, tenantId, companyId).catch(() => null);
+    }
+    return null;
+  }
+
   /**
-   * Effective catalog items for one key (XBOS sync + HRM extension merge).
-   * WorkItem: DO-HDSD-MUTATE-SOFTDEL-BH-REDEPLOY-01 — compile dep for E3 insurance-policies.
+   * Resolve write storage key — prefer L1 live key (DEC → hr_decision_types), else defaultStorageKey.
+   * @CODE-MEMORY method · VAL-E1B-DEC-03 · SA-ERP-E1B-DESIGN-REVIEW-01 §3.1
+   */
+  async resolveWriteStorageKey(
+    tenantId: string,
+    companyId: string,
+    catalogKey: string,
+  ): Promise<string> {
+    const fam = resolveCatalogFamily(catalogKey);
+    const t = tenantId.trim().toLowerCase();
+    const c = companyId.trim().toLowerCase();
+    for (const candidate of catalogAliasTryList(catalogKey)) {
+      const row = await this.loadSyncedExact(candidate, t, c);
+      if (row) {
+        return row.key;
+      }
+    }
+    return fam.storageKey;
+  }
+
+  private matchesPickerQuery(item: SettingsCatalogItem, q: string | undefined): boolean {
+    if (!q?.trim()) return true;
+    const needle = q.trim().toLowerCase();
+    return item.code.toLowerCase().includes(needle) || item.label.toLowerCase().includes(needle);
+  }
+
+  private matchesActiveFilter(
+    item: SettingsCatalogItem,
+    activeRaw: string | undefined,
+    status: 'active' | 'draft' | 'all' | undefined,
+  ): boolean {
+    if (status === 'all') return true;
+    if (status === 'active') return item.status === 'active';
+    if (status === 'draft') return item.status === 'draft';
+    if (activeRaw == null || activeRaw.trim() === '') return true;
+    const a = activeRaw.trim().toLowerCase();
+    if (a === '1' || a === 'true' || a === 'active' || a === 'yes') return item.status === 'active';
+    if (a === '0' || a === 'false' || a === 'draft' || a === 'inactive' || a === 'no') {
+      return item.status !== 'active';
+    }
+    return true;
+  }
+
+  /**
+   * Load effective items for one catalog family (merge all aliases' L1+L2a).
+   * @CODE-MEMORY method · FR-HRM-SC-POS/LEAVE/DEC · AC-SET-FS-01 · VAL-E1B-DEC-01 · TechSpec §18.1
    */
   async getEffectiveItemsForKey(
     tenantId: string,
@@ -216,40 +353,90 @@ export class SettingsCatalogsService {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
-    const key = this.normalizeCatalogKey(catalogKey);
-    const synced = await this.catalogSync.listSyncedCatalogs(t, c);
-    const syncedRow = synced.data.find((row) => String(row.key).toLowerCase() === key);
-    const parsed = syncedRow
-      ? this.parsePayloadItems(syncedRow.payload)
-      : { name: null, domain: null, key: null, items: [] as Array<{ code: string; label: string; unit?: string | null; status?: string }> };
-    const xbosItems = this.toXbosOriginItems(parsed.items);
-    const extRes = await this.db.query<{
-      code: string;
-      label: string;
-      unit: string | null;
-      status: string;
-    }>(
-      `
+    const fam = resolveCatalogFamily(this.normalizeCatalogKey(catalogKey));
+    let xbosMerged: SettingsCatalogItem[] = [];
+    let hrmMerged: SettingsCatalogItem[] = [];
+
+    for (const alias of fam.aliases) {
+      const synced = await this.loadSyncedExact(alias, t, c);
+      const parsed = synced
+        ? this.parsePayloadItems(synced.payload)
+        : {
+            items: [] as Array<{
+              code: string;
+              label: string;
+              unit?: string | null;
+              status?: string;
+            }>,
+          };
+      xbosMerged = this.mergeByCodePreferFirst(xbosMerged, this.toXbosOriginItems(parsed.items));
+
+      const extRes = await this.db.query<{
+        code: string;
+        label: string;
+        unit: string | null;
+        status: string;
+      }>(
+        `
       SELECT code, label, unit, status
       FROM public.hrm_catalog_extension_items
       WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3
       ORDER BY code
     `,
-      [t, c, key],
-    );
-    const hrmItems: SettingsCatalogItem[] = extRes.rows.map((row) => ({
-      code: row.code,
-      label: row.label,
-      unit: row.unit,
-      status: row.status === 'draft' ? 'draft' : 'active',
-      origin: 'hrm' as const,
-    }));
-    return this.mergeEffective(xbosItems, hrmItems);
+        [t, c, alias],
+      );
+      const hrmItems: SettingsCatalogItem[] = extRes.rows.map((row) => ({
+        code: row.code,
+        label: row.label,
+        unit: row.unit,
+        status: row.status === 'draft' ? 'draft' : 'active',
+        origin: 'hrm' as const,
+      }));
+      hrmMerged = this.mergeByCodePreferFirst(hrmMerged, hrmItems);
+    }
+
+    return this.mergeEffective(xbosMerged, hrmMerged);
   }
 
   /**
-   * BR-HRM-MD-01 — persist only codes present in effective catalog.
-   * WorkItem: DO-HDSD-MUTATE-SOFTDEL-BH-REDEPLOY-01 — compile dep for E3 insurance consumers.
+   * Picker API — AC-SET-FS-01..05 / AC-HRM-PICKER-01 · E1-B alias-aware.
+   * @CODE-MEMORY method · FR-HRM-SC-* Settings list for combobox search
+   */
+  async listPickerItems(
+    tenantId: string,
+    companyId: string,
+    catalogKey: string,
+    query?: { q?: string; active?: string; status?: 'active' | 'draft' | 'all' },
+  ): Promise<{
+    catalog_key: string;
+    aliases: string[];
+    family_id: string;
+    company_id: string;
+    total: number;
+    data: SettingsCatalogItem[];
+  }> {
+    const fam = resolveCatalogFamily(this.normalizeCatalogKey(catalogKey));
+    const storageKey = await this.resolveWriteStorageKey(tenantId, companyId, catalogKey);
+    const items = await this.getEffectiveItemsForKey(tenantId, companyId, catalogKey);
+    const filtered = items.filter(
+      (item) =>
+        this.matchesActiveFilter(item, query?.active, query?.status) &&
+        this.matchesPickerQuery(item, query?.q),
+    );
+    return {
+      catalog_key: storageKey,
+      aliases: [...fam.aliases],
+      family_id: fam.familyId,
+      company_id: companyId.trim().toLowerCase(),
+      total: filtered.length,
+      data: filtered,
+    };
+  }
+
+  /**
+   * BR-HRM-MD-01 — consumer forms may only persist codes from effective catalog.
+   * Empty catalog → 400 (honest empty; no free-text SoT).
+   * @CODE-MEMORY method · VAL-SET-MD-01..03 · TechSpec §18.1
    */
   async assertCodeInEffectiveCatalog(opts: {
     tenantId: string;
@@ -289,8 +476,14 @@ export class SettingsCatalogsService {
     return hit;
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-SC-01
+   * SRS bước: Diễn biến #2/#3/#4 — merge snapshot + extension; empty chưa sync OK
+   * TechSpec: §14.8 ref_srs FR-HRM-SC-01
+   */
   async getOverview(tenantId: string, companyId: string): Promise<{ catalogs: SettingsCatalogOverviewRow[] }> {
     await this.ensureExtensionSchema();
+    // Xử lý: đọc partition đã resolve (main→holding ở controller).
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
     const synced = await this.catalogSync.listSyncedCatalogs(t, c);
@@ -362,9 +555,35 @@ export class SettingsCatalogsService {
     }
 
     const catalogs: SettingsCatalogOverviewRow[] = [];
+    // E1-B: family effectiveItems from in-memory L1+L2a so dual DEC keys share one merged set.
+    const familyEffectiveCache = new Map<string, SettingsCatalogItem[]>();
+    const effectiveForFamily = (familyId: string, aliases: readonly string[]): SettingsCatalogItem[] => {
+      const cached = familyEffectiveCache.get(familyId);
+      if (cached) return cached;
+      let xbosMerged: SettingsCatalogItem[] = [];
+      let hrmMerged: SettingsCatalogItem[] = [];
+      for (const alias of aliases) {
+        const syncedRow = synced.data.find((row) => row.key === alias);
+        if (syncedRow) {
+          const parsedAlias = this.parsePayloadItems(syncedRow.payload);
+          xbosMerged = this.mergeByCodePreferFirst(
+            xbosMerged,
+            this.toXbosOriginItems(parsedAlias.items),
+          );
+        }
+        hrmMerged = this.mergeByCodePreferFirst(hrmMerged, extByKey.get(alias) ?? []);
+      }
+      const merged = this.mergeEffective(xbosMerged, hrmMerged);
+      familyEffectiveCache.set(familyId, merged);
+      return merged;
+    };
+
     for (const catalogKey of [...keys].sort()) {
-      const syncedRow = synced.data.find((c) => c.key === catalogKey);
-      const parsed = syncedRow ? this.parsePayloadItems(syncedRow.payload) : { name: null, domain: null, key: null, items: [] };
+      const fam = resolveCatalogFamily(catalogKey);
+      const syncedRow = synced.data.find((row) => row.key === catalogKey);
+      const parsed = syncedRow
+        ? this.parsePayloadItems(syncedRow.payload)
+        : { name: null, domain: null, key: null, items: [] };
       const xbosItems = this.toXbosOriginItems(parsed.items);
       const hrmExtensionItems = extByKey.get(catalogKey) ?? [];
       catalogs.push({
@@ -380,7 +599,9 @@ export class SettingsCatalogsService {
         extension_items: hrmExtensionItems,
         extensionItems: hrmExtensionItems,
         items: hrmExtensionItems,
-        effectiveItems: this.mergeEffective(xbosItems, hrmExtensionItems),
+        effectiveItems: effectiveForFamily(fam.familyId, fam.aliases),
+        aliases: [...fam.aliases],
+        familyId: fam.familyId,
       });
     }
     return { catalogs };
@@ -416,9 +637,12 @@ export class SettingsCatalogsService {
     workflowInstanceId: string | null;
   }> {
     await this.ensureExtensionSchema();
-    const ck = this.normalizeCatalogKey(catalogKey);
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
+    const inputKey = this.normalizeCatalogKey(catalogKey);
+    const ck = isE1bMasterCatalogKey(inputKey)
+      ? await this.resolveWriteStorageKey(t, c, inputKey)
+      : inputKey;
     const batchId = randomUUID();
     let submitted = 0;
     for (const row of items) {
@@ -670,13 +894,17 @@ export class SettingsCatalogsService {
     companyId: string,
     catalogKey: string,
     items: CatalogExtensionItemDto[],
-  ): Promise<{ upserted: number }> {
+  ): Promise<{ upserted: number; storageKey: string }> {
     await this.ensureExtensionSchema();
-    const ck = this.normalizeCatalogKey(catalogKey);
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
+    const inputKey = this.normalizeCatalogKey(catalogKey);
+    // E1-B MD families → storageKey; other extension catalogs (employee fields) keep literal key.
+    const ck = isE1bMasterCatalogKey(inputKey)
+      ? await this.resolveWriteStorageKey(t, c, inputKey)
+      : inputKey;
     if (items.length === 0) {
-      return { upserted: 0 };
+      return { upserted: 0, storageKey: ck };
     }
 
     const codes: string[] = [];
@@ -703,41 +931,64 @@ export class SettingsCatalogsService {
     `,
       [t, c, ck, codes, labels, units, statuses],
     );
-    return { upserted: items.length };
+    return { upserted: items.length, storageKey: ck };
   }
 
   async upsertCatalogItem(tenantId: string, body: SettingsCatalogItemMutationDto) {
+    const status = body.status === 'draft' ? 'draft' : 'active';
     const result = await this.appendExtensionItems(tenantId, body.company_id, body.category_key, [
       {
         code: body.item_key,
         label: body.item_name,
         unit: body.item_value ?? undefined,
-        status: 'active',
+        status,
       },
     ]);
     return {
       upserted: result.upserted,
       item_key: body.item_key,
-      category_key: body.category_key,
+      category_key: result.storageKey,
+      status,
     };
   }
 
+  /**
+   * Soft-deactivate extension item (status=draft) — AC-SC-POS prefer stop over hard delete.
+   * XBOS-origin codes cannot be deleted here (extension-only); missing extension → 404.
+   * E1-B: locate across family aliases; prefer storageKey row.
+   */
   async deleteCatalogItem(tenantId: string, body: Pick<SettingsCatalogItemMutationDto, 'company_id' | 'category_key' | 'item_key'>) {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
     const c = body.company_id.trim().toLowerCase();
-    const catalogKey = this.normalizeCatalogKey(body.category_key);
+    const inputKey = this.normalizeCatalogKey(body.category_key);
+    const fam = resolveCatalogFamily(inputKey);
     const code = body.item_key.trim();
-    const res = await this.db.query<{ code: string }>(
-      `DELETE FROM public.hrm_catalog_extension_items
-       WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3 AND code = $4
-       RETURNING code`,
-      [t, c, catalogKey, code],
-    );
-    if (!res.rows[0]) {
-      throw new ApiException('HRM-SET-404', 'Catalog item not found', HttpStatus.NOT_FOUND);
+    const tryKeys = isE1bMasterCatalogKey(inputKey)
+      ? catalogAliasTryList(inputKey)
+      : [inputKey];
+
+    for (const catalogKey of tryKeys) {
+      const res = await this.db.query<{ code: string; catalog_key: string }>(
+        `UPDATE public.hrm_catalog_extension_items
+         SET status = 'draft'
+         WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3 AND code = $4
+         RETURNING code, catalog_key`,
+        [t, c, catalogKey, code],
+      );
+      if (res.rows[0]) {
+        return {
+          item_key: res.rows[0].code,
+          category_key: res.rows[0].catalog_key,
+          status: 'draft' as const,
+        };
+      }
     }
-    return { item_key: res.rows[0].code, category_key: catalogKey };
+    throw new ApiException(
+      'HRM-SET-404',
+      `Catalog item not found in HRM extension for family '${fam.familyId}' (cannot hard-delete XBOS master)`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 
   async requestFieldRemoval(
@@ -747,20 +998,31 @@ export class SettingsCatalogsService {
     payload: RequestCatalogFieldRemovalDto,
   ) {
     await this.ensureExtensionSchema();
-    const ck = this.normalizeCatalogKey(catalogKey);
+    const inputKey = this.normalizeCatalogKey(catalogKey);
     const code = payload.code.trim();
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
+    const tryKeys = isE1bMasterCatalogKey(inputKey)
+      ? catalogAliasTryList(inputKey)
+      : [inputKey];
 
-    const extRes = await this.db.query<{ label: string }>(
-      `
+    let ck = inputKey;
+    let extRes: { rows: Array<{ label: string }> } = { rows: [] };
+    for (const candidate of tryKeys) {
+      extRes = await this.db.query<{ label: string }>(
+        `
       SELECT label
       FROM public.hrm_catalog_extension_items
       WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3 AND code = $4
       LIMIT 1
     `,
-      [t, c, ck, code],
-    );
+        [t, c, candidate, code],
+      );
+      if (extRes.rows[0]) {
+        ck = candidate;
+        break;
+      }
+    }
     if (!extRes.rows[0]) {
       throw new ApiException(
         'HRM-SET-410',
@@ -807,6 +1069,44 @@ export class SettingsCatalogsService {
     };
   }
 
+  /**
+   * Count active items across FR-HRM-SC-POS catalog keys (XBOS snapshot + HRM extension).
+   * When > 0, hardcoded tenant-position registry must not write as SoT.
+   */
+  async countActivePosMasterItems(tenantId: string, companyId: string): Promise<number> {
+    let total = 0;
+    for (const key of HRM_SC_POS_KEYS) {
+      const items = await this.getEffectiveItemsForKey(tenantId, companyId, key);
+      total += items.filter((i) => i.status === 'active').length;
+    }
+    return total;
+  }
+
+  /**
+   * G-ORPH-BE-03 gate — hardcode seed only when sponsor enables bootstrap AND POS SoT empty.
+   * @CODE-MEMORY method · FR-HRM-SC-MD-01/02 · U65
+   */
+  private async assertTenantPositionHardcodeSeedAllowed(
+    tenantId: string,
+    companyId: string,
+  ): Promise<void> {
+    if (!isTenantPositionSeedEnvAllowed()) {
+      throw new ApiException(
+        'HRM-CAT-POS-SEED-FORBIDDEN',
+        'tenant-position-catalog seed is bootstrap-only (G-ORPH-BE-03 retired). Prefer POST …/sync-from-xbos or catalog-sync/pull for job_titles/departments. Set HRM_ALLOW_TENANT_POSITION_SEED=1 only for explicit bootstrap-dev — not UAT evidence.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    const activePos = await this.countActivePosMasterItems(tenantId, companyId);
+    if (activePos > 0) {
+      throw new ApiException(
+        'HRM-CAT-POS-SEED-SOT-EXISTS',
+        `Refusing hardcoded tenant-position seed: ${activePos} active item(s) already in XBOS/Settings POS catalogs (${HRM_SC_POS_KEYS.join('|')}). Use Settings path.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+  }
+
   async seedEmployeeProfileTemplate(tenantId: string, companyId: string): Promise<{
     catalogs: Array<{ catalogKey: string; upserted: number }>;
     totalUpserted: number;
@@ -821,25 +1121,18 @@ export class SettingsCatalogsService {
       );
     }
     const c = companyId.trim().toLowerCase();
+    // Xử lý: dept/position field defs = empty select — SoT là job_titles/departments (XBOS), không hardcode (G-ORPH-BE-03).
+    const deptPositionItems = buildEmptyPositionFieldDefs();
     const templates: Array<{ catalogKey: string; items: CatalogExtensionItemDto[] }> = [
       {
         catalogKey: 'hrm_employee_basic_fields',
-        items: (() => {
-          const tenantCatalog = getTenantPositionCatalog(t);
-          const deptPositionItems: CatalogExtensionItemDto[] = tenantCatalog
-            ? buildPositionCatalogItems(tenantCatalog)
-            : [
-                { code: 'department', label: 'Phòng ban', unit: 'select:', status: 'active' },
-                { code: 'position', label: 'Chức danh', unit: 'select:', status: 'active' },
-              ];
-          return [
+        items: [
             { code: 'employee_code', label: 'Mã nhân sự', unit: 'text', status: 'active' },
             { code: 'full_name', label: 'Họ và tên', unit: 'text', status: 'active' },
             ...deptPositionItems,
             { code: 'status', label: 'Trạng thái lao động', unit: 'select:active|probation|inactive', status: 'active' },
             { code: 'xbos_basic_badge_id', label: 'Mã thẻ nội bộ', unit: 'text', status: 'active' },
-          ];
-        })(),
+        ],
       },
       {
         catalogKey: 'hrm_employee_personal_fields',
@@ -1000,7 +1293,11 @@ export class SettingsCatalogsService {
     return { tenantId: t, companyId: c, catalogs, totalUpserted };
   }
 
-  /** Upsert chỉ field department + position theo danh mục tenant-position-catalog.ts */
+  /**
+   * BOOTSTRAP-ONLY — upsert department + position into hrm_employee_basic_fields from hardcode registry.
+   * Prefer XBOS pull job_titles/departments. Requires HRM_ALLOW_TENANT_POSITION_SEED=1 and empty POS SoT.
+   * @CODE-MEMORY method · G-ORPH-BE-03 retired · FR-HRM-SC-MD-01/02
+   */
   async seedTenantPositionCatalog(
     tenantId: string,
     companyId: string,
@@ -1010,15 +1307,18 @@ export class SettingsCatalogsService {
     departmentOptions: number;
     positionOptions: number;
     upserted: number;
+    source: 'bootstrap_hardcode';
+    sot: 'deprecated_use_xbos_settings';
   }> {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
+    await this.assertTenantPositionHardcodeSeedAllowed(t, c);
     const catalog = getTenantPositionCatalog(t);
     if (!catalog) {
       throw new ApiException(
         'HRM-CAT-POSITION',
-        `No position catalog defined for tenant "${t}"`,
+        `No bootstrap position catalog defined for tenant "${t}" — use XBOS sync for job_titles/departments`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -1032,6 +1332,8 @@ export class SettingsCatalogsService {
       departmentOptions: deptUnit.replace(/^select:/, '').split('|').filter(Boolean).length,
       positionOptions: posUnit.replace(/^select:/, '').split('|').filter(Boolean).length,
       upserted: result.upserted,
+      source: 'bootstrap_hardcode',
+      sot: 'deprecated_use_xbos_settings',
     };
   }
 
@@ -1042,14 +1344,25 @@ export class SettingsCatalogsService {
       departmentOptions: number;
       positionOptions: number;
       upserted: number;
+      source: 'bootstrap_hardcode';
+      sot: 'deprecated_use_xbos_settings';
     }>;
   }> {
+    if (!isTenantPositionSeedEnvAllowed()) {
+      throw new ApiException(
+        'HRM-CAT-POS-SEED-FORBIDDEN',
+        'tenant-position-catalog seed-all is bootstrap-only (G-ORPH-BE-03 retired). Prefer sync-from-xbos. Set HRM_ALLOW_TENANT_POSITION_SEED=1 only for explicit bootstrap-dev.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
     const scopes: Array<{
       tenantId: string;
       companyId: string;
       departmentOptions: number;
       positionOptions: number;
       upserted: number;
+      source: 'bootstrap_hardcode';
+      sot: 'deprecated_use_xbos_settings';
     }> = [];
     for (const { tenantId, companyId } of GROUP_HRM_TENANT_SCOPES.filter((s) => s.tenantId !== 'xevn')) {
       const row = await this.seedTenantPositionCatalog(tenantId, companyId);
@@ -1059,6 +1372,8 @@ export class SettingsCatalogsService {
         departmentOptions: row.departmentOptions,
         positionOptions: row.positionOptions,
         upserted: row.upserted,
+        source: row.source,
+        sot: row.sot,
       });
     }
     return { scopes };

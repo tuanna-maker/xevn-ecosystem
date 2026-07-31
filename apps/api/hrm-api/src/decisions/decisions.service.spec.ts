@@ -67,6 +67,7 @@ describe('DecisionsService', () => {
       decision_date: '2026-07-01',
       reason: 'QA CRUD matrix close',
       employee_name: 'QA Decision',
+      position_key: 'NV_KD',
     });
 
     expect(out).toBeDefined();

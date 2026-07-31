@@ -6,6 +6,7 @@ import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
+import { ApplyCatalogToMembersDto } from './dto/apply-catalog-to-members.dto';
 import { PublishCatalogDto } from './dto/publish-catalog.dto';
 
 @Controller('config-sync')
@@ -53,6 +54,32 @@ export class ConfigSyncController {
       companyId: scope.companyId,
     });
     return ok(data, 'XBOS-CFG-203', 'Catalog published');
+  }
+
+  /**
+   * XBOS-DM-HRM-07 / G-BM-REC-01 — Option B fan-out to member partitions.
+   * Source scope uses group legal read (JWT `main` → `holding`) so group CEO can apply.
+   */
+  @Post('catalog/:catalogKey/apply-to-members')
+  async applyCatalogToMembers(
+    @Param('catalogKey') catalogKey: string,
+    @Body() payload: ApplyCatalogToMembersDto,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    this.assertInternalAccess(authorization, internalApiKey);
+    const scope = resolveXbosGroupLegalReadScopeContext(authorization, {
+      tenantId: payload.tenantId,
+      companyId: payload.companyId,
+    });
+    const data = await this.configSyncService.applyCatalogToMembers(catalogKey, {
+      tenantId: scope.tenantId,
+      companyId: scope.companyId,
+      targets: payload.targets,
+      memberCompanyIds: payload.memberCompanyIds,
+      actor: payload.actor,
+    });
+    return ok(data, 'XBOS-CFG-204', 'Catalog applied to members');
   }
 
   @Get('catalog/:catalogKey')

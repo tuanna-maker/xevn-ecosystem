@@ -1,6 +1,34 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-HRM-METADATA-WORKFLOW-ID-HUMANIZE-01
+ * change_mode: UPGRADE
+ * What: Cột Quy trình humanize/hide workflow_code kỹ thuật (parity HRM MetadataQueueTab)
+ * Why: QC C-HRM-MENU-SWEEP-01 — không hiện xbos.employee_metadata.*
+ * must_keep: approve/reject handlers
+ */
 import type { EmployeeMetadataQueueItem } from './hrmApiClient';
 import { HRM_TABLE_CLASS, HRM_TABLE_SHELL } from './mock-data';
 import { SETTINGS_CONTROL_TEXT } from '../../pages/command-center/settings-form-pattern';
+
+/** Parity with apps/web/hrm/src/lib/metadataWorkflowLabel.ts */
+function formatMetadataWorkflowLabel(code: string | null | undefined): string {
+  const trimmed = typeof code === 'string' ? code.trim() : '';
+  if (!trimmed) return 'Quy trình mặc định';
+  if (trimmed === 'xbos.employee_metadata.default') {
+    return 'Duyệt thay đổi hồ sơ (mặc định)';
+  }
+  const looksHuman =
+    /[\sÀ-ỹ]/.test(trimmed) && !/^xbos\./i.test(trimmed) && !/^[a-z0-9]+(\.[a-z0-9_]+)+$/i.test(trimmed);
+  if (looksHuman) return trimmed;
+  if (
+    /^xbos\./i.test(trimmed) ||
+    trimmed.includes('.') ||
+    /^[a-z][a-z0-9_-]*$/i.test(trimmed)
+  ) {
+    return 'Quy trình phê duyệt metadata';
+  }
+  return trimmed;
+}
 
 export interface HrmMetadataQueueSectionProps {
   rows: EmployeeMetadataQueueItem[];
@@ -25,10 +53,10 @@ export function HrmMetadataQueueSection({
         <thead className="bg-white/70 backdrop-blur-md">
           <tr>
             <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Nhân sự</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Field</th>
+            <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trường dữ liệu</th>
             <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Giá trị đề nghị</th>
             <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Lý do</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Workflow</th>
+            <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Quy trình</th>
             <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
           </tr>
         </thead>
@@ -52,7 +80,9 @@ export function HrmMetadataQueueSection({
                     : JSON.stringify(row.requested_value)}
                 </td>
                 <td className="px-3 py-2 text-slate-600">{row.reason ?? 'Không có'}</td>
-                <td className="px-3 py-2 text-slate-600">{row.workflow_code ?? 'Mặc định'}</td>
+                <td className="px-3 py-2 text-slate-600" data-testid="metadata-workflow-label">
+                  {formatMetadataWorkflowLabel(row.workflow_code)}
+                </td>
                 <td className="px-3 py-2 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <button
@@ -97,8 +127,8 @@ function MetadataQueueHeader({
         </p>
         <p className="text-sm text-slate-500">
           {fallback
-            ? 'Không tải được HRM API — hàng chờ trống.'
-            : 'UC-HRM-26 — GET /api/hrm/employee-metadata/change-requests'}
+            ? 'Không tải được hàng chờ metadata.'
+            : 'Duyệt yêu cầu thay đổi metadata nhân sự'}
         </p>
       </div>
       <span className="rounded-full border border-xevn-border bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">

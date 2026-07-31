@@ -16,6 +16,20 @@ import { listBusinessMasterItems } from '../../integrations/businessMasterApi';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 import { resolvePartnersPageFailure } from '../../utils/portalStrictMode';
 
+function resolvePartnerTypeLabel(type: string): string {
+  const s = type?.trim().toLowerCase();
+  switch (s) {
+    case 'supplier':
+      return 'Nhà cung cấp';
+    case 'distributor':
+      return 'Nhà phân phối';
+    case 'service':
+      return 'Đối tác công nghệ';
+    default:
+      return '—';
+  }
+}
+
 const PartnersPage: React.FC = () => {
   const { companies } = useGlobalFilter();
   const { tenantId, companyId, isMasterContext } = useTenantScope();
@@ -52,7 +66,8 @@ const PartnersPage: React.FC = () => {
     const total = filteredPartners.length;
     const active = filteredPartners.filter((p) => p.status === 'active').length;
     const byType = filteredPartners.reduce((acc, p) => {
-      acc[p.type] = (acc[p.type] || 0) + 1;
+      const label = resolvePartnerTypeLabel(p.type);
+      acc[label] = (acc[label] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     return { total, active, byType };
@@ -98,7 +113,7 @@ const PartnersPage: React.FC = () => {
       sortable: true,
       render: (value) => (
         <Badge variant="info" size="sm">
-          {value}
+          {resolvePartnerTypeLabel(value)}
         </Badge>
       ),
     },
@@ -167,6 +182,10 @@ const PartnersPage: React.FC = () => {
           <StatCard
             title="Nhà cung cấp"
             value={stats.byType['Nhà cung cấp'] || 0}
+          />
+          <StatCard
+            title="Nhà phân phối"
+            value={stats.byType['Nhà phân phối'] || 0}
           />
           <StatCard
             title="Đối tác công nghệ"

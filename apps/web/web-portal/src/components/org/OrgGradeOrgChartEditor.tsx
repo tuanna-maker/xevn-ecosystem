@@ -143,7 +143,7 @@ export const OrgGradeOrgChartEditor: React.FC<OrgGradeOrgChartEditorProps> = ({
                             className="group inline-flex max-w-full cursor-grab items-center gap-1 rounded-lg border border-xevn-border/80 bg-white/95 px-2 py-1.5 text-xs shadow-sm active:cursor-grabbing md:text-sm"
                           >
                             <GripVertical
-                              className="h-3.5 w-3.5 shrink-0 text-slate-400"
+                              className="h-3.5 w-3.5 shrink-0 text-xevn-textMuted"
                               strokeWidth={2}
                               aria-hidden
                             />

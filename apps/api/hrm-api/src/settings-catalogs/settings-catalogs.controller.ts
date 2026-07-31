@@ -3,21 +3,44 @@
  * Screen: HRM Settings catalogs (`/hr/settings-catalogs`) — overview + item C/U/D
  * UC: HRM-SC-01..03 · UF-HRM-10
  * BR: Group CEO `company_id=main` catalogs partition under `holding` (ADR-GROUP-CEO-MAIN-HOLDING-SCOPE)
- * SRS: docs/hrm/SRS.md §13 portal embed · docs/hrm/BANG_TONG_HOP_USECASE_HRM.md HRM-SC-03
- * TechSpec: docs/hrm/TECHSPEC.md §11.4 Catalog → form
- * Purpose: Expose settings-catalogs overview (XBOS snapshot + HRM extension merge) and mutate
- *   extension items. All read/write paths must use resolveHrmSettingsCatalogCompanyId so portal
- *   `main` JWT writes to the same `holding` partition overview reads.
- * WorkItem: D-HRM-SET-ITEM-PERSIST-01
- * Coded: 2026-07-17
+ * SRS: docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.8 · FR-HRM-SC-01
+ * SRS bước: Diễn biến #1 auth · #2 Mở tổng quan · #3 Chưa đồng bộ empty · #4 Có nhóm
+ * TechSpec: docs/hrm/TECHSPEC.md §14.8 (ref_srs: FR-HRM-SC-01) · §11.4 Catalog → form
+ * Purpose: Expose tổng quan danh mục (XBOS snapshot + HRM extension); mutate extension items.
+ *   Mọi read/write dùng resolveHrmSettingsCatalogCompanyId (main→holding).
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded: 2026-07-21
  * Callers: apps/web/hrm settings-catalogs FE · portal groupHrCatalogApi
  * Callees: SettingsCatalogsService · resolveHrmSettingsCatalogCompanyId → hrm_catalog_extension_items
- * FEActions: Thêm/cập nhật mục → POST/PATCH items → GET overview F5
+ * FEActions: Mở tổng quan → GET /; Thêm/cập nhật mục → POST/PATCH items → GET overview F5
  * BEChain: resolveScopeContext → resolveHrmSettingsCatalogCompanyId → upsert/delete → same company_id on GET
- * Impact: Write/read company_id mismatch → 201 with empty hrmExtensionItems after F5
- * must_keep: XBOS sync-from-xbos still maps main→holding; member tenant main stays main
+ * Impact: Write/read company_id mismatch → 201 với empty hrmExtensionItems sau F5
+ * must_keep: XBOS sync-from-xbos vẫn map main→holding; empty «chưa đồng bộ» trung thực; seed endpoints không dùng U65
  * SOLID: Controller owns auth+scope; service owns SQL upsert/merge
  * LastVerified: settings-catalogs.controller.spec.ts · d-hrm-set-item-persist-01.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: Map Diễn biến FR-HRM-SC-01 + TechSpec §14.8 (không đổi logic)
+ * Why: Sponsor lock W1 spine
+ * must_keep: D-HRM-SET-ITEM-PERSIST-01 main→holding
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-17
+ * WorkItem: D-HRM-SET-ITEM-PERSIST-01
+ * What: Document main→holding catalog partition on overview/items
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-23
+ * WorkItem: D-HRM-SETTINGS-MD-CRUD-BE-01
+ * change_mode: ADD
+ * What: GET :catalogKey/items picker (q/active/company_id) for AC-SET-FS / AC-HRM-PICKER-01
+ * SRS: FR-HRM-SC-POS/JT/LEAVE/DEC/PAY · ADR S1/S3 · TechSpec §18.1
+ * must_keep: main→holding partition; empty honesty; no seed in UAT evidence
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-25
+ * WorkItem: D-HRM-SETTINGS-MD-POS-SEED-BE-01
+ * change_mode: UPGRADE
+ * What: seed/tenant-position-catalog* gated bootstrap-only (G-ORPH-BE-03); SoT = XBOS/Settings
  */
 import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ok } from '../common/api-response';
@@ -26,6 +49,7 @@ import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveHrmSettingsCatalogCompanyId } from '../common/hrm-list-scope';
 import { resolveScopeContext } from '../common/scope-context';
 import { AppendExtensionItemsDto } from './dto/append-extension-items.dto';
+import { ListCatalogPickerQueryDto } from './dto/list-catalog-picker.query.dto';
 import { RequestCatalogFieldRemovalDto } from './dto/request-removal.dto';
 import { SettingsCatalogsService } from './settings-catalogs.service';
 import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
@@ -59,6 +83,11 @@ export class SettingsCatalogsController {
     return { tenantId: scope.tenantId, catalogCompanyId };
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-SC-01
+   * SRS bước: Diễn biến #1 auth · #2 Mở tổng quan · #3 empty chưa đồng bộ · #4 Có nhóm
+   * TechSpec: §14.8 ref_srs FR-HRM-SC-01 · GET /settings-catalogs → HRM-SET-200
+   */
   @Get()
   overview(
     @Headers('authorization') authorization?: string,
@@ -67,6 +96,7 @@ export class SettingsCatalogsController {
     @Headers('x-company-id') companyId?: string,
     @Query('company_id') queryCompanyId?: string,
   ) {
+    // Xử lý: Diễn biến #1 — auth; partition main→holding trước overview.
     this.assertAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
@@ -76,6 +106,7 @@ export class SettingsCatalogsController {
     );
     return this.settingsCatalogs
       .getOverview(scope.tenantId, catalogCompanyId)
+      // Thành công: Diễn biến #2/#3/#4 — nhóm hoặc empty «chưa đồng bộ» trung thực.
       .then((data) => ok(data, 'HRM-SET-200', 'Settings catalogs overview'));
   }
 
@@ -356,6 +387,39 @@ export class SettingsCatalogsController {
     return this.settingsCatalogs
       .seedEmployeeProfileTemplate(scope.tenantId, scope.companyId)
       .then((data) => ok(data, 'HRM-SET-204', 'Employee profile catalog template seeded'));
+  }
+
+  /**
+   * Picker list — AC-SET-FS-01..05 / AC-HRM-PICKER-01.
+   * @CODE-MEMORY method · FR-HRM-SC-POS/LEAVE/DEC/PAY
+   * TechSpec: §18.1 Settings CRUD + filter/search
+   */
+  @Get(':catalogKey/items')
+  listCatalogPickerItems(
+    @Param('catalogKey') catalogKey: string,
+    @Query() query: ListCatalogPickerQueryDto,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+    @Headers('x-tenant-id') tenantId?: string,
+    @Headers('x-company-id') companyId?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? query.company_id,
+    });
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      scope.tenantId,
+      scope.companyId,
+    );
+    return this.settingsCatalogs
+      .listPickerItems(scope.tenantId, catalogCompanyId, catalogKey, {
+        q: query.q,
+        active: query.active,
+        status: query.status,
+      })
+      .then((data) => ok(data, 'HRM-SET-200', 'Settings catalog picker items'));
   }
 
   @Post(':catalogKey/extension-items')

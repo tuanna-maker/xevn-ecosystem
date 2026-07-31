@@ -17,6 +17,11 @@ describe('ConfigSyncController', () => {
   const serviceMock = {
     bootstrapXevnGroupConfig: jest.fn().mockResolvedValue({ seeded_catalogs: 3 }),
     publishCatalog: jest.fn().mockResolvedValue({ key: 'job_titles', version: 2 }),
+    applyCatalogToMembers: jest.fn().mockResolvedValue({
+      catalogKey: 'job_titles',
+      appliedCount: 1,
+      applied: [{ tenantId: 'xe-du-lich', companyId: 'main', version: 1, checksum: 'sha256:x' }],
+    }),
     getCatalogForTarget: jest.fn().mockResolvedValue({ key: 'job_titles' }),
     listCatalogsForTarget: jest.fn().mockResolvedValue({ total: 1, target: 'hrm', data: [] }),
   };
@@ -230,6 +235,54 @@ describe('ConfigSyncController', () => {
     expect(serviceMock.publishCatalog).toHaveBeenCalledWith(
       'job_titles',
       expect.objectContaining({ tenantId: 'xevn', companyId: 'holding' }),
+    );
+  });
+
+  it('G-BM-REC-01: apply-to-members requires auth', async () => {
+    await expect(
+      controller.applyCatalogToMembers(
+        'job_titles',
+        {
+          tenantId: 'xevn',
+          companyId: 'holding',
+          memberCompanyIds: ['vtc'],
+        },
+        undefined,
+        undefined,
+      ),
+    ).rejects.toThrow('Unauthorized bootstrap access');
+    expect(serviceMock.applyCatalogToMembers).not.toHaveBeenCalled();
+  });
+
+  it('G-BM-REC-01: apply-to-members returns XBOS-CFG-204 and maps group JWT main→holding source', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const result = await controller.applyCatalogToMembers(
+      'recruitment_channels',
+      {
+        tenantId: 'xevn',
+        companyId: 'holding',
+        targets: [{ tenantId: 'xe-du-lich', companyId: 'main' }],
+        actor: 'group_ceo',
+      },
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.success).toBe(true);
+    expect(result.code).toBe('XBOS-CFG-204');
+    expect(serviceMock.applyCatalogToMembers).toHaveBeenCalledWith(
+      'recruitment_channels',
+      expect.objectContaining({
+        tenantId: 'xevn',
+        companyId: 'holding',
+        targets: [{ tenantId: 'xe-du-lich', companyId: 'main' }],
+        actor: 'group_ceo',
+      }),
     );
   });
 });

@@ -1,5 +1,9 @@
 import { IsBoolean, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
+/**
+ * E1-A MD-BIND — position_key catalog SoT; position = optional label snapshot.
+ * must_keep: Lane B ≠ FR-RC-01 SoT (job_requisitions).
+ */
 export class CreateJobPostingDto {
   @IsString()
   @MaxLength(64)
@@ -13,9 +17,21 @@ export class CreateJobPostingDto {
   @IsString()
   department?: string;
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  department_key?: string;
+
+  /** Snapshot label — denorm from catalog when omitted. */
+  @IsOptional()
   @IsString()
   @MaxLength(256)
-  position!: string;
+  position?: string;
+
+  /** Catalog SoT (job_titles.code). */
+  @IsString()
+  @MaxLength(128)
+  position_key!: string;
 
   @IsOptional()
   @IsString()

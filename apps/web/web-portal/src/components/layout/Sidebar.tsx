@@ -306,7 +306,7 @@ const Sidebar: React.FC = () => {
             className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
               isParentActive
                 ? 'bg-xevn-accent/10 text-xevn-accent'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                : 'text-white/55 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -340,7 +340,7 @@ const Sidebar: React.FC = () => {
               `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive
                   ? 'bg-xevn-accent text-white shadow-lg shadow-xevn-accent/25'
-                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                  : 'text-white/55 hover:bg-slate-700/50 hover:text-white'
               } ${isChild ? 'py-2.5 text-[13px]' : ''}`
             }
           >
@@ -362,7 +362,7 @@ const Sidebar: React.FC = () => {
           href={resolveExternalHref(item.path)}
           className={`flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
             isChild ? 'py-2.5 text-[13px]' : ''
-          } text-slate-300 hover:bg-slate-700/50 hover:text-white`}
+          } text-white/55 hover:bg-slate-700/50 hover:text-white`}
         >
           <div className="flex items-center gap-3">
             {item.icon}
@@ -385,7 +385,7 @@ const Sidebar: React.FC = () => {
           `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
             isActive
               ? 'bg-xevn-accent text-white shadow-lg shadow-xevn-accent/25'
-              : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+              : 'text-white/55 hover:bg-slate-700/50 hover:text-white'
           } ${isChild ? 'py-2.5 text-[13px]' : ''}`
         }
       >
@@ -412,7 +412,7 @@ const Sidebar: React.FC = () => {
             <h1 className="text-white font-bold text-lg tracking-tight">
               X-BOS
             </h1>
-            <p className="text-slate-400 text-xs">XeVN Holding</p>
+            <p className="text-white/60 text-xs">XeVN Holding</p>
           </div>
         </div>
       </div>

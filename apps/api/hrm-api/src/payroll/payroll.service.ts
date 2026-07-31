@@ -1,3 +1,25 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Phiếu lương / kỳ lương (service)
+ * UC:         UC-HRM-24 · UC-HRM-28 · HRM-PR-05
+ * BR:         workforce scope filter khi group CEO main
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.6 · FR-HRM-PR-05
+ * SRS bước:   Diễn biến #4 Tải phiếu · #5 Empty · #6 Vượt phạm vi
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.6 (ref_srs: FR-HRM-PR-05)
+ * Purpose:    List phiếu theo scope (+ periods process upstream); W1 FR là đọc.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ * Callers:    payroll.controller.ts → listPayslips
+ * Callees:    resolveHrmListScope · pushWorkforceEmployeeScopeFilter → payroll_payslips
+ * must_keep:  empty list OK; J-MOB-04 company_uuid↔holding slug
+ * SOLID:      Service owns SQL scope
+ * LastVerified: payroll.service.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: CODE-MEMORY map Diễn biến PR-05 trên listPayslips
+ */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
@@ -365,6 +387,11 @@ export class PayrollService {
     };
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-PR-05
+   * SRS bước: Diễn biến #4 Tải phiếu · #5 Empty · #6 lọc phạm vi
+   * TechSpec: §14.6 ref_srs FR-HRM-PR-05
+   */
   async listPayslips(
     query: {
       company_id: string;
@@ -379,6 +406,7 @@ export class PayrollService {
   ) {
     await this.ensureSchema();
     const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    // Xử lý: Diễn biến #6 — chỉ phiếu trong ladder scope (không xem hộ).
     const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -413,6 +441,7 @@ export class PayrollService {
       `,
       values,
     );
+    // Thành công: Diễn biến #4/#5 — total=0 = empty trung thực.
     return {
       total: res.rows.length,
       data: res.rows.map((row) => ({

@@ -1,17 +1,56 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Lương → Thành phần lương / Payment batches
+ * UC:         UC-HRM-28 · UC-HRM-31 · FR-HRM-SC-PAY-01
+ * BR:         BR-HRM-PAY-E2-02 · BR-HRM-PAY-E2-03
+ * SRS:        docs/program/deltas/BA_ERP_E2_SRS_01_20260728.md · FR-HRM-PAY-CLEAN-E2-01
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.6 · DB_DESIGN_HRM_ERP_E2 · API_DESIGN_HRM_ERP_E2
+ * Purpose:    CRUD thành phần lương + payment batch; E2 soft-assert pay_types cho component_type.
+ * WorkItem:   D-BE-ERP-E2-01
+ * Coded:      2026-07-28
+ * Callers:    payroll.controller.ts
+ * Callees:    SettingsCatalogsService.assertCodeInEffectiveCatalog · public.salary_components
+ * FE-Actions: Lưu TP → POST/PATCH component_type=code; list → bind label VI
+ * BE-Chain:   ensureSchema → assert pay_types → unique (company_id, lower(code)) → INSERT/UPDATE
+ * Impact:     Sai nature SoT → HARDCODE VI lọt DB; unique mỏng → trùng mã
+ * must_keep:  Plane B slug; E1-A/E1-B untouched; no tax-settlement invent; U65 no seed
+ * SOLID:      Catalog service owns salary_components + payment_batches SQL
+ * LastVerified: be-erp-e2-01.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-BE-ERP-E2-01
+ * change_mode: ADD
+ * What: assertCodeInEffectiveCatalog(pay_types) → HRM-PAY-TYPE-KEY; unique → HRM-SC-002;
+ *       stop DEFAULT/fallback VI 'Lương'; unique index + DROP DEFAULT; no tax endpoints
+ * Why: SA-ERP-E2-ACK-01 · AC-E2-BE-01 · VAL-E2-01/04 · FR-HRM-PAY-CLEAN-E2-01 #3/#5
+ * must_keep: payment_batches paths; list/get scope parity; HOLD_DEPLOY; U65
+ */
+import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  MASTER_TENANT_ID,
   pushCompanyIdFilter,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
 } from '../common/hrm-list-scope';
+import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService } from '../db/hrm-db.service';
+import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
+
+export const HRM_PAY_TYPE_KEY = 'HRM-PAY-TYPE-KEY';
+export const HRM_SC_002 = 'HRM-SC-002';
 
 @Injectable()
 export class PayrollCatalogService {
-  constructor(private readonly db: HrmDbService) {}
+  constructor(
+    private readonly db: HrmDbService,
+    @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
+  ) {}
+
+  private resolveCatalogTenantId(): string {
+    return masterTenantIdFromEnv() || MASTER_TENANT_ID;
+  }
 
   private async ensureSalaryComponentSchema() {
     await this.db.query(`
@@ -27,6 +66,7 @@ export class PayrollCatalogService {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
+    // E2: component_type = pay_types.code — no VI DEFAULT 'Lương' on new DDL.
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.salary_components (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -34,7 +74,7 @@ export class PayrollCatalogService {
         code TEXT NOT NULL,
         name TEXT NOT NULL,
         category_id UUID REFERENCES public.salary_component_categories (id) ON DELETE SET NULL,
-        component_type TEXT NOT NULL DEFAULT 'Lương',
+        component_type TEXT NOT NULL,
         nature TEXT NOT NULL DEFAULT 'income',
         value_type TEXT NOT NULL DEFAULT 'currency',
         is_taxable BOOLEAN NOT NULL DEFAULT FALSE,
@@ -50,6 +90,19 @@ export class PayrollCatalogService {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+    // Existing DBs may still carry DEFAULT 'Lương' from pre-E2 CREATE — drop invent default.
+    await this.db.query(`
+      ALTER TABLE public.salary_components
+      ALTER COLUMN component_type DROP DEFAULT;
+    `);
+    await this.db.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_salary_components_company_code
+      ON public.salary_components (company_id, lower(code));
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_salary_components_company_component_type
+      ON public.salary_components (company_id, component_type);
     `);
   }
 
@@ -101,6 +154,53 @@ export class PayrollCatalogService {
     `);
   }
 
+  /** FR-HRM-PAY-CLEAN-E2-01 #3/#5 — nature ∈ effective pay_types. */
+  private async assertPayTypeKey(companyId: string, componentType: string | null | undefined): Promise<string> {
+    const code = componentType?.trim() ?? '';
+    if (!code) {
+      throw new ApiException(
+        HRM_PAY_TYPE_KEY,
+        'component_type is required (pay_types catalog code; VI label invent forbidden)',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (!this.settingsCatalogs) return code;
+    const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+      tenantId: this.resolveCatalogTenantId(),
+      companyId,
+      catalogKey: 'pay_types',
+      code,
+      errorCode: HRM_PAY_TYPE_KEY,
+      errorMessage: `component_type '${code}' is not in pay_types catalog (free-text/HARDCODE SoT forbidden)`,
+    });
+    return hit.code;
+  }
+
+  private async assertUniqueComponentCode(
+    companyId: string,
+    code: string,
+    excludeId?: string,
+  ): Promise<void> {
+    const values: unknown[] = [companyId, code];
+    let sql = `
+      SELECT id FROM public.salary_components
+      WHERE company_id = $1 AND lower(code) = lower($2)
+    `;
+    if (excludeId) {
+      values.push(excludeId);
+      sql += ` AND id <> $${values.length}::uuid`;
+    }
+    sql += ' LIMIT 1';
+    const dup = await this.db.query<{ id: string }>(sql, values);
+    if (dup.rows[0]) {
+      throw new ApiException(
+        HRM_SC_002,
+        `Salary component code '${code}' already exists for company`,
+        HttpStatus.CONFLICT,
+      );
+    }
+  }
+
   async listSalaryComponents(companyId: string, authorization?: string) {
     await this.ensureSalaryComponentSchema();
     const scope = resolveHrmListScope(authorization, companyId);
@@ -140,37 +240,57 @@ export class PayrollCatalogService {
   async createSalaryComponent(payload: Record<string, unknown>, authorization?: string) {
     await this.ensureSalaryComponentSchema();
     const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const code = String(payload.code ?? '').trim();
+    const name = String(payload.name ?? '').trim();
+    if (!code || !name) {
+      throw new ApiException('HRM-SC-001', 'code and name are required', HttpStatus.BAD_REQUEST);
+    }
+    // E2 — cấm fallback VI 'Lương'; require explicit pay_types code.
+    const componentType = await this.assertPayTypeKey(companyId, payload.component_type as string | undefined);
+    await this.assertUniqueComponentCode(companyId, code);
     const id = randomUUID();
-    const res = await this.db.query(
-      `INSERT INTO public.salary_components (
-        id, company_id, code, name, category_id, component_type, nature, value_type,
-        is_taxable, is_insurance_base, formula, default_value, min_value, max_value,
-        description, applied_to, is_active, sort_order
-      ) VALUES (
-        $1, $2, $3, $4, $5::uuid, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
-      ) RETURNING *;`,
-      [
-        id,
-        companyId,
-        String(payload.code ?? '').trim(),
-        String(payload.name ?? '').trim(),
-        payload.category_id ?? null,
-        payload.component_type ?? 'Lương',
-        payload.nature ?? 'income',
-        payload.value_type ?? 'currency',
-        payload.is_taxable ?? false,
-        payload.is_insurance_base ?? false,
-        payload.formula ?? null,
-        payload.default_value ?? 0,
-        payload.min_value ?? null,
-        payload.max_value ?? null,
-        payload.description ?? null,
-        payload.applied_to ?? 'all',
-        payload.is_active ?? true,
-        payload.sort_order ?? 0,
-      ],
-    );
-    return res.rows[0];
+    try {
+      const res = await this.db.query(
+        `INSERT INTO public.salary_components (
+          id, company_id, code, name, category_id, component_type, nature, value_type,
+          is_taxable, is_insurance_base, formula, default_value, min_value, max_value,
+          description, applied_to, is_active, sort_order
+        ) VALUES (
+          $1, $2, $3, $4, $5::uuid, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
+        ) RETURNING *;`,
+        [
+          id,
+          companyId,
+          code,
+          name,
+          payload.category_id ?? null,
+          componentType,
+          payload.nature ?? 'income',
+          payload.value_type ?? 'currency',
+          payload.is_taxable ?? false,
+          payload.is_insurance_base ?? false,
+          payload.formula ?? null,
+          payload.default_value ?? 0,
+          payload.min_value ?? null,
+          payload.max_value ?? null,
+          payload.description ?? null,
+          payload.applied_to ?? 'all',
+          payload.is_active ?? true,
+          payload.sort_order ?? 0,
+        ],
+      );
+      return res.rows[0];
+    } catch (err) {
+      const pgCode = (err as { code?: string })?.code;
+      if (pgCode === '23505') {
+        throw new ApiException(
+          HRM_SC_002,
+          `Salary component code '${code}' already exists for company`,
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw err;
+    }
   }
 
   async updateSalaryComponent(id: string, payload: Record<string, unknown>, companyId: string, authorization?: string) {
@@ -178,6 +298,21 @@ export class PayrollCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const peek = await this.db.query(`SELECT company_id FROM public.salary_components WHERE id = $1::uuid LIMIT 1;`, [id]);
     assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-SC-404', mismatchCode: 'HRM-SC-409' });
+    const persistCompanyId = String(peek.rows[0].company_id);
+    if (payload.component_type !== undefined) {
+      payload = {
+        ...payload,
+        component_type: await this.assertPayTypeKey(persistCompanyId, payload.component_type as string),
+      };
+    }
+    if (payload.code !== undefined) {
+      const nextCode = String(payload.code ?? '').trim();
+      if (!nextCode) {
+        throw new ApiException('HRM-SC-001', 'code cannot be empty', HttpStatus.BAD_REQUEST);
+      }
+      await this.assertUniqueComponentCode(persistCompanyId, nextCode, id);
+      payload = { ...payload, code: nextCode };
+    }
     const fields: string[] = [];
     const values: unknown[] = [];
     const allowed = [
@@ -196,13 +331,26 @@ export class PayrollCatalogService {
       throw new ApiException('HRM-VAL-001', 'No fields to update', HttpStatus.BAD_REQUEST);
     }
     values.push(id);
-    const res = await this.db.query(
-      `UPDATE public.salary_components SET ${fields.join(', ')}, updated_at = NOW()
-       WHERE id = $${values.length}::uuid RETURNING *;`,
-      values,
-    );
-    if (!res.rows[0]) throw new ApiException('HRM-SC-404', 'Salary component not found', HttpStatus.NOT_FOUND);
-    return res.rows[0];
+    try {
+      const res = await this.db.query(
+        `UPDATE public.salary_components SET ${fields.join(', ')}, updated_at = NOW()
+         WHERE id = $${values.length}::uuid RETURNING *;`,
+        values,
+      );
+      if (!res.rows[0]) throw new ApiException('HRM-SC-404', 'Salary component not found', HttpStatus.NOT_FOUND);
+      return res.rows[0];
+    } catch (err) {
+      if (err instanceof ApiException) throw err;
+      const pgCode = (err as { code?: string })?.code;
+      if (pgCode === '23505') {
+        throw new ApiException(
+          HRM_SC_002,
+          'Salary component code already exists for company',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw err;
+    }
   }
 
   async deleteSalaryComponent(id: string, companyId: string, authorization?: string) {

@@ -30,6 +30,7 @@ import {
   Warehouse,
   LayoutGrid,
   Package,
+  Share2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -79,6 +80,12 @@ import {
   type WorkflowStepAction,
   type WorkflowTransitionKind,
 } from '../../data/workflow-graph';
+import {
+  HRM_RECRUITMENT_WF_PRESET_META,
+  buildHrmRecruitmentWorkflowPreset,
+  findWorkflowByRecruitmentCode,
+  type HrmRecruitmentWfPresetKind,
+} from '../../data/hrm-recruitment-workflow-presets';
 import { RACI_PERMISSION_BOOTSTRAP } from '../../data/raci-permission-seeds';
 import { RACI_LETTER_MEANINGS, RACI_ORG_COLUMNS, RACI_SOURCE_FILE } from '../../data/xevn-raci-catalog';
 import { OrgGradeOrgChart } from '../../components/org/OrgGradeOrgChart';
@@ -111,8 +118,24 @@ import {
 import { WorkspaceLayout } from './WorkspaceLayout';
 import { CommandCenterModuleRail } from './CommandCenterModuleRail';
 import { applyShareholderRowFieldUpdate } from './shareholderRowUpdate';
-import { formatViGroupedInteger, parseViGroupedInteger } from '../../utils/viNumberFormat';
+import {
+  fetchShareholderUiRows,
+  mapShareholderApiRowToUiRow,
+  mapShareholderApiRowsToUiRows,
+} from './shareholderListSync';
+import {
+  formatViGroupedInteger,
+  parseViGroupedInteger,
+  ViDateInput,
+  ViGroupedIntegerInput,
+} from '@xevn/ui';
+import {
+  MetadataDateInput,
+  MetadataNumberOrMoneyInput,
+} from './MetadataTypedFieldControls';
 import { WorkflowCanvas, formatWorkflowDrawerDetails } from './WorkflowCanvas';
+import { WorkflowStepResolverFields } from './WorkflowStepResolverFields';
+import { workflowResolverLabel } from '../../data/workflow-resolver';
 import { HrmCollapsibleSidebar } from '../../modules/hrm/HrmCollapsibleSidebar';
 import {
   readPortalRailCollapsed,
@@ -124,6 +147,13 @@ import {
   commandCenterInboxInstanceDeepLink,
   parseCommandCenterSettingsDeepLink,
 } from '../../modules/hrm/commandCenterUrl';
+import {
+  buildSyntheticInboxTaskFromDeepLink,
+  isActionableWorkflowInboxTask,
+  matchInboxTaskForDeepLink,
+  resolveActionableTaskIdFromInstanceDetail,
+  withResolvedInboxTaskId,
+} from '../../modules/hrm/inboxDeepLink';
 import { TenantConfigScopeBar } from './TenantConfigScopeBar';
 import { CompanyRaciPanel } from './CompanyRaciPanel';
 import { FoundationCategoryWizard } from './FoundationCategoryWizard';
@@ -153,6 +183,8 @@ import {
 } from '../../integrations/infrastructureApi';
 import {
   isOperatingEntityInFoundationScope,
+  normalizeFoundationCategoriesScopeForPersist,
+  toggleInfraAppliesToCompanyId,
 } from '../../integrations/infrastructureEntityKeyResolver';
 import {
   resolveMetadataCustomBlocks,
@@ -172,6 +204,11 @@ import {
   resolveInfraSiteConsumerFieldDefs,
 } from '../../integrations/infraSiteConsumerContext';
 import { buildLayoutForEnabledLevels } from '../../utils/orgGradeLayout';
+import { resolveInfraBlockCodeDisplayLabel } from '../../utils/infraBlockDisplayLabels';
+import {
+  METADATA_DATA_TYPE_OPTIONS_VI,
+  resolveMetadataDataTypeDisplayLabel,
+} from '../../utils/metadataDataTypeDisplayLabels';
 import {
   deptTemplatesLoadErrorMessage,
   deleteDeptSystemTemplate,
@@ -212,7 +249,6 @@ import {
   deleteShareholderApi,
   legalDocumentViewUrl,
   listLegalDocuments,
-  listShareholders,
   saveLegalDocument,
   saveShareholder,
   syncShareholders,
@@ -240,6 +276,7 @@ import {
 import { listHrmEmployees } from '../../modules/hrm/hrmApiClient';
 import { WorkflowTaskDetailDrawer } from './WorkflowTaskDetailDrawer';
 import { CatalogGovernancePanel } from './CatalogGovernancePanel';
+import { ApplyCatalogToMembersPanel } from './ApplyCatalogToMembersPanel';
 import { AssetRequestPanel } from './AssetRequestPanel';
 import {
   apiRowToWorkflowDefinition,
@@ -295,6 +332,11 @@ import {
   parseLegalEntitySaveFieldErrors,
 } from '../../integrations/legalEntityFormMapper';
 import { normalizeLegalEntityPutBody } from '../../integrations/legalEntityPutBody';
+import {
+  HDSD_SHAREHOLDER_TEST_IDS,
+  hdsdShareholderNameTestId,
+  hdsdShareholderSaveTestId,
+} from '../../lib/hdsdMutateTestIds';
 
 const RAIL_STROKE = 1.5;
 const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
@@ -315,6 +357,7 @@ type SettingsMenuKey =
   | 'measurement'
   | 'pricing'
   | 'hrm_catalog_governance'
+  | 'hrm_catalog_apply_members'
   | 'asset_requests';
 
 const COMPANY_SETUP_MENU_KEYS: CompanySetupMenuKey[] = [
@@ -765,7 +808,9 @@ const WORKFLOW_STEP_ACTION_LABELS: Record<WorkflowStepAction, string> = {
 };
 
 const WORKFLOW_TRIGGER_EVENTS: ReadonlyArray<{ id: string; label: string }> = [
-  { id: 'hr.recruitment.request_submitted', label: 'Hồ sơ tuyển dụng được gửi duyệt' },
+  { id: 'hr.recruitment.plan_submitted', label: 'Kế hoạch tuyển dụng được gửi duyệt' },
+  { id: 'hr.recruitment.request_submitted', label: 'Yêu cầu tuyển dụng được gửi duyệt' },
+  { id: 'hr.recruitment.candidate_pipeline_started', label: 'Ứng viên bắt đầu quy trình tuyển' },
   { id: 'hr.org_change.request_submitted', label: 'Đề xuất thay đổi cơ cấu / JD (HCNS)' },
   { id: 'finance.capex.workflow_started', label: 'Đề xuất đầu tư / CAPEX khởi tạo' },
   { id: 'logistics.inventory.adjustment_requested', label: 'Yêu cầu điều chỉnh tồn kho / phân bổ' },
@@ -825,21 +870,47 @@ function createEmptyWorkflowDefinition(tempId: string): WorkflowDefinition {
   };
 }
 
-/** Minimal inbox card for wfInstanceId deep link before list hydrates (J-XBOS-01). */
-function syntheticInboxTaskFromInstanceId(instanceId: string): UnifiedTask {
-  return {
-    cardId: instanceId,
-    sourceId: instanceId,
-    sourceSystem: 'xbos-workflow',
-    dedupeKey: `wf-inst-${instanceId}`,
-    statusNormalized: 'PENDING_APPROVAL',
-    orgUnitId: MASTER_TENANT_ID,
-    moduleCode: 'business',
-    title: 'Chi tiết quy trình',
-    assigneeUserId: '',
-    assigneeName: '',
-    priority: 'medium',
-  };
+/**
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: R-XHRM-REC-WF-DEEPLINK-TASKID
+ * Date: 2026-07-20
+ * What: Inbox deep-link Xử lý uses step task id (wfTaskId / inbox match / detail pending),
+ *   not synthetic cardId=instanceId (brief reject 404).
+ * Why: QC C-XHRM-REC-WF-CANVAS-05-01 / R-XHRM-REC-WF-DEEPLINK-TASKID
+ * must_keep: J-REC-WF-02/03/06 GWC — card path with real cardId unchanged; instance detail fetch keeps sourceId
+ * @see ../../modules/hrm/inboxDeepLink.ts
+ */
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-XBOS-LABEL-FE-02
+ * change_mode: FIX
+ * What: Thuộc khối (modal field tùy chỉnh hạ tầng) và header khối dùng
+ *   resolveInfraBlockCodeDisplayLabel — không còn in raw blockCode (`general`…).
+ * Why: QA-XBOS-U72-LABEL-01 F-XBOS-09 FAIL — probe thấy short token `general` trên bind read-only.
+ * SRS: docs/xbos/SRS_FIELD_DISPLAY.md · F-XBOS-09 · AC-F-XBOS-09
+ * must_keep: value=/API vẫn wire key; option select VI; không đụng ApplyCatalogToMembersPanel (F-10)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-FE-U72-SOFT-P2-01
+ * change_mode: FIX
+ * What: dataType options/meta → VI (resolveMetadataDataTypeDisplayLabel); toast holding → «tập đoàn»
+ * Why: QC C-XBOS-U72-P2 soft — EN Text/Number/Date + toast `(holding)`
+ * SRS: docs/xbos/SRS_FIELD_DISPLAY.md · BR-XBOS-COPY-01 · U72
+ * must_keep: F-09/F-10 CLOSED; value= dataType wire; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-XBOS-INF-SCOPE-KEY-PLANE-FE-01
+ * change_mode: ADD
+ * What: Wizard tick/save foundation scope qua toggleInfraAppliesToCompanyId +
+ *   normalizeFoundationCategoriesScopeForPersist trên PUT settings (holding → root; cấm B′/slug workforce).
+ * Why: ADR-XBOS-INF-APPLIES-TO-COMPANY-IDS-KEY-PLANE — AC-INF-KEY-01..05; legacy main → 0 tick.
+ * SRS: UC-XBOS-INF-01 / UC-XBOS-CC-07 · BR-FCAT-SCOPE-04
+ * TechSpec: docs/xbos/API_DESIGN_XBOS_INFRASTRUCTURE.md §0/§4
+ * must_keep: infraEntityIdsMatch; CO-HC/OP/MD GWC; không rewrite apps/api
+ */
+/** Minimal inbox card for wfInstanceId deep link before list/detail hydrates (J-XBOS-01). */
+function syntheticInboxTaskFromInstanceId(instanceId: string, taskId?: string | null): UnifiedTask {
+  return buildSyntheticInboxTaskFromDeepLink({ instanceId, taskId });
 }
 
 function workflowDestinationLabel(form: WorkflowDefinition, nodeId: string): string {
@@ -951,14 +1022,12 @@ function getParentEntityLabel(parentId: string | null | undefined, list: Company
 
 const DEPT_HEAD_EMPTY_OPTION = { id: '', label: '— Chọn trưởng bộ phận —' };
 
-const EMPLOYEE_METADATA_DATA_TYPES: Array<{ value: EmployeeMetadataDataType; label: string }> = [
-  { value: 'text', label: 'Text' },
-  { value: 'number', label: 'Number' },
-  { value: 'date', label: 'Date' },
-  { value: 'select', label: 'Select' },
-  { value: 'phone', label: 'Phone' },
-  { value: 'email', label: 'Email' },
-];
+/** User-facing VI labels; option value= remains wire key (U72 / C-XBOS-U72-P2). */
+const EMPLOYEE_METADATA_DATA_TYPES: Array<{ value: EmployeeMetadataDataType; label: string }> =
+  METADATA_DATA_TYPE_OPTIONS_VI.map((o) => ({
+    value: o.value as EmployeeMetadataDataType,
+    label: o.label,
+  }));
 
 function createDefaultEmployeeMetadataRows(
   legalEntityId: string | null | undefined,
@@ -1144,6 +1213,7 @@ const settingsMenusAfterCompany: Array<{ key: SettingsMenuKey; label: string; Ic
   { key: 'tenant_departments', label: 'Phòng/Ban pháp nhân', Icon: LayoutGrid },
   { key: 'company_group_hr', label: 'Danh mục hồ sơ nhân sự', Icon: UserCheck },
   { key: 'hrm_catalog_governance', label: 'Duyệt danh mục HRM', Icon: FileArchive },
+  { key: 'hrm_catalog_apply_members', label: 'Áp dụng danh mục HRM', Icon: Share2 },
   { key: 'permission', label: 'Hệ thống phân quyền', Icon: ShieldCheck },
   { key: 'workflow', label: 'Hệ thống quy trình', Icon: GitBranch },
   { key: 'asset_requests', label: 'Yêu cầu tài sản', Icon: Package },
@@ -1171,6 +1241,7 @@ function settingsWorkspaceTitle(
     tenant_departments: 'Phòng/Ban pháp nhân',
     company_group_hr: 'Danh mục hồ sơ nhân sự',
     hrm_catalog_governance: 'Duyệt danh mục HRM',
+    hrm_catalog_apply_members: 'Áp dụng danh mục HRM',
     permission: 'Hệ thống phân quyền',
     workflow: 'Hệ thống quy trình',
     asset_requests: 'Yêu cầu tài sản',
@@ -1194,7 +1265,7 @@ function settingsWorkspaceTitle(
     if (t) return `Hệ thống Phòng/Ban — ${t}`;
     return 'Hệ thống Phòng/Ban — Khung mới';
   }
-  return labels[menu];
+  return labels[menu] ?? 'Cài đặt hệ thống';
 }
 
 function formatAsOf(iso: string): string {
@@ -1308,24 +1379,35 @@ const CommandCenterPage: React.FC = () => {
 
   const ccDeepLinkKeyRef = useRef('');
   const ccWorkflowDefinitionDeepLinkRef = useRef<string | null>(null);
+  const ccWorkflowDesignerDeepLinkRef = useRef(false);
   const ccWorkflowInstanceDeepLinkRef = useRef<string | null>(null);
+  const ccWorkflowTaskDeepLinkRef = useRef<string | null>(null);
   const ccInboxHomeDeepLinkRef = useRef<string | null>(null);
 
   useEffect(() => {
     const parsed = parseCommandCenterSettingsDeepLink(location.search);
     if (!parsed.settingsMenu) return;
 
-    const linkKey = `${parsed.settingsMenu}|${parsed.workflowDefinitionId ?? ''}|${parsed.workflowInstanceId ?? ''}`;
+    const linkKey = `${parsed.settingsMenu}|${parsed.settingsMenuRaw ?? ''}|${parsed.workflowDefinitionId ?? ''}|${parsed.workflowInstanceId ?? ''}|${parsed.workflowTaskId ?? ''}`;
     if (ccDeepLinkKeyRef.current === linkKey) return;
     ccDeepLinkKeyRef.current = linkKey;
 
     setSelectedModule(SYSTEM_SETTINGS);
     setActiveSettingsMenu(parsed.settingsMenu as SettingsMenuKey);
+    if (parsed.settingsMenuRaw === 'workflow_designer') {
+      ccWorkflowDesignerDeepLinkRef.current = true;
+    }
+    if (parsed.settingsMenuRaw === 'raci') {
+      setCompanyDetailTab('raci');
+    }
     if (parsed.workflowDefinitionId) {
       ccWorkflowDefinitionDeepLinkRef.current = parsed.workflowDefinitionId;
     }
     if (parsed.workflowInstanceId) {
       ccWorkflowInstanceDeepLinkRef.current = parsed.workflowInstanceId;
+    }
+    if (parsed.workflowTaskId) {
+      ccWorkflowTaskDeepLinkRef.current = parsed.workflowTaskId;
     }
   }, [location.search]);
 
@@ -1521,16 +1603,7 @@ const CommandCenterPage: React.FC = () => {
     nameVi?: string;
     shortName?: string;
   }>({});
-  const [shareholderRows, setShareholderRows] = useState<ShareholderRow[]>([
-    {
-      id: 'sh-1',
-      holderName: 'Nguyễn Văn A',
-      identityCode: '079188001235',
-      ratioPercent: 40,
-      contributedValue: 200000000000,
-      submitted: true,
-    },
-  ]);
+  const [shareholderRows, setShareholderRows] = useState<ShareholderRow[]>([]);
   const [shareholderSelection, setShareholderSelection] = useState<Set<string>>(() => new Set());
   const [legalDocRows, setLegalDocRows] = useState<LegalDocRow[]>([
     {
@@ -2112,22 +2185,11 @@ const CommandCenterPage: React.FC = () => {
     void (async () => {
       try {
         const [shareholders, documents] = await Promise.all([
-          listShareholders(shareholderApiKey, scope.tenantId),
+          fetchShareholderUiRows(shareholderApiKey, scope.tenantId),
           listLegalDocuments(profileEntityId, scope.tenantId),
         ]);
         if (cancelled) return;
-        if (shareholders.length) {
-          setShareholderRows(
-            shareholders.map((s) => ({
-              id: String(s.id),
-              holderName: String(s.holder_name ?? ''),
-              identityCode: String(s.identity_code ?? ''),
-              ratioPercent: Number(s.ratio_percent ?? 0),
-              contributedValue: Number(s.contributed_value ?? 0),
-              submitted: true,
-            })),
-          );
-        }
+        setShareholderRows(shareholders);
         if (documents.length) {
           setLegalDocRows(
             documents.map((d) => ({
@@ -2303,26 +2365,72 @@ const CommandCenterPage: React.FC = () => {
   }, [workflows, activeSettingsMenu, workflowDefinitionsSource]);
 
   useEffect(() => {
+    if (!ccWorkflowDesignerDeepLinkRef.current || activeSettingsMenu !== 'workflow') return;
+    if (workflowDefinitionsSource === 'loading') return;
+    if (workflows.length === 0 && !workflowDefinitionsLoadFailed) return;
+    ccWorkflowDesignerDeepLinkRef.current = false;
+    if (workflows.length > 0) {
+      openEditWorkflow(workflows[0].id);
+      setWorkflowDetailTab('canvas');
+      return;
+    }
+    openNewWorkflow();
+    setWorkflowDetailTab('canvas');
+  }, [
+    workflows,
+    activeSettingsMenu,
+    workflowDefinitionsSource,
+    workflowDefinitionsLoadFailed,
+  ]);
+
+  useEffect(() => {
     const instanceId = ccWorkflowInstanceDeepLinkRef.current;
     if (!instanceId || activeSettingsMenu !== 'workflow') return;
+    const taskId = ccWorkflowTaskDeepLinkRef.current;
     ccWorkflowInstanceDeepLinkRef.current = null;
-    openInboxTaskDetail(syntheticInboxTaskFromInstanceId(instanceId), { skipUrlSync: true });
-  }, [activeSettingsMenu]);
+    ccWorkflowTaskDeepLinkRef.current = null;
+    const matched = matchInboxTaskForDeepLink(inboxTasks, { taskId, instanceId });
+    openInboxTaskDetail(matched ?? syntheticInboxTaskFromInstanceId(instanceId, taskId), {
+      skipUrlSync: true,
+    });
+  }, [activeSettingsMenu, inboxTasks]);
 
   useEffect(() => {
     const parsed = parseCommandCenterSettingsDeepLink(location.search);
     const instanceId = parsed.workflowInstanceId?.trim();
+    const taskId = parsed.workflowTaskId?.trim() || null;
     if (!instanceId || parsed.settingsMenu) {
       if (!instanceId) ccInboxHomeDeepLinkRef.current = null;
       return;
     }
-    if (inboxDetailOpen && inboxDetailTask?.sourceId === instanceId) return;
-    if (ccInboxHomeDeepLinkRef.current === instanceId) return;
+    const linkKey = `${instanceId}|${taskId ?? ''}`;
+    const matched = matchInboxTaskForDeepLink(inboxTasks, { taskId, instanceId });
+    const alreadyOpenSame =
+      inboxDetailOpen &&
+      inboxDetailTask &&
+      inboxDetailTask.sourceId === instanceId &&
+      (!taskId || inboxDetailTask.cardId === taskId || !isActionableWorkflowInboxTask(inboxDetailTask));
 
-    ccInboxHomeDeepLinkRef.current = instanceId;
-    const matched = inboxTasks.find((t) => t.sourceId === instanceId);
-    openInboxTaskDetail(matched ?? syntheticInboxTaskFromInstanceId(instanceId), { skipUrlSync: true });
-  }, [location.search, inboxTasks, inboxDetailOpen, inboxDetailTask?.sourceId]);
+    // Upgrade instance-only stub → matched inbox task once list hydrates (closes brief 404 race).
+    if (
+      alreadyOpenSame &&
+      matched &&
+      inboxDetailTask &&
+      !isActionableWorkflowInboxTask(inboxDetailTask) &&
+      isActionableWorkflowInboxTask(matched)
+    ) {
+      setInboxDetailTask(matched);
+      return;
+    }
+
+    if (alreadyOpenSame && isActionableWorkflowInboxTask(inboxDetailTask)) return;
+    if (ccInboxHomeDeepLinkRef.current === linkKey && inboxDetailOpen) return;
+
+    ccInboxHomeDeepLinkRef.current = linkKey;
+    openInboxTaskDetail(matched ?? syntheticInboxTaskFromInstanceId(instanceId, taskId), {
+      skipUrlSync: true,
+    });
+  }, [location.search, inboxTasks, inboxDetailOpen, inboxDetailTask]);
 
   useEffect(() => {
     if (activeSettingsMenu !== 'workflow') {
@@ -2599,6 +2707,14 @@ const CommandCenterPage: React.FC = () => {
           if (!apiRow) return;
           setResolvedLegalEntityApiId(resolvedId);
           setCompanyForm(mapLegalEntityRowToCompanyForm(apiRow) as CompanyFormState);
+          const shareholderApiKey = resolveShareholderApiEntityKey(id, resolvedId);
+          if (shareholderApiKey) {
+            void fetchShareholderUiRows(shareholderApiKey, tenantId)
+              .then((rows) => setShareholderRows(rows))
+              .catch(() => {
+                /* useEffect fallback */
+              });
+          }
         })
         .catch(() => {
           setPublishMessage('Không tải được hồ sơ tập đoàn từ API — có thể lưu để tạo mới trên org-foundation.');
@@ -2620,7 +2736,8 @@ const CommandCenterPage: React.FC = () => {
         })
         .then((apiRow) => {
           if (!apiRow) return;
-          setResolvedLegalEntityApiId(String(apiRow.id));
+          const resolvedId = String(apiRow.id);
+          setResolvedLegalEntityApiId(resolvedId);
           setCompanyForm(mapLegalEntityRowToCompanyForm(apiRow) as CompanyFormState);
           setParentUnitQuery(
             getParentEntityLabel(
@@ -2628,32 +2745,21 @@ const CommandCenterPage: React.FC = () => {
               settingsLegalEntities.length ? settingsLegalEntities : legalEntityList,
             ),
           );
+          const shareholderApiKey = resolveShareholderApiEntityKey(id, resolvedId);
+          if (shareholderApiKey) {
+            void fetchShareholderUiRows(shareholderApiKey, tenantId)
+              .then((rows) => setShareholderRows(rows))
+              .catch(() => {
+                /* useEffect fallback */
+              });
+          }
         })
         .catch(() => {
           setPublishMessage('Không tải được hồ sơ pháp nhân từ API — hiển thị dữ liệu danh sách.');
         });
     } else {
-      setShareholderRows([
-        {
-          id: 'sh-1',
-          holderName: 'Nguyễn Văn A',
-          identityCode: '079188001235',
-          ratioPercent: 40,
-          contributedValue: Math.round((500000000000 * 40) / 100),
-          submitted: true,
-        },
-      ]);
-      setLegalDocRows([
-        {
-          id: 'doc-1',
-          documentName: 'Giấy chứng nhận Đăng ký doanh nghiệp',
-          documentCode: 'GPKD-2026-001',
-          issuedDate: '2026-01-01',
-          expiredDate: '2030-12-31',
-          fileName: 'gpkd-2026-001.pdf',
-          submitted: true,
-        },
-      ]);
+      setShareholderRows([]);
+      setLegalDocRows([]);
     }
     setDepartmentRowsByEntity((prev) => {
       if (prev[id]?.length) return prev;
@@ -2803,8 +2909,15 @@ const CommandCenterPage: React.FC = () => {
     customFieldDefsByEntity?: unknown;
   }) {
     const scope = getCommandCenterStorageScope();
+    const rawCategories = next?.foundationCategories ?? foundationCategories;
+    // ADR key plane: persist Plane A LE + holding root; never B′ / workforce member slugs.
+    const foundationCategoriesPayload = Array.isArray(rawCategories)
+      ? normalizeFoundationCategoriesScopeForPersist(
+          rawCategories as Array<{ appliesToCompanyIds?: string[] }>,
+        )
+      : rawCategories;
     const payload = {
-      foundationCategories: next?.foundationCategories ?? foundationCategories,
+      foundationCategories: foundationCategoriesPayload,
       sites: next?.sites ?? infrastructureSites,
       blockTitleOverridesByEntity:
         next?.blockTitleOverridesByEntity ?? infrastructureBlockTitleOverridesByEntity,
@@ -3053,16 +3166,7 @@ const CommandCenterPage: React.FC = () => {
       if (shareholderApiKey && (isHoldingRoot || (persistedId && isPersistedApiId(persistedId)))) {
         const synced = await syncShareholders(shareholderApiKey, tenantId, shareholderRows);
         if (synced.length) {
-          setShareholderRows(
-            synced.map((s) => ({
-              id: String(s.id),
-              holderName: String(s.holder_name ?? ''),
-              identityCode: String(s.identity_code ?? ''),
-              ratioPercent: Number(s.ratio_percent ?? 0),
-              contributedValue: Number(s.contributed_value ?? 0),
-              submitted: true,
-            })),
-          );
+          setShareholderRows(mapShareholderApiRowsToUiRows(synced));
         }
       }
 
@@ -3105,7 +3209,7 @@ const CommandCenterPage: React.FC = () => {
     }
 
     const successMsg = isHoldingRoot
-      ? 'Đã lưu hồ sơ tập đoàn (holding) lên org-foundation.'
+      ? 'Đã lưu hồ sơ tập đoàn lên org-foundation.'
       : 'Đã lưu và làm mới danh sách pháp nhân.';
     setCompanySaveFeedback({ kind: 'success', text: successMsg });
     setPublishMessage(successMsg);
@@ -3395,9 +3499,10 @@ const CommandCenterPage: React.FC = () => {
       return;
     }
     setFoundationCategorySaving(true);
+    const normalizedForm = normalizeFoundationCategoriesScopeForPersist([foundationForm])[0]!;
     const nextFoundationCategories = mergeFoundationCategoryIntoList(
       foundationCategories,
-      foundationForm,
+      normalizedForm,
     );
     try {
       const saved = await saveInfrastructureSettingsToDb({
@@ -3448,10 +3553,11 @@ const CommandCenterPage: React.FC = () => {
   function toggleFoundationCompany(companyId: string) {
     setFoundationForm((prev) => {
       if (!prev) return prev;
-      const set = new Set(prev.appliesToCompanyIds);
-      if (set.has(companyId)) set.delete(companyId);
-      else set.add(companyId);
-      const appliesToCompanyIds = Array.from(set);
+      // ADR §4.4: holding → xbos-group-holding-root; member → Plane A LE UUID.
+      const appliesToCompanyIds = toggleInfraAppliesToCompanyId(
+        prev.appliesToCompanyIds,
+        companyId,
+      );
       setFoundationFieldsPreviewEntityId((current) =>
         resolveFoundationFieldsPreviewEntityId(appliesToCompanyIds, current),
       );
@@ -3794,6 +3900,32 @@ const CommandCenterPage: React.FC = () => {
     setWorkflowCanvasSelectedStepId(null);
   }
 
+  /**
+   * J-REC-WF-01 / UC-HRM-REC-WF-01 — open canvas form from normative recruitment
+   * bridge codes (U65). If definition already exists, edit that row instead of
+   * duplicating workflow_code.
+   */
+  function openRecruitmentWorkflowPreset(kind: HrmRecruitmentWfPresetKind) {
+    const existing = findWorkflowByRecruitmentCode(workflows, kind);
+    if (existing) {
+      openEditWorkflow(existing.id);
+      setPublishMessage(
+        `Đã mở định nghĩa ${existing.code} — kiểm tra bước/resolver rồi Lưu (status active) nếu cần.`,
+      );
+      return;
+    }
+    const tempId = `wf-rec-${kind}-${Date.now()}`;
+    const preset = buildHrmRecruitmentWorkflowPreset(kind, tempId);
+    setWorkflowEditId('new');
+    setWorkflowForm(preset);
+    setWorkflowView('detail');
+    setWorkflowDetailTab('graph');
+    setWorkflowCanvasSelectedStepId(null);
+    setPublishMessage(
+      `Mẫu ${preset.code} đã điền sẵn — nhấn Lưu để kích hoạt trên workflow-engine (không seed).`,
+    );
+  }
+
   function openEditWorkflow(id: string) {
     const w = workflows.find((x) => x.id === id);
     if (!w) return;
@@ -3903,7 +4035,11 @@ const CommandCenterPage: React.FC = () => {
         ...f,
         steps: f.steps.map((s) => {
           if (s.id !== stepId) return s;
-          const next = { ...s, ...patch };
+          const next: WorkflowGraphStep = { ...s, ...patch };
+          if ('resolverType' in patch && patch.resolverType === undefined) {
+            delete next.resolverType;
+            delete next.resolverConfig;
+          }
           if (
             patch.handlerRoleId !== undefined &&
             !workflowHandlerRoleAllowsRejectOutcome(next.handlerRoleId)
@@ -3973,28 +4109,38 @@ const CommandCenterPage: React.FC = () => {
     if (shareholderSubmitPendingId) return;
     const target = shareholderRows.find((r) => r.id === id);
     if (!target) return;
+    const holderName = String(target.holderName ?? '').trim();
+    if (!holderName) {
+      setPublishMessage('Nhập họ tên cổ đông trước khi lưu.');
+      return;
+    }
     setShareholderSubmitPendingId(id);
     try {
-      const scope = await ensureLegalProfileEntityId();
-      if (!scope) return;
+      const scope = resolveLegalProfileScope();
       const shareholderApiKey = resolveShareholderApiEntityKey(companyEntityId, scope.entityId);
-      if (!shareholderApiKey) return;
+      if (!shareholderApiKey) {
+        setPublishMessage(legalProfileScopePersistMessage(companyEntityId));
+        return;
+      }
       const saved = await saveShareholder(
         shareholderApiKey,
         scope.tenantId,
         {
-          holderName: target.holderName,
+          holderName,
           identityCode: target.identityCode,
           ratioPercent: target.ratioPercent,
           contributedValue: target.contributedValue,
         },
         isPersistedApiId(target.id) ? target.id : undefined,
       );
-      setShareholderRows((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, id: String(saved.id), submitted: true } : r,
-        ),
-      );
+      const savedUiRow = mapShareholderApiRowToUiRow(saved);
+      setShareholderRows((prev) => prev.map((r) => (r.id === id ? savedUiRow : r)));
+      try {
+        const refreshed = await fetchShareholderUiRows(shareholderApiKey, scope.tenantId);
+        setShareholderRows(refreshed.length > 0 ? refreshed : [savedUiRow]);
+      } catch {
+        /* giữ optimistic row khi refetch lỗi */
+      }
       setPublishMessage('Đã lưu cổ đông lên hệ thống.');
     } catch (error) {
       setPublishMessage(error instanceof Error ? error.message : 'Không lưu được cổ đông.');
@@ -4282,14 +4428,32 @@ const CommandCenterPage: React.FC = () => {
     setInboxDetailLoadFailed(false);
     setInboxDetailLoading(true);
     if (!options?.skipUrlSync && selectedModule !== SYSTEM_SETTINGS) {
-      ccInboxHomeDeepLinkRef.current = task.sourceId;
-      navigate(commandCenterInboxInstanceDeepLink(task.sourceId));
+      const taskIdForUrl = isActionableWorkflowInboxTask(task) ? task.cardId : undefined;
+      ccInboxHomeDeepLinkRef.current = `${task.sourceId}|${taskIdForUrl ?? ''}`;
+      navigate(commandCenterInboxInstanceDeepLink(task.sourceId, taskIdForUrl));
     }
     void fetchWorkflowInstanceDetail(task.sourceId, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID)
       .then((detail) => {
         const normalized = normalizeWorkflowInstanceDetail(detail);
         setInboxDetailPayload(normalized);
         setInboxDetailLoadFailed(!normalized);
+        if (!normalized) return;
+        setInboxDetailTask((prev) => {
+          if (!prev || isActionableWorkflowInboxTask(prev)) return prev;
+          const resolvedId = resolveActionableTaskIdFromInstanceDetail(
+            normalized.tasks,
+            resolveInboxAssigneeUserId(),
+          );
+          if (!resolvedId) return prev;
+          const upgraded = withResolvedInboxTaskId(prev, resolvedId);
+          if (!options?.skipUrlSync && selectedModule !== SYSTEM_SETTINGS) {
+            ccInboxHomeDeepLinkRef.current = `${upgraded.sourceId}|${upgraded.cardId}`;
+            navigate(commandCenterInboxInstanceDeepLink(upgraded.sourceId, upgraded.cardId), {
+              replace: true,
+            });
+          }
+          return upgraded;
+        });
       })
       .catch(() => {
         setInboxDetailLoadFailed(true);
@@ -4305,13 +4469,17 @@ const CommandCenterPage: React.FC = () => {
     setInboxDetailLoadFailed(false);
     ccInboxHomeDeepLinkRef.current = null;
     const parsed = parseCommandCenterSettingsDeepLink(location.search);
-    if (parsed.workflowInstanceId && !parsed.settingsMenu) {
+    if ((parsed.workflowInstanceId || parsed.workflowTaskId) && !parsed.settingsMenu) {
       navigate('/command-center', { replace: true });
     }
   };
 
   const completeInboxFromDrawer = async (outcome: 'approved' | 'rejected') => {
     if (!inboxDetailTask || inboxTasksSource !== 'api') return;
+    if (!isActionableWorkflowInboxTask(inboxDetailTask)) {
+      setMenuNotice('Đang tải mã nhiệm vụ — thử lại sau khi chi tiết workflow sẵn sàng.');
+      return;
+    }
     setInboxDrawerBusy(true);
     try {
       await applyWorkflowInboxTaskDecision(
@@ -4332,6 +4500,10 @@ const CommandCenterPage: React.FC = () => {
 
   const promptRejectInboxFromDrawer = () => {
     if (!inboxDetailTask || inboxTasksSource !== 'api' || inboxDrawerBusy) return;
+    if (!isActionableWorkflowInboxTask(inboxDetailTask)) {
+      setMenuNotice('Đang tải mã nhiệm vụ — thử lại sau khi chi tiết workflow sẵn sàng.');
+      return;
+    }
     const title = inboxDetailTask.title?.trim() || 'nhiệm vụ này';
     requestConfirm({
       title: 'Từ chối nhiệm vụ',
@@ -4344,6 +4516,10 @@ const CommandCenterPage: React.FC = () => {
 
   const quickCompleteInboxTask = async (task: UnifiedTask) => {
     if (inboxTasksSource !== 'api') return;
+    if (!isActionableWorkflowInboxTask(task)) {
+      setMenuNotice('Thiếu mã nhiệm vụ workflow — mở chi tiết hoặc chọn thẻ Inbox.');
+      return;
+    }
     setInboxActionBusyId(task.cardId);
     try {
       await applyWorkflowInboxTaskDecision(
@@ -4497,10 +4673,9 @@ const CommandCenterPage: React.FC = () => {
 
 
   function renderSettingsWorkspacePanel() {
-    const inputClass = `min-w-0 max-w-full border border-xevn-border bg-white px-3 py-2 text-left outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-xevn-accent ${SETTINGS_CONTROL_TEXT} ${SETTINGS_RADIUS_INPUT}`;
+    const inputClass = `min-w-0 max-w-full border border-xevn-border bg-white px-3 py-2 text-left outline-none placeholder:text-xevn-textMuted focus:ring-2 focus:ring-xevn-accent ${SETTINGS_CONTROL_TEXT} ${SETTINGS_RADIUS_INPUT}`;
     const selectClass = `${inputClass} appearance-none cursor-pointer bg-white pr-10`;
-    const dateClass = `${inputClass} cursor-pointer pr-10 [color-scheme:light] [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-10 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0`;
-    const deptInputClass = `min-w-0 w-full max-w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`;
+    const deptInputClass = `min-w-0 w-full max-w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none placeholder:text-xevn-textMuted focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`;
     const deptSelectClass = `${deptInputClass} appearance-none cursor-pointer bg-white pr-10`;
     const orgGradeBandSurface: Record<OrgGradeBand, string> = {
       yellow: 'bg-amber-50/90 border-amber-200',
@@ -4530,7 +4705,7 @@ const CommandCenterPage: React.FC = () => {
       activeSettingsMenu === 'company_infrastructure' && infrastructureView === 'detail';
     const showWorkflowDetailStickyNav =
       activeSettingsMenu === 'workflow' && workflowView === 'detail';
-    const showStickyPageTitle = settingsPageTitleText.trim().length > 0;
+    const showStickyPageTitle = (settingsPageTitleText ?? '').trim().length > 0;
     const scopedDeptEntityKey =
       activeSettingsMenu === 'tenant_departments' ? settingsScopeEntityId : companyEntityId;
     const scopedDeptRows =
@@ -4632,7 +4807,7 @@ const CommandCenterPage: React.FC = () => {
                 <Search className="h-4 w-4 shrink-0 text-xevn-textSecondary" strokeWidth={RAIL_STROKE} />
                 <input
                   ref={searchRef}
-                  className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate-400 ${SETTINGS_CONTROL_TEXT}`}
+                  className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-xevn-textMuted ${SETTINGS_CONTROL_TEXT}`}
                   placeholder="Tìm nhanh trong bảng cấu hình..."
                 />
               </div>
@@ -4996,14 +5171,16 @@ const CommandCenterPage: React.FC = () => {
                   <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                     <span className={SETTINGS_LABEL_CLASS}>Ngày cấp lần đầu</span>
                     <div className="relative min-w-0">
-                      <input
-                        type="date"
+                      <ViDateInput
+                        aria-label="Ngày cấp lần đầu"
                         value={companyForm.firstIssueDate}
-                        onChange={(e) => setCompanyForm((s) => ({ ...s, firstIssueDate: e.target.value }))}
-                        className={dateClass}
+                        onValueChange={(iso) =>
+                          setCompanyForm((s) => ({ ...s, firstIssueDate: iso }))
+                        }
+                        className={`${inputClass} pr-10`}
                       />
                       <Calendar
-                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textMuted"
                         strokeWidth={RAIL_STROKE}
                         aria-hidden
                       />
@@ -5172,6 +5349,8 @@ const CommandCenterPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={addShareholderRow}
+                      data-testid={HDSD_SHAREHOLDER_TEST_IDS.addRow}
+                      aria-label="Thêm cổ đông"
                       className="rounded-lg border border-xevn-border px-3 py-2 text-sm font-medium transition hover:bg-slate-100 active:scale-95"
                     >
                       + Thêm cổ đông
@@ -5226,9 +5405,20 @@ const CommandCenterPage: React.FC = () => {
                             />
                           </td>
                           <td className="px-3 py-2">
+                            <span className="sr-only">{row.holderName}</span>
                             <input
                               value={row.holderName}
+                              name={`shareholder-holderName-${row.id}`}
+                              data-testid={hdsdShareholderNameTestId(row.id)}
+                              aria-label="Họ tên cổ đông"
                               onChange={(e) => updateShareholderRow(row.id, 'holderName', e.target.value)}
+                              onInput={(e) =>
+                                updateShareholderRow(
+                                  row.id,
+                                  'holderName',
+                                  (e.target as HTMLInputElement).value,
+                                )
+                              }
                               className="w-full rounded-input border border-xevn-border bg-white px-2 py-1"
                             />
                           </td>
@@ -5250,20 +5440,11 @@ const CommandCenterPage: React.FC = () => {
                             />
                           </td>
                           <td className="px-3 py-2">
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              value={
-                                row.contributedValue === 0
-                                  ? ''
-                                  : formatViGroupedInteger(row.contributedValue)
-                              }
-                              onChange={(e) =>
-                                updateShareholderRow(
-                                  row.id,
-                                  'contributedValue',
-                                  parseViGroupedInteger(e.target.value),
-                                )
+                            <ViGroupedIntegerInput
+                              aria-label="Giá trị góp"
+                              value={row.contributedValue}
+                              onValueChange={(n) =>
+                                updateShareholderRow(row.id, 'contributedValue', n)
                               }
                               className="w-full rounded-input border border-xevn-border bg-white px-2 py-1 tabular-nums"
                               placeholder="0"
@@ -5281,6 +5462,7 @@ const CommandCenterPage: React.FC = () => {
                                 }}
                                 title="Lưu cổ đông"
                                 aria-label="Lưu cổ đông"
+                                data-testid={hdsdShareholderSaveTestId(row.id)}
                               >
                                 <Check className="h-4 w-4" />
                               </MutationButton>
@@ -5349,18 +5531,18 @@ const CommandCenterPage: React.FC = () => {
                               />
                             </td>
                             <td className="px-3 py-2">
-                              <input
-                                type="date"
+                              <MetadataDateInput
+                                aria-label="Ngày cấp tài liệu"
                                 value={row.issuedDate}
-                                onChange={(e) => updateLegalDocRow(row.id, 'issuedDate', e.target.value)}
+                                onChange={(iso) => updateLegalDocRow(row.id, 'issuedDate', iso)}
                                 className="w-full rounded-input border border-xevn-border bg-white px-2 py-1"
                               />
                             </td>
                             <td className="px-3 py-2">
-                              <input
-                                type="date"
+                              <MetadataDateInput
+                                aria-label="Ngày hết hạn tài liệu"
                                 value={row.expiredDate}
-                                onChange={(e) => updateLegalDocRow(row.id, 'expiredDate', e.target.value)}
+                                onChange={(iso) => updateLegalDocRow(row.id, 'expiredDate', iso)}
                                 className={`w-full rounded-input border bg-white px-2 py-1 ${
                                   isExpired ? 'border-rose-400 text-rose-600' : 'border-xevn-border'
                                 }`}
@@ -5854,18 +6036,19 @@ const CommandCenterPage: React.FC = () => {
                               />
                             ) : null}
                             {f.dataType === 'number' ? (
-                              <input
-                                type="number"
+                              <MetadataNumberOrMoneyInput
+                                label={f.labelVi}
+                                fieldCode={f.fieldCode}
                                 value={value}
-                                onChange={(e) => setVal(e.target.value)}
+                                onChange={setVal}
                                 className={deptInputClass}
                               />
                             ) : null}
                             {f.dataType === 'date' ? (
-                              <input
-                                type="date"
+                              <MetadataDateInput
+                                aria-label={f.labelVi}
                                 value={value}
-                                onChange={(e) => setVal(e.target.value)}
+                                onChange={setVal}
                                 className={deptInputClass}
                               />
                             ) : null}
@@ -5963,16 +6146,18 @@ const CommandCenterPage: React.FC = () => {
                         {infraUiMerged.fields.leaseLegalEndDate?.labelVi ?? 'Thời hạn thuê / pháp lý'}
                       </span>
                       <div className="relative min-w-0">
-                        <input
-                          type="date"
-                          value={infraForm.leaseLegalEndDate}
-                          onChange={(e) =>
-                            setInfraForm((s) => ({ ...s, leaseLegalEndDate: e.target.value }))
+                        <ViDateInput
+                          aria-label={
+                            infraUiMerged.fields.leaseLegalEndDate?.labelVi ?? 'Thời hạn thuê / pháp lý'
                           }
-                          className={dateClass}
+                          value={infraForm.leaseLegalEndDate}
+                          onValueChange={(iso) =>
+                            setInfraForm((s) => ({ ...s, leaseLegalEndDate: iso }))
+                          }
+                          className={`${deptInputClass} pr-10`}
                         />
                         <Calendar
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textMuted"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -5998,18 +6183,19 @@ const CommandCenterPage: React.FC = () => {
                               />
                             ) : null}
                             {f.dataType === 'number' ? (
-                              <input
-                                type="number"
+                              <MetadataNumberOrMoneyInput
+                                label={f.labelVi}
+                                fieldCode={f.fieldCode}
                                 value={value}
-                                onChange={(e) => setVal(e.target.value)}
+                                onChange={setVal}
                                 className={deptInputClass}
                               />
                             ) : null}
                             {f.dataType === 'date' ? (
-                              <input
-                                type="date"
+                              <MetadataDateInput
+                                aria-label={f.labelVi}
                                 value={value}
-                                onChange={(e) => setVal(e.target.value)}
+                                onChange={setVal}
                                 className={deptInputClass}
                               />
                             ) : null}
@@ -6141,18 +6327,19 @@ const CommandCenterPage: React.FC = () => {
                               />
                             ) : null}
                             {f.dataType === 'number' ? (
-                              <input
-                                type="number"
+                              <MetadataNumberOrMoneyInput
+                                label={f.labelVi}
+                                fieldCode={f.fieldCode}
                                 value={value}
-                                onChange={(e) => setVal(e.target.value)}
+                                onChange={setVal}
                                 className={deptInputClass}
                               />
                             ) : null}
                             {f.dataType === 'date' ? (
-                              <input
-                                type="date"
+                              <MetadataDateInput
+                                aria-label={f.labelVi}
                                 value={value}
-                                onChange={(e) => setVal(e.target.value)}
+                                onChange={setVal}
                                 className={deptInputClass}
                               />
                             ) : null}
@@ -6230,18 +6417,19 @@ const CommandCenterPage: React.FC = () => {
                                   />
                                 ) : null}
                                 {f.dataType === 'number' ? (
-                                  <input
-                                    type="number"
+                                  <MetadataNumberOrMoneyInput
+                                    label={f.labelVi}
+                                    fieldCode={f.fieldCode}
                                     value={value}
-                                    onChange={(e) => setVal(e.target.value)}
+                                    onChange={setVal}
                                     className={deptInputClass}
                                   />
                                 ) : null}
                                 {f.dataType === 'date' ? (
-                                  <input
-                                    type="date"
+                                  <MetadataDateInput
+                                    aria-label={f.labelVi}
                                     value={value}
-                                    onChange={(e) => setVal(e.target.value)}
+                                    onChange={setVal}
                                     className={deptInputClass}
                                   />
                                 ) : null}
@@ -6646,6 +6834,10 @@ const CommandCenterPage: React.FC = () => {
             <CatalogGovernancePanel onStatusMessage={setMenuNotice} />
           ) : null}
 
+          {activeSettingsMenu === 'hrm_catalog_apply_members' ? (
+            <ApplyCatalogToMembersPanel onStatusMessage={setMenuNotice} />
+          ) : null}
+
           {activeSettingsMenu === 'asset_requests' ? (
             <AssetRequestPanel onStatusMessage={setMenuNotice} />
           ) : null}
@@ -6900,7 +7092,9 @@ const CommandCenterPage: React.FC = () => {
                               className="flex justify-between gap-2 border-b border-slate-100 py-1"
                             >
                               <span>{f.fieldName}</span>
-                              <span className="shrink-0 text-xs text-slate-400">{f.dataType}</span>
+                              <span className="shrink-0 text-sm text-xevn-textSecondary">
+                                {resolveMetadataDataTypeDisplayLabel(f.dataType)}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -7130,6 +7324,41 @@ const CommandCenterPage: React.FC = () => {
                     <Plus className="h-5 w-5 shrink-0" strokeWidth={RAIL_STROKE} />
                     Thêm quy trình mới
                   </button>
+                </div>
+                <div
+                  className={`border border-xevn-border bg-slate-50/80 p-4 shadow-soft ${SETTINGS_RADIUS_CARD}`}
+                  data-testid="hrm-rec-wf-presets"
+                >
+                  <h4 className={`mb-1 ${SETTINGS_SECTION_TITLE_CLASS}`}>
+                    Mẫu QT tuyển dụng HRM (bridge)
+                  </h4>
+                  <p className="mb-3 text-sm text-slate-600">
+                    Tạo/kích hoạt mã chuẩn để HRM Gửi duyệt / Bắt đầu QT spawn instance — không seed
+                    inbox. Nếu mã đã tồn tại, mở chỉnh sửa.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {HRM_RECRUITMENT_WF_PRESET_META.map((preset) => {
+                      const exists = Boolean(findWorkflowByRecruitmentCode(workflows, preset.kind));
+                      return (
+                        <button
+                          key={preset.workflowCode}
+                          type="button"
+                          onClick={() => openRecruitmentWorkflowPreset(preset.kind)}
+                          className="inline-flex flex-col items-start gap-0.5 rounded-input border border-xevn-border bg-white px-3 py-2 text-left text-[13px] shadow-sm transition hover:border-xevn-primary/50 hover:bg-white active:scale-[0.99]"
+                          data-testid={`hrm-rec-wf-preset-${preset.kind}`}
+                          data-wf-code={preset.workflowCode}
+                          data-wf-exists={exists ? '1' : '0'}
+                        >
+                          <span className="font-semibold text-xevn-text">{preset.nameVi}</span>
+                          <span className="font-mono text-[12px] text-slate-500">
+                            {preset.workflowCode}
+                            {exists ? ' · đã có' : ' · tạo mới'}
+                          </span>
+                          <span className="text-[12px] text-slate-500">{preset.shortHintVi}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div className={`overflow-x-auto border border-xevn-border shadow-soft ${SETTINGS_RADIUS_CARD}`}>
                   <table className="min-w-[920px] w-full text-base font-normal text-xevn-text">
@@ -7379,7 +7608,10 @@ const CommandCenterPage: React.FC = () => {
                         return (
                         <div
                           key={step.id}
-                          className={`${WORKFLOW_STEPS_TABLE_GRID} rounded-input border border-xevn-border/80 bg-white/60 p-4 shadow-sm`}
+                          className="rounded-input border border-xevn-border/80 bg-white/60 p-4 shadow-sm"
+                        >
+                        <div
+                          className={`${WORKFLOW_STEPS_TABLE_GRID}`}
                         >
                           <div
                             className="flex min-w-0 items-start justify-between gap-2 pt-0.5"
@@ -7565,6 +7797,13 @@ const CommandCenterPage: React.FC = () => {
                               />
                             </div>
                           </label>
+                        </div>
+                        <WorkflowStepResolverFields
+                          step={step}
+                          onChange={(patch) => patchWorkflowStepRow(step.id, patch)}
+                          selectClassName={deptSelectClass}
+                          inputClassName={deptInputClass}
+                        />
                         </div>
                         );
                       })}
@@ -8017,6 +8256,22 @@ const CommandCenterPage: React.FC = () => {
                         </div>
                       ))}
                     </dl>
+                    <div className="mt-6 rounded-input border border-xevn-border/80 bg-white/70 p-3">
+                      <WorkflowStepResolverFields
+                        step={step}
+                        compact
+                        onChange={(patch) => patchWorkflowStepRow(step.id, patch)}
+                        selectClassName={deptSelectClass}
+                        inputClassName={deptInputClass}
+                      />
+                    </div>
+                    <p className="mt-3 text-sm text-slate-500">
+                      Resolver hiện tại:{' '}
+                      <span className="font-medium text-xevn-text">
+                        {workflowResolverLabel(step.resolverType)}
+                      </span>
+                      . Bấm «Lưu quy trình» rồi F5 để xác nhận persist (AC-CD-F4-06).
+                    </p>
                     <button
                       type="button"
                       onClick={() => {
@@ -8168,7 +8423,7 @@ const CommandCenterPage: React.FC = () => {
                         >
                           <div>
                             <p className="text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
-                            <p className="text-xs text-slate-500">{b.blockCode} · order {b.order}</p>
+                            <p className="text-xs text-slate-500">Thứ tự: {b.order}</p>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
@@ -8208,7 +8463,7 @@ const CommandCenterPage: React.FC = () => {
                                   ...prev,
                                   [entityId]: (prev[entityId] ?? []).filter((f) => f.blockCode !== b.blockCode),
                                 }));
-                                setPublishMessage(`Đã xóa block ${b.blockCode}`);
+                                setPublishMessage(`Đã xóa khối ${b.labelVi}`);
                       setInfraSelectedCustomBlockCode(null);
                               }}
                               className="rounded-input bg-rose-50 px-3 py-2 text-[15px] font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99]"
@@ -8226,7 +8481,7 @@ const CommandCenterPage: React.FC = () => {
 
                 <div className={SETTINGS_SECTION_GRID}>
                   <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4}`}>
-                    <span className={SETTINGS_LABEL_CLASS}>blockCode</span>
+                    <span className={SETTINGS_LABEL_CLASS}>Mã khối</span>
                     <input
                       value={infraCustomBlockDraft.blockCode}
                       onChange={(e) =>
@@ -8346,7 +8601,7 @@ const CommandCenterPage: React.FC = () => {
                     />
                   </label>
                   <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4}`}>
-                    <span className={SETTINGS_LABEL_CLASS}>Data type</span>
+                    <span className={SETTINGS_LABEL_CLASS}>Kiểu dữ liệu</span>
                     <select
                       value={infraCustomFieldDraft.dataType}
                       onChange={(e) =>
@@ -8377,12 +8632,12 @@ const CommandCenterPage: React.FC = () => {
                       }
                       className="w-full rounded-input border border-xevn-border bg-white px-3 py-2 text-base outline-none"
                     >
-                      <option value="general">general - Khối Thông tin chung</option>
-                      <option value="location">location - Khối Vị trí & liên hệ</option>
-                      <option value="capacity">capacity - Khối Năng lực</option>
+                      <option value="general">Khối Thông tin chung</option>
+                      <option value="location">Khối Vị trí & liên hệ</option>
+                      <option value="capacity">Khối Năng lực</option>
                       {infraCustomBlocksForModalEntity.map((b) => (
                         <option key={b.id} value={b.blockCode}>
-                          {b.blockCode} — {b.labelVi}
+                          {b.labelVi}
                         </option>
                       ))}
                     </select>
@@ -8452,7 +8707,7 @@ const CommandCenterPage: React.FC = () => {
                         return;
                       }
                       if (infraCustomFieldDraft.dataType === 'select' && !infraCustomFieldDraft.selectConfig.trim()) {
-                        setPublishMessage('Select dataType yêu cầu `selectConfig` (CSV).');
+                        setPublishMessage('Kiểu «Lựa chọn» yêu cầu cấu hình tùy chọn (CSV).');
                         return;
                       }
 
@@ -8533,7 +8788,8 @@ const CommandCenterPage: React.FC = () => {
                           <div className="min-w-[14rem]">
                             <p className="text-[15px] font-semibold text-xevn-text">{f.labelVi}</p>
                             <p className="text-xs text-slate-500">
-                              `{f.fieldCode}` · {f.dataType} · {f.blockCode} · {f.visible ? 'visible' : 'hidden'}
+                              {EMPLOYEE_METADATA_DATA_TYPES.find((t) => t.value === f.dataType)?.label ?? '—'} ·{' '}
+                              {f.visible ? 'Hiển thị' : 'Ẩn'}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -8558,7 +8814,7 @@ const CommandCenterPage: React.FC = () => {
                                   ...prev,
                                   [entityId]: (prev[entityId] ?? []).filter((x) => x.id !== f.id),
                                 }));
-                                setPublishMessage(`Đã xóa field ${f.fieldCode}`);
+                                setPublishMessage(`Đã xóa field ${f.labelVi}`);
                               }}
                               className="rounded-input bg-rose-50 px-3 py-2 text-[15px] font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99]"
                             >
@@ -8621,7 +8877,7 @@ const CommandCenterPage: React.FC = () => {
                               <button
                                 type="button"
                                 disabled
-                                className="rounded-input bg-white px-2 py-1 text-[13px] font-medium text-slate-400 opacity-60"
+                                className="rounded-input bg-white px-2 py-1 text-[13px] font-medium text-xevn-textMuted opacity-60"
                               >
                                 Xóa
                               </button>
@@ -8673,7 +8929,7 @@ const CommandCenterPage: React.FC = () => {
                                   >
                                     <p className="truncate text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
                                     <p className="mt-0.5 truncate text-xs text-slate-500">
-                                      {b.blockCode} · order {b.order}
+                                      Thứ tự: {b.order}
                                     </p>
                                   </button>
                                   <div className="flex items-center gap-2">
@@ -8697,7 +8953,7 @@ const CommandCenterPage: React.FC = () => {
                                           [entityId]: (prev[entityId] ?? []).filter((f) => f.blockCode !== b.blockCode),
                                         }));
                                         setInfraSelectedCustomBlockCode('general');
-                                        setPublishMessage(`Đã xóa block ${b.blockCode}`);
+                                        setPublishMessage(`Đã xóa khối ${b.labelVi}`);
                                       }}
                                       className="rounded-input bg-rose-50 px-2 py-1 text-[13px] font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99]"
                                     >
@@ -8846,20 +9102,14 @@ const CommandCenterPage: React.FC = () => {
                 <div className="mb-4 flex h-10 items-center justify-between gap-3 border-b border-xevn-border pb-3">
                   {(() => {
                     const selectedCode = infraSelectedCustomBlockCode ?? 'general';
-                    const baseTitle =
-                      selectedCode === 'general'
-                        ? infraBlockTitleDraft.general || 'Khối Thông tin chung'
-                        : selectedCode === 'location'
-                          ? infraBlockTitleDraft.location || 'Khối Vị trí & liên hệ'
-                          : selectedCode === 'capacity'
-                            ? infraBlockTitleDraft.capacity || 'Khối Năng lực'
-                            : '';
-                    const customBlock = infraCustomBlocksForModalEntity.find((b) => b.blockCode === selectedCode);
-                    const selectedTitle = customBlock?.labelVi ?? baseTitle ?? selectedCode;
+                    // F-XBOS-09: header never falls back to raw blockCode
+                    const selectedTitle = resolveInfraBlockCodeDisplayLabel(selectedCode, {
+                      titleOverrides: infraBlockTitleDraft,
+                      customBlocks: infraCustomBlocksForModalEntity,
+                    });
                     return (
                       <>
                         <h4 className="text-base font-bold text-xevn-text">{selectedTitle}</h4>
-                        <span className="text-sm text-slate-500">{selectedCode}</span>
                       </>
                     );
                   })()}
@@ -8933,7 +9183,7 @@ const CommandCenterPage: React.FC = () => {
                     if (!customBlock) {
                       return (
                         <div className="text-sm text-slate-600">
-                          Không tìm thấy khối custom: <span className="font-semibold">{selectedCode}</span>
+                          Không tìm thấy khối custom.
                         </div>
                       );
                     }
@@ -8995,7 +9245,7 @@ const CommandCenterPage: React.FC = () => {
                                 [entityId]: (prev[entityId] ?? []).filter((f) => f.blockCode !== selectedCode),
                               }));
                               setInfraSelectedCustomBlockCode('general');
-                              setPublishMessage(`Đã xóa block ${selectedCode}`);
+                              setPublishMessage(`Đã xóa khối ${customBlock.labelVi || 'khối'}`);
                             }}
                             className="rounded-input bg-rose-50 px-4 py-2.5 text-[15px] font-semibold text-rose-700 transition hover:bg-rose-100 active:scale-[0.99]"
                           >
@@ -9139,7 +9389,13 @@ const CommandCenterPage: React.FC = () => {
 
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4}`}>
                       <span className={SETTINGS_LABEL_CLASS}>Thuộc khối</span>
-                      <div className="mt-1 text-base font-medium text-xevn-text">{infraCustomFieldDraft.blockCode}</div>
+                      {/* F-XBOS-09: display VI only; draft.blockCode remains wire key for save */}
+                      <div className="mt-1 text-base font-medium text-xevn-text">
+                        {resolveInfraBlockCodeDisplayLabel(infraCustomFieldDraft.blockCode, {
+                          titleOverrides: infraBlockTitleDraft,
+                          customBlocks: infraCustomBlocksForModalEntity,
+                        })}
+                      </div>
                     </label>
 
                     <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4}`}>
@@ -9212,7 +9468,7 @@ const CommandCenterPage: React.FC = () => {
                         const fieldCode = makeInfraCustomFieldCode(INFRA_CUSTOM_FIELD_FORM_CODE, blockCode, labelVi);
 
                         if (infraCustomFieldDraft.dataType === 'select' && !infraCustomFieldDraft.selectConfig.trim()) {
-                          setPublishMessage('Select dataType yêu cầu `selectConfig` (CSV).');
+                          setPublishMessage('Kiểu «Lựa chọn» yêu cầu cấu hình tùy chọn (CSV).');
                           return;
                         }
 
@@ -9403,7 +9659,7 @@ const CommandCenterPage: React.FC = () => {
                             <p className="truncate text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
                             <p className="text-xs text-slate-500">{fieldCount} trường</p>
                           </button>
-                          <button type="button" disabled className="rounded-input bg-white px-2 py-1 text-[13px] font-medium text-slate-400 opacity-60">Xóa</button>
+                          <button type="button" disabled className="rounded-input bg-white px-2 py-1 text-[13px] font-medium text-xevn-textMuted opacity-60">Xóa</button>
                         </div>
                       );})}
                       {baseBlocks.map((b) => (
@@ -9429,7 +9685,6 @@ const CommandCenterPage: React.FC = () => {
                         <div key={b.id} className={`flex items-center justify-between gap-2 rounded-input border border-xevn-border bg-white px-3 py-2 shadow-soft transition ${selectedCode === b.blockCode ? 'ring-2 ring-xevn-accent/30' : ''}`}>
                           <button type="button" className="min-w-0 flex-1 text-left" onClick={() => setGroupHrSelectedCustomBlockCode(b.blockCode)}>
                             <p className="truncate text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
-                            <p className="mt-0.5 truncate text-xs text-slate-500">{b.blockCode}</p>
                           </button>
                           <button
                             type="button"
@@ -9911,18 +10166,19 @@ const CommandCenterPage: React.FC = () => {
                         />
                       ) : null}
                       {field.dataType === 'number' ? (
-                        <input
-                          type="number"
+                        <MetadataNumberOrMoneyInput
+                          label={field.fieldName.trim() || '(Chưa đặt tên)'}
+                          fieldCode={field.id}
                           value={value}
-                          onChange={(e) => setVal(e.target.value)}
+                          onChange={setVal}
                           className={deptInputClass}
                         />
                       ) : null}
                       {field.dataType === 'date' ? (
-                        <input
-                          type="date"
+                        <MetadataDateInput
+                          aria-label={field.fieldName.trim() || 'Ngày'}
                           value={value}
-                          onChange={(e) => setVal(e.target.value)}
+                          onChange={setVal}
                           className={deptInputClass}
                         />
                       ) : null}
@@ -9993,8 +10249,9 @@ const CommandCenterPage: React.FC = () => {
               <LayoutDashboard className="h-6 w-6" strokeWidth={2} />
             </div>
             <div>
+              {/* @CODE-MEMORY-CHANGE XEVN-THM-FE-W1-TITLE-01 — hero = XeVN OS; module secondary = Command Center; must_keep TopHeader portal-brand-mark untouched */}
               <h1 className="page-title text-xl font-semibold tracking-tight text-xevn-text">
-                X-BOS Unified Portal
+                XeVN OS
               </h1>
               <p className="body-text text-sm text-xevn-textSecondary">Command Center</p>
             </div>
@@ -10199,7 +10456,10 @@ const CommandCenterPage: React.FC = () => {
               </section>
 
               {/* Action Cards */}
-              <section className={`border border-xevn-border bg-xevn-surface/90 p-6 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}>
+              <section
+                data-testid="cc-inbox-panel"
+                className={`border border-xevn-border bg-xevn-surface/90 p-6 shadow-soft backdrop-blur-sm ${SETTINGS_RADIUS_CARD}`}
+              >
                 <ApiLoadBanner
                   loadFailed={inboxTasksStrict.loadFailed}
                   usingMockFallback={inboxTasksStrict.usingMockFallback}
@@ -10269,6 +10529,7 @@ const CommandCenterPage: React.FC = () => {
                     filteredCards.map((task) => (
                       <li
                         key={task.cardId}
+                        data-testid="cc-inbox-task-card"
                         className="flex flex-col gap-3 rounded-xl border border-xevn-border bg-white/90 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
                       >
                         <div className="min-w-0 flex-1">

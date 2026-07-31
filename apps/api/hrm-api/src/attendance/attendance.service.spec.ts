@@ -23,7 +23,7 @@ describe('AttendanceService', () => {
   it('BR-ATT-DATE-01: rejects epoch attendance_date on create', async () => {
     await expect(
       service.createRecord({
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        company_id: 'holding',
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         attendance_date: '1970-01-01',
       }),
@@ -80,7 +80,7 @@ describe('AttendanceService', () => {
 
     await expect(
       service.createRecord({
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        company_id: 'holding',
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         attendance_date: '2026-04-22',
       }),

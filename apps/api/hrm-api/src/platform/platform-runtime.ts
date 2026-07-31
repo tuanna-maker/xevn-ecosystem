@@ -55,6 +55,25 @@ export async function hrmRateLimitMiddleware(
   if (allowed) next();
 }
 
+/** Pilot/mobile ESS — avoid idle keep-alive RST → RN fetch ERR-NETWORK (HOLD-ERRBUDGET). */
+export function hrmMobileEssConnectionGuard(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  const requestId = req.headers['x-request-id'];
+  const isMobileClient = typeof requestId === 'string' && requestId.startsWith('mob-');
+  const path = req.url ?? req.path ?? '';
+  const isEssTxn =
+    path.includes('/attendance/') ||
+    path.includes('/payroll/') ||
+    path.includes('/auth/mobile/');
+  if (isMobileClient && isEssTxn) {
+    res.setHeader('Connection', 'close');
+  }
+  next();
+}
+
 export function hrmMetricsOnFinish(req: Request, res: Response): void {
   const startedAt = Date.now();
   res.on('finish', () => {

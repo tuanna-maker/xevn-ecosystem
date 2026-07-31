@@ -59,6 +59,22 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
               { department: 'Vận hành', count: '400', avg_salary: '18000000' },
               { department: 'Khác', count: '50', avg_salary: null },
             ],
+            by_company: [
+              {
+                company_id: 'holding',
+                total: '200',
+                active_count: '190',
+                inactive_count: '10',
+                archived_count: '0',
+              },
+              {
+                company_id: 'trsport',
+                total: '300',
+                active_count: '280',
+                inactive_count: '20',
+                archived_count: '1',
+              },
+            ],
             recent: [
               {
                 id: '11111111-1111-4111-8111-111111111111',
@@ -96,9 +112,14 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
       });
       expect(result.new_hires.last_30_days).toBe(24);
       expect(result.new_hires.recent).toHaveLength(1);
+      expect(result.by_company.length).toBeGreaterThanOrEqual(5);
+      expect(result.by_company.map((r) => r.company_id)).toEqual(
+        expect.arrayContaining(['holding', 'trsport', 'logistics', 'finance', 'services']),
+      );
       expect(db.query).toHaveBeenCalledTimes(1);
       expect(db.query.mock.calls[0]?.[0]).toContain('WITH scoped AS');
       expect(db.query.mock.calls[0]?.[0]).toContain('salary_range_above_30m');
+      expect(db.query.mock.calls[0]?.[0]).toContain('by_company AS');
       expect(db.query.mock.calls[0]?.[0]).toContain('company_id');
     });
 
@@ -120,6 +141,7 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
               salary_range_below_15m: '0',
             },
             by_department: [],
+            by_company: [],
             recent: [],
           },
         ],
@@ -132,12 +154,18 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
         roleCode: 'group_ceo',
       });
 
-      await service.getEmployeesSummary({ company_id: 'main' }, `Bearer ${token}`, { tenantId: 'xevn' });
+      const result = await service.getEmployeesSummary(
+        { company_id: 'main' },
+        `Bearer ${token}`,
+        { tenantId: 'xevn' },
+      );
 
       const firstSql = String(db.query.mock.calls[0]?.[0] ?? '');
       const firstValues = db.query.mock.calls[0]?.[1] as unknown[] | undefined;
       expect(firstSql).toContain('company_id = ANY');
       expect(firstValues?.[0]).toEqual(expect.arrayContaining(['holding']));
+      expect(result.by_company).toHaveLength(5);
+      expect(result.by_company.every((r) => r.total === 0)).toBe(true);
     });
   });
 
@@ -152,6 +180,13 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
         archived_count: 0,
         payroll: { total: 0, employees_with_salary: 0 },
         by_department: [],
+        by_company: [
+          { company_id: 'holding', total: 120, active_count: 110, inactive_count: 10, archived_count: 0 },
+          { company_id: 'trsport', total: 400, active_count: 380, inactive_count: 20, archived_count: 0 },
+          { company_id: 'logistics', total: 250, active_count: 240, inactive_count: 10, archived_count: 0 },
+          { company_id: 'finance', total: 180, active_count: 170, inactive_count: 10, archived_count: 0 },
+          { company_id: 'services', total: 157, active_count: 150, inactive_count: 7, archived_count: 0 },
+        ],
         salary_ranges: [],
         new_hires: { last_30_days: 0, recent: [] },
       }),

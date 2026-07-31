@@ -63,4 +63,12 @@ export class ListEmployeesQueryDto {
   /** Nest hard cap 100 (unchanged). UI tables: prefer 30–50 (ADR-HRM-SCALE §5.2). */
   @Max(100)
   page_size?: number;
+
+  /**
+   * CD-FB-05 / ADR-HRM-SCALE §5.4 — opaque keyset cursor (created_at + id).
+   * When set, OFFSET `page` is ignored; response includes `next_cursor`.
+   */
+  @IsOptional()
+  @IsString()
+  cursor?: string;
 }

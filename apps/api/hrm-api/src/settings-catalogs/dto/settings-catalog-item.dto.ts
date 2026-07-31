@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class SettingsCatalogItemMutationDto {
   @IsString()
@@ -21,6 +21,11 @@ export class SettingsCatalogItemMutationDto {
   @IsString()
   @MaxLength(128)
   item_value?: string;
+
+  /** active = in picker; draft = deactivated (AC-SC-POS soft stop). */
+  @IsOptional()
+  @IsIn(['active', 'draft'])
+  status?: 'active' | 'draft';
 
   @IsOptional()
   metadata?: Record<string, unknown>;

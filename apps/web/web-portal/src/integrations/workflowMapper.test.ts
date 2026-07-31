@@ -129,8 +129,120 @@ describe('workflowMapper', () => {
     });
     const payload = workflowDefinitionToApiPayload(def);
     expect(payload.workflowCode).toBe('WF-TD-01');
+    expect(payload.category).toBe('general');
+    expect(payload.conditions).toEqual({});
     const graph = payload.graph as { steps: unknown[] };
     expect(Array.isArray(graph.steps)).toBe(true);
     expect((graph.steps[0] as { taskName: string }).taskName).toBe('Trưởng bộ phận duyệt');
+  });
+
+  it('XHRM-REC-WF: recruitment code payload sets businessType + taskType (J-REC-WF-01)', () => {
+    const def = apiRowToWorkflowDefinition({
+      id: 'def-rec',
+      workflow_code: 'hrm_requisition_approval',
+      name: 'Phê duyệt yêu cầu tuyển dụng HRM',
+      graph: {
+        steps: [
+          {
+            id: 'requisition_approval',
+            order: 1,
+            name: 'Phê duyệt yêu cầu tuyển',
+            taskType: 'rec_req_approve',
+            resolver_type: 'direct_manager',
+            resolver_config: { fallback_role_code: 'hrbp' },
+            transitions: [
+              { kind: 'approve', destinationId: 'wf-end-success' },
+              { kind: 'reject', destinationId: 'wf-end-reject' },
+              { kind: 'exception', destinationId: 'wf-bod-special' },
+            ],
+          },
+        ],
+      },
+    });
+    expect(def.steps[0]?.taskType).toBe('rec_req_approve');
+    expect(def.steps[0]?.resolverType).toBe('direct_manager');
+    const payload = workflowDefinitionToApiPayload(def);
+    expect(payload.status).toBe('active');
+    expect(payload.category).toBe('hrm_recruitment');
+    expect(payload.conditions).toEqual({ businessType: 'hrm_requisition' });
+    const step = (payload.graph as { steps: Array<Record<string, unknown>> }).steps[0]!;
+    expect(step.stepKey).toBe('requisition_approval');
+    expect(step.taskType).toBe('rec_req_approve');
+    expect(step.resolver_type).toBe('direct_manager');
+  });
+
+  it('AC-CD-F4-06: preserves resolver_type through load → edit → PUT → reload', () => {
+    const leaveStep = {
+      stepKey: 'manager_approval',
+      name: 'Quản lý trực tiếp phê duyệt',
+      order: 1,
+      resolver_type: 'direct_manager',
+      resolver_config: { fallback_role_code: 'hrbp' },
+      allowsReject: true,
+    };
+    const def = apiRowToWorkflowDefinition({
+      id: 'def-leave',
+      workflow_code: 'hrm_leave_approval',
+      name: 'Phê duyệt đơn nghỉ phép HRM',
+      graph: { steps: [leaveStep] },
+    });
+    expect(def.steps[0]?.resolverType).toBe('direct_manager');
+    expect(def.steps[0]?.resolverConfig).toEqual({ fallback_role_code: 'hrbp' });
+
+    const edited = {
+      ...def,
+      steps: def.steps.map((s) => ({
+        ...s,
+        resolverType: 'position_template' as const,
+        resolverConfig: { position_code: 'TRUONG_PHONG', company_id: 'main' },
+      })),
+    };
+    const payload = workflowDefinitionToApiPayload(edited);
+    const graph = payload.graph as { steps: Array<Record<string, unknown>> };
+    expect(graph.steps[0]?.resolver_type).toBe('position_template');
+    expect(graph.steps[0]?.resolver_config).toEqual({
+      position_code: 'TRUONG_PHONG',
+      company_id: 'main',
+    });
+
+    const reloaded = apiRowToWorkflowDefinition({
+      id: 'def-leave',
+      workflow_code: 'hrm_leave_approval',
+      name: 'Phê duyệt đơn nghỉ phép HRM',
+      graph: payload.graph,
+    });
+    expect(reloaded.steps[0]?.resolverType).toBe('position_template');
+    expect(reloaded.steps[0]?.resolverConfig).toEqual({
+      position_code: 'TRUONG_PHONG',
+      company_id: 'main',
+    });
+  });
+
+  it('AC-CD-F4-07 canvas: parallel_group resolver round-trips', () => {
+    const steps = normalizeGraphSteps([
+      {
+        id: 'parallel-1',
+        order: 1,
+        taskName: 'Duyệt song song',
+        resolverType: 'parallel_group',
+        resolverConfig: {
+          resolver_types: ['direct_manager', 'position_template'],
+          parallel_policy: 'all',
+        },
+      },
+    ]);
+    expect(steps[0]?.resolverType).toBe('parallel_group');
+    const payload = workflowDefinitionToApiPayload({
+      id: 'd',
+      code: 'WF-P',
+      name: 'P',
+      applyingEntityId: 'main',
+      triggerEvent: 't',
+      totalSlaHours: 24,
+      steps,
+    });
+    const apiStep = (payload.graph as { steps: Array<Record<string, unknown>> }).steps[0];
+    expect(apiStep?.resolver_type).toBe('parallel_group');
+    expect((apiStep?.resolver_config as { parallel_policy: string }).parallel_policy).toBe('all');
   });
 });

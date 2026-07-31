@@ -29,7 +29,7 @@ describe('OperatingUnitsService', () => {
     query.mockResolvedValue({ rows: [] });
   });
 
-  it('group CEO on main returns all 5 GROUP_MEMBER_SLUGS with BA-D-01 display names (P1-PROD-INT-BE-04)', async () => {
+  it('group CEO on main returns all 5 GROUP_MEMBER_SLUGS with LE/ĐVTV display names (BE-HRM-EMP-COMPANY-COL-01)', async () => {
     query.mockImplementation(async (sql: string) => {
       if (typeof sql === 'string' && sql.includes('FROM public.company_slug_map')) {
         return {
@@ -52,9 +52,10 @@ describe('OperatingUnitsService', () => {
     });
     expect(rows[4]).toMatchObject({
       operating_slug: 'services',
-      display_name_vi: 'Khối Dịch vụ X.E',
+      display_name_vi: HRM_OPERATING_UNIT_DEFAULT_DISPLAY_NAMES.services,
       rollup_order: 5,
     });
+    expect(rows.every((r) => !/^Khối\s/.test(r.display_name_vi))).toBe(true);
   });
 
   it('member CEO sees empty partition (no GROUP_MEMBER rollup slugs)', async () => {

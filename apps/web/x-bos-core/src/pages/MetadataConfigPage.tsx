@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useXbosStore } from '@/store/useXbosStore';
 import type { MetadataDataType } from '@/types';
 import { OrgTabs } from '@/components/layout/OrgTabs';
+import { resolveMetadataDataTypeLabel, resolveMetadataEntityTypeLabel } from '@/utils/xbosCoreLabelMaps';
 
 export function MetadataConfigPage() {
   const metadataAttributes = useXbosStore((s) => s.metadataAttributes);
@@ -139,11 +140,11 @@ export function MetadataConfigPage() {
               value={dataType}
               onChange={(e) => setDataType(e.target.value as MetadataDataType)}
             >
-              <option value="text">text</option>
-              <option value="number">number</option>
-              <option value="date">date</option>
-              <option value="boolean">boolean</option>
-              <option value="select">select</option>
+              <option value="text">{resolveMetadataDataTypeLabel('text')}</option>
+              <option value="number">{resolveMetadataDataTypeLabel('number')}</option>
+              <option value="date">{resolveMetadataDataTypeLabel('date')}</option>
+              <option value="boolean">{resolveMetadataDataTypeLabel('boolean')}</option>
+              <option value="select">{resolveMetadataDataTypeLabel('select')}</option>
             </select>
           </label>
           <label className="flex items-end gap-2 pb-1">
@@ -331,11 +332,11 @@ export function MetadataConfigPage() {
                 <td className="px-4 py-3 text-xevn-muted">
                   {m.dataType === 'select' ? (
                     <>
-                      select · {m.refCategoryCode ? `DNA:${m.refCategoryCode}` : 'tự khai'}
+                      {resolveMetadataDataTypeLabel('select')} · {m.refCategoryCode ? `DNA:${m.refCategoryCode}` : 'tự khai'}
                     </>
                   ) : m.dataType === 'boolean' ? (
                     <>
-                      boolean ·{' '}
+                      {resolveMetadataDataTypeLabel('boolean')} ·{' '}
                       {(m.validationJson as { trueLabel?: string; true_label?: string })
                         .trueLabel ?? (m.validationJson as { trueLabel?: string; true_label?: string }).true_label ?? 'Bật'}
                       /
@@ -343,10 +344,10 @@ export function MetadataConfigPage() {
                         .falseLabel ?? (m.validationJson as { falseLabel?: string; false_label?: string }).false_label ?? 'Tắt'}
                     </>
                   ) : (
-                    m.dataType
+                    resolveMetadataDataTypeLabel(m.dataType)
                   )}
                 </td>
-                <td className="px-4 py-3 text-xevn-muted">{m.entityType}</td>
+                <td className="px-4 py-3 text-xevn-muted">{resolveMetadataEntityTypeLabel(m.entityType)}</td>
               </tr>
             ))}
           </tbody>

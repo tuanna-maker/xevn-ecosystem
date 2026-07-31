@@ -29,6 +29,20 @@ describe('resolveHrmListScope (ADR-HRM-RBAC-SCOPE-LADDER)', () => {
     expect(scope.companyIds).toEqual([...HRM_GROUP_MEMBER_COMPANY_SLUGS]);
   });
 
+  it('expands main rollup when mobile login JWT uses holding slug (W2A standalone)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      company_uuid: '85945933-632a-4bca-8fe9-3bbe8bc9294b',
+      employee_id: 'portal-gceo-uuid',
+      roles: ['employee', 'manager', 'hr_manager'],
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main');
+    expect(scope.masterTenantPartition).toBe(true);
+    expect(scope.companyIds).toEqual([...HRM_GROUP_MEMBER_COMPANY_SLUGS]);
+  });
+
   it('keeps single main for member subsidiary CEO', () => {
     const token = signServiceJwt({
       sub: 'du-lich.ceo@xe.vn',

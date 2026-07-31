@@ -1,18 +1,54 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Hồ sơ NV → Quá trình công tác / Work Timeline
+ * UC:         UC-HRM-21 · FR-HRM-MD-BIND-E1A-01 · FR-HRM-SC-POS-01
+ * BR:         BR-HRM-MD-01 · BR-HRM-MD-E1A-01/03 · AC-HRM-PICKER-01
+ * SRS:        docs/program/deltas/BA_ERP_E1A_SRS_01_20260728.md · docs/hrm/SRS.md §16.4
+ * TechSpec:   docs/hrm/TECHSPEC.md §11.4 / §14
+ * DB_DESIGN:  docs/hrm/DB_DESIGN_HRM_MD_BIND_E1A.md §3 (employee_work_timeline.position_key)
+ * API_DESIGN: docs/hrm/API_DESIGN_HRM_MD_BIND_E1A.md WH-C/U · HRM-WH-POS-KEY
+ * Purpose:    Profile tabs CRUD; E1-A bind Vị trí = catalog code (position_key), không free-text SoT.
+ * WorkItem:   D-BE-ERP-E1A-POS-KEY-01
+ * Coded:      2026-07-28
+ * Callers:    employees.controller.ts work-timeline
+ * Callees:    SettingsCatalogsService.assertCodeInEffectiveCatalog · employee_work_timeline
+ * must_keep:  employees.job_title_key path riêng; scope_parity list/get; U65 no seed
+ * SOLID:      Service owns schema + catalog soft assert
+ * LastVerified: be-erp-e1a-pos-key-01.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-BE-ERP-E1A-POS-KEY-01
+ * change_mode: ADD
+ * What: ensureSchema ADD position_key/department_key; create/update assert job_titles; allowlist keys
+ * Why: Layer A MD-BIND — cấm invent position TEXT làm SoT
+ * must_keep: job_title_key trên employees; Leave; JD position_code; decision_type
+ */
+import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
-import { assertResourceInHrmScope, pushCompanyIdFilter, resolveHrmListScope } from '../common/hrm-list-scope';
+import {
+  assertResourceInHrmScope,
+  MASTER_TENANT_ID,
+  pushCompanyIdFilter,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
+import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService } from '../db/hrm-db.service';
+import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { EmployeeProfileListQueryDto } from './dto/employee-profile-list.query.dto';
 import { EmployeesService } from './employees.service';
 
 type ProfileRow = Record<string, unknown> & { id: string };
+
+/** VAL-MDBIND — work timeline position catalog soft-ref. */
+export const HRM_WH_POS_KEY = 'HRM-WH-POS-KEY';
+export const HRM_WH_DEPT_KEY = 'HRM-WH-DEPT-KEY';
 
 @Injectable()
 export class EmployeeProfileService {
   constructor(
     private readonly db: HrmDbService,
     private readonly employees: EmployeesService,
+    @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
   ) {}
 
   private async ensureSchema() {
@@ -112,6 +148,20 @@ export class EmployeeProfileService {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+    // E1-A MD-BIND — position_key SoT (≠ employees.job_title_key).
+    await this.db.query(`
+      ALTER TABLE public.employee_work_timeline
+        ADD COLUMN IF NOT EXISTS position_key TEXT NULL;
+    `);
+    await this.db.query(`
+      ALTER TABLE public.employee_work_timeline
+        ADD COLUMN IF NOT EXISTS department_key TEXT NULL;
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_employee_work_timeline_position_key
+        ON public.employee_work_timeline (company_id, position_key)
+        WHERE position_key IS NOT NULL;
     `);
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.employee_resume_files (
@@ -304,18 +354,121 @@ export class EmployeeProfileService {
     return this.listScopedRows('public.employee_work_timeline', '*', employeeId, query, authorization);
   }
 
-  createWorkTimelineItem(employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
-    return this.insertProfileRow('public.employee_work_timeline', employeeId, query, authorization, payload);
+  private resolveCatalogTenantId(): string {
+    return masterTenantIdFromEnv() || MASTER_TENANT_ID;
   }
 
-  updateWorkTimelineItem(
+  /**
+   * FR-HRM-SC-POS-01 #5/#6 · BR-HRM-MD-01 — position_key ∈ job_titles.
+   * Returns catalog label for snapshot denorm when client omits `position`.
+   */
+  private async assertWhPositionKey(
+    companyId: string,
+    positionKey: unknown,
+  ): Promise<{ code: string; label: string }> {
+    const code = typeof positionKey === 'string' ? positionKey.trim() : '';
+    if (!code) {
+      throw new ApiException(
+        HRM_WH_POS_KEY,
+        'position_key is required (catalog SoT; free-text position alone forbidden)',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (!this.settingsCatalogs) {
+      return { code, label: code };
+    }
+    const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+      tenantId: this.resolveCatalogTenantId(),
+      companyId,
+      catalogKey: 'job_titles',
+      code,
+      errorCode: HRM_WH_POS_KEY,
+      errorMessage: `position_key '${code}' is not in job_titles catalog (free-text SoT forbidden)`,
+    });
+    return { code: hit.code, label: hit.label };
+  }
+
+  private async assertWhDepartmentKey(companyId: string, departmentKey: unknown): Promise<string | null> {
+    if (departmentKey === undefined || departmentKey === null) return null;
+    const code = typeof departmentKey === 'string' ? departmentKey.trim() : '';
+    if (!code) {
+      throw new ApiException(
+        HRM_WH_DEPT_KEY,
+        'department_key cannot be empty when provided',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (!this.settingsCatalogs) return code;
+    const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+      tenantId: this.resolveCatalogTenantId(),
+      companyId,
+      catalogKey: 'departments',
+      code,
+      errorCode: HRM_WH_DEPT_KEY,
+      errorMessage: `department_key '${code}' is not in departments catalog`,
+    });
+    return hit.code;
+  }
+
+  async createWorkTimelineItem(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
+    await this.ensureSchema();
+    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const pos = await this.assertWhPositionKey(employee.company_id, payload.position_key);
+    const departmentKey = await this.assertWhDepartmentKey(employee.company_id, payload.department_key);
+    const positionSnapshot =
+      typeof payload.position === 'string' && payload.position.trim()
+        ? payload.position.trim()
+        : pos.label;
+    const normalized: Record<string, unknown> = {
+      ...payload,
+      position_key: pos.code,
+      position: positionSnapshot,
+    };
+    if (departmentKey != null) {
+      normalized.department_key = departmentKey;
+    }
+    return this.insertProfileRow('public.employee_work_timeline', employeeId, query, authorization, normalized);
+  }
+
+  async updateWorkTimelineItem(
     itemId: string,
     employeeId: string,
     query: EmployeeProfileListQueryDto,
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.updateProfileRow('public.employee_work_timeline', itemId, employeeId, query, authorization, payload, [
+    await this.ensureSchema();
+    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const normalized: Record<string, unknown> = { ...payload };
+    const hasPositionKey = Object.prototype.hasOwnProperty.call(payload, 'position_key');
+    const hasPositionText = Object.prototype.hasOwnProperty.call(payload, 'position');
+    if (hasPositionText && !hasPositionKey) {
+      throw new ApiException(
+        HRM_WH_POS_KEY,
+        'position_key is required when updating position (invent-only free-text forbidden)',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (hasPositionKey) {
+      const pos = await this.assertWhPositionKey(employee.company_id, payload.position_key);
+      normalized.position_key = pos.code;
+      if (
+        payload.position === undefined ||
+        (typeof payload.position === 'string' && !payload.position.trim())
+      ) {
+        normalized.position = pos.label;
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(payload, 'department_key')) {
+      const departmentKey = await this.assertWhDepartmentKey(employee.company_id, payload.department_key);
+      normalized.department_key = departmentKey;
+    }
+    return this.updateProfileRow('public.employee_work_timeline', itemId, employeeId, query, authorization, normalized, [
       'event_date',
       'title',
       'description',
@@ -323,7 +476,9 @@ export class EmployeeProfileService {
       'status',
       'contract_code',
       'department',
+      'department_key',
       'position',
+      'position_key',
       'notes',
     ]);
   }

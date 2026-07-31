@@ -93,7 +93,7 @@ export function MasterDataPage() {
             <div className="space-y-1.5">
               <div className="text-xs font-medium text-xevn-muted">Tìm nhanh</div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-xevn-neutral" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-xevn-muted" />
                 <input
                   className="input-apple pl-9 w-full"
                   value={groupSearch}
@@ -164,7 +164,7 @@ export function MasterDataPage() {
             <div className="h-full min-h-[220px] flex items-center justify-center text-center">
               <div className="space-y-2">
                 <div className="inline-flex items-center justify-center gap-2 rounded-xl border border-black/[0.06] bg-white/70 px-4 py-3 shadow-soft">
-                  <Layers className="h-5 w-5 text-xevn-neutral" />
+                  <Layers className="h-5 w-5 text-xevn-muted" />
                   <div className="text-sm font-medium text-xevn-text">Danh mục con</div>
                 </div>
                 <div className="text-sm text-xevn-muted">Vui lòng chọn một Nhóm danh mục để xem chi tiết</div>
@@ -330,7 +330,7 @@ export function MasterDataPage() {
                 setActiveCode(created.code);
                 setGroupModalOpen(false);
               }}
-              className="rounded-xl bg-xevn-primary px-5 py-2 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 hover:bg-blue-800"
+              className="rounded-xl bg-xevn-primary px-5 py-2 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 hover:bg-xevn-accent"
             >
               Xác nhận thêm
             </button>

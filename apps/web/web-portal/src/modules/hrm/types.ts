@@ -17,6 +17,7 @@ export type HrmWorkspaceMenuKey =
   | 'processes'
   | 'internal_services'
   | 'tools_equipment'
+  | 'fleet'
   | 'company'
   | 'reports'
   | 'settings'

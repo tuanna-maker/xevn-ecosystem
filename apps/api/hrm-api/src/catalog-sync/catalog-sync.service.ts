@@ -1,3 +1,29 @@
+/**
+ * @CODE-MEMORY
+ * Screen: HRM → Đồng bộ danh mục XBOS (catalog-sync)
+ * UC: UC-HRM-06 · UC-HRM-07 · UC-HRM-08 · FR-HRM-06
+ * BR: BR-HRM-SC-SYNC-01 · BR-HRM-SC-ALIAS-01
+ * SRS: docs/hrm/SRS.md · UC-HRM-06 Diễn biến pull
+ * TechSpec: docs/hrm/TECHSPEC.md §11.4 · §14.8
+ * API_DESIGN: docs/hrm/API_DESIGN_HRM_SETTINGS_E1B.md §7
+ * Purpose: Pull/list/get L1 synced_catalogs từ XBOS config-sync; không invent L0.
+ * WorkItem: (baseline) catalog-sync
+ * Coded: 2026-05
+ * Callers: catalog-sync.controller · settings-catalogs.service
+ * Callees: XBOS /api/xbos/config-sync · public.synced_catalogs
+ * must_keep: service JWT S2S; unique (tenant, company, catalog_key); empty honest
+ * SOLID: Sync I/O tách khỏi Settings merge
+ * LastVerified: catalog-sync.controller.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28
+ * WorkItem: D-BE-ERP-E1B-ALIAS-KEYS-01
+ * change_mode: ADD
+ * What: pull/{key} + get local — alias try-list (decision_types→hr_decision_types);
+ *   getSyncedCatalogExact for family merge; store under actual remote key; resolvedFrom.
+ * SRS: FR-HRM-SC-DEC-01 · UC-HRM-06 · BA_ERP_E1B_SRS_01 AC-SET-UI-05
+ * must_keep: no new sync URL; no DDL rename; no invent L0
+ * LastVerified: d-be-erp-e1b-alias-keys-01.spec.ts
+ */
 import { existsSync } from 'node:fs';
 import { Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
@@ -7,6 +33,10 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { fetchWithTimeoutAndRetry } from '../common/http-retry-fetch';
 import { HrmDbService } from '../db/hrm-db.service';
 import { defaultCompanyIdFromEnv, masterTenantIdFromEnv } from '../common/tenant-scope-env';
+import {
+  catalogAliasTryList,
+  normalizeMasterCatalogKey,
+} from '../settings-catalogs/hrm-settings-master-keys';
 
 export interface HrmSyncedCatalog {
   tenantId: string;
@@ -17,6 +47,8 @@ export interface HrmSyncedCatalog {
   checksum: string;
   syncedAt: string;
   payload: unknown;
+  /** Present when pull/get resolved via an alias different from the requested key. */
+  resolvedFrom?: string;
 }
 
 export interface HrmCatalogSyncStatus {
@@ -165,16 +197,17 @@ export class CatalogSyncService {
     `);
   }
 
-  async pullCatalogFromXbos(
+  /**
+   * Pull one exact XBOS key into synced_catalogs (no alias resolve).
+   * @CODE-MEMORY method · UC-HRM-06
+   */
+  private async pullExactCatalogFromXbos(
     catalogKey: string,
-    tenantId: string,
-    companyId: string,
+    normalizedTenantId: string,
+    normalizedCompanyId: string,
     authorization?: string,
-  ) {
-    await this.ensureSchema();
-    const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
-    const normalizedCompanyId = this.normalizeScopeId(companyId, 'companyId');
-    const url = `${this.xbosApiUrl}/api/xbos/config-sync/catalog/${catalogKey}?target=hrm&tenantId=${encodeURIComponent(normalizedTenantId)}&companyId=${encodeURIComponent(normalizedCompanyId)}`;
+  ): Promise<HrmSyncedCatalog> {
+    const url = `${this.xbosApiUrl}/api/xbos/config-sync/catalog/${encodeURIComponent(catalogKey)}?target=hrm&tenantId=${encodeURIComponent(normalizedTenantId)}&companyId=${encodeURIComponent(normalizedCompanyId)}`;
     let response: Response;
     try {
       response = await fetchWithTimeoutAndRetry(url, {
@@ -196,6 +229,13 @@ export class CatalogSyncService {
       throw new ApiException('HRM-SYNC-001', msg, HttpStatus.BAD_GATEWAY);
     }
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new ApiException(
+          'HRM-SYNC-002',
+          `Catalog '${catalogKey}' unavailable from XBOS`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
       throw new ApiException(
         'HRM-SYNC-001',
         `XBOS API error ${response.status}`,
@@ -207,9 +247,10 @@ export class CatalogSyncService {
       data?: { data?: unknown };
       error?: string;
     };
-    const remotePayload = body.data && typeof body.data === 'object' && 'data' in body.data
-      ? body.data.data
-      : body.data;
+    const remotePayload =
+      body.data && typeof body.data === 'object' && 'data' in body.data
+        ? body.data.data
+        : body.data;
     if (!body.success || !remotePayload) {
       throw new ApiException(
         'HRM-SYNC-002',
@@ -230,7 +271,13 @@ export class CatalogSyncService {
         checksum = EXCLUDED.checksum,
         synced_at = NOW()
     `,
-      [normalizedTenantId, normalizedCompanyId, catalogKey, JSON.stringify(remotePayload), checksum],
+      [
+        normalizedTenantId,
+        normalizedCompanyId,
+        catalogKey,
+        JSON.stringify(remotePayload),
+        checksum,
+      ],
     );
     await this.db.query(
       `
@@ -255,7 +302,7 @@ export class CatalogSyncService {
       [catalogKey, normalizedTenantId, normalizedCompanyId],
     );
     const row = rowRes.rows[0];
-    const record: HrmSyncedCatalog = {
+    return {
       tenantId: normalizedTenantId,
       companyId: normalizedCompanyId,
       key: row.catalog_key,
@@ -265,13 +312,79 @@ export class CatalogSyncService {
       syncedAt: row.synced_at,
       payload: row.payload,
     };
-    return record;
   }
 
-  async getSyncedCatalog(catalogKey: string, tenantId: string, companyId: string) {
+  /**
+   * Pull with E1-B alias try-list (API_DESIGN §7.1). Stores under actual remote key.
+   * @CODE-MEMORY method · UC-HRM-06 · FR-HRM-SC-DEC-01 alias
+   */
+  async pullCatalogFromXbos(
+    catalogKey: string,
+    tenantId: string,
+    companyId: string,
+    authorization?: string,
+  ): Promise<HrmSyncedCatalog> {
     await this.ensureSchema();
     const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
     const normalizedCompanyId = this.normalizeScopeId(companyId, 'companyId');
+    const requested = normalizeMasterCatalogKey(catalogKey);
+    const tryList = catalogAliasTryList(requested);
+    let lastMiss: ApiException | null = null;
+    let lastUpstream: ApiException | null = null;
+
+    for (const key of tryList) {
+      try {
+        const record = await this.pullExactCatalogFromXbos(
+          key,
+          normalizedTenantId,
+          normalizedCompanyId,
+          authorization,
+        );
+        if (key !== requested) {
+          return { ...record, resolvedFrom: requested };
+        }
+        return record;
+      } catch (e) {
+        if (e instanceof ApiException && e.code === 'HRM-SYNC-002') {
+          lastMiss = e;
+          continue;
+        }
+        if (e instanceof ApiException && e.code === 'HRM-SYNC-001') {
+          // Keep trying aliases on soft upstream miss patterns; hard fail after all keys.
+          lastUpstream = e;
+          continue;
+        }
+        throw e;
+      }
+    }
+
+    if (lastMiss) {
+      throw new ApiException(
+        'HRM-SYNC-002',
+        `Catalog unavailable from XBOS for aliases [${tryList.join(', ')}]`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    throw (
+      lastUpstream ??
+      new ApiException(
+        'HRM-SYNC-002',
+        `Catalog unavailable from XBOS for aliases [${tryList.join(', ')}]`,
+        HttpStatus.NOT_FOUND,
+      )
+    );
+  }
+
+  /** Exact L1 lookup — no alias resolve (family merge callers). Returns null if missing. */
+  async getSyncedCatalogExact(
+    catalogKey: string,
+    tenantId: string,
+    companyId: string,
+  ): Promise<HrmSyncedCatalog | null> {
+    await this.ensureSchema();
+    const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
+    const normalizedCompanyId = this.normalizeScopeId(companyId, 'companyId');
+    const key = normalizeMasterCatalogKey(catalogKey);
     const res = await this.db.query<{
       catalog_key: string;
       source_system: 'xbos';
@@ -285,15 +398,11 @@ export class CatalogSyncService {
       FROM public.synced_catalogs
       WHERE catalog_key = $1 AND tenant_id = $2 AND company_id = $3
     `,
-      [catalogKey, normalizedTenantId, normalizedCompanyId],
+      [key, normalizedTenantId, normalizedCompanyId],
     );
     const item = res.rows[0];
     if (!item) {
-      throw new ApiException(
-        'HRM-SYNC-002',
-        `Catalog '${catalogKey}' not synced in HRM`,
-        HttpStatus.NOT_FOUND,
-      );
+      return null;
     }
     return {
       tenantId: normalizedTenantId,
@@ -304,7 +413,27 @@ export class CatalogSyncService {
       checksum: item.checksum,
       syncedAt: item.synced_at,
       payload: item.payload,
-    } as HrmSyncedCatalog;
+    };
+  }
+
+  /** Alias-aware get — try storageKey then aliases (API_DESIGN §7.2). */
+  async getSyncedCatalog(catalogKey: string, tenantId: string, companyId: string) {
+    const requested = normalizeMasterCatalogKey(catalogKey);
+    const tryList = catalogAliasTryList(requested);
+    for (const key of tryList) {
+      const row = await this.getSyncedCatalogExact(key, tenantId, companyId);
+      if (row) {
+        if (key !== requested) {
+          return { ...row, resolvedFrom: requested };
+        }
+        return row;
+      }
+    }
+    throw new ApiException(
+      'HRM-SYNC-002',
+      `Catalog '${catalogKey}' not synced in HRM (tried: ${tryList.join(', ')})`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 
   async listSyncedCatalogs(tenantId: string, companyId: string) {

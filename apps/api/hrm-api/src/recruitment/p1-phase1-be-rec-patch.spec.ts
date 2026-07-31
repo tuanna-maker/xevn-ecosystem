@@ -15,7 +15,12 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
         onModuleDestroy: jest.fn(),
       } as unknown as jest.Mocked<HrmDbService>;
       db.query.mockResolvedValue({ rows: [] } as never);
-      service = new RecruitmentService(db);
+      const bridge = {
+        ensureSchema: jest.fn().mockResolvedValue(undefined),
+        assertNotLockedOrThrow: jest.fn(),
+        startRecruitmentWorkflowIfConfigured: jest.fn().mockResolvedValue(null),
+      };
+      service = new RecruitmentService(db, bridge as never);
     });
 
     it('updates holding requisition when group CEO requests company_id=main (AC-CRUD-HRM-REC-G-U-01)', async () => {
@@ -27,8 +32,10 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
       });
       const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
-          return { rows: [{ company_id: 'holding' }] } as never;
+        if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+          return {
+            rows: [{ company_id: 'holding', status: 'open', workflow_instance_id: null }],
+          } as never;
         }
         if (sql.includes('UPDATE public.job_requisitions')) {
           return {
@@ -77,7 +84,7 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
         roleCode: 'group_ceo',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
+        if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
           return { rows: [] } as never;
         }
         return { rows: [] } as never;
@@ -101,8 +108,10 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
         roleCode: 'group_ceo',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
-          return { rows: [{ company_id: 'other-co' }] } as never;
+        if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+          return {
+            rows: [{ company_id: 'other-co', status: 'open', workflow_instance_id: null }],
+          } as never;
         }
         return { rows: [] } as never;
       });

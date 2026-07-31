@@ -1,63 +1,78 @@
+/**
+ * @CODE-MEMORY
+ * Screen: Unified Shell entry (WP-SHELL-UNIFIED)
+ * UC: portal entry · L-OPS
+ * BR: ADR-XEVN-THEME-SHARP-OPS · inventory FE-W1
+ * Purpose: Cổng vào — mark XeVN + CTA Cockpit / Command Center; không KPI chip thừa.
+ * WorkItem: XEVN-THM-FE-W1
+ * Coded: 2026-07-22
+ * must_keep: mark+wordmark; primary CTA Cockpit; không stats strip
+ * LastVerified: visual + theme-contrast
+ */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, ArrowRight } from 'lucide-react';
 
-/**
- * Lớp vào tổng thể (Unified Shell): không sidebar — người dùng vào đây trước,
- * sau đó chuyển sang Bảng điều hành (/cockpit) rồi mới dùng workspace /dashboard/*.
- */
 const UnifiedShellPage: React.FC = () => {
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-[#F9FAFB]">
-      <header className="shrink-0 border-b border-slate-200/80 bg-white/80 backdrop-blur-md shadow-soft">
-        <div className="xevn-safe-inline py-6 flex items-center justify-between max-w-[1920px] mx-auto w-full">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E40AF] to-slate-900 flex items-center justify-center shadow-md">
-              <Building2 className="w-7 h-7 text-white" strokeWidth={1.5} />
-            </div>
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-xevn-background">
+      <header className="shrink-0 border-b border-xevn-border bg-xevn-surface/80 backdrop-blur-md shadow-soft">
+        <div className="xevn-safe-inline mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between">
+          <div className="flex h-10 items-center gap-3">
+            <img
+              src="/xevn-logo.png"
+              alt="XeVN"
+              className="h-10 w-10 object-contain"
+              width={40}
+              height={40}
+            />
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">XeVN OS</p>
-              <h1 className="text-lg font-bold text-slate-900">Unified Shell</h1>
+              <p className="text-xs font-medium uppercase tracking-wide text-xevn-textSecondary">
+                XeVN OS
+              </p>
+              <h1 className="text-lg font-bold text-xevn-text">Unified Shell</h1>
             </div>
           </div>
-          <span className="text-sm text-slate-500 hidden sm:inline">Cổng vào duy nhất · Prototype</span>
+          <span className="hidden text-sm text-xevn-textSecondary sm:inline">
+            Cổng vào duy nhất
+          </span>
         </div>
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto overflow-x-hidden px-8 py-16">
-        <div className="max-w-lg w-full text-center space-y-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#1E40AF]/10 text-[#1E40AF]">
-            <LayoutDashboard className="w-10 h-10" strokeWidth={1.5} />
+        <div className="w-full max-w-lg space-y-8 text-center">
+          <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-xevn-primary/10 text-xevn-primary">
+            <LayoutDashboard className="h-10 w-10" strokeWidth={1.5} />
           </div>
           <div className="space-y-3">
-            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
+            <h2 className="xevn-type-title tracking-tight text-xevn-text md:text-3xl">
               Chào mừng đến hệ điều hành tập đoàn
             </h2>
-            <p className="text-slate-600 text-base leading-relaxed">
+            <p className="xevn-type-body leading-relaxed text-xevn-textSecondary">
               Bắt đầu từ lớp Unified, sau đó mở Bảng điều hành (Executive Cockpit). Khi đã vào cockpit,
               workspace nghiệp vụ (sidebar) mới được mở khóa.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
+          <div className="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
             <Link
               to="/cockpit"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E40AF] text-white px-8 py-4 text-sm font-semibold shadow-soft hover:opacity-95 active:scale-95 transition-transform"
+              className="inline-flex items-center justify-center gap-2 rounded-card bg-xevn-primary px-8 py-4 text-sm font-semibold text-white shadow-soft transition-transform hover:bg-xevn-primaryPressed active:scale-95"
             >
               Vào Bảng điều hành
-              <ArrowRight className="w-5 h-5" strokeWidth={1.5} />
+              <ArrowRight className="h-5 w-5" strokeWidth={1.5} />
             </Link>
             <Link
               to="/command-center"
-              className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-8 py-4 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 active:scale-95 transition-transform"
+              className="inline-flex items-center justify-center rounded-card border border-xevn-border bg-xevn-surface px-8 py-4 text-sm font-semibold text-xevn-text shadow-sm transition-transform hover:bg-xevn-background active:scale-95"
             >
               Command Center
             </Link>
           </div>
 
-          <p className="text-xs text-slate-400">
-            Workspace portal: <code className="text-slate-600">/dashboard/*</code> — chỉ khả dụng sau khi đã vào{' '}
-            <code className="text-slate-600">/cockpit</code>
+          <p className="text-xs text-xevn-textSecondary">
+            Workspace portal: <code className="text-xevn-text">/dashboard/*</code> — chỉ khả dụng sau khi
+            đã vào <code className="text-xevn-text">/cockpit</code>
           </p>
         </div>
       </main>

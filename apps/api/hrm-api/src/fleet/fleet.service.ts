@@ -1,3 +1,44 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Hồ sơ xe (Fleet) — list + keyword filter
+ * UC:         FR-HRM-FL-01
+ * BR:         BR-FLEET-LIST-SCOPE · G-FL-02 keyword plate/name in-scope
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.49 · FR-HRM-FL-01 Diễn biến #4
+ * TechSpec:   docs/hrm/TECHSPEC.md §16.5 · API_DESIGN_HRM_FLEET.md §A
+ * Purpose:    Đọc/ghi nội bộ hồ sơ xe; GET list lọc biển số + tên mềm trong fleet_fields.
+ * WorkItem:   BE-HRM-FLEET-KEYWORD-01
+ * Coded:      2026-07-27
+ *
+ * Callers:
+ *   - FleetController.listVehicles
+ *   - Internal/ops upsertVehicle (no public HTTP — G-FL-UPSERT)
+ *
+ * Callees:
+ *   - HrmDbService → public.hrm_fleet_vehicles
+ *   - pushCompanyIdFilter (scope parity)
+ *
+ * FE-Actions:
+ *   | Thao tác        | Handler      | Lib / RPC                                      |
+ *   |-----------------|--------------|------------------------------------------------|
+ *   | Tìm biển/tên    | listVehicles | GET …/fleet/vehicles?keyword|q → HRM-FLEET-200 |
+ *
+ * BE-Chain:
+ *   listVehicles → WHERE tenant + companyIds + optional status + ILIKE plate/name keys
+ *
+ * Impact:     Keyword bỏ scope → lộ xe ĐV khác; public upsert → phá FL-01 view-only
+ * must_keep:  FL-01 GET list only · TEXT slug · empty 200 · không mở HTTP upsert
+ * SOLID:      Service = SQL + map; controller = auth/scope transport
+ * LastVerified: fleet.controller.spec.ts · fleet.service.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: BE-HRM-FLEET-KEYWORD-01
+ * change_mode: ADD
+ * What: Thêm filter keyword/q trên listVehicles (plate + name keys trong fleet_fields)
+ * Why: Đóng residual G-FL-02 — SRS Diễn biến #4 tìm biển số / tên trong ĐV
+ * SRS: §3.49 · FR-HRM-FL-01 #4
+ * TechSpec: §16.5 · API_DESIGN_HRM_FLEET §A F.1
+ * must_keep: không public write · U65 empty OK · HOLD_DEPLOY
+ */
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
@@ -14,6 +55,23 @@ export type FleetVehicleRow = {
   created_at: string;
   updated_at: string;
 };
+
+/** Prefer `q` over `keyword` (employees directory parity). */
+export function resolveFleetSearchTerm(keyword?: string, q?: string): string | undefined {
+  const term = (q ?? keyword)?.trim();
+  if (!term) return undefined;
+  return term.slice(0, 100);
+}
+
+/** Soft name keys in fleet_fields (Settings tourism catalog + generic aliases). */
+const FLEET_NAME_JSON_KEYS = [
+  'driver_name',
+  'manufacturer',
+  'model',
+  'route_name',
+  'name',
+  'vehicle_name',
+] as const;
 
 @Injectable()
 export class FleetService implements OnModuleInit {
@@ -59,7 +117,7 @@ export class FleetService implements OnModuleInit {
   async listVehicles(
     tenantId: string,
     companyIds: string[],
-    opts?: { status?: string; limit?: number },
+    opts?: { status?: string; limit?: number; keyword?: string; q?: string },
   ) {
     await this.ensureSchema();
     const filters = ['tenant_id = $1'];
@@ -68,6 +126,15 @@ export class FleetService implements OnModuleInit {
     if (opts?.status) {
       filters.push(`status = $${values.length + 1}`);
       values.push(opts.status);
+    }
+    const searchTerm = resolveFleetSearchTerm(opts?.keyword, opts?.q);
+    if (searchTerm) {
+      const idx = values.length + 1;
+      const nameClauses = FLEET_NAME_JSON_KEYS.map(
+        (key) => `COALESCE(fleet_fields->>'${key}','') ILIKE $${idx}`,
+      ).join(' OR ');
+      filters.push(`(license_plate ILIKE $${idx} OR ${nameClauses})`);
+      values.push(`%${searchTerm}%`);
     }
     const limit = Math.min(Math.max(opts?.limit ?? 500, 1), 2000);
     const res = await this.db.query<FleetVehicleRow>(

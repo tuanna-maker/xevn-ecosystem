@@ -4,6 +4,7 @@ import {
   HRM_COMPANY_UUID_BY_SLUG,
   HRM_GROUP_MEMBER_COMPANY_SLUGS,
   HRM_PILOT_OPERATING_COMPANY_ID,
+  isGroupCeoMasterOperatingBucket,
   MASTER_TENANT_ID,
 } from './hrm-list-scope';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
@@ -78,6 +79,34 @@ function isGroupCeoPilotCompanyUuid(
   return Object.values(HRM_COMPANY_UUID_BY_SLUG).some((uuid) => normalizeUuid(uuid) === requested);
 }
 
+/**
+ * Mobile standalone login: JWT companyId=holding (employee row) + request `main` (operating bucket).
+ * ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §3.1 · D-HRM-W2A-SCOPE-PARITY-01.
+ */
+function isGroupCeoHoldingJwtMainRequest(
+  jwtPayload: Record<string, unknown> | null | undefined,
+  claimTenantId: string | undefined,
+  claimCompanyId: string | undefined,
+  roleCode: string | undefined,
+  requestedCompanyId: string | undefined,
+): boolean {
+  if (!claimTenantId || !claimCompanyId || !requestedCompanyId) {
+    return false;
+  }
+  if (requestedCompanyId.trim() !== HRM_PILOT_OPERATING_COMPANY_ID) {
+    return false;
+  }
+  if (claimCompanyId.trim().toLowerCase() !== 'holding') {
+    return false;
+  }
+  return isGroupCeoMasterOperatingBucket(
+    jwtPayload ?? null,
+    claimTenantId,
+    claimCompanyId,
+    roleCode ?? '',
+  );
+}
+
 /** Mobile JWT: companyId slug + company_uuid; attendance APIs key rows by UUID. */
 function companyScopeMatches(
   claimCompanyId: string | undefined,
@@ -86,6 +115,7 @@ function companyScopeMatches(
   scopeGate?: {
     claimTenantId?: string;
     roleCode?: string;
+    jwtPayload?: Record<string, unknown> | null;
   },
 ): boolean {
   if (!claimCompanyId || !requestedCompanyId) {
@@ -94,6 +124,17 @@ function companyScopeMatches(
   const claim = claimCompanyId.trim();
   const requested = requestedCompanyId.trim();
   if (claim === requested) {
+    return true;
+  }
+  if (
+    isGroupCeoHoldingJwtMainRequest(
+      scopeGate?.jwtPayload,
+      scopeGate?.claimTenantId,
+      claim,
+      scopeGate?.roleCode,
+      requested,
+    )
+  ) {
     return true;
   }
   if (
@@ -193,7 +234,18 @@ export function resolveScopeContext(
   const normalizedRequest = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
 
   const tenantId = assertScopeId(claimTenantId ?? normalizedRequest.tenantId, 'tenantId');
-  const companyId = assertScopeId(claimCompanyId ?? normalizedRequest.companyId, 'companyId');
+  let companyId = assertScopeId(claimCompanyId ?? normalizedRequest.companyId, 'companyId');
+  if (
+    isGroupCeoHoldingJwtMainRequest(
+      jwtPayload as Record<string, unknown> | null,
+      claimTenantId,
+      claimCompanyId,
+      roleCode,
+      normalizedRequest.companyId,
+    )
+  ) {
+    companyId = HRM_PILOT_OPERATING_COMPANY_ID;
+  }
 
   if (claimTenantId && normalizedRequest.tenantId && claimTenantId !== normalizedRequest.tenantId) {
     throw new ApiException('SCOPE_CONTEXT_MISMATCH', 'tenantId mismatches token scope', HttpStatus.CONFLICT, {
@@ -208,6 +260,7 @@ export function resolveScopeContext(
     !companyScopeMatches(claimCompanyId, claimCompanyUuid, normalizedRequest.companyId, {
       claimTenantId,
       roleCode,
+      jwtPayload: jwtPayload as Record<string, unknown> | null,
     })
   ) {
     throw new ApiException('SCOPE_CONTEXT_MISMATCH', 'companyId mismatches token scope', HttpStatus.CONFLICT, {

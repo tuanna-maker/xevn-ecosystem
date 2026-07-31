@@ -12,6 +12,8 @@ describe('SettingsCatalogsService', () => {
     listSyncedCatalogs: jest.fn(),
     listRemoteCatalogsFromXbos: jest.fn(),
     pullCatalogFromXbos: jest.fn(),
+    getSyncedCatalogExact: jest.fn().mockResolvedValue(null),
+    getSyncedCatalog: jest.fn().mockRejectedValue(new Error('not synced')),
   } as unknown as CatalogSyncService;
 
   const xbosWorkflow = {

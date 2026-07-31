@@ -23,6 +23,12 @@ describe('HRM portal registry (COND-PF-PORTAL-01)', () => {
     expect(hrmAppRelPathFromPortalSuffix('performance')).toBe('/performance');
   });
 
+  it('includes fleet view and maps to /fleet iframe (G-FL-07)', () => {
+    expect(HRM_ALL_VIEWS).toContain('fleet');
+    expect(isHrmWorkspaceView('fleet')).toBe(true);
+    expect(hrmAppRelPathFromPortalSuffix('fleet')).toBe('/fleet');
+  });
+
   it('still falls back unknown views to dashboard', () => {
     expect(isHrmWorkspaceView('not-a-view')).toBe(false);
     expect(parseHrmWorkspaceView('not-a-view')).toBe(HRM_DEFAULT_VIEW);

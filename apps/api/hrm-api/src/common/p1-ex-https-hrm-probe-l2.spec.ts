@@ -4,6 +4,7 @@ import { createHmac } from 'node:crypto';
 import request from 'supertest';
 import { ContractsInsuranceController } from '../contracts-insurance/contracts-insurance.controller';
 import { ContractsInsuranceService } from '../contracts-insurance/contracts-insurance.service';
+import { EmployeeCompensationService } from '../contracts-insurance/employee-compensation.service';
 import { RecruitmentController } from '../recruitment/recruitment.controller';
 import { RecruitmentCatalogService } from '../recruitment/recruitment-catalog.service';
 import { RecruitmentService } from '../recruitment/recruitment.service';
@@ -66,6 +67,7 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
             listInsurance: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ins-1', employee_id: 'emp-1' }] }),
           },
         },
+        { provide: EmployeeCompensationService, useValue: {} },
       ],
     );
     await request(app.getHttpServer())

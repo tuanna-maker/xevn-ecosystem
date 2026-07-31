@@ -499,7 +499,7 @@ export const CompanyRaciPanel: React.FC<CompanyRaciPanelProps> = ({
                   <tr key={`${cap.activity_code}-${cap.module_code}-${i}`} className="border-b border-slate-100">
                     <td className="py-2 pr-3" title={techHint}>
                       <div className="text-[13px] font-medium leading-snug text-xevn-text">{activityName}</div>
-                      <span className="font-mono text-xs text-slate-400">{cap.activity_code}</span>
+                      <span className="font-mono text-xs text-xevn-textMuted">{cap.activity_code}</span>
                     </td>
                     <td className="py-2 pr-3" title={`module: ${cap.module_code}`}>
                       {moduleLabel}

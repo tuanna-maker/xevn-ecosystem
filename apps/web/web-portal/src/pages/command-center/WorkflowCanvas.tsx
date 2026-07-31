@@ -916,17 +916,28 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                     height: r.h,
                   }}
                 >
-                  <div className="flex min-w-0 items-start justify-center gap-2">
-                    <p className="min-w-0 flex-1 text-center text-[15px] font-bold leading-snug text-xevn-text">
-                      {roleTitle}
-                    </p>
-                    {runtimeStatus ? (
-                      <span
-                        className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600"
-                        title="Trạng thái runtime"
+                  <div className="flex min-w-0 flex-col items-center justify-center gap-1">
+                    <div className="flex w-full min-w-0 items-start justify-center gap-2">
+                      <p className="min-w-0 flex-1 text-center text-[15px] font-bold leading-snug text-xevn-text">
+                        {roleTitle}
+                      </p>
+                      {runtimeStatus ? (
+                        <span
+                          className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600"
+                          title="Trạng thái runtime"
+                        >
+                          {workflowInstanceStatusLabelVi(runtimeStatus)}
+                        </span>
+                      ) : null}
+                    </div>
+                    {step.resolverType ? (
+                      <p
+                        className="min-w-0 text-center text-[11px] font-semibold uppercase tracking-wide text-xevn-primary"
+                        data-testid={`wf-resolver-badge-${step.id}`}
+                        title={`resolver_type=${step.resolverType}`}
                       >
-                        {workflowInstanceStatusLabelVi(runtimeStatus)}
-                      </span>
+                        {step.resolverType}
+                      </p>
                     ) : null}
                   </div>
                   <p className="min-w-0 self-center text-center text-base font-medium leading-snug text-slate-800 [text-wrap:balance] line-clamp-4">
@@ -935,7 +946,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                   <div className="flex min-w-0 items-center justify-between gap-2 border-t border-slate-100 pt-3">
                     <span className="flex min-w-0 items-center gap-2 text-slate-500">
                       <ModIcon
-                        className="h-5 w-5 shrink-0 text-slate-400"
+                        className="h-5 w-5 shrink-0 text-xevn-textMuted"
                         strokeWidth={ICON_STROKE}
                         aria-hidden
                       />
@@ -989,7 +1000,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                 title={capTitle}
               >
                 <CapIcon
-                  className="h-4 w-4 shrink-0 text-slate-400"
+                  className="h-4 w-4 shrink-0 text-xevn-textMuted"
                   strokeWidth={ICON_STROKE}
                   aria-hidden
                 />
@@ -1005,6 +1016,12 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   );
 };
 
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-07-WF-CANVAS-01
+ * What: Surface resolver_type in canvas step drawer details
+ * Why: AC-CD-F4-06 — admin must see/edit resolver on canvas path
+ */
 export function formatWorkflowDrawerDetails(
   step: WorkflowGraphStep,
   roleLabel: (id: string) => string,
@@ -1012,9 +1029,17 @@ export function formatWorkflowDrawerDetails(
   moduleLabel: (id: string) => string,
   destinationLabel: (id: string) => string,
 ) {
+  const resolverLabel = step.resolverType
+    ? `${step.resolverType}${
+        step.resolverConfig && Object.keys(step.resolverConfig).length > 0
+          ? ` · ${JSON.stringify(step.resolverConfig)}`
+          : ''
+      }`
+    : 'Legacy (hat / cố định)';
   const base = [
     { k: 'Tên đầu việc', v: step.taskName || '—' },
     { k: 'Vai trò xử lý', v: roleLabel(step.handlerRoleId) },
+    { k: 'Resolver động', v: resolverLabel },
     { k: 'Hành động', v: actionLabel(step.stepAction) },
     { k: 'SLA bước (giờ)', v: String(step.slaHours) },
     { k: 'Dữ liệu liên quan', v: moduleLabel(step.relatedModuleId) },

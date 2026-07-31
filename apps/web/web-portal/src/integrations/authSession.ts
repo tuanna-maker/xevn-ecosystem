@@ -19,6 +19,15 @@ export type LoginResult = {
   defaultCompanyId: string;
 };
 
+export type SelectMembershipResult = {
+  accessToken: string;
+  expiresInSec: number;
+  membership: AccessibleTenant;
+  memberships: AccessibleTenant[];
+  defaultTenantId: string;
+  defaultCompanyId: string;
+};
+
 let unauthorizedHandler: (() => void) | null = null;
 
 /** AuthContext registers logout + redirect when API returns 401 with a stored JWT. */
@@ -173,6 +182,33 @@ export async function fetchPortalMe(accessToken: string) {
     throw new Error(json?.message ?? 'Phiên đăng nhập hết hạn');
   }
   return json.data as { user: PortalUser; memberships: AccessibleTenant[] };
+}
+
+/** UC-HRM-SCOPE-04 — portal membership switch with JWT re-issue (ADR §5.3). */
+export async function selectPortalMembership(
+  accessToken: string,
+  tenantId: string,
+): Promise<SelectMembershipResult> {
+  const res = await fetch('/api/xbos/auth/select-membership', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ tenantId }),
+  });
+  const json = await res.json().catch(() => null);
+  if (res.status === 401) {
+    handleUnauthorizedResponse(res.status);
+    throw new Error(json?.message ?? 'Phiên đăng nhập hết hạn');
+  }
+  if (res.status === 403) {
+    throw new Error(json?.message ?? 'Membership không thuộc tài khoản hiện tại');
+  }
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message ?? 'Không thể chuyển membership');
+  }
+  return json.data as SelectMembershipResult;
 }
 
 /**

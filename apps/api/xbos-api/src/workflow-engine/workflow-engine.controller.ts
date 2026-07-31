@@ -40,7 +40,19 @@ export class WorkflowEngineController {
   async startInstance(@Body() body: Record<string, unknown>, @Headers('x-tenant-id') tenantId?: string, @Headers('x-company-id') companyId?: string, @Headers('authorization') authorization?: string, @Headers('x-internal-api-key') internalApiKey?: string) {
     this.assertInternal(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    if (body.workflowCode || body.workflow_code) {
+      return ok(
+        await this.service.startInstanceFromWorkflowCode(scope.tenantId, scope.companyId, body),
+        'XBOS-WF-201',
+        'Instance started',
+      );
+    }
     return ok(await this.service.startInstance(scope.tenantId, scope.companyId, body), 'XBOS-WF-201', 'Instance started');
+  }
+
+  @Post('instances/start')
+  async startInstanceAlias(@Body() body: Record<string, unknown>, @Headers('x-tenant-id') tenantId?: string, @Headers('x-company-id') companyId?: string, @Headers('authorization') authorization?: string, @Headers('x-internal-api-key') internalApiKey?: string) {
+    return this.startInstance(body, tenantId, companyId, authorization, internalApiKey);
   }
 
   @Get('instances')

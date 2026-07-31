@@ -1,3 +1,59 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     POST /api/xbos/auth/login · POST /api/xbos/auth/select-membership — portal JWT session
+ * UC:         UC-XBOS-AUTH-01 · UC-HRM-SCOPE-04
+ * BR:         P-CC-01-jwt — portal access token TTL 24h (`expiresInSec=86400`)
+ * SRS:        docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md UC-XBOS-AUTH-01/02; PILOT matrix P-CC-01
+ * TechSpec:   apps/api/xbos-api auth + jwt-sign; deploy PORTAL_LOGIN_JWT_TTL_SEC
+ * Purpose:    Authenticate portal users, issue HS256 service JWT with tenant/company/role claims,
+ *             and re-issue JWT on membership switch. Login + selectMembership share the same TTL resolver.
+ * WorkItem:   P1-EX-BE-HTTPS-P-CC-01-JWT-01
+ * Coded:      2026-05-29 (TTL 86400); refreshed 2026-07-19
+ *
+ * Callers:
+ *   - auth.controller.ts → login() / selectMembership() / me()
+ *
+ * Callees:
+ *   - login → ensurePilotMembershipForUser → tenantScope.listAccessible → signServiceJwt
+ *   - selectMembership → tenantScope.listAccessible → signServiceJwt
+ *   - resolvePortalLoginJwtTtlSec → env PORTAL_LOGIN_JWT_TTL_SEC | PORTAL_LOGIN_JWT_TTL_DEFAULT_SEC
+ *
+ * FE-Actions:
+ *   | User action        | Handler                         | Lib / RPC                          |
+ *   |--------------------|---------------------------------|------------------------------------|
+ *   | Đăng nhập portal   | AuthContext login               | POST /api/xbos/auth/login          |
+ *   | Đổi membership     | AuthContext selectMembership    | POST /api/xbos/auth/select-membership |
+ *
+ * BE-Chain:
+ *   login → xbos_portal_user + membership list → JWT (sub,tenantId,companyId,roleCode) exp=iat+TTL
+ *
+ * Impact:     Wrong TTL breaks P-CC-01-jwt HTTPS probe and session refresh math (FE expiresInSec).
+ * must_keep:  expiresInSec === JWT exp-iat; default 86400; env override only via PORTAL_LOGIN_JWT_TTL_SEC
+ * SOLID:      SRP — portal credential + JWT issue; scope listing stays in TenantScopeService
+ * LastVerified: auth.service.spec.ts · scripts/tmp-p1-ex-qa-https-01-probe.mjs P-CC-01-jwt · 2026-07-28 (PM re-dispatch freshness)
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem:   P1-EX-BE-HTTPS-P-CC-01-JWT-01
+ * Date:       2026-07-25 evening
+ * Change:     QC GWC re-dispatch — live HTTPS already expiresInSec=86400 / jwt_delta=86400; no TTL math change.
+ *             Probe hardened to assert body TTL AND JWT exp−iat === 86400 (parity must_keep).
+ * must_keep:  default TTL 86400; response expiresInSec mirrors signServiceJwt ttl
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem:   P1-EX-BE-HTTPS-P-CC-01-JWT-01
+ * Date:       2026-07-27
+ * Change:     PM re-dispatch QC GWC residual — freshness verify live dev-portal dual assert 86400/86400;
+ *             full probe EXIT=0 (L2 23/23 L2.5 7/7); no TTL math / deploy change (HOLD_DEPLOY).
+ * must_keep:  expiresInSec === jwt_delta === 86400; probe body+JWT parity assert
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem:   P1-EX-BE-HTTPS-P-CC-01-JWT-01
+ * Date:       2026-07-28
+ * Change:     QC GWC residual re-dispatch — live dev-portal still expiresInSec=86400 / jwt_delta=86400;
+ *             full probe EXIT=0 (L2 23/23 L2.5 7/7); jest auth+jwt-sign 10/10; no TTL math / deploy (HOLD_DEPLOY).
+ * must_keep:  expiresInSec === jwt_delta === 86400; existing auth/scope; U65 zero-seed
+ */
+
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
@@ -147,6 +203,39 @@ export class AuthService implements OnModuleInit {
     return {
       user: { userId, displayName: res.rows[0]?.display_name ?? userId },
       memberships,
+    };
+  }
+
+  /** UC-HRM-SCOPE-04 — re-issue portal JWT for selected tenant membership (ADR §5.3). */
+  async selectMembership(userId: string, tenantId: string) {
+    const normalizedTenant = tenantId.trim().toLowerCase();
+    const memberships = await this.tenantScope.listAccessible(userId);
+    const match = memberships.find((m) => m.tenantId.trim().toLowerCase() === normalizedTenant);
+    if (!match) {
+      throw new ApiException(
+        'XBOS-AUTH-403',
+        'Membership không thuộc tài khoản hiện tại',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    const expiresInSec = resolvePortalLoginJwtTtlSec();
+    const accessToken = signServiceJwt(
+      {
+        sub: userId,
+        email: userId,
+        tenantId: match.tenantId,
+        companyId: match.companyId,
+        roleCode: match.roleCode,
+      },
+      expiresInSec,
+    );
+    return {
+      accessToken,
+      expiresInSec,
+      membership: match,
+      memberships,
+      defaultTenantId: match.tenantId,
+      defaultCompanyId: match.companyId,
     };
   }
 }

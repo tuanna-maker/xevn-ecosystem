@@ -16,6 +16,7 @@ describe('P1-BROWSER-E2E-INBOX-08 UF-XBOS-08 workflow spawn', () => {
 
   it('spawns pending inbox task when active definition is created from canvas save', async () => {
     query
+      .mockResolvedValueOnce({ rows: [{ max_v: null }] })
       .mockResolvedValueOnce({
         rows: [
           {
@@ -72,6 +73,7 @@ describe('P1-BROWSER-E2E-INBOX-08 UF-XBOS-08 workflow spawn', () => {
 
   it('does not duplicate inbox task when pending task already exists on create', async () => {
     query
+      .mockResolvedValueOnce({ rows: [{ max_v: 0 }] })
       .mockResolvedValueOnce({
         rows: [{ id: 'def-existing', workflow_code: 'WF-EXIST', name: 'Existing', status: 'active', graph: {} }],
       })
@@ -84,14 +86,16 @@ describe('P1-BROWSER-E2E-INBOX-08 UF-XBOS-08 workflow spawn', () => {
       graph: { steps: [{ id: 's1', order: 1, handlerRoleId: 'bod' }] },
     });
 
-    expect(query).toHaveBeenCalledTimes(2);
-    expect(String(query.mock.calls[1]?.[0] ?? '')).toContain('EXISTS');
+    expect(query).toHaveBeenCalledTimes(3);
+    expect(String(query.mock.calls[2]?.[0] ?? '')).toContain('EXISTS');
   });
 
   it('skips spawn when definition status is draft', async () => {
-    query.mockResolvedValueOnce({
-      rows: [{ id: 'def-draft', workflow_code: 'WF-DRAFT', name: 'Draft', status: 'draft', graph: {} }],
-    });
+    query
+      .mockResolvedValueOnce({ rows: [{ max_v: null }] })
+      .mockResolvedValueOnce({
+        rows: [{ id: 'def-draft', workflow_code: 'WF-DRAFT', name: 'Draft', status: 'draft', graph: {} }],
+      });
 
     await service.upsertDefinition('xevn', 'main', null, {
       workflowCode: 'WF-DRAFT',
@@ -100,6 +104,6 @@ describe('P1-BROWSER-E2E-INBOX-08 UF-XBOS-08 workflow spawn', () => {
       graph: {},
     });
 
-    expect(query).toHaveBeenCalledTimes(1);
+    expect(query).toHaveBeenCalledTimes(2);
   });
 });

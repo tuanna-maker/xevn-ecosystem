@@ -1,3 +1,53 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     XBOS Config Sync — publish / áp dụng danh mục ĐVTV (admin tập đoàn)
+ * UC:         XBOS-DM-HRM-07 · XBOS-DM-HRM-09 · UC-XBOS-02/05
+ * BR:         Partition `(tenant_id, company_id, catalog_key)` — không rollup đọc chung
+ * SRS:        docs/hrm/DANH_MUC_XBOS_CHO_HRM.md §14 XBOS-DM-HRM-07 · FR-HRM-SC-01 consumer
+ * TechSpec:   docs/hrm/TECHSPEC.md §17.6 dual catalog · BM-06 Option B fan-out
+ * Purpose:    Phát hành danh mục theo một partition; áp dụng (fan-out) sang ĐVTV đã chọn
+ *             để HRM pull đúng snapshot member — không dùng seed làm nghiệm thu.
+ * WorkItem:   BM-BE-CFG-APPLY-MEMBERS-01
+ * Coded:      2026-07-22
+ *
+ * Callers:
+ *   - config-sync.controller → publishCatalog / applyCatalogToMembers
+ *   - catalog-governance.controller → publishCatalogVersion (delegate)
+ *
+ * Callees:
+ *   - publishCatalog → config_catalogs + config_catalog_items + catalog_audit_logs
+ *   - applyCatalogToMembers → getCatalogForTarget(source) → publishCatalog(each target)
+ *
+ * BE-Chain:
+ *   POST …/publish → upsert one scope
+ *   POST …/apply-to-members → copy items to N member scopes (allow-list keys)
+ *
+ * Impact:     Fan-out sai key/scope → member HRM sync nhầm hoặc đè catalog ngoài TD
+ * must_keep:  Single-company publish path · Leave/Catalog WF bridges · U65 no seed
+ * SOLID:      Apply tái sử dụng publishCatalog — không nhân bản SQL upsert
+ * LastVerified: config-sync.service.spec.ts · bm-be-cfg-apply-members-01-20260722.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: BM-BE-CFG-APPLY-MEMBERS-01
+ * change_mode: ADD
+ * What: Thêm applyCatalogToMembers (Option B) cho allow-list recruitment keys
+ * Why:  Đóng G-BM-REC-01 / G-BM-03 — thiếu fan-out holding → member companyIds
+ * SRS:  DANH_MUC §14 XBOS-DM-HRM-07 · BM-06
+ * TechSpec: SA bm-sa-xbos-hrm-rec-trace-01 §5 Option B
+ * must_keep: publishCatalog single-scope; bridges leave/rec untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-29
+ * WorkItem: D-BE-XBOS-CTRL-G1-ALLOWLIST-01
+ * change_mode: ADD
+ * What: Mở rộng APPLY_TO_MEMBERS_CATALOG_ALLOWLIST P0+P1; alias path→canonical;
+ *       DEC try-list nguồn (hr_decision_types|decision_types); write key = L0 nguồn (SA-DEC-WRITE-01)
+ * Why:  Sponsor chốt P0+P1 — unlock departments/leave_types + E1-B parity keys fan-out
+ * SRS:  docs/program/deltas/BA_ERP_XBOS_CTRL_SPEC_01_20260728.md §2.1–2.4 · FR-XBOS-CTRL-01
+ * TechSpec: docs/xbos/TECHSPEC_XBOS_APPLY_TO_MEMBERS_EXPAND.md §2.1–2.2
+ * API:  docs/xbos/API_DESIGN_XBOS_APPLY_TO_MEMBERS_EXPAND.md §1
+ * must_keep: publishCatalog reuse · no new tables/URLs · U65 no seed · P2 HOLD
+ * LastVerified: config-sync.service.spec.ts · d-be-xbos-ctrl-g1-allowlist-01-20260729.md
+ */
 import { Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
@@ -7,6 +57,70 @@ import { assertMasterGroupBootstrapScope } from '../platform/tenant-bootstrap.po
 import { createHash } from 'node:crypto';
 
 export type AssignmentTarget = 'hrm' | 'xbos' | 'web-portal';
+
+/**
+ * Allow-list for apply-to-members (G-BM-REC-01 / DM-07 / E-XBOS-CTRL-G1).
+ * P0 = Settings spine; P1 = E1-B parity (sponsor unlocked 2026-07-29).
+ * P2 HOLD: salary_components, insurers, insurance_types, kpi_library, …
+ */
+export const APPLY_TO_MEMBERS_CATALOG_ALLOWLIST = [
+  // P0
+  'job_titles',
+  'recruitment_channels',
+  'job_grades',
+  'departments',
+  'leave_types',
+  // P1
+  'contract_types',
+  'employment_types',
+  'pay_types',
+  'shifts',
+  'decision_types',
+] as const;
+
+export type ApplyToMembersCatalogKey = (typeof APPLY_TO_MEMBERS_CATALOG_ALLOWLIST)[number];
+
+/**
+ * Path aliases → canonical allow-list key (BA §2.4 / DB_DESIGN expand §3.2).
+ * Allow-list check uses canonical; storage write key may differ for DEC (SA-DEC-WRITE-01).
+ */
+export const APPLY_TO_MEMBERS_CATALOG_ALIASES: Readonly<Record<string, ApplyToMembersCatalogKey>> = {
+  positions: 'job_titles',
+  employee_positions: 'job_titles',
+  candidate_sources: 'recruitment_channels',
+  grades: 'job_grades',
+  department_catalog: 'departments',
+  org_departments: 'departments',
+  employment_type: 'employment_types',
+  component_types: 'pay_types',
+  pay_natures: 'pay_types',
+  hr_decision_types: 'decision_types',
+  work_shifts: 'shifts',
+};
+
+/** Source L0 storage keys to probe (prefer path order) — DEC dual-key live. */
+const APPLY_SOURCE_STORAGE_TRY_LIST: Readonly<
+  Partial<Record<ApplyToMembersCatalogKey, readonly string[]>>
+> = {
+  decision_types: ['decision_types', 'hr_decision_types'],
+};
+
+export function resolveApplyToMembersCanonicalKey(normalizedKey: string): string {
+  return APPLY_TO_MEMBERS_CATALOG_ALIASES[normalizedKey] ?? normalizedKey;
+}
+
+export type ApplyCatalogMemberTarget = {
+  tenantId: string;
+  companyId: string;
+};
+
+export type ApplyCatalogToMembersPayload = {
+  tenantId: string;
+  companyId: string;
+  targets?: ApplyCatalogMemberTarget[];
+  memberCompanyIds?: string[];
+  actor?: string;
+};
 
 export interface ConfigCatalogItem {
   code: string;
@@ -698,5 +812,231 @@ export class ConfigSyncService {
     });
 
     return this.getCatalogForTarget(normalizedCatalogKey, 'xbos', validated.tenantId, validated.companyId);
+  }
+
+  /**
+   * XBOS-DM-HRM-07 / G-BM-REC-01 — Option B: copy source catalog snapshot to selected member partitions.
+   * Reuses publishCatalog so version/checksum/audit semantics stay identical to single-company publish.
+   * E-XBOS-CTRL-G1: P0+P1 allow-list + path alias → canonical; DEC write key = source L0 header.
+   */
+  async applyCatalogToMembers(catalogKey: string, payload: ApplyCatalogToMembersPayload) {
+    await this.ensureSchema();
+    const normalizedCatalogKey = this.normalizeCatalogKey(catalogKey);
+    const canonicalCatalogKey = resolveApplyToMembersCanonicalKey(normalizedCatalogKey);
+    if (
+      !APPLY_TO_MEMBERS_CATALOG_ALLOWLIST.includes(
+        canonicalCatalogKey as ApplyToMembersCatalogKey,
+      )
+    ) {
+      throw new ApiException(
+        'XBOS-CFG-005',
+        `Catalog '${normalizedCatalogKey}' is not allowed for apply-to-members. Allowed: ${APPLY_TO_MEMBERS_CATALOG_ALLOWLIST.join(', ')}`,
+        HttpStatus.BAD_REQUEST,
+        {
+          catalogKey: normalizedCatalogKey,
+          canonicalCatalogKey,
+          allowed: [...APPLY_TO_MEMBERS_CATALOG_ALLOWLIST],
+        },
+      );
+    }
+
+    const sourceTenantId = this.normalizeScopeId(payload.tenantId, 'tenantId');
+    const sourceCompanyId = this.normalizeScopeId(payload.companyId, 'companyId');
+    const targets = this.normalizeApplyTargets(payload, sourceTenantId, sourceCompanyId);
+
+    const storageTryList = this.resolveApplySourceStorageTryList(
+      canonicalCatalogKey as ApplyToMembersCatalogKey,
+      normalizedCatalogKey,
+    );
+    const { source, writeKey } = await this.loadApplySourceCatalog(
+      storageTryList,
+      sourceTenantId,
+      sourceCompanyId,
+    );
+
+    const actor = payload.actor?.trim() || 'system';
+    const applied: Array<{
+      tenantId: string;
+      companyId: string;
+      version: number;
+      checksum: string;
+    }> = [];
+
+    for (const target of targets) {
+      const published = await this.publishCatalog(writeKey, {
+        tenantId: target.tenantId,
+        companyId: target.companyId,
+        name: source.name,
+        domain: source.domain,
+        assignedTo: source.assignedTo,
+        items: source.items,
+        actor,
+      });
+      applied.push({
+        tenantId: published.tenantId,
+        companyId: published.companyId,
+        version: published.version,
+        checksum: published.checksum,
+      });
+    }
+
+    const summary = {
+      catalogKey: canonicalCatalogKey,
+      writeKey,
+      source: {
+        tenantId: source.tenantId,
+        companyId: source.companyId,
+        version: source.version,
+        checksum: source.checksum,
+        itemCount: source.items.length,
+        catalogKey: source.key,
+      },
+      applied,
+      appliedCount: applied.length,
+    };
+
+    await this.db.query(
+      `
+      INSERT INTO public.catalog_audit_logs (catalog_key, action, actor, after_payload)
+      VALUES ($1, 'apply_to_members', $2, $3::jsonb)
+    `,
+      [writeKey, actor, JSON.stringify(summary)],
+    );
+
+    await this.platformAudit.emit({
+      actor,
+      tenantId: sourceTenantId,
+      companyId: sourceCompanyId,
+      action: 'config_catalog.apply_to_members',
+      entityType: 'config_catalog',
+      entityId: writeKey,
+      payload: {
+        appliedCount: applied.length,
+        canonicalCatalogKey,
+        writeKey,
+        targets: applied.map((row) => `${row.tenantId}/${row.companyId}`),
+      },
+    });
+
+    return summary;
+  }
+
+  /** Prefer path storage key first when it is an alias sibling (e.g. hr_decision_types). */
+  private resolveApplySourceStorageTryList(
+    canonical: ApplyToMembersCatalogKey,
+    pathNormalized: string,
+  ): string[] {
+    const family = APPLY_SOURCE_STORAGE_TRY_LIST[canonical];
+    if (!family || family.length === 0) {
+      return [canonical];
+    }
+    const ordered = [pathNormalized, ...family.filter((k) => k !== pathNormalized)];
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const key of ordered) {
+      if (!seen.has(key)) {
+        seen.add(key);
+        out.push(key);
+      }
+    }
+    return out;
+  }
+
+  private async loadApplySourceCatalog(
+    storageTryList: string[],
+    sourceTenantId: string,
+    sourceCompanyId: string,
+  ): Promise<{ source: ConfigCatalog; writeKey: string }> {
+    let lastMissing: ApiException | undefined;
+    for (const storageKey of storageTryList) {
+      try {
+        // Prefer hrm assignment for HRM pull consumers; fall back to xbos if source is xbos-only.
+        try {
+          const source = await this.getCatalogForTarget(
+            storageKey,
+            'hrm',
+            sourceTenantId,
+            sourceCompanyId,
+          );
+          return { source, writeKey: source.key };
+        } catch (err) {
+          if (err instanceof ApiException && err.code === 'XBOS-CFG-002') {
+            const source = await this.getCatalogForTarget(
+              storageKey,
+              'xbos',
+              sourceTenantId,
+              sourceCompanyId,
+            );
+            return { source, writeKey: source.key };
+          }
+          throw err;
+        }
+      } catch (err) {
+        if (err instanceof ApiException && err.code === 'XBOS-CFG-001') {
+          lastMissing = err;
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw (
+      lastMissing ??
+      new ApiException(
+        'XBOS-CFG-001',
+        `Catalog '${storageTryList[0] ?? 'unknown'}' not found`,
+        HttpStatus.NOT_FOUND,
+      )
+    );
+  }
+
+  private normalizeApplyTargets(
+    payload: ApplyCatalogToMembersPayload,
+    sourceTenantId: string,
+    sourceCompanyId: string,
+  ): ApplyCatalogMemberTarget[] {
+    const raw: ApplyCatalogMemberTarget[] = [];
+    if (Array.isArray(payload.targets)) {
+      for (const target of payload.targets) {
+        raw.push({
+          tenantId: this.normalizeScopeId(target.tenantId, 'tenantId'),
+          companyId: this.normalizeScopeId(target.companyId, 'companyId'),
+        });
+      }
+    }
+    if (Array.isArray(payload.memberCompanyIds)) {
+      for (const companyId of payload.memberCompanyIds) {
+        raw.push({
+          tenantId: sourceTenantId,
+          companyId: this.normalizeScopeId(companyId, 'companyId'),
+        });
+      }
+    }
+    if (raw.length === 0) {
+      throw new ApiException(
+        'XBOS-VAL-011',
+        'Apply-to-members requires targets[] and/or memberCompanyIds[]',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const seen = new Set<string>();
+    const unique: ApplyCatalogMemberTarget[] = [];
+    for (const target of raw) {
+      const key = `${target.tenantId}::${target.companyId}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      if (target.tenantId === sourceTenantId && target.companyId === sourceCompanyId) {
+        throw new ApiException(
+          'XBOS-VAL-012',
+          'Apply-to-members target must differ from source scope',
+          HttpStatus.BAD_REQUEST,
+          { sourceTenantId, sourceCompanyId, target },
+        );
+      }
+      unique.push(target);
+    }
+    return unique;
   }
 }

@@ -21,8 +21,16 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     listJobRequisitions: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'req-1' }] }),
     getJobRequisitionById: jest.fn().mockResolvedValue({ id: 'req-1', company_id: 'holding' }),
     updateJobRequisition: jest.fn().mockResolvedValue({ id: 'req-1', company_id: 'holding', status: 'on_hold' }),
+    submitJobRequisitionForApproval: jest.fn().mockResolvedValue({
+      id: 'req-1',
+      company_id: 'holding',
+      workflow_instance_id: null,
+      spawn: null,
+      spawnMissing: true,
+    }),
     createCandidate: jest.fn().mockResolvedValue({ id: 'cand-1' }),
     listCandidates: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'cand-1' }] }),
+    getCandidateById: jest.fn().mockResolvedValue({ id: 'cand-1', company_id: 'holding' }),
     scheduleInterview: jest.fn().mockResolvedValue({ id: 'int-1' }),
     updateInterviewStatus: jest.fn().mockResolvedValue({ id: 'int-1', status: 'passed' }),
   };
@@ -32,12 +40,23 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     createJobPosting: jest.fn().mockResolvedValue({ id: 'jp-1' }),
     deleteJobPosting: jest.fn().mockResolvedValue({ id: 'jp-1' }),
     listCandidatesTable: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    getCandidatePoolById: jest.fn().mockResolvedValue({ id: 'cp-1', company_id: 'holding', stage: 'hired' }),
     createCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
     updateCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
     deleteCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
     listCandidateApplications: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     listRecruitmentPlans: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     updateRecruitmentPlanStatus: jest.fn().mockResolvedValue({ id: 'plan-1', status: 'approved' }),
+    submitRecruitmentPlanForApproval: jest.fn().mockResolvedValue({
+      id: 'plan-1',
+      spawn: null,
+      spawnMissing: true,
+    }),
+    startCandidatePipeline: jest.fn().mockResolvedValue({
+      id: 'cp-1',
+      spawn: null,
+      spawnMissing: true,
+    }),
   };
 
   beforeEach(async () => {
@@ -60,6 +79,7 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       title: 'Backend Engineer',
       department: 'Engineering',
       employment_type: 'full_time',
+      headcount: 2,
     });
     const listReqRes = await controller.listJobRequisitions(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
@@ -74,6 +94,22 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     const listCandidateRes = await controller.listCandidates(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
+    const getCandidateRes = await controller.getCandidate(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
+    const getPoolRes = await controller.getCandidatePool(
+      '289a9388-22c5-49be-a795-f498a0c72436',
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      'main',
+    );
     const scheduleRes = await controller.scheduleInterview(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       candidate_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
@@ -93,8 +129,16 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     expect(listReqRes.code).toBe('HRM-REC-200');
     expect(createCandidateRes.code).toBe('HRM-REC-202');
     expect(listCandidateRes.code).toBe('HRM-REC-200');
+    expect(getCandidateRes.code).toBe('HRM-REC-200');
+    expect(getPoolRes.code).toBe('HRM-REC-CP-200');
     expect(scheduleRes.code).toBe('HRM-REC-203');
     expect(updateRes.code).toBe('HRM-REC-204');
+    expect(catalogMock.getCandidatePoolById).toHaveBeenCalledWith(
+      '289a9388-22c5-49be-a795-f498a0c72436',
+      'main',
+      undefined,
+    );
+    expect(serviceMock.getCandidateById).toHaveBeenCalled();
   });
 
   it('accepts internal API key and forwards recruitment payloads', async () => {
@@ -103,6 +147,7 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       title: 'QA Engineer',
       department: 'Quality',
       employment_type: 'full_time',
+      headcount: 1,
     };
     const requisitionQuery = {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
@@ -334,5 +379,71 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       `Bearer ${token}`,
       { tenantId: 'xevn' },
     );
+  });
+
+  /**
+   * XHRM-REC-WF-BE-02 / D-XHRM-REC-WF-SUBMIT-SCOPE
+   * Regression: toHrmListScopeContext(headers) caused 500 tenantId?.trim is not a function.
+   * Missing WF definition → 2xx + spawnMissing (not 500).
+   * Asserts 4th arg is HrmListScopeContext ({ tenantId }), never a Nest headers bag.
+   */
+  it('submit-workflow returns HRM-REC-WF-200 with spawnMissing when definition missing (J-REC-WF-02)', async () => {
+    const requisitionId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const query = { company_id: 'holding' };
+    const res = await controller.submitJobRequisitionWorkflow(
+      requisitionId,
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      query,
+      'ceo@xe.vn',
+    );
+    expect(res.code).toBe('HRM-REC-WF-200');
+    expect(res.data).toEqual(
+      expect.objectContaining({
+        spawnMissing: true,
+        workflow_instance_id: null,
+      }),
+    );
+    const scopeArg = serviceMock.submitJobRequisitionForApproval.mock.calls[0]?.[3];
+    expect(scopeArg).toEqual({ tenantId: 'xevn' });
+    expect(typeof (scopeArg as { tenantId?: unknown })?.tenantId).toBe('string');
+    expect(serviceMock.submitJobRequisitionForApproval).toHaveBeenCalledWith(
+      requisitionId,
+      query,
+      undefined,
+      { tenantId: 'xevn' },
+      {
+        submitterUserId: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        companySlug: 'holding',
+      },
+    );
+  });
+
+  it('plan submit-workflow and candidate start-pipeline return 2xx spawnMissing without scope-context crash', async () => {
+    const planId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
+    const candidateId = 'a76f23f7-3683-4120-81b7-5126ee997b8e';
+    const planRes = await controller.submitRecruitmentPlanWorkflow(
+      planId,
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+      'ceo@xe.vn',
+    );
+    const pipelineRes = await controller.startCandidatePipeline(
+      candidateId,
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+      'ceo@xe.vn',
+    );
+    expect(planRes.code).toBe('HRM-REC-PLAN-WF-200');
+    expect(planRes.data).toEqual(expect.objectContaining({ spawnMissing: true }));
+    expect(pipelineRes.code).toBe('HRM-REC-CP-WF-200');
+    expect(pipelineRes.data).toEqual(expect.objectContaining({ spawnMissing: true }));
   });
 });

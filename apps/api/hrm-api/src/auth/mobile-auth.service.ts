@@ -1,11 +1,90 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Mobile → Đăng nhập / chọn membership / refresh JWT
+ * UC:         UC-HRM-MOB-03 · UC-HRM-MOB-05 · attendance claim company_uuid
+ * BR:         ADR Plane A bridge §4.3.3 — mobile UUID = Plane B′ only
+ * SRS:        docs/architecture/ADR-HRM-XBOS-PLANE-A-BRIDGE-4LE-5SLUG-20260727.md §4.3
+ * TechSpec:   docs/architecture/ADR-HRM-RBAC-SCOPE-LADDER.md §4 (mobile attendance key)
+ * Purpose:    Mint mobile JWT với company_uuid khớp HRM_COMPANY_UUID_BY_SLUG để
+ *             POST attendance/records không bị HRM-PLANE-409 sau OP/ATT persist guard.
+ * WorkItem:   D-HRM-MOB-UUID-BPRIME-01
+ * Coded:      2026-07-27
+ * Callers:    mobile-auth.controller.ts → login / selectMembership / refresh
+ * Callees:    HRM_COMPANY_UUID_BY_SLUG · isHrmMappedCompanyUuid · signServiceJwt
+ * FEActions:  login → store company_uuid → attendance body company_id = claim
+ * BEChain:    resolveCompanyUuid → JWT company_uuid → assertHrmMappedCompanyUuidOrThrow
+ * Impact:     Sai map → mobile check-in 409; LE lọt claim → phá plane guard
+ * must_keep:  LE body attendance vẫn 409; không weaken assertHrmMappedCompanyUuidOrThrow;
+ *             CO-HC / OP / MD GWC không reopen; U65 zero-seed
+ * SOLID:      UUID ladder tập trung ở hrm-list-scope; auth chỉ resolve claim
+ * LastVerified: mobile-auth.service.spec + live uat.nv0001
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-30
+ * WorkItem: D-HDSD-MOB-UAT-AUTH-01
+ * change_mode: FIX
+ * What: Lazy ensure `uat.nv####@xe.vn` employee row + accept documented `xevn-uat-2026`
+ *       when hash missing/stale after tenant-master reset (mirrors PORTAL-GCEO ensure).
+ * Why:  QA-HDSD-MOB-CH12-01 — uat.nv0001/0002 → 401 on pilot :3001; ceo@ login OK.
+ * SRS:  MOBILE_PERSONA_UX_MATRIX §2.2 · HDSD CH12 TC-MOB-003/004
+ * must_keep: Chỉ pattern uat.nv#### seq 1..1000; prod cần HRM_MOBILE_UAT_PASSWORD env;
+ *            không weaken verify cho email khác; U65 no bulk seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-31
+ * WorkItem: D-HDSD-MOB-PILOT-TXN-NET-01
+ * change_mode: ADD
+ * What: nv0001 lazy ensure pending leave (J-MOB-03) + pilot CORS relax + Connection:close for mob-* ESS
+ * Why: QA R4 device ERR-NETWORK on transactional GET while auth 201; pending/payslip empty block list→detail
+ * must_keep: U65 lazy product ensure only; seq 1..2 pilot personas; no pnpm seed:*
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-31
+ * WorkItem: D-HDSD-MOB-PILOT-DATA-PENDING-01
+ * change_mode: ADD
+ * What: Sau login uat.nv0001/0002 gọi ensureUatMobilePilotTransactionData — payslip + pending duyệt
+ * Why:  QA-HDSD-MOB-CH12-01-R4 payslip total=0 · manager pending=0 block J-MOB-04/05
+ * must_keep: U65 lazy product ensure only; không pnpm seed:*; chỉ seq 1..2 pilot personas
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-30
+ * WorkItem: D-BE-MOB-AUTH-CEO-HASH-01
+ * change_mode: FIX
+ * What: Lazy idempotent ensure holding PORTAL-GCEO row for portal Group CEO when
+ *       employees wiped (tenant-master reset); verify portal password (Xevn@2026 dev)
+ *       when no mobile_password_hash or hash mismatch for ceo@xe.vn only.
+ * Why:  Post D-DEV-RESET-TENANT-MASTER-01 mobile login 401 — no employee row;
+ *       prior hash blocked pilot fallback. Mirrors recruitment bridge ensure pattern.
+ * SRS:  UC-HRM-MOB-03 · docs/qa/PILOT_TEST_ACCOUNTS.md (ceo@xe.vn / Xevn@2026)
+ * must_keep: U65 no bulk seed; production requires HRM_PORTAL_GROUP_CEO_PASSWORD env;
+ *            subsidiary CEO accounts unchanged; LE plane guard unchanged
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-MOB-UUID-BPRIME-01
+ * change_mode: FIX
+ * What: resolveCompanyUuid bỏ SHA256 hash; custom attendance_company_uuid chỉ nhận
+ *       UUID ∈ map; LE/unknown → map-by-slug (main→holding) hoặc HRM-AUTH-409.
+ *       refresh tái resolve company_uuid từ employee row khi có.
+ * Why:  QA-HRM-MOB-UUID-PLANE-01 EC-1 FAIL — live JWT hash ∉ map → HRM-PLANE-409
+ * SRS:  ADR-PLANE-A-BRIDGE §4.3.3
+ * must_keep: assertHrmMappedCompanyUuidOrThrow LE reject; CO-HC/OP/MD
+ */
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import {
+  HRM_COMPANY_UUID_BY_SLUG,
+  HRM_PILOT_OPERATING_COMPANY_ID,
+  isHrmMappedCompanyUuid,
+} from '../common/hrm-list-scope';
 import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import type { MobileLoginDto } from './dto/mobile-login.dto';
 import type { MobileRefreshDto } from './dto/mobile-refresh.dto';
+import {
+  ensureUatMobileEmployeeRow,
+  matchesUatMobilePassword,
+  parseUatMobileSeqFromLoginEmail,
+  resolveCanonicalUatLoginEmail,
+} from './uat-mobile-auth-ensure';
+import { ensureUatMobilePilotTransactionData } from './uat-mobile-pilot-data-ensure';
 
 type EmployeeAuthRow = {
   id: string;
@@ -33,6 +112,11 @@ const REFRESH_TTL_SEC = 30 * 24 * 60 * 60;
 const MASTER_TENANT = (process.env.MASTER_TENANT_ID ?? 'xevn').trim().toLowerCase();
 const MEMBER_COMPANY_SLUGS = new Set(['holding', 'trsport', 'logistics', 'finance', 'services']);
 
+/** Documented portal Group CEO — mobile login after tenant-master wipe (not QA bulk seed). */
+const PORTAL_GROUP_CEO_EMAIL = 'ceo@xe.vn';
+const PORTAL_GROUP_CEO_EMPLOYEE_CODE = 'PORTAL-GCEO';
+const PORTAL_GROUP_CEO_COMPANY_ID = 'holding';
+
 @Injectable()
 export class MobileAuthService {
   constructor(private readonly db: HrmDbService) {}
@@ -41,16 +125,155 @@ export class MobileAuthService {
     return createHash('sha256').update(`${email.trim().toLowerCase()}:${password}`).digest('hex');
   }
 
+  private isPortalGroupCeoEmail(email: string): boolean {
+    return email.trim().toLowerCase() === PORTAL_GROUP_CEO_EMAIL;
+  }
+
+  /** Portal password for documented Group CEO — dev default Xevn@2026; prod via env only. */
+  private resolvePortalGroupCeoPassword(): string | undefined {
+    const fromEnv = process.env.HRM_PORTAL_GROUP_CEO_PASSWORD?.trim();
+    if (fromEnv) return fromEnv;
+    if (process.env.NODE_ENV === 'production') return undefined;
+    return process.env.PILOT_PORTAL_DEV_PASSWORD?.trim() || 'Xevn@2026';
+  }
+
+  private matchesPortalGroupCeoPassword(email: string, password: string): boolean {
+    if (!this.isPortalGroupCeoEmail(email)) return false;
+    const portalPw = this.resolvePortalGroupCeoPassword();
+    if (!portalPw) return false;
+    return password === portalPw;
+  }
+
+  private buildPortalGroupCeoCustomFields(portalPassword: string): Record<string, string> {
+    const email = PORTAL_GROUP_CEO_EMAIL;
+    return {
+      tenant_id: MASTER_TENANT,
+      is_primary: 'true',
+      is_primary_membership: 'true',
+      company_display: 'Tập đoàn X.E',
+      mobile_password_hash: this.hashPassword(email, portalPassword),
+    };
+  }
+
+  /**
+   * Product ensure (not bulk seed): holding PORTAL-GCEO row for portal Group CEO
+   * when tenant-master reset removed all employees — mirrors recruitment bridge ensure.
+   */
+  private async ensurePortalGroupCeoEmployeeRow(portalPassword: string): Promise<void> {
+    const userKey = PORTAL_GROUP_CEO_EMAIL;
+    const customFields = this.buildPortalGroupCeoCustomFields(portalPassword);
+
+    const existing = await this.db.query<{ id: string }>(
+      `
+        SELECT id::text AS id
+        FROM public.employees
+        WHERE archived_at IS NULL
+          AND status = 'active'
+          AND lower(email) = $1
+          AND company_id IN ($2, 'main')
+        ORDER BY CASE WHEN company_id = $2 THEN 0 ELSE 1 END
+        LIMIT 1;
+      `,
+      [userKey, PORTAL_GROUP_CEO_COMPANY_ID],
+    );
+    if (existing.rows[0]?.id) {
+      await this.db.query(
+        `
+          UPDATE public.employees
+          SET custom_fields = COALESCE(custom_fields, '{}'::jsonb) || $2::jsonb,
+              job_title_key = COALESCE(NULLIF(job_title_key, ''), 'CEO'),
+              updated_at = NOW()
+          WHERE id = $1::uuid AND archived_at IS NULL;
+        `,
+        [existing.rows[0].id, JSON.stringify(customFields)],
+      );
+      return;
+    }
+
+    const byCode = await this.db.query<{ id: string }>(
+      `
+        SELECT id::text AS id
+        FROM public.employees
+        WHERE archived_at IS NULL
+          AND company_id IN ($1, 'main')
+          AND lower(employee_code) = lower($2)
+        ORDER BY CASE WHEN company_id = $1 THEN 0 ELSE 1 END
+        LIMIT 1;
+      `,
+      [PORTAL_GROUP_CEO_COMPANY_ID, PORTAL_GROUP_CEO_EMPLOYEE_CODE],
+    );
+    if (byCode.rows[0]?.id) {
+      await this.db.query(
+        `
+          UPDATE public.employees
+          SET email = $2,
+              custom_fields = COALESCE(custom_fields, '{}'::jsonb) || $3::jsonb,
+              job_title_key = COALESCE(NULLIF(job_title_key, ''), 'CEO'),
+              updated_at = NOW()
+          WHERE id = $1::uuid AND archived_at IS NULL;
+        `,
+        [byCode.rows[0].id, userKey, JSON.stringify(customFields)],
+      );
+      return;
+    }
+
+    const newId = randomUUID();
+    await this.db.query(
+      `
+        INSERT INTO public.employees (
+          id, company_id, employee_code, email, full_name, job_title_key, status, hired_at, custom_fields
+        ) VALUES (
+          $1::uuid, $2, $3, $4, $5, 'CEO', 'active', CURRENT_DATE, $6::jsonb
+        );
+      `,
+      [
+        newId,
+        PORTAL_GROUP_CEO_COMPANY_ID,
+        PORTAL_GROUP_CEO_EMPLOYEE_CODE,
+        userKey,
+        'CEO Tập đoàn',
+        JSON.stringify(customFields),
+      ],
+    );
+  }
+
+  private async fetchActiveEmployeesByEmail(
+    email: string,
+    alsoEmail?: string,
+  ): Promise<EmployeeAuthRow[]> {
+    const emails = [email.trim().toLowerCase()];
+    const alt = alsoEmail?.trim().toLowerCase();
+    if (alt && !emails.includes(alt)) emails.push(alt);
+    const res = await this.db.query<EmployeeAuthRow>(
+      `
+        SELECT id, company_id, email, full_name, employee_code, job_title_key, custom_fields
+        FROM public.employees
+        WHERE lower(email) = ANY($1::text[]) AND archived_at IS NULL AND status = 'active'
+        ORDER BY company_id, employee_code;
+      `,
+      [emails],
+    );
+    return res.rows;
+  }
+
   private verifyPassword(email: string, password: string, row: EmployeeAuthRow): boolean {
+    const hashEmail = resolveCanonicalUatLoginEmail(email);
     const custom = row.custom_fields ?? {};
     const storedHash = custom.mobile_password_hash?.trim();
     if (storedHash) {
-      const actual = Buffer.from(this.hashPassword(email, password), 'hex');
+      const actual = Buffer.from(this.hashPassword(hashEmail, password), 'hex');
       const expected = Buffer.from(storedHash, 'hex');
       if (expected.length === actual.length) {
-        return timingSafeEqual(expected, actual);
+        const hashOk = timingSafeEqual(expected, actual);
+        if (hashOk) return true;
+        // Stale hash after reset/sync — documented portal CEO or UAT matrix password only.
+        if (this.matchesPortalGroupCeoPassword(hashEmail, password)) return true;
+        if (matchesUatMobilePassword(hashEmail, password)) return true;
+        return false;
       }
     }
+    if (this.matchesPortalGroupCeoPassword(hashEmail, password)) return true;
+    if (matchesUatMobilePassword(hashEmail, password)) return true;
     const pilot =
       process.env.HRM_MOBILE_PILOT_PASSWORD ??
       (process.env.NODE_ENV !== 'production' ? 'xevn-pilot' : undefined);
@@ -151,12 +374,32 @@ export class MobileAuthService {
     return MASTER_TENANT;
   }
 
-  resolveCompanyUuid(row: EmployeeAuthRow, tenantId: string): string {
+  /**
+   * Plane B′ attendance claim — ADR bridge §4.3.3 / D-HRM-MOB-UUID-BPRIME-01.
+   * Custom `attendance_company_uuid` accepted only when ∈ HRM_COMPANY_UUID_BY_SLUG;
+   * LE / hash / unknown → map-by-slug (`main` → holding) or reject.
+   */
+  resolveCompanyUuid(row: EmployeeAuthRow, _tenantId: string): string {
     const custom = row.custom_fields ?? {};
     const fromCustom = custom.attendance_company_uuid?.trim();
-    if (fromCustom && /^[0-9a-f-]{36}$/i.test(fromCustom)) return fromCustom;
-    const h = createHash('sha256').update(`hrm-scope:${tenantId}:${row.company_id}`).digest('hex');
-    return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`;
+    // Xử lý: chỉ nhận UUID Plane B′ từ custom — LE/hash bị bỏ qua, map theo slug.
+    if (fromCustom && isHrmMappedCompanyUuid(fromCustom)) {
+      return fromCustom.trim().toLowerCase();
+    }
+    const slug = row.company_id.trim().toLowerCase();
+    if (slug === HRM_PILOT_OPERATING_COMPANY_ID) {
+      return HRM_COMPANY_UUID_BY_SLUG.holding;
+    }
+    const mapped = HRM_COMPANY_UUID_BY_SLUG[slug as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    if (mapped) {
+      return mapped;
+    }
+    throw new ApiException(
+      'HRM-AUTH-409',
+      'Không xác định được company_uuid Plane B′ cho phạm vi nhân viên — liên hệ quản trị',
+      HttpStatus.CONFLICT,
+      { company_id: row.company_id, employee_id: row.id },
+    );
   }
 
   rowToMembership(row: EmployeeAuthRow): MobileMembership {
@@ -236,18 +479,36 @@ export class MobileAuthService {
     };
   }
 
+  private async ensureDocumentedMobileLoginRow(email: string, password: string): Promise<void> {
+    if (this.matchesPortalGroupCeoPassword(email, password)) {
+      await this.ensurePortalGroupCeoEmployeeRow(password);
+      return;
+    }
+    const uatSeq = parseUatMobileSeqFromLoginEmail(email);
+    if (uatSeq && matchesUatMobilePassword(email, password)) {
+      await ensureUatMobileEmployeeRow(this.db, uatSeq, password);
+    }
+  }
+
   async login(body: MobileLoginDto, scopeHint?: { tenantId?: string; companyId?: string }) {
-    const email = body.email.trim().toLowerCase();
-    const res = await this.db.query<EmployeeAuthRow>(
-      `
-        SELECT id, company_id, email, full_name, employee_code, job_title_key, custom_fields
-        FROM public.employees
-        WHERE lower(email) = $1 AND archived_at IS NULL AND status = 'active'
-        ORDER BY company_id, employee_code;
-      `,
-      [email],
-    );
-    const verified = res.rows.filter((row) => this.verifyPassword(email, body.password, row));
+    const rawEmail = body.email.trim().toLowerCase();
+    const email = resolveCanonicalUatLoginEmail(rawEmail);
+    const uatSeq = parseUatMobileSeqFromLoginEmail(rawEmail);
+    // Legacy nguyen.van.an.#### alias — upsert canonical row before fetch (stale legacy row parity).
+    if (uatSeq && matchesUatMobilePassword(rawEmail, body.password)) {
+      await ensureUatMobileEmployeeRow(this.db, uatSeq, body.password);
+    }
+    let rows = await this.fetchActiveEmployeesByEmail(email, rawEmail !== email ? rawEmail : undefined);
+    if (!rows.length) {
+      await this.ensureDocumentedMobileLoginRow(rawEmail, body.password);
+      rows = await this.fetchActiveEmployeesByEmail(email, rawEmail !== email ? rawEmail : undefined);
+    }
+    let verified = rows.filter((row) => this.verifyPassword(email, body.password, row));
+    if (!verified.length) {
+      await this.ensureDocumentedMobileLoginRow(rawEmail, body.password);
+      rows = await this.fetchActiveEmployeesByEmail(email, rawEmail !== email ? rawEmail : undefined);
+      verified = rows.filter((row) => this.verifyPassword(email, body.password, row));
+    }
     if (!verified.length) {
       throw new ApiException('HRM-AUTH-401', 'Email hoặc mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
     }
@@ -271,6 +532,15 @@ export class MobileAuthService {
           return false;
         }
       }) ?? verified[0];
+    }
+
+    if (uatSeq && matchesUatMobilePassword(rawEmail, body.password)) {
+      await ensureUatMobilePilotTransactionData(this.db, uatSeq, body.password, {
+        id: selected.id,
+        company_id: selected.company_id,
+        employee_code: selected.employee_code,
+        full_name: selected.full_name,
+      });
     }
 
     return await this.buildLoginResponse(email, selected, verified);
@@ -309,7 +579,7 @@ export class MobileAuthService {
     const tenantId = String(payload.tenantId ?? payload.tenant_id ?? '');
     const companyId = String(payload.companyId ?? payload.company_id ?? '');
     const employeeId = String(payload.employee_id ?? '');
-    const companyUuid = String(payload.company_uuid ?? '');
+    let companyUuid = String(payload.company_uuid ?? '');
     const email = String(payload.sub ?? '').trim().toLowerCase();
     if (!tenantId || !companyId || !employeeId) {
       throw new ApiException('HRM-AUTH-401', 'Refresh token thiếu phạm vi', HttpStatus.UNAUTHORIZED);
@@ -329,6 +599,15 @@ export class MobileAuthService {
     const row = rowRes.rows[0];
     if (row) {
       roles = await this.resolveRolesForEmployee(row);
+      // Xử lý: nâng claim cũ (hash) → Plane B′ map khi refresh còn employee row.
+      companyUuid = this.resolveCompanyUuid(row, tenantId);
+    } else if (!isHrmMappedCompanyUuid(companyUuid)) {
+      throw new ApiException(
+        'HRM-AUTH-409',
+        'Refresh token company_uuid không thuộc Plane B′ — đăng nhập lại',
+        HttpStatus.CONFLICT,
+        { company_uuid: companyUuid },
+      );
     }
     return this.issueTokens({ tenantId, companyId, employeeId, email, roles, companyUuid });
   }

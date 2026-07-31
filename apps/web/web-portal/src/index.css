@@ -2,6 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * @CODE-MEMORY
+ * Screen:     Web portal global CSS — XeVN Precision Motion tokens
+ * UC:         XEVN-BRAND-FULL-FE-REMASTER · L1
+ * BR:         L-CONTRAST / L-TYPE / proposal §3
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * TechSpec:   docs/architecture/ADR-XEVN-THEME-SHARP-OPS-20260722.md
+ * Purpose:    :root CSS vars = brand SoT mirror; Tailwind `xevn.*` remains class SoT
+ *             (same hex). Utilities `.xevn-border` / `.xevn-focus-ring` /
+ *             `.xevn-dialog-surface` bootstrap L2 Dialog/Modal borders.
+ * WorkItem:   FE-XEVN-BRAND-TOKENS-L1-01
+ * Coded:      2026-07-22
+ * Callers:    index.html → main; ConfirmDialog; sticky chrome
+ * Callees:    none (CSS only)
+ * must_keep:  --xevn-color-primary #1E40AF; text #111827; secondary #4B5563;
+ *             muted #6B7280 placeholder-only; radius card 12 / input 8
+ * SOLID:      Tokens here; components consume via utility / Tailwind classes
+ * LastVerified: docs/qa/evidence/fe-xevn-brand-tokens-l1-01-20260722.md
+ *
+ * XeVN Precision Motion — design tokens SoT (proposal §3 · L1 foundation).
+ * Tailwind `theme.extend.colors.xevn` mirrors these hex values (class SoT).
+ */
+:root {
+  --xevn-color-primary: #1e40af;
+  --xevn-color-primary-pressed: #1e3a8a;
+  --xevn-color-accent: #06b6d4;
+  --xevn-color-success: #10b981;
+  --xevn-color-warning: #f59e0b;
+  --xevn-color-danger: #ef4444;
+  --xevn-color-info: #3b82f6;
+  --xevn-color-surface: #ffffff;
+  --xevn-color-background: #f9fafb;
+  --xevn-color-text: #111827;
+  --xevn-color-text-secondary: #4b5563;
+  --xevn-color-text-muted: #6b7280;
+  --xevn-color-border: #e5e7eb;
+  --xevn-color-brand-shell: #000000;
+  --xevn-radius-input: 8px;
+  --xevn-radius-card: 12px;
+  --xevn-shadow-soft: 0 4px 24px -4px rgba(15, 23, 42, 0.08);
+  --xevn-shadow-overlay: 0 25px 50px -12px rgba(15, 23, 42, 0.18);
+  --xevn-space-xs: 0.25rem; /* 4 */
+  --xevn-space-sm: 0.5rem; /* 8 */
+  --xevn-space-md: 1rem; /* 16 */
+  --xevn-space-lg: 1.5rem; /* 24 */
+  --xevn-space-xl: 2rem; /* 32 */
+  --xevn-space-2xl: 3rem; /* 48 */
+  --xevn-space-3xl: 4rem; /* 64 */
+  --xevn-type-body-min: 0.9375rem; /* 15px @ 16px root */
+  --xevn-type-table-min: 0.875rem; /* 14px */
+  --xevn-type-title-min: 1.25rem; /* 20px */
+  --xevn-type-label-min: 0.875rem; /* 14px */
+}
+
 /* Base Styles */
 * {
   margin: 0;
@@ -24,8 +78,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: theme('colors.xevn.background');
-  color: theme('colors.xevn.text');
+  background-color: var(--xevn-color-background);
+  color: var(--xevn-color-text);
+  font-size: max(1rem, var(--xevn-type-body-min));
 }
 
 /* Custom Scrollbar */
@@ -35,28 +90,28 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #e5e7eb;
+  background: var(--xevn-color-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #6b7280;
+  background: var(--xevn-color-text-muted);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: var(--xevn-color-text-secondary);
 }
 
-/* Focus Styles */
+/* Focus Styles — accent token (proposal §3.1 focus ring) */
 *:focus-visible {
-  outline: 2px solid #06b6d4;
+  outline: 2px solid var(--xevn-color-accent);
   outline-offset: 2px;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(6, 182, 212, 0.2);
+  background-color: color-mix(in srgb, var(--xevn-color-accent) 20%, transparent);
 }
 
 /* Animations */
@@ -142,9 +197,14 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* Vibrant Gradient Text */
+/* Vibrant Gradient Text — token-driven (L1; prefer solid xevn-text for ops) */
 .gradient-text {
-  background: linear-gradient(135deg, #1e40af 0%, #06b6d4 50%, #ef4444 100%);
+  background: linear-gradient(
+    135deg,
+    var(--xevn-color-primary) 0%,
+    var(--xevn-color-accent) 50%,
+    var(--xevn-color-danger) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -152,6 +212,72 @@ body {
 
 /* Custom Utilities */
 @layer utilities {
+  /** Border DNA — divider / control edge (proposal §3.1 Border) */
+  .xevn-border {
+    border-color: var(--xevn-color-border);
+  }
+
+  /**
+   * Focus ring recipe for interactive controls (L2 Button/Input consume via TW
+   * `ring-xevn-accent` or this utility when not using Tailwind ring).
+   */
+  .xevn-focus-ring {
+    outline: none;
+  }
+  .xevn-focus-ring:focus-visible {
+    outline: 2px solid var(--xevn-color-accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--xevn-color-accent) 25%, transparent);
+  }
+
+  /**
+   * Dialog / modal panel chrome (L1 → L2 bootstrap).
+   * Prefer with Tailwind: `rounded-card border border-xevn-border bg-xevn-surface shadow-overlay`
+   * or this single utility when class lists must stay short.
+   */
+  .xevn-dialog-surface {
+    border-radius: var(--xevn-radius-card);
+    border: 1px solid var(--xevn-color-border);
+    background-color: var(--xevn-color-surface);
+    box-shadow: var(--xevn-shadow-overlay);
+    color: var(--xevn-color-text);
+  }
+
+  /**
+   * Type floors (L-TYPE / proposal §3.3) — use on ops body / titles / labels.
+   */
+  .xevn-type-body {
+    font-size: max(1rem, var(--xevn-type-body-min));
+    line-height: 1.5;
+    color: var(--xevn-color-text);
+  }
+
+  .xevn-type-table {
+    font-size: max(0.875rem, var(--xevn-type-table-min));
+    line-height: 1.4;
+    color: var(--xevn-color-text);
+  }
+
+  .xevn-type-title {
+    font-size: max(1.25rem, var(--xevn-type-title-min));
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--xevn-color-text);
+  }
+
+  .xevn-type-label {
+    font-size: max(0.875rem, var(--xevn-type-label-min));
+    font-weight: 500;
+    line-height: 1.375;
+    color: var(--xevn-color-text-secondary);
+  }
+
+  /** Dark brand shell (login / splash) — proposal §4.1 */
+  .xevn-brand-shell {
+    background-color: var(--xevn-color-brand-shell);
+    color: #f9fafb;
+  }
+
   /**
    * X-BOS Safe Area — đối xứng tuyệt đối hai rìa (Bộ luật đối xứng V2).
    * Trục px-8 (32px) → px-12 (48px); không kéo vượt 3rem.

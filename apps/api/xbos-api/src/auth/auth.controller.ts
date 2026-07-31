@@ -5,6 +5,7 @@ import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PortalLoginDto } from './dto/login.dto';
+import { SelectMembershipDto } from './dto/select-membership.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -25,5 +26,24 @@ export class AuthController {
     }
     const data = await this.auth.me(userId);
     return ok(data, 'XBOS-AUTH-200', 'Session loaded');
+  }
+
+  @Post('select-membership')
+  async selectMembership(
+    @Headers('authorization') authorization: string | undefined,
+    @Body() body: SelectMembershipDto,
+  ) {
+    const payload = getVerifiedInternalJwtPayload(authorization);
+    const userId =
+      typeof payload?.sub === 'string'
+        ? payload.sub
+        : typeof payload?.email === 'string'
+          ? payload.email
+          : null;
+    if (!userId) {
+      throw new ApiException('XBOS-AUTH-401', 'Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    const data = await this.auth.selectMembership(userId, body.tenantId);
+    return ok(data, 'XBOS-AUTH-201', 'Đã chuyển membership');
   }
 }

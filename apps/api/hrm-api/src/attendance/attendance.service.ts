@@ -1,3 +1,25 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Bản ghi chấm công / đơn chỉnh sửa
+ * UC:         HRM-AT-01 · HRM-AT-02 · HRM-AT-03 · UC-HRM-09
+ * BR:         scope ladder · AC empty honesty trên list
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.9 FR-HRM-AT-01 (+ AT-02/AT-03)
+ * SRS bước:   AT-01 Diễn biến #7 Lưu · list #4/#5 empty · AT-14 #9–#10 lưới kỳ
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.4 liên kết · FR-HRM-AT-01
+ * Purpose:    Ghi/list/cập nhật trạng thái attendance_records + update-requests.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ * Callers:    attendance.controller.ts
+ * Callees:    HrmDbService · AttendanceEventFanoutService
+ * must_keep:  không phá AC-ATT-SHEET; leave module tách LeaveRequestsService
+ * SOLID:      Records tách sheets (catalog) và leave
+ * LastVerified: attendance.service related specs
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: CODE-MEMORY map Diễn biến AT-01 (không đổi logic)
+ */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
@@ -357,6 +379,11 @@ export class AttendanceService {
     };
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-AT-01
+   * SRS bước: Diễn biến #7 Lưu thành công — INSERT attendance_records + event
+   * TechSpec: FR-HRM-AT-01 · liên kết lưới AT-14
+   */
   async createRecord(
     payload: CreateAttendanceRecordDto,
     authorization?: string,
@@ -368,6 +395,7 @@ export class AttendanceService {
     if (payload.latitude != null && payload.longitude != null) {
       await this.assertWithinWorkSite(companyId, payload.latitude, payload.longitude);
     }
+    // Thất bại nhánh giờ: Diễn biến #4 — ra trước vào.
     this.assertCheckInOutOrder(payload.check_in_at, payload.check_out_at);
     const status = payload.status ?? 'pending';
     try {
@@ -401,6 +429,7 @@ export class AttendanceService {
         `,
         [randomUUID(), created.id, 'hrm-api', JSON.stringify({ status: created.status })],
       );
+      // Thành công: Diễn biến #7 — khóa bản ghi ngày công.
       return this.mapRecord(created);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Cannot create attendance record';

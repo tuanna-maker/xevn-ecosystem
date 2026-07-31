@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, FileArchive, X } from 'lucide-react';
 import type { InfrastructureFoundationCategory } from '../../data/infrastructure-foundation-catalog';
+import {
+  infraEntityIdsMatch,
+  isInfraScopeKeySelected,
+} from '../../integrations/infrastructureEntityKeyResolver';
 import { AutoResizeTextarea, SETTINGS_COL, SETTINGS_FIELD_SHELL, SETTINGS_LABEL_CLASS, SETTINGS_PAGE_SUBTITLE_CLASS, SETTINGS_PAGE_TITLE_CLASS, SETTINGS_RADIUS_CARD, SETTINGS_SECTION_GRID, SETTINGS_SECTION_TITLE_CLASS, XEVN_VIEWPORT_PADDING } from './settings-form-pattern';
 import { MutationButton } from '../../components/common/MutationButton';
 
@@ -218,7 +222,8 @@ export function FoundationCategoryWizard({
             </p>
             <div className="flex flex-wrap gap-3">
               {legalEntities.map((c) => {
-                const selected = form.appliesToCompanyIds.includes(c.id);
+                // AC-INF-KEY-05: tick via alias match (main/holding ↔ xbos-group-holding-root).
+                const selected = isInfraScopeKeySelected(c.id, form.appliesToCompanyIds);
                 return (
                   <button
                     key={c.id}
@@ -256,13 +261,15 @@ export function FoundationCategoryWizard({
             {form.appliesToCompanyIds.length ? (
               <div className="flex flex-wrap gap-2">
                 {form.appliesToCompanyIds.map((entityId) => {
-                  const entity = legalEntities.find((c) => c.id === entityId);
-                  const active = fieldsPreviewEntityId === entityId;
+                  const entity = legalEntities.find((c) => infraEntityIdsMatch(c.id, entityId));
+                  const active =
+                    fieldsPreviewEntityId != null &&
+                    infraEntityIdsMatch(fieldsPreviewEntityId, entityId);
                   return (
                     <button
                       key={entityId}
                       type="button"
-                      onClick={() => onFieldsPreviewEntityChange(entityId)}
+                      onClick={() => onFieldsPreviewEntityChange(entity?.id ?? entityId)}
                       className={`rounded-input border px-3 py-1.5 text-sm font-semibold transition ${
                         active
                           ? 'border-xevn-primary bg-xevn-primary text-white'

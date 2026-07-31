@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Lock, Save, Send, ShieldCheck, Sparkles } from 'lucide-react';
 import { useXbosStore } from '@/store/useXbosStore';
 import type { CascadePeriodType } from '@/types';
+import { resolveCascadeAllocationStatusLabel } from '@/utils/xbosCoreLabelMaps';
 
 const DEFAULT_TENANT = 'tenant-xevn-holding';
 const PERIOD_TYPES: CascadePeriodType[] = ['Q1', 'Q2', 'YEAR'];
@@ -199,7 +200,7 @@ export function KpiAssignmentsPage() {
     try {
       if (!selectedHeaderId) throw new Error('Vui lòng chọn bản phân bổ.');
       updateKpiCascadeStatus(DEFAULT_TENANT, selectedHeaderId, next);
-      setMessage(`Đã chuyển trạng thái sang ${next}.`);
+      setMessage(`Đã chuyển trạng thái sang ${resolveCascadeAllocationStatusLabel(next)}.`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Lỗi không xác định');
     }
@@ -354,11 +355,11 @@ export function KpiAssignmentsPage() {
         </button>
         <button type="button" onClick={() => moveStatus('approved')} className="inline-flex items-center gap-2 rounded-xl border border-black/[0.08] bg-white px-4 py-2 text-sm font-medium shadow-sm">
           <ShieldCheck className="h-4 w-4" />
-          Approved
+          Đã duyệt
         </button>
         <button type="button" onClick={() => moveStatus('frozen')} className="inline-flex items-center gap-2 rounded-xl border border-black/[0.08] bg-white px-4 py-2 text-sm font-medium shadow-sm">
           <Lock className="h-4 w-4" />
-          Freeze
+          Đã khóa
         </button>
       </div>
 
@@ -370,7 +371,10 @@ export function KpiAssignmentsPage() {
         <div>Tổng Target_Value cá nhân: <span className="font-mono">{Number(totalTarget.toFixed(4))}</span></div>
         <div>Ghi chú: tầng cá nhân không bắt buộc tổng target bằng Parent_KPI_Value.</div>
         <div>Chính sách quota theo chức danh: {positionQuotaPolicies.filter((q) => q.tenantId === DEFAULT_TENANT && q.kpiCode === selectedKpiCode && q.periodType === periodType).map((q) => `${q.positionCode}<=${q.quotaCeiling}`).join(' | ') || 'chưa cấu hình'}</div>
-        <div>Trạng thái bản phân bổ: <span className="font-mono">{selectedHeader?.status ?? 'draft'}</span></div>
+        <div>
+          Trạng thái bản phân bổ:{' '}
+          <span className="font-mono">{resolveCascadeAllocationStatusLabel(selectedHeader?.status ?? 'draft')}</span>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-black/[0.06] bg-white/90 p-4">
@@ -386,7 +390,9 @@ export function KpiAssignmentsPage() {
                 className={`text-left rounded-xl border px-3 py-2 text-sm ${selectedHeaderId === h.id ? 'border-xevn-primary bg-xevn-primary/5' : 'border-black/[0.08] bg-white'}`}
               >
                 <div className="font-medium">{h.periodType} · {h.kpiCode} · {org?.name ?? h.parentOrgUnitId}</div>
-                <div className="text-xs text-xevn-muted">Parent: {h.parentKpiValue} · Status: {h.status} · Effective: {h.effectiveDate}</div>
+                <div className="text-xs text-xevn-muted">
+                  Parent: {h.parentKpiValue} · Trạng thái: {resolveCascadeAllocationStatusLabel(h.status)} · Effective: {h.effectiveDate}
+                </div>
               </button>
             );
           })}

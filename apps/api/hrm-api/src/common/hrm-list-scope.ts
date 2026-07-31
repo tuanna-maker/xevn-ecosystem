@@ -1,3 +1,53 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     N/A (BE shared scope) — HRM list/persist company scope ladder
+ * UC:         HRM-OP-01 / HRM-OP-02 / HRM-OP-04 · ADR-HRM-RBAC-SCOPE-LADDER §4
+ * BR:         DATA_LINKAGE §6 Plane B′ · BA-DUAL-PLANE-AUDIT-02 §2#1
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.45–3.48 · FR-HRM-OP-01..04
+ * TechSpec:   docs/hrm/TECHSPEC.md §16.5 · docs/hrm/DB_DESIGN_HRM_OPERATIONS.md (UUID persist + slug map)
+ * Purpose:    Chuẩn hóa phạm vi list/persist HRM: slug TEXT (Plane B), UUID pilot map (Plane B′),
+ *             cấm dùng XBOS legal-entity UUID (Plane A) như khóa vận hành.
+ * WorkItem:   D-HRM-OP-DUAL-PLANE-GUARD-01
+ * Coded:      2026-07-27
+ *
+ * Callers:
+ *   - operations/operations.service.ts → resolveHrmOperationsPersistCompanyId / pushCompanyIdUuidFilter
+ *   - attendance / home / metadata (UUID-column siblings) → cùng helper map
+ *
+ * Callees:
+ *   - getVerifiedInternalJwtPayload → JWT claims
+ *
+ * BE-Chain:
+ *   slug|main → HRM_COMPANY_UUID_BY_SLUG → company_id UUID columns (hrm_tasks, service_requests)
+ *   LE UUID ∉ map → HRM-PLANE-409 (fail-closed, không silent 0)
+ *
+ * Impact:     Bỏ guard → persist/list LE UUID → aggregate OP-04 giả 0 / lệch Plane B′
+ * must_keep:  Fleet/Payroll TEXT company_id; resolveHrmListScope slug siblings; CO-HC by_company slug
+ * SOLID:      Scope map tập trung — Operations/ATT/MD không nhân bản UUID ladder
+ * LastVerified: common/hrm-list-scope.spec.ts · operations/be-hrm-op-dual-plane-guard-01.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-OP-DUAL-PLANE-GUARD-01
+ * change_mode: ADD
+ * What: Thêm isHrmMappedCompanyUuid / assertHrmMappedCompanyUuidOrThrow; fail-closed UUID ∉ map
+ *       trên resolveHrmOperationsPersistCompanyId. OP list/summary dùng assertOperationsCompanyWire.
+ *       companyIdsToUuidList giữ pass-through UUID (home/inbox must_keep) — anti-LE list ở OP service.
+ * Why:  BA dual-plane P1 — LE UUID ≠ map → empty/0 silent undercount trên OP persist/list/OP-04.
+ * SRS:  FR-HRM-OP-01 #4 · FR-HRM-OP-02 #2 · FR-HRM-OP-04 #4/#5/#7
+ * TechSpec: DB_DESIGN_HRM_OPERATIONS · API_DESIGN_HRM_OPERATIONS (slug→UUID map)
+ * must_keep: Happy slug→map UUID; TEXT spine siblings; CO-HC by_company; home UUID filter callers
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-MD-DUAL-PLANE-GUARD-01
+ * change_mode: ADD
+ * What: Metadata service reuse assertHrmMappedCompanyUuidOrThrow / isHrmMappedCompanyUuid
+ *       (persist + list/audit/decide wire). Không harden companyIdsToUuidList / resolveHrmCompanyUuidForSlug
+ *       pass-through (home/inbox/employees must_keep).
+ * Why:  BA dual-plane residual #2 · G-MD-PLANE-01 — LE trên employee_metadata_* → empty/miss.
+ * SRS:  FR-HRM-MD-01 #6/#7 · UC-HRM-26
+ * TechSpec: DB_DESIGN_HRM_W2_SLICE §C · API_DESIGN_HRM_W2_SLICE C1/C2
+ * must_keep: OP GWC · CO-HC · home UUID pass-through · slug map happy path
+ */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
@@ -26,6 +76,40 @@ export const HRM_COMPANY_UUID_BY_SLUG: Record<(typeof HRM_GROUP_MEMBER_COMPANY_S
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+/** Plane B′ set — only these UUIDs may hit UUID `company_id` columns via OP/ATT map helpers. */
+const HRM_MAPPED_COMPANY_UUID_SET: ReadonlySet<string> = new Set(
+  Object.values(HRM_COMPANY_UUID_BY_SLUG).map((id) => id.trim().toLowerCase()),
+);
+
+/**
+ * True when value is a Plane B′ pilot UUID (∈ HRM_COMPANY_UUID_BY_SLUG).
+ * XBOS legal-entity UUIDs (Plane A) return false.
+ */
+export function isHrmMappedCompanyUuid(value: string): boolean {
+  const trimmed = value.trim().toLowerCase();
+  return UUID_RE.test(trimmed) && HRM_MAPPED_COMPANY_UUID_SET.has(trimmed);
+}
+
+/**
+ * Fail-closed: reject XBOS LE / unknown UUID that is not in the pilot map.
+ * Happy path: returns normalized mapped UUID.
+ */
+export function assertHrmMappedCompanyUuidOrThrow(
+  value: string,
+  options?: { code?: string; message?: string },
+): string {
+  const trimmed = value.trim().toLowerCase();
+  if (!isHrmMappedCompanyUuid(trimmed)) {
+    throw new ApiException(
+      options?.code ?? 'HRM-PLANE-409',
+      options?.message ??
+        'company_id UUID is not an HRM pilot mapped UUID (XBOS legal-entity id rejected)',
+      HttpStatus.CONFLICT,
+    );
+  }
+  return trimmed;
+}
+
 /** UF-HRM-11 — employee list + metadata submit expose legal UUID for slug partitions. */
 export function resolveHrmCompanyUuidForSlug(companySlug: string): string | null {
   const trimmed = companySlug.trim().toLowerCase();
@@ -40,6 +124,24 @@ export function resolveHrmCompanyUuidForSlug(companySlug: string): string | null
   }
   const mapped = HRM_COMPANY_UUID_BY_SLUG[trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
   return mapped ?? null;
+}
+
+/**
+ * Inverse of resolveHrmCompanyUuidForSlug for TEXT ladders (leave_requests, settings catalog).
+ * Pilot legal UUID → operating slug; unknown UUID left as-is; slugs unchanged.
+ */
+export function resolveHrmCompanySlugForId(companyId: string): string {
+  const trimmed = companyId.trim().toLowerCase();
+  if (!trimmed || !UUID_RE.test(trimmed)) {
+    return trimmed;
+  }
+  const wanted = normalizeUuid(trimmed);
+  for (const slug of HRM_GROUP_MEMBER_COMPANY_SLUGS) {
+    if (normalizeUuid(HRM_COMPANY_UUID_BY_SLUG[slug]) === wanted) {
+      return slug;
+    }
+  }
+  return trimmed;
 }
 
 /** Master tenant registry slug — portal JWT for group CEO. */
@@ -74,6 +176,39 @@ function normalizeUuid(value: string): string {
 
 function readJwtPayload(authorization: string | undefined): Record<string, unknown> | null {
   return getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+}
+
+/** Documented portal Group CEO — mobile standalone login row uses company_id=holding (ADR §3.1). */
+export const PORTAL_GROUP_CEO_LOGIN_EMAIL = 'ceo@xe.vn';
+
+/**
+ * Group CEO on master tenant — operational bucket `main` (portal JWT) or `holding` employee row (mobile login).
+ * ADR-GROUP-CEO-MAIN-HOLDING-SCOPE · D-HRM-W2A-SCOPE-PARITY-01.
+ */
+export function isGroupCeoMasterOperatingBucket(
+  jwtPayload: Record<string, unknown> | null,
+  tenantId: string,
+  claimCompanyId: string,
+  roleCode: string,
+): boolean {
+  if (tenantId.trim().toLowerCase() !== MASTER_TENANT_ID) {
+    return false;
+  }
+  const claim = claimCompanyId.trim().toLowerCase();
+  if (claim !== HRM_PILOT_OPERATING_COMPANY_ID && claim !== 'holding') {
+    return false;
+  }
+  const role = roleCode.trim().toLowerCase();
+  if (role === 'group_ceo' || role.startsWith('group_')) {
+    return true;
+  }
+  if (claim === 'holding' && jwtPayload) {
+    const sub = readClaim(jwtPayload, 'sub')?.toLowerCase();
+    if (sub === PORTAL_GROUP_CEO_LOGIN_EMAIL) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -141,7 +276,7 @@ export function normalizeHomeSummaryCompanyId(
 
 /**
  * Attendance update-requests may persist `company_id` as slug or derived UUID TEXT.
- * Include JWT slug + company_uuid so nip.io/mobile and pilot slug probes stay aligned.
+ * Include JWT slug + company_uuid so dev-portal/mobile and pilot slug probes stay aligned.
  */
 export function expandHrmTextCompanyIds(
   scope: HrmListScope,
@@ -187,8 +322,7 @@ export function resolveHrmListScope(
   const isGroupRollup =
     tenantId === MASTER_TENANT_ID &&
     requestedCompanyId === HRM_PILOT_OPERATING_COMPANY_ID &&
-    claimCompany === HRM_PILOT_OPERATING_COMPANY_ID &&
-    (roleCode === 'group_ceo' || roleCode.startsWith('group_'));
+    isGroupCeoMasterOperatingBucket(jwtPayload, tenantId, claimCompany, roleCode);
 
   const serviceGroupMain =
     !jwtPayload &&
@@ -239,6 +373,8 @@ function companyIdsToUuidList(companyIds: string[]): string[] {
   return companyIds.map((id) => {
     const trimmed = id.trim().toLowerCase();
     if (UUID_RE.test(trimmed)) {
+      // Pass-through UUID for non-OP callers (home/inbox). OP list/summary fail-closed via
+      // OperationsService.assertOperationsCompanyWire + persist assertHrmMappedCompanyUuidOrThrow.
       return trimmed;
     }
     if (trimmed === HRM_PILOT_OPERATING_COMPANY_ID) {
@@ -277,7 +413,8 @@ export function resolveHrmOperationsPersistCompanyId(
   }
   const trimmed = requestedCompanyId.trim();
   if (UUID_RE.test(trimmed)) {
-    return trimmed.toLowerCase();
+    // Xử lý: persist UUID chỉ chấp nhận Plane B′ map — reject LE (FR-HRM-OP-01 #4).
+    return assertHrmMappedCompanyUuidOrThrow(trimmed);
   }
   return HRM_COMPANY_UUID_BY_SLUG[trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG] ?? trimmed;
 }
@@ -292,8 +429,9 @@ export function resolveHrmPersistCompanyIdText(
   requestedCompanyId: string,
   context?: HrmListScopeContext,
 ): string {
-  const scope = resolveHrmListScope(authorization, requestedCompanyId, context);
-  const raw = requestedCompanyId.trim().toLowerCase();
+  // Pilot UUID → slug before TEXT persist (G-AT10-01); FE may send employee.company_id UUID.
+  const raw = resolveHrmCompanySlugForId(requestedCompanyId);
+  const scope = resolveHrmListScope(authorization, raw, context);
   const persisted =
     raw === HRM_PILOT_OPERATING_COMPANY_ID && scope.masterTenantPartition ? 'holding' : raw;
 
@@ -404,21 +542,23 @@ export function pushWorkforceEmployeeScopeFilter(
 /**
  * Group employee-import catalogs are stored under `holding` while portal JWT uses `main`.
  * Maps overview/sync scope for group CEO rollup on master tenant.
+ * Also maps pilot legal UUID → slug (parity leave create assert vs Settings GET).
  */
 export function resolveHrmSettingsCatalogCompanyId(
   authorization: string | undefined,
   tenantId: string,
   companyId: string,
 ): string {
-  const scope = resolveHrmListScope(authorization, companyId, { tenantId });
+  const normalized = resolveHrmCompanySlugForId(companyId);
+  const scope = resolveHrmListScope(authorization, normalized, { tenantId });
   if (
     tenantId.trim().toLowerCase() === MASTER_TENANT_ID &&
-    companyId.trim().toLowerCase() === HRM_PILOT_OPERATING_COMPANY_ID &&
+    normalized === HRM_PILOT_OPERATING_COMPANY_ID &&
     scope.masterTenantPartition
   ) {
     return 'holding';
   }
-  return companyId.trim().toLowerCase();
+  return normalized;
 }
 
 function readResourceTenantId(resource: { custom_fields?: Record<string, unknown> | null } | null | undefined): string {

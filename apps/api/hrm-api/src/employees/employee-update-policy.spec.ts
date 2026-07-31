@@ -3,6 +3,7 @@ import { signServiceJwt } from '../common/jwt-sign';
 import {
   assertEmployeeUpdateAllowed,
   canFullEmployeeUpdate,
+  mergeSelfEssCustomFields,
   readJwtEmployeeId,
 } from './employee-update-policy';
 
@@ -79,7 +80,7 @@ describe('employee-update-policy', () => {
     ).not.toThrow();
   });
 
-  it('assertEmployeeUpdateAllowed permits self avatar_url only', () => {
+  it('assertEmployeeUpdateAllowed permits self avatar_url', () => {
     const token = signServiceJwt({
       sub: 'uat.nv0001@xe.vn',
       tenantId: 'xevn',
@@ -94,6 +95,51 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).not.toThrow();
+  });
+
+  it('AC-ESS-01: assertEmployeeUpdateAllowed permits self custom_fields phone_number/work_phone', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: employeeId,
+      roles: ['employee'],
+    });
+    expect(() =>
+      assertEmployeeUpdateAllowed(
+        employeeId,
+        {
+          custom_fields: {
+            phone_number: '0911111111',
+            work_phone: '0281234567',
+            gender: 'male',
+            tenant_id: 'xevn',
+          },
+        },
+        `Bearer ${token}`,
+      ),
+    ).not.toThrow();
+  });
+
+  it('assertEmployeeUpdateAllowed rejects self custom_fields without phone keys', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: employeeId,
+      roles: ['employee'],
+    });
+    expect(() =>
+      assertEmployeeUpdateAllowed(
+        employeeId,
+        { custom_fields: { gender: 'male', salary: '999' } },
+        `Bearer ${token}`,
+      ),
+    ).toThrow(
+      expect.objectContaining<ApiException>({
+        code: 'HRM-EMP-403',
+      }),
+    );
   });
 
   it('assertEmployeeUpdateAllowed rejects self full_name patch', () => {
@@ -111,6 +157,85 @@ describe('employee-update-policy', () => {
         code: 'HRM-EMP-403',
       }),
     );
+  });
+
+  it('Option A R1: self full_name denied even with manager|hr_manager roles', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: employeeId,
+      roles: ['employee', 'manager', 'hr_manager'],
+    });
+    expect(canFullEmployeeUpdate(`Bearer ${token}`)).toBe(true);
+    expect(() =>
+      assertEmployeeUpdateAllowed(employeeId, { full_name: 'SHOULD_NOT_APPLY' }, `Bearer ${token}`),
+    ).toThrow(
+      expect.objectContaining<ApiException>({
+        code: 'HRM-EMP-403',
+      }),
+    );
+  });
+
+  it('Option A R1: self gender-only custom_fields denied with manager|hr_manager roles', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: employeeId,
+      roles: ['employee', 'manager', 'hr_manager'],
+    });
+    expect(() =>
+      assertEmployeeUpdateAllowed(
+        employeeId,
+        { custom_fields: { gender: 'female' } },
+        `Bearer ${token}`,
+      ),
+    ).toThrow(
+      expect.objectContaining<ApiException>({
+        code: 'HRM-EMP-403',
+      }),
+    );
+  });
+
+  it('Option A R1: self phone custom_fields still allowed with manager|hr_manager roles', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: employeeId,
+      roles: ['employee', 'manager', 'hr_manager'],
+    });
+    expect(() =>
+      assertEmployeeUpdateAllowed(
+        employeeId,
+        {
+          custom_fields: {
+            phone_number: '0911111111',
+            work_phone: '0281234567',
+            gender: 'male',
+          },
+        },
+        `Bearer ${token}`,
+      ),
+    ).not.toThrow();
+  });
+
+  it('Option A R1: manager|hr_manager may still full-update a different employee', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: employeeId,
+      roles: ['employee', 'manager', 'hr_manager'],
+    });
+    expect(() =>
+      assertEmployeeUpdateAllowed(
+        '22222222-2222-4222-8222-222222222222',
+        { full_name: 'Other Employee' },
+        `Bearer ${token}`,
+      ),
+    ).not.toThrow();
   });
 
   it('assertEmployeeUpdateAllowed rejects cross-employee avatar patch', () => {
@@ -132,5 +257,33 @@ describe('employee-update-policy', () => {
         code: 'HRM-EMP-403',
       }),
     );
+  });
+
+  it('mergeSelfEssCustomFields applies only phone keys and preserves others', () => {
+    const merged = mergeSelfEssCustomFields(
+      { phone_number: '0901234567', gender: 'male', tenant_id: 'xevn', salary: '1000' },
+      {
+        phone_number: '0911111111',
+        work_phone: '0289999999',
+        gender: 'female',
+        salary: '999999',
+        tenant_id: 'hacked',
+      },
+    );
+    expect(merged).toEqual({
+      phone_number: '0911111111',
+      work_phone: '0289999999',
+      gender: 'male',
+      tenant_id: 'xevn',
+      salary: '1000',
+    });
+  });
+
+  it('mergeSelfEssCustomFields clears phone key when empty string', () => {
+    const merged = mergeSelfEssCustomFields(
+      { phone_number: '0901234567', work_phone: '028' },
+      { phone_number: '  ', work_phone: '028123' },
+    );
+    expect(merged).toEqual({ work_phone: '028123' });
   });
 });

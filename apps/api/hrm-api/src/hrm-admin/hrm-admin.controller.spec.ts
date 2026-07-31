@@ -23,18 +23,18 @@ describe('HrmAdminController', () => {
   it('UC-HRM-02: wraps platform admin response with deterministic code', async () => {
     const result = await controller.createPlatformAdmin('Bearer t', {
       email: 'a@x.com',
-      password: '12345678',
+      password: 'secret1234',
       full_name: 'A',
     });
     expect(result.success).toBe(true);
     expect(result.code).toBe('HRM-ADMIN-201');
   });
 
-  it('UC-HRM-03: wraps company admin response with deterministic code', async () => {
+  it('UC-HRM-03: wraps company admin response with deterministic code (Plane B slug)', async () => {
     const result = await controller.createCompanyAdmin('Bearer t', {
       email: 'a@x.com',
-      password: '12345678',
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      password: 'secret1234',
+      company_id: 'holding',
       full_name: 'A',
       role: 'admin',
     });
@@ -42,9 +42,9 @@ describe('HrmAdminController', () => {
     expect(result.code).toBe('HRM-ADMIN-202');
   });
 
-  it('UC-HRM-04: wraps invite response with deterministic code', async () => {
+  it('UC-HRM-04: wraps invite response with deterministic code (Plane B slug)', async () => {
     const result = await controller.inviteEmployees('Bearer t', {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      company_id: 'holding',
       employees: [{ email: 'e@x.com' }],
     });
     expect(result.success).toBe(true);

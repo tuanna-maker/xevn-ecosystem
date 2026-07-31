@@ -299,7 +299,7 @@ const PositionsSettingsPage: React.FC = () => {
                   setIsModalOpen(false);
                   resetForm();
                 }}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1 text-xevn-textMuted hover:text-slate-600 rounded"
               >
                 <X size={20} />
               </button>

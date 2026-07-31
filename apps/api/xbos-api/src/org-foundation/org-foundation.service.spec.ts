@@ -105,3 +105,45 @@ describe('OrgFoundationService — legal entity upsert (UC-CC-03)', () => {
     ).rejects.toMatchObject({ code: 'XBOS-ORG-400' });
   });
 });
+
+describe('OrgFoundationService — group member units industry contract (UC-HRM-CO-01)', () => {
+  it('includes business_lines in members payload so FE does not infer industry from entity_type', async () => {
+    const db = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({
+          rows: [{ tenant_id: 'xevn', name: 'Tập đoàn XeVN', short_name: 'XeVN' }],
+        })
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              tenant_id: 'xe-du-lich',
+              tenant_name: 'XeVN Du lịch',
+              tenant_short_name: 'Du lịch',
+              id: MEMBER_ENTITY_ID,
+              code: 'XE_DULICH',
+              name: 'Công ty Du lịch XeVN',
+              business_lines: 'tourism',
+              entity_type: 'subsidiary',
+              payload: { companyForm: { industry: 'Du lịch lữ hành' } },
+            },
+          ],
+        }),
+    } as unknown as XbosDbService;
+    const service = new OrgFoundationService(db);
+
+    const result = await service.listGroupMemberUnits();
+
+    expect(result.holding).toEqual({ tenant_id: 'xevn', name: 'Tập đoàn XeVN', short_name: 'XeVN' });
+    expect(result.members).toEqual([
+      expect.objectContaining({
+        tenant_id: 'xe-du-lich',
+        id: MEMBER_ENTITY_ID,
+        business_lines: 'tourism',
+        entity_type: 'subsidiary',
+      }),
+    ]);
+    const membersQuery = (db.query as jest.Mock).mock.calls[1];
+    expect(String(membersQuery?.[0])).toContain('le.business_lines');
+  });
+});

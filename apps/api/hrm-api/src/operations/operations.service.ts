@@ -1,8 +1,50 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /hrm/operations · Công việc vận hành + báo cáo tổng hợp (OP-01..04)
+ * UC:         HRM-OP-01 · HRM-OP-02 · HRM-OP-03 · HRM-OP-04
+ * BR:         DATA_LINKAGE §6 · G-OP-PLANE-01 (UUID persist + slug wire)
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.45–3.48 · FR-HRM-OP-01..04
+ * TechSpec:   docs/hrm/TECHSPEC.md §16.5 · docs/hrm/DB_DESIGN_HRM_OPERATIONS.md ·
+ *             docs/hrm/API_DESIGN_HRM_OPERATIONS.md
+ * Purpose:    CRUD công việc/YCDV trên company_id UUID (Plane B′ map); OP-04 summary đếm
+ *             đa bảng — UUID (tasks/SR) + TEXT (payroll/recruitment) + workforce ATT.
+ * WorkItem:   D-HRM-OP-DUAL-PLANE-GUARD-01
+ * Coded:      2026-07-27
+ *
+ * Callers:
+ *   - operations.controller.ts → createTask/listTasks/getSummary/…
+ *
+ * Callees:
+ *   - resolveHrmOperationsPersistCompanyId / pushCompanyIdUuidFilter / resolveHrmListScope
+ *   - HrmDbService.query → public.hrm_tasks · public.service_requests (+ cite ATT/Payroll/Rec)
+ *
+ * BE-Chain:
+ *   POST tasks → resolveHrmOperationsPersistCompanyId(slug) → INSERT hrm_tasks.company_id UUID
+ *   GET list/summary → resolveHrmListScope → pushCompanyIdUuidFilter (fail-closed LE)
+ *   OP-04 getSummary → countByScope mix: company_uuid | company_text | workforce
+ *
+ * Impact:     Sai plane → LE UUID list/summary trả 0 giả; đếm lệch TEXT vs UUID modules
+ * must_keep:  Soft employee_id SR; empty zeros honesty; Fleet TEXT; CO-HC không đụng;
+ *             slug→map UUID happy path; U65 no seed
+ * SOLID:      Service owns schema ensure + scope; DTO/controller thin
+ * LastVerified: operations/be-hrm-op-dual-plane-guard-01.spec.ts · operations.service.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-OP-DUAL-PLANE-GUARD-01
+ * change_mode: ADD
+ * What: Document OP-04 UUID vs TEXT module mix; rely on shared HRM-PLANE-409 anti-join LE.
+ * Why:  Audit P1 — cấm silent fake 0 khi company_id là XBOS LE UUID.
+ * SRS:  FR-HRM-OP-04 #4/#5/#7
+ * TechSpec: API_DESIGN_HRM_OPERATIONS §D · DB_DESIGN §3 reports aggregate
+ * must_keep: Happy slug path; ATT/Payroll/Recruitment DDL cite; Admin/Fleet GWC
+ */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
+  assertHrmMappedCompanyUuidOrThrow,
   assertResourceInHrmScope,
+  isHrmMappedCompanyUuid,
   pushCompanyIdFilter,
   pushCompanyIdUuidFilter,
   pushWorkforceEmployeeScopeFilter,
@@ -75,6 +117,20 @@ export class OperationsService {
     private readonly db: HrmDbService,
     private readonly fanout: AttendanceEventFanoutService,
   ) {}
+
+  /**
+   * Fail-closed when wire `company_id` is a UUID outside Plane B′ map (XBOS LE).
+   * Slugs (`holding`/`main`/…) pass through — map happens on persist / UUID filter.
+   */
+  private assertOperationsCompanyWire(requestedCompanyId: string): void {
+    const trimmed = requestedCompanyId.trim();
+    // UUID shape but not mapped → LE / unknown; reject before list/summary counts.
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(trimmed)) {
+      if (!isHrmMappedCompanyUuid(trimmed)) {
+        assertHrmMappedCompanyUuidOrThrow(trimmed);
+      }
+    }
+  }
 
   private toServiceRequestRealtimePayload(row: ServiceRequestRow): ServiceRequestRealtimePayload {
     return {
@@ -162,6 +218,7 @@ export class OperationsService {
 
   async listTasks(query: ListTasksQueryDto, authorization?: string, tenantId?: string) {
     await this.ensureSchema();
+    this.assertOperationsCompanyWire(query.company_id);
     const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -293,6 +350,7 @@ export class OperationsService {
 
   async listServiceRequests(query: ListServiceRequestsQueryDto, authorization?: string, tenantId?: string) {
     await this.ensureSchema();
+    this.assertOperationsCompanyWire(query.company_id);
     const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
     const clauses: string[] = [];
     const values: unknown[] = [];
@@ -463,6 +521,7 @@ export class OperationsService {
   private async countByScope(
     table: string,
     scope: HrmListScope,
+    /** OP-04 plane mix: UUID tasks/SR · TEXT payroll/recruitment · workforce ATT (cite pairs). */
     mode: 'company_text' | 'company_uuid' | 'workforce',
   ): Promise<number> {
     const filters: string[] = [];
@@ -470,6 +529,7 @@ export class OperationsService {
     if (mode === 'workforce') {
       pushWorkforceEmployeeScopeFilter(filters, values, scope);
     } else if (mode === 'company_uuid') {
+      // Xử lý: UUID filter fail-closed nếu scope wire là LE ∉ map (HRM-PLANE-409) — không fake 0.
       pushCompanyIdUuidFilter(filters, values, scope.companyIds);
     } else {
       pushCompanyIdFilter(filters, values, scope.companyIds);
@@ -484,6 +544,8 @@ export class OperationsService {
 
   async getSummary(requestedCompanyId: string, authorization?: string, tenantId?: string) {
     await this.ensureSchema();
+    // OP-04: reject LE UUID wire before mixed-plane counts (no silent fake 0).
+    this.assertOperationsCompanyWire(requestedCompanyId);
     const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
     const [attendance, payroll, recruitment, tasks, serviceRequests] = await Promise.all([
       this.countByScope('attendance_records', scope, 'workforce'),

@@ -1,4 +1,5 @@
 import type { InfrastructureFoundationCategory } from '../../data/infrastructure-foundation-catalog';
+import { infraEntityIdsMatch } from '../../integrations/infrastructureEntityKeyResolver';
 
 /** Row is eligible for the saved list table (no empty draft pollution). */
 export function isFoundationCategoryDisplayable(row: InfrastructureFoundationCategory): boolean {
@@ -36,6 +37,12 @@ export function resolveFoundationFieldsPreviewEntityId(
   appliesToCompanyIds: string[],
   current: string | null,
 ): string | null {
-  if (current && appliesToCompanyIds.includes(current)) return current;
+  // Alias-aware — holding root chip stays selected when GET returned main/holding (AC-INF-KEY-05).
+  if (
+    current &&
+    appliesToCompanyIds.some((id) => infraEntityIdsMatch(id, current))
+  ) {
+    return current;
+  }
   return appliesToCompanyIds[0] ?? null;
 }

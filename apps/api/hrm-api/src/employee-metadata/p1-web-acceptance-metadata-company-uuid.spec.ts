@@ -49,4 +49,16 @@ describe('P1-WEB-ACCEPTANCE-FIX-WAVE-02 UF-HRM-11 metadata company_uuid', () => 
       }),
     ).rejects.toMatchObject({ code: 'HRM-VAL-001', status: HttpStatus.BAD_REQUEST });
   });
+
+  it('rejects XBOS LE UUID with HRM-PLANE-409 (D-HRM-MD-DUAL-PLANE-GUARD-01)', async () => {
+    await expect(
+      service.submitChangeRequest({
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        field_key: 'job_title',
+        requested_value: JSON.stringify({ code: 'LE' }),
+      }),
+    ).rejects.toMatchObject({ code: 'HRM-PLANE-409', status: HttpStatus.CONFLICT });
+    expect(repository.submitChange).not.toHaveBeenCalled();
+  });
 });

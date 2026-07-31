@@ -48,4 +48,13 @@ describe('foundationCategoryList', () => {
     expect(resolveFoundationFieldsPreviewEntityId(['a', 'b'], 'z')).toBe('a');
     expect(resolveFoundationFieldsPreviewEntityId([], 'a')).toBe(null);
   });
+
+  it('resolveFoundationFieldsPreviewEntityId matches holding aliases (AC-INF-KEY-05)', () => {
+    expect(
+      resolveFoundationFieldsPreviewEntityId(['main'], 'xbos-group-holding-root'),
+    ).toBe('xbos-group-holding-root');
+    expect(
+      resolveFoundationFieldsPreviewEntityId(['holding', 'eb3fb3fc-0081-446b-8d99-2b398dddc709'], 'xbos-group-holding-root'),
+    ).toBe('xbos-group-holding-root');
+  });
 });

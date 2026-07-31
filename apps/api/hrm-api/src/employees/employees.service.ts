@@ -1,4 +1,85 @@
-import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Hồ sơ nhân viên (service)
+ * UC:         UC-HRM-20 · UC-HRM-21 · HRM-EM-01
+ * BR:         BR-HRM-SCOPE-LIST · ADR-GROUP-CEO-MAIN-HOLDING-SCOPE · BR-EMP-COL-01
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.1 · FR-HRM-EM-01
+ * SRS bước:   Diễn biến #5 Trùng mã NV · #7 Lưu thành công · #8 Tải lại (list/get/cursor)
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.1 (ref_srs: FR-HRM-EM-01) · ADR-HRM-SCALE §5.4
+ * Purpose:    CRUD + list/summary theo scope; keyset cursor tránh storm OFFSET khi export.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ *
+ * Callers:
+ *   - employees.controller.ts → createEmployee / listEmployees / getEmployeesSummary / …
+ *
+ * Callees:
+ *   - resolveHrmListScope → pushEmployeeListScopeFilters → public.employees
+ *   - encode/decodeEmployeeListCursor → keyset WHERE
+ *   - resolveCompanyDisplayNameVi → company_display_name (ĐVTV/LE SoT; never Khối)
+ *
+ * FE-Actions:
+ *   | Thao tác          | Handler             | Lib / RPC                |
+ *   |-------------------|---------------------|--------------------------|
+ *   | Lưu hồ sơ         | createEmployee      | INSERT employees         |
+ *   | Trang danh sách   | listEmployees       | GET /employees?page=     |
+ *   | Export walk       | listEmployees+cursor| GET /employees?cursor=   |
+ *
+ * BE-Chain:
+ *   createEmployee → INSERT employees (23505 → HRM-EMP-DUPLICATE)
+ *   listEmployees → OFFSET hoặc keyset → employees
+ *
+ * Impact:      Scope lệch → 404/empty; cursor lỗi → 400; trùng mã → mất Diễn biến #5
+ * must_keep:   leave/recruit/F5; OFFSET khi không cursor; empty list trung thực
+ * SOLID:       Service domain; cursor codec tách file
+ * LastVerified: be-hrm-co-emp-count-01.spec.ts · p1-hrm-perf-be-01.spec.ts · cd-fb-05-perf-be.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22 BE-HRM-EMP-COMPANY-COL-01
+ * change_mode: ADD
+ * What: mapEmployee / list/get expose company_display_name via resolveCompanyDisplayNameVi (LE SoT)
+ * Why: BA-HRM-EMP-COMPANY-COL-01 AC-EMP-COL-01..03 — cột «Thông tin công ty» ≠ Khối registry
+ * must_keep: scope_parity; cursor; slug map sync stays in OperatingUnitsService (AC-EMP-COL-04)
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: Map Diễn biến FR-HRM-EM-01 + TechSpec §14.1; comment nhánh then (không đổi logic)
+ * Why: Sponsor lock CODE-MEMORY ↔ SRS bước
+ * must_keep: cursor ISO · summary · duplicate 409
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-05-PERF-BE
+ * What: Additive keyset cursor on listEmployees (next_cursor); summary unchanged
+ * Why: CD-FB-03 audit — stop ~12 OFFSET page storm on export/full walk
+ * SRS/BR: ADR-HRM-SCALE §5.4 Cursor stretch promoted for CD-FB-05
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20
+ * WorkItem: D-C-P1-HRM-PERF-02-CURSOR-TZ
+ * What: ISO-8601 cursor encode (no Date.toString); SQL created_at_cursor (US) for keyset precision
+ * Why: QA FAIL page-2+ 500 gmt+0700; JS Date ms truncation skipped rows (~200/1108 walk)
+ * SRS/BR: ADR-HRM-SCALE §5.4 — cursor must cast to timestamptz and not skip same-ms rows
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-23
+ * WorkItem: D-HRM-SETTINGS-MD-CRUD-BE-01
+ * change_mode: ADD
+ * What: create/update validate job_title_key ∈ job_titles when set (VAL-SET-MD-01 / FR-HRM-SC-POS-01)
+ * must_keep: company_display_name LE SoT; cursor; scope_parity; no Khối
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-25
+ * WorkItem: D-HRM-SETTINGS-MD-COMPILE-BE-01
+ * change_mode: UPGRADE
+ * What: assertJobTitleKeyInCatalog reads scopeContext.tenantId (HrmListScopeContext), not HrmListScope fields
+ * Why: nest compile TS2339 blocked :28001 / Settings master-data QA
+ * must_keep: company_display_name LE SoT; list scope RBAC ladder; catalog assert when key set
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-HRM-CO-EMP-COUNT-BE-01
+ * change_mode: ADD
+ * What: GET /employees/summary → by_company[{company_id slug, total, active_count, …}] same resolveHrmListScope
+ * Why: Company Management employee_count=0 — FE needs per-slug Plane B counts (not XBOS LE UUID)
+ * must_keep: scope_parity list↔summary; rollup main zero-fills 5 slugs; no legal-entity UUID keys
+ */
+import { HttpStatus, Injectable, OnModuleInit, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
@@ -12,26 +93,63 @@ import {
   resolveHrmCompanyUuidForSlug,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
+import { resolveCompanyDisplayNameVi } from '../operating-units/hrm-company-display-name';
+import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { EmployeeSummaryQueryDto } from './dto/employee-summary.query.dto';
 import { GetEmployeeQueryDto } from './dto/get-employee.query.dto';
 import { ListEmployeesQueryDto } from './dto/list-employees.query.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
-import { buildSalaryRangesFromCounts, EMPLOYEE_SALARY_NUM_SQL } from './employee-summary';
+import {
+  decodeEmployeeListCursor,
+  encodeEmployeeListCursorFromRow,
+} from './employee-list-cursor';
+import {
+  buildEmployeeSummaryByCompany,
+  buildSalaryRangesFromCounts,
+  EMPLOYEE_SALARY_NUM_SQL,
+} from './employee-summary';
 import type { EmployeeSummaryResult } from './employee-summary.types';
 import {
   directoryItemPassesAttendanceFilter,
+  isDirectoryView,
   mapDirectoryDetail,
   mapDirectoryListItem,
   resolveDirectorySearchTerm,
   todayIsoInHoChiMinh,
 } from './employee-directory';
 import type { EmployeeRow } from './employee-directory.types';
-import { assertEmployeeUpdateAllowed } from './employee-update-policy';
+import {
+  assertEmployeeUpdateAllowed,
+  isSelfEmployeeTarget,
+  mergeSelfEssCustomFields,
+} from './employee-update-policy';
 
 @Injectable()
 export class EmployeesService implements OnModuleInit {
-  constructor(private readonly db: HrmDbService) {}
+  constructor(
+    private readonly db: HrmDbService,
+    @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
+  ) {}
+
+  private async assertJobTitleKeyInCatalog(
+    companyId: string,
+    jobTitleKey: string | null | undefined,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    const code = jobTitleKey?.trim();
+    if (!code || !this.settingsCatalogs) return;
+    // HrmListScopeContext = { tenantId? } from toHrmListScopeContext — not HrmListScope.
+    const tenantId = scopeContext?.tenantId?.trim() || MASTER_TENANT_ID;
+    await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+      tenantId,
+      companyId,
+      catalogKey: 'job_titles',
+      code,
+      errorCode: 'HRM-EMP-JOB-TITLE',
+      errorMessage: `job_title_key '${code}' is not in job_titles catalog (free-text SoT forbidden)`,
+    });
+  }
 
   async onModuleInit() {
     await this.ensureSchema();
@@ -137,10 +255,14 @@ export class EmployeesService implements OnModuleInit {
 
   private mapEmployee(row: EmployeeRow) {
     const companyUuid = resolveHrmCompanyUuidForSlug(row.company_id);
+    // Plane A / ĐVTV LE SoT — never Khối* (AC-EMP-COL-01/03).
+    // company_slug_map sync (upgrade Khối → LE) lives in OperatingUnitsService (AC-EMP-COL-04).
+    const company_display_name = resolveCompanyDisplayNameVi(row.company_id, null);
     return {
       id: row.id,
       company_id: row.company_id,
       company_uuid: companyUuid,
+      company_display_name,
       employee_code: row.employee_code,
       email: row.email,
       full_name: row.full_name,
@@ -156,12 +278,18 @@ export class EmployeesService implements OnModuleInit {
     };
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01
+   * SRS bước: Diễn biến #5 Trùng mã NV · #7 Lưu thành công
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01
+   */
   async createEmployee(
     payload: CreateEmployeeDto,
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
     const scope = resolveHrmListScope(authorization, payload.company_id, scopeContext);
+    // Xử lý: persist company_id theo ladder (main→holding) — khóa đơn vị Diễn biến #7/#8.
     const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id, scopeContext);
     const customFields: Record<string, string> = { ...(payload.custom_fields ?? {}) };
     if (scope.memberTenantId && !customFields.tenant_id?.trim()) {
@@ -169,6 +297,8 @@ export class EmployeesService implements OnModuleInit {
     } else if (scope.masterTenantPartition && !customFields.tenant_id?.trim()) {
       customFields.tenant_id = MASTER_TENANT_ID;
     }
+
+    await this.assertJobTitleKeyInCatalog(companyId, payload.job_title_key, scopeContext);
 
     const employeeId = randomUUID();
     try {
@@ -193,10 +323,12 @@ export class EmployeesService implements OnModuleInit {
           JSON.stringify(customFields),
         ],
       );
+      // Thành công: Diễn biến #7 — trả hồ sơ mới (khóa id mang sang CI/AT).
       return this.mapEmployee(res.rows[0]);
     } catch (error) {
       const pg = error as { code?: string };
       if (pg.code === '23505') {
+        // Thất bại: Diễn biến #5 — trùng mã NV / email trong đơn vị.
         throw new ApiException(
           'HRM-EMP-DUPLICATE',
           'Duplicate employee code or email for this company',
@@ -334,6 +466,11 @@ export class EmployeesService implements OnModuleInit {
    * P1-HRM-PERF-BE-01 — single-call dashboard aggregates (same list scope filters).
    * Replaces ~N sequential GET /employees pages for count/stats on embed.
    */
+  /**
+   * @CODE-MEMORY method · AC-CO-EMP / D-HRM-CO-EMP-COUNT-BE-01
+   * SRS bước: Company Management — cột Số nhân viên theo ĐVTV (Plane B slug)
+   * TechSpec: GET /employees/summary · by_company · same resolveHrmListScope as list
+   */
   async getEmployeesSummary(
     query: EmployeeSummaryQueryDto,
     authorization?: string,
@@ -345,9 +482,13 @@ export class EmployeesService implements OnModuleInit {
       status: query.status,
       include_archived: query.include_archived,
     };
-    const { filters, values } = this.buildEmployeeListFilters(listQuery, authorization, scopeContext);
+    const { filters, values, scope } = this.buildEmployeeListFilters(
+      listQuery,
+      authorization,
+      scopeContext,
+    );
     const whereClause = filters.join(' AND ');
-    // P1-HRM-SCALE-BE-W2 — one CTE scan for agg + dept + recent (was 3 round-trips × scoped scan)
+    // P1-HRM-SCALE-BE-W2 — one CTE scan for agg + dept + by_company + recent
     type SummaryAggregateRow = {
       total: string;
       active_count: string;
@@ -366,6 +507,13 @@ export class EmployeesService implements OnModuleInit {
       count: string;
       avg_salary: string | null;
     };
+    type SummaryCompanyRow = {
+      company_id: string;
+      total: string;
+      active_count: string;
+      inactive_count: string;
+      archived_count: string;
+    };
     type SummaryRecentRow = {
       id: string;
       employee_code: string;
@@ -378,12 +526,14 @@ export class EmployeesService implements OnModuleInit {
     const bundledRes = await this.db.query<{
       aggregate: SummaryAggregateRow | null;
       by_department: SummaryDeptRow[] | null;
+      by_company: SummaryCompanyRow[] | null;
       recent: SummaryRecentRow[] | null;
     }>(
       `
         WITH scoped AS (
           SELECT
             id,
+            company_id,
             employee_code,
             full_name,
             status,
@@ -419,6 +569,16 @@ export class EmployeesService implements OnModuleInit {
           FROM scoped
           GROUP BY 1
         ),
+        by_company AS (
+          SELECT
+            company_id,
+            COUNT(*)::text AS total,
+            COUNT(*) FILTER (WHERE status = 'active')::text AS active_count,
+            COUNT(*) FILTER (WHERE status = 'inactive')::text AS inactive_count,
+            COUNT(*) FILTER (WHERE archived_at IS NOT NULL)::text AS archived_count
+          FROM scoped
+          GROUP BY company_id
+        ),
         recent AS (
           SELECT
             id::text AS id,
@@ -440,6 +600,13 @@ export class EmployeesService implements OnModuleInit {
             ),
             '[]'::json
           ) AS by_department,
+          COALESCE(
+            (
+              SELECT json_agg(row_to_json(c) ORDER BY c.company_id ASC)
+              FROM by_company c
+            ),
+            '[]'::json
+          ) AS by_company,
           COALESCE(
             (SELECT json_agg(row_to_json(r)) FROM recent r),
             '[]'::json
@@ -464,6 +631,7 @@ export class EmployeesService implements OnModuleInit {
     const payload = bundledRes.rows[0];
     const aggregate = payload?.aggregate ?? emptyAggregate;
     const departmentRows = payload?.by_department ?? [];
+    const companyRows = payload?.by_company ?? [];
     const recentRows = payload?.recent ?? [];
 
     return {
@@ -481,6 +649,7 @@ export class EmployeesService implements OnModuleInit {
         count: Number(row.count),
         avg_salary: row.avg_salary == null ? null : Number(row.avg_salary),
       })),
+      by_company: buildEmployeeSummaryByCompany(companyRows, scope.companyIds),
       salary_ranges: buildSalaryRangesFromCounts(aggregate),
       new_hires: {
         last_30_days: Number(aggregate.new_hires_last_30_days),
@@ -496,6 +665,11 @@ export class EmployeesService implements OnModuleInit {
     };
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01
+   * SRS bước: Diễn biến #8 Tải lại trang — list scoped (+ cursor export)
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01
+   */
   async listEmployees(
     query: ListEmployeesQueryDto,
     authorization?: string,
@@ -503,16 +677,75 @@ export class EmployeesService implements OnModuleInit {
   ) {
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
-    const offset = (page - 1) * pageSize;
+    const cursorRaw = typeof query.cursor === 'string' ? query.cursor.trim() : '';
     const { filters, values, idx } = this.buildEmployeeListFilters(query, authorization, scopeContext);
-
     const whereClause = filters.join(' AND ');
+
+    // CD-FB-05 — keyset cursor (ADR §5.4); OFFSET path must_keep when cursor absent
+    if (cursorRaw) {
+      if (isDirectoryView(query.view)) {
+        throw new ApiException(
+          'HRM-EMP-CURSOR-002',
+          'cursor is not supported with view=directory',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      let cursor: { createdAt: string; id: string };
+      try {
+        cursor = decodeEmployeeListCursor(cursorRaw);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'invalid cursor';
+        throw new ApiException('HRM-EMP-CURSOR-001', message, HttpStatus.BAD_REQUEST);
+      }
+
+      const fetchSize = pageSize + 1;
+      const dataRes = await this.db.query<
+        EmployeeRow & { list_total: string; created_at_cursor: string }
+      >(
+        `
+          WITH scoped AS (
+            SELECT
+              id, company_id, employee_code, email, full_name, job_title_key, manager_id,
+              status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at,
+              to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at_cursor,
+              COUNT(*) OVER()::text AS list_total
+            FROM public.employees
+            WHERE ${whereClause}
+          )
+          SELECT *
+          FROM scoped
+          WHERE (created_at, id) < ($${idx}::timestamptz, $${idx + 1}::uuid)
+          ORDER BY created_at DESC, id DESC
+          LIMIT $${idx + 2};
+        `,
+        [...values, cursor.createdAt, cursor.id, fetchSize],
+      );
+
+      const hasMore = dataRes.rows.length > pageSize;
+      const pageRows = hasMore ? dataRes.rows.slice(0, pageSize) : dataRes.rows;
+      const total = Number(pageRows[0]?.list_total ?? dataRes.rows[0]?.list_total ?? 0);
+      const last = pageRows[pageRows.length - 1];
+      const nextCursor = hasMore && last ? encodeEmployeeListCursorFromRow(last) : null;
+
+      return {
+        total,
+        page,
+        page_size: pageSize,
+        next_cursor: nextCursor,
+        data: pageRows.map((row) => this.mapEmployee(row)),
+      };
+    }
+
+    const offset = (page - 1) * pageSize;
     // P1-HRM-SCALE-BE-W2 — single round-trip: window COUNT + page rows (ADR §5.4 COUNT strategy)
-    const dataRes = await this.db.query<EmployeeRow & { list_total: string }>(
+    const dataRes = await this.db.query<
+      EmployeeRow & { list_total: string; created_at_cursor: string }
+    >(
       `
         SELECT
           id, company_id, employee_code, email, full_name, job_title_key, manager_id,
           status, hired_at, archived_at, avatar_url, custom_fields, created_at, updated_at,
+          to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at_cursor,
           COUNT(*) OVER()::text AS list_total
         FROM public.employees
         WHERE ${whereClause}
@@ -531,10 +764,17 @@ export class EmployeesService implements OnModuleInit {
       total = Number(countRes.rows[0]?.total ?? 0);
     }
 
+    const last = dataRes.rows[dataRes.rows.length - 1];
+    const nextCursor =
+      dataRes.rows.length === pageSize && last && offset + dataRes.rows.length < total
+        ? encodeEmployeeListCursorFromRow(last)
+        : null;
+
     return {
       total,
       page,
       page_size: pageSize,
+      next_cursor: nextCursor,
       data: dataRes.rows.map((row) => this.mapEmployee(row)),
     };
   }
@@ -592,6 +832,11 @@ export class EmployeesService implements OnModuleInit {
     );
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01
+   * SRS bước: Diễn biến #8 — get-by-id cùng scope list (U19 parity)
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01
+   */
   async getEmployeeById(
     employeeId: string,
     query: GetEmployeeQueryDto,
@@ -635,6 +880,7 @@ export class EmployeesService implements OnModuleInit {
       values.push(payload.full_name.trim());
     }
     if (payload.job_title_key !== undefined) {
+      await this.assertJobTitleKeyInCatalog(existing.company_id, payload.job_title_key);
       updates.push(`job_title_key = $${updates.length + 1}`);
       values.push(payload.job_title_key.trim());
     }
@@ -643,8 +889,12 @@ export class EmployeesService implements OnModuleInit {
       values.push(payload.hired_at);
     }
     if (payload.custom_fields !== undefined) {
+      // Option A: self always merges phone keys only (even manager|hr_manager JWT).
+      const nextCustomFields = isSelfEmployeeTarget(employeeId, authorization)
+        ? mergeSelfEssCustomFields(existing.custom_fields, payload.custom_fields)
+        : (payload.custom_fields ?? {});
       updates.push(`custom_fields = $${updates.length + 1}::jsonb`);
-      values.push(JSON.stringify(payload.custom_fields ?? {}));
+      values.push(JSON.stringify(nextCustomFields));
     }
     if (payload.avatar_url !== undefined) {
       updates.push(`avatar_url = $${updates.length + 1}`);

@@ -93,4 +93,17 @@ describe('WorkflowTaskDetailDrawer', () => {
     expect(onApprove).toHaveBeenCalledTimes(1);
     expect(onRejectRequest).not.toHaveBeenCalled();
   });
+
+  it('R-XHRM-REC-WF-DEEPLINK-TASKID: blocks Xử lý when cardId is instance-only synthetic', () => {
+    const synthetic: UnifiedTask = {
+      ...task,
+      cardId: 'inst-1',
+      sourceId: 'inst-1',
+      dedupeKey: 'wf-inst-inst-1',
+    };
+    render(<WorkflowTaskDetailDrawer {...baseProps} task={synthetic} />);
+
+    expect(screen.getByRole('button', { name: 'Từ chối nhiệm vụ' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Xử lý nhanh' })).toBeDisabled();
+  });
 });

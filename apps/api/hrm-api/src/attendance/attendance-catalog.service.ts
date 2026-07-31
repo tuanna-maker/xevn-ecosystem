@@ -1,6 +1,38 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Bảng chấm công / ca làm (catalog)
+ * UC:         HRM-AT-14
+ * BR:         BR-ATT-SHEET-01..07 · AC-ATT-SHEET-01..06
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.4 · FR-HRM-AT-14
+ * SRS bước:   Diễn biến #3/#4 list+empty · #8 Lưu bảng · #11 F5 — không tự bịa ngày công
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.4 · §12.1/§13 (ref_srs: FR-HRM-AT-14)
+ * Purpose:    CRUD attendance_sheets + work_shifts; header kỳ không seed records.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ * Callers:    attendance.controller.ts → list/create/update/delete attendance-sheets
+ * Callees:    resolveHrmListScope → public.attendance_sheets
+ * must_keep:  AC-ATT-SHEET empty honesty; không INSERT attendance_records khi tạo sheet
+ * SOLID:      Catalog tách khỏi AttendanceService (records)
+ * LastVerified: attendance sheet related specs / AC-ATT-SHEET
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: CODE-MEMORY map Diễn biến AT-14 (không đổi logic)
+ * must_keep: AC-ATT-SHEET-01..06
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-C-CONV-AS-01
+ * change_mode: ADD
+ * What: create/update sheet nhận CreateAttendanceSheetDto / UpdateAttendanceSheetDto
+ * Why: §15.1 C-CONV-AS-01 — bỏ Record<string, unknown> ở service edge
+ * must_keep: AC-ATT-SHEET empty honesty; không INSERT attendance_records khi tạo sheet
+ */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import { CreateAttendanceSheetDto } from './dto/create-attendance-sheet.dto';
+import { UpdateAttendanceSheetDto } from './dto/update-attendance-sheet.dto';
 import {
   assertResourceInHrmScope,
   pushCompanyIdFilter,
@@ -150,6 +182,11 @@ export class AttendanceCatalogService {
     return { id };
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-AT-14
+   * SRS bước: Diễn biến #3 Tải danh sách · #4 Empty trung thực
+   * TechSpec: §14.4 ref_srs FR-HRM-AT-14 · AC-ATT-SHEET
+   */
   async listAttendanceSheets(companyId: string, authorization?: string) {
     await this.ensureAttendanceSheetSchema();
     const scope = resolveHrmListScope(authorization, companyId);
@@ -160,10 +197,16 @@ export class AttendanceCatalogService {
       `SELECT * FROM public.attendance_sheets WHERE ${filters.join(' AND ')} ORDER BY start_date DESC;`,
       values,
     );
+    // Thành công: list hoặc empty trung thực (Diễn biến #4) — không fake rows.
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createAttendanceSheet(payload: Record<string, unknown>, authorization?: string) {
+  /**
+   * @CODE-MEMORY method · FR-HRM-AT-14
+   * SRS bước: Diễn biến #8 Lưu thành công — chỉ header bảng, không bịa điểm danh
+   * TechSpec: §14.4 ref_srs FR-HRM-AT-14 · AC-ATT-SHEET-01
+   */
+  async createAttendanceSheet(payload: CreateAttendanceSheetDto, authorization?: string) {
     await this.ensureAttendanceSheetSchema();
     const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
     const res = await this.db.query(
@@ -185,10 +228,16 @@ export class AttendanceCatalogService {
         'draft',
       ],
     );
+    // Thành công: Diễn biến #8 — khóa bảng kỳ; lưới trống = AC-ATT-SHEET-06.
     return res.rows[0];
   }
 
-  async updateAttendanceSheet(id: string, payload: Record<string, unknown>, companyId: string, authorization?: string) {
+  async updateAttendanceSheet(
+    id: string,
+    payload: UpdateAttendanceSheetDto,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureAttendanceSheetSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const peek = await this.db.query(`SELECT company_id FROM public.attendance_sheets WHERE id = $1::uuid LIMIT 1;`, [id]);

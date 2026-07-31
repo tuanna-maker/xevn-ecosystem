@@ -67,6 +67,7 @@ export const HRM_VIEW_PATH_MAP: Record<string, string> = {
   processes: '/processes',
   internal_services: '/internal-services',
   tools_equipment: '/tools-equipment',
+  fleet: '/fleet',
   guide: '/guide',
 };
 

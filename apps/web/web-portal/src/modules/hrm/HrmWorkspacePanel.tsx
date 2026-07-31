@@ -1,3 +1,47 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /command-center/hrm/:view — HrmWorkspacePanel (Group CEO CC embed)
+ * UC:         UC-HRM-20..27
+ * BR:         BR-MOCK-01, BR-MOCK-02, BR-SCOPE-01, BR-EXEC-01b
+ * SRS:        docs/hrm/SRS.md §13
+ * TechSpec:   docs/hrm/TECHSPEC.md §11.2–11.3
+ * Purpose:    Command Center HRM cockpit — live Nest HRM API only; error banner + empty tables.
+ * WorkItem:   PCOMP-W2-FE-01
+ * Coded:      2026-07-19
+ *
+ * Callers:
+ *   - modules/hrm/HrmWorkspaceRoute.tsx → <HrmWorkspacePanel />
+ *
+ * Callees:
+ *   - hrmApiClient list* / getHrmOperationsSummary
+ *   - hrmWorkspaceEmbedApi mappers
+ *   - fetchGroupMemberUnitsForCommandCenter
+ *
+ * FE-Actions:
+ *   | User action           | Handler              | Lib / RPC                          |
+ *   |-----------------------|----------------------|------------------------------------|
+ *   | Open dashboard        | useEffect load       | listHrmEmployees + payslips + ops  |
+ *   | Open employees/payroll| useEffect load       | listHrmEmployees / listHrmPayslips |
+ *   | Metadata approve/rej  | handleMetadataDecision| approve/rejectEmployeeMetadataRequest |
+ *
+ * BE-Chain: N/A (FE)
+ * Impact:   Silent mock rows or fake KPI amounts mislead UAT
+ * must_keep: no HRM_MOCK_* / previewMockRows; dashboard payroll from payslips or honest empty
+ * SOLID:    Panel = fetch + layout; mapping in hrmWorkspaceEmbedApi
+ * LastVerified: mock-data.test.ts · hrmWorkspaceEmbedApi.test.ts · pcomp-w2-fe-01-20260719.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: PCOMP-W2-FE-01
+ * What: Wire dashboard payroll card to payslip aggregate; remove seed empty copy; narrow deferred-API notice
+ * Why: Close [~] residual static «299 tỷ ₫» / false API_NOT_AVAILABLE on live views
+ * SRS/BR: UC-HRM-20 · BR-MOCK-01 · BR-EXEC-01b
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-09-RECRUIT
+ * What: Embed recruitment funnel 6 stages from candidates-pool API; open HRM for JD library
+ * Why: F6 AC-CD-F6-03 / UC-HRM-22 dashboard pipeline on CC
+ * SRS/BR: UC-HRM-22 · BR-CD-F6-03 · BR-DQ-01
+ */
 /** HRM workspace — mount bởi router `/command-center/hrm/:view`, không nhồi vào CommandCenterPage. */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,15 +58,10 @@ import type { Company, Employee } from '../../data/mock-data';
 import { ENTITY_LEVEL_LABELS } from '../../data/mock-data';
 import { fetchGroupMemberUnitsForCommandCenter } from '../../integrations/tenantScopeApi';
 import {
-  SETTINGS_COL,
   SETTINGS_CONTROL_TEXT,
-  SETTINGS_FIELD_SHELL,
-  SETTINGS_LABEL_CLASS,
   SETTINGS_PAGE_SUBTITLE_CLASS,
   SETTINGS_PAGE_TITLE_CLASS,
   SETTINGS_RADIUS_CARD,
-  SETTINGS_RADIUS_INPUT,
-  SETTINGS_SECTION_GRID,
   WORKSPACE_STICKY_HEADER_ROW,
   WORKSPACE_STICKY_HEADER_AXIS_H,
   WORKSPACE_STICKY_SEARCH_SHELL_CLASS,
@@ -39,6 +78,7 @@ import {
   listHrmInsurance,
   listHrmEmployees,
   listHrmJobRequisitions,
+  listHrmCandidatesPool,
   listHrmPayslips,
   listHrmOperationsTasks,
   listHrmServiceRequests,
@@ -52,6 +92,7 @@ import {
   type HrmInsuranceApiRow,
   type HrmEmployeeApiRow,
   type HrmJobRequisitionRow,
+  type HrmCandidatePoolEmbedRow,
   type HrmPayslipApiRow,
   type HrmOperationsSummary,
 } from './hrmApiClient';
@@ -59,13 +100,18 @@ import { resolveIdentityScope } from '../../integrations/identityScope';
 import { formatHrmMetadataQueueError } from './hrmWorkspaceErrorText';
 import { formatJoinDateVi } from './formatJoinDate';
 import {
+  HRM_RECRUIT_FUNNEL_LABEL_VI,
+  HRM_RECRUIT_FUNNEL_STAGES,
+  isHrmCockpitApiDeferredView,
+  mapHrmDashboardPayrollSummary,
   mapHrmDashboardStats,
   mapHrmInsuranceEmbedRows,
+  mapHrmRecruitmentFunnelCounts,
   shouldLoadMetadataQueue,
 } from './hrmWorkspaceEmbedApi';
 import { HrmMetadataQueueSection } from './HrmMetadataQueueSection';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
-import { allowMockFallback, API_LOAD_FAILED_MESSAGE, API_NOT_AVAILABLE_MESSAGE } from '../../utils/mockPolicy';
+import { API_LOAD_FAILED_MESSAGE, API_NOT_AVAILABLE_MESSAGE } from '../../utils/mockPolicy';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 
 const RAIL_STROKE = 1.5;
@@ -86,7 +132,7 @@ const SettingSectionHeader: React.FC<{ title: string; subtitle?: React.ReactNode
 
 export interface HrmWorkspacePanelProps {
   view: HrmWorkspaceMenuKey;
-  /** Đồng bộ pháp nhân với Command Center; không truyền → mock. */
+  /** Đồng bộ pháp nhân với Command Center; không truyền → fetch tenant-scope API. */
   legalEntityList?: Company[];
 }
 
@@ -102,6 +148,9 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
   const [apiEmployees, setApiEmployees] = useState<HrmEmployeeApiRow[] | null>(null);
   const [apiPayslips, setApiPayslips] = useState<HrmPayslipApiRow[] | null>(null);
   const [apiRecruitment, setApiRecruitment] = useState<HrmJobRequisitionRow[] | null>(null);
+  const [apiRecruitCandidates, setApiRecruitCandidates] = useState<HrmCandidatePoolEmbedRow[] | null>(
+    null,
+  );
   const [apiAttendance, setApiAttendance] = useState<HrmAttendanceRecordRow[] | null>(null);
   const [apiContracts, setApiContracts] = useState<HrmContractRow[] | null>(null);
   const [apiInsurance, setApiInsurance] = useState<HrmInsuranceApiRow[] | null>(null);
@@ -163,9 +212,9 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       contracts: { title: 'Hợp đồng', subtitle: 'Hợp đồng lao động và phụ lục.' },
       insurance: {
         title: 'Bảo hiểm',
-        subtitle: 'Danh sách BHXH/BHYT từ HRM API (contracts-insurance/insurance).',
+        subtitle: 'Danh sách BHXH/BHYT theo hồ sơ nhân sự.',
       },
-      decisions: { title: 'Hàng chờ metadata', subtitle: 'Duyệt thay đổi field hồ sơ sau sync catalog (UC-HRM-26).' },
+      decisions: { title: 'Hàng chờ metadata', subtitle: 'Duyệt thay đổi field hồ sơ sau đồng bộ danh mục.' },
       hrm_ai: {
         title: 'UniAI',
         subtitle: 'Trợ lý cho HCNS: soạn văn bản, checklist và giải thích chính sách.',
@@ -201,7 +250,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       code: row.employee_code,
       fullName: row.full_name,
       position: row.job_title_key ?? '—',
-      department: 'Du lịch XeVN',
+      department: '—',
       email: row.email,
       phone: '—',
       employmentType: 'full-time' as const,
@@ -217,6 +266,10 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
     activeEmployeeCount,
     apiOperationsSummary,
   );
+  const dashboardPayroll = useMemo(
+    () => mapHrmDashboardPayrollSummary(hrmLoadError ? null : apiPayslips),
+    [apiPayslips, hrmLoadError],
+  );
   const recruitmentRows = useMemo(() => {
     if (apiRecruitment?.length) {
       return apiRecruitment.map((r) => ({
@@ -230,6 +283,10 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
     }
     return [];
   }, [apiRecruitment]);
+  const recruitmentFunnel = useMemo(
+    () => mapHrmRecruitmentFunnelCounts(apiRecruitCandidates),
+    [apiRecruitCandidates],
+  );
   const attendanceRows = useMemo(() => {
     if (apiAttendance?.length) {
       return apiAttendance.map((r) => ({
@@ -339,8 +396,14 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           if (!cancelled) setApiPayslips(pay.data);
         }
         if (view === 'recruitment') {
-          const rec = await listHrmJobRequisitions(scope);
-          if (!cancelled) setApiRecruitment(rec.data);
+          const [rec, cand] = await Promise.all([
+            listHrmJobRequisitions(scope),
+            listHrmCandidatesPool(scope),
+          ]);
+          if (!cancelled) {
+            setApiRecruitment(rec.data);
+            setApiRecruitCandidates(cand.data);
+          }
         }
         if (view === 'attendance') {
           const att = await listHrmAttendanceRecords(scope);
@@ -374,6 +437,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           setApiEmployees(null);
           setApiPayslips(null);
           setApiRecruitment(null);
+          setApiRecruitCandidates(null);
           setApiAttendance(null);
           setApiContracts(null);
           setApiInsurance(null);
@@ -558,7 +622,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         return (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-slate-600">
-              Hàng chờ duyệt metadata nhân sự — GET /api/hrm/employee-metadata/change-requests.
+              Hàng chờ duyệt metadata nhân sự.
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -789,7 +853,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
             <div className={WORKSPACE_STICKY_SEARCH_SHELL_CLASS}>
               <Search className="h-4 w-4 shrink-0 text-xevn-textSecondary" strokeWidth={RAIL_STROKE} />
               <input
-                className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate-400 ${SETTINGS_CONTROL_TEXT}`}
+                className={`min-w-0 flex-1 bg-transparent outline-none placeholder:text-xevn-textMuted ${SETTINGS_CONTROL_TEXT}`}
                 placeholder="Tìm nhanh trong module HRM..."
               />
             </div>
@@ -811,11 +875,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
               message={hrmLoadError ?? undefined}
             />
           </div>
-          {!hrmLoadError &&
-          ['decisions', 'reports', 'hrm_ai', 'tasks', 'processes', 'internal_services', 'tools_equipment', 'guide'].includes(
-            view,
-          ) &&
-          !allowMockFallback() ? (
+          {!hrmLoadError && isHrmCockpitApiDeferredView(view) ? (
             <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700">
               {API_NOT_AVAILABLE_MESSAGE}
             </div>
@@ -915,26 +975,40 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className={`${SETTINGS_CONTROL_TEXT} font-semibold text-xevn-text`}>Tổng quỹ lương kỳ</p>
-                      <p className="mt-1 text-sm text-slate-500">Tháng 03/2026 — toàn pháp nhân</p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {hrmLoadError
+                          ? 'Không tải được phiếu lương — xem banner phía trên.'
+                          : dashboardPayroll.hasData
+                            ? `${dashboardPayroll.periodLabel} — ${dashboardPayroll.payslipCount} phiếu từ HRM API`
+                            : hrmApiLoading
+                              ? 'Đang tải phiếu lương…'
+                              : 'Chưa có phiếu lương từ HRM API.'}
+                      </p>
                     </div>
                     <span className="rounded-full border border-xevn-border bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-                      Đã khóa sổ C&B
+                      {dashboardPayroll.statusLabel}
                     </span>
                   </div>
                   <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Tổng lương gross</p>
-                      <p className="mt-1 text-2xl font-semibold tabular-nums text-xevn-text">299 tỷ ₫</p>
+                      <p className="text-sm font-medium uppercase tracking-wide text-xevn-textSecondary">Tổng lương gross</p>
+                      <p className="mt-1 text-2xl font-semibold tabular-nums text-xevn-text">
+                        {dashboardPayroll.grossFormatted}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Thuế TNCN</p>
-                      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-700">30 tỷ ₫</p>
-                      <p className="text-xs text-slate-500">~10% quỹ khả dụng</p>
+                      <p className="text-sm font-medium uppercase tracking-wide text-xevn-textSecondary">Khấu trừ</p>
+                      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-700">
+                        {dashboardPayroll.deductionsFormatted}
+                      </p>
+                      <p className="text-xs text-slate-500">Từ deduction_amount phiếu lương</p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-slate-400">BHXH/BHYT/BHTN</p>
-                      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-700">31 tỷ ₫</p>
-                      <p className="text-xs text-slate-500">~10,5% tổng quỹ</p>
+                      <p className="text-sm font-medium uppercase tracking-wide text-xevn-textSecondary">Thực nhận</p>
+                      <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-700">
+                        {dashboardPayroll.netFormatted}
+                      </p>
+                      <p className="text-xs text-slate-500">Từ net_amount phiếu lương</p>
                     </div>
                   </div>
                 </div>
@@ -1147,10 +1221,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                       <td colSpan={6} className="px-3 py-8 text-center text-slate-500">
                         {hrmLoadError
                           ? 'Không tải được danh sách công việc — xem banner phía trên.'
-                          : 'Chưa có công việc — chạy '}
-                        {!hrmLoadError ? (
-                          <code className="text-xs">pnpm seed:hrm:operations-sample</code>
-                        ) : null}
+                          : 'Chưa có công việc từ HRM API.'}
                       </td>
                     </tr>
                   ) : null}
@@ -1225,7 +1296,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
                       <td colSpan={7} className="px-3 py-8 text-center text-slate-500">
                         {hrmLoadError
                           ? 'Không tải được yêu cầu dịch vụ — xem banner phía trên.'
-                          : 'Chưa có yêu cầu dịch vụ — seed operations sample.'}
+                          : 'Chưa có yêu cầu dịch vụ từ HRM API.'}
                       </td>
                     </tr>
                   ) : null}
@@ -1374,51 +1445,73 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
           ) : null}
 
           {view === 'recruitment' ? (
-            <div className={HRM_TABLE_SHELL}>
-              <table className={HRM_TABLE_CLASS}>
-                <thead className="bg-white/70 backdrop-blur-md">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chiến dịch</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phòng/Ban</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Chỉ tiêu</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Ứng viên pipeline</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
-                    <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recruitmentRows.map((row) => (
-                    <tr key={row.id} className="border-t border-xevn-border">
-                      <td className="px-3 py-2 font-medium text-xevn-text">{row.campaign}</td>
-                      <td className="px-3 py-2 text-slate-600">{row.department}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.need}</td>
-                      <td className="px-3 py-2 text-right tabular-nums">{row.pipeline}</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={
-                            row.status === 'Đang tuyển'
-                              ? 'font-medium text-emerald-700'
-                              : row.status === 'Tạm dừng'
-                                ? 'text-amber-700'
-                                : 'text-slate-600'
-                          }
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          className="text-[15px] font-semibold text-xevn-primary hover:underline"
-                          onClick={() => openHrmApp('/hr/recruitment')}
-                        >
-                          Mở pipeline
-                        </button>
-                      </td>
-                    </tr>
+            <div className="space-y-4">
+              <div className="rounded-xl border border-xevn-border bg-white shadow-soft">
+                <div className="flex items-center justify-between border-b border-xevn-border px-4 py-2.5">
+                  <h3 className="text-sm font-semibold text-xevn-text">Pipeline ứng viên (6 giai đoạn)</h3>
+                  <span className="text-xs tabular-nums text-slate-500">
+                    Tổng: {apiRecruitCandidates == null ? '…' : recruitmentFunnel.total}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 divide-x divide-y divide-xevn-border sm:grid-cols-3 lg:grid-cols-6 lg:divide-y-0">
+                  {HRM_RECRUIT_FUNNEL_STAGES.map((stage) => (
+                    <div key={stage} className="min-w-0 px-3 py-2.5" data-funnel-stage={stage}>
+                      <p className="line-clamp-2 text-[11px] font-medium text-slate-500">
+                        {HRM_RECRUIT_FUNNEL_LABEL_VI[stage]}
+                      </p>
+                      <p className="text-lg font-bold tabular-nums text-xevn-text">
+                        {apiRecruitCandidates == null ? '—' : recruitmentFunnel[stage]}
+                      </p>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </div>
+              <div className={HRM_TABLE_SHELL}>
+                <table className={HRM_TABLE_CLASS}>
+                  <thead className="bg-white/70 backdrop-blur-md">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Chiến dịch</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Phòng/Ban</th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Chỉ tiêu</th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Ứng viên pipeline</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Trạng thái</th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recruitmentRows.map((row) => (
+                      <tr key={row.id} className="border-t border-xevn-border">
+                        <td className="px-3 py-2 font-medium text-xevn-text">{row.campaign}</td>
+                        <td className="px-3 py-2 text-slate-600">{row.department}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">{row.need}</td>
+                        <td className="px-3 py-2 text-right tabular-nums">{row.pipeline}</td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={
+                              row.status === 'Đang tuyển'
+                                ? 'font-medium text-emerald-700'
+                                : row.status === 'Tạm dừng'
+                                  ? 'text-amber-700'
+                                  : 'text-slate-600'
+                            }
+                          >
+                            {row.status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <button
+                            type="button"
+                            className="text-[15px] font-semibold text-xevn-primary hover:underline"
+                            onClick={() => openHrmApp('/hr/recruitment')}
+                          >
+                            Mở pipeline
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : null}
 
@@ -1685,47 +1778,17 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
             <div
               className={`border border-xevn-border bg-white/70 mt-4 p-4 shadow-soft backdrop-blur-md ${SETTINGS_RADIUS_CARD}`}
             >
-              <div className={`${SETTINGS_SECTION_GRID} gap-y-4`}>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Ngày công chuẩn / tháng</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="22"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Giờ làm việc mặc định / ngày</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="8,0 giờ"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Làm tròn công</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="0,25 bước — nửa ngày"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span8}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Webhook đồng bộ chấm công thiết bị</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="https://api.xevn.local/hrm/attendance/device-ingest"
-                  />
-                </label>
-                <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span4}`}>
-                  <span className={SETTINGS_LABEL_CLASS}>Khóa kỳ lương tự động</span>
-                  <input
-                    readOnly
-                    className={`mt-2 w-full border border-xevn-border bg-white px-3 py-2 text-left text-base text-xevn-text outline-none focus:ring-2 focus:ring-xevn-accent ${SETTINGS_RADIUS_INPUT}`}
-                    defaultValue="Ngày 25 hàng tháng"
-                  />
-                </label>
+              <p className="text-sm text-slate-600">
+                {API_NOT_AVAILABLE_MESSAGE} Cấu hình vận hành nằm trong app HRM đầy đủ.
+              </p>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => openHrmApp('/hr/settings')}
+                  className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
+                >
+                  Mở HRM / Cài đặt
+                </button>
               </div>
             </div>
           ) : null}

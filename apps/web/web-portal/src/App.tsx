@@ -15,6 +15,7 @@ const ExecutiveDashboardPage = lazy(() => import('./pages/dashboard/ExecutiveDas
 const CatalogGovernancePage = lazy(() => import('./pages/governance/CatalogGovernancePage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const CommandCenterPage = lazy(() => import('./pages/command-center/CommandCenterPage'));
+const CommandCenterInboxPage = lazy(() => import('./pages/command-center/CommandCenterInboxPage'));
 const UnifiedShellPage = lazy(() => import('./pages/unified/UnifiedShellPage'));
 const CustomersPage = lazy(() => import('./pages/customers/CustomersPage'));
 const PartnersPage = lazy(() => import('./pages/partners/PartnersPage'));
@@ -53,6 +54,7 @@ const App: React.FC = () => {
               <Route index element={<UnifiedShellPage />} />
               <Route path="cockpit" element={<ExecutiveDashboardPage />} />
               <Route path="catalog-governance" element={<CatalogGovernancePage />} />
+              <Route path="command-center/inbox" element={<CommandCenterInboxPage />} />
               <Route path="command-center" element={<CommandCenterPage />}>
                 <Route path="hrm" element={<Navigate to="hrm/dashboard" replace />} />
                 <Route path="hrm/*" element={<HrmWorkspaceRoute />} />

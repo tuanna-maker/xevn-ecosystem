@@ -4,6 +4,7 @@ import { ApiException } from '../common/api.exception';
 import {
   expandHrmTextCompanyIds,
   pushCompanyIdUuidFilter,
+  resolveHrmCompanyUuidForSlug,
   resolveHrmListScope,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
@@ -18,6 +19,19 @@ type InboxRow = {
   read_at: string | null;
   created_at: string;
 };
+
+/** Inbox table keeps UUID company_id; leave/attendance TEXT slug → pilot UUID. */
+function resolveInboxPersistCompanyUuid(companyId: string): string {
+  const mapped = resolveHrmCompanyUuidForSlug(companyId);
+  if (!mapped) {
+    throw new ApiException(
+      'HRM-INBOX-COMPANY',
+      `company_id '${companyId}' cannot resolve to UUID for inbox persist`,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  return mapped;
+}
 
 @Injectable()
 export class HrmInboxService {
@@ -45,11 +59,15 @@ export class HrmInboxService {
    * Lưu inbox từ envelope realtime: đơn chờ → 1 dòng broadcast (recipient NULL);
    * đã xử lý → broadcast + (nếu có employee_id) 1 dòng gửi đích nhân viên.
    * Các luồng gửi/nhận mới (đơn công, nghỉ, dịch vụ, …) nên dùng cùng envelope + AttendanceEventFanoutService.
+   *
+   * @CODE-MEMORY-CHANGE 2026-07-27 · D-HRM-LEAVE-REQ-CREATE-BE-01
+   * What: Map TEXT slug (holding) → pilot UUID before $2::uuid — G-AT10-01 leave create must not 500
    */
   async persistAttendanceEnvelope(envelope: HrmRealtimeEventEnvelope): Promise<void> {
     await this.ensureSchema();
     const { type, request } = envelope;
     const payload = JSON.stringify(envelope);
+    const companyUuid = resolveInboxPersistCompanyUuid(String(request.company_id));
 
     if (
       type === 'attendance_update_request.created' ||
@@ -61,7 +79,7 @@ export class HrmInboxService {
           INSERT INTO public.hrm_inbox_notifications (id, company_id, event_type, payload, recipient_employee_id)
           VALUES ($1::uuid, $2::uuid, $3, $4::jsonb, NULL);
         `,
-        [randomUUID(), request.company_id, type, payload],
+        [randomUUID(), companyUuid, type, payload],
       );
       return;
     }
@@ -72,7 +90,7 @@ export class HrmInboxService {
         INSERT INTO public.hrm_inbox_notifications (id, company_id, event_type, payload, recipient_employee_id)
         VALUES ($1::uuid, $2::uuid, $3, $4::jsonb, NULL);
       `,
-      [idCompany, request.company_id, type, payload],
+      [idCompany, companyUuid, type, payload],
     );
 
     const targetEmployeeId =
@@ -87,7 +105,7 @@ export class HrmInboxService {
         INSERT INTO public.hrm_inbox_notifications (id, company_id, event_type, payload, recipient_employee_id)
         VALUES ($1::uuid, $2::uuid, $3, $4::jsonb, $5::uuid);
       `,
-      [idEmployee, request.company_id, type, payload, targetEmployeeId],
+      [idEmployee, companyUuid, type, payload, targetEmployeeId],
     );
   }
 

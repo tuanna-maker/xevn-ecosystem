@@ -9,9 +9,11 @@ import {
   loginPortal,
   peekLoginRedirect,
   persistAuthSession,
+  selectPortalMembership,
   setUnauthorizedHandler,
   type LoginResult,
   type PortalUser,
+  type SelectMembershipResult,
 } from '../integrations/authSession';
 import type { AccessibleTenant } from '../integrations/tenantScopeApi';
 
@@ -21,7 +23,9 @@ type AuthContextValue = {
   memberships: AccessibleTenant[];
   loading: boolean;
   isAuthenticated: boolean;
+  membershipSwitching: boolean;
   login: (email: string, password: string) => Promise<LoginResult>;
+  selectMembership: (tenantId: string) => Promise<SelectMembershipResult>;
   logout: () => void;
 };
 
@@ -32,6 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [accessToken, setAccessToken] = useState<string | null>(() => getValidAccessToken());
   const [memberships, setMemberships] = useState<AccessibleTenant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [membershipSwitching, setMembershipSwitching] = useState(false);
 
   const logout = useCallback(() => {
     clearAuthSession();
@@ -98,6 +103,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return result;
   }, []);
 
+  const selectMembership = useCallback(
+    async (tenantId: string) => {
+      const token = getValidAccessToken();
+      const currentUser = user ?? getStoredUser();
+      if (!token || !currentUser) {
+        throw new Error('Phiên đăng nhập không hợp lệ');
+      }
+      setMembershipSwitching(true);
+      try {
+        const result = await selectPortalMembership(token, tenantId);
+        persistAuthSession({
+          accessToken: result.accessToken,
+          expiresInSec: result.expiresInSec,
+          user: currentUser,
+          memberships: result.memberships,
+          defaultTenantId: result.defaultTenantId,
+          defaultCompanyId: result.defaultCompanyId,
+        });
+        setAccessToken(result.accessToken);
+        setMemberships(result.memberships);
+        return result;
+      } finally {
+        setMembershipSwitching(false);
+      }
+    },
+    [user],
+  );
+
   const value = useMemo(
     () => ({
       user,
@@ -105,10 +138,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       memberships,
       loading,
       isAuthenticated: Boolean(accessToken) && !isStoredSessionExpired(),
+      membershipSwitching,
       login,
+      selectMembership,
       logout,
     }),
-    [user, accessToken, memberships, loading, login, logout],
+    [user, accessToken, memberships, loading, membershipSwitching, login, selectMembership, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

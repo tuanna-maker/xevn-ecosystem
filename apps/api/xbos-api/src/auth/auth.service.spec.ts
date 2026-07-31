@@ -160,4 +160,36 @@ describe('AuthService portal login JWT TTL', () => {
       status: HttpStatus.FORBIDDEN,
     });
   });
+
+  it('UC-HRM-SCOPE-04: selectMembership re-issues JWT for chosen tenant', async () => {
+    const userId = 'ceo@xe.vn';
+    (tenantScope.listAccessible as jest.Mock).mockResolvedValueOnce([
+      { tenantId: 'xevn', companyId: 'main', roleCode: 'group_ceo' },
+      { tenantId: 'xe-du-lich', companyId: 'main', roleCode: 'ceo' },
+    ]);
+
+    const result = await service.selectMembership(userId, 'xe-du-lich');
+
+    expect(result.membership.tenantId).toBe('xe-du-lich');
+    expect(result.defaultTenantId).toBe('xe-du-lich');
+    expect(result.expiresInSec).toBe(86400);
+    const payload = decodeJwtPayload(result.accessToken);
+    expect(payload.tenantId).toBe('xe-du-lich');
+    expect(payload.companyId).toBe('main');
+    expect(payload.roleCode).toBe('ceo');
+    expect(payload.exp as number - (payload.iat as number)).toBe(86400);
+  });
+
+  it('UC-HRM-SCOPE-04: selectMembership 403 when tenant not in memberships', async () => {
+    (tenantScope.listAccessible as jest.Mock).mockResolvedValueOnce([
+      { tenantId: 'xevn', companyId: 'main', roleCode: 'group_ceo' },
+    ]);
+
+    await expect(service.selectMembership('ceo@xe.vn', 'xe-unknown')).rejects.toMatchObject<
+      ApiException
+    >({
+      code: 'XBOS-AUTH-403',
+      status: HttpStatus.FORBIDDEN,
+    });
+  });
 });

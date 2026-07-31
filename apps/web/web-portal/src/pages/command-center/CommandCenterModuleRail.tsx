@@ -85,7 +85,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
               <span
                 className={`flex items-center justify-center rounded-full border transition ${iconWrap} ${
                   m.disabled
-                    ? 'cursor-not-allowed border-dashed border-slate-200 text-slate-300'
+                    ? 'cursor-not-allowed border-dashed border-xevn-border text-xevn-textMuted'
                     : isActive
                       ? 'border-xevn-primary bg-xevn-primary/10 text-xevn-primary shadow-sm'
                       : 'border-transparent text-xevn-textSecondary hover:border-xevn-border hover:bg-slate-50'

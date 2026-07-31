@@ -1,3 +1,52 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Command Center — rail / widget KPI đa cấp (UF-XBOS-10)
+ * UC:         UC-XBOS-KPI-01..04 · FR-XBOS-KPI-03
+ * BR:         Scope rollup = resolveKpiRollupScopeContext (group CEO main→holding); empty series hợp lệ
+ * SRS:        SRS_XBOS_KHACH.md §3.16 FR-XBOS-KPI-03 Diễn biến #1–7
+ * TechSpec:   docs/xbos/TECHSPEC.md §14.17 · ref_srs FR-XBOS-KPI-03
+ * db_design:  docs/xbos/DB_DESIGN_XBOS_KPI.md — xbos_kpi_actuals · xbos_portal_alerts
+ * api_design: docs/xbos/API_DESIGN_XBOS_KPI.md Endpoints A–E (F.1)
+ * Purpose:    Cấp evaluate math, rollup series đa cấp, và portal alerts cho FE bind widget/rail —
+ *             read-only rollup không bắt buộc ghi actuals; empty series trung thực (U65).
+ * WorkItem:   BE-XBOS-OA-KPI-DTO-01 (OpenAPI series depth; runtime must_keep)
+ * Coded:      2026-07-27
+ *
+ * Callers:
+ *   - web-portal kpiEngineApi / useCommandCenterKpiRail → GET/POST /api/xbos/kpi-engine/*
+ *
+ * Callees:
+ *   - resolveKpiRollupScopeContext / resolveScopeContext / resolveTenantOnlyContext
+ *   - KpiEngineService.evaluate · evaluateBatch · rollup · listPortalAlerts · publishPortalAlert
+ *
+ * FE-Actions:
+ *   | Thao tác | Handler | API |
+ *   |----------|---------|-----|
+ *   | Mở KPI tập đoàn | fetch rollup | GET …/kpi-engine/rollup |
+ *   | Preview điểm | evaluate | POST …/evaluate |
+ *   | Rail cảnh báo | list/publish | GET/POST …/portal-alerts |
+ *
+ * BE-Chain:
+ *   rollup → xbos_kpi_actuals (SUM/AVG group hoặc single)
+ *   evaluate → computed (+ optional xbos_portal_alerts)
+ *   portal-alerts → xbos_portal_alerts
+ *
+ * Impact:     Đổi scope rollup hoặc ép fake series → UF-XBOS-10 / 409 sai tư cách
+ * must_keep:  UF-XBOS-10 🟢 · series:[] hợp lệ · không seed · RACI/WF/catalog-gov không đụng
+ * SOLID:      Controller = auth/scope/envelope; Service = math + SQL actuals/alerts
+ * LastVerified: kpi-engine.controller.spec.ts · kpi-engine.service.spec.ts · be-xbos-oa-kpi-dto-01-20260727.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: BE-XBOS-OA-KPI-DTO-01
+ * change_mode: UPGRADE
+ * What: Neo CODE-MEMORY + OpenAPI F.1 (Mục đích/Nghiệp vụ/Bước SRS) · KpiRollupData series/points
+ * Why:  Đóng G-DTO-W2-KPI-01 residual sau U71 API_DESIGN — deepen contract; không đổi runtime
+ * SRS:  §3.16 FR-XBOS-KPI-03 Diễn biến #1–7
+ * TechSpec: §14.17 · G-DTO-W2-KPI-01 CLOSED
+ * db_design: DB_DESIGN_XBOS_KPI.md
+ * api_design: API_DESIGN_XBOS_KPI.md Endpoints A–E
+ * must_keep: Hành vi rollup scope / empty series / evaluate math / UF-10 không đổi
+ */
 import { Body, Controller, Get, Headers, HttpStatus, Post, Query } from '@nestjs/common';
 import { resolveScopeContext, resolveTenantOnlyContext } from '../common/scope-context';
 import { ApiException } from '../common/api.exception';

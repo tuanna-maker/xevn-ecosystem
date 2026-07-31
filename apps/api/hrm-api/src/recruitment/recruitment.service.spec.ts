@@ -13,7 +13,12 @@ describe('RecruitmentService', () => {
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
     db.query.mockResolvedValue({ rows: [] } as never);
-    service = new RecruitmentService(db);
+    const bridge = {
+      ensureSchema: jest.fn().mockResolvedValue(undefined),
+      assertNotLockedOrThrow: jest.fn(),
+      startRecruitmentWorkflowIfConfigured: jest.fn().mockResolvedValue(null),
+    };
+    service = new RecruitmentService(db, bridge as never);
   });
 
   it('throws deterministic error when requisition does not exist for candidate creation', async () => {
@@ -88,8 +93,10 @@ describe('RecruitmentService', () => {
     });
     const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
-        return { rows: [{ company_id: 'holding' }] } as never;
+      if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+        return {
+          rows: [{ company_id: 'holding', status: 'open', workflow_instance_id: null }],
+        } as never;
       }
       if (sql.includes('UPDATE public.job_requisitions')) {
         return {
@@ -127,7 +134,7 @@ describe('RecruitmentService', () => {
 
   it('throws deterministic error when requisition does not exist for status update', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT company_id::text AS company_id FROM public.job_requisitions')) {
+      if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
@@ -143,31 +150,29 @@ describe('RecruitmentService', () => {
   });
 
   it('returns paginated candidates with optional requisition filter', async () => {
-    db.query
-      .mockResolvedValueOnce({ rows: [] } as never)
-      .mockResolvedValueOnce({ rows: [] } as never)
-      .mockResolvedValueOnce({ rows: [] } as never)
-      .mockResolvedValueOnce({ rows: [] } as never)
-      .mockResolvedValueOnce({ rows: [] } as never)
-      .mockResolvedValueOnce({ rows: [] } as never)
-      .mockResolvedValueOnce({
-        rows: [{ total: '1' }],
-      } as never)
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'c1',
-            company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-            requisition_id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
-            full_name: 'Candidate One',
-            email: 'candidate@xe.vn',
-            source: 'linkedin',
-            status: 'new',
-            created_at: '2026-04-23T00:00:00.000Z',
-            updated_at: '2026-04-23T00:00:00.000Z',
-          },
-        ],
-      } as never);
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('SELECT COUNT(*)') && sql.includes('recruitment_candidates')) {
+        return { rows: [{ total: '1' }] } as never;
+      }
+      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT')) {
+        return {
+          rows: [
+            {
+              id: 'c1',
+              company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+              requisition_id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+              full_name: 'Candidate One',
+              email: 'candidate@xe.vn',
+              source: 'linkedin',
+              status: 'new',
+              created_at: '2026-04-23T00:00:00.000Z',
+              updated_at: '2026-04-23T00:00:00.000Z',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
 
     const result = await service.listCandidates({
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
@@ -180,7 +185,7 @@ describe('RecruitmentService', () => {
     expect(result.page).toBe(2);
     expect(result.page_size).toBe(10);
     expect(result.data[0]).toMatchObject({ id: 'c1', status: 'new' });
-    expect(db.query).toHaveBeenLastCalledWith(expect.stringContaining('LIMIT $3 OFFSET $4'), expect.any(Array));
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('LIMIT $3 OFFSET $4'), expect.any(Array));
   });
 
   it('finds holding requisition when group CEO creates candidate with company_id=main', async () => {

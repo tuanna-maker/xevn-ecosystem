@@ -6,6 +6,7 @@ import { DrawerShell } from '@/components/drawers/DrawerShell';
 import { OrgTabs } from '@/components/layout/OrgTabs';
 import type { CategoryItem, OrgUnit } from '@/types';
 import { cn } from '@/lib/cn';
+import { resolveOrgTypeCodeLabel, resolveRecordStatusLabel } from '@/utils/xbosCoreLabelMaps';
 
 const DEFAULT_TENANT = 'tenant-xevn-holding';
 
@@ -96,7 +97,7 @@ export function OrganizationPage() {
           <button
             type="button"
             onClick={openDrawer}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 transition hover:bg-blue-800"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 transition hover:bg-xevn-accent"
           >
             <Plus className="h-4 w-4" />
             Thêm mới
@@ -120,7 +121,7 @@ export function OrganizationPage() {
               <tr key={row.id} className="border-b border-black/[0.04] last:border-0 hover:bg-black/[0.02]">
                 <td className="px-4 py-3 font-mono text-xs">{row.code}</td>
                 <td className="px-4 py-3 font-medium">{row.name}</td>
-                <td className="px-4 py-3 text-xevn-muted">{row.orgTypeCode}</td>
+                <td className="px-4 py-3 text-xevn-muted">{resolveOrgTypeCodeLabel(row.orgTypeCode)}</td>
                 <td className="px-4 py-3 text-xevn-muted">{parentLabel(row.parentId)}</td>
                 <td className="px-4 py-3">
                   <span
@@ -131,7 +132,7 @@ export function OrganizationPage() {
                         : 'bg-slate-200 text-slate-600'
                     )}
                   >
-                    {row.status}
+                    {resolveRecordStatusLabel(row.status)}
                   </span>
                 </td>
               </tr>
@@ -178,10 +179,10 @@ export function OrganizationPage() {
                   }))
                 }
               >
-                <option value="holding">holding</option>
-                <option value="subsidiary">subsidiary</option>
-                <option value="division">division</option>
-                <option value="department">department</option>
+                <option value="holding">{resolveOrgTypeCodeLabel('holding')}</option>
+                <option value="subsidiary">{resolveOrgTypeCodeLabel('subsidiary')}</option>
+                <option value="division">{resolveOrgTypeCodeLabel('division')}</option>
+                <option value="department">{resolveOrgTypeCodeLabel('department')}</option>
               </select>
             </Field>
             <Field label="Đơn vị cha">
@@ -190,7 +191,7 @@ export function OrganizationPage() {
                 value={form.parentId}
                 onChange={(e) => setForm((f) => ({ ...f, parentId: e.target.value }))}
               >
-                <option value="">— Gốc (Holding) —</option>
+                <option value="">— Gốc (Tập đoàn) —</option>
                 {orgUnits.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.code} — {o.name}

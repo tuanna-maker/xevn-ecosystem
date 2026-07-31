@@ -519,6 +519,155 @@ describe('EmployeesService', () => {
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
     });
 
+    it('AC-ESS-01: self PATCH custom_fields phone merges and preserves HR keys', async () => {
+      const token = signServiceJwt({
+        sub: 'uat.nv0001@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        employee_id: employeeId,
+        roles: ['employee'],
+      });
+      const existingRow = {
+        ...baseRow,
+        custom_fields: {
+          tenant_id: 'xevn',
+          gender: 'male',
+          phone_number: '0901234567',
+          salary: '12000000',
+        },
+      };
+      const updatedRow = {
+        ...existingRow,
+        custom_fields: {
+          tenant_id: 'xevn',
+          gender: 'male',
+          phone_number: '0911111111',
+          work_phone: '0287654321',
+          salary: '12000000',
+        },
+        updated_at: '2026-07-19T00:00:00.000Z',
+      };
+      db.query
+        .mockResolvedValueOnce({ rows: [existingRow] } as never)
+        .mockResolvedValueOnce({ rows: [updatedRow] } as never);
+
+      const result = await service.updateEmployee(
+        employeeId,
+        {
+          custom_fields: {
+            phone_number: '0911111111',
+            work_phone: '0287654321',
+            gender: 'female',
+            salary: '1',
+            tenant_id: 'hacked',
+          },
+        },
+        'holding',
+        `Bearer ${token}`,
+      );
+
+      expect(result.custom_fields).toEqual(updatedRow.custom_fields);
+      const lastCall = db.query.mock.calls[db.query.mock.calls.length - 1];
+      expect(String(lastCall?.[0])).toContain('custom_fields = $1::jsonb');
+      expect(JSON.parse(String(lastCall?.[1]?.[0]))).toEqual({
+        tenant_id: 'xevn',
+        gender: 'male',
+        phone_number: '0911111111',
+        work_phone: '0287654321',
+        salary: '12000000',
+      });
+      expect(lastCall?.[1]?.[1]).toBe(employeeId);
+    });
+
+    it('self PATCH custom_fields without phone keys is forbidden', async () => {
+      const token = signServiceJwt({
+        sub: 'uat.nv0001@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        employee_id: employeeId,
+        roles: ['employee'],
+      });
+
+      await expect(
+        service.updateEmployee(
+          employeeId,
+          { custom_fields: { gender: 'female' } },
+          'holding',
+          `Bearer ${token}`,
+        ),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+    });
+
+    it('Option A R1: manager|hr_manager self full_name + gender-only → 403; phone merges', async () => {
+      const token = signServiceJwt({
+        sub: 'uat.nv0001@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        employee_id: employeeId,
+        roles: ['employee', 'manager', 'hr_manager'],
+      });
+
+      await expect(
+        service.updateEmployee(employeeId, { full_name: 'SHOULD_NOT_APPLY' }, 'holding', `Bearer ${token}`),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+
+      await expect(
+        service.updateEmployee(
+          employeeId,
+          { custom_fields: { gender: 'female' } },
+          'holding',
+          `Bearer ${token}`,
+        ),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+
+      const existingRow = {
+        ...baseRow,
+        custom_fields: {
+          tenant_id: 'xevn',
+          gender: 'Nữ',
+          phone_number: '0901234567',
+          grade: 'G5',
+        },
+      };
+      const updatedRow = {
+        ...existingRow,
+        custom_fields: {
+          tenant_id: 'xevn',
+          gender: 'Nữ',
+          phone_number: '0912222333',
+          work_phone: '0281111222',
+          grade: 'G5',
+        },
+        updated_at: '2026-07-19T12:00:00.000Z',
+      };
+      db.query
+        .mockResolvedValueOnce({ rows: [existingRow] } as never)
+        .mockResolvedValueOnce({ rows: [updatedRow] } as never);
+
+      const result = await service.updateEmployee(
+        employeeId,
+        {
+          custom_fields: {
+            phone_number: '0912222333',
+            work_phone: '0281111222',
+            gender: 'female',
+          },
+        },
+        'holding',
+        `Bearer ${token}`,
+      );
+
+      expect(result.custom_fields?.gender).toBe('Nữ');
+      const lastCall = db.query.mock.calls[db.query.mock.calls.length - 1];
+      expect(JSON.parse(String(lastCall?.[1]?.[0]))).toEqual({
+        tenant_id: 'xevn',
+        gender: 'Nữ',
+        phone_number: '0912222333',
+        work_phone: '0281111222',
+        grade: 'G5',
+      });
+    });
+
     it('listEmployees returns avatar_url in data rows', async () => {
       const rowWithAvatar = { ...baseRow, avatar_url: avatarUrl, list_total: '1' };
       db.query.mockResolvedValueOnce({ rows: [rowWithAvatar] } as never);

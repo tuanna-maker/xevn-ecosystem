@@ -2,13 +2,21 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
 
+function mockBridge() {
+  return {
+    ensureSchema: jest.fn().mockResolvedValue(undefined),
+    assertNotLockedOrThrow: jest.fn(),
+    startRecruitmentWorkflowIfConfigured: jest.fn().mockResolvedValue(null),
+  };
+}
+
 describe('RecruitmentCatalogService', () => {
   it('listJobPostings scopes company_id', async () => {
     const db = {
       query: jest.fn().mockResolvedValue({ rows: [] }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
-    const service = new RecruitmentCatalogService(db);
+    const service = new RecruitmentCatalogService(db, mockBridge() as never);
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
@@ -25,7 +33,7 @@ describe('RecruitmentCatalogService', () => {
       query: jest.fn().mockResolvedValue({ rows: [] }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
-    const service = new RecruitmentCatalogService(db);
+    const service = new RecruitmentCatalogService(db, mockBridge() as never);
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',

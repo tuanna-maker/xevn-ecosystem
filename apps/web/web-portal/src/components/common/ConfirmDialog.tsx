@@ -1,3 +1,22 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Portal ConfirmDialog (alertdialog overlay)
+ * UC:         G-UX-01 · brand L1/L2 popup DNA
+ * BR:         Escape cancel; focus trap; no seed
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3–§4 · AC-BRAND-DNA-02
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L1–L2
+ * Purpose:    Confirm / destructive modal dùng token border + radius-card +
+ *             shadow-overlay (`.xevn-dialog-surface`); CTA primary / danger DNA.
+ * WorkItem:   FE-XEVN-BRAND-TOKENS-L1-01
+ * Coded:      2026-07-22
+ * Callers:    useConfirmDialog → CommandCenter / settings mutate flows
+ * Callees:    index.css `.xevn-dialog-surface` · Tailwind xevn.*
+ * must_keep:  role=alertdialog + Escape cancel; token border (không gray generic);
+ *             destructive = xevn-danger (không rose marketing)
+ * SOLID:      Presentational dialog; hook owns open state
+ * LastVerified: ConfirmDialog.test.tsx
+ */
+
 import { useCallback, useEffect, useId, useRef } from 'react';
 
 export type ConfirmDialogProps = {
@@ -87,7 +106,7 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="w-full max-w-md rounded-card border border-xevn-border bg-xevn-surface p-6 shadow-overlay"
+        className="xevn-dialog-surface w-full max-w-md p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id={titleId} className="text-lg font-semibold text-xevn-text">
@@ -102,7 +121,7 @@ export function ConfirmDialog({
             type="button"
             disabled={confirming}
             onClick={onCancel}
-            className="rounded-input border border-xevn-border bg-white px-4 py-2.5 text-sm font-medium text-xevn-text transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-input border border-xevn-border bg-xevn-surface px-4 py-2.5 text-sm font-medium text-xevn-text transition hover:bg-xevn-background disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-xevn-accent"
           >
             {cancelLabel}
           </button>
@@ -110,10 +129,10 @@ export function ConfirmDialog({
             type="button"
             disabled={confirming}
             onClick={() => void onConfirm()}
-            className={`rounded-input px-4 py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+            className={`rounded-input px-4 py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
               destructive
-                ? 'bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2'
-                : 'bg-xevn-primary hover:bg-xevn-accent focus:outline-none focus:ring-2 focus:ring-xevn-primary focus:ring-offset-2'
+                ? 'bg-xevn-danger hover:opacity-90 focus:ring-xevn-danger'
+                : 'bg-xevn-primary hover:bg-xevn-primaryPressed focus:ring-xevn-primary'
             }`}
           >
             {confirming ? 'Đang xử lý…' : confirmLabel}

@@ -140,3 +140,41 @@ describe('handleUnauthorizedResponse (401-only logout)', () => {
     expect(sessionStorage.getItem('xevn.portal.accessToken')).toBe('test-jwt');
   });
 });
+
+describe('selectPortalMembership (UC-HRM-SCOPE-04)', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns new JWT payload on success', async () => {
+    const mockFetch = vi.mocked(fetch);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: true,
+        data: {
+          accessToken: 'jwt-member',
+          expiresInSec: 86400,
+          membership: { tenantId: 'xe-du-lich', companyId: 'main', roleCode: 'ceo' },
+          memberships: [],
+          defaultTenantId: 'xe-du-lich',
+          defaultCompanyId: 'main',
+        },
+      }),
+    } as Response);
+
+    const { selectPortalMembership } = await import('./authSession');
+    const result = await selectPortalMembership('old-jwt', 'xe-du-lich');
+    expect(result.accessToken).toBe('jwt-member');
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/xbos/auth/select-membership',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+});

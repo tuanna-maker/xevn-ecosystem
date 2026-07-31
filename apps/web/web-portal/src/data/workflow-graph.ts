@@ -8,8 +8,10 @@ import {
   workflowRoleIdForRaciColumn,
   type RaciOrgColumnId,
 } from './xevn-raci-catalog';
+import type { WorkflowResolverConfig, WorkflowResolverType } from './workflow-resolver';
 
 export type { RaciOrgColumnId } from './xevn-raci-catalog';
+export type { WorkflowResolverConfig, WorkflowResolverType } from './workflow-resolver';
 
 export const WF_NODE_START = 'wf-start';
 export const WF_NODE_END_OK = 'wf-end-success';
@@ -103,6 +105,17 @@ export type WorkflowGraphStep = {
   relatedModuleId: string;
   /** Luôn đúng 3 phần tử theo WORKFLOW_TRANSITION_KINDS */
   transitions: WorkflowGraphTransition[];
+  /**
+   * ADR-WORKFLOW-RESOLVER-DYNAMIC §5 — dynamic assignee resolver.
+   * Absent = legacy hat/fixed_user shim on engine.
+   */
+  resolverType?: WorkflowResolverType;
+  resolverConfig?: WorkflowResolverConfig;
+  /**
+   * XBOS step task_type — recruitment bridge maps to candidate.stage
+   * (XBOS_HRM_REC_WF_BRIDGE_DATA_CONTRACT §2.2). Optional for non-recruit graphs.
+   */
+  taskType?: string;
 };
 
 export type WorkflowDefinition = {

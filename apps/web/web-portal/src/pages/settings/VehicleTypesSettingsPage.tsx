@@ -25,6 +25,7 @@ import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { resolveIdentityScope, ScopeContextError } from '../../integrations/identityScope';
 import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
 import { resolveVehicleTypesSettingsFailure } from '../../utils/portalStrictMode';
+import { ViGroupedIntegerInput } from '@xevn/ui';
 
 const VEHICLE_REGISTRY_MODULE = 'fleet';
 
@@ -600,7 +601,7 @@ const VehicleTypesSettingsPage: React.FC = () => {
                   setIsModalOpen(false);
                   resetForm();
                 }}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1 text-xevn-textMuted hover:text-slate-600 rounded"
               >
                 <X size={20} />
               </button>
@@ -739,15 +740,14 @@ const VehicleTypesSettingsPage: React.FC = () => {
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Chu kỳ bảo dưỡng (km)
                   </label>
-                  <input
-                    type="number"
-                    step="1000"
-                    value={formData.maintenanceIntervalKm}
-                    onChange={(e) =>
-                      setFormData({ ...formData, maintenanceIntervalKm: Number(e.target.value) })
+                  <ViGroupedIntegerInput
+                    aria-label="Chu kỳ bảo dưỡng (km)"
+                    value={formData.maintenanceIntervalKm || 0}
+                    onValueChange={(n) =>
+                      setFormData({ ...formData, maintenanceIntervalKm: n })
                     }
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-xevn-accent/20 focus:border-xevn-accent"
-                    placeholder="VD: 10000"
+                    placeholder="VD: 10.000"
                   />
                 </div>
               </div>

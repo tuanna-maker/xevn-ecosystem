@@ -15,6 +15,7 @@ import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
 import { resolveExpenseCategoriesSettingsFailure } from '../../utils/portalStrictMode';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { ViGroupedIntegerInput } from '@xevn/ui';
 
 const ExpenseCategoriesSettingsPage: React.FC = () => {
   const { companies } = useCompanyFilterOptions();
@@ -238,7 +239,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
         value ? (
           <CheckCircle size={16} className="text-emerald-500" />
         ) : (
-          <AlertCircle size={16} className="text-slate-300" />
+          <AlertCircle size={16} className="text-xevn-textMuted" />
         )
       ),
     },
@@ -250,7 +251,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
         value ? (
           <Badge variant="warning" size="sm">Bắt buộc</Badge>
         ) : (
-          <span className="text-xs text-slate-400">Không</span>
+          <span className="text-sm text-xevn-textSecondary">Không</span>
         )
       ),
     },
@@ -269,7 +270,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
             )}
           </div>
         ) : (
-          <span className="text-xs text-slate-400">Tự động</span>
+          <span className="text-sm text-xevn-textSecondary">Tự động</span>
         )
       ),
     },
@@ -417,7 +418,7 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
                   setIsModalOpen(false);
                   resetForm();
                 }}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1 text-xevn-textMuted hover:text-slate-600 rounded"
               >
                 <X size={20} />
               </button>
@@ -510,14 +511,17 @@ const ExpenseCategoriesSettingsPage: React.FC = () => {
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Mức tối đa không cần duyệt (VNĐ)
                   </label>
-                  <input
-                    type="number"
-                    value={formData.maxAmountNoApproval || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, maxAmountNoApproval: e.target.value ? Number(e.target.value) : undefined })
+                  <ViGroupedIntegerInput
+                    aria-label="Mức tối đa không cần duyệt"
+                    value={formData.maxAmountNoApproval ?? 0}
+                    onValueChange={(n) =>
+                      setFormData({
+                        ...formData,
+                        maxAmountNoApproval: n === 0 ? undefined : n,
+                      })
                     }
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-xevn-accent/20 focus:border-xevn-accent"
-                    placeholder="VD: 10000000"
+                    placeholder="VD: 10.000.000"
                   />
                 </div>
               </div>

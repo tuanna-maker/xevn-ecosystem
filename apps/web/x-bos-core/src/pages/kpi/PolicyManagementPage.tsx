@@ -3,6 +3,7 @@ import { Check, ChevronDown, Edit3, Plus, Trash2 } from 'lucide-react';
 import { DrawerShell } from '@/components/drawers/DrawerShell';
 import { useXbosStore } from '@/store/useXbosStore';
 import type { KpiDefinition, PolicyDefinition, PolicyGroup, StaffLevelCode } from '@/types';
+import { resolveRecordStatusLabel } from '@/utils/xbosCoreLabelMaps';
 
 const DEFAULT_TENANT = 'tenant-xevn-holding';
 
@@ -322,7 +323,7 @@ export function PolicyManagementPage() {
           <button
             type="button"
             onClick={openCreateGroup}
-            className="inline-flex items-center gap-2 rounded-xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 hover:bg-blue-800"
+            className="inline-flex items-center gap-2 rounded-xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 hover:bg-xevn-accent"
           >
             <Plus className="h-4 w-4" />
             Thêm nhóm
@@ -374,7 +375,7 @@ export function PolicyManagementPage() {
                           : 'rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600'
                       }
                     >
-                      {g.status}
+                      {resolveRecordStatusLabel(g.status)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -432,7 +433,7 @@ export function PolicyManagementPage() {
             type="button"
             disabled={!selectedGroupCode}
             onClick={openCreatePolicy}
-            className="inline-flex items-center gap-2 rounded-xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 hover:bg-blue-800 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 hover:bg-xevn-accent disabled:opacity-50"
           >
             <Plus className="h-4 w-4" />
             Thêm chính sách
@@ -485,7 +486,7 @@ export function PolicyManagementPage() {
                           : 'rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600'
                       }
                     >
-                      {p.status}
+                      {resolveRecordStatusLabel(p.status)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -556,9 +557,9 @@ export function PolicyManagementPage() {
                   value={groupForm.status}
                   onChange={(e) => setGroupForm((f) => ({ ...f, status: e.target.value as PolicyGroup['status'] }))}
                 >
-                  <option value="draft">draft</option>
-                  <option value="active">active</option>
-                  <option value="inactive">inactive</option>
+                  <option value="draft">{resolveRecordStatusLabel('draft')}</option>
+                  <option value="active">{resolveRecordStatusLabel('active')}</option>
+                  <option value="inactive">{resolveRecordStatusLabel('inactive')}</option>
                 </select>
               </Field>
             </div>
@@ -663,9 +664,9 @@ export function PolicyManagementPage() {
                   value={policyForm.status}
                   onChange={(e) => setPolicyForm((f) => ({ ...f, status: e.target.value as PolicyDefinition['status'] }))}
                 >
-                  <option value="draft">draft</option>
-                  <option value="active">active</option>
-                  <option value="inactive">inactive</option>
+                  <option value="draft">{resolveRecordStatusLabel('draft')}</option>
+                  <option value="active">{resolveRecordStatusLabel('active')}</option>
+                  <option value="inactive">{resolveRecordStatusLabel('inactive')}</option>
                 </select>
               </Field>
             </div>

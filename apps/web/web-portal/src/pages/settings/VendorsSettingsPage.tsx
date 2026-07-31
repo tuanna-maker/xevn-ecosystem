@@ -17,6 +17,7 @@ import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import { API_LOAD_FAILED_MESSAGE } from '../../utils/mockPolicy';
 import { resolveVendorsSettingsFailure } from '../../utils/portalStrictMode';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
+import { ViGroupedIntegerInput } from '@xevn/ui';
 
 const VendorsSettingsPage: React.FC = () => {
   const { companies } = useCompanyFilterOptions();
@@ -258,7 +259,7 @@ const VendorsSettingsPage: React.FC = () => {
               {(value / 1000000).toFixed(0)}M
             </span>
           ) : (
-            <span className="text-sm text-slate-400">-</span>
+            <span className="text-sm text-xevn-textMuted">-</span>
           )}
         </div>
       ),
@@ -271,7 +272,7 @@ const VendorsSettingsPage: React.FC = () => {
         value ? (
           <Badge variant="success" size="sm">{value}%</Badge>
         ) : (
-          <span className="text-slate-400">-</span>
+          <span className="text-xevn-textMuted">-</span>
         )
       ),
     },
@@ -420,7 +421,7 @@ const VendorsSettingsPage: React.FC = () => {
                   setIsModalOpen(false);
                   resetForm();
                 }}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1 text-xevn-textMuted hover:text-slate-600 rounded"
               >
                 <X size={20} />
               </button>
@@ -597,14 +598,14 @@ const VendorsSettingsPage: React.FC = () => {
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Hạn mức công nợ (VNĐ)
                   </label>
-                  <input
-                    type="number"
-                    value={formData.creditLimit || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, creditLimit: e.target.value ? Number(e.target.value) : undefined })
+                  <ViGroupedIntegerInput
+                    aria-label="Hạn mức công nợ"
+                    value={formData.creditLimit ?? 0}
+                    onValueChange={(n) =>
+                      setFormData({ ...formData, creditLimit: n === 0 ? undefined : n })
                     }
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-xevn-accent/20 focus:border-xevn-accent"
-                    placeholder="VD: 500000000"
+                    placeholder="VD: 500.000.000"
                   />
                 </div>
                 <div>

@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { DrawerShell } from '@/components/drawers/DrawerShell';
 import { useXbosStore } from '@/store/useXbosStore';
 import type { KpiDefinition, KpiFrequency } from '@/types';
+import { resolveKpiFrequencyLabel, resolveRecordStatusLabel } from '@/utils/xbosCoreLabelMaps';
 
 const DEFAULT_TENANT = 'tenant-xevn-holding';
 const KPI_VALUE_TYPE_CATEGORY_CODE = 'KPI_VALUE_TYPE';
@@ -145,7 +146,7 @@ export function KpiDefinitionsPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex items-center gap-2 rounded-2xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 transition hover:bg-blue-800"
+            className="inline-flex items-center gap-2 rounded-2xl bg-xevn-primary px-4 py-2.5 text-sm font-medium text-white shadow-md shadow-xevn-primary/25 transition hover:bg-xevn-accent"
           >
             <Plus className="h-4 w-4" />
             Thêm KPI
@@ -175,7 +176,7 @@ export function KpiDefinitionsPage() {
                 <td className="px-4 py-3 font-mono text-xs">{row.kpiCode}</td>
                 <td className="px-4 py-3 font-medium">{row.kpiName}</td>
                 <td className="px-4 py-3 text-xevn-muted">{row.unit}</td>
-                <td className="px-4 py-3 text-xevn-muted">{row.frequency}</td>
+                <td className="px-4 py-3 text-xevn-muted">{resolveKpiFrequencyLabel(row.frequency)}</td>
                 <td className="px-4 py-3">{row.version}</td>
                 <td className="px-4 py-3">
                   <span
@@ -187,7 +188,7 @@ export function KpiDefinitionsPage() {
                           : 'rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600'
                     }
                   >
-                    {row.status}
+                    {resolveRecordStatusLabel(row.status)}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -263,9 +264,9 @@ export function KpiDefinitionsPage() {
                   value={form.frequency}
                   onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value as KpiFrequency }))}
                 >
-                  <option value="daily">daily</option>
-                  <option value="weekly">weekly</option>
-                  <option value="monthly">monthly</option>
+                  <option value="daily">{resolveKpiFrequencyLabel('daily')}</option>
+                  <option value="weekly">{resolveKpiFrequencyLabel('weekly')}</option>
+                  <option value="monthly">{resolveKpiFrequencyLabel('monthly')}</option>
                 </select>
               </Field>
             </div>
@@ -304,9 +305,9 @@ export function KpiDefinitionsPage() {
                   value={form.status}
                   onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as KpiDefinition['status'] }))}
                 >
-                  <option value="draft">draft</option>
-                  <option value="active">active</option>
-                  <option value="inactive">inactive</option>
+                  <option value="draft">{resolveRecordStatusLabel('draft')}</option>
+                  <option value="active">{resolveRecordStatusLabel('active')}</option>
+                  <option value="inactive">{resolveRecordStatusLabel('inactive')}</option>
                 </select>
               </Field>
             </div>

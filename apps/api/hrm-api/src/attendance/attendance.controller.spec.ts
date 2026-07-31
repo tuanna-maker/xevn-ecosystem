@@ -203,7 +203,7 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
   });
 
   it('HRM-AT-10: create leave request returns HRM-LEAVE-201', async () => {
-    const createLeave = await controller.createLeaveRequest(undefined, 'test-key', {
+    const createLeave = await controller.createLeaveRequest(undefined, 'test-key', 'xevn', undefined, {
       company_id: companyId,
       employee_id: employeeId,
       employee_code: 'NV0001',
@@ -214,6 +214,11 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
       total_days: 3,
     });
     expect(createLeave.code).toBe('HRM-LEAVE-201');
+    expect(leaveMock.createLeaveRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ leave_type: 'annual' }),
+      undefined,
+      expect.objectContaining({ tenantId: 'xevn' }),
+    );
   });
 
   it('HRM-AT-11: list leave requests returns HRM-LEAVE-200', async () => {

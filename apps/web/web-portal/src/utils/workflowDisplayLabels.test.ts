@@ -13,6 +13,9 @@ describe('workflowDisplayLabels', () => {
     expect(resolveWorkflowBusinessTypeLabel('fleet_ops')).toBe('Vận hành đội xe');
     expect(resolveWorkflowBusinessTypeLabel('finance_expense')).toBe('Chi phí & thanh toán');
     expect(resolveWorkflowBusinessTypeLabel('hrm_recruitment')).toBe('Tuyển dụng');
+    expect(resolveWorkflowBusinessTypeLabel('hrm_requisition')).toBe('Yêu cầu tuyển dụng');
+    expect(resolveWorkflowBusinessTypeLabel('hrm_candidate')).toBe('Roadmap ứng viên');
+    expect(resolveWorkflowBusinessTypeLabel('hrm_recruitment_plan')).toBe('Kế hoạch tuyển dụng');
     expect(resolveWorkflowBusinessTypeLabel('general')).toBe('Nghiệp vụ chung');
     expect(resolveWorkflowBusinessTypeLabel('hrm_payroll')).toBe('Tiền lương');
   });
@@ -29,7 +32,7 @@ describe('workflowDisplayLabels', () => {
     const originalHostname = window.location.hostname;
     Object.defineProperty(window, 'location', {
       configurable: true,
-      value: { ...window.location, hostname: '14.225.217.232' },
+      value: { ...window.location, hostname: 'example.invalid' },
     });
     expect(shouldShowWorkflowDevSeedControls()).toBe(false);
 

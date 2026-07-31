@@ -54,10 +54,16 @@ export class CreateDecisionDto {
   @MaxLength(128)
   department?: string;
 
+  /** Snapshot label (U72) — optional when position_key denorms from catalog. */
   @IsOptional()
   @IsString()
   @MaxLength(128)
   position?: string;
+
+  /** Catalog SoT (job_titles.code) — E1-A MD-BIND; ≠ employees.job_title_key. */
+  @IsString()
+  @MaxLength(128)
+  position_key!: string;
 
   @IsOptional()
   @IsString()
@@ -76,6 +82,12 @@ export class CreateDecisionDto {
   @IsString()
   @MaxLength(128)
   signer_position?: string;
+
+  /** Catalog SoT for signer chức danh — required when signer fields present. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  signer_position_key?: string;
 
   @IsOptional()
   @IsString()

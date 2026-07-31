@@ -1,7 +1,11 @@
 import { createHmac } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import { HRM_COMPANY_UUID_BY_SLUG } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { mapServiceRequestRow, OperationsService } from './operations.service';
+
+/** Plane B′ holding UUID — never XBOS LE UUID in OP happy-path fixtures. */
+const HOLDING_UUID = HRM_COMPANY_UUID_BY_SLUG.holding;
 
 function createInternalJwt(payload: Record<string, unknown>) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
@@ -37,7 +41,7 @@ describe('OperationsService', () => {
       service.updateTaskStatus(
         '16f5e2c5-8fbb-4500-8c82-623950f7055e',
         { status: 'done' },
-        '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        'holding',
       ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-OPS-404' });
   });
@@ -52,7 +56,7 @@ describe('OperationsService', () => {
           rows: [
             {
               id: 't1',
-              company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+              company_id: HOLDING_UUID,
               title: 'Verify onboarding checklist',
               description: 'Ops handover',
               priority: 'high',
@@ -68,7 +72,7 @@ describe('OperationsService', () => {
     });
 
     const result = await service.listTasks({
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      company_id: 'holding',
       page: 2,
       page_size: 5,
     });
@@ -79,7 +83,7 @@ describe('OperationsService', () => {
     expect(result.data[0]).toMatchObject({ id: 't1', priority: 'high' });
     const listCall = db.query.mock.calls.find((c) => String(c[0]).includes('LIMIT'));
     expect(listCall?.[0]).toContain('company_id = $1::uuid');
-    expect(listCall?.[1]).toEqual(['78b8a663-f5e5-4f4d-a020-b8f950ec2037', 5, 5]);
+    expect(listCall?.[1]).toEqual([HOLDING_UUID, 5, 5]);
   });
 
   it('listTasks rolls up company_id=main via UUID IN (group CEO)', async () => {
@@ -111,7 +115,7 @@ describe('OperationsService', () => {
           rows: [
             {
               id: 'sr-1',
-              company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+              company_id: HOLDING_UUID,
               service_type: 'meal',
               employee_id: null,
               employee_name: 'Nguyen Van A',
@@ -144,7 +148,7 @@ describe('OperationsService', () => {
     });
 
     const rows = await service.listServiceRequests({
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      company_id: 'holding',
     });
     expect(rows[0]).toMatchObject({ service_type: 'meal', request_type: 'meal', status: 'pending' });
   });
@@ -152,7 +156,7 @@ describe('OperationsService', () => {
   it('MP-14: mapServiceRequestRow mirrors service_type into request_type', () => {
     const row = mapServiceRequestRow({
       id: 'sr-1',
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      company_id: HOLDING_UUID,
       service_type: 'vehicle',
       employee_id: null,
       employee_name: 'Test',
@@ -253,7 +257,7 @@ describe('OperationsService', () => {
       return Promise.resolve({ rows: [] } as never);
     });
 
-    const summary = await service.getSummary('78b8a663-f5e5-4f4d-a020-b8f950ec2037');
+    const summary = await service.getSummary('holding');
     expect(summary).toEqual({
       attendance_records: 10,
       payroll_periods: 2,

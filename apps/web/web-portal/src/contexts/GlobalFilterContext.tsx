@@ -145,7 +145,12 @@ export const GlobalFilterProvider: React.FC<{ children: ReactNode }> = ({ childr
       setTenantScopeStatus('ready');
       setTenantScopeError(null);
       setUsingMockTenantFallback(false);
-      setSelectedTenant(pickPreferredTenant(mapped));
+      // Keep explicit membership choice after select-membership; only pick default when unknown.
+      setSelectedTenant((prev) => {
+        const still = mapped.find((t) => t.tenantId === prev.tenantId);
+        if (still && prev.id !== '__loading__') return still;
+        return pickPreferredTenant(mapped);
+      });
       return;
     }
 

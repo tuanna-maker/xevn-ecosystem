@@ -18,6 +18,7 @@ import {
   BookOpen,
   ConciergeBell,
   Wrench,
+  Truck,
   HelpCircle,
   FileSignature,
 } from 'lucide-react';
@@ -50,6 +51,7 @@ const MAIN_AFTER: NavItem[] = [
   { key: 'processes', label: 'Quy trình & chính sách', Icon: BookOpen },
   { key: 'internal_services', label: 'Dịch vụ nội bộ', Icon: ConciergeBell },
   { key: 'tools_equipment', label: 'Công cụ & thiết bị', Icon: Wrench },
+  { key: 'fleet', label: 'Hồ sơ xe', Icon: Truck },
 ];
 
 const ADMIN: NavItem[] = [
@@ -67,7 +69,7 @@ const ICON_ONLY_ITEMS: NavItem[] = [
 ];
 
 export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = false }) => {
-  const sectionLabelClass = 'px-1 text-xs font-semibold uppercase tracking-wider text-slate-400';
+  const sectionLabelClass = 'px-1 text-xs font-semibold uppercase tracking-wider text-xevn-textSecondary';
 
   const linkClass = (isActive: boolean, iconOnly?: boolean) => {
     const py = iconOnly ? 'py-2' : 'py-3';

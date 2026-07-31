@@ -1,3 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Lương / Phiếu lương (HTTP /payroll)
+ * UC:         UC-HRM-24 · UC-HRM-28 · HRM-PR-05
+ * BR:         scope ladder · empty trung thực khi chưa có phiếu
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.6 · FR-HRM-PR-05
+ * SRS bước:   Diễn biến #1 auth · #4 Tải phiếu · #5 Empty hợp lệ · #6 Vượt phạm vi
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.6 (ref_srs: FR-HRM-PR-05)
+ * Purpose:    Surface kỳ lương + list phiếu (W1 đọc); periods upstream cho xem phiếu.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ * Callers:    apps/web/hrm PayrollPayslipsApiTab
+ * Callees:    PayrollService.listPayslips · PayrollCatalogService
+ * FE-Actions: Chọn kỳ → GET payslips; empty = chưa có phiếu
+ * BE-Chain:   controller → payroll_payslips JOIN payroll_periods
+ * Impact:     Sai scope → xem hộ phiếu trái phép (Diễn biến #6)
+ * must_keep:  empty 200 trung thực; không seed phiếu trong U65
+ * SOLID:      Controller mỏng; service owns scope filters
+ * LastVerified: payroll.controller.spec.ts · payroll.service.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: CODE-MEMORY map Diễn biến PR-05 (không đổi logic)
+ */
 import {
   Body,
   Controller,
@@ -103,6 +128,11 @@ export class PayrollController {
       .then((data) => ok(data, 'HRM-PAY-203', 'Payroll period closed'));
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-PR-05
+   * SRS bước: Diễn biến #1 auth · #4 Tải phiếu · #5 Empty hợp lệ · #6 scope
+   * TechSpec: §14.6 ref_srs FR-HRM-PR-05 · GET /payroll/payslips → HRM-PAY-200
+   */
   @Get('payslips')
   listPayslips(
     @Headers('authorization') authorization: string | undefined,
@@ -113,10 +143,12 @@ export class PayrollController {
     @Headers() headers: Record<string, unknown> = {},
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
+    // Xử lý: Diễn biến #1 — auth; service lọc scope (#6).
     this.assertBusinessAccess(authHeader, internalApiKey);
     resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
     return this.payrollService
       .listPayslips(query, authHeader, toHrmListScopeContext(tenantId))
+      // Thành công: Diễn biến #4/#5 — list hoặc empty trung thực.
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslips listed'));
   }
 

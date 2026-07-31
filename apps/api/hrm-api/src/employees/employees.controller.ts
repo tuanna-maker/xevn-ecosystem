@@ -1,3 +1,49 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Hồ sơ nhân viên (HTTP /employees)
+ * UC:         UC-HRM-20 · UC-HRM-21 · HRM-EM-01
+ * BR:         BR-HRM-SCOPE-LIST
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.1 · FR-HRM-EM-01
+ * SRS bước:   Diễn biến #1 auth · #7 Lưu thành công (POST) · #8 Tải lại (GET list/get)
+ * TechSpec:   docs/hrm/TECHSPEC.md §14.1 (ref_srs: FR-HRM-EM-01)
+ * Purpose:    Surface Nest cho tạo/list/summary/CRUD hồ sơ; khóa id mở HĐ/BH/công.
+ * WorkItem:   BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * Coded:      2026-07-21
+ *
+ * Callers:
+ *   - portal/hrm FE → /api/hrm/employees*
+ *
+ * Callees:
+ *   - EmployeesService.createEmployee / listEmployees / getEmployeesSummary / …
+ *   - EmployeeProfileService.*
+ *
+ * FE-Actions:
+ *   | Thao tác        | Handler             | Lib / RPC              |
+ *   |-----------------|---------------------|------------------------|
+ *   | Lưu hồ sơ mới   | createEmployee      | POST /employees        |
+ *   | Danh sách / F5  | listEmployees       | GET /employees         |
+ *   | Dashboard       | getEmployeesSummary | GET /employees/summary |
+ *
+ * BE-Chain: controller → EmployeesService → public.employees
+ * Impact:   Sai thứ tự route summary → 500; sai scope → list trống / 404
+ * must_keep: leave/recruit/F5; @Get('summary') trước :employeeId; empty list trung thực
+ * SOLID:    Controller mỏng — auth + scope; service giữ nghiệp vụ
+ * LastVerified: d-dash-01-employees-summary.spec.ts · cd-fb-05-perf-be.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-21
+ * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
+ * change_mode: ADD
+ * What: Gắn SRS bước Diễn biến + TechSpec §14.1 ref_srs (không đổi nghiệp vụ)
+ * Why: Sponsor lock — mỗi handler map FR-HRM-EM-01
+ * SRS: docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.1 · FR-HRM-EM-01
+ * TechSpec: docs/hrm/TECHSPEC.md §14.1 (ref_srs: FR-HRM-EM-01)
+ * must_keep: CD-FB-05 cursor / summary route order
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: CD-FB-05-PERF-BE
+ * What: Document cursor query on list; no route change required (cursor is query param)
+ * Why: Coordinate FE CD-FB-04 export walk off OFFSET storm
+ */
 import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
@@ -28,6 +74,11 @@ export class EmployeesController {
     }
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01
+   * SRS bước: Diễn biến #1 auth · #7 Lưu thành công — tạo hồ sơ mới
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01 · POST /employees → HRM-EMP-201
+   */
   @Post()
   createEmployee(
     @Headers('authorization') authorization: string | undefined,
@@ -36,13 +87,20 @@ export class EmployeesController {
     @Headers('x-company-id') headerCompanyId: string | undefined,
     @Body() body: CreateEmployeeDto,
   ) {
+    // Xử lý: Diễn biến #1 — từ chối nếu hết phiên / không đủ quyền.
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
     return this.employeesService
       .createEmployee(body, authorization, toHrmListScopeContext(tenantId))
+      // Thành công: Diễn biến #7 — hồ sơ mới trả FE (list sau F5 = #8).
       .then((data) => ok(data, 'HRM-EMP-201', 'Employee created'));
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01
+   * SRS bước: Diễn biến #8 Tải lại trang — danh sách / directory trong đơn vị
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01 · GET /employees → HRM-EMP-200
+   */
   @Get()
   listEmployees(
     @Headers('authorization') authorization: string | undefined,
@@ -64,7 +122,12 @@ export class EmployeesController {
       .then((data) => ok(data, 'HRM-EMP-200', 'Employees listed'));
   }
 
-  /** P1-HRM-PERF-BE-01 — dashboard stats in one round-trip (same scope as list). */
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01 (đọc tổng hợp cùng scope list)
+   * SRS bước: Diễn biến #8 — tải lại / xem dữ liệu đơn vị (summary dashboard)
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01 · GET /employees/summary
+   * must_keep: route đăng ký trước :employeeId
+   */
   @Get('summary')
   getEmployeesSummary(
     @Headers('authorization') authorization: string | undefined,
@@ -555,6 +618,11 @@ export class EmployeesController {
       .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee training deleted'));
   }
 
+  /**
+   * @CODE-MEMORY method · FR-HRM-EM-01
+   * SRS bước: Diễn biến #8 — chi tiết hồ sơ / F5 cùng scope list (U19)
+   * TechSpec: §14.1 ref_srs FR-HRM-EM-01 · GET …/:employeeId → HRM-EMP-200
+   */
   @Get(':employeeId')
   getEmployeeById(
     @Param('employeeId') employeeId: string,

@@ -34,7 +34,49 @@ describe('FleetController (HRM-FL-01)', () => {
     expect(serviceMock.listVehicles).toHaveBeenCalledWith('xevn', ['xe-du-lich'], {
       status: undefined,
       limit: undefined,
+      keyword: undefined,
+      q: undefined,
     });
+  });
+
+  it('HRM-FL-01 #4: forwards keyword/q to service (G-FL-02)', async () => {
+    const res = await controller.listVehicles(
+      undefined,
+      'test-key',
+      'xevn',
+      'xe-du-lich',
+      undefined,
+      undefined,
+      undefined,
+      '51A',
+      undefined,
+    );
+    expect(res.code).toBe('HRM-FLEET-200');
+    expect(serviceMock.listVehicles).toHaveBeenCalledWith('xevn', ['xe-du-lich'], {
+      status: undefined,
+      limit: undefined,
+      keyword: '51A',
+      q: undefined,
+    });
+  });
+
+  it('HRM-FL-01 #4: prefers q when both keyword and q present', async () => {
+    await controller.listVehicles(
+      undefined,
+      'test-key',
+      'xevn',
+      'xe-du-lich',
+      undefined,
+      undefined,
+      undefined,
+      'ignored',
+      'Toyota',
+    );
+    expect(serviceMock.listVehicles).toHaveBeenCalledWith(
+      'xevn',
+      ['xe-du-lich'],
+      expect.objectContaining({ keyword: 'ignored', q: 'Toyota' }),
+    );
   });
 
   it('HRM-FL-01: rolls up company_id=main for group CEO JWT', async () => {

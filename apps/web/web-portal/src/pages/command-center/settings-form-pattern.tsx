@@ -1,4 +1,20 @@
 /**
+ * @CODE-MEMORY
+ * Screen:     Settings / Workspace form pattern constants
+ * UC:         XBOS settings · brand L1 token aliases
+ * BR:         Symmetrical Grid Law · L-TYPE floors
+ * SRS:        docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3.2–§3.3
+ * TechSpec:   docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md L1
+ * Purpose:    String aliases → Tailwind `xevn.*` / radius / dialog surface —
+ *             một SoT class names cho CC + settings (không hex cứng).
+ * WorkItem:   FE-XEVN-BRAND-TOKENS-L1-01
+ * Coded:      2026-07-22
+ * Callers:    CommandCenterPage · BusinessMasterSettings · sticky headers
+ * Callees:    web-portal index.css utilities · tailwind.config.cjs xevn.*
+ * must_keep:  SETTINGS_RADIUS_* = rounded-input|card; XEVN_DIALOG_SURFACE token border
+ * SOLID:      Constants-only module; no business fetch
+ * LastVerified: docs/qa/evidence/fe-xevn-brand-tokens-l1-01-20260722.md
+ *
  * XeVN Symmetrical Grid Law (Apple-style rhythm)
  *
  * Viewport: `XEVN_VIEWPORT_PADDING` = `xevn-safe-inline` (clamp đối xứng px-8 → px-12). Kèm `XEVN_FLUID_SHELL` max-width 1920px.
@@ -45,6 +61,20 @@ export const SETTINGS_RADIUS_INPUT = 'rounded-input';
 
 /** Bán kính 12px — card section */
 export const SETTINGS_RADIUS_CARD = 'rounded-card';
+
+/** Border DNA — `border-xevn-border` (#E5E7EB) */
+export const XEVN_BORDER = 'border border-xevn-border';
+
+/** Focus ring — accent token (TW `ring-xevn-accent`) */
+export const XEVN_FOCUS_RING =
+  'outline-none focus:ring-2 focus:ring-xevn-accent focus:ring-offset-2';
+
+/**
+ * Dialog / modal panel chrome (L1→L2).
+ * Equivalent CSS utility: `.xevn-dialog-surface` in `index.css`.
+ */
+export const XEVN_DIALOG_SURFACE =
+  'rounded-card border border-xevn-border bg-xevn-surface shadow-overlay';
 
 /**
  * Lưới 12 cột, gap-6.
@@ -121,13 +151,13 @@ export const NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLAS
  * (thường là chữ thường); chữ IN HOA trên nền hẹp trông “nặng” hơn nếu cùng 15px.
  */
 export const NAV_RAIL_MODULE_CAPTION_IDLE_CLASS =
-  'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-slate-500 break-words hyphens-auto';
+  'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-xevn-textSecondary break-words hyphens-auto';
 
 export const NAV_RAIL_MODULE_CAPTION_ACTIVE_CLASS =
   'w-full max-w-full text-center text-balance text-[0.8125rem] font-bold leading-snug tracking-tight text-xevn-primary break-words hyphens-auto';
 
 export const NAV_RAIL_MODULE_CAPTION_DISABLED_CLASS =
-  'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-slate-400 break-words hyphens-auto';
+  'w-full max-w-full text-center text-balance text-[0.8125rem] font-normal leading-snug tracking-tight text-xevn-textMuted break-words hyphens-auto';
 
 /** Chiều ngang cột Sub-sidebar (Cài đặt + HRM con) — đủ nhãn dài tiếng Việt */
 export const NAV_SUBSIDEBAR_WIDTH_CLASS =
@@ -196,7 +226,7 @@ export const AutoResizeTextarea: React.FC<{
       placeholder={placeholder}
       aria-label={ariaLabel}
       onChange={(e) => onChange(e.target.value)}
-      className={`box-border min-w-0 max-w-full resize-none overflow-hidden border border-xevn-border bg-white px-3 py-2 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-xevn-accent ${SETTINGS_CONTROL_TEXT} ${SETTINGS_RADIUS_INPUT} ${className ?? ''}`}
+      className={`box-border min-w-0 max-w-full resize-none overflow-hidden border border-xevn-border bg-white px-3 py-2 outline-none placeholder:text-xevn-textMuted focus:ring-2 focus:ring-xevn-accent ${SETTINGS_CONTROL_TEXT} ${SETTINGS_RADIUS_INPUT} ${className ?? ''}`}
     />
   );
 };

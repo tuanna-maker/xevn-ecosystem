@@ -26,10 +26,10 @@ describe('resolveXbosCorsOptions', () => {
 
   it('whitelists when CORS_ALLOWED_ORIGINS is set (non-production)', () => {
     process.env.CORS_ALLOWED_ORIGINS =
-      'https://14-225-217-232.nip.io,http://127.0.0.1:8088';
+      'http://14.225.217.232:8088,http://127.0.0.1:8088';
     expect(shouldUseXbosCorsWhitelist()).toBe(true);
     expect(resolveXbosCorsOptions()).toEqual({
-      origin: ['https://14-225-217-232.nip.io', 'http://127.0.0.1:8088'],
+      origin: ['http://14.225.217.232:8088', 'http://127.0.0.1:8088'],
       credentials: true,
     });
   });
@@ -52,8 +52,8 @@ describe('resolveXbosCorsOptions', () => {
 
   it('deployed JWT without NODE_ENV still uses whitelist when origins set', () => {
     process.env.SERVICE_JWT_SECRET = 'rotated-production-secret-hex';
-    process.env.CORS_ALLOWED_ORIGINS = 'https://14-225-217-232.nip.io';
-    expect(resolveXbosCorsOptions().origin).toEqual(['https://14-225-217-232.nip.io']);
+    process.env.CORS_ALLOWED_ORIGINS = 'http://14.225.217.232:8088';
+    expect(resolveXbosCorsOptions().origin).toEqual(['http://14.225.217.232:8088']);
   });
 
   it('parseCorsAllowedOrigins trims and drops empty entries', () => {

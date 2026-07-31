@@ -17,7 +17,12 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
         onModuleDestroy: jest.fn(),
       } as unknown as jest.Mocked<HrmDbService>;
       db.query.mockResolvedValue({ rows: [] } as never);
-      service = new RecruitmentService(db);
+      const bridge = {
+        ensureSchema: jest.fn().mockResolvedValue(undefined),
+        assertNotLockedOrThrow: jest.fn(),
+        startRecruitmentWorkflowIfConfigured: jest.fn().mockResolvedValue(null),
+      };
+      service = new RecruitmentService(db, bridge as never);
     });
 
     it('finds holding requisition when group CEO requests company_id=main (J-HRM-05)', async () => {
