@@ -20,6 +20,10 @@ describe('hdsdMutateTestIds (D-HDSD-MUTATE-FE-DEPS-02)', () => {
     expect(HDSD_MUTATE_TEST_IDS.requisitionCreateBtn).toBe('hdsd-requisition-create-btn');
     expect(HDSD_MUTATE_TEST_IDS.requisitionFormReady).toBe('hdsd-requisition-form-ready');
     expect(HDSD_MUTATE_TEST_IDS.requisitionJobTemplate).toBe('hdsd-requisition-job-template');
+    expect(HDSD_MUTATE_TEST_IDS.requisitionSubmitWf).toBe('hdsd-requisition-submit-wf');
+    expect(HDSD_MUTATE_TEST_IDS.requisitionPostCreateSubmit).toBe(
+      'hdsd-requisition-post-create-submit',
+    );
     expect(HDSD_MUTATE_TEST_IDS.leaveReasonInput).toBe('hdsd-leave-reason');
     expect(HDSD_MUTATE_TEST_IDS.leaveOverviewRecent).toBe('hdsd-leave-overview-recent');
     expect(HDSD_MUTATE_TEST_IDS.leaveOverviewReasonPrefix).toBe('hdsd-leave-overview-reason');

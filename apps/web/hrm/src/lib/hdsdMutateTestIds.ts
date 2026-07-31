@@ -19,6 +19,12 @@
  * What: Reconstruct module after Vite 500 (file absent on :8088 / wide-revert)
  * Why: QA-HDSD-MUTATE-SOFTDEL-BH-8088-SMOKE-02 — Employees import resolve fail
  * must_keep: SoftDel · BH policy_id picker · TC-041 · U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-REC-13-S2-SUBMIT-INBOX-01
+ * change_mode: ADD
+ * What: requisitionSubmitWf + post-create submit CTA test ids (J-REC-WF-02)
+ * Why: R-REC-13-S2-SUBMIT-INBOX — harness must click Gửi duyệt QT after create
+ * must_keep: SoftDel/BH/leave ids unchanged · U65 no seed
  */
 /**
  * Stable data-testid / aria hooks for HDSD U65 browser mutate harness (UF-XBOS-05 · UF-HRM-02/05/07/09).
@@ -43,6 +49,10 @@ export const HDSD_MUTATE_TEST_IDS = {
   requisitionEmploymentType: 'hdsd-requisition-employment-type',
   requisitionFormReady: 'hdsd-requisition-form-ready',
   requisitionFormSubmit: 'hdsd-requisition-form-submit',
+  /** Post-create / row «Gửi duyệt QT» — POST …/requisitions/:id/submit-workflow */
+  requisitionSubmitWf: 'hdsd-requisition-submit-wf',
+  /** Banner after YCTD create offering immediate submit (SoT S2). */
+  requisitionPostCreateSubmit: 'hdsd-requisition-post-create-submit',
   leaveOverviewRecent: 'hdsd-leave-overview-recent',
   leaveOverviewReasonPrefix: 'hdsd-leave-overview-reason',
   leaveReasonInput: 'hdsd-leave-reason',
@@ -58,4 +68,8 @@ export function hdsdShareholderNameTestId(rowId: string): string {
 
 export function hdsdLeaveOverviewReasonTestId(rowId: string): string {
   return `${HDSD_MUTATE_TEST_IDS.leaveOverviewReasonPrefix}-${rowId}`;
+}
+
+export function hdsdRequisitionSubmitWfTestId(rowId: string): string {
+  return `${HDSD_MUTATE_TEST_IDS.requisitionSubmitWf}-${rowId}`;
 }
