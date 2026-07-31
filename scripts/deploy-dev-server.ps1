@@ -252,21 +252,25 @@ $remoteCmd = 'tmp=$(mktemp /tmp/xevn-deploy.XXXXXX.sh) && printf ''%s'' ''' + $b
 
 
 
-$out = if ($VPS_KEY_PATH) {
-
-  & $plink -ssh $VPS_HOST -i $VPS_KEY_PATH -hostkey $HOSTKEY -batch $remoteCmd 2>&1
-
-} else {
-
-  & $plink -ssh $VPS_HOST -pw $VPS_PW -hostkey $HOSTKEY -batch $remoteCmd 2>&1
-
+# plink/git write progress to stderr; with $ErrorActionPreference=Stop, 2>&1 ErrorRecords abort early.
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+try {
+  if ($VPS_KEY_PATH) {
+    $out = & $plink -ssh $VPS_HOST -i $VPS_KEY_PATH -hostkey $HOSTKEY -batch $remoteCmd 2>&1
+  } else {
+    $out = & $plink -ssh $VPS_HOST -pw $VPS_PW -hostkey $HOSTKEY -batch $remoteCmd 2>&1
+  }
+  $plinkExit = $LASTEXITCODE
+} finally {
+  $ErrorActionPreference = $prevEap
 }
 
 $out | ForEach-Object { Write-Host $_ }
 
-if ($LASTEXITCODE -ne 0) {
+if ($plinkExit -ne 0) {
 
-  Write-Fail "Deploy failed (exit $LASTEXITCODE)"
+  Write-Fail "Deploy failed (exit $plinkExit)"
 
   exit 1
 
