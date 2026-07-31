@@ -92,7 +92,7 @@ async function parseHrmJson<T>(res: Response): Promise<{ data: T; envelope: HrmE
     throw new ApiClientError({
       status: res.status,
       code: body?.code,
-      message: body?.message ?? `HRM API request failed (${res.status})`,
+      message: body?.message ?? `Không xử lý được yêu cầu HRM (${res.status})`,
       details: body?.details,
     });
   }
@@ -108,7 +108,7 @@ async function parseHrmJson<T>(res: Response): Promise<{ data: T; envelope: HrmE
     throw new ApiClientError({
       status: res.status,
       code: body.code,
-      message: body.message ?? "HRM API request failed",
+      message: body.message ?? "Không xử lý được yêu cầu HRM",
       details: body.details,
     });
   }
@@ -212,7 +212,7 @@ export async function downloadEmployeeImportTemplate(format: "csv" | "xlsx" = "x
     throw new ApiClientError({
       status: res.status,
       code: body?.code,
-      message: body?.message ?? `HRM API request failed (${res.status})`,
+      message: body?.message ?? `Không xử lý được yêu cầu HRM (${res.status})`,
       details: body?.details,
     });
   }
@@ -270,6 +270,8 @@ export async function upsertSettingsCatalogItem(
     code: string;
     label: string;
     itemValue?: string;
+    /** draft = ngưng dùng (soft-stop); omit → BE default active. */
+    status?: "active" | "draft";
   },
   scope: HrmSpreadsheetScope,
 ) {
@@ -506,13 +508,51 @@ export async function getPayrollReconciliationSummary(companyId: string) {
   );
 }
 
+export type HrmJobRequisitionStatus =
+  | "open"
+  | "closed"
+  | "on_hold"
+  | "draft"
+  | "pending_approval"
+  | "approved"
+  | "rejected";
+
 export type HrmJobRequisition = {
   id: string;
   company_id: string;
   title: string;
   department: string;
   employment_type: string;
-  status: "open" | "closed" | "on_hold";
+  /** FR-HRM-RC-01 / G-RC-01 — số lượng cần tuyển (≥1); not job_postings.headcount. */
+  headcount: number;
+  status: HrmJobRequisitionStatus;
+  job_description?: string | null;
+  requirements?: string | null;
+  job_template_id?: string | null;
+  /** XBOS WF instance — BR-REC-WF-08 lock when set + non-terminal. */
+  workflow_instance_id?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Submit/start-pipeline response (data contract §4 + §6 SPAWN-MISSING). */
+export type HrmRecruitmentWfSubmitResult = HrmJobRequisition & {
+  spawn?: { workflowInstanceId?: string; idempotent?: boolean } | null;
+  spawnMissing?: boolean;
+};
+
+export type HrmJobDescriptionTemplate = {
+  id: string;
+  company_id: string;
+  code: string;
+  title: string;
+  /** Catalog SoT (job_titles) — FR-HRM-RC-JD-01 / AC-SET-FS-03. */
+  position_code?: string | null;
+  /** Display denormalized from catalog label (optional). */
+  position_name: string | null;
+  job_description: string | null;
+  requirements: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -560,6 +600,11 @@ export async function createJobRequisition(payload: {
   title: string;
   department: string;
   employment_type: string;
+  /** Required integer ≥1 (FR-HRM-RC-01). */
+  headcount: number;
+  job_description?: string;
+  requirements?: string;
+  job_template_id?: string;
 }) {
   return requestHrm<HrmJobRequisition>("/api/hrm/recruitment/requisitions", {
     method: "POST",
@@ -568,6 +613,66 @@ export async function createJobRequisition(payload: {
       company_id: normalizeHrmApiListCompanyId(payload.company_id),
     }),
   });
+}
+
+export async function listJobDescriptionTemplates(params: { company_id: string }) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  return requestHrm<{ total: number; data: HrmJobDescriptionTemplate[] }>(
+    `/api/hrm/recruitment/job-templates?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function createJobDescriptionTemplate(payload: {
+  company_id: string;
+  code: string;
+  title: string;
+  /** Required catalog code from job_titles (BE HRM-REC-JD-POS). */
+  position_code: string;
+  /** Optional denormalized label. */
+  position_name?: string;
+  job_description?: string;
+  requirements?: string;
+  notes?: string;
+}) {
+  return requestHrm<HrmJobDescriptionTemplate>("/api/hrm/recruitment/job-templates", {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      company_id: normalizeHrmApiListCompanyId(payload.company_id),
+    }),
+  });
+}
+
+export async function updateJobDescriptionTemplate(
+  templateId: string,
+  companyId: string,
+  payload: Partial<{
+    code: string;
+    title: string;
+    position_code: string;
+    position_name: string;
+    job_description: string;
+    requirements: string;
+    notes: string;
+  }>,
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmJobDescriptionTemplate>(
+    `/api/hrm/recruitment/job-templates/${encodeURIComponent(templateId)}?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteJobDescriptionTemplate(templateId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/recruitment/job-templates/${encodeURIComponent(templateId)}?${search.toString()}`,
+    { method: "DELETE" },
+  );
 }
 
 export async function getJobRequisition(requisitionId: string, companyId: string) {
@@ -582,7 +687,7 @@ export async function getJobRequisition(requisitionId: string, companyId: string
 export async function updateJobRequisition(
   requisitionId: string,
   companyId: string,
-  payload: { status: HrmJobRequisition["status"] },
+  payload: { status: HrmJobRequisition["status"]; headcount?: number },
 ) {
   const search = new URLSearchParams();
   search.set("company_id", normalizeHrmApiListCompanyId(companyId));
@@ -654,6 +759,9 @@ export type HrmJobPostingRow = {
   company_id: string;
   title: string;
   department: string | null;
+  /** E1-A catalog code (job_titles); snapshot in `position`. */
+  position_key?: string | null;
+  department_key?: string | null;
   position: string;
   employment_type: string;
   work_location: string | null;
@@ -682,8 +790,17 @@ export type HrmCandidatePoolRow = {
   source: string | null;
   applied_date: string | null;
   notes: string | null;
+  /** Soft hire link — FR-HRM-INT-01 / G-DB-01 (required when stage=hired). */
+  employee_id?: string | null;
+  /** XBOS candidate pipeline instance — lock stage PATCH when active. */
+  workflow_instance_id?: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type HrmCandidatePipelineStartResult = HrmCandidatePoolRow & {
+  spawn?: { workflowInstanceId?: string; idempotent?: boolean } | null;
+  spawnMissing?: boolean;
 };
 
 export type HrmCandidateApplicationRow = {
@@ -731,9 +848,15 @@ export type HrmRecruitmentPlanRow = {
   note: string | null;
   status: string;
   creator_name: string | null;
+  workflow_instance_id?: string | null;
   created_at: string;
   updated_at: string;
   departments?: HrmRecruitmentPlanDepartmentRow[];
+};
+
+export type HrmRecruitmentPlanWfSubmitResult = HrmRecruitmentPlanRow & {
+  spawn?: { workflowInstanceId?: string; idempotent?: boolean } | null;
+  spawnMissing?: boolean;
 };
 
 export async function listJobPostings(params: { company_id: string; status?: string }) {
@@ -750,7 +873,10 @@ export async function createJobPosting(payload: {
   company_id: string;
   title: string;
   position: string;
+  /** E1-A — catalog code SoT (required when Vị trí shown). */
+  position_key?: string;
   department?: string;
+  department_key?: string;
   employment_type?: string;
   work_location?: string;
   salary_min?: number;
@@ -797,6 +923,8 @@ export async function createCandidatePool(payload: {
   position?: string | null;
   source?: string | null;
   stage?: string;
+  /** FR-HRM-INT-01 — bắt buộc khi stage=hired. */
+  employee_id?: string | null;
   rating?: number | null;
   applied_date?: string | null;
   expected_start_date?: string | null;
@@ -822,6 +950,8 @@ export async function updateCandidatePool(
     position: string | null;
     source: string | null;
     stage: string;
+    /** FR-HRM-INT-01 / G-DB-01 — soft hire link when stage=hired. */
+    employee_id: string | null;
     rating: number | null;
     applied_date: string | null;
     expected_start_date: string | null;
@@ -880,6 +1010,36 @@ export async function updateRecruitmentPlanStatus(
   return requestHrm<HrmRecruitmentPlanRow>(
     `/api/hrm/recruitment/recruitment-plans/${planId}/status?${search.toString()}`,
     { method: "PATCH", body: JSON.stringify({ status }) },
+  );
+}
+
+/** UC-HRM-REC-WF-02 — spawn plan approval (U65 FE path). */
+export async function submitRecruitmentPlanWorkflow(planId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmRecruitmentPlanWfSubmitResult>(
+    `/api/hrm/recruitment/recruitment-plans/${encodeURIComponent(planId)}/submit-workflow?${search.toString()}`,
+    { method: "POST", body: JSON.stringify({}) },
+  );
+}
+
+/** UC-HRM-REC-WF-02 — spawn requisition approval (U65 FE path). */
+export async function submitJobRequisitionWorkflow(requisitionId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmRecruitmentWfSubmitResult>(
+    `/api/hrm/recruitment/requisitions/${encodeURIComponent(requisitionId)}/submit-workflow?${search.toString()}`,
+    { method: "POST", body: JSON.stringify({}) },
+  );
+}
+
+/** UC-HRM-REC-WF-04 — start candidate pipeline (U65 FE path). */
+export async function startCandidatePipeline(candidateId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmCandidatePipelineStartResult>(
+    `/api/hrm/recruitment/candidates-pool/${encodeURIComponent(candidateId)}/start-pipeline?${search.toString()}`,
+    { method: "POST", body: JSON.stringify({}) },
   );
 }
 
@@ -1165,6 +1325,13 @@ export type HrmContractRecord = {
   employee_name?: string | null;
   employee_code?: string | null;
   department?: string | null;
+  department_key?: string | null;
+  position?: string | null;
+  position_key?: string | null;
+  signer_position?: string | null;
+  signer_position_key?: string | null;
+  /** F5 / CD-FB-08 — link to compensation package (salary deprecated on body). */
+  compensation_package_id?: string | null;
 };
 
 export type HrmInsuranceRecord = {
@@ -1193,6 +1360,10 @@ export type HrmInsuranceRecord = {
 export type HrmEmployeeRecord = {
   id: string;
   company_id: string;
+  /** Plane A / ĐVTV display when BE-HRM-EMP-COMPANY-COL-01 enriches list/get. */
+  company_display_name?: string | null;
+  /** Optional alias some payloads may use for the same SoT. */
+  company_name?: string | null;
   employee_code: string;
   email: string;
   full_name: string;
@@ -1206,6 +1377,39 @@ export type HrmEmployeeRecord = {
   updated_at: string;
 };
 
+/**
+ * @CODE-MEMORY
+ * Screen:     Employees list / export / archive walk (HRM API client)
+ * UC:         UC-HRM-20 / UC-HRM-21 · J-HRM-02 export
+ * BR:         BR-HRM-SCOPE-LIST
+ * SRS:        docs/hrm/SRS.md §Employees list
+ * TechSpec:   docs/decisions/ADR-HRM-SCALE-1000-USERS-20260717.md §5.4 Cursor
+ * Purpose:    GET /employees list page + keyset cursor; listAllEmployees walks next_cursor
+ *             for export/archive only (never dashboard tiles — use getEmployeesSummary).
+ * WorkItem:   C-P1-HRM-PERF-02-CURSOR-FE
+ * Coded:      2026-07-20
+ * Callers:    Employees.tsx export/archive · useEmployeesPage (listEmployees only)
+ * Callees:    GET /api/hrm/employees · GET /api/hrm/employees/summary
+ * FEActions:  Export/Archive dialog open → listAllEmployees → cursor walk
+ * Impact:     Deep OFFSET page=N>5 storm on ~1k NV export if cursor walk regresses
+ * must_keep:  Dashboard getEmployeesSummary (FE-04); table listEmployees page=1; pickers capped
+ * SOLID:      SRP — transport only; no UI state
+ * LastVerified: hooks/c-p1-hrm-perf-02-cursor-fe.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20 C-P1-HRM-PERF-02-CURSOR-FE
+ *   Replace OFFSET page+=1 walk with next_cursor keyset (BE CD-FB-05 READY).
+ *   listEmployees accepts optional cursor; response includes next_cursor.
+ */
+
+export type HrmEmployeeListPage = {
+  total: number;
+  page: number;
+  page_size: number;
+  /** Opaque keyset cursor for the next page; null/absent when exhausted (CD-FB-05). */
+  next_cursor?: string | null;
+  data: HrmEmployeeRecord[];
+};
+
 export async function listEmployees(params: {
   company_id: string;
   keyword?: string;
@@ -1213,12 +1417,13 @@ export async function listEmployees(params: {
   include_archived?: boolean;
   page?: number;
   page_size?: number;
-}) {
+  /** When set, BE uses keyset pagination and ignores `page` (CD-FB-05). */
+  cursor?: string;
+}): Promise<HrmEmployeeListPage> {
   const search = buildListSearchParams(params);
-  return requestHrm<{ total: number; page: number; page_size: number; data: HrmEmployeeRecord[] }>(
-    `/api/hrm/employees?${search.toString()}`,
-    { method: "GET" },
-  );
+  return requestHrm<HrmEmployeeListPage>(`/api/hrm/employees?${search.toString()}`, {
+    method: "GET",
+  });
 }
 
 export type HrmEmployeeSummary = {
@@ -1253,9 +1458,18 @@ export type HrmEmployeeSummary = {
       avatar_url: string | null;
     }>;
   };
+  /**
+   * Optional per-operating-slug headcounts (D-HRM-CO-EMP-COUNT-BE-01).
+   * When present, CompanyManagement enrich prefers this over N× summary calls.
+   */
+  by_company?: Array<{
+    company_id: string;
+    total: number;
+    active_count?: number;
+  }>;
 };
 
-/** P1-HRM-PERF-BE-01 — dashboard aggregates (HRM-EMP-SUMMARY-200). */
+/** P1-HRM-PERF-BE-01 — dashboard aggregates (HRM-EMP-SUMMARY-200). must_keep FE-04. */
 export async function getEmployeesSummary(params: {
   company_id: string;
   keyword?: string;
@@ -1268,7 +1482,10 @@ export async function getEmployeesSummary(params: {
   });
 }
 
-/** Paginate employees list — respects Nest @Max(100) page_size cap. */
+/**
+ * Full export/archive walk via keyset `next_cursor` (no deep OFFSET `page=N>5`).
+ * Dashboard must NOT call this — use getEmployeesSummary (P1-HRM-PERF-FE-04).
+ */
 export async function listAllEmployees(params: {
   company_id: string;
   keyword?: string;
@@ -1277,16 +1494,27 @@ export async function listAllEmployees(params: {
   page_size?: number;
 }): Promise<{ total: number; data: HrmEmployeeRecord[] }> {
   const all: HrmEmployeeRecord[] = [];
-  let page = 1;
+  let cursor: string | undefined;
   let total = 0;
   const pageSize = clampHrmPageSize(params.page_size ?? HRM_API_MAX_PAGE_SIZE);
-  for (;;) {
-    const res = await listEmployees({ ...params, page, page_size: pageSize });
+  // Safety: ~1k NV / 100 ≈ 12 pages; hard cap prevents runaway if BE misbehaves.
+  const maxPages = 500;
+  for (let i = 0; i < maxPages; i += 1) {
+    const res = await listEmployees({
+      company_id: params.company_id,
+      keyword: params.keyword,
+      status: params.status,
+      include_archived: params.include_archived,
+      page_size: pageSize,
+      ...(cursor ? { cursor } : {}),
+    });
     total = res.total ?? all.length;
     const batch = res.data ?? [];
     all.push(...batch);
-    if (batch.length === 0 || all.length >= total) break;
-    page += 1;
+    const next = res.next_cursor?.trim() || null;
+    if (!next || batch.length === 0) break;
+    if (next === cursor) break;
+    cursor = next;
   }
   return { total, data: all };
 }
@@ -1412,7 +1640,17 @@ export async function createEmployeeContract(payload: {
   employee_id: string;
   contract_type: string;
   start_date: string;
-  end_date: string;
+  /** Optional for open-ended types (G-CI-01 / FR-HRM-CI-01); omit when empty. */
+  end_date?: string;
+  contract_code?: string;
+  /** E1-A MD-BIND — catalog codes + optional snapshots. */
+  position_key: string;
+  position?: string;
+  department_key?: string;
+  department?: string;
+  signer_position_key?: string;
+  signer_position?: string;
+  signer_name?: string;
 }) {
   return requestHrm<HrmContractRecord>("/api/hrm/contracts-insurance/contracts", {
     method: "POST",
@@ -1536,7 +1774,21 @@ export async function listAllEmployeeContracts(params: {
 
 export async function updateEmployeeContract(
   contractId: string,
-  payload: Partial<{ contract_type: string; start_date: string; end_date: string; status: "active" | "expired" | "terminated" }>,
+  payload: Partial<{
+    contract_type: string;
+    start_date: string;
+    end_date: string;
+    status: "active" | "expired" | "terminated";
+    compensation_package_id?: string | null;
+    notes?: string;
+    position_key?: string;
+    position?: string;
+    department_key?: string;
+    department?: string;
+    signer_position_key?: string;
+    signer_position?: string;
+    signer_name?: string;
+  }>,
 ) {
   return requestHrm<HrmContractRecord>(`/api/hrm/contracts-insurance/contracts/${contractId}`, {
     method: "PATCH",
@@ -1548,6 +1800,160 @@ export async function deleteEmployeeContract(contractId: string) {
   return requestHrm<{ id: string }>(`/api/hrm/contracts-insurance/contracts/${contractId}`, {
     method: "DELETE",
   });
+}
+
+/** F5 / UC-HRM-CI-08 — compensation line types (base | probation | allowance). */
+export type HrmCompensationLineType = "base" | "probation" | "allowance";
+
+export type HrmCompensationLineInput = {
+  line_type: HrmCompensationLineType;
+  amount: number;
+  currency?: string;
+  allowance_code?: string;
+  taxable?: boolean;
+  note?: string;
+  sort_order?: number;
+};
+
+export type HrmCompensationLineRecord = {
+  id: string;
+  package_id: string;
+  line_type: HrmCompensationLineType;
+  amount: number;
+  currency: string;
+  allowance_code: string | null;
+  taxable: boolean;
+  note: string | null;
+  sort_order: number;
+  created_at: string;
+};
+
+export type HrmCompensationPackageRecord = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  contract_id: string | null;
+  version: number;
+  supersedes_package_id: string | null;
+  effective_from: string;
+  effective_to: string | null;
+  currency: string;
+  change_reason: string | null;
+  created_at: string;
+  updated_at: string;
+  lines: HrmCompensationLineRecord[];
+};
+
+export type HrmCompensationHistoryRecord = {
+  id: string;
+  company_id: string;
+  employee_id: string;
+  package_id: string;
+  previous_package_id: string | null;
+  version: number;
+  change_reason: string | null;
+  snapshot: Record<string, unknown>;
+  created_at: string;
+};
+
+export async function createCompensationPackage(payload: {
+  company_id: string;
+  employee_id: string;
+  effective_from: string;
+  effective_to?: string;
+  currency?: string;
+  change_reason?: string;
+  contract_id?: string;
+  link_to_contract?: boolean;
+  lines: HrmCompensationLineInput[];
+}) {
+  return requestHrm<HrmCompensationPackageRecord>(
+    "/api/hrm/contracts-insurance/compensation-packages",
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function listCompensationPackages(params: {
+  company_id: string;
+  employee_id?: string;
+  page?: number;
+  page_size?: number;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  if (params.employee_id) search.set("employee_id", params.employee_id);
+  if (params.page) search.set("page", String(params.page));
+  if (params.page_size) search.set("page_size", String(clampHrmPageSize(params.page_size)));
+  return requestHrm<{
+    total: number;
+    page: number;
+    page_size: number;
+    data: HrmCompensationPackageRecord[];
+  }>(`/api/hrm/contracts-insurance/compensation-packages?${search.toString()}`, { method: "GET" });
+}
+
+export async function getActiveCompensationPackage(params: {
+  company_id: string;
+  employee_id: string;
+  as_of?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  search.set("employee_id", params.employee_id);
+  if (params.as_of) search.set("as_of", params.as_of);
+  return requestHrm<HrmCompensationPackageRecord | null>(
+    `/api/hrm/contracts-insurance/compensation-packages/active?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function getCompensationPackageById(packageId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmCompensationPackageRecord>(
+    `/api/hrm/contracts-insurance/compensation-packages/${packageId}?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function reviseCompensationPackage(
+  packageId: string,
+  companyId: string,
+  payload: {
+    effective_from: string;
+    effective_to?: string;
+    currency?: string;
+    change_reason?: string;
+    lines: HrmCompensationLineInput[];
+  },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmCompensationPackageRecord>(
+    `/api/hrm/contracts-insurance/compensation-packages/${packageId}/revise?${search.toString()}`,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
+}
+
+export async function listCompensationHistory(params: {
+  company_id: string;
+  employee_id?: string;
+  package_id?: string;
+  page?: number;
+  page_size?: number;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  if (params.employee_id) search.set("employee_id", params.employee_id);
+  if (params.package_id) search.set("package_id", params.package_id);
+  if (params.page) search.set("page", String(params.page));
+  if (params.page_size) search.set("page_size", String(clampHrmPageSize(params.page_size)));
+  return requestHrm<{
+    total: number;
+    page: number;
+    page_size: number;
+    data: HrmCompensationHistoryRecord[];
+  }>(`/api/hrm/contracts-insurance/compensation-history?${search.toString()}`, { method: "GET" });
 }
 
 export type HrmOperationsTask = {
@@ -1668,7 +2074,7 @@ export async function submitEmployeeMetadataChangeRequest(payload: {
     throw new ApiClientError({
       status: 400,
       code: 'HRM-META-SCOPE',
-      message: 'Không xác định được company_id UUID cho yêu cầu metadata',
+      message: 'Không xác định được công ty cho yêu cầu metadata',
     });
   }
   return requestHrm<HrmEmployeeMetadataChangeRequest>("/api/hrm/employee-metadata/change-requests", {
@@ -2406,12 +2812,38 @@ export type HrmPerformanceEvaluation = {
   id: string;
   company_id: string;
   employee_id: string;
+  /** Optional BE enrich (prevents UI leaking raw employee_id UUID). */
+  employee_name?: string | null;
+  employee_code?: string | null;
   cycle_id: string;
   score: number;
   summary: string;
   reviewer: string;
+  /** E3 SM — draft|submitted|approved|completed (orthogonal to cycle status). */
+  status?: 'draft' | 'submitted' | 'approved' | 'completed' | string;
+  kpi_code?: string | null;
+  kpi_name?: string | null;
+  job_grade_key?: string | null;
+  department_key?: string | null;
   created_at: string;
   updated_at: string;
+};
+
+/** E3 — insurance policy master (`/contracts-insurance/insurance-policies`). */
+export type HrmInsurancePolicy = {
+  id: string;
+  company_id: string;
+  policy_code: string;
+  policy_name: string;
+  insurer_key: string;
+  insurer_label?: string | null;
+  insurance_type: string;
+  status: 'draft' | 'active' | 'expired' | 'cancelled' | string;
+  effective_date: string;
+  expiry_date?: string | null;
+  notes?: string | null;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export async function listPerformanceCycles(params: { company_id: string; status?: "draft" | "active" | "closed" }) {
@@ -2454,11 +2886,156 @@ export async function createPerformanceEvaluation(payload: {
   score: number;
   summary: string;
   reviewer: string;
+  kpi_code?: string;
+  kpi_name?: string;
+  job_grade_key?: string;
+  department_key?: string;
 }) {
   return requestHrm<HrmPerformanceEvaluation>("/api/hrm/performance/evaluations", {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/** E3 — PATCH cycle (AC-PERF-01). */
+export async function updatePerformanceCycle(
+  cycleId: string,
+  payload: {
+    company_id: string;
+    cycle_name?: string;
+    start_date?: string;
+    end_date?: string;
+    status?: "draft" | "active" | "closed";
+  },
+) {
+  return requestHrm<HrmPerformanceCycle>(`/api/hrm/performance/cycles/${cycleId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+/** E3 — DELETE cycle when draft / no submitted+ evals (AC-PERF-02). */
+export async function deletePerformanceCycle(cycleId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", companyId);
+  return requestHrm<{ id: string }>(`/api/hrm/performance/cycles/${cycleId}?${search.toString()}`, {
+    method: "DELETE",
+  });
+}
+
+/** E3 — PATCH evaluation status / content / KPI keys (AC-PERF-03..05). */
+export async function updatePerformanceEvaluation(
+  evaluationId: string,
+  payload: {
+    company_id: string;
+    status?: "draft" | "submitted" | "approved" | "completed";
+    score?: number;
+    summary?: string;
+    reviewer?: string;
+    kpi_code?: string;
+    kpi_name?: string;
+    job_grade_key?: string;
+    department_key?: string;
+  },
+) {
+  return requestHrm<HrmPerformanceEvaluation>(
+    `/api/hrm/performance/evaluations/${evaluationId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    },
+  );
+}
+
+/** E3 — DELETE draft evaluation only. */
+export async function deletePerformanceEvaluation(evaluationId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", companyId);
+  return requestHrm<{ id: string }>(
+    `/api/hrm/performance/evaluations/${evaluationId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
+}
+
+/** E3 — list insurance policy masters. */
+export async function listInsurancePolicies(params: {
+  company_id: string;
+  status?: string;
+  q?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", params.company_id);
+  if (params.status) search.set("status", params.status);
+  if (params.q) search.set("q", params.q);
+  return requestHrm<{ total: number; data: HrmInsurancePolicy[] }>(
+    `/api/hrm/contracts-insurance/insurance-policies?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+/** POST CreateInsurancePolicyDto — cấm insurer_label (BE snapshots catalog). D-HDSD-BF-03-BH-POL-DTO-01 */
+export async function createInsurancePolicy(payload: {
+  company_id: string;
+  policy_code: string;
+  policy_name: string;
+  insurer_key: string;
+  insurance_type: string;
+  effective_date: string;
+  expiry_date?: string;
+  notes?: string;
+  status?: "draft" | "active" | "expired" | "cancelled";
+}) {
+  return requestHrm<HrmInsurancePolicy>("/api/hrm/contracts-insurance/insurance-policies", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getInsurancePolicy(policyId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", companyId);
+  return requestHrm<HrmInsurancePolicy>(
+    `/api/hrm/contracts-insurance/insurance-policies/${policyId}?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+/**
+ * PATCH UpdateInsurancePolicyDto — company_id = query only (body forbidNonWhitelisted).
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-BF-03-BH-POL-DTO-01 — strip company_id/insurer_label from body
+ */
+export async function updateInsurancePolicy(
+  policyId: string,
+  companyId: string,
+  payload: {
+    policy_code?: string;
+    policy_name?: string;
+    insurer_key?: string;
+    insurance_type?: string;
+    effective_date?: string;
+    expiry_date?: string | null;
+    notes?: string | null;
+    status?: "draft" | "active" | "expired" | "cancelled";
+  },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", companyId);
+  return requestHrm<HrmInsurancePolicy>(
+    `/api/hrm/contracts-insurance/insurance-policies/${policyId}?${search.toString()}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    },
+  );
+}
+
+export async function deleteInsurancePolicy(policyId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", companyId);
+  return requestHrm<{ id: string }>(
+    `/api/hrm/contracts-insurance/insurance-policies/${policyId}?${search.toString()}`,
+    { method: "DELETE" },
+  );
 }
 
 export type HrmDecisionRecord = {
@@ -2472,11 +3049,14 @@ export type HrmDecisionRecord = {
   employee_name: string;
   employee_code: string | null;
   department: string | null;
+  department_key?: string | null;
   position: string | null;
+  position_key?: string | null;
   effective_date: string | null;
   expiry_date: string | null;
   signer_name: string | null;
   signer_position: string | null;
+  signer_position_key?: string | null;
   signing_date: string | null;
   file_url: string | null;
   status: string;
@@ -2510,11 +3090,14 @@ export async function createHrDecision(payload: {
   employee_name: string;
   employee_code?: string;
   department?: string;
+  department_key?: string;
   position?: string;
+  position_key?: string;
   effective_date?: string;
   expiry_date?: string;
   signer_name?: string;
   signer_position?: string;
+  signer_position_key?: string;
   signing_date?: string;
   file_url?: string;
   status?: string;
@@ -2538,11 +3121,14 @@ export async function updateHrDecision(
     employee_name: string;
     employee_code?: string;
     department?: string;
+    department_key?: string;
     position?: string;
+    position_key?: string;
     effective_date?: string;
     expiry_date?: string;
     signer_name?: string;
     signer_position?: string;
+    signer_position_key?: string;
     signing_date?: string;
     file_url?: string;
     status?: string;
@@ -2822,12 +3408,25 @@ export async function updateJobPosting(
   );
 }
 
+/**
+ * FR-HRM-INT-01 / G-DB-01 — stage PATCH via dedicated endpoint; pass employee_id when hired.
+ * SRS bước: Diễn biến #5/#7 · TechSpec §17.3 G-DB-01
+ */
 export async function updateCandidatePoolStage(
   candidateId: string,
   companyId: string,
   stage: string,
+  employeeId?: string | null,
 ) {
-  return updateCandidatePool(candidateId, companyId, { stage });
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  const body: { stage: string; employee_id?: string } = { stage };
+  const linked = employeeId?.trim();
+  if (linked) body.employee_id = linked;
+  return requestHrm<HrmCandidatePoolRow>(
+    `/api/hrm/recruitment/candidates-pool/${candidateId}/stage?${search.toString()}`,
+    { method: "PATCH", body: JSON.stringify(body) },
+  );
 }
 
 export async function createRecruitmentPlan(payload: Record<string, unknown>) {
@@ -3161,6 +3760,8 @@ export type HrmCandidateApplicationEnriched = HrmCandidateApplicationRow & {
     avatar_url: string | null;
     applied_date: string | null;
     source: string | null;
+    /** Soft hire link on pool candidate (may be omitted by BE enrich JSON). */
+    employee_id?: string | null;
   };
 };
 
@@ -3185,12 +3786,21 @@ export async function deleteCandidateApplication(applicationId: string, companyI
   );
 }
 
-export async function updateCandidateApplicationStage(applicationId: string, companyId: string, stage: string) {
+/** FR-HRM-INT-01 — application hired inherits candidate→employee soft link; pass employee_id when known. */
+export async function updateCandidateApplicationStage(
+  applicationId: string,
+  companyId: string,
+  stage: string,
+  employeeId?: string | null,
+) {
   const search = new URLSearchParams();
   setListCompanyId(search, companyId);
+  const body: { stage: string; employee_id?: string } = { stage };
+  const linked = employeeId?.trim();
+  if (linked) body.employee_id = linked;
   return requestHrm<HrmCandidateApplicationRow>(
     `/api/hrm/recruitment/candidate-applications/${applicationId}/stage?${search.toString()}`,
-    { method: "PATCH", body: JSON.stringify({ stage }) },
+    { method: "PATCH", body: JSON.stringify(body) },
   );
 }
 
@@ -3586,6 +4196,52 @@ export async function deleteEmployeeAsset(employeeId: string, assetId: string, c
   return requestHrm<{ id: string }>(
     `/api/hrm/employees/${encodeURIComponent(employeeId)}/assets/${assetId}?${employeeProfileQuery(companyId).toString()}`,
     { method: "DELETE" },
+  );
+}
+
+/**
+ * @CODE-MEMORY
+ * Screen:     /fleet · Hồ sơ xe
+ * UC:         FR-HRM-FL-01
+ * BR:         FL-01 list-only · G-FL-02 keyword/q
+ * SRS:        docs/client-delivery/hrm/SRS_HRM_KHACH.md §3.49 #2/#3/#4/#8
+ * TechSpec:   docs/hrm/TECHSPEC.md §16.5 · API_DESIGN_HRM_FLEET §A
+ * Purpose:    GET danh sách xe theo ĐV; optional q/keyword; empty 200 honesty.
+ * WorkItem:   D-FE-HRM-FLEET-CATALOG-UX-01
+ * Coded:      2026-07-27
+ * Callers:    hooks/useFleetVehicles.ts
+ * Callees:    GET /api/hrm/fleet/vehicles
+ * must_keep:  No POST/PUT invent · U65 · HOLD_DEPLOY
+ * LastVerified: lib/fleetCatalogUx.test.ts
+ */
+export type HrmFleetVehicleRow = {
+  id: string;
+  tenant_id?: string;
+  company_id?: string;
+  license_plate: string;
+  fleet_fields: Record<string, unknown>;
+  status: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export async function listFleetVehicles(params: {
+  company_id: string;
+  status?: string;
+  /** Prefer `q` (BE prefer q over keyword). */
+  q?: string;
+  keyword?: string;
+  limit?: number;
+}) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, params.company_id);
+  if (params.status?.trim()) search.set('status', params.status.trim());
+  const q = (params.q ?? params.keyword ?? '').trim();
+  if (q) search.set('q', q.slice(0, 100));
+  if (params.limit != null) search.set('limit', String(params.limit));
+  return requestHrm<{ total: number; data: HrmFleetVehicleRow[] }>(
+    `/api/hrm/fleet/vehicles?${search.toString()}`,
+    { method: 'GET' },
   );
 }
 
