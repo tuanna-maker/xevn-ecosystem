@@ -28440,3 +28440,27 @@ pm_dispatch_hint: QA-HDSD-BF-03-SOFTDEL-RET-01 ? browser U65 soft-delete archive
 ## 2026-08-01T16:51:00+07:00 | pm -> qa | DISPATCHED QA-REC-HDSD-COVERAGE-01A-RET
 ## 2026-08-01T16:51:00+07:00 | pm -> qa | DISPATCHED QA-REC-HDSD-COVERAGE-01B-RET
 ## 2026-08-01T16:51:00+07:00 | pm -> qa | DISPATCHED QA-REC-13-S2-SUBMIT-INBOX-8088-RET
+
+## 2026-07-31T15:13:43.698Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-07-31T15:13:47.498Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-07-31T15:13:50.965Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-07-31T15:13:55.246Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)

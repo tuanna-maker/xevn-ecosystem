@@ -1,17 +1,20 @@
-# ADR: HRM scale baseline — ≥1000 concurrent users + embed perf (:8088)
+﻿# ADR: HRM scale baseline — ≥1000 concurrent users + embed perf (:8088)
 
 | Field | Value |
 |-------|--------|
 | **ADR-ID** | ADR-HRM-SCALE-1000-USERS-20260717 |
 | **work_item_id** | `P1-HRM-NFR-1000-SA` |
 | **Program** | HRM UAT / customer demo perf · CD-FB-03 residual |
-| **Status** | **Accepted** (governance SoT for W1–W3 execution) |
+| **Status** | **Accepted** — **W1 FE CLOSED**; **W2 FE picker CLOSED** (QC GWC 2026-07-17); **W3 T-CONC GO WITH CONDITIONS** (QC **RERUN4** 2026-07-17: VPS-local LB **1000 VU** PASS — 0% err, list p95 **1481 ms**; hold **45s ≠ ADR 5min**; **T-P95-SUM 1183 ms** @1000; `COND-SCALE-W3-TIMEOUT-600` **CLOSED**; RERUN3 WAN ceiling 400 **superseded**; DO-W5 PG **superseded**); **DO-W3 rate-limit CLOSED**; **DO-W4 replicas+LB LIVE** |
 | **Date** | 2026-07-17 |
 | **Decision owner** | Technical Manager (TA lane) |
 | **Consumers** | Dev-FE, Dev-BE, DevOps, QA, QC, PM |
 | **Related ADRs** | `ADR-HRM-EMBED-DATA-MODE.md`, `ADR-HRM-RBAC-SCOPE-LADDER.md` |
 | **Spec refs** | `docs/hrm/SRS.md` §UC-HRM-SCOPE / AC-INT-SCOPE-G-01 (≥1000 NV UAT); `docs/hrm/TECHSPEC.md` §2–4; `docs/hrm/HRM_MENU_DATA_LINKAGE_MATRIX.md` §1–2 (`N_EMP(*) ≥ 1000`); `docs/ecosystem/NFR_OBSERVABILITY_SECURITY_BASELINE.md` |
 | **Evidence (as-is)** | `docs/qa/evidence/cd-fb-03-hrm-perf-audit-20260620.md`, `p1-hrm-perf-{be-01,fe-01,fe-04}-20260620.md`, `p1-hrm-console-audit-20260716.md`, `p1-hrm-console-audit-qa-retest-20260716.md` |
+| **Evidence (W1 FE close)** | `docs/qa/evidence/p1-hrm-scale-fe-w1-20260717.md`, `p1-hrm-scale-fe-w1-deploy-20260717.md`, `p1-hrm-scale-qa-w1-20260717.md`, **`qc-p1-hrm-scale-w1-20260717.md`** (GO WITH CONDITIONS) |
+| **Evidence (W2 FE picker close)** | `docs/qa/evidence/p1-hrm-scale-fe-w2-20260717.md`, `p1-hrm-scale-fe-w2-deploy-20260717.md` (HEAD `5d27676`), `p1-hrm-scale-qa-w2-20260717.md`, **`qc-p1-hrm-scale-w2-20260717.md`** (GO WITH CONDITIONS) |
+| **Evidence (W3 T-CONC)** | Baseline/QC: `p1-hrm-scale-w3-t-conc-20260717.md`, `qc-p1-hrm-scale-w3-20260717.md` (50 VU); DO-W2 re-run: `p1-hrm-scale-w3-t-conc-rerun-20260717.md`, `qc-p1-hrm-scale-w3-rerun-20260717.md` (200 VU, 429@400); **DO-W3:** `p1-hrm-scale-do-w3-20260717.md` (rate-limit CLOSED); **QC rerun2:** `qc-p1-hrm-scale-w3-rerun2-20260717.md`; **DO-W4:** `p1-hrm-scale-do-w4-20260717.md` + `_p1-hrm-scale-do-w4-t-conc-raw-20260717.json` (**VPS-local** `:3101` **1000 VU PASS**, `t_conc_met=true`); WAN console `_p1-hrm-scale-do-w4-t-conc-console-20260717.txt` = **not** capacity SoT; **QC RERUN3:** `qc-p1-hrm-scale-w3-rerun3-20260717.md` (NO-GO on WAN — **superseded** for ceiling); **QC RERUN4:** `qc-p1-hrm-scale-w3-rerun4-20260717.md` (**GWC**) |
 
 ---
 
@@ -22,7 +25,7 @@
 | NFR class | Meaning | Current SoT |
 |-----------|---------|-------------|
 | **NFR-DATA-1k** | Workforce cardinality ≥ **1000 nhân viên** in scope (group CEO rollup) | Matrix AC-FID-01 / SRS AC-INT-SCOPE-G-01 — **met** on `:8088` (~1107–1109 rows) |
-| **NFR-CONC-1k** | Platform supports **≥1000 concurrent authenticated users** (sessions/requests) without p95 collapse or console P0 | **Not proven** — no load test evidence; pool/rate-limit/FE fan-out not sized for this |
+| **NFR-CONC-1k** | Platform supports **≥1000 concurrent authenticated users** (sessions/requests) without p95 collapse or console P0 | **GWC (RERUN4)** — VPS-local LB **1000 VU / 45s / 0% err / list p95 1481 ms**; full ADR ideal (**5 min** hold + summary p95 &lt;1s @1000) still **conditional** |
 
 This ADR treats **NFR-CONC-1k** as the primary target and treats **NFR-DATA-1k** as the **hot-path payload** that must stay efficient when many users open HRM embed simultaneously.
 
@@ -30,10 +33,12 @@ This ADR treats **NFR-CONC-1k** as the primary target and treats **NFR-DATA-1k**
 
 | Symptom | Class | Status (2026-07-17) |
 |---------|-------|---------------------|
-| Slow Employees / Dashboard mount | Perf P0/P1 | Partially mitigated (summary + iframe soft nav); **list still fans ~12× `GET /employees`** |
+| Slow Employees / Dashboard mount | Perf P0/P1 | **W1 FE CLOSED** — Employees table ≤1 paged list GET (`useEmployeesPage`); summary path remains FE-04; QC GWC `qc-p1-hrm-scale-w1-20260717.md` |
+| List→profile detail×2 + multi-page list chains | Perf P1 | **CLOSED** — `D-P1-HRM-EMP-PROFILE-REQ-DEDUPE-01` (RQ `useEmployee` + restored `embedScopeKey`) |
 | React duplicate-key console | Console **P0** | **CLOSED** (QA retest PASS) after BE `ORDER BY created_at DESC, id DESC` + FE dedupe defense |
 | CC parent ×2 mount APIs | Noise P1 | Residual — portal `requestCoalescer` shipped; browser call-count QA may still be open |
-| Employees DataTable renders **full ~1100 DOM rows** | FE cost P1 | **Open** — no list virtualization; client merges all pages |
+| Satellite pickers still `listAllEmployees` | FE cost P2 | **CLOSED W2 FE picker** — insurance typeahead + company 0 dump + leave Select capped (`COND-SCALE-W2-PICKER`); **`D-HRM-ATT-NAV-STALL-01` CLOSED** (`COND-SCALE-W2-ATT-NAV`, QC `qc-d-hrm-att-nav-stall-01-20260717.md`); **insurance list fan-out CLOSED** (`COND-SCALE-W2-INS-LIST-FANOUT`, QC `qc-p1-hrm-scale-fe-w2-ins-list-20260717.md` @ `bf5067b`); residual: contracts list same class P2 |
+| Employees DataTable full ~1100 DOM | FE cost P1 | **Mitigated W1** — server page UI (page_size=50); virtualization deferred if page stays ≤50 |
 
 ### 1.3 Constraints
 
@@ -64,13 +69,14 @@ Failure if unresolved: sponsor UAT “slow / noisy console”, false PROD-ready 
 
 | Component | Behavior | Gap vs 1k scale |
 |-----------|----------|-----------------|
-| Portal `HrmWorkspaceRoute` | Stable iframe `key={embedScopeKey}` + postMessage soft nav (FE-01) | ✅ Tab switch no remount storm |
-| HRM `useEmployeesSummary` | 1× `GET /employees/summary` (FE-04) | ✅ Dashboard headcount path |
-| HRM `useEmployees` | `listAllEmployees` loop page_size=100 until `total` | ❌ Still full fan-out for Employees table / pickers |
+| HRM `useEmployees` / `useEmployeePicker` | Pickers: capped page + keyword typeahead (`useEmployeePicker`); `listAllEmployees` export-only | ✅ **W2 FE picker CLOSED** — QC GWC `qc-p1-hrm-scale-w2-20260717.md`; ❌ insurance **list** mount may still multi-page (P2 residual) |
+| HRM `useEmployeesPage` | RQ server page `page_size=50` | ✅ W1 CLOSED — T-FANOUT ≤1 |
+| HRM `useEmployee` | RQ detail key `['employee-detail', id, companyId]` | ✅ W1 — profile in-flight dedupe |
+| Portal `HrmWorkspaceRoute` | Stable iframe `key={embedScopeKey}` + postMessage soft nav | ✅ FE-01 restored in W1 (was regresssed to `key={target}`) |
 | HRM `dedupeEmployeesById` | First-wins unique by `id` | ✅ Defense after OFFSET dup era |
-| HRM QueryClient | Default `staleTime: 60_000` (App.tsx) | ⚠️ Unused by `useEmployees` (not RQ) |
+| HRM QueryClient | Default `staleTime: 60_000` (App.tsx) | ✅ Wired for Employees page + detail (W1) |
 | Portal `requestCoalescer` | In-flight (+ optional TTL) GET dedupe | ✅ Correct for portal; **not** a substitute for RQ inside HRM iframe |
-| `Employees.tsx` | Full-array `DataTable` | ❌ No virtualization / server page UI |
+| `Employees.tsx` | Server-paged DataTable (page UI) | ✅ W1 — no client merge of 1100 rows on mount |
 
 ### 3.2 BE
 
@@ -200,31 +206,46 @@ Failure if unresolved: sponsor UAT “slow / noisy console”, false PROD-ready 
 
 ### W1 — Close residual fan-out + console hygiene (execution)
 
-| work_item_id (suggested) | Owner | Scope | Exit |
-|--------------------------|-------|-------|------|
-| `P1-HRM-SCALE-FE-W1` | **dev-fe** | Replace Employees table path: RQ paged `useEmployeesPage` (no `listAllEmployees` on mount); keep `dedupeEmployeesById` defense; optional row virtualization if page_size>100 not used; confirm FE-01/FE-04 still green | Network: ≤1 list GET per page change; console P0=0; vitest on query keys |
-| `P1-HRM-SCALE-BE-W1` | **dev-be** | Spot-check list SQL EXPLAIN on rollup scope; document/add missing composite index if seq scan; ensure COUNT+ORDER use index; OpenAPI note page_size guidance | EXPLAIN evidence; jest stable ORDER BY still PASS |
-| `P1-HRM-SCALE-QA-W1` | **qa** | Browser `:8088` ceo@xe.vn — Employees + Dashboard; assert T-FANOUT, T-CONSOLE-P0, T-DEDUPE | Evidence md + screenshots |
+| work_item_id (suggested) | Owner | Scope | Exit | Status 2026-07-17 |
+|--------------------------|-------|-------|------|-------------------|
+| `P1-HRM-SCALE-FE-W1` | **dev-fe** | Replace Employees table path: RQ paged `useEmployeesPage` (no `listAllEmployees` on mount); keep `dedupeEmployeesById` defense; restore `embedScopeKey` soft nav; RQ detail `useEmployee` | Network: ≤1 list GET per page change; console P0=0; vitest on query keys | **CLOSED** — FE + deploy + QA + QC GWC |
+| `P1-HRM-SCALE-BE-W1` | **dev-be** | Spot-check list SQL EXPLAIN on rollup scope; document/add missing composite index if seq scan; ensure COUNT+ORDER use index; OpenAPI note page_size guidance | EXPLAIN evidence; jest stable ORDER BY still PASS | Parallel lane (`p1-hrm-scale-be-w1-20260717.md`) — **not** folded into FE QC verdict |
+| `P1-HRM-SCALE-QA-W1` | **qa** | Browser `:8088` ceo@xe.vn — Employees; assert T-FANOUT, T-CONSOLE-P0, T-DEDUPE, J-HRM-02 | Evidence md + screenshots | **CLOSED** — `p1-hrm-scale-qa-w1-20260717.md` PASS_TO_PM |
+| `P1-HRM-SCALE-QC-W1` | **qc** | Gate Scale FE W1 only; W2 residuals as conditions | GO / GWC; NOT Phase 1 / NOT PROD | **CLOSED** — **GO WITH CONDITIONS** `qc-p1-hrm-scale-w1-20260717.md` |
 
 **Entry:** This ADR Accepted; L0 `qc:fe-be-health` PASS.  
-**Defer to W1 end:** Full 1000-VU load (W3).
+**Defer to W1 end:** Full 1000-VU load (W3).  
+**W1 FE exit met:** T-FANOUT Employees table ≤1; profile dedupe CLOSED; iframe `_v` stable; J-HRM-02 PASS.
 
 ### W2 — Capacity hardening (API + pool)
 
-| work_item_id | Owner | Scope | Exit |
-|--------------|-------|-------|------|
-| `P1-HRM-SCALE-BE-W2` | **dev-be** | Indexes migrated; reduce double-COUNT if needed; typeahead/search endpoint for pickers still using full dump (`keyword` + limit) | Migration + EXPLAIN; picker consumers switched off `listAllEmployees` where possible |
-| `P1-HRM-SCALE-FE-W2` | **dev-fe** | Migrate remaining `listAllEmployees` call sites (insurance/decisions pickers → search or capped pages); settings-catalogs RQ unify if still open (FE-03) | Grep `listAllEmployees` = export-only or zero |
-| `P1-HRM-SCALE-DO-W2` | **devops** | Tune hrm-api PG pool + rate-limit for pilot; metrics dashboards for list/summary p95; document in `PRODUCTION_ENABLE_RUNBOOK` delta | `pg_pool_waiting_count` under synthetic 100 VU smoke |
+| work_item_id | Owner | Scope | Exit | Status 2026-07-17 |
+|--------------|-------|-------|------|-------------------|
+| `P1-HRM-SCALE-BE-W2` | **dev-be** | Indexes migrated; reduce double-COUNT if needed; typeahead/search endpoint for pickers still using full dump (`keyword` + limit) | Migration + EXPLAIN; picker consumers switched off `listAllEmployees` where possible | Parallel lane — **OPEN** (not folded into FE picker QC) |
+| `P1-HRM-SCALE-FE-W2` | **dev-fe** | Migrate remaining `listAllEmployees` call sites (insurance/decisions pickers → search or capped pages); settings-catalogs RQ unify if still open (FE-03) | Grep `listAllEmployees` = export-only or zero | **PICKER CLOSED** — FE + deploy `5d27676` + QA + **QC GWC** `qc-p1-hrm-scale-w2-20260717.md`; `COND-SCALE-W2-PICKER` **CLOSED** |
+| `P1-HRM-SCALE-QA-W2` | **qa** | Browser `:8088` — insurance/company/leave picker Network + J-HRM-02 regression | Evidence md + screenshots | **CLOSED** — `p1-hrm-scale-qa-w2-20260717.md` PASS_TO_PM |
+| `P1-HRM-SCALE-QC-W2` | **qc** | Gate Scale FE W2 picker only; residual att-nav + list fan-out as conditions | GO / GWC; NOT Phase 1 / NOT PROD | **CLOSED** — **GO WITH CONDITIONS** `qc-p1-hrm-scale-w2-20260717.md` |
+| `P1-HRM-SCALE-DO-W2` | **devops** | Tune hrm-api PG pool + rate-limit for pilot; metrics dashboards for list/summary p95; document in `PRODUCTION_ENABLE_RUNBOOK` delta | `pg_pool_waiting_count` under synthetic 100 VU smoke | **OPEN** |
+| `D-HRM-ATT-NAV-STALL-01` | **dev-fe** → **qc** | Soft-nav out of Attendance stalls (found in W2 QA cross-nav) | Soft-nav leave Attendance renders target view; `_v` stable | **CLOSED** — `COND-SCALE-W2-ATT-NAV` closed by QC `qc-d-hrm-att-nav-stall-01-20260717.md` @ HEAD `96651c7` (ENV Vite repair + QA retest PASS; does **not** reopen W1 profile CLOSED) |
+| `P1-HRM-SCALE-FE-W2-INS-LIST` | **dev-fe** → **devops** → **qa** → **qc** | Insurance **list** mount fan-out (page=1..11) → cap page=1 + honest total + explicit «Tải thêm» | Mount ≤1–2 list GETs; 0 auto page≥2; +1 page=2 on load-more; W2 picker / ATT-NAV / J-HRM-02 regression green | **CLOSED** — `COND-SCALE-W2-INS-LIST-FANOUT` closed by QC `qc-p1-hrm-scale-fe-w2-ins-list-20260717.md` @ HEAD `bf5067b`; residual: contracts list same class P2 |
+
+**W2 FE picker exit met:** Insurance ≤1+keyword; company 0 mount dump; leave Select capped; J-HRM-02 PASS. **ATT-NAV exit met:** soft-nav leave Attendance ×2 + J-HRM-02 @ `96651c7`. **INS-LIST exit met:** mount 1× page=1 + honest total 1043 + «Tải thêm» +1 page=2 @ `bf5067b` — `COND-SCALE-W2-INS-LIST-FANOUT` **CLOSED** (QC `qc-p1-hrm-scale-fe-w2-ins-list-20260717.md`). **Residual:** contracts list fan-out P2 (same class); T-CONC → W3.
 
 ### W3 — Concurrent-user proof + stretch
 
-| work_item_id | Owner | Scope | Exit |
-|--------------|-------|-------|------|
-| `P1-HRM-SCALE-DO-W3` | **devops** | Load test **1000 concurrent** (staged ramp); capture p95/error budget vs T-CONC / T-P95-LIST | Evidence under `docs/qa/evidence/` or `docs/ops/evidence/` |
-| `P1-HRM-SCALE-BE-W3` | **dev-be** | **Only if** T-P95-LIST fails under load: keyset cursor pagination (Option C slice) | OpenAPI + ADR amend |
-| `P1-HRM-SCALE-QA-W3` | **qa** | Retest UF/J-HRM-* regression + console P0=0 after any BE cursor change | PASS_TO_PM |
-| `P1-HRM-SCALE-QC-W3` | **qc** | Gate GO/GWC on T-* evidence pack | Go/No-Go |
+| work_item_id | Owner | Scope | Exit | Status 2026-07-17 |
+|--------------|-------|-------|------|-------------------|
+| `P1-HRM-SCALE-W3-T-CONC` | **devops** | Load test **1000 concurrent** (staged ramp); capture p95/error budget vs T-CONC / T-P95-LIST | Evidence under `docs/qa/evidence/` or `docs/ops/evidence/` | **GWC met (RERUN4)** — VPS-local LB **1000 VU** PASS (0% err, list p95 **1481 ms**, 45s holds); full 5min endurance still **COND-SCALE-W3-HOLD-5MIN** |
+| `P1-HRM-SCALE-DO-W2` | **devops** | Tune pool/replica/runtime bottleneck identified by W3 probe; `pg_pool_waiting_count` visibility | Pool evidence + re-probe entry | **CLOSED** (pool=40; ceiling 50->200 VU) — condition for T-CONC re-run |
+| `P1-HRM-SCALE-BE-W2` | **dev-be** | Covering indexes + query-count pressure reduction on list hot path | Migration/EXPLAIN + regression evidence | **CLOSED** (`0016` applied; git 2a7a02b) — condition for T-CONC re-run |
+| `P1-HRM-SCALE-DO-W3-REPLICA` | **devops** | Rate-limit budget tuning + horizontal HRM-BE replicas behind nginx upstream (re-run 429 cliff @400 VU) | Re-probe 400->1000 VU + pool/429 visibility | **PARTIAL CLOSED** — rate-limit **120000**/min; `COND-SCALE-W3-RATE-LIMIT-400` **CLOSED**; timeout residual cleared by DO-W4 VPS-local |
+| `P1-HRM-SCALE-DO-W4-REPLICA` | **devops** | ≥2 hrm-be + `hrm-api-lb` least_conn `:3101`; pool 20+20; `node dist/main`; T-CONC via LB | Re-probe 400→1000 via LB | **CLOSED** — topology LIVE; VPS-local **400/600/800/1000 PASS**; `t_conc_met=true`; `COND-SCALE-W3-TIMEOUT-600` **CLOSED** (QC RERUN4) |
+| `P1-HRM-SCALE-DO-W5-PG-HEADROOM` | **devops** | Measure/raise Postgres headroom under 600 VU cliff; re-probe via LB; **no 4× replicas before PG proof** | PG evidence + re-probe 400→1000 | **SUPERSEDED** — timeout@600 cleared on VPS-local SoT; reopen only if 5min hold FAIL or PG saturation proven |
+| `P1-HRM-SCALE-BE-W3` | **dev-be** | **Only if** T-P95-LIST still fails: keyset cursor pagination (Option C slice) | OpenAPI + ADR amend | **DEFERRED** — list p95 **PASS** (&lt;2s) @1000; optional **T-P95-SUM** residual @1000 (1183 ms) |
+| `P1-HRM-SCALE-QA-W3` | **qa** | Retest UF/J-HRM-* regression + console P0=0 after any BE cursor change | PASS_TO_PM | **NOT RUN** for W3 T-CONC probe; no UF promoted |
+| `P1-HRM-SCALE-QC-W3` | **qc** | Gate GO/GWC/NO-GO on T-* evidence pack | Go/No-Go | **GO WITH CONDITIONS** — **RERUN4** `qc-p1-hrm-scale-w3-rerun4-20260717.md` (VPS-local 1000 VU PASS; RERUN3 WAN NO-GO **superseded**; conditions: 45s vs 5min hold + T-P95-SUM 1183 ms); **NOT** Phase 1 / **NOT** PROD |
+
+**W3 QC status (RERUN4):** T-CONC = **GO WITH CONDITIONS**. Capacity SoT = **VPS-local** `127.0.0.1:3101` only — **WAN Windows→:3101 is not capacity SoT** (RERUN3 console noise superseded). Proven: **1000 VU**, error **0%**, list p95 **1481 ms &lt;2s**, stages 400→1000 all PASS under **45s** holds. `COND-SCALE-W3-TIMEOUT-600` **CLOSED**. Residuals: `COND-SCALE-W3-HOLD-5MIN` (optional 5min re-probe); `COND-SCALE-W3-T-P95-SUM-1000` (summary p95 **1183 ms**). DO-W5 PG headroom **SUPERSEDED**. Read-only NFR — **no** UF promote; **not** Phase 1 / **not** PROD.
 
 ---
 

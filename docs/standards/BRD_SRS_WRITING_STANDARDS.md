@@ -1,19 +1,23 @@
 # Chuẩn Viết BRD & SRS — XeVN Ecosystem
 
 > **Áp dụng cho:** Toàn bộ sub-agent (SA, BA-Process, BA-Data, Dev-BE, Dev-FE, PM) khi soạn tài liệu thiết kế hệ thống.
-> **Cập nhật lần cuối:** 21/05/2026
+> **Cập nhật lần cuối:** 22/07/2026 · **SA-SPEC-OS-ALIGN-01** (brand P0 + OS SoT links)
 
 ### Agent — SRS khách XeVN (đọc trước khi làm việc)
 
 | Việc | Nguồn |
 |------|--------|
+| **OS chất lượng (SoT MUST)** | `projects/_vibe-team-os/13-BRD-SRS-TECHSPEC-QUALITY.md` (§3.4 FR đồng nhất · failure-first · Kết quả trả về · skeleton · dual-doc · TechSpec depth) |
+| **OS truy vết** | `projects/_vibe-team-os/14-TRACEABILITY-SRS-TECHSPEC-CODE.md` (`ref_srs` · CODE-MEMORY VI · ADD/UPGRADE) |
 | Quy trình đầy đủ (global) | `~/.cursor/skills/client-delivery-brd-srs/SKILL.md` + subagent **`@ba-docs`** |
 | XeVN paths | `.cursor/skills/client-delivery-docs/PROJECT_PROFILE.md` |
+| Gap register | `docs/program/SPEC_CODE_TRACEABILITY_GAP_REGISTER.md` |
 | Bài học global | `~/.cursor/knowledge-base/client-delivery-brd-srs.md` |
 | Mẫu viết FR | `E-Office-Bateco/document_HDSD/02_Tai_lieu_nghiep_vu.md` + `docs/srs-overrides/_TEMPLATE_FR.md` |
 | Build | `pnpm docs:srs:audit` → `pnpm docs:srs:html` |
 | Kiểm sơ đồ | `node scripts/audit-mermaid-diagrams.mjs` (BRD); Việt hóa **không** sửa trong ` ```mermaid ` |
 | **Mặc định** | SRS **6 chương Bateco**, **373 FR × 7 mục** — **không** revert 8 chương / 12 mục UC / REQ-SRS |
+| **Shell HTML** | TSCAir + logo `docs/client-delivery/assets/xevn-logo.png` · footer **XeVN Group** (cấm UNICOM trên deliverable / chuẩn viết) |
 
 ---
 
@@ -34,11 +38,12 @@
 ## 2. Cấu trúc BRD chuẩn (9 chương)
 
 ```
-Trang Bìa (Cover) — **bắt buộc giống mẫu TSCAir/Unicom** (`doc-page cover`, không dùng `.hero`):
+Trang Bìa (Cover) — **bắt buộc giống layout TSCAir** (shell XeVN, không dùng `.hero`):
   - `accent-bar` + `header` (mã tài liệu trái, phiên bản phải) + `divider`
-  - `logo-wrap` (logo `docs/client-delivery/assets/logo-unicom.png`, base64 trong HTML gửi khách)
+  - `logo-wrap` (logo XeVN `docs/client-delivery/assets/xevn-logo.png`, base64 trong HTML gửi khách)
   - `doc-label`, `project-title` (`.eo` / `.bateco`), `subtitle`, `meta-info`
-  - `footer`: UNICOM TECHNOLOGY SOLUTIONS CO., LTD · `© 2026 — All Rights Reserved`
+  - `footer`: **XeVN Group** · `© 2026 — All Rights Reserved` (cấm footer UNICOM legacy)
+  - Mã tài liệu: `XEVN/BRD-*` / `XEVN/SRS-*` (vd. `XEVN/BRD-XEVN-OS-001`) — cấm `UNICOM/*`
   - Build: `node scripts/build-brd-xevn-html.mjs` / `node scripts/build-srs-xevn-html.mjs`
 
 Chương 1. Tóm tắt điều hành & Bài toán nghiệp vụ
@@ -113,6 +118,20 @@ Chương 6. Ràng buộc nghiệp vụ tổng quát (BR-ECO, BR-CAT, …)
 ```
 
 **Không đưa vào SRS gửi khách (khác mẫu Bateco):** Chương 0 meta pipeline; 8 chương kỹ thuật tách rời; Phụ lục traceability REQ-SRS; 12 mục/UC (Kiểm chứng, bảng mã lỗi 6 dòng/UC, Metadata STT/REQ-ID); `stat-row` / `flow-box` HTML tùy biến (dùng markdown số thứ tự như Bateco).
+
+### 3.1 OS MUST bổ sung (bám `_vibe-team-os/13` §3.4 — chưa đủ nếu chỉ đếm 7 tiêu đề)
+
+| OS § | Yêu cầu MUST | Áp dụng XeVN |
+|------|--------------|--------------|
+| **3.4.2** | Diễn biến: auth ≤2 dòng · success ≥40% · fail domain ≥30% | Bắt buộc khi remaster / ADD FR; audit `docs:srs:audit` **chưa** đếm tỷ lệ → gap **G-RULE-02** |
+| **3.4.6** | Mục **Kết quả trả về khi thành công** (người dùng thấy · bản ghi · khóa · trạng thái · UC mở khóa) | Bắt buộc trên FR mới / remaster; bổ sung `_TEMPLATE_FR.md` (gap **G-RULE-05**) |
+| **3.4.7** | Remaster **ADD-only** — không giảm số dòng đầu vào / quy tắc | QC so sánh bản trước; cấm wipe stub |
+| **3.4.8** | Skeleton Ch.4–6 trong **body** + inventory UC từ BRD | HTML SRS XeVN đã có 6 chương; inventory SoT = catalog 373 + module khách |
+| **3.4.10** | Dual-doc: bản khách = SoT đầy đủ; `*_team.md` = clone + path | Module HRM/XBOS: `SRS_*_KHACH.md` + team `docs/*/SRS.md` |
+| **3.4.11** | TechSpec: ma trận `Bước# → API → bảng` + file `DB_DESIGN_*` / `API_DESIGN_*` (field-level) | Team TechSpec có `ref_srs` / §17 matrix **PARTIAL**; thiếu chuẩn bắt buộc trong file này → **G-RULE-03** |
+| **14** | Mọi block TechSpec có `ref_srs`; CODE-MEMORY VI trỏ FR/UC + bước | Policy global + wave SA; coverage chưa 100% |
+
+Chi tiết gap: `docs/program/SPEC_CODE_TRACEABILITY_GAP_REGISTER.md` §1 · evidence `docs/qa/evidence/sa-spec-os-align-01-20260722.md`.
 
 ---
 
@@ -215,7 +234,7 @@ Tài liệu chuẩn đã được viết và phê duyệt (dùng làm mẫu):
 
 ## 9. Kiểm tra nhanh trước khi submit
 
-- [ ] Trang bìa TSCAir: `doc-page cover`, logo UNICOM, mã `UNICOM/BRD-*` hoặc `UNICOM/SRS-*`, **không** class `hero-title`
+- [ ] Trang bìa TSCAir: `doc-page cover`, logo XeVN (`xevn-logo.png`), mã `XEVN/BRD-*` hoặc `XEVN/SRS-*`, footer **XeVN Group**, **không** class `hero-title` / UNICOM legacy
 - [ ] BRD/SRS: sơ đồ kiến trúc PNG và Mermaid sequence/flowchart **hiển thị hình** (không để text/raw) — build `pnpm docs:client-delivery:html`
 - [ ] Tham chiếu tài liệu: ghi **tên tài liệu**, không ghi đường dẫn file `.md` / `docs/...`
 - [ ] BRD: 373 UC — mục 7.5, 8.5, 9.5 và Phụ lục A
@@ -229,6 +248,9 @@ Tài liệu chuẩn đã được viết và phê duyệt (dùng làm mẫu):
 - [ ] Không có meta agent (Writing Standards, pipeline, audit, path `docs/` trong narrative)
 - [ ] Văn phong tiếng Việt thuần — không câu Anh–Việt lẫn trong thân tài liệu khách
 - [ ] SRS: `pnpm docs:srs:audit` → 373/373; build `ok=true`
+- [ ] (OS §3.4.6) FR remaster / mới có **Kết quả trả về khi thành công** — không chỉ «Thành công»
+- [ ] (OS §3.4.2) Spot-check Diễn biến: auth ≤2 · có ≥3 bước success nghiệp vụ · fail domain sâu
+- [ ] Ctrl+F deliverable: không còn `UNICOM`, meta pipeline, path `docs/` trong narrative khách
 
 ---
 
@@ -238,23 +260,26 @@ Tài liệu chuẩn đã được viết và phê duyệt (dùng làm mẫu):
 
 | Artifact | Đường dẫn |
 |----------|-----------|
+| OS SoT chất lượng | `projects/_vibe-team-os/13-BRD-SRS-TECHSPEC-QUALITY.md` |
+| OS SoT truy vết | `projects/_vibe-team-os/14-TRACEABILITY-SRS-TECHSPEC-CODE.md` |
 | Rule (file docs/client-delivery, build script) | `.cursor/rules/client-delivery-docs.mdc` |
-| Skill (quy trình đầy đủ) | `.cursor/skills/client-delivery-docs/SKILL.md` |
+| Skill (quy trình đầy đủ) | `.cursor/skills/client-delivery-docs/SKILL.md` (+ global `client-delivery-brd-srs`) |
 | KB ngắn (lessons) | `.cursor/knowledge-base/client-delivery-docs.md` |
+| Gap / alignment | `docs/program/SPEC_CODE_TRACEABILITY_GAP_REGISTER.md` |
 
 **Lệnh build (agent tự chạy, không nhờ user):**
 
 ```bash
 pnpm docs:client-delivery:html    # BRD + SRS
 pnpm docs:srs:api-hints           # trước khi cập nhật bảng API SRS
-pnpm docs:srs:audit               # rubric 12 mục / UC
+pnpm docs:srs:audit               # gate 7 mục / FR × 373 — không phải rubric 12 mục cũ
 pnpm docs:srs:html                # chỉ SRS
 ```
 
 **Vai trò:**
 
 - **BA-Process / BA-Data:** UC, BR, AC → `docs/srs-overrides/` hoặc BRD markdown; không paste vào HTML.
-- **SA:** Ch.1–4 SRS, API catalog; giữ shell TSCAir.
+- **SA:** Ch.1–4 SRS, API catalog, TechSpec `ref_srs` + ma trận bước→API→DB (OS §3.4.11); giữ shell TSCAir **XeVN Group**.
 - **PM:** Chỉ gửi khách sau build `ok=true` + spot-check bìa/TOC trên trình duyệt.
 
-**Subagent Task:** khi dispatch BA/SA/PM cho BRD/SRS khách, ghi trong prompt: *Đọc skill `client-delivery-docs` và tuân `BRD_SRS_WRITING_STANDARDS.md`; cấm meta prompt trong deliverable.*
+**Subagent Task:** khi dispatch BA/SA/PM cho BRD/SRS khách, ghi trong prompt: *Đọc OS `_vibe-team-os/13` + `14`, skill `client-delivery-docs`, tuân `BRD_SRS_WRITING_STANDARDS.md`; cấm meta prompt / UNICOM trong deliverable.*
