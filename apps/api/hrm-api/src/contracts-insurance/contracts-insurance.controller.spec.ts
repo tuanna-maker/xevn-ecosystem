@@ -3,6 +3,7 @@ import { createHmac } from 'node:crypto';
 import { PATH_METADATA } from '@nestjs/common/constants';
 import { ContractsInsuranceController } from './contracts-insurance.controller';
 import { ContractsInsuranceService } from './contracts-insurance.service';
+import { EmployeeCompensationService } from './employee-compensation.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
@@ -28,12 +29,24 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
     listExpiringInsurance: jest.fn().mockResolvedValue({ total: 1, days: 30, data: [{ id: 'ins-1' }] }),
   };
 
+  const compensationMock = {
+    createPackage: jest.fn().mockResolvedValue({ id: 'pkg-1', version: 1, lines: [] }),
+    listPackages: jest.fn().mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
+    getPackageById: jest.fn().mockResolvedValue({ id: 'pkg-1', lines: [] }),
+    getActivePackage: jest.fn().mockResolvedValue(null),
+    revisePackage: jest.fn().mockResolvedValue({ id: 'pkg-2', version: 2, lines: [] }),
+    listHistory: jest.fn().mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     process.env.INTERNAL_API_KEY = 'test-key';
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ContractsInsuranceController],
-      providers: [{ provide: ContractsInsuranceService, useValue: serviceMock }],
+      providers: [
+        { provide: ContractsInsuranceService, useValue: serviceMock },
+        { provide: EmployeeCompensationService, useValue: compensationMock },
+      ],
     }).compile();
 
     controller = module.get<ContractsInsuranceController>(ContractsInsuranceController);
@@ -43,6 +56,7 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
     const createContractRes = await controller.createContract(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      position_key: 'NV_KD',
       contract_type: 'fixed_term',
       start_date: '2026-04-01',
       end_date: '2026-12-31',
@@ -115,6 +129,7 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
     const contractBody = {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      position_key: 'NV_KD',
       contract_type: 'permanent',
       start_date: '2026-04-01',
       end_date: '2027-04-01',
@@ -191,6 +206,7 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       controller.createContract(`Bearer ${token}`, undefined, 'xevn', undefined, {
         company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        position_key: 'NV_KD',
         contract_type: 'fixed_term',
         start_date: '2026-04-01',
         end_date: '2026-12-31',
