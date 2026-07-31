@@ -30,6 +30,12 @@
  * must_keep: SoftDel ⋯→Xóa→AlertDialog→archive; row click→profile; open=false không throw
  * Impact: Employees list mounts với rows; SoftDel menu reachable
  * LastVerified: EmployeeFormDialog.mount-guard.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 DO-HDSD-MUTATE-SOFTDEL-EMP-FORM-REDEPLOY-03B
+ * change_mode: FIX
+ * What: Drop ViDateField import (file never shipped) — restore Input type=date for start/birth
+ * Why: Vite Failed to resolve @/components/ui/ViDateField → Employees SoftDel still blocked on :8088
+ * must_keep: SoftDel catalog guard; ViMoneyInput salary path (already on VPS 7c03091)
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +58,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
-import { ViDateField } from '@/components/ui/ViDateField';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -735,7 +740,7 @@ export function EmployeeFormDialog({
                       <FormItem>
                         <FormLabel>{basicLabel('start_date', t('employees.startDate'))}</FormLabel>
                         <FormControl>
-                          <ViDateField value={field.value ?? ''} onValueChange={field.onChange} onBlur={field.onBlur} />
+                          <Input type="date" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -852,7 +857,7 @@ export function EmployeeFormDialog({
                       <FormItem>
                         <FormLabel>{personalLabel('birth_date', t('employeeForm.birthDate'))}</FormLabel>
                         <FormControl>
-                          <ViDateField value={field.value ?? ''} onValueChange={field.onChange} onBlur={field.onBlur} />
+                          <Input type="date" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
