@@ -5,8 +5,12 @@ import {
   buildAttendanceCheckInMap,
   composeTeamDirectoryMembers,
   countTeamDirectoryFilterOptions,
+  DIRECTORY_SEARCH_DEBOUNCE_MS,
+  DIRECTORY_SEARCH_MIN_CHARS,
   filterTeamDirectoryBySearch,
+  foldDirectorySearchText,
   groupTeamDirectoryByDepartment,
+  normalizeDirectorySearchQuery,
   resolveDepartmentColorStrip,
   resolveListEmployeeDepartment,
   resolveTeamCheckInStatus,
@@ -124,7 +128,16 @@ describe('applyTeamDirectoryFilters', () => {
     ]),
   );
 
+  it('normalizes search per SRS R1 (min 2 chars) and NFR debounce constant', () => {
+    expect(DIRECTORY_SEARCH_MIN_CHARS).toBe(2);
+    expect(DIRECTORY_SEARCH_DEBOUNCE_MS).toBe(300);
+    expect(normalizeDirectorySearchQuery('N')).toBe('');
+    expect(normalizeDirectorySearchQuery('  ')).toBe('');
+    expect(normalizeDirectorySearchQuery('Nguyễn')).toBe('Nguyễn');
+  });
+
   it('filters by search query on name, code, department, and job title', () => {
+    expect(filterTeamDirectoryBySearch(members, 'N')).toHaveLength(3);
     expect(filterTeamDirectoryBySearch(members, 'huỳnh')).toHaveLength(1);
     expect(filterTeamDirectoryBySearch(members, 'NV300')).toHaveLength(1);
     expect(filterTeamDirectoryBySearch(members, 'lái xe')).toHaveLength(1);
@@ -132,6 +145,21 @@ describe('applyTeamDirectoryFilters', () => {
     expect(applyTeamDirectoryFilters(members, 'checked_in', '')).toHaveLength(2);
     expect(applyTeamDirectoryFilters(members, 'off', '')).toHaveLength(1);
     expect(applyTeamDirectoryFilters(members, 'all', 'lê')).toHaveLength(1);
+  });
+
+  it('AC-DIR-01: ASCII Nguyen matches accented Nguyễn (fold)', () => {
+    expect(foldDirectorySearchText('Nguyễn')).toBe('nguyen');
+    expect(filterTeamDirectoryBySearch(members, 'Nguyen')).toHaveLength(0);
+    const withNguyen = composeTeamDirectoryMembers(
+      [emp('e9', 'Nguyễn Văn A', 'HLD-0099', 'engineer', 'Ban Điều hành')],
+      new Map(),
+    );
+    expect(filterTeamDirectoryBySearch(withNguyen, 'Nguyen')).toHaveLength(1);
+    expect(filterTeamDirectoryBySearch(withNguyen, 'ZzzNoMatch999')).toHaveLength(0);
+  });
+
+  it('R2: nonsense query yields empty for empty-state copy path', () => {
+    expect(applyTeamDirectoryFilters(members, 'all', 'ZzzNoMatch999')).toHaveLength(0);
   });
 
   it('counts filter chip totals', () => {

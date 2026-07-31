@@ -11,7 +11,7 @@ import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { colors, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { resolveAttendanceChangeTypeVi } from '../../utils/attendanceUpdateTypes';
 import { formatHrmDate } from '../../utils/formatHrm';
 import { userFacingScopeError } from '../../utils/scopeError';
@@ -169,14 +169,14 @@ const styles = StyleSheet.create({
   },
   errWrap: { paddingHorizontal: spacing.md, paddingBottom: spacing.sm },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: statusToneColor('danger').border,
     padding: spacing.md,
   },
   errorText: {
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
   },

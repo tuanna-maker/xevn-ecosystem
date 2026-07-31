@@ -5,7 +5,6 @@ const hrmRequest = vi.fn();
 
 vi.mock('../hrmApiClient', () => ({
   hrmRequest: (...args: unknown[]) => hrmRequest(...args),
-  resolveHrmCompanyHeaderId: (_uuid?: string | null, slug?: string | null) => slug ?? 'holding',
 }));
 
 vi.mock('../mapApiError', () => ({
@@ -13,7 +12,7 @@ vi.mock('../mapApiError', () => ({
 }));
 
 const auth = {
-  baseUrl: 'https://14-225-217-232.nip.io',
+  baseUrl: 'http://127.0.0.1:28001',
   accessToken: 'tok',
   companyId: 'holding',
   companyUuid: 'uuid-holding',
@@ -32,7 +31,7 @@ describe('fetchEmployeeDirectoryDetail', () => {
         employee_code: 'NV0002',
         full_name: 'UAT NV0002',
         job_title_key: 'engineer',
-        department: 'Vận tải',
+        department: 'Váº­n táº£i',
         avatar_url: null,
         status: 'active',
         manager_id: null,
@@ -47,7 +46,7 @@ describe('fetchEmployeeDirectoryDetail', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.row.full_name).toBe('UAT NV0002');
-      expect(result.row.department).toBe('Vận tải');
+      expect(result.row.department).toBe('Váº­n táº£i');
     }
     expect(hrmRequest).toHaveBeenCalledTimes(1);
     const [, path] = hrmRequest.mock.calls[0];
@@ -61,14 +60,14 @@ describe('fetchEmployeeDirectoryDetail', () => {
     hrmRequest.mockResolvedValueOnce({
       ok: false,
       code: 'HRM-404',
-      message: 'Không tìm thấy nhân viên.',
+      message: 'KhĂ´ng tĂ¬m tháº¥y nhĂ¢n viĂªn.',
       requestId: 'r1',
     });
 
     const result = await fetchEmployeeDirectoryDetail(auth, 'missing');
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.message).toContain('Không tìm thấy');
+      expect(result.message).toContain('KhĂ´ng tĂ¬m tháº¥y');
     }
   });
 

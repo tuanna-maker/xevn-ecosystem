@@ -9,11 +9,20 @@ import { EssRichListRow } from '../../components/ui/EssRichListRow';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError } from '../../integrations/mapApiError';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
+import { colors, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { formatHrmDate } from '../../utils/formatHrm';
 import { resolveContractTypeLabel } from '../../utils/profileTabs';
 import { userFacingScopeError } from '../../utils/scopeError';
+
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-MOB-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: Pass statusLabel VI for contract/insurance EssRichListRow badges
+ * Why: U72 M-F-01 raw active/expired/terminated
+ * must_keep: resolveContractTypeLabel; U65 · HOLD_DEPLOY
+ */
 
 type Contract = {
   id: string;
@@ -143,6 +152,7 @@ export function ContractsScreen() {
                 title={resolveContractTypeLabel(item.contract_type)}
                 subtitle={`${formatHrmDate(item.start_date)} → ${formatHrmDate(item.end_date)}`}
                 status={item.status}
+                statusLabel={statusLabel(item.status)}
               />
             </ElevatedCard>
           ))}
@@ -159,6 +169,7 @@ export function ContractsScreen() {
                 title={item.provider}
                 subtitle={`${item.policy_number} · hết hạn ${formatHrmDate(item.expiry_date)}`}
                 status={item.status}
+                statusLabel={statusLabel(item.status)}
               />
             </ElevatedCard>
           ))}
@@ -176,15 +187,15 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: statusToneColor('danger').border,
     padding: spacing.md,
     marginBottom: spacing.md,
   },
   errorText: {
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
   },

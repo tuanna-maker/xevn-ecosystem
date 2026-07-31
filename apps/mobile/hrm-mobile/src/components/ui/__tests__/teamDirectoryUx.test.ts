@@ -17,6 +17,22 @@ describe('MOB-UX-12b team directory UX (SET G-2)', () => {
     expect(screen).not.toContain('@shopify/flash-list');
   });
 
+  it('TeamDirectoryScreen wires NFR-W7-04 debounce, R2 empty copy, and ≥44px search', () => {
+    const screen = readSrc('features/team/TeamDirectoryScreen.tsx');
+    expect(screen).toContain('DIRECTORY_SEARCH_DEBOUNCE_MS');
+    expect(screen).toContain('Không tìm thấy nhân viên');
+    expect(screen).toContain('minHeight: 44');
+    expect(screen).toContain('loadTeamDirectoryWithAttendance');
+    expect(screen).toContain('TeamColleagueDetail');
+    // PCOMP-W7-MOB-DIRECTORY-SEARCH-01 — client filter must use debouncedSearch (not '')
+    expect(screen).toContain("applyTeamDirectoryFilters(members, filter, debouncedSearch)");
+    expect(screen).toContain('team-directory-empty');
+    // PCOMP-W7-MOB-DIRECTORY-01 — Plane B slug query (not header UUID helper)
+    expect(screen).toContain("from '../../integrations/companyWireScope'");
+    expect(screen).toContain('resolveDirectoryQueryCompanyId');
+    expect(screen).not.toContain("from '../../integrations/hrmApiClient'");
+  });
+
   it('TeamDirectoryRow uses avatar ring, dept strip, attendance dot, localized job title', () => {
     const row = readSrc('components/team/TeamDirectoryRow.tsx');
     expect(row).toContain('EmployeeAvatarRing');

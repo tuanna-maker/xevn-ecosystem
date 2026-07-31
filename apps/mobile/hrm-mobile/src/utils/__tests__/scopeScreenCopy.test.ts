@@ -9,6 +9,8 @@ import {
   resolveScopeScreenSubtitle,
 } from '../scopeScreenCopy';
 
+const TRSPORT_PLANE_A = 'Công ty Cổ phần Thương mại và Dịch vụ X.E';
+
 describe('scopeScreenCopy — MOB-UX-16d ILA-07', () => {
   it('resolveAuthRolesVi maps JWT roles to Vietnamese', () => {
     expect(resolveAuthRolesVi(['manager', 'hr_manager'])).toBe('Quản lý, Quản lý nhân sự');
@@ -20,15 +22,15 @@ describe('scopeScreenCopy — MOB-UX-16d ILA-07', () => {
     expect(resolveScopeScreenSubtitle(false)).not.toMatch(/Member CEO/i);
   });
 
-  it('operating unit subtitles avoid raw slug tokens', () => {
+  it('operating unit subtitles sanitize Khối API labels to Plane A', () => {
     expect(resolveRollupOperatingUnitSubtitle()).toBe('Xem dữ liệu toàn tập đoàn');
-    expect(
-      resolveOperatingUnitRowSubtitle({
-        operating_slug: 'trsport',
-        display_name_vi: 'Khối Vận tải X.E',
-        rollup_order: 2,
-      }),
-    ).toBe('Lọc danh sách theo Khối Vận tải X.E');
+    const subtitle = resolveOperatingUnitRowSubtitle({
+      operating_slug: 'trsport',
+      display_name_vi: 'Khối Vận tải X.E',
+      rollup_order: 2,
+    });
+    expect(subtitle).toBe(`Lọc danh sách theo ${TRSPORT_PLANE_A}`);
+    expect(subtitle).not.toMatch(/Khối/);
   });
 
   it('membership row title uses Vietnamese company label', () => {
@@ -43,7 +45,7 @@ describe('scopeScreenCopy — MOB-UX-16d ILA-07', () => {
         company_display: 'trsport',
         is_primary: true,
       }),
-    ).toBe('Khối Vận tải X.E');
+    ).toBe(TRSPORT_PLANE_A);
     expect(
       resolveMembershipRowSubtitle({
         tenant_id: 'xe-vn',

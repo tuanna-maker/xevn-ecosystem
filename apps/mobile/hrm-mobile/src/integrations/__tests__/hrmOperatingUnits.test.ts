@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  isPilotKhoiFictionLabel,
   normalizeOperatingUnitRows,
   PILOT_HRM_OPERATING_UNITS,
+  PLANE_A_COMPANY_LABELS_FALLBACK,
+  sanitizeOperatingUnitDisplayLabel,
   sortOperatingUnits,
 } from '../hrmOperatingUnits';
 import {
@@ -44,21 +47,33 @@ describe('hrmListScope U39 parity', () => {
 });
 
 describe('hrmOperatingUnits registry', () => {
-  it('pilot fallback has 5 BA-D-01 labels matching QA probe', () => {
-    expect(PILOT_HRM_OPERATING_UNITS).toHaveLength(5);
+  it('Plane A fallback has 5 TECHSPEC §19.1 labels (no Khối fiction)', () => {
+    expect(PLANE_A_COMPANY_LABELS_FALLBACK).toHaveLength(5);
+    expect(PILOT_HRM_OPERATING_UNITS).toBe(PLANE_A_COMPANY_LABELS_FALLBACK);
     expect(PILOT_HRM_OPERATING_UNITS[0].display_name_vi).toBe('Tập đoàn XeVN');
-    expect(PILOT_HRM_OPERATING_UNITS.find((r) => r.operating_slug === 'services')?.display_name_vi).toBe(
-      'Khối Dịch vụ X.E',
+    expect(
+      PILOT_HRM_OPERATING_UNITS.find((r) => r.operating_slug === 'services')?.display_name_vi,
+    ).toBe('Công ty TNHH X.E Việt Nam');
+    for (const row of PLANE_A_COMPANY_LABELS_FALLBACK) {
+      expect(row.display_name_vi).not.toMatch(/Khối/i);
+    }
+  });
+
+  it('sanitizeOperatingUnitDisplayLabel replaces Khối from API', () => {
+    expect(isPilotKhoiFictionLabel('Khối Dịch vụ X.E')).toBe(true);
+    expect(sanitizeOperatingUnitDisplayLabel('services', 'Khối Dịch vụ X.E')).toBe(
+      'Công ty TNHH X.E Việt Nam',
     );
   });
 
-  it('normalizeOperatingUnitRows sorts by rollup_order', () => {
+  it('normalizeOperatingUnitRows sorts by rollup_order and sanitizes labels', () => {
     const rows = normalizeOperatingUnitRows([
       { operating_slug: 'services', display_name_vi: 'Khối Dịch vụ X.E', rollup_order: 5 },
       { operating_slug: 'holding', display_name_vi: 'Tập đoàn XeVN', rollup_order: 1 },
     ]);
     expect(rows[0].operating_slug).toBe('holding');
     expect(rows[1].operating_slug).toBe('services');
+    expect(rows[1].display_name_vi).toBe('Công ty TNHH X.E Việt Nam');
   });
 
   it('sortOperatingUnits orders ascending', () => {
@@ -76,5 +91,6 @@ describe('hrmOperatingUnits registry', () => {
     ]);
     expect(rows).toHaveLength(1);
     expect(rows[0].operating_slug).toBe('logistics');
+    expect(rows[0].display_name_vi).toBe('Công ty TNHH Du lịch Visun');
   });
 });

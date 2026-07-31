@@ -10,7 +10,7 @@ import { PayslipHeroCard } from '../../components/ui/PayslipHeroCard';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError } from '../../integrations/mapApiError';
+import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
 import {
   buildEmployeePayslipQuery,
   filterPayslipsForPeriod,
@@ -18,7 +18,7 @@ import {
   type PayslipListRow,
 } from '../../integrations/payrollPayslips';
 import type { PayslipStackParamList } from '../../navigation/types';
-import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
+import { colors, layout, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { formatHrmCurrency } from '../../utils/formatHrm';
 import { resolvePayslipPeriodLabelVi } from '../../utils/payslipDisplayVi';
 
@@ -105,6 +105,7 @@ export function PayslipListScreen() {
         title={formatPeriodLabel(item.period_label)}
         subtitle={`Thực lĩnh ${formatHrmCurrency(item.net_amount, item.currency)}`}
         status={item.status}
+        statusLabel={statusLabel(item.status)}
         onPress={() => openPayslipDetail(item)}
         style={styles.listRow}
       />
@@ -222,16 +223,16 @@ const styles = StyleSheet.create({
   list: { paddingHorizontal: spacing.md, paddingBottom: spacing.xl },
   listRow: { marginBottom: spacing.sm },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: statusToneColor('danger').border,
     padding: spacing.md,
     marginBottom: spacing.sm,
     marginHorizontal: layout.screenPaddingH,
   },
   errorText: {
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
     fontSize: typography.fontSize.subhead,
     fontWeight: typography.fontWeight.medium,
     lineHeight: typography.lineHeight.subhead,

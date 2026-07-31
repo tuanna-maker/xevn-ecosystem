@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { resolveWireCompanyId } from '../companyWireScope';
 import { resolveHrmCompanyHeaderId, resolveHrmWriteHeaderId } from '../hrmApiClient';
 
-/** Mirrors UAT `authHeaders` + P5 body contract for uat.nv####@xe.vn workforce. */
+/** Mirrors UAT `authHeaders` + P5 body — Plane B′ `HRM_COMPANY_UUID_BY_SLUG` (not SHA256 hash). */
 describe('P1-PHASE1-MOB-P5-JWT-01 attendance write scope', () => {
-  const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+  const holdingUuid = '10000000-0000-4000-8000-000000000001';
 
-  it('GET header uses membership slug; write header and body use legal UUID', () => {
+  it('GET header uses membership slug; write header and body use Plane B′ UUID', () => {
     const scope = {
       companyId: 'holding',
       companyUuid: holdingUuid,

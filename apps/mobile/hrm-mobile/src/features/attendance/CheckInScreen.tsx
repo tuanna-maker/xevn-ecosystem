@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     TabAttendance → CheckIn (AttendanceEntry mobile)
+ * UC:         UC-HRM-MOB check-in · J-MOB clock-in
+ * BR:         BR-ATT-01 location optional · sticky CTA clear home indicator
+ * SRS:        docs/program/UX-UI-ERP-ANALYSIS.md §2.2 WCAG 2.4.12
+ * TechSpec:   MOBILE_XEVN_DESIGN_SYSTEM_DIRECTION.md §3–4.1
+ * Purpose:    Chấm công vào — hero + vị trí thiết bị; StickyFooter thumbZone trên tab bar.
+ * WorkItem:   D-UX-R3-WCAG-MOBILE-01
+ * Coded:      2026-07-28
+ * Callers:    AttendanceStack CheckIn
+ * Callees:    AppScreenLayout · StickyFooter · PrimaryButton · checkInLocation
+ * Impact:     Bỏ thumbZone / footerBottomExtra → CTA bị FAB/home indicator che
+ * must_keep:  StickyFooter thumbZone; testID check-in-sticky-footer / check-in-submit; hide FAB on CheckIn
+ * SOLID:      Screen owns submit; location util tách
+ * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ */
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import React, { useCallback, useState } from 'react';
@@ -15,7 +32,7 @@ import { enqueueOfflineWrite } from '../../integrations/offlineQueue';
 import { useNetwork } from '../../context/NetworkContext';
 import { vi } from '../../i18n/vi';
 import { groupedLayout } from '../../theme/groupedLayout';
-import { colors, layout, typography } from '../../theme/tokens';
+import { colors, layout, statusToneColor, typography } from '../../theme/tokens';
 import {
   buildCheckInSubmitBody,
   resolveDeviceLocationLabel,
@@ -213,15 +230,15 @@ export function CheckInScreen() {
 
 const styles = StyleSheet.create({
   warnBanner: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: statusToneColor('warning').bg,
     borderRadius: layout.itemGap,
     borderWidth: 1,
-    borderColor: '#FCD34D',
+    borderColor: statusToneColor('warning').border,
     padding: layout.itemGap,
     marginBottom: layout.itemGap,
   },
   warnText: {
-    color: '#92400E',
+    color: statusToneColor('warning').text,
     fontSize: typography.fontSize.callout,
     lineHeight: typography.lineHeight.callout,
   },

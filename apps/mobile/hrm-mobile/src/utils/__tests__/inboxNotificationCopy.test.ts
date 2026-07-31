@@ -142,4 +142,16 @@ describe('inboxNotificationCopy — MOB-UX-15a', () => {
     const task = mapInboxToHomeTask(row, false);
     expect(task?.navigate).toEqual({ target: 'PayslipList' });
   });
+
+  it('payslip.published subtitle formats raw net_amount with vi-VN currency (D-UX-VI-FORMAT-MOBILE-01)', () => {
+    const copy = resolveInboxNotificationCopy(
+      sampleRow('payslip.published', { period_label: 'Tháng 5/2026', net_amount: 15_000_000 }),
+      false,
+      BASE_NOW,
+    );
+    expect(copy.subtitle).toContain('Tháng 5/2026');
+    expect(copy.subtitle).toMatch(/15/);
+    expect(copy.subtitle).toMatch(/₫|VND|đ/i);
+    expect(copy.subtitle).not.toMatch(/15000000(?!\.)/);
+  });
 });

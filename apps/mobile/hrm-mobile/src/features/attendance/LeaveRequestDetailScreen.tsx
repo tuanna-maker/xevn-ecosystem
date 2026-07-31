@@ -1,3 +1,16 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: PCOMP-W7-MOB-LEAVE-DOC
+ * What: Detail SurfaceCard opens attachment_url via Linking (AC-LEAVE-DOC-01/03)
+ * Why: UC-HRM-MOB-06b manager/owner read-only download
+ * SRS/BR: MOBILE_W7_SRS_DELTA §4.2 D6 · TechSpec §5.2 step 6
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22
+ * WorkItem: MOB-XEVN-BRAND-PRIMITIVES-L2-01
+ * What: Hủy đơn chờ duyệt → ConfirmActionModal (decline) thay Alert.alert confirm
+ * Why: L2 brand DNA — prefer branded modal for destructive confirm
+ * must_keep: ConfirmActionModal for cancel confirm; runtime result Alert OK
+ */
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,6 +22,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, StyleSheet, Text, View } from 'react-native';
 
 import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
+
+import { ConfirmActionModal } from '../../components/ui/ConfirmActionModal';
 
 import { DetailMetricGrid } from '../../components/ui/DetailMetricGrid';
 
@@ -104,6 +119,8 @@ export function LeaveRequestDetailScreen() {
   const [loading, setLoading] = useState(true);
 
   const [cancelling, setCancelling] = useState(false);
+
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
@@ -228,45 +245,22 @@ export function LeaveRequestDetailScreen() {
 
 
   const onCancel = () => {
+    if (!row || cancelling) return;
+    setConfirmCancelOpen(true);
+  };
 
+  const confirmCancelLeave = () => {
     if (!row) return;
-
-    Alert.alert('Hủy đơn nghỉ', 'Bạn có chắc muốn hủy đơn đang chờ duyệt?', [
-
-      { text: 'Không', style: 'cancel' },
-
-      {
-
-        text: 'Hủy đơn',
-
-        style: 'destructive',
-
-        onPress: () => {
-
-          void (async () => {
-
-            setCancelling(true);
-
-            try {
-
-              const result = await tryCancelLeaveRequest(auth.getHrmAuth(), row.id);
-
-              Alert.alert('Chưa khả dụng', result.message);
-
-            } finally {
-
-              setCancelling(false);
-
-            }
-
-          })();
-
-        },
-
-      },
-
-    ]);
-
+    setConfirmCancelOpen(false);
+    void (async () => {
+      setCancelling(true);
+      try {
+        const result = await tryCancelLeaveRequest(auth.getHrmAuth(), row.id);
+        Alert.alert('Chưa khả dụng', result.message);
+      } finally {
+        setCancelling(false);
+      }
+    })();
   };
 
 
@@ -440,6 +434,17 @@ export function LeaveRequestDetailScreen() {
         </>
 
       ) : null}
+
+      <ConfirmActionModal
+        visible={confirmCancelOpen}
+        kind="decline"
+        title="Hủy đơn nghỉ"
+        message="Bạn có chắc muốn hủy đơn đang chờ duyệt?"
+        confirmLabel="Hủy đơn"
+        cancelLabel="Không"
+        onConfirm={confirmCancelLeave}
+        onCancel={() => setConfirmCancelOpen(false)}
+      />
 
     </AppScreenLayout>
 

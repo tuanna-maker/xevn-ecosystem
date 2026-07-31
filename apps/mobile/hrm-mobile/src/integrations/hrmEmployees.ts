@@ -1,8 +1,39 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     TabProfile → Profile (ESS) · attendance leave meta hydrate
+ * UC:         UC-HRM-MOB-12 full · J-MOB-12
+ * BR:         BR-ESS-01 · scope parity list ≡ get-by-id (API_DESIGN)
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.5 · SRS_MOBILE UC-HRM-MOB-12
+ * TechSpec:   MOBILE_W7_TECHSPEC_DELTA DynamicProfileForm · API_DESIGN_HRM_EMPLOYEES §1
+ * Purpose:    GET/PATCH employees for self profile + leave request meta.
+ * WorkItem:   PCOMP-W7-MOB-PROFILE-FULL-01
+ * Coded:      2026-05 (baseline) · 2026-07-19 ESS patch · 2026-07-28 Plane B
+ * @CODE-MEMORY-CHANGE 2026-07-28 PCOMP-W7-MOB-PROFILE-FULL-01
+ * What: GET /employees/:id + list fallback use resolveDirectoryQueryCompanyId
+ *       (Plane B slug / main) — same as directory W7-5 must_keep GWC.
+ * must_keep: PATCH still via hrmRequest write header UUID; dual-plane JWT …0001
+ *
+ * Callers: ProfileScreen · hydrateEmployeeMetaForRequest · avatar PATCH
+ * Callees: hrmRequest · resolveDirectoryQueryCompanyId
+ * LastVerified: integrations/__tests__/hrmEmployees.test.ts
+ */
 import type { MobileMembership } from '../context/AuthContext';
-import { resolveHrmCompanyHeaderId } from './hrmApiClient';
+import { resolveDirectoryQueryCompanyId } from './companyWireScope';
 import type { HrmAuthConfig } from './types';
 import { hrmRequest } from './hrmApiClient';
 import { readListRows } from './envelope';
+
+/** Plane B `company_id` query for GET employee (profile ESS ≡ directory scope). */
+function resolveEmployeeGetQueryCompanyId(auth: HrmAuthConfig): string {
+  return resolveDirectoryQueryCompanyId({
+    companyUuid: auth.companyUuid,
+    companyId: auth.companyId,
+    accessToken: auth.accessToken,
+    memberships: auth.memberships,
+    employeeId: auth.employeeId,
+    tenantId: auth.tenantId,
+  });
+}
 
 export type EmployeeRow = {
   id: string;
@@ -100,13 +131,38 @@ export async function patchEmployeeAvatarUrl(
   });
 }
 
+/**
+ * PATCH merged `custom_fields` for ESS self/HR (W7-6 MOB-12).
+ * Caller must merge with existing custom_fields — BE replaces JSONB wholesale.
+ * Self path requires BE allowlist (`custom_fields` / phone keys); else HRM-EMP-403.
+ */
+export async function patchEmployeeCustomFields(
+  auth: HrmAuthConfig,
+  employeeId: string,
+  customFields: Record<string, string>,
+) {
+  const id = employeeId.trim();
+  if (!id) {
+    return {
+      ok: false as const,
+      code: 'HRM-MOB-ESS-400',
+      message: 'Thiếu employeeId.',
+      requestId: 'local',
+    };
+  }
+  return hrmRequest<unknown>(auth, `/employees/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ custom_fields: customFields }),
+  });
+}
+
 async function fetchEmployeeByIdDirect(
   auth: HrmAuthConfig,
   employeeId: string,
 ): Promise<EmployeeRow | null> {
   const id = employeeId.trim();
   if (!id) return null;
-  const companyId = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
+  const companyId = resolveEmployeeGetQueryCompanyId(auth);
   if (!companyId) return null;
 
   const q = new URLSearchParams({ company_id: companyId });
@@ -130,7 +186,7 @@ export async function fetchEmployeeById(
   const direct = await fetchEmployeeByIdDirect(auth, id);
   if (direct) return direct;
 
-  const companyId = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
+  const companyId = resolveEmployeeGetQueryCompanyId(auth);
   if (!companyId) return null;
 
   let page = 1;

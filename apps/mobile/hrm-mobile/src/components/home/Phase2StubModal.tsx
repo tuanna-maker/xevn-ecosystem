@@ -1,7 +1,24 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Home — Phase2StubModal (stub feature dialog)
+ * UC:         BR-ZEN-02 · AC-BRAND-DNA-01
+ * BR:         Modal DNA — radius.modal · borderWidth.thin · colors.border
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L3m
+ * TechSpec:   THEME_USAGE.md § L2 inventory / L3 optional stub close
+ * Purpose:    Dialog stub Phase 2 — chrome khớp ConfirmActionModal DNA.
+ * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
+ * Coded:      2026-07-22
+ * Callers:    Home / dashboard stub taps
+ * Callees:    colors.surface|text|primary · radius.modal · borderWidth.thin
+ * Impact:     radius.lg không stroke → lệch L2 modal DNA
+ * must_keep:  radius.modal + borderWidth.thin + colors.border
+ * SOLID:      Stub UI tách business ESS remaster
+ * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ */
 import React from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text } from 'react-native';
 
-import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
+import { borderWidth, colors, layout, radius, spacing, typography } from '../../theme/tokens';
 
 type Phase2StubModalProps = {
   visible: boolean;
@@ -42,7 +59,9 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 320,
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.modal,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.border,
     padding: layout.cardPadding,
     gap: spacing.md,
   },

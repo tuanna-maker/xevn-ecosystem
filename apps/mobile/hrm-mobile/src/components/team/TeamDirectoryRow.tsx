@@ -1,3 +1,18 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     TeamDirectory row card
+ * UC:         UC-HRM-MOB-16 (W7-5) · AC-DIR-03
+ * BR:         BR-DIR-01
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.4
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §4.2 EmployeeDirectoryScreen
+ * Purpose:    Avatar + name + job + dept + attendance badge; press → detail (≥44px).
+ * WorkItem:   PCOMP-W7-MOB-DIRECTORY
+ * Coded:      2026-07-19
+ * Callers: TeamDirectoryScreen
+ * Callees: EmployeeAvatarRing · StatusBadge · PressableScale
+ * must_keep: minHeight list row; onPress navigation to detail
+ * LastVerified: components/ui/__tests__/teamDirectoryUx.test.ts
+ */
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { PressableScale } from '../primitives/PressableScale';
@@ -146,7 +161,7 @@ const styles = StyleSheet.create({
   },
   code: {
     fontSize: typography.fontSize.footnote,
-    color: colors.neutral,
+    color: colors.textMuted,
     lineHeight: typography.lineHeight.footnote,
   },
 });

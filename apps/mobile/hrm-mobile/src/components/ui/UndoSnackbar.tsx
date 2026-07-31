@@ -2,6 +2,20 @@ import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, shadow, spacing, typography } from '../../theme/tokens';
 
+/**
+ * @CODE-MEMORY
+ * Screen:     ESS undo snackbar (overlay)
+ * UC:         BR-ESS-UNDO-01
+ * Purpose:    Inverse chrome snackbar — message + optional Hoàn tác; auto-dismiss.
+ * WorkItem:   XEVN-THM-MOB-W2
+ * Coded:      2026-07-22
+ * must_keep:  backgroundColor = colors.text (ADR inverse); not AS-IS Gray-800 hex;
+ *             Undo touch ≥44; text on surface / primaryDisabled CTA
+ * LastVerified: theme/__tests__/mobW2Remaster.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22 XEVN-THM-MOB-W2 — migrate snackbar fill + undo link to tokens
+ */
+
 type UndoSnackbarProps = {
   visible: boolean;
   message: string;
@@ -40,6 +54,7 @@ export function UndoSnackbar({
               onUndo();
               onDismiss();
             }}
+            style={styles.undoPress}
             hitSlop={8}
           >
             <Text style={styles.undo}>Hoàn tác</Text>
@@ -62,10 +77,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    backgroundColor: '#1F2937',
+    /** Inverse chrome — ADR colors.text; ban AS-IS Gray-800 snackbar fill */
+    backgroundColor: colors.text,
     borderRadius: radius.md,
     paddingVertical: spacing.sm + 2,
     paddingHorizontal: spacing.md,
+    minHeight: 44,
     ...shadow.soft,
   },
   message: {
@@ -74,8 +91,13 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
   },
+  undoPress: {
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xs,
+  },
   undo: {
-    color: '#93C5FD',
+    color: colors.primaryDisabled,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.bold,
   },

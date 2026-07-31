@@ -1,11 +1,49 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     TabProfile → Profile ESS helpers
+ * UC:         UC-HRM-MOB-12 full (W7-6)
+ * BR:         BR-ESS-01 self allowlist · BR-BDAY-01 no DOB year
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.5
+ * TechSpec:   docs/hrm/MOBILE_W7_DATA_CONTRACTS.md §7
+ * Purpose:    Read custom_fields + gender VI + HR patch gate + personal section fallback.
+ * WorkItem:   PCOMP-W7-MOB-PROFILE-FULL
+ * Coded:      2026-06-09
+ * @CODE-MEMORY-CHANGE 2026-07-19 — always emit phone/gender/address rows (— when empty) for J-MOB-12 shell
+ *
+ * Callers: dynamicProfileForm · profileTabs · ProfileScreen
+ * Callees: sanitizeProfileDisplay
+ * must_keep: SELF_EDITABLE = phone_number|work_phone only; never DOB year in sections
+ * LastVerified: utils/__tests__/profileEssFields.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-MOB-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: resolveGenderVi unknown exotic code → «—» (cấm sanitize raw key)
+ * Why: U72 M-F-09
+ * must_keep: Nam/Nữ/Khác known map; U65 · HOLD_DEPLOY
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-MOB-DIR-TOAST-01
+ * What: sanitizeProfileDisplay from profileDisplaySanitize leaf (not profileTabs).
+ * Why: Break profileTabs ↔ profileEssFields Metro require cycle (LogBox P2).
+ * must_keep: SELF_EDITABLE phone only; no DOB year; Plane B profile ESS
+ */
+
 import type { EmployeeRow } from '../integrations/hrmEmployees';
-import type { ProfileFieldRow, ProfileSection } from './profileTabs';
-import { sanitizeProfileDisplay } from './profileTabs';
+import {
+  sanitizeProfileDisplay,
+  type ProfileFieldRow,
+  type ProfileSection,
+} from './profileDisplaySanitize';
 
 const GENDER_LABELS: Record<string, string> = {
   male: 'Nam',
   female: 'Nữ',
   other: 'Khác',
+  nam: 'Nam',
+  nữ: 'Nữ',
+  nu: 'Nữ',
+  khác: 'Khác',
+  khac: 'Khác',
 };
 
 const SELF_EDITABLE_CATALOG_KEYS = new Set(['phone_number', 'work_phone']);
@@ -36,7 +74,7 @@ export function readEmployeeCustomFields(row: EmployeeRow): Record<string, strin
 export function resolveGenderVi(code: string | null | undefined): string {
   const key = code?.trim().toLowerCase() ?? '';
   if (!key) return '—';
-  return GENDER_LABELS[key] ?? sanitizeProfileDisplay(key);
+  return GENDER_LABELS[key] ?? '—';
 }
 
 export function canHrFullEmployeePatch(roles: string[]): boolean {
@@ -56,30 +94,33 @@ export function buildProfilePersonalSections(row: EmployeeRow): ProfileSection[]
   ];
 
   const phone = cf.phone_number || cf.work_phone;
-  if (phone) {
-    contactRows.push({ label: 'Số điện thoại', value: sanitizeProfileDisplay(phone) });
-  }
+  contactRows.push({
+    label: 'Số điện thoại',
+    value: phone ? sanitizeProfileDisplay(phone) : '—',
+  });
 
-  const personalRows: ProfileFieldRow[] = [];
-  if (cf.gender) {
-    personalRows.push({ label: 'Giới tính', value: resolveGenderVi(cf.gender) });
-  }
-  if (cf.address || cf.dia_chi) {
-    personalRows.push({
+  const personalRows: ProfileFieldRow[] = [
+    { label: 'Giới tính', value: cf.gender ? resolveGenderVi(cf.gender) : '—' },
+    {
       label: 'Địa chỉ',
-      value: sanitizeProfileDisplay(cf.address || cf.dia_chi),
-    });
-  }
+      value: sanitizeProfileDisplay(cf.permanent_address || cf.address || cf.dia_chi) || '—',
+    },
+  ];
   if (cf.emergency_contact_name) {
     personalRows.push({
       label: 'Liên hệ khẩn cấp',
       value: sanitizeProfileDisplay(cf.emergency_contact_name),
     });
   }
-
-  const sections: ProfileSection[] = [{ title: 'Liên hệ', rows: contactRows }];
-  if (personalRows.length > 0) {
-    sections.push({ title: 'Thông tin cá nhân', rows: personalRows });
+  if (cf.national_id) {
+    personalRows.push({
+      label: 'CCCD/CMND',
+      value: sanitizeProfileDisplay(cf.national_id),
+    });
   }
-  return sections;
+
+  return [
+    { title: 'Liên hệ', rows: contactRows },
+    { title: 'Thông tin cá nhân', rows: personalRows },
+  ];
 }

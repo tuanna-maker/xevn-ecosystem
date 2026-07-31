@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Shell — AppScreenLayout (inline header + scroll chrome)
+ * UC:         AC-BRAND-DNA-06
+ * BR:         Header title colors.text; error banner radius.card + borderWidth.thin
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L3m
+ * TechSpec:   THEME_USAGE.md § L3
+ * Purpose:    Layout chung ESS — title/subtitle sharp-ops; banner lỗi dùng L1 border DNA.
+ * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
+ * Coded:      2026-07-22
+ * Callers:    ScopeScreen + hầu hết stack screens
+ * Callees:    colors.* · radius.card · borderWidth.thin · layoutInsets
+ * Impact:     Literal borderWidth:1 trên banner → lệch L2 Card DNA
+ * must_keep:  colors.text / textSecondary; borderWidth.thin trên errorBanner
+ * SOLID:      Layout shell tách domain content
+ * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ */
 import React from 'react';
 import {
   ActivityIndicator,
@@ -12,7 +29,7 @@ import {
 } from 'react-native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
+import { borderWidth, colors, layout, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import {
   resolveBottomSafeInset,
   resolveScreenPaddingTop,
@@ -242,14 +259,14 @@ const styles = StyleSheet.create({
     lineHeight: typography.lineHeight.subhead,
   },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
     borderRadius: radius.card,
-    borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderWidth: borderWidth.thin,
+    borderColor: statusToneColor('danger').border,
     padding: layout.cardPadding,
   },
   errorText: {
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
     fontSize: typography.fontSize.callout,
     fontWeight: typography.fontWeight.medium,
   },

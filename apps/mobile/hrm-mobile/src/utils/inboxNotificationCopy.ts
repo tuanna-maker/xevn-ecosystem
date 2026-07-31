@@ -2,7 +2,7 @@ import type { Ionicons } from '@expo/vector-icons';
 import { resolveLeaveTypeLabel } from '../i18n/leaveTypes';
 import { resolveAttendanceChangeTypeVi } from './attendanceUpdateTypes';
 import { parseInboxEntity } from './dashboardHub';
-import { formatHrmDate, formatHrmDateRange, formatHrmDateTime } from './formatHrm';
+import { formatHrmCurrency, formatHrmDate, formatHrmDateRange, formatHrmDateTime, parseAmount } from './formatHrm';
 import type { EssRichListRowIconTone } from '../components/ui/EssRichListRow';
 import type { StatusTone } from '../theme/tokens';
 
@@ -96,10 +96,29 @@ function resolveAttendanceSubtitle(payload: unknown): string {
   return parts.join(' · ') || 'Yêu cầu chỉnh sửa chấm công';
 }
 
+/** Display net for inbox — vi-VN currency when payload is numeric or grouped string. */
+function resolvePayslipNetDisplay(inner: Record<string, unknown>): string {
+  for (const key of ['net_amount', 'netAmount'] as const) {
+    const v = inner[key];
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      return formatHrmCurrency(v);
+    }
+    if (typeof v === 'string' && v.trim()) {
+      const raw = v.trim();
+      const n = parseAmount(raw);
+      if (Number.isFinite(n) && (n !== 0 || /^0([.,]0+)?$/.test(raw.replace(/\s/g, '')))) {
+        return formatHrmCurrency(n);
+      }
+      return raw;
+    }
+  }
+  return '';
+}
+
 function resolvePayslipSubtitle(payload: unknown): string {
   const inner = unwrapInboxPayload(payload);
   const period = payloadString(inner, 'period_label', 'periodLabel', 'period_name', 'periodName');
-  const net = payloadString(inner, 'net_amount', 'netAmount');
+  const net = resolvePayslipNetDisplay(inner);
   if (period && net) return `${period} · ${net}`;
   if (period) return period;
   return 'Phiếu lương mới';

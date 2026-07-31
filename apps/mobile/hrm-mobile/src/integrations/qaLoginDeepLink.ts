@@ -1,6 +1,8 @@
 import type { SignInPayload } from '../context/AuthContext';
 import { isUuid } from '../utils/uuid';
+import { getDefaultBaseUrl } from './hrmApiClient';
 import { parseJwtClaims } from './jwtClaims';
+import { normalizeHrmBaseUrl } from './normalizeHrmBaseUrl';
 
 function normalizeQaScopeSlug(companyId: string, claims: ReturnType<typeof parseJwtClaims>): string {
   const raw = companyId.trim();
@@ -82,7 +84,7 @@ export function qaDeepLinkToSignInPayload(params: QaLoginDeepLinkParams): SignIn
         ]
       : [];
   return {
-    baseUrl: params.baseUrl ?? '',
+    baseUrl: normalizeHrmBaseUrl(params.baseUrl, getDefaultBaseUrl()),
     tenantId: params.tenantId,
     companyId,
     companyUuid,

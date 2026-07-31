@@ -15,7 +15,7 @@ vi.mock('../hrmApiClient', async (importOriginal) => {
 import { DIRECTORY_PAGE_SIZE, loadTeamDirectoryWithAttendance } from '../hrmTeamDirectory';
 
 const auth = {
-  baseUrl: 'https://14-225-217-232.nip.io',
+  baseUrl: 'http://127.0.0.1:28001',
   accessToken: 'token',
   tenantId: 'xevn',
   companyId: 'holding',
@@ -39,7 +39,7 @@ describe('loadTeamDirectoryWithAttendance', () => {
                 company_id: 'holding',
                 employee_code: 'NV001',
                 email: 'a@xe.vn',
-                full_name: 'Nguyễn A',
+                full_name: 'Nguyá»…n A',
                 job_title_key: 'engineer',
                 status: 'active',
                 hired_at: null,
@@ -49,7 +49,7 @@ describe('loadTeamDirectoryWithAttendance', () => {
                 company_id: 'holding',
                 employee_code: 'NV002',
                 email: 'b@xe.vn',
-                full_name: 'Trần B',
+                full_name: 'Tráº§n B',
                 job_title_key: 'manager',
                 status: 'active',
                 hired_at: null,
@@ -97,7 +97,105 @@ describe('loadTeamDirectoryWithAttendance', () => {
     expect(result.members[1].checkInStatus).toBe('not_checked_in');
     expect(hrmRequest.mock.calls[0][1]).toContain('view=directory');
     expect(hrmRequest.mock.calls[0][1]).toContain(`page_size=${DIRECTORY_PAGE_SIZE}`);
+    expect(DIRECTORY_PAGE_SIZE).toBeLessThanOrEqual(50);
     expect(hrmRequest.mock.calls[0][1]).not.toContain('page_size=200');
+    expect(hrmRequest.mock.calls[0][1]).not.toContain('q=');
+  });
+
+  it('sends q when search has at least 2 characters (SRS R1 / AC-DIR-01)', async () => {
+    hrmRequest.mockImplementation(async (_auth, path: string) => {
+      if (path.startsWith('/employees?')) {
+        return {
+          ok: true,
+          data: {
+            data: [
+              {
+                id: 'emp-1',
+                company_id: 'holding',
+                employee_code: 'NV001',
+                email: 'a@xe.vn',
+                full_name: 'Nguyá»…n VÄƒn A',
+                job_title_key: 'staff',
+                status: 'active',
+                hired_at: null,
+              },
+            ],
+            total: 1,
+          },
+          code: 'HRM-EMP-DIR-200',
+          message: 'OK',
+          requestId: 'r1',
+        };
+      }
+      if (path.startsWith('/attendance/records?')) {
+        return { ok: true, data: { data: [] }, code: 'HRM-ATT-200', message: 'OK', requestId: 'r2' };
+      }
+      return { ok: false, code: '404', message: 'not found', requestId: 'x' };
+    });
+
+    const result = await loadTeamDirectoryWithAttendance({
+      auth,
+      listCompanyId: 'holding',
+      attendanceCompanyId: 'holding',
+      isManager: true,
+      employeeId: 'mgr-1',
+      search: 'Nguyá»…n',
+      date: '2026-06-09',
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.members).toHaveLength(1);
+    expect(hrmRequest.mock.calls[0][1]).toContain('q=');
+    expect(decodeURIComponent(String(hrmRequest.mock.calls[0][1]))).toContain('Nguyá»…n');
+  });
+
+  it('does not send q when search is under 2 characters', async () => {
+    hrmRequest.mockImplementation(async (_auth, path: string) => {
+      if (path.startsWith('/employees?')) {
+        return { ok: true, data: { data: [], total: 0 }, code: 'HRM-EMP-DIR-200', message: 'OK', requestId: 'r1' };
+      }
+      if (path.startsWith('/attendance/records?')) {
+        return { ok: true, data: { data: [] }, code: 'HRM-ATT-200', message: 'OK', requestId: 'r2' };
+      }
+      return { ok: false, code: '404', message: 'not found', requestId: 'x' };
+    });
+
+    await loadTeamDirectoryWithAttendance({
+      auth,
+      listCompanyId: 'holding',
+      attendanceCompanyId: 'holding',
+      isManager: false,
+      employeeId: 'e1',
+      search: 'N',
+      date: '2026-06-09',
+    });
+
+    expect(hrmRequest.mock.calls[0][1]).not.toMatch(/[?&]q=/);
+  });
+
+  it('returns ok empty list when search has no matches (SRS R2)', async () => {
+    hrmRequest.mockImplementation(async (_auth, path: string) => {
+      if (path.startsWith('/employees?')) {
+        return { ok: true, data: { data: [], total: 0 }, code: 'HRM-EMP-DIR-200', message: 'OK', requestId: 'r1' };
+      }
+      if (path.startsWith('/attendance/records?')) {
+        return { ok: true, data: { data: [] }, code: 'HRM-ATT-200', message: 'OK', requestId: 'r2' };
+      }
+      return { ok: false, code: '404', message: 'not found', requestId: 'x' };
+    });
+
+    const result = await loadTeamDirectoryWithAttendance({
+      auth,
+      listCompanyId: 'holding',
+      attendanceCompanyId: 'holding',
+      isManager: false,
+      employeeId: 'e1',
+      search: 'ZzNoMatch',
+      date: '2026-06-09',
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.members).toHaveLength(0);
   });
 
   it('surfaces API validation error instead of silent empty list', async () => {
@@ -149,7 +247,10 @@ describe('loadTeamDirectoryWithAttendance', () => {
     ];
 
     hrmRequest.mockImplementation(async (_auth, path: string) => {
-      if (path.includes('page=1&')) {
+      if (path.includes('page=1&') || path.includes('page=1')) {
+        if (path.startsWith('/attendance/records?')) {
+          return { ok: true, data: { data: [] }, code: 'HRM-ATT-200', message: 'OK', requestId: 'r3' };
+        }
         return {
           ok: true,
           data: { total: DIRECTORY_PAGE_SIZE + 1, data: page1Rows },
@@ -158,7 +259,7 @@ describe('loadTeamDirectoryWithAttendance', () => {
           requestId: 'r1',
         };
       }
-      if (path.includes('page=2&')) {
+      if (path.includes('page=2')) {
         return {
           ok: true,
           data: { total: DIRECTORY_PAGE_SIZE + 1, data: page2Rows },
@@ -190,11 +291,11 @@ describe('loadTeamDirectoryWithAttendance', () => {
     expect(employeeCalls).toHaveLength(2);
   });
 
-  it('returns error when no employees in scope', async () => {
+  it('returns ok empty when no employees in scope (API honest empty)', async () => {
     hrmRequest.mockResolvedValue({
       ok: true,
       data: { data: [] },
-      code: 'HRM-EMP-200',
+      code: 'HRM-EMP-DIR-200',
       message: 'OK',
       requestId: 'r1',
     });
@@ -208,7 +309,39 @@ describe('loadTeamDirectoryWithAttendance', () => {
       date: '2026-06-09',
     });
 
-    expect(result.ok).toBe(false);
+    expect(result.ok).toBe(true);
     expect(result.members).toHaveLength(0);
+  });
+
+  it('uses Plane B slug on wire company_id (not inventing LE UUID)', async () => {
+    hrmRequest.mockImplementation(async (_auth, path: string) => {
+      if (path.startsWith('/employees?')) {
+        return {
+          ok: true,
+          data: { data: [], total: 0 },
+          code: 'HRM-EMP-DIR-200',
+          message: 'OK',
+          requestId: 'r1',
+        };
+      }
+      if (path.startsWith('/attendance/records?')) {
+        return { ok: true, data: { data: [] }, code: 'HRM-ATT-200', message: 'OK', requestId: 'r2' };
+      }
+      return { ok: false, code: '404', message: 'not found', requestId: 'x' };
+    });
+
+    await loadTeamDirectoryWithAttendance({
+      auth,
+      listCompanyId: 'holding',
+      attendanceCompanyId: auth.companyUuid!,
+      isManager: true,
+      employeeId: 'mgr-1',
+      date: '2026-06-09',
+    });
+
+    expect(hrmRequest.mock.calls[0][1]).toContain('company_id=holding');
+    expect(hrmRequest.mock.calls[0][1]).toContain('view=directory');
+    expect(hrmRequest.mock.calls[0][1]).toContain(`page_size=${DIRECTORY_PAGE_SIZE}`);
+    expect(DIRECTORY_PAGE_SIZE).toBe(30);
   });
 });

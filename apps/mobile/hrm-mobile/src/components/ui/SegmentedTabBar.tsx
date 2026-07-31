@@ -1,7 +1,24 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     SegmentedTabBar — Profile ESS / Leave tabs
+ * UC:         UC-HRM-MOB-12 · WCAG 2.4.12 / HIG touch
+ * BR:         Touch target ≥44pt
+ * SRS:        docs/program/UX-UI-ERP-ANALYSIS.md §2.2 WCAG 2.4.12
+ * TechSpec:   MOBILE_XEVN_DESIGN_SYSTEM_DIRECTION.md §4.1
+ * Purpose:    iOS-style segmented control; tab hit area ≥44pt (HIG).
+ * WorkItem:   D-UX-R3-WCAG-MOBILE-01
+ * Coded:      2026-07-28
+ * Callers:    ProfileScreen · LeaveRequestsListScreen
+ * Callees:    PressableScale · layout.touchTargetMin
+ * Impact:     minHeight dưới 44 → device QA U49 / WCAG FAIL
+ * must_keep:  minHeight ≥ layout.touchTargetMin (44)
+ * SOLID:      Presentational control — no domain state
+ * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ */
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { PressableScale } from '../primitives/PressableScale';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
 
 export type SegmentedTabOption<T extends string> = {
   key: T;
@@ -48,7 +65,7 @@ const styles = StyleSheet.create({
   },
   segment: {
     flex: 1,
-    minHeight: 36,
+    minHeight: layout.touchTargetMin,
     borderRadius: radius.md - 2,
     alignItems: 'center',
     justifyContent: 'center',

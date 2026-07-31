@@ -730,7 +730,7 @@ export function ManagerApprovalsScreen() {
 
               placeholder="Nhập lý do…"
 
-              placeholderTextColor={colors.textSecondary}
+              placeholderTextColor={colors.textMuted}
 
             />
 

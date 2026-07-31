@@ -5,6 +5,7 @@
 
 import type { Ionicons } from '@expo/vector-icons';
 
+import { colors, statusToneColor } from '../theme/tokens';
 import type { MobilePersonaId } from '../utils/mobilePersona';
 
 export type FabPrimaryActionId = 'check_in' | 'create_leave' | 'manager_approvals';
@@ -34,13 +35,15 @@ export const CHECK_IN_FAB_ACCESSIBILITY_LABEL = 'Thao tác nhanh';
 
 export const FAB_ACTION_SHEET_TEST_ID = 'fab-primary-action-sheet';
 
+const warnTone = statusToneColor('warning');
+
 const CHECK_IN: FabPrimaryAction = {
   id: 'check_in',
   label: 'Chấm công',
   subtitle: 'Ghi nhận giờ vào / ra',
   icon: 'time',
-  iconColor: '#0E7490',
-  iconBg: '#CCFBF1',
+  iconColor: colors.accent,
+  iconBg: colors.homeTileCheckin,
   testID: 'fab-action-check-in',
   accessibilityLabel: 'Chấm công',
 };
@@ -50,8 +53,8 @@ const CREATE_LEAVE: FabPrimaryAction = {
   label: 'Tạo đơn nghỉ',
   subtitle: 'Gửi yêu cầu nghỉ phép mới',
   icon: 'calendar',
-  iconColor: '#1E40AF',
-  iconBg: '#DBEAFE',
+  iconColor: colors.primary,
+  iconBg: colors.primaryMuted,
   testID: 'fab-action-create-leave',
   accessibilityLabel: 'Tạo đơn nghỉ',
 };
@@ -61,8 +64,8 @@ const MANAGER_APPROVALS_BASE: Omit<FabPrimaryAction, 'badgeCount'> = {
   label: 'Duyệt đơn',
   subtitle: 'Đơn chờ duyệt từ cấp dưới',
   icon: 'checkmark-done',
-  iconColor: '#B45309',
-  iconBg: '#FEF3C7',
+  iconColor: warnTone.text,
+  iconBg: warnTone.bg,
   testID: 'fab-action-manager-approvals',
   accessibilityLabel: 'Duyệt đơn chờ duyệt',
 };

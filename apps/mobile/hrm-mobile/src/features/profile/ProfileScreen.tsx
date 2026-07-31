@@ -1,12 +1,40 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     TabProfile → Profile (Thông tin / Công việc / Tài liệu)
+ * UC:         UC-HRM-MOB-12 · UC-HRM-MOB-12 full (W7-6) · J-AVT-02
+ * BR:         BR-ESS-01 · BR-BDAY-01 · avatar self PATCH
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.5 · SRS_MOBILE UC-HRM-MOB-12
+ * TechSpec:   MOBILE_W7_TECHSPEC_DELTA DynamicProfileForm · avatar baseline
+ * Purpose:    ESS profile: hero+avatar, catalog-driven DynamicProfileForm (phone self-edit),
+ *             work metrics, documents. Self PATCH custom_fields allowlist (phone).
+ * WorkItem:   PCOMP-W7-MOB-PROFILE-FULL-01
+ * Coded:      2026-06-09
+ * @CODE-MEMORY-CHANGE 2026-07-19 — W7-6 DynamicProfileForm + settings-catalogs fields + ESS save
+ * @CODE-MEMORY-CHANGE 2026-07-28 PCOMP-W7-MOB-PROFILE-FULL-01
+ * What: Catalog + employee GET use resolveDirectoryQueryCompanyId (Plane B ≡ directory).
+ * must_keep: directory Plane B GWC; dual-plane JWT …0001; attendance write UUID paths untouched
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-UX-R3-WCAG-MOBILE-01
+ * What: Profile ESS sample WCAG 2.4.12 — SegmentedTabBar ≥44; AppScreenLayout scroll clears tab/home indicator; ESS save ≥44.
+ * must_keep: touch ≥44; testID profile-screen / dynamic-profile-form / profile-ess-save
+ *
+ * Callers: RootNavigator TabProfile stack · Dashboard navigateToProfileRoot
+ * Callees: fetchEmployeeById · fetchEmployeeFieldsCatalog · patchEmployeeCustomFields · upload avatar
+ * @CODE-MEMORY-CHANGE 2026-08-01 MOB-NAV-SETTINGS-01 — ProfileSettingsEntry → SettingsScreen (TC-MOB-032/006)
+ * must_keep: profile-settings-entry testID; Profile hero/form testIDs unchanged
+ * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ */
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NavigationProp } from '@react-navigation/native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 
+import { DynamicProfileForm } from '../../components/profile/DynamicProfileForm';
 import { EmployeeHeroCard } from '../../components/profile/EmployeeHeroCard';
 import { IconDetailRow } from '../../components/profile/IconDetailRow';
 import { ProfileDocumentCard } from '../../components/profile/ProfileDocumentCard';
+import { ProfileManagerApprovalsEntry } from '../../components/profile/ProfileManagerApprovalsEntry';
 import { ProfileQuickActionGrid } from '../../components/profile/ProfileQuickActionGrid';
+import { ProfileSettingsEntry } from '../../components/profile/ProfileSettingsEntry';
 import { ProfileSectionCard } from '../../components/profile/ProfileSectionCard';
 import { ProfileTaskCard } from '../../components/profile/ProfileTaskCard';
 import { StatusMetricGrid } from '../../components/profile/StatusMetricGrid';
@@ -20,7 +48,14 @@ import { readListRows } from '../../integrations/envelope';
 import { fetchLeaveBalance, type LeaveBalancePayload } from '../../integrations/hrmLeaveBalance';
 import { getDefaultBaseUrl, hrmRequest } from '../../integrations/hrmApiClient';
 import { resolveAvatarUploadCompanyId, uploadHrmAvatarFile } from '../../integrations/hrmFileUpload';
-import { fetchEmployeeById, patchEmployeeAvatarUrl, type EmployeeRow } from '../../integrations/hrmEmployees';
+import {
+  fetchEmployeeById,
+  patchEmployeeAvatarUrl,
+  patchEmployeeCustomFields,
+  type EmployeeRow,
+} from '../../integrations/hrmEmployees';
+import { resolveDirectoryQueryCompanyId } from '../../integrations/companyWireScope';
+import { fetchEmployeeFieldsCatalog } from '../../integrations/hrmEmployeeFieldsCatalog';
 import {
   buildEmployeePayslipQuery,
   type PayslipListRow,
@@ -31,13 +66,13 @@ import {
   navigateToContracts,
   navigateToLeaveRequestsList,
   navigateToManagerApprovals,
+  navigateToSettings,
 } from '../../navigation/profileStackNav';
 import { groupedLayout } from '../../theme/groupedLayout';
 import { colors, typography } from '../../theme/tokens';
 import { formatHrmCurrency, formatHrmDate } from '../../utils/formatHrm';
 import type { ProfileQuickActionId } from '../../utils/profileQuickActions';
 import {
-  buildProfileInfoSections,
   buildProfileWorkSections,
   PROFILE_TAB_OPTIONS,
   resolveContractTypeLabel,
@@ -46,7 +81,14 @@ import {
   type ProfileContractDoc,
   type ProfileTabKey,
 } from '../../utils/profileTabs';
-import { canHrFullEmployeePatch } from '../../utils/profileEssFields';
+import { canHrFullEmployeePatch, readEmployeeCustomFields } from '../../utils/profileEssFields';
+import {
+  buildDynamicProfileFields,
+  buildSelfEssCustomFieldsPatch,
+  draftFromDynamicFields,
+  type EmployeeFieldCatalogItem,
+} from '../../utils/dynamicProfileForm';
+import { fetchManagerPendingSnapshot } from '../../utils/profileManagerApprovals';
 import { resolveProfileCurrentTask, type ProfileCurrentTask } from '../../utils/profileTask';
 import { buildProfileStatusMetrics } from '../../utils/profileWorkMetrics';
 import { resolveRoleSubtitle } from '../../utils/dashboardEss';
@@ -59,6 +101,8 @@ export function ProfileScreen() {
 
   const [tab, setTab] = useState<ProfileTabKey>('info');
   const [employee, setEmployee] = useState<EmployeeRow | null>(null);
+  const [fieldCatalog, setFieldCatalog] = useState<EmployeeFieldCatalogItem[] | null>(null);
+  const [essDraft, setEssDraft] = useState<Record<string, string>>({});
   const [fullName, setFullName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [employeeCode, setEmployeeCode] = useState('');
@@ -74,7 +118,9 @@ export function ProfileScreen() {
   const [checkInAt, setCheckInAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [essSaving, setEssSaving] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [managerPendingTotal, setManagerPendingTotal] = useState(0);
 
   const baseUrl = auth.getHrmAuth().baseUrl || getDefaultBaseUrl();
   const hrCanEditProfile = canHrFullEmployeePatch(auth.roles);
@@ -209,6 +255,8 @@ export function ProfileScreen() {
     if (!id) {
       setSubtitle('Chưa có thông tin nhân viên.');
       setEmployee(null);
+      setFieldCatalog(null);
+      setEssDraft({});
       setFullName('');
       setJobTitle('');
       setEmployeeCode('');
@@ -223,13 +271,35 @@ export function ProfileScreen() {
       setCheckInAt(null);
       return;
     }
-    const row = await fetchEmployeeById(auth.getHrmAuth(), id);
+    // Plane B TEXT slug (holding/trsport/main) — same resolver as directory W7-5 GWC
+    const hrmAuth = auth.getHrmAuth();
+    const catalogCid = resolveDirectoryQueryCompanyId({
+      companyUuid: hrmAuth.companyUuid,
+      companyId: hrmAuth.companyId,
+      accessToken: hrmAuth.accessToken,
+      memberships: hrmAuth.memberships,
+      employeeId: hrmAuth.employeeId ?? auth.employeeId,
+      tenantId: hrmAuth.tenantId,
+    });
+    const catalogPromise = catalogCid
+      ? fetchEmployeeFieldsCatalog(hrmAuth, catalogCid)
+      : Promise.resolve(null);
+    const [row, catalog] = await Promise.all([
+      fetchEmployeeById(hrmAuth, id),
+      catalogPromise,
+    ]);
+    setFieldCatalog(catalog);
     if (!row) {
       setSubtitle('Không tìm thấy hồ sơ. Thử làm mới hoặc liên hệ HR.');
       setEmployee(null);
+      setEssDraft({});
       return;
     }
     applyRow(row);
+    const dynamic = buildDynamicProfileFields(row, catalog, {
+      isHr: canHrFullEmployeePatch(auth.roles),
+    });
+    setEssDraft(draftFromDynamicFields(dynamic));
     const companyId = auth.getAttendanceCompanyId();
     if (companyId) {
       await loadPendingTask(companyId, id);
@@ -239,6 +309,18 @@ export function ProfileScreen() {
       setPendingUpdateCount(0);
     }
     await Promise.all([loadDocuments(id), loadWorkMetrics(id)]);
+
+    if (auth.isManager) {
+      const attendanceCid = auth.getAttendanceCompanyId();
+      if (attendanceCid) {
+        const mgrPending = await fetchManagerPendingSnapshot(hrmAuth, attendanceCid, id);
+        setManagerPendingTotal(mgrPending.total);
+      } else {
+        setManagerPendingTotal(0);
+      }
+    } else {
+      setManagerPendingTotal(0);
+    }
   }, [applyRow, auth, loadDocuments, loadPendingTask, loadWorkMetrics]);
 
   const refresh = useCallback(async () => {
@@ -256,8 +338,17 @@ export function ProfileScreen() {
     }, [refresh]),
   );
 
-  const infoSections = useMemo(() => (employee ? buildProfileInfoSections(employee) : []), [employee]);
-  const workSections = useMemo(() => (employee ? buildProfileWorkSections(employee) : []), [employee]);
+  const dynamicFields = useMemo(
+    () =>
+      employee
+        ? buildDynamicProfileFields(employee, fieldCatalog, { isHr: hrCanEditProfile })
+        : [],
+    [employee, fieldCatalog, hrCanEditProfile],
+  );
+  const workSections = useMemo(
+    () => (employee ? buildProfileWorkSections(employee) : []),
+    [employee],
+  );
 
   const statusMetrics = useMemo(
     () =>
@@ -269,7 +360,14 @@ export function ProfileScreen() {
         checkInAt,
         employmentStatus: employee?.status,
       }),
-    [checkInAt, employee?.status, hasAttendanceToday, leaveBalance, pendingLeaveCount, pendingUpdateCount],
+    [
+      checkInAt,
+      employee?.status,
+      hasAttendanceToday,
+      leaveBalance,
+      pendingLeaveCount,
+      pendingUpdateCount,
+    ],
   );
 
   const uploadAndPatchAvatar = useCallback(
@@ -334,7 +432,7 @@ export function ProfileScreen() {
     }
   }, [auth, blockIfOffline]);
 
-  const save = async () => {
+  const saveHrProfile = async () => {
     if (!hrCanEditProfile) {
       Alert.alert('Thông báo', 'Liên hệ HR để cập nhật họ tên và chức danh.');
       return;
@@ -368,6 +466,45 @@ export function ProfileScreen() {
       } else Alert.alert(vi.error, formatHrmError(res));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveEssFields = async () => {
+    const off = blockIfOffline();
+    if (off) {
+      Alert.alert(vi.error, `${off}`);
+      return;
+    }
+    const id = auth.employeeId.trim();
+    if (!id || !employee) {
+      Alert.alert(vi.error, 'Thiếu thông tin nhân viên.');
+      return;
+    }
+    const existing = readEmployeeCustomFields(employee);
+    const merged = buildSelfEssCustomFieldsPatch(existing, essDraft);
+    if (!merged) {
+      Alert.alert('Thông báo', 'Không có thay đổi số điện thoại để lưu.');
+      return;
+    }
+    setEssSaving(true);
+    try {
+      const res = await patchEmployeeCustomFields(auth.getHrmAuth(), id, merged);
+      if (res.ok) {
+        Alert.alert('Thành công', 'Đã cập nhật thông tin liên hệ.');
+        void load();
+      } else {
+        const code = 'code' in res ? String(res.code) : '';
+        if (code === 'HRM-EMP-403') {
+          Alert.alert(
+            'Thông báo',
+            'Hệ thống chưa mở quyền tự sửa số điện thoại. Vui lòng liên hệ HR để cập nhật.',
+          );
+        } else {
+          Alert.alert(vi.error, formatHrmError(res));
+        }
+      }
+    } finally {
+      setEssSaving(false);
     }
   };
 
@@ -410,6 +547,28 @@ export function ProfileScreen() {
     navigateToContracts(navigation);
   }, [navigation]);
 
+  const essCanSave = useMemo(() => {
+    if (!employee) return false;
+    const existing = readEmployeeCustomFields(employee);
+    return buildSelfEssCustomFieldsPatch(existing, essDraft) != null;
+  }, [employee, essDraft]);
+
+  const quickActionBadges = useMemo(
+    () =>
+      auth.isManager && managerPendingTotal > 0
+        ? ({ approvals: managerPendingTotal } as Partial<Record<ProfileQuickActionId, number>>)
+        : undefined,
+    [auth.isManager, managerPendingTotal],
+  );
+
+  const goManagerApprovals = useCallback(() => {
+    navigateToManagerApprovals(navigation);
+  }, [navigation]);
+
+  const goSettings = useCallback(() => {
+    navigateToSettings(navigation);
+  }, [navigation]);
+
   return (
     <AppScreenLayout
       subtitle={subtitle || 'Cập nhật thông tin cá nhân'}
@@ -429,7 +588,7 @@ export function ProfileScreen() {
         {tab === 'info' ? (
           <View testID="profile-tab-info">
             <EmployeeHeroCard
-              fullName={fullName}
+              fullName={fullName || sanitizeProfileDisplay(employeeCode) || 'Hồ sơ'}
               subtitle={subtitle}
               employmentStatus={employee?.status ?? 'active'}
               avatar={{
@@ -440,49 +599,60 @@ export function ProfileScreen() {
                 onRemove: removeAvatar,
               }}
             />
-            {infoSections.map((section) => (
-              <ProfileSectionCard
-                key={section.title}
-                title={section.title}
-                icon="mail"
-                testID={`profile-info-section-${section.title}`}
-              >
-                {section.rows.map((row) => (
-                  <IconDetailRow
-                    key={`${section.title}-${row.label}`}
-                    icon={row.label === 'Email' ? 'mail-outline' : 'id-card-outline'}
-                    label={row.label}
-                    value={row.value}
-                    numeric={row.numeric}
-                  />
-                ))}
+            <ProfileSettingsEntry onPress={goSettings} />
+            {auth.isManager ? (
+              <ProfileManagerApprovalsEntry
+                pendingCount={managerPendingTotal}
+                onPress={goManagerApprovals}
+              />
+            ) : null}
+            {employee ? (
+              <DynamicProfileForm
+                fields={dynamicFields}
+                draft={essDraft}
+                onChangeField={(code, value) =>
+                  setEssDraft((prev) => ({ ...prev, [code]: value }))
+                }
+                onSave={() => void saveEssFields()}
+                saving={essSaving}
+                canSave={essCanSave}
+                hint={
+                  hrCanEditProfile
+                    ? undefined
+                    : 'Bạn có thể sửa số điện thoại bên dưới (nếu được phép). Họ tên / mã NV do HR quản lý.'
+                }
+              />
+            ) : (
+              <ProfileSectionCard title="Hồ sơ" icon="alert-circle-outline">
+                <Text style={styles.emptyHint} testID="profile-ess-missing">
+                  {subtitle || 'Không tìm thấy hồ sơ. Thử làm mới hoặc liên hệ HR.'}
+                </Text>
               </ProfileSectionCard>
-            ))}
+            )}
             {hrCanEditProfile ? (
               <ProfileSectionCard title="Cập nhật hồ sơ (HR)" icon="create-outline">
                 <FormField label="Họ tên" value={fullName} onChangeText={setFullName} />
                 <FormField label="Chức danh" value={jobTitle} onChangeText={setJobTitle} />
                 <PrimaryButton
                   label={saving ? vi.loading : vi.save}
-                  onPress={() => void save()}
+                  onPress={() => void saveHrProfile()}
                   disabled={saving}
                   loading={saving}
+                  testID="profile-hr-save"
                 />
               </ProfileSectionCard>
-            ) : (
-              <ProfileSectionCard title="Cập nhật hồ sơ" icon="information-circle-outline">
-                <Text style={styles.emptyHint}>
-                  Bạn có thể đổi ảnh đại diện ở trên. Các thông tin khác — liên hệ HR để chỉnh sửa.
-                </Text>
-              </ProfileSectionCard>
-            )}
+            ) : null}
           </View>
         ) : null}
 
         {tab === 'work' ? (
           <View testID="profile-tab-work">
             <StatusMetricGrid metrics={statusMetrics} />
-            <ProfileQuickActionGrid onAction={onQuickAction} />
+            <ProfileQuickActionGrid
+              onAction={onQuickAction}
+              isManager={auth.isManager}
+              badgeCounts={quickActionBadges}
+            />
             {currentTask ? <ProfileTaskCard task={currentTask} /> : null}
             {workSections.map((section) => (
               <ProfileSectionCard key={section.title} title={section.title} icon="briefcase-outline">

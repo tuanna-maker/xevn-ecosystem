@@ -1,6 +1,23 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Home — ChatStubModal (chat Phase 2 stub)
+ * UC:         BR-ESS-CHAT-01 · AC-BRAND-DNA-01
+ * BR:         Modal DNA — radius.modal · borderWidth.thin · colors.border
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L3m
+ * TechSpec:   THEME_USAGE.md § L2 inventory / L3 optional stub close
+ * Purpose:    Dialog stub chat nội bộ — chrome khớp ConfirmActionModal DNA.
+ * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
+ * Coded:      2026-07-22
+ * Callers:    Home chat entry
+ * Callees:    colors.surface|text|primary · radius.modal · borderWidth.thin
+ * Impact:     radius.lg không stroke → lệch L2 modal DNA
+ * must_keep:  radius.modal + borderWidth.thin + colors.border; không mở URL ngoài
+ * SOLID:      Stub UI tách chat product
+ * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ */
 import React from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
+import { Modal, Pressable, StyleSheet, Text } from 'react-native';
+import { borderWidth, colors, layout, radius, spacing, typography } from '../../theme/tokens';
 
 type ChatStubModalProps = {
   visible: boolean;
@@ -36,7 +53,9 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 320,
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.modal,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.border,
     padding: layout.cardPadding,
     gap: spacing.md,
   },

@@ -43,7 +43,10 @@ export function resolveRollupOperatingUnitMeta(): string {
 }
 
 export function resolveOperatingUnitRowSubtitle(unit: HrmOperatingUnitRow): string {
-  return `Lọc danh sách theo ${unit.display_name_vi}`;
+  const label = resolveCompanyDisplayVi(unit.operating_slug, {
+    operatingUnits: [unit],
+  });
+  return `Lọc danh sách theo ${label}`;
 }
 
 export function resolveOperatingUnitRowMeta(unit: HrmOperatingUnitRow): string {

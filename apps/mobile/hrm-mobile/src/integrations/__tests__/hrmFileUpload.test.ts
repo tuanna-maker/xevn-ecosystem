@@ -9,12 +9,12 @@ import {
 } from '../hrmFileUpload';
 import type { HrmAuthConfig } from '../types';
 
-const HOLDING_UUID = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+const HOLDING_UUID = '10000000-0000-4000-8000-000000000001';
 const EMPLOYEE_ID = '3796d949-4513-45c0-88fa-33030a062b17';
 
 function holdingAuth(overrides: Partial<HrmAuthConfig> = {}): HrmAuthConfig {
   return {
-    baseUrl: 'https://14-225-217-232.nip.io',
+    baseUrl: 'http://127.0.0.1:28001',
     accessToken: 'token',
     tenantId: 'xevn',
     companyId: 'holding',
@@ -68,7 +68,7 @@ describe('buildAvatarUploadUrl', () => {
     expect(url).not.toContain(encodeURIComponent(HOLDING_UUID));
     expect(url).toContain('feature=employee-avatar');
     expect(url).toBe(
-      'https://14-225-217-232.nip.io/api/hrm/files/upload?feature=employee-avatar&company_id=holding',
+      'http://127.0.0.1:28001/api/hrm/files/upload?feature=employee-avatar&company_id=holding',
     );
   });
 
@@ -83,9 +83,9 @@ describe('buildAvatarUploadUrl', () => {
   });
 });
 
-describe('buildLeaveAttachmentUploadUrl — PCOMP-W7-MOB-LEAVE-DOC', () => {
+describe('buildLeaveAttachmentUploadUrl â€” PCOMP-W7-MOB-LEAVE-DOC', () => {
   it('uses leave-attachment feature and holding slug query', () => {
-    const url = buildLeaveAttachmentUploadUrl('https://14-225-217-232.nip.io', 'holding');
+    const url = buildLeaveAttachmentUploadUrl('http://127.0.0.1:28001', 'holding');
     expect(url).toContain('feature=leave-attachment');
     expect(url).toContain('company_id=holding');
   });

@@ -33,13 +33,29 @@ describe('profileEssFields — PCOMP-W7-MOB-PROFILE-FULL', () => {
     const labels = sections.flatMap((s) => s.rows.map((r) => r.label));
     expect(labels).toContain('Số điện thoại');
     expect(labels).toContain('Giới tính');
+    expect(labels).toContain('Địa chỉ');
     expect(resolveGenderVi('male')).toBe('Nam');
     const allValues = sections.flatMap((s) => s.rows.map((r) => r.value)).join(' ');
     expect(allValues).not.toMatch(/199\d/);
   });
 
+  it('always shows phone/gender/address when custom_fields empty (J-MOB-12 shell)', () => {
+    const sections = buildProfilePersonalSections({ ...base, custom_fields: {} });
+    const labels = sections.flatMap((s) => s.rows.map((r) => r.label));
+    expect(labels).toEqual(
+      expect.arrayContaining(['Số điện thoại', 'Giới tính', 'Địa chỉ', 'Email', 'Mã nhân viên']),
+    );
+  });
+
   it('HR roles can full patch; employee cannot', () => {
     expect(canHrFullEmployeePatch(['hr_manager'])).toBe(true);
     expect(canHrFullEmployeePatch(['staff'])).toBe(false);
+  });
+
+  it('unknown gender → em dash (U72 M-F-09)', () => {
+    expect(resolveGenderVi('male')).toBe('Nam');
+    expect(resolveGenderVi('female')).toBe('Nữ');
+    expect(resolveGenderVi('other')).toBe('Khác');
+    expect(resolveGenderVi('nonbinary_x')).toBe('—');
   });
 });

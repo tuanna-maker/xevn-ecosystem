@@ -1,12 +1,31 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Requests → LeaveRequestsList (My Leaves) period header
+ * UC:         UC-HRM-MOB-06c · J-MOB-25
+ * BR:         BR-LEAVE-BAL-01 · BR-ESS-06
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.3 · MOBILE_HRM_ESS_UX_BENCHMARK §4.2
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §3.6
+ * Purpose:    Two metric cards Còn lại / Đã dùng from GET leave-balance.
+ * WorkItem:   PCOMP-W7-MOB-LEAVE-BAL · PCOMP-W8-MOB-ESS-LEAVE-01
+ * Coded:      2026-06-08
+ *
+ * Callers: LeaveRequestsListScreen
+ * Callees: formatLeaveBalanceDays · resolveLeaveBalanceDisplayDays
+ *
+ * must_keep:  No fake numbers on error; Kỳ nghỉ {year} label
+ * SOLID:      Presentational — fetch owned by list screen
+ * LastVerified: components/ui/__tests__/mobUx13d.test.ts · leaveBalanceChip.test.ts
+ */
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { LeaveBalancePayload } from '../../integrations/hrmLeaveBalance';
 import {
   formatLeaveBalanceDays,
+  LEAVE_BALANCE_MISSING_HR_MSG,
   resolveLeaveBalanceDisplayDays,
 } from '../../integrations/hrmLeaveBalance';
 import { groupedLayout } from '../../theme/groupedLayout';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { colors, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 
 type LeaveBalanceHeaderProps = {
   balance: LeaveBalancePayload | null;
@@ -14,12 +33,16 @@ type LeaveBalanceHeaderProps = {
   error?: string;
 };
 
+const successTone = statusToneColor('success');
+const infoTone = statusToneColor('info');
+
 export function LeaveBalanceHeader({ balance, loading, error }: LeaveBalanceHeaderProps) {
   const year = balance?.year ?? new Date().getFullYear();
   const available = balance
     ? formatLeaveBalanceDays(resolveLeaveBalanceDisplayDays(balance))
     : '—';
   const used = balance ? formatLeaveBalanceDays(balance.used_days) : '—';
+  const errorText = error ? LEAVE_BALANCE_MISSING_HR_MSG : null;
 
   return (
     <View style={styles.wrap} testID="leave-balance-header">
@@ -36,7 +59,7 @@ export function LeaveBalanceHeader({ balance, loading, error }: LeaveBalanceHead
           <Text style={styles.cardUnit}>ngày</Text>
         </View>
       </View>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {errorText ? <Text style={styles.error}>{errorText}</Text> : null}
     </View>
   );
 }
@@ -62,12 +85,12 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   cardAvailable: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
+    backgroundColor: successTone.bg,
+    borderColor: successTone.border,
   },
   cardUsed: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#BFDBFE',
+    backgroundColor: infoTone.bg,
+    borderColor: infoTone.border,
   },
   cardLabel: {
     fontSize: typography.fontSize.footnote,
@@ -80,11 +103,11 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   cardUnit: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.caption,
     color: colors.textSecondary,
   },
   error: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.footnote,
     color: colors.danger,
   },
 });

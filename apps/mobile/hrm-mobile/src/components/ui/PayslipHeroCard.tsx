@@ -1,9 +1,33 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Payslip list — hero net salary card
+ * UC:         ZenHR Z-P10 · M-F-02 · AC-U72-MOB-GLOBAL
+ * BR:         BR-ZEN-03/05 · U72
+ * SRS:        d-mob-u72-label-scan-01 §3 M-F-02
+ * TechSpec:   display-label-no-raw-key.mdc
+ * Purpose:    Hero thực lĩnh + kỳ; status qua statusLabel VI (cấm raw draft/paid).
+ * WorkItem:   D-MOB-U72-LABEL-FE-01
+ * Coded:      2026-07-27
+ * Callers:    PayslipListScreen
+ * Callees:    formatPayslipHeroNet · statusLabel
+ * must_keep:  resolvePayslipPeriodLabelVi at call site; U65
+ * LastVerified: integrations/__tests__/mapApiError.u72.test.ts (status) + payslip hero smoke
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-MOB-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: Hero status text uses statusLabel VI; hide when «—»
+ * Why: U72 M-F-02 raw capitalize status on gradient
+ * must_keep: period/net display; U65 · HOLD_DEPLOY
+ */
+
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { formatPayslipHeroNet } from '../../integrations/payrollPayslips';
+import { statusLabel as resolvePayslipStatusVi } from '../../integrations/mapApiError';
 import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
 import { PAYSLIP_HERO_TEST_ID } from '../../utils/payslipHero';
 
@@ -24,7 +48,8 @@ export function PayslipHeroCard({
   onPress,
 }: PayslipHeroCardProps) {
   const netDisplay = formatPayslipHeroNet(netAmount, currency);
-  const statusLabel = status?.trim() || '';
+  const statusText = status?.trim() ? resolvePayslipStatusVi(status) : '';
+  const showStatus = Boolean(statusText) && statusText !== '—';
 
   return (
     <Pressable
@@ -49,9 +74,9 @@ export function PayslipHeroCard({
           <Text style={styles.period} numberOfLines={2}>
             {periodLabel}
           </Text>
-          {statusLabel ? (
+          {showStatus ? (
             <Text style={styles.status} numberOfLines={1}>
-              {statusLabel}
+              {statusText}
             </Text>
           ) : null}
         </View>
@@ -104,7 +129,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.footnote,
     color: 'rgba(255,255,255,0.8)',
     lineHeight: typography.lineHeight.footnote,
-    textTransform: 'capitalize',
   },
   chevronWrap: {
     marginLeft: spacing.sm,

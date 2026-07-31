@@ -92,3 +92,13 @@ export function navigateToUpdateRequestDetail(navigation: MainTabNav, id: string
 export function navigateToJourney(navigation: MainTabNav, feed: JourneyFeedParams): void {
   navigateProfileStackScreen(navigation, 'Journey', { feed });
 }
+
+/** Profile / Home hub → Settings (HDSD §12.9 · TC-MOB-032). */
+export function navigateToSettings(navigation: MainTabNav): void {
+  navigateProfileStackScreen(navigation, 'Settings');
+}
+
+/** Settings quick nav → Scope (HDSD §12.1 · TC-MOB-006). */
+export function navigateToScope(navigation: MainTabNav): void {
+  navigateProfileStackScreen(navigation, 'Scope');
+}

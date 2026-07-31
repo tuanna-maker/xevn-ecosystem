@@ -18,8 +18,8 @@ describe('resolveHrmAvatarUrl', () => {
 
   it('prefixes relative /api/hrm/files path with baseUrl', () => {
     expect(
-      resolveHrmAvatarUrl('https://14-225-217-232.nip.io', '/api/hrm/files/holding/u1.jpg'),
-    ).toBe('https://14-225-217-232.nip.io/api/hrm/files/holding/u1.jpg');
+      resolveHrmAvatarUrl('http://127.0.0.1:28001', '/api/hrm/files/holding/u1.jpg'),
+    ).toBe('http://127.0.0.1:28001/api/hrm/files/holding/u1.jpg');
   });
 
   it('handles baseUrl trailing slash', () => {
@@ -47,7 +47,7 @@ describe('withAvatarCacheBust', () => {
 
 describe('resolveEmployeeInitials', () => {
   it('uses first and last word initials', () => {
-    expect(resolveEmployeeInitials('Nguyễn Văn An')).toBe('NA');
+    expect(resolveEmployeeInitials('Nguyá»…n VÄƒn An')).toBe('NA');
   });
 
   it('uses two chars for single word', () => {

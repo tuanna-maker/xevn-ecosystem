@@ -1,7 +1,47 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Tab Đội nhóm → TeamDirectory (list helpers)
+ * UC:         UC-HRM-MOB-16 (W7-5)
+ * BR:         BR-DIR-01 · BR-DIR-02 · BR-DIR-03
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.4
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §3.7 · NFR-W7-04
+ * Data:       docs/hrm/MOBILE_W7_DATA_CONTRACTS.md §5 VAL-W7-DIR-*
+ * Purpose:    Compose directory members (dept/job/attendance), section group,
+ *             chip filters; search normalize for API q (≥2 chars / R1).
+ * WorkItem:   PCOMP-W7-MOB-DIRECTORY
+ * Coded:      2026-07-19
+ *
+ * Callers: TeamDirectoryScreen · hrmTeamDirectory · TeamDirectoryRow
+ * Callees: resolveRoleSubtitle · resolveColleagueHeroSubtitle
+ *
+ * FE-Actions:
+ *   | User action | Handler | Lib / RPC |
+ *   |-------------|---------|-----------|
+ *   | Chip filter | applyTeamDirectoryFilters | client |
+ *   | Search ≥2   | normalizeDirectorySearchQuery | GET /employees?view=directory&q= |
+ *
+ * Impact:     Wrong dept group / search min chars → AC-DIR-01/J-MOB-16 FAIL
+ * must_keep:  status=active default; R1 q<2 → no API search; no DOB on list
+ * SOLID:      Pure helpers — HTTP owned by hrmTeamDirectory
+ * LastVerified: utils/__tests__/teamDirectory.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 PCOMP-W7-MOB-DIRECTORY-SEARCH-01
+ * What: foldDirectorySearchText (NFD) so ASCII «Nguyen» matches «Nguyễn» client-side.
+ * Why: AC-DIR-01 device FAIL when list relied on server-only filter.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-MOB-DIR-TOAST-01
+ * What: Own resolveColleagueHeroSubtitle here (leaf for list); detail imports this file only.
+ * Why: Break Metro require cycle teamDirectory ↔ teamDirectoryDetail (LogBox P2).
+ * must_keep: resolveDirectoryQueryCompanyId Plane B · hub empty hide · HOLD_DEPLOY
+ */
 import type { EmployeeRow } from '../integrations/hrmEmployees';
 import type { AttendanceRecordRow } from './dashboardEss';
 import { resolveRoleSubtitle } from './dashboardEss';
-import { resolveColleagueHeroSubtitle } from './teamDirectoryDetail';
+
+/** SRS R1 / NFR-W7-04 — API search only when query length ≥ 2. */
+export const DIRECTORY_SEARCH_MIN_CHARS = 2;
+/** TechSpec NFR-W7-04 debounce for directory search. */
+export const DIRECTORY_SEARCH_DEBOUNCE_MS = 300;
 
 export type TeamDirectoryFilter = 'all' | 'checked_in' | 'off';
 
@@ -38,6 +78,18 @@ const DEPT_STRIP_COLORS = [
 ] as const;
 
 const UNASSIGNED_DEPARTMENT = 'Khác';
+
+/** ZenHR org line: «Phòng ban · Chức danh» — shared by list + detail (no detail import). */
+export function resolveColleagueHeroSubtitle(department: string, jobTitle: string): string {
+  const dept = department.trim();
+  const role = jobTitle.trim();
+  const hasDept = dept.length > 0 && dept !== '—';
+  const hasRole = role.length > 0 && role !== '—';
+  if (hasDept && hasRole) return `${dept} · ${role}`;
+  if (hasDept) return dept;
+  if (hasRole) return role;
+  return '—';
+}
 
 /** Maps today's attendance rows to employee_id → checked in. */
 export function buildAttendanceCheckInMap(rows: AttendanceRecordRow[]): Map<string, TeamCheckInStatus> {
@@ -124,19 +176,40 @@ export function groupTeamDirectoryByDepartment(members: TeamDirectoryMember[]): 
   }));
 }
 
-/** Client-side search on name, code, department, job title. */
+/**
+ * SRS R1 — trim; return '' when length below DIRECTORY_SEARCH_MIN_CHARS
+ * so list stays default A–Z (no `q` on wire).
+ */
+export function normalizeDirectorySearchQuery(raw: string): string {
+  const term = raw.trim();
+  if (term.length < DIRECTORY_SEARCH_MIN_CHARS) return '';
+  return term;
+}
+
+/**
+ * Accent-fold for AC-DIR-01 — «Nguyen» matches «Nguyễn» (NFD strip marks).
+ * Used by client refine so list/chip update even before server `q` round-trip.
+ */
+export function foldDirectorySearchText(raw: string): string {
+  return raw
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase();
+}
+
+/** Client-side refine on name, code, department, job title (chip/local + search). */
 export function filterTeamDirectoryBySearch(
   members: TeamDirectoryMember[],
   query: string,
 ): TeamDirectoryMember[] {
-  const q = query.trim().toLowerCase();
+  const q = foldDirectorySearchText(normalizeDirectorySearchQuery(query));
   if (!q) return members;
   return members.filter((m) => {
-    const name = m.employee.full_name?.toLowerCase() ?? '';
-    const code = m.employee.employee_code?.toLowerCase() ?? '';
-    const dept = m.department.toLowerCase();
-    const job = m.jobTitle.toLowerCase();
-    const subtitle = m.departmentLabel.toLowerCase();
+    const name = foldDirectorySearchText(m.employee.full_name ?? '');
+    const code = foldDirectorySearchText(m.employee.employee_code ?? '');
+    const dept = foldDirectorySearchText(m.department);
+    const job = foldDirectorySearchText(m.jobTitle);
+    const subtitle = foldDirectorySearchText(m.departmentLabel);
     return (
       name.includes(q) ||
       code.includes(q) ||

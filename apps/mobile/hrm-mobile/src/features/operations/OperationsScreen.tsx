@@ -12,9 +12,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useOfflineWriteGuard } from '../../hooks/useOfflineWriteGuard';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError } from '../../integrations/mapApiError';
+import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
 import { vi } from '../../i18n/vi';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { colors, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { formatHrmDate } from '../../utils/formatHrm';
 import { userFacingScopeError } from '../../utils/scopeError';
 import {
@@ -275,6 +275,7 @@ export function OperationsScreen() {
               title={resolveServiceTypeLabel(item.service_type)}
               subtitle={`${item.employee_name} · ${formatHrmDate(item.request_date)}`}
               status={item.status}
+              statusLabel={statusLabel(item.status)}
               actions={
                 item.status === 'pending' ? (
                   <View style={styles.actionRow}>
@@ -323,14 +324,14 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: statusToneColor('danger').border,
     padding: spacing.md,
   },
   errorText: {
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.semibold,
   },

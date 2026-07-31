@@ -7,7 +7,7 @@ vi.mock('../hrmApiClient', () => ({
   resolveHrmCompanyHeaderId: vi.fn((uuid: string, slug: string) => slug || uuid),
 }));
 
-const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+const holdingUuid = '10000000-0000-4000-8000-000000000001';
 const employeeId = '3796d949-4513-45c0-88fa-33030a062b17';
 
 describe('loadHomeCelebrateSections — PCOMP-W7-MOB-WHOS-OUT-01', () => {

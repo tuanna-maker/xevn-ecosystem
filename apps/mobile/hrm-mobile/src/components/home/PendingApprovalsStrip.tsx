@@ -3,9 +3,11 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { formatManagerCardTitle, type ManagerPreviewRow } from '../../utils/dashboardHub';
-import { colors, layout, radius, shadow, spacing, typography } from '../../theme/tokens';
+import { colors, layout, radius, shadow, spacing, statusToneColor, typography } from '../../theme/tokens';
 
 export const PENDING_APPROVALS_STRIP_TEST_ID = 'home-pending-approvals-strip';
+
+const warnTone = statusToneColor('warning');
 
 type PendingApprovalsStripProps = {
   pendingCount: number;
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: radius.full,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: warnTone.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
   countBadgeText: {
     fontSize: typography.fontSize.caption,
     lineHeight: typography.lineHeight.caption,
-    color: '#FFFFFF',
+    color: colors.surface,
     fontWeight: typography.fontWeight.bold,
   },
   viewAll: {
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
   },
   pendingPill: {
     alignSelf: 'flex-start',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: warnTone.bg,
     borderRadius: radius.full,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
   pendingPillText: {
     fontSize: typography.fontSize.caption,
     lineHeight: typography.lineHeight.caption,
-    color: '#B45309',
+    color: warnTone.text,
     fontWeight: typography.fontWeight.semibold,
   },
 });

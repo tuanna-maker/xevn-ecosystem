@@ -61,6 +61,13 @@ describe('layoutInsets — MOBILE_XEVN_DESIGN_SYSTEM §4.1', () => {
     expect(resolveStickyFooterPaddingBottom(false, 0)).toBe(8);
   });
 
+  it('resolveFabActionSheetMarginBottom — WCAG 2.4.12 sheet clears tab + safe inset', async () => {
+    const { resolveFabActionSheetMarginBottom, TAB_BAR_BASE_HEIGHT, WCAG_MIN_TOUCH_TARGET_PT } =
+      await loadInsets();
+    expect(WCAG_MIN_TOUCH_TARGET_PT).toBe(44);
+    expect(resolveFabActionSheetMarginBottom(34, 8)).toBe(34 + TAB_BAR_BASE_HEIGHT + 8);
+  });
+
   it('resolveAndroidNavigationBarInset — MOB-UX-13b Android 3-button fallback', async () => {
     platformState.os = 'android';
     vi.resetModules();

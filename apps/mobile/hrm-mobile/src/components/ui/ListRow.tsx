@@ -24,6 +24,8 @@ type ListRowProps = {
 
   statusTestID?: string;
 
+  testID?: string;
+
   onPress?: () => void;
 
   trailing?: React.ReactNode;
@@ -44,6 +46,7 @@ export function ListRow({
   statusLabel,
   statusTone,
   statusTestID,
+  testID,
   onPress,
   trailing,
   actions,
@@ -52,7 +55,7 @@ export function ListRow({
 
   const content = (
 
-    <View style={[styles.card, style]}>
+    <View style={[styles.card, style]} testID={testID}>
 
       <View style={styles.main}>
 
@@ -188,7 +191,7 @@ const styles = StyleSheet.create({
 
     fontSize: typography.fontSize.footnote,
 
-    color: colors.neutral,
+    color: colors.textMuted,
 
     lineHeight: typography.lineHeight.footnote,
 

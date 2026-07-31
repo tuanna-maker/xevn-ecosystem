@@ -2,6 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNetwork } from '../context/NetworkContext';
+import { colors, spacing, statusToneColor, typography } from '../theme/tokens';
+
+const warn = statusToneColor('warning');
 
 export function OfflineBanner() {
   const net = useNetwork();
@@ -16,11 +19,16 @@ export function OfflineBanner() {
 
 const styles = StyleSheet.create({
   wrap: {
-    backgroundColor: '#422006',
-    paddingHorizontal: 12,
-    paddingBottom: 8,
+    backgroundColor: warn.bg,
+    paddingHorizontal: spacing.md - 4,
+    paddingBottom: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: '#78350f',
+    borderBottomColor: warn.border,
   },
-  text: { color: '#fef3c7', fontSize: 13, lineHeight: 18 },
+  text: {
+    color: warn.text,
+    fontSize: typography.fontSize.footnote,
+    lineHeight: typography.lineHeight.footnote,
+    fontWeight: typography.fontWeight.medium,
+  },
 });

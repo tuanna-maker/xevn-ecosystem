@@ -9,12 +9,13 @@ type IconDetailRowProps = {
   value: string;
   numeric?: boolean;
   showChevron?: boolean;
+  testID?: string;
 };
 
 /** Grouped profile row with leading icon — SET G / F-3. */
-export function IconDetailRow({ icon, label, value, numeric, showChevron }: IconDetailRowProps) {
+export function IconDetailRow({ icon, label, value, numeric, showChevron, testID }: IconDetailRowProps) {
   return (
-    <View style={styles.row} accessibilityRole="text">
+    <View style={styles.row} accessibilityRole="text" testID={testID}>
       <View style={styles.iconWrap}>
         <Ionicons name={icon} size={18} color={colors.primary} />
       </View>

@@ -1,5 +1,29 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Cold-start SplashIntro — overlay brand XeVN
+ * UC:         AC-BRAND-DNA-03 / AC-BRAND-DNA-06
+ * BR:         Splash bg unified #000000 (Expo + Android + intro)
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L1m→L3m
+ * TechSpec:   docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3 · brand.splash.bg
+ * Purpose:    Hiển thị logo XeVN trên nền đen brand một lần mỗi cold start (shell L3).
+ * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
+ * Coded:      2026-07-22
+ * Callers:    App.tsx → SplashIntro
+ * Callees:    colors.brandShell / colors.splashGlow ← theme/tokens
+ * Impact:     Đổi nền ≠ #000 → lệch native splash / Expo
+ * must_keep:  backgroundColor = colors.brandShell (#000000); glow = colors.splashGlow
+ * SOLID:      Brand intro tách khỏi navigator
+ * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: MOB-XEVN-BRAND-SHELL-L3-01 · 2026-07-22
+ * Change: L3 shell gate — giữ L1 token consume; cập nhật LastVerified + work_item shell.
+ * must_keep: brandShell #000 + splashGlow không đổi hex ad-hoc.
+ */
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
+
+import { colors } from '../../theme/tokens';
 
 const LOGO = require('../../../assets/xevn-logo.png');
 
@@ -94,7 +118,7 @@ export function SplashIntro({ onFinish }: SplashIntroProps) {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
+    backgroundColor: colors.brandShell,
     zIndex: 9999,
     elevation: 9999,
   },
@@ -108,7 +132,7 @@ const styles = StyleSheet.create({
     width: LOGO_SIZE * 1.35,
     height: LOGO_SIZE * 1.35,
     borderRadius: LOGO_SIZE,
-    backgroundColor: 'rgba(43, 89, 188, 0.18)',
+    backgroundColor: colors.splashGlow,
   },
   logo: {
     width: LOGO_SIZE,

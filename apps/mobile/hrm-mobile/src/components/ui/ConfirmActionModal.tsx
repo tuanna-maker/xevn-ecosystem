@@ -1,7 +1,38 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     ConfirmActionModal — hộp thoại xác nhận branded (approve / decline / submit)
+ * UC:         AC-BRAND-DNA-01 · J-MOB approvals / leave submit
+ * BR:         XeVN Precision Motion — modal r12 · border thin · colors.border
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md § L2m
+ * TechSpec:   apps/mobile/hrm-mobile/src/theme/THEME_USAGE.md § L2 Modal
+ * Purpose:    Thay Alert.alert hệ thống cho thao tác xác nhận có DNA brand; đọc radius.modal + borderWidth.thin.
+ * WorkItem:   MOB-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ *
+ * Callers:
+ *   - CreateLeaveRequestScreen → confirm submit
+ *   - ManagerApprovalsScreen → approve / decline
+ *   - LeaveRequestDetailScreen → cancel leave confirm
+ *   - AvatarUploadField → remove avatar confirm
+ *
+ * Callees: PrimaryButton · theme/tokens (colors, radius.modal, borderWidth.thin)
+ *
+ * FE-Actions:
+ *   | Thao tác     | Handler   | UI                         |
+ *   |--------------|-----------|----------------------------|
+ *   | Huỷ          | onCancel  | ghost PrimaryButton        |
+ *   | Xác nhận     | onConfirm | primary / danger button    |
+ *
+ * Impact:     Đổi radius/border lệch → modal lệch card DNA; Alert.alert còn lại = system chrome (document).
+ * must_keep:  radius.modal; borderWidth.thin; colors.border; không hardcode borderWidth: 1
+ * SOLID:      Dialog presentation tách khỏi screen business logic
+ * LastVerified: src/theme/__tests__/mobL2Primitives.test.ts
+ */
+
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { borderWidth, colors, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { PrimaryButton } from './PrimaryButton';
 
 export type ConfirmActionKind = 'approve' | 'decline' | 'submit';
@@ -18,8 +49,8 @@ type ConfirmActionModalProps = {
 };
 
 const ICONS: Record<ConfirmActionKind, { name: keyof typeof Ionicons.glyphMap; color: string; bg: string }> = {
-  approve: { name: 'checkmark-circle', color: colors.success, bg: '#D1FAE5' },
-  decline: { name: 'close-circle', color: colors.danger, bg: '#FEE2E2' },
+  approve: { name: 'checkmark-circle', color: colors.success, bg: statusToneColor('success').bg },
+  decline: { name: 'close-circle', color: colors.danger, bg: statusToneColor('danger').bg },
   submit: { name: 'paper-plane', color: colors.primary, bg: colors.primaryMuted },
 };
 
@@ -67,10 +98,10 @@ const styles = StyleSheet.create({
   },
   box: {
     backgroundColor: colors.surface,
-    borderRadius: radius.card,
+    borderRadius: radius.modal,
     padding: spacing.lg,
     gap: spacing.md,
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.border,
     alignItems: 'center',
   },

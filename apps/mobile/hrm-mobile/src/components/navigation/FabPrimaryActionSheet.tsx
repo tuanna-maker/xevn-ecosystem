@@ -1,3 +1,32 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     FabPrimaryActionSheet — bottom sheet thao tác nhanh FAB
+ * UC:         J-MOB FAB primary actions · AC-BRAND-DNA-01
+ * BR:         radius.modal · borderWidth.thin · colors.border · shadow.soft
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md § L2m
+ * TechSpec:   apps/mobile/hrm-mobile/src/theme/THEME_USAGE.md § L2 ActionSheet
+ * Purpose:    Sheet chọn check-in / tạo nghỉ / duyệt; DNA modal giống ConfirmActionModal.
+ * WorkItem:   MOB-XEVN-BRAND-PRIMITIVES-L2-01
+ * Coded:      2026-07-22
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-UX-R3-WCAG-MOBILE-01
+ * What: WCAG 2.4.12 — margin bottom qua resolveFabActionSheetMarginBottom (tab + home indicator).
+ * must_keep: sheet trên tab bar; row/cancel ≥44; radius.modal
+ *
+ * Callers: RootNavigator / tab FAB host · ClockIn method selector sample
+ * Callees: fabPrimaryActions · profileStackNav · layoutInsets · theme/tokens
+ *
+ * FE-Actions:
+ *   | Thao tác   | Handler              | Nav                         |
+ *   |------------|----------------------|-----------------------------|
+ *   | Chọn row   | onSelect(id)         | check_in / leave / approvals|
+ *   | Đóng       | onClose              | Modal dismiss               |
+ *
+ * Impact:     Hardcode borderRadius/card → lệch modal DNA; thiếu safe margin → CTA che home indicator.
+ * must_keep:  radius.modal; borderWidth.thin; colors.border; resolveFabActionSheetMarginBottom
+ * SOLID:      Navigation map tách trong navigateForAction
+ * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ */
+
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -17,8 +46,8 @@ import {
   navigateToManagerApprovals,
 } from '../../navigation/profileStackNav';
 import type { MainTabParamList } from '../../navigation/types';
-import { TAB_BAR_BASE_HEIGHT, resolveBottomSafeInset } from '../../theme/layoutInsets';
-import { colors, layout, radius, shadow, spacing, typography } from '../../theme/tokens';
+import { resolveFabActionSheetMarginBottom } from '../../theme/layoutInsets';
+import { borderWidth, colors, layout, radius, shadow, spacing, typography } from '../../theme/tokens';
 
 type TabNav = BottomTabNavigationProp<MainTabParamList>;
 
@@ -50,7 +79,7 @@ export function FabPrimaryActionSheet({ visible, actions, onClose }: FabPrimaryA
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<TabNav>();
 
-  const sheetBottom = resolveBottomSafeInset(insets.bottom) + TAB_BAR_BASE_HEIGHT + spacing.sm;
+  const sheetBottom = resolveFabActionSheetMarginBottom(insets.bottom, spacing.sm);
 
   const onSelect = useCallback(
     (id: FabPrimaryActionId) => {
@@ -122,12 +151,12 @@ const styles = StyleSheet.create({
   },
   sheet: {
     backgroundColor: colors.surface,
-    borderRadius: radius.card,
+    borderRadius: radius.modal,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.border,
     ...shadow.soft,
   },

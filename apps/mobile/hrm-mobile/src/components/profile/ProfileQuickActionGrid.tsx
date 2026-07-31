@@ -8,6 +8,8 @@ import { PROFILE_QUICK_ACTIONS, type ProfileQuickActionId } from '../../utils/pr
 type ProfileQuickActionGridProps = {
   onAction: (id: ProfileQuickActionId) => void;
   badgeCounts?: Partial<Record<ProfileQuickActionId, number>>;
+  /** Hide Phê duyệt tile for non-manager personas (J-MOB-05). */
+  isManager?: boolean;
   testID?: string;
 };
 
@@ -15,11 +17,16 @@ type ProfileQuickActionGridProps = {
 export function ProfileQuickActionGrid({
   onAction,
   badgeCounts,
+  isManager = false,
   testID = 'profile-quick-action-grid',
 }: ProfileQuickActionGridProps) {
+  const actions = isManager
+    ? PROFILE_QUICK_ACTIONS
+    : PROFILE_QUICK_ACTIONS.filter((action) => action.id !== 'approvals');
+
   return (
     <View style={styles.grid} testID={testID}>
-      {PROFILE_QUICK_ACTIONS.map((action) => {
+      {actions.map((action) => {
         const badge = badgeCounts?.[action.id] ?? 0;
         return (
           <PressableScale
@@ -63,6 +70,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     paddingVertical: spacing.sm,
     minWidth: 72,
+    minHeight: layout.touchTargetMin,
   },
   iconWrap: {
     position: 'relative',

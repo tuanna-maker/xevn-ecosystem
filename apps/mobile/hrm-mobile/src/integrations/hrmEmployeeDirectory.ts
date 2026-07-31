@@ -1,4 +1,34 @@
-import { resolveHrmCompanyHeaderId, hrmRequest } from './hrmApiClient';
+/**
+ * @CODE-MEMORY
+ * Screen:     TeamColleagueDetail (directory detail)
+ * UC:         UC-HRM-MOB-16 (W7-5) · AC-DIR-02
+ * BR:         BR-DIR-02 (PII / phone policy)
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.4 R6
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §3.7 · §4.2 EmployeeDirectoryDetail
+ * Data:       docs/hrm/MOBILE_W7_DATA_CONTRACTS.md §5 detail · VAL-W7-DIR-01/03
+ * Purpose:    GET colleague profile lite with view=directory + attendance_today.
+ * WorkItem:   PCOMP-W7-MOB-DIRECTORY
+ * Coded:      2026-07-19
+ *
+ * Callers: TeamColleagueDetailScreen
+ * Callees: hrmRequest · resolveHrmCompanyHeaderId · formatHrmError
+ *
+ * FE-Actions:
+ *   | User action | Handler | Lib / RPC |
+ *   |-------------|---------|-----------|
+ *   | Tap row | fetchEmployeeDirectoryDetail | GET /employees/:id?view=directory |
+ *
+ * Impact:     Wrong view → PII leak / missing fields → VAL-W7-DIR-03 FAIL
+ * must_keep:  view=directory; no invent email/phone; list→detail same id
+ * SOLID:      Detail fetch only — mapping in teamDirectoryDetail
+ * LastVerified: integrations/__tests__/hrmEmployeeDirectory.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 PCOMP-W7-MOB-DIRECTORY-01
+ * What: company_id query via resolveDirectoryQueryCompanyId (Plane B slug / main).
+ * Why: VAL-W7-DIR-01 scope parity list↔detail; dual-plane GWC must_keep.
+ */
+import { resolveDirectoryQueryCompanyId } from './companyWireScope';
+import { hrmRequest } from './hrmApiClient';
 import { formatHrmError } from './mapApiError';
 import type { HrmAuthConfig } from './types';
 
@@ -32,7 +62,7 @@ function isDirectoryDetailRow(data: unknown): data is DirectoryDetailRow {
   return typeof row.id === 'string' && 'employee_code' in row;
 }
 
-/** GET /employees/:id?view=directory — colleague detail for team directory (J-MOB-30 / R-DIR-DETAIL-01). */
+/** GET /employees/:id?view=directory — colleague detail for team directory (J-MOB-16 / AC-DIR-02). */
 export async function fetchEmployeeDirectoryDetail(
   auth: HrmAuthConfig,
   employeeId: string,
@@ -42,7 +72,14 @@ export async function fetchEmployeeDirectoryDetail(
     return { ok: false, message: 'Thiếu mã nhân viên.' };
   }
 
-  const companyId = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
+  const companyId = resolveDirectoryQueryCompanyId({
+    companyUuid: auth.companyUuid,
+    companyId: auth.companyId,
+    accessToken: auth.accessToken,
+    memberships: auth.memberships,
+    employeeId: auth.employeeId,
+    tenantId: auth.tenantId,
+  });
   if (!companyId) {
     return { ok: false, message: 'Cần phạm vi công ty.' };
   }

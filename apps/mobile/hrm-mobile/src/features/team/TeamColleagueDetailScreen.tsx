@@ -1,3 +1,29 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     TeamColleagueDetail (read-only directory profile)
+ * UC:         UC-HRM-MOB-16 (W7-5) · AC-DIR-02 · J-MOB-16 L2.5
+ * BR:         BR-DIR-02
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.4 R6
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §4.2 EmployeeDirectoryDetailScreen
+ * Data:       docs/hrm/MOBILE_W7_DATA_CONTRACTS.md §5 detail · VAL-W7-DIR-01/03
+ * Purpose:    Read-only colleague detail from view=directory; contact + work + attendance.
+ * WorkItem:   PCOMP-W7-MOB-DIRECTORY
+ * Coded:      2026-07-19
+ *
+ * Callers: RootNavigator TeamColleagueDetail
+ * Callees: fetchEmployeeDirectoryDetail · mapColleagueDetailFields · QuickActionRow
+ *
+ * FE-Actions:
+ *   | User action | Handler | Lib / RPC |
+ *   |-------------|---------|-----------|
+ *   | Open from row | load | GET /employees/:id?view=directory |
+ *   | Pull refresh | load | same |
+ *
+ * Impact:     Missing fields / wrong id → AC-DIR-02 FAIL
+ * must_keep:  read-only; no invent PII; hero + sections
+ * SOLID:      Screen only — fetch/map helpers elsewhere
+ * LastVerified: components/ui/__tests__/employeeDetailUx.test.ts
+ */
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

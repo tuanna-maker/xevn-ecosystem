@@ -6,6 +6,8 @@ import type { HrmAuthConfig } from '../integrations/types';
 
 import { getDefaultBaseUrl, hrmRequest, type HrmRequestResult } from '../integrations/hrmApiClient';
 
+import { normalizeHrmBaseUrl } from '../integrations/normalizeHrmBaseUrl';
+
 import { computeTokenExpiresAt, isMobileTokenExpired } from '../integrations/mobileAuthSession';
 
 import {
@@ -217,7 +219,7 @@ function buildHrmAuthConfig(state: AuthState): HrmAuthConfig {
   });
 
   return {
-    baseUrl: state.baseUrl.trim() || getDefaultBaseUrl(),
+    baseUrl: state.baseUrl.trim() ? normalizeHrmBaseUrl(state.baseUrl, getDefaultBaseUrl()) : getDefaultBaseUrl(),
     accessToken: state.accessToken.trim() || undefined,
     internalApiKey: state.internalApiKey.trim() || undefined,
     tenantId: state.tenantId.trim(),
@@ -469,7 +471,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const storedUuid = (await SecureStore.getItemAsync(STORAGE.COMPANY_UUID)) ?? '';
 
-      const base = loaded.baseUrl?.trim() || getDefaultBaseUrl();
+      const base = normalizeHrmBaseUrl(loaded.baseUrl, getDefaultBaseUrl());
 
       const hasAuth = Boolean(loaded.accessToken?.trim() || loaded.internalApiKey?.trim());
 
@@ -529,7 +531,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       signedIn: true,
 
-      baseUrl: payload.baseUrl.trim() || getDefaultBaseUrl(),
+      baseUrl: normalizeHrmBaseUrl(payload.baseUrl, getDefaultBaseUrl()),
 
       accessToken: payload.accessToken.trim(),
 

@@ -44,4 +44,11 @@ describe('resolveAttendanceTimelineBadge', () => {
     const badge = resolveAttendanceTimelineBadge({ status: 'leave' });
     expect(badge).toMatchObject({ kind: 'leave', label: 'Nghỉ phép', tone: 'info' });
   });
+
+  it('unknown attendance status → em dash + neutral (U72 M-F-08)', () => {
+    const badge = resolveAttendanceTimelineBadge({ status: 'weird_enum_x' });
+    expect(badge.label).toBe('—');
+    expect(badge.tone).toBe('neutral');
+    expect(badge.label).not.toBe('weird_enum_x');
+  });
 });

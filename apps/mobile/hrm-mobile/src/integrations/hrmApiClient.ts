@@ -1,6 +1,19 @@
+/**
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: D-MOB-REMOVE-NIPIO-01 · 2026-07-28
+ * Change: getDefaultBaseUrl fallback qua pilotApiBase = VPS/dev HRM_BE_PORT:3001; không hostname DNS tạm / không portal :8088.
+ * must_keep: EXPO_PUBLIC trim ưu tiên; __DEV__ http://localhost:3001.
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: D-HDSD-MOB-PILOT-CLIENT-NET-01 · 2026-07-31
+ * Change: normalizeHrmBaseUrl + QA logcat trace; release cleartext via network_security_config (pilot HTTP :3001).
+ * must_keep: resolveHrmCompanyHeaderId / resolveHrmWriteHeaderId split; EXPO_PUBLIC ưu tiên.
+ */
+import { isQaDeepLinkLoginEnabled } from '../config/qaLogin';
 import { RELEASE_PILOT_HRM_API_BASE_URL } from '../config/pilotApiBase';
 import { isUuid } from '../utils/uuid';
 import { isHrmWireBlockedSlug } from './companyWireScope';
+import { normalizeHrmBaseUrl } from './normalizeHrmBaseUrl';
 import type { ApiEnvelopeError, ApiEnvelopeSuccess, HrmAuthConfig } from './types';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -11,6 +24,15 @@ export type HrmRequestResult<T> =
 
 function stripTrailingSlash(url: string): string {
   return url.replace(/\/+$/, '');
+}
+
+/** Resolve wire origin for hrmRequest — never pass malformed deep-link base to fetch. */
+export function resolveHrmApiBaseUrl(auth: Pick<HrmAuthConfig, 'baseUrl'>): string {
+  const devFallback =
+    typeof __DEV__ !== 'undefined' && __DEV__ ? 'http://localhost:3001' : RELEASE_PILOT_HRM_API_BASE_URL;
+  const fromEnv = process.env.EXPO_PUBLIC_HRM_API_BASE_URL?.trim();
+  const envFallback = fromEnv ? stripTrailingSlash(fromEnv) : devFallback;
+  return normalizeHrmBaseUrl(auth.baseUrl, envFallback);
 }
 
 function randomRequestId(): string {
@@ -51,11 +73,11 @@ export function isHrmWriteMethod(method?: string): boolean {
 
 export function getDefaultBaseUrl(): string {
   const fromEnv = process.env.EXPO_PUBLIC_HRM_API_BASE_URL;
-  if (fromEnv && fromEnv.trim()) return stripTrailingSlash(fromEnv.trim());
+  if (fromEnv && fromEnv.trim()) return normalizeHrmBaseUrl(fromEnv);
   if (typeof __DEV__ !== 'undefined' && __DEV__) {
-    return 'http://localhost:3001';
+    return normalizeHrmBaseUrl('http://localhost:3001');
   }
-  return RELEASE_PILOT_HRM_API_BASE_URL;
+  return normalizeHrmBaseUrl(RELEASE_PILOT_HRM_API_BASE_URL);
 }
 
 export async function hrmRequest<T>(
@@ -67,7 +89,8 @@ export async function hrmRequest<T>(
   const timeoutMs = init.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const { timeoutMs: _omit, ...fetchInit } = init;
 
-  const url = `${stripTrailingSlash(auth.baseUrl)}/api/hrm${path.startsWith('/') ? path : `/${path}`}`;
+  const base = resolveHrmApiBaseUrl(auth);
+  const url = `${base}/api/hrm${path.startsWith('/') ? path : `/${path}`}`;
   const headers: Record<string, string> = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -88,6 +111,17 @@ export async function hrmRequest<T>(
   }
   if (auth.internalApiKey) {
     headers['x-internal-api-key'] = auth.internalApiKey;
+  }
+
+  if (isQaDeepLinkLoginEnabled()) {
+    const authPreview = headers.Authorization
+      ? headers.Authorization.startsWith('Bearer ')
+        ? 'Bearer …'
+        : 'present'
+      : 'missing';
+    console.info(
+      `[HRM-MOB] ${method} ${url} x-company-id=${companyHeader || '(empty)'} Authorization=${authPreview}`,
+    );
   }
 
   const controller = new AbortController();

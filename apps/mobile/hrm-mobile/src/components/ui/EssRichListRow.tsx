@@ -13,7 +13,8 @@ const ICON_GRADIENTS: Record<EssRichListRowIconTone, [string, string]> = {
   success: [colors.payslipHeroGradientStart, colors.payslipHeroGradientEnd],
   warning: ['#F59E0B', '#D97706'],
   accent: [colors.accent, '#0891B2'],
-  neutral: ['#9CA3AF', '#6B7280'],
+  /** Chrome icon only — ban pale slate-400 body text */
+  neutral: [colors.textMuted, colors.textSecondary],
 };
 
 type EssRichListRowProps = {

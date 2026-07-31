@@ -9,8 +9,9 @@ import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
 import { formatHrmError } from '../../integrations/mapApiError';
-import { colors, radius, spacing, typography } from '../../theme/tokens';
+import { colors, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { formatHrmDateRange } from '../../utils/formatHrm';
+import { statusLabel } from '../../integrations/mapApiError';
 import { resolvePayslipPeriodLabelVi } from '../../utils/payslipDisplayVi';
 import { userFacingScopeError } from '../../utils/scopeError';
 
@@ -106,6 +107,7 @@ export function PayrollSummaryScreen() {
               title={periodLabel}
               subtitle={formatHrmDateRange(item.start_date, item.end_date)}
               status={item.status}
+              statusLabel={statusLabel(item.status)}
               onPress={() => nav.navigate('PayslipList', { periodId: item.id, periodLabel })}
             />
           );
@@ -132,15 +134,15 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   errorBanner: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
     borderRadius: radius.card,
     borderWidth: 1,
-    borderColor: '#FCA5A5',
+    borderColor: statusToneColor('danger').border,
     padding: spacing.md,
     marginBottom: spacing.sm,
   },
   errorText: {
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
     fontSize: typography.fontSize.sm,
     fontWeight: typography.fontWeight.medium,
   },

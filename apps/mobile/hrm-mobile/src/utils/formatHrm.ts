@@ -48,11 +48,25 @@ export function formatHrmDateTime(value: string | null | undefined): string {
   return `${datePart} ${hours}:${minutes}`;
 }
 
-/** Normalize API amount (number or string) for display math. */
+/**
+ * Normalize API amount (number or string) for display math.
+ * Accepts plain digits, en commas, or vi-VN thousand dots (15.000.000 / 15.000.000,5).
+ * WorkItem: D-UX-VI-FORMAT-MOBILE-01 — BR-UX-NUM-03 paste parity.
+ */
 export function parseAmount(raw: string | number | null | undefined): number {
   if (typeof raw === 'number') return Number.isFinite(raw) ? raw : 0;
   if (typeof raw === 'string') {
-    const n = Number.parseFloat(raw.replace(/,/g, ''));
+    const trimmed = raw.trim().replace(/\s/g, '').replace(/[₫đ]|VND/gi, '');
+    if (!trimmed) return 0;
+    // vi-VN grouped integers / decimals (dot thousands, optional comma fraction)
+    if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(trimmed)) {
+      const normalized = trimmed.includes(',')
+        ? trimmed.replace(/\./g, '').replace(',', '.')
+        : trimmed.replace(/\./g, '');
+      const n = Number.parseFloat(normalized);
+      return Number.isFinite(n) ? n : 0;
+    }
+    const n = Number.parseFloat(trimmed.replace(/,/g, ''));
     return Number.isFinite(n) ? n : 0;
   }
   return 0;

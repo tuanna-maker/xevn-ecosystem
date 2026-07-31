@@ -43,7 +43,13 @@ export function ManagerAttendanceCard({
       </View>
       <View style={styles.actions}>
         <PrimaryButton label="Từ chối" variant="secondary" onPress={onDecline} size="sm" style={styles.actionBtn} />
-        <PrimaryButton label="Duyệt" onPress={onAccept} size="sm" style={styles.actionBtn} />
+        <PrimaryButton
+          label="Duyệt"
+          onPress={onAccept}
+          size="sm"
+          style={styles.actionBtn}
+          testID="manager-approve-button"
+        />
       </View>
     </ElevatedCard>
   );

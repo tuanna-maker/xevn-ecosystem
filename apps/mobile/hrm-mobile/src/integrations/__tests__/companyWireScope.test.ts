@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   resolveAvatarUploadQueryCompanyId,
+  resolveDirectoryQueryCompanyId,
   resolveHomeSummaryQueryCompanyId,
   resolveLeaveBalanceQueryCompanyId,
   resolvePayrollQueryCompanyId,
@@ -84,7 +85,7 @@ describe('resolvePayrollQueryCompanyId', () => {
 
 describe('resolveHomeSummaryQueryCompanyId', () => {
   it('uses holding slug for home/summary whos_out workforce rollup (D-W7-HOME-WHOS-SLUG-01)', () => {
-    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
     expect(
       resolveHomeSummaryQueryCompanyId({
         companyUuid: holdingUuid,
@@ -112,7 +113,7 @@ describe('resolveHomeSummaryQueryCompanyId', () => {
   });
 
   it('PCOMP-W7-MOB-WHOS-OUT-02: recovers holding slug from membership when companyId is legal UUID', () => {
-    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
     const employeeId = '3796d949-4513-45c0-88fa-33030a062b17';
     expect(
       resolveHomeSummaryQueryCompanyId({
@@ -135,7 +136,7 @@ describe('resolveHomeSummaryQueryCompanyId', () => {
 
 describe('resolveLeaveBalanceQueryCompanyId', () => {
   it('D-W8-MOB-BAL-UI-01: uses holding slug when SecureStore companyId is legal UUID', () => {
-    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
     const employeeId = '3796d949-4513-45c0-88fa-33030a062b17';
     expect(
       resolveLeaveBalanceQueryCompanyId({
@@ -189,11 +190,73 @@ describe('resolveLeaveBalanceQueryCompanyId', () => {
       }),
     ).toBe('trsport');
   });
+
+  it('PCOMP-W7-MOB-LEAVE-BAL-02: delegates Plane B to resolveDirectoryQueryCompanyId', () => {
+    expect(
+      resolveLeaveBalanceQueryCompanyId({
+        companyUuid: DU_LICH_UUID,
+        companyId: 'main',
+      }),
+    ).toBe('main');
+    expect(
+      resolveLeaveBalanceQueryCompanyId({
+        companyUuid: '10000000-0000-4000-8000-000000000001',
+        companyId: 'holding',
+      }),
+    ).toBe(
+      resolveDirectoryQueryCompanyId({
+        companyUuid: '10000000-0000-4000-8000-000000000001',
+        companyId: 'holding',
+      }),
+    );
+  });
+});
+
+describe('resolveDirectoryQueryCompanyId', () => {
+  it('PCOMP-W7-MOB-DIRECTORY-01: keeps Plane B slug holding (not LE UUID)', () => {
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
+    expect(
+      resolveDirectoryQueryCompanyId({
+        companyUuid: holdingUuid,
+        companyId: 'holding',
+      }),
+    ).toBe('holding');
+  });
+
+  it('PCOMP-W7-MOB-DIRECTORY-01: main rollup stays on query (header may use UUID)', () => {
+    expect(
+      resolveDirectoryQueryCompanyId({
+        companyUuid: DU_LICH_UUID,
+        companyId: 'main',
+      }),
+    ).toBe('main');
+  });
+
+  it('PCOMP-W7-MOB-DIRECTORY-01: recovers trsport from membership when companyId is UUID', () => {
+    const trsportUuid = '10000000-0000-4000-8000-000000000005';
+    const employeeId = '293b5900-8f99-4a97-878b-26270fb01827';
+    expect(
+      resolveDirectoryQueryCompanyId({
+        companyUuid: trsportUuid,
+        companyId: trsportUuid,
+        employeeId,
+        tenantId: 'xevn',
+        memberships: [
+          {
+            tenant_id: 'xevn',
+            company_id: 'trsport',
+            company_uuid: trsportUuid,
+            employee_id: employeeId,
+          },
+        ],
+      }),
+    ).toBe('trsport');
+  });
 });
 
 describe('resolveAvatarUploadQueryCompanyId', () => {
   it('PCOMP-W4-PROFILE-AVATAR-MOB-JAVT-03: holding slug for file upload query (ADR scope ladder)', () => {
-    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
     expect(
       resolveAvatarUploadQueryCompanyId({
         companyUuid: holdingUuid,
@@ -219,7 +282,7 @@ describe('resolveHrmCompanyHeaderId scope slug guard', () => {
   });
 
   it('UAT P5 parity: holding slug header on GET + UUID on write', () => {
-    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
     expect(resolveHrmCompanyHeaderId(holdingUuid, 'holding')).toBe('holding');
     expect(resolveHrmWriteHeaderId(holdingUuid, 'holding')).toBe(holdingUuid);
     expect(

@@ -23,6 +23,11 @@ describe('resolveAttendanceChangeTypeVi — MOB-UX-15d', () => {
     expect(resolveAttendanceChangeTypeVi('HRM-ATT-REQ-203')).toBe('Chỉnh sửa chấm công');
   });
 
+  it('unknown wire tokens → em dash (U72 M-F-07, no snake→spaces)', () => {
+    expect(resolveAttendanceChangeTypeVi('foo_bar')).toBe('—');
+    expect(resolveAttendanceChangeTypeVi('custom_edit')).toBe('—');
+  });
+
   it('resolveUpdateTypeLabel delegates to the same mapper', () => {
     expect(resolveUpdateTypeLabel('check_in_out')).toBe('Giờ vào và ra');
   });

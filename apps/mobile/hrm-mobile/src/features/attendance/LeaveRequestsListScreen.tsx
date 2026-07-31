@@ -48,7 +48,7 @@ import { groupedLayout } from '../../theme/groupedLayout';
 
 import { resolveScrollPaddingBottom } from '../../theme/layoutInsets';
 
-import { colors, spacing, typography } from '../../theme/tokens';
+import { colors, spacing, statusToneColor, typography } from '../../theme/tokens';
 
 import { formatHrmDateRange } from '../../utils/formatHrm';
 
@@ -549,13 +549,13 @@ const styles = StyleSheet.create({
 
   errorBanner: {
 
-    backgroundColor: '#FEE2E2',
+    backgroundColor: statusToneColor('danger').bg,
 
     borderRadius: 12,
 
     borderWidth: 1,
 
-    borderColor: '#FCA5A5',
+    borderColor: statusToneColor('danger').border,
 
     padding: spacing.md,
 
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
 
   errorText: {
 
-    color: '#991B1B',
+    color: statusToneColor('danger').text,
 
     fontSize: typography.fontSize.subhead,
 

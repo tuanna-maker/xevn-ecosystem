@@ -44,9 +44,15 @@ describe('dashboardHome', () => {
   });
 
   it('resolveHomeGreeting falls back when no membership', () => {
-    const g = resolveHomeGreeting([], '', 'du-lich');
+    const g = resolveHomeGreeting([], '', '');
     expect(g.displayName).toBe('bạn');
     expect(g.companyLabel).toBe('Chưa chọn công ty');
+  });
+
+  it('resolveHomeGreeting hides raw slug when no membership display', () => {
+    const g = resolveHomeGreeting([], '', 'du-lich');
+    expect(g.displayName).toBe('bạn');
+    expect(g.companyLabel).toBe('—');
   });
 
   it('pickUpcomingLeaves filters future approved/pending only', () => {

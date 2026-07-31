@@ -1,3 +1,26 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Auth — LoginScreen (hero + BrandedLoginCard)
+ * UC:         UC-HRM-MOB-01 · AC-BRAND-DNA-03 / AC-BRAND-DNA-06
+ * BR:         Login shell — primary gradient hero · L1 tokens · input DNA L2
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L3m
+ * TechSpec:   THEME_USAGE.md § L3 · XEVN_BRAND_UIUX_PROPOSAL.md §3
+ * Purpose:    Đăng nhập ESS — logo/mark XeVN trên hero primary; form card L3 DNA.
+ * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
+ * Coded:      2026-07-22
+ * Callers:    RootNavigator (unsigned)
+ * Callees:    BrandedLoginCard · XevnLogo · colors.homeHeroGradient* · borderWidth.thin · radius.input|card
+ * Impact:     Literal borderWidth:1 / ad-hoc radius → lệch FormField / Card DNA
+ * must_keep:  XevnLogo mark; input/devBox dùng borderWidth.thin + colors.border; radius.input|card
+ * SOLID:      Auth shell tách ESS remaster (L4c cấm ở wave này)
+ * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-30
+ * WorkItem: D-MOB-G-ORPH-KHOI-01
+ * change_mode: FIX
+ * What: Multi-membership login toast dùng resolveCompanyDisplayVi (G-ORPH-MOB-03)
+ * Why: AC-MOB-LABEL-05 · BR-MOB-LABEL-03
+ */
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
@@ -18,8 +41,9 @@ import { useAuth, type MobileLoginResult, type SignInPayload } from '../../conte
 import { getDefaultBaseUrl, hrmRequest } from '../../integrations/hrmApiClient';
 import { parseJwtClaims } from '../../integrations/jwtClaims';
 import { formatHrmError } from '../../integrations/mapApiError';
+import { resolveCompanyDisplayVi } from '../../utils/companyDisplayVi';
 import { vi } from '../../i18n/vi';
-import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
+import { borderWidth, colors, layout, radius, spacing, typography } from '../../theme/tokens';
 
 function enrichDevPayloadFromJwt(payload: SignInPayload): SignInPayload {
   const claims = parseJwtClaims(payload.accessToken);
@@ -68,9 +92,12 @@ export function LoginScreen() {
       }
       const active = res.data.active_membership;
       if (res.data.memberships && res.data.memberships.length > 1) {
+        const activeCompanyLabel = resolveCompanyDisplayVi(active?.company_id, {
+          membershipCompanyDisplay: active?.company_display,
+        });
         Alert.alert(
           'Nhiều phạm vi',
-          `Bạn có ${res.data.memberships.length} công ty. Đang dùng: ${active?.company_display ?? active?.tenant_id ?? 'mặc định'}. Đổi phạm vi tại Cài đặt → Phạm vi.`,
+          `Bạn có ${res.data.memberships.length} công ty. Đang dùng: ${activeCompanyLabel}. Đổi phạm vi tại Cài đặt → Phạm vi.`,
         );
       }
       await signInWithMobileLogin({
@@ -250,7 +277,7 @@ function FormField(props: {
         autoCapitalize={props.autoCapitalize ?? 'sentences'}
         keyboardType={props.keyboardType}
         placeholder={props.placeholder}
-        placeholderTextColor={colors.textSecondary}
+        placeholderTextColor={colors.textMuted}
       />
     </View>
   );
@@ -294,12 +321,12 @@ const styles = StyleSheet.create({
   field: { gap: 4 },
   label: {
     color: colors.text,
-    fontSize: typography.fontSize.footnote,
+    fontSize: typography.fontSize.subhead,
     fontWeight: typography.fontWeight.medium,
-    lineHeight: typography.lineHeight.footnote,
+    lineHeight: typography.lineHeight.subhead,
   },
   input: {
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.border,
     borderRadius: radius.input,
     paddingHorizontal: spacing.md - 4,
@@ -325,7 +352,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.md,
     borderRadius: radius.card,
-    borderWidth: 1,
+    borderWidth: borderWidth.thin,
     borderColor: colors.border,
     backgroundColor: colors.surface,
   },

@@ -1,3 +1,10 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-19
+ * WorkItem: PCOMP-W7-MOB-LEAVE-DOC
+ * What: leave medical multipart upload — feature=leave-attachment; 10MB PDF/image
+ * Why: UC-HRM-MOB-06b W7-3; TechSpec §3.5 / §5.2
+ * SRS/BR: MOBILE_W7_SRS_DELTA §4.2 · BR-LEAVE-DOC-01
+ */
 import {
   getDefaultBaseUrl,
   resolveHrmWriteHeaderId,

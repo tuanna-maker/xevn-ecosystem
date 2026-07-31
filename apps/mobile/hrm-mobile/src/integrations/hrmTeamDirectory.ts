@@ -1,19 +1,55 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Tab Đội nhóm → TeamDirectory
+ * UC:         UC-HRM-MOB-16 (W7-5)
+ * BR:         BR-DIR-01 · BR-DIR-03
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.4
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §3.7 · NFR-W7-04
+ * Data:       docs/hrm/MOBILE_W7_DATA_CONTRACTS.md §5 — GET /employees?view=directory
+ * Purpose:    Load scoped directory list (active) + today attendance join;
+ *             paginate page_size≤50; pass `q` when search ≥2 chars.
+ * WorkItem:   PCOMP-W7-MOB-DIRECTORY
+ * Coded:      2026-07-19
+ *
+ * Callers: TeamDirectoryScreen
+ * Callees: hrmRequest · composeTeamDirectoryMembers · normalizeDirectorySearchQuery
+ *
+ * FE-Actions:
+ *   | User action | Handler | Lib / RPC |
+ *   |-------------|---------|-----------|
+ *   | Open tab / refresh | loadTeamDirectoryWithAttendance | GET /employees?view=directory |
+ *   | Search ≥2 | same + q= | GET /employees?view=directory&q= |
+ *   | Attendance badge | client join | GET /attendance/records |
+ *
+ * Impact:     page_size>100 → HRM-VAL-001; wrong company_id → empty/scope leak
+ * must_keep:  view=directory; status=active; BR-DIR-03 page_size≤50; R1 q min 2
+ * SOLID:      Integration only — UI in TeamDirectoryScreen
+ * LastVerified: integrations/__tests__/hrmTeamDirectory.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 PCOMP-W7-MOB-DIRECTORY-01
+ * What: Plane B listCompanyId via resolveDirectoryQueryCompanyId; page_size default 30;
+ *       empty scope without search → ok empty (API honest empty).
+ * Why: Header helper sent LE UUID when scope=main; dual-plane GWC must_keep slug query.
+ * must_keep: leave/auth flows; view=directory; client accent-fold search.
+ */
 import type { AttendanceRecordRow } from '../utils/dashboardEss';
 import { todayIsoInHoChiMinh } from '../utils/dashboardHubCelebrate';
 import {
   buildAttendanceCheckInMap,
   composeTeamDirectoryMembers,
+  normalizeDirectorySearchQuery,
   type TeamDirectoryMember,
 } from '../utils/teamDirectory';
+import { resolveDirectoryQueryCompanyId } from './companyWireScope';
 import { readListRows, readListTotal } from './envelope';
 import type { EmployeeRow } from './hrmEmployees';
-import { hrmRequest, resolveHrmCompanyHeaderId } from './hrmApiClient';
+import { hrmRequest } from './hrmApiClient';
 import { formatHrmError } from './mapApiError';
 import type { HrmAuthConfig } from './types';
 
-/** Pilot HRM API max per `list-employees.query.dto` (HRM-VAL-001). */
-export const DIRECTORY_PAGE_SIZE = 100;
-const DIRECTORY_MAX_PAGES = 20;
+/** BR-DIR-03 / TechSpec §3.7 default 30 · max 50 (BE hard max 100). */
+export const DIRECTORY_PAGE_SIZE = 30;
+const DIRECTORY_MAX_PAGES = 40;
 
 export type TeamDirectoryLoadResult =
   | { ok: true; members: TeamDirectoryMember[]; date: string }
@@ -46,7 +82,7 @@ function buildEmployeesQuery(companyId: string, search: string, page = 1): URLSe
     status: 'active',
     view: 'directory',
   });
-  const term = search.trim();
+  const term = normalizeDirectorySearchQuery(search);
   if (term) q.set('q', term);
   return q;
 }
@@ -111,13 +147,14 @@ export async function loadTeamDirectoryWithAttendance(input: {
   const date = (input.date ?? todayIsoInHoChiMinh()).slice(0, 10);
   const listCid = input.listCompanyId.trim();
   const attCid = input.attendanceCompanyId.trim();
+  const searchTerm = normalizeDirectorySearchQuery(input.search ?? '');
 
   if (!listCid) {
     return { ok: false, message: 'Cần phạm vi công ty.', members: [], date };
   }
 
   const [employeesResult, attendanceRows] = await Promise.all([
-    fetchDirectoryEmployees(input.auth, listCid, input.search ?? ''),
+    fetchDirectoryEmployees(input.auth, listCid, searchTerm),
     attCid
       ? fetchTodayAttendance(
           input.auth,
@@ -135,13 +172,21 @@ export async function loadTeamDirectoryWithAttendance(input: {
 
   let employees = employeesResult.rows;
 
-  if (employees.length === 0 && listCid) {
-    const headerId = resolveHrmCompanyHeaderId(input.auth.companyUuid, input.auth.companyId);
-    if (headerId && headerId !== listCid) {
+  if (employees.length === 0 && listCid && !searchTerm) {
+    // Plane B recovery — never fall back to LE UUID; recover alternate slug from auth.
+    const planeB = resolveDirectoryQueryCompanyId({
+      companyUuid: input.auth.companyUuid,
+      companyId: input.auth.companyId,
+      accessToken: input.auth.accessToken,
+      memberships: input.auth.memberships,
+      employeeId: input.auth.employeeId,
+      tenantId: input.auth.tenantId,
+    });
+    if (planeB && planeB !== listCid) {
       const fallbackResult = await fetchDirectoryEmployees(
         input.auth,
-        headerId,
-        input.search ?? '',
+        planeB,
+        searchTerm,
       );
       if (!fallbackResult.ok) {
         return { ok: false, message: fallbackResult.message, members: [], date };
@@ -160,13 +205,9 @@ export async function loadTeamDirectoryWithAttendance(input: {
   const attendanceMap = buildAttendanceCheckInMap(attendanceRows);
   const members = composeTeamDirectoryMembers(employees, attendanceMap);
 
+  // SRS R2 + API_DESIGN honest empty — success with empty list (UI copy)
   if (members.length === 0) {
-    return {
-      ok: false,
-      message: 'Không tìm thấy nhân viên trong phạm vi.',
-      members: [],
-      date,
-    };
+    return { ok: true, members: [], date };
   }
 
   return { ok: true, members, date };

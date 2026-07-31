@@ -47,6 +47,11 @@ describe('resolveEmployeeStatusLabel', () => {
   it('maps API status to Vietnamese', () => {
     expect(resolveEmployeeStatusLabel('active')).toBe('Đang làm việc');
     expect(resolveEmployeeStatusLabel('on_leave')).toBe('Đang nghỉ phép');
+    expect(resolveEmployeeStatusLabel('probation')).toBe('Thử việc');
+  });
+
+  it('unknown employment status → em dash (U72 M-F-09)', () => {
+    expect(resolveEmployeeStatusLabel('exotic_status')).toBe('—');
   });
 });
 
@@ -109,8 +114,16 @@ describe('buildProfileDocumentSections', () => {
 });
 
 describe('resolveContractTypeLabel', () => {
-  it('maps contract_type keys', () => {
+  it('maps contract_type keys including web HDLD / full-time (U72 M-F-05)', () => {
     expect(resolveContractTypeLabel('probation')).toBe('Thử việc');
+    expect(resolveContractTypeLabel('full-time')).toBe('Toàn thời gian');
+    expect(resolveContractTypeLabel('full_time')).toBe('Toàn thời gian');
+    expect(resolveContractTypeLabel('fixed_term')).toBe('Có thời hạn');
+    expect(resolveContractTypeLabel('permanent')).toBe('Không thời hạn');
+    expect(resolveContractTypeLabel('HDLD_KTH')).toBe('Không thời hạn');
+    expect(resolveContractTypeLabel('HDLD_01')).toBe('Có thời hạn');
+    expect(resolveContractTypeLabel('Hợp đồng 1 năm')).toBe('Hợp đồng 1 năm');
+    expect(resolveContractTypeLabel('weird_slug_xyz')).toBe('—');
   });
 });
 

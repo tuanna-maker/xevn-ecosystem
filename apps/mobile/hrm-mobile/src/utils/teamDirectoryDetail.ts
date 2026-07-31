@@ -1,9 +1,15 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-MOB-DIR-TOAST-01
+ * What: Import TEAM_CHECK_IN_BADGE + resolveColleagueHeroSubtitle from teamDirectory only.
+ * Why: One-way detail → list helpers; removes Metro require-cycle LogBox P2.
+ * must_keep: Plane B directory detail · profile ESS · HOLD_DEPLOY
+ */
 import type { QuickActionItem } from '../components/ui/QuickActionRow';
 import type { DirectoryDetailRow } from '../integrations/hrmEmployeeDirectory';
 import { resolveRoleSubtitle } from './dashboardEss';
 import { formatHrmDateTime } from './formatHrm';
 import { resolveEmployeeStatusLabel } from './profileTabs';
-import { TEAM_CHECK_IN_BADGE } from './teamDirectory';
+import { resolveColleagueHeroSubtitle, TEAM_CHECK_IN_BADGE } from './teamDirectory';
 
 export type ColleagueDetailFields = {
   name: string;
@@ -19,6 +25,9 @@ export type ColleagueDetailFields = {
   checkInAt: string;
 };
 
+/** Re-export for callers/tests that imported from detail module. */
+export { resolveColleagueHeroSubtitle };
+
 /** Localized employment status — no raw `active` on UI (MOB-UX-12a). */
 export function mapEmploymentStatusVi(status: string | null | undefined): string {
   return resolveEmployeeStatusLabel(status);
@@ -28,18 +37,6 @@ export function resolveDirectoryDepartment(row: DirectoryDetailRow): string {
   const dept = row.department?.trim();
   if (dept) return dept;
   return resolveRoleSubtitle(row.job_title_key);
-}
-
-/** ZenHR org line: «Phòng ban · Chức danh». */
-export function resolveColleagueHeroSubtitle(department: string, jobTitle: string): string {
-  const dept = department.trim();
-  const role = jobTitle.trim();
-  const hasDept = dept.length > 0 && dept !== '—';
-  const hasRole = role.length > 0 && role !== '—';
-  if (hasDept && hasRole) return `${dept} · ${role}`;
-  if (hasDept) return dept;
-  if (hasRole) return role;
-  return '—';
 }
 
 export function hasDialablePhone(phone: string): boolean {

@@ -1,3 +1,26 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     CreateLeaveRequest — system pickers for medical docs
+ * UC:         UC-HRM-MOB-06b
+ * BR:         BR-LEAVE-DOC-01 · D3/D4 MIME+size client gate
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.2
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §5.2
+ * Purpose:    Prompt image vs PDF; return LeaveAttachmentDraft for upload.
+ * WorkItem:   PCOMP-W7-MOB-LEAVE-DOC
+ * Coded:      2026-07-19
+ *
+ * Callers:
+ *   - LeaveAttachmentPicker.tsx → promptLeaveAttachmentPick
+ *
+ * Callees:
+ *   - pickHrmImageFromLibrary → expo-image-picker
+ *   - expo-document-picker (optional) → PDF
+ *
+ * must_keep:  PDF + image paths; cancel resolves null (no throw)
+ * SOLID:      I/O seam for picker; validation stays in leaveAttachment.ts
+ * LastVerified: utils/__tests__/leaveAttachment.test.ts
+ */
+
 import { Alert } from 'react-native';
 import { pickHrmImageFromLibrary } from './hrmImagePicker';
 import type { LeaveAttachmentDraft } from './leaveAttachment';

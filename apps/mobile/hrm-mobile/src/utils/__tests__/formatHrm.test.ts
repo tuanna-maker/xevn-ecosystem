@@ -65,6 +65,12 @@ describe('formatHrm', () => {
     expect(parseAmount('invalid')).toBe(0);
   });
 
+  it('parseAmount accepts vi-VN thousand grouping (D-UX-VI-FORMAT-MOBILE-01)', () => {
+    expect(parseAmount('15.000.000')).toBe(15_000_000);
+    expect(parseAmount('1.500.000,5')).toBe(1_500_000.5);
+    expect(parseAmount('20,000,000')).toBe(20_000_000);
+  });
+
   it('formatHrmCurrency uses Intl vi-VN VND', () => {
     const out = formatHrmCurrency(1_500_000);
     expect(out).toContain('1');

@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Home (Dashboard) — HomeTopBar
+ * UC:         UC-HRM-MOB hub · WCAG 2.4.12 / HIG
+ * BR:         Top safe-area; touch ≥44pt
+ * SRS:        docs/program/UX-UI-ERP-ANALYSIS.md §2.2
+ * TechSpec:   MOBILE_XEVN_DESIGN_SYSTEM_DIRECTION.md §4.1
+ * Purpose:    Thanh đầu Home — avatar/identity/search/chat/notify; paddingTop insets.top.
+ * WorkItem:   D-UX-R3-WCAG-MOBILE-01
+ * Coded:      2026-07-28
+ * Callers:    DashboardScreen
+ * Callees:    useSafeAreaInsets · HrmAvatar · layout.touchTargetMin
+ * Impact:     Bỏ paddingTop insets → che status bar; avatar hit dưới 44 → HIG FAIL
+ * must_keep:  paddingTop insets.top; avatarHit / iconButton ≥44
+ * SOLID:      Presentational chrome
+ * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ */
 import { Ionicons } from '@expo/vector-icons';
 
 import React from 'react';
@@ -80,7 +97,11 @@ export function HomeTopBar({
 
           accessibilityLabel={`Hồ sơ ${displayName}`}
 
+          style={styles.avatarHit}
+
           hitSlop={8}
+
+          testID="home-top-bar-avatar"
 
         >
 
@@ -207,6 +228,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
     gap: spacing.sm,
+
+  },
+
+  avatarHit: {
+
+    width: layout.touchTargetMin,
+
+    height: layout.touchTargetMin,
+
+    alignItems: 'center',
+
+    justifyContent: 'center',
 
   },
 

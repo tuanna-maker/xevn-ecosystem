@@ -8,11 +8,20 @@ import { SurfaceCard } from '../../components/ui/SurfaceCard';
 import { useAuth } from '../../context/AuthContext';
 import { readListRows } from '../../integrations/envelope';
 import { hrmRequest } from '../../integrations/hrmApiClient';
-import { formatHrmError } from '../../integrations/mapApiError';
+import { formatHrmError, statusLabel } from '../../integrations/mapApiError';
 import type { RequestsStackParamList } from '../../navigation/types';
 import { resolveAttendanceChangeTypeVi } from '../../utils/attendanceUpdateTypes';
 import { formatHrmDate, sanitizeSeedDisplay } from '../../utils/formatHrm';
 import { userFacingScopeError } from '../../utils/scopeError';
+
+/**
+ * @CODE-MEMORY-CHANGE 2026-07-27
+ * WorkItem: D-MOB-U72-LABEL-FE-01
+ * change_mode: FIX
+ * What: StatusBadge label=statusLabel(VI); unknown → —
+ * Why: U72 M-F-03 UpdateRequestDetail raw status
+ * must_keep: resolveAttendanceChangeTypeVi; U65 · HOLD_DEPLOY
+ */
 
 type Req = {
   id: string;
@@ -72,7 +81,7 @@ export function UpdateRequestDetailScreen() {
     >
       {row ? (
         <>
-          <StatusBadge status={row.status} />
+          <StatusBadge status={row.status} label={statusLabel(row.status)} />
 
           <SurfaceCard title="Thông tin">
             <DetailRow label="Nhân viên" value={row.employee_name} />

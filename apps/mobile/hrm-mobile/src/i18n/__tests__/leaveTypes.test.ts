@@ -9,8 +9,10 @@ describe('leaveTypes', () => {
     expect(resolveLeaveTypeLabel('LVT_02')).toBe('Nghỉ ốm');
   });
 
-  it('falls back to raw code when unknown', () => {
-    expect(resolveLeaveTypeLabel('CUSTOM_X')).toBe('CUSTOM_X');
+  it('falls back to em dash when leave type unknown (U72 M-F-04)', () => {
+    expect(resolveLeaveTypeLabel('CUSTOM_X')).toBe('—');
+    expect(resolveLeaveTypeLabel('')).toBe('—');
+    expect(resolveLeaveTypeLabel(null)).toBe('—');
   });
 
   it('resolves badge colors for known types', () => {

@@ -8,7 +8,7 @@ import {
 } from '../hrmApiClient';
 
 const DU_LICH_UUID = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
-const HOLDING_UUID = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+const HOLDING_UUID = '10000000-0000-4000-8000-000000000001';
 
 describe('resolveHrmCompanyHeaderId', () => {
   it('uses legal UUID when scope slug is blocked main', () => {
@@ -157,7 +157,7 @@ describe('hrmRequest x-company-id header', () => {
 });
 
 describe('getDefaultBaseUrl', () => {
-  it('uses HTTPS pilot origin when env unset outside __DEV__', () => {
+  it('uses deploy/dev HRM origin when env unset outside __DEV__', () => {
     const prevEnv = process.env.EXPO_PUBLIC_HRM_API_BASE_URL;
     const prevDev = (globalThis as { __DEV__?: boolean }).__DEV__;
     delete process.env.EXPO_PUBLIC_HRM_API_BASE_URL;

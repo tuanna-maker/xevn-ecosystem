@@ -1,3 +1,33 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     ESS leave surfaces (CreateLeave chip · My Leaves header · Profile metrics)
+ * UC:         UC-HRM-MOB-06c
+ * BR:         BR-LEAVE-BAL-01 · BR-LEAVE-BAL-02
+ * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md §4.3
+ * TechSpec:   docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md §3.6
+ * Data:       docs/hrm/MOBILE_W7_DATA_CONTRACTS.md §4
+ * Purpose:    Client for GET /attendance/leave-balance — slug query scope, parse payload,
+ *             chip format + warn helpers (no invent balance).
+ * WorkItem:   PCOMP-W7-MOB-LEAVE-BAL
+ * Coded:      2026-06-08
+ *
+ * Callers: CreateLeaveRequestScreen · LeaveRequestsListScreen · ProfileScreen · LeaveBalanceChip
+ * Callees: resolveLeaveBalanceQueryCompanyId · hrmRequest GET /attendance/leave-balance
+ *
+ * FE-Actions:
+ *   | User action | Handler | Lib / RPC |
+ *   |-------------|---------|-----------|
+ *   | Open wizard / My Leaves | fetchLeaveBalance | GET leave-balance |
+ *
+ * Impact:     UUID query → empty/403; wrong chip format → AC-LEAVE-BAL-01 FAIL
+ * must_keep:  holding slug not legal UUID; SRS chip copy helpers; BR-LEAVE-BAL-02 warn-only
+ * SOLID:      Integration + pure display/warn helpers; UI in LeaveBalanceChip/Header
+ * LastVerified: integrations/__tests__/hrmLeaveBalance.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-19 PCOMP-W7-MOB-LEAVE-BAL — chip format + B1/B2/B3 helpers
+ * @CODE-MEMORY-CHANGE 2026-07-28 PCOMP-W7-MOB-LEAVE-BAL-02 — Plane B query ≡ resolveDirectoryQueryCompanyId
+ *             (holding/trsport/main); chip still on CreateLeave step 0 (testID leave-balance-chip)
+ */
 import { resolveLeaveBalanceQueryCompanyId } from './companyWireScope';
 import { hrmRequest, type HrmRequestResult } from './hrmApiClient';
 import type { HrmAuthConfig } from './types';
@@ -140,4 +170,59 @@ export async function fetchLeaveBalance(
 export function formatLeaveBalanceDays(value: number): string {
   if (!Number.isFinite(value)) return '0';
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+/** SRS UC-HRM-MOB-06c B1 — API 404 / no policy configured. */
+export const LEAVE_BALANCE_MISSING_HR_MSG = 'Chưa có số dư — liên hệ HR';
+
+export function isLeaveBalanceNotConfiguredError(
+  code?: string,
+  httpStatus?: number,
+): boolean {
+  if (httpStatus === 404) return true;
+  const c = (code ?? '').trim().toUpperCase();
+  return (
+    c === 'HRM-LEAVE-BAL-404' ||
+    c === 'HRM-ATT-BAL-404' ||
+    c === 'HRM-DATA-404'
+  );
+}
+
+/**
+ * SRS UC-HRM-MOB-06c main flow step 2:
+ * «Còn lại: {remaining_days} / {entitled_days} ngày phép năm {year}»
+ */
+export function formatLeaveBalanceChipText(
+  balance: Pick<
+    LeaveBalancePayload,
+    'remaining_days' | 'available_days' | 'entitled_days' | 'year' | 'balance_year'
+  >,
+): string {
+  const remaining = formatLeaveBalanceDays(resolveLeaveBalanceDisplayDays(balance));
+  const entitled = formatLeaveBalanceDays(balance.entitled_days);
+  const year = balance.year || balance.balance_year || new Date().getFullYear();
+  return `Còn lại: ${remaining} / ${entitled} ngày phép năm ${year}`;
+}
+
+/** SRS B2/B3 · BR-LEAVE-BAL-02 — pilot warns, does not block submit. */
+export type LeaveBalanceWarnLevel = 'none' | 'exceed' | 'depleted';
+
+export function resolveLeaveBalanceWarnLevel(
+  remainingDays: number | null | undefined,
+  requestedDays: number,
+): LeaveBalanceWarnLevel {
+  if (remainingDays == null || !Number.isFinite(remainingDays)) return 'none';
+  if (remainingDays <= 0) return 'depleted';
+  if (Number.isFinite(requestedDays) && requestedDays > remainingDays) return 'exceed';
+  return 'none';
+}
+
+export function leaveBalanceWarnBannerText(level: LeaveBalanceWarnLevel): string | null {
+  if (level === 'depleted') {
+    return 'Số dư phép đã hết — đơn vẫn có thể gửi; quản lý/HR sẽ xem xét (BR-LEAVE-BAL-02).';
+  }
+  if (level === 'exceed') {
+    return 'Số ngày nghỉ vượt số dư còn lại — tiếp tục sẽ cần xác nhận (cảnh báo, không chặn).';
+  }
+  return null;
 }

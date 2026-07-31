@@ -167,11 +167,16 @@ export function resolveAvatarUploadQueryCompanyId(input: WireScopeInput): string
 }
 
 /**
- * `company_id` query param for GET `/attendance/leave-balance`.
- * D-W8-MOB-BAL-UI-01 / P1-LEAVE-BALANCE-DEVICE-01: TEXT slug only (`holding`, `trsport`, …) — never legal UUID.
+ * `company_id` query param for GET `/employees?view=directory` (+ detail).
+ * PCOMP-W7-MOB-DIRECTORY-01 / API_DESIGN_HRM_EMPLOYEES: Plane B TEXT slug
+ * (`holding`, `trsport`, `main` rollup) — never LE UUID when membership slug recoverable.
+ * Header `x-company-id` still uses {@link resolveHrmCompanyHeaderId} (may be UUID for `main`).
  */
-export function resolveLeaveBalanceQueryCompanyId(input: WireScopeInput): string {
+export function resolveDirectoryQueryCompanyId(input: WireScopeInput): string {
   const scopeSlug = input.companyId?.trim().toLowerCase() ?? '';
+
+  // Group CEO rollup — query accepts `main` (unlike wire header blocked set).
+  if (scopeSlug === 'main') return 'main';
 
   if (scopeSlug && !isUuid(scopeSlug) && !isHrmWireBlockedSlug(scopeSlug)) {
     return scopeSlug;
@@ -183,13 +188,27 @@ export function resolveLeaveBalanceQueryCompanyId(input: WireScopeInput): string
   const token = input.accessToken?.trim() ?? '';
   if (token) {
     const jwtSlug = parseJwtClaims(token)?.companyId?.trim().toLowerCase() ?? '';
+    if (jwtSlug === 'main') return 'main';
     if (jwtSlug && !isHrmWireBlockedSlug(jwtSlug) && !isUuid(jwtSlug)) return jwtSlug;
   }
 
   const rollupMembership = rollupSlugFromMemberships(input);
   if (rollupMembership) return rollupMembership;
 
-  if (scopeSlug && LEAVE_BALANCE_QUERY_SCOPE_SLUGS.has(scopeSlug)) return scopeSlug;
+  if (scopeSlug === 'main' || (scopeSlug && HOME_SUMMARY_QUERY_SCOPE_SLUGS.has(scopeSlug))) {
+    return scopeSlug;
+  }
 
+  // ESS peer default — honest Plane B slug, not LE UUID
   return 'holding';
+}
+
+/**
+ * `company_id` query param for GET `/attendance/leave-balance`.
+ * D-W8-MOB-BAL-UI-01 / P1-LEAVE-BALANCE-DEVICE-01 / PCOMP-W7-MOB-LEAVE-BAL-02:
+ * Plane B TEXT slug — same resolver as directory/profile (`holding`, `trsport`, `main` rollup);
+ * never LE UUID when membership/JWT slug recoverable.
+ */
+export function resolveLeaveBalanceQueryCompanyId(input: WireScopeInput): string {
+  return resolveDirectoryQueryCompanyId(input);
 }

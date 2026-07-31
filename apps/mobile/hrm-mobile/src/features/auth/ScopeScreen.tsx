@@ -1,3 +1,20 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Auth / Settings — ScopeScreen (phạm vi công ty)
+ * UC:         UC-HRM-MOB-02 · AC-BRAND-DNA-06
+ * BR:         Shell header via AppScreenLayout; cards = SurfaceCard L2 DNA
+ * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L3m
+ * TechSpec:   THEME_USAGE.md § L3
+ * Purpose:    Chọn membership / đơn vị vận hành — chrome dùng L1 text tokens + L2 SurfaceCard.
+ * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
+ * Coded:      2026-07-22
+ * Callers:    RootNavigator / Settings stack
+ * Callees:    AppScreenLayout · SurfaceCard · colors.text|textSecondary
+ * Impact:     Hex nhạt trên title/hint → lệch sharp-ops ADR
+ * must_keep:  colors.text / textSecondary; không remaster ESS list domain (L4c)
+ * SOLID:      Copy helpers ở scopeScreenCopy — UI shell tách nghiệp vụ scope
+ * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
@@ -18,6 +35,7 @@ import {
 } from '../../integrations/hrmListScope';
 import { vi } from '../../i18n/vi';
 import { colors, spacing, typography } from '../../theme/tokens';
+import { SCOPE_SCREEN_TEST_ID } from '../../utils/profileSettingsNav';
 import { resolveCompanyDisplayVi } from '../../utils/companyDisplayVi';
 import {
   resolveMembershipRowMeta,
@@ -127,6 +145,7 @@ export function ScopeScreen() {
   const subtitle = resolveScopeScreenSubtitle(showOperatingUnits);
 
   return (
+    <View testID={SCOPE_SCREEN_TEST_ID} style={styles.screenRoot}>
     <AppScreenLayout
       title="Phạm vi công ty"
       subtitle={subtitle}
@@ -228,15 +247,17 @@ export function ScopeScreen() {
         </View>
       ) : null}
     </AppScreenLayout>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screenRoot: { flex: 1 },
   pressed: { opacity: 0.92 },
   disabled: { opacity: 0.6 },
   section: { marginTop: spacing.md },
   sectionTitle: {
-    color: colors.textSecondary,
+    color: colors.text,
     fontSize: typography.fontSize.title2,
     fontWeight: typography.fontWeight.semibold,
     marginBottom: spacing.sm,

@@ -1,5 +1,9 @@
 /**
  * Safe-area + tab bar inset helpers — MOBILE_XEVN_DESIGN_SYSTEM_DIRECTION.md §3–4.1.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-UX-R3-WCAG-MOBILE-01
+ * What: WCAG 2.4.12 Focus not obscured — helpers for FAB sheet clearance + HIG ≥44pt.
+ * must_keep: tab bar 49 + bottom safe inset; Android 3-button fallback 24; thumbZone ≥24
  */
 
 import { Platform } from 'react-native';
@@ -8,6 +12,12 @@ import { layout } from './tokens';
 
 /** iOS HIG / DS §4.1 base tab bar content height (excludes home indicator). */
 export const TAB_BAR_BASE_HEIGHT = 49;
+
+/**
+ * WCAG 2.2 §2.4.12 (mobile) + iOS HIG — minimum interactive target (pt/dp).
+ * Prefer `layout.touchTargetMin` at call sites; constant mirrors token for inset math/tests.
+ */
+export const WCAG_MIN_TOUCH_TARGET_PT = 44;
 
 /**
  * Android 3-button nav — SafeAreaProvider often reports bottom=0 (MOB-UX-13b).
@@ -95,4 +105,16 @@ export function resolveStickyFooterPaddingBottom(
 /** Check-in screen footer zone — tab bar + optional lift so CTAs clear center FAB on other routes. */
 export function resolveCheckInFooterBottomInset(tabBarHeight: number, fabLift = 0): number {
   return tabBarHeight + fabLift;
+}
+
+/**
+ * FabPrimaryActionSheet (clock-in method / quick actions) — lift sheet above tab bar + home indicator
+ * so focused CTAs are not obscured (WCAG 2.4.12).
+ * @param spacingSm — typically `spacing.sm` gap above tab chrome
+ */
+export function resolveFabActionSheetMarginBottom(
+  insetBottom: number,
+  spacingSm: number,
+): number {
+  return resolveBottomSafeInset(insetBottom) + TAB_BAR_BASE_HEIGHT + spacingSm;
 }

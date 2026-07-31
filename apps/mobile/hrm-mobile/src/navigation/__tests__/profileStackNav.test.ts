@@ -130,5 +130,52 @@ describe('profileStackNav — R-W7-MOB-LEAVE-NAV-01-R3', () => {
 
   });
 
+  it('ProfileScreen exposes manager approvals entry on default info tab (J-MOB-05)', () => {
+    const profile = fs.readFileSync(
+      path.resolve(__dirname, '../../features/profile/ProfileScreen.tsx'),
+      'utf8',
+    );
+    const entry = fs.readFileSync(
+      path.resolve(__dirname, '../../components/profile/ProfileManagerApprovalsEntry.tsx'),
+      'utf8',
+    );
+    expect(profile).toContain('ProfileManagerApprovalsEntry');
+    expect(profile).toContain('fetchManagerPendingSnapshot');
+    expect(profile).toContain('navigateToManagerApprovals');
+    expect(entry).toContain('PROFILE_APPROVALS_ENTRY_TEST_ID');
+    expect(entry).toContain('Phê duyệt');
+  });
+
+  it('ProfileScreen exposes settings entry + stack nav helpers (MOB-NAV-SETTINGS-01)', () => {
+    const profile = fs.readFileSync(
+      path.resolve(__dirname, '../../features/profile/ProfileScreen.tsx'),
+      'utf8',
+    );
+    const settingsEntry = fs.readFileSync(
+      path.resolve(__dirname, '../../components/profile/ProfileSettingsEntry.tsx'),
+      'utf8',
+    );
+    const nav = readNavSrc('profileStackNav.ts');
+    const settings = fs.readFileSync(
+      path.resolve(__dirname, '../../features/settings/SettingsScreen.tsx'),
+      'utf8',
+    );
+    const scope = fs.readFileSync(
+      path.resolve(__dirname, '../../features/auth/ScopeScreen.tsx'),
+      'utf8',
+    );
+
+    expect(profile).toContain('ProfileSettingsEntry');
+    expect(profile).toContain('navigateToSettings');
+    expect(settingsEntry).toContain('PROFILE_SETTINGS_ENTRY_TEST_ID');
+    expect(settingsEntry).toContain('vi.settings');
+    expect(nav).toContain("navigateProfileStackScreen(navigation, 'Settings')");
+    expect(nav).toContain("navigateProfileStackScreen(navigation, 'Scope')");
+    expect(settings).toContain('settings-screen');
+    expect(settings).toContain('settings-scope-link');
+    expect(settings).toContain('Phạm vi công ty');
+    expect(scope).toContain('SCOPE_SCREEN_TEST_ID');
+  });
+
 });
 

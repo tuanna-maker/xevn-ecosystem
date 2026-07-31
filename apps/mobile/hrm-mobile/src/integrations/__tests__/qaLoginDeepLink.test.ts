@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseQaLoginDeepLink, qaDeepLinkToSignInPayload } from '../qaLoginDeepLink';
 
 const SAMPLE_JWT =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOiJ4ZXZuIiwiY29tcGFueV9pZCI6ImhvbGRpbmciLCJjb21wYW55X3V1aWQiOiI2ZWZhYTVkNi1hNGE4LTRiZmQtODA1YS0zYzRmMDAzZTQwMTMiLCJlbXBsb3llZV9pZCI6IjM3OTZkOTQ5LTQ1MTMtNDVjMC04OGZhLTMzMDMwYTA2MmIxNyIsInJvbGVzIjpbImVtcGxveWVlIl0sImlhdCI6MSwiZXhwIjo5OTk5OTk5OTk5fQ.sig';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOiJ4ZXZuIiwiY29tcGFueV9pZCI6ImhvbGRpbmciLCJjb21wYW55X3V1aWQiOiIxMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEiLCJlbXBsb3llZV9pZCI6IjM3OTZkOTQ5LTQ1MTMtNDVjMC04OGZhLTMzMDMwYTA2MmIxNyIsInJvbGVzIjpbImVtcGxveWVlIl0sImlhdCI6MSwiZXhwIjo5OTk5OTk5OTk5fQ.sig';
 
 describe('parseQaLoginDeepLink', () => {
   it('parses xevn://qa-login with token query params', () => {
@@ -17,7 +17,7 @@ describe('parseQaLoginDeepLink', () => {
   it('backfills scope fields from JWT claims when query omits them', () => {
     const url = `xevn://qa-login?token=${encodeURIComponent(SAMPLE_JWT)}`;
     const parsed = parseQaLoginDeepLink(url);
-    expect(parsed?.companyUuid).toBe('6efaa5d6-a4a8-4bfd-805a-3c4f003e4013');
+    expect(parsed?.companyUuid).toBe('10000000-0000-4000-8000-000000000001');
     expect(parsed?.employeeId).toBe('3796d949-4513-45c0-88fa-33030a062b17');
   });
 
@@ -43,8 +43,17 @@ describe('qaDeepLinkToSignInPayload', () => {
     expect(payload.memberships[0]?.employee_id).toBe('3796d949-4513-45c0-88fa-33030a062b17');
   });
 
+  it('normalizes pilot base_url from deep link', () => {
+    const pilotBase = 'http://14.225.217.232:3001';
+    const url = `xevn://qa-login?access_token=${encodeURIComponent(SAMPLE_JWT)}&tenant_id=xevn&company_id=holding&company_uuid=10000000-0000-4000-8000-000000000001&base_url=${encodeURIComponent(pilotBase)}`;
+    const params = parseQaLoginDeepLink(url);
+    expect(params?.baseUrl).toBe(pilotBase);
+    const payload = qaDeepLinkToSignInPayload(params!);
+    expect(payload.baseUrl).toBe(pilotBase);
+  });
+
   it('P1-LEAVE-BALANCE-DEVICE-01: normalizes UUID company_id query to holding slug', () => {
-    const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
+    const holdingUuid = '10000000-0000-4000-8000-000000000001';
     const url = `xevn://qa-login?access_token=${encodeURIComponent(SAMPLE_JWT)}&tenant_id=xevn&company_id=${holdingUuid}&company_uuid=${holdingUuid}`;
     const params = parseQaLoginDeepLink(url);
     expect(params).not.toBeNull();
