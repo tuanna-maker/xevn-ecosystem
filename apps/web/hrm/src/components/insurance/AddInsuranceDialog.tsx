@@ -1,9 +1,22 @@
-﻿import { useState, useEffect } from 'react';
+﻿/**
+ * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E3-01
+ * change_mode: ADD
+ * What: Zod require employee_id; insurers + insurance_types CatalogSearchPicker; Network codes
+ * Why: AC-INS-02/03/04 · AC-E3-ZOD-I-01 — cấm free-text insurer SoT khi catalog >0
+ * must_keep: employee typeahead; participant PATCH path; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-BF-03-BH-FE-PICKER-01
+ * change_mode: ADD
+ * What: Active policy picker + CTA «Tạo chính sách BH»; payload policy_id; block Lưu khi 0 active
+ * Why: QA TC-049 HRM-INS-POL-404 khi UAT 0 policy — soft-resolve must_keep; FE explicit policy_id
+ * must_keep: BE soft-resolve · insurance GET · SoftDel · TC-041 · U65 no seed · cấm orphan NULL
+ */
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { vi, enUS, zhCN } from 'date-fns/locale';
@@ -13,18 +26,31 @@ import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   createInsurancePolicyParticipant,
+  listInsurancePolicies,
   updateInsurancePolicyParticipant,
 } from '@/integrations/hrmApi';
 import {
   ACT_HRM_INS_LINK_CAPABILITY,
   buildInsuranceParticipantApiPayload,
+  formatInsurancePolicyPickerLabel,
+  INSURANCE_POLICY_MASTER_ANCHOR_ID,
+  isInsuranceParticipantPolicyAmbig,
+  isInsuranceParticipantPolicyBlocked,
   resolveInsuranceParticipantMutateTarget,
+  resolveInsurancePolicyPickerOptions,
   type InsuranceParticipantFormPayload,
 } from '@/lib/insuranceParticipantLink';
 import {
   useDebouncedPickerKeyword,
   useEmployeePickerSearch,
 } from '@/hooks/useEmployeePicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import {
+  insurerOptionsFromCatalog,
+  insuranceTypeOptionsFromCatalog,
+} from '@/lib/catalogSearchPicker';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +66,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -103,22 +130,91 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     }
   };
 
-  const formSchema = z.object({
-    employee_code: z.string().min(1, d('codeRequired')).max(50),
-    employee_name: z.string().min(1, d('nameRequired')).max(100),
-    department: z.string().max(100).optional(),
-    social_insurance_number: z.string().max(20).optional(),
-    health_insurance_number: z.string().max(20).optional(),
-    unemployment_insurance_number: z.string().max(20).optional(),
-    social_insurance_rate: z.coerce.number().min(0).max(100).optional(),
-    health_insurance_rate: z.coerce.number().min(0).max(100).optional(),
-    unemployment_insurance_rate: z.coerce.number().min(0).max(100).optional(),
-    base_salary: z.coerce.number().min(0).optional(),
-    effective_date: z.date().optional(),
-    expiry_date: z.date().optional(),
-    status: z.string().default('active'),
-    notes: z.string().max(500).optional(),
+  const { catalogs, isLoading: catalogsLoading } = useSettingsCatalogsOverview();
+  const insurerOptions = useMemo(() => insurerOptionsFromCatalog(catalogs), [catalogs]);
+  const typeOptions = useMemo(() => insuranceTypeOptionsFromCatalog(catalogs), [catalogs]);
+  const settingsCta = hrmPathWithEmbedSearch('/settings');
+
+  const policiesQuery = useQuery({
+    queryKey: ['insurance-policies', currentCompanyId, 'picker'],
+    queryFn: () => listInsurancePolicies({ company_id: currentCompanyId! }),
+    enabled: Boolean(currentCompanyId) && open,
   });
+  const policyRows = policiesQuery.data?.data ?? [];
+
+  const formSchema = useMemo(
+    () =>
+      z
+        .object({
+          employee_id: z.string().optional(),
+          employee_code: z.string().min(1, d('codeRequired')).max(50),
+          employee_name: z.string().min(1, d('nameRequired')).max(100),
+          department: z.string().max(100).optional(),
+          policy_id: z.string().optional().or(z.literal('')),
+          insurer_key: z.string().optional().or(z.literal('')),
+          insurance_type: z.string().optional().or(z.literal('')),
+          social_insurance_number: z.string().max(20).optional(),
+          health_insurance_number: z.string().max(20).optional(),
+          unemployment_insurance_number: z.string().max(20).optional(),
+          social_insurance_rate: z.coerce.number().min(0).max(100).optional(),
+          health_insurance_rate: z.coerce.number().min(0).max(100).optional(),
+          unemployment_insurance_rate: z.coerce.number().min(0).max(100).optional(),
+          base_salary: z.coerce.number().min(0).optional(),
+          effective_date: z.date().optional(),
+          expiry_date: z.date().optional(),
+          status: z.string().default('active'),
+          notes: z.string().max(500).optional(),
+        })
+        .superRefine((val, ctx) => {
+          const insurers = insurerOptions.map((o) => o.value);
+          const insurer = val.insurer_key?.trim() ?? '';
+          if (insurers.length > 0 && !insurer) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Chọn nhà bảo hiểm từ danh mục',
+              path: ['insurer_key'],
+            });
+          } else if (insurers.length > 0 && insurer && !insurers.includes(insurer)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Nhà BH không thuộc danh mục',
+              path: ['insurer_key'],
+            });
+          }
+          const types = typeOptions.map((o) => o.value);
+          const type = val.insurance_type?.trim() ?? '';
+          if (types.length > 0 && !type) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Chọn loại bảo hiểm từ danh mục',
+              path: ['insurance_type'],
+            });
+          } else if (types.length > 0 && type && !types.includes(type)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Loại BH không thuộc danh mục',
+              path: ['insurance_type'],
+            });
+          }
+          // Create: require explicit policy_id when active policies exist (AMBIG / single)
+          if (!isEditing) {
+            const options = resolveInsurancePolicyPickerOptions(policyRows, insurer);
+            if (options.length > 0 && !val.policy_id?.trim()) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message:
+                  options.length > 1
+                    ? 'Chọn chính sách BH (nhiều chính sách đang hiệu lực)'
+                    : 'Chọn chính sách BH',
+                path: ['policy_id'],
+              });
+            }
+          }
+        }),
+    // i18n `d` for field labels; catalog + policies for refine
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [i18n.language, insurerOptions, typeOptions, policyRows, isEditing],
+  );
 
   type FormData = z.infer<typeof formSchema>;
 
@@ -137,9 +233,13 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      employee_id: '',
       employee_code: '',
       employee_name: '',
       department: '',
+      policy_id: '',
+      insurer_key: '',
+      insurance_type: '',
       social_insurance_number: '',
       health_insurance_number: '',
       unemployment_insurance_number: '',
@@ -152,15 +252,27 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     },
   });
 
+  const watchedInsurerKey = form.watch('insurer_key');
+  const policyPickerOptions = useMemo(
+    () => resolveInsurancePolicyPickerOptions(policyRows, watchedInsurerKey),
+    [policyRows, watchedInsurerKey],
+  );
+  const policyBlocked = !isEditing && isInsuranceParticipantPolicyBlocked(policyPickerOptions);
+  const policyAmbig = !isEditing && isInsuranceParticipantPolicyAmbig(policyPickerOptions);
+
   useEffect(() => {
     if (open) {
       setSelectedEmployeeId(editingInsurance?.employee_id);
       setEmployeeKeyword('');
       if (editingInsurance) {
         form.reset({
+          employee_id: editingInsurance.employee_id || '',
           employee_code: editingInsurance.employee_code,
           employee_name: editingInsurance.employee_name,
           department: editingInsurance.department || '',
+          policy_id: '',
+          insurer_key: '',
+          insurance_type: '',
           social_insurance_number: editingInsurance.social_insurance_number || '',
           health_insurance_number: editingInsurance.health_insurance_number || '',
           unemployment_insurance_number: editingInsurance.unemployment_insurance_number || '',
@@ -176,9 +288,13 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
       } else {
         setSelectedEmployeeId(undefined);
         form.reset({
+          employee_id: '',
           employee_code: '',
           employee_name: '',
           department: '',
+          policy_id: '',
+          insurer_key: '',
+          insurance_type: '',
           social_insurance_number: '',
           health_insurance_number: '',
           unemployment_insurance_number: '',
@@ -193,9 +309,36 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     }
   }, [open, editingInsurance, form]);
 
+  // Auto-select when exactly 1 active policy in picker scope
+  useEffect(() => {
+    if (!open || isEditing) return;
+    if (policyPickerOptions.length === 1) {
+      const onlyId = policyPickerOptions[0]!.id;
+      if (form.getValues('policy_id') !== onlyId) {
+        form.setValue('policy_id', onlyId, { shouldValidate: true });
+      }
+      return;
+    }
+    const current = form.getValues('policy_id')?.trim() ?? '';
+    if (current && !policyPickerOptions.some((p) => p.id === current)) {
+      form.setValue('policy_id', '', { shouldValidate: true });
+    }
+  }, [open, isEditing, policyPickerOptions, form]);
+
   const invalidateInsuranceQueries = () => {
     queryClient.invalidateQueries({ queryKey: ['insurance'] });
     queryClient.invalidateQueries({ queryKey: ['insurance-policy-participants'] });
+    queryClient.invalidateQueries({ queryKey: ['insurance-policies'] });
+  };
+
+  const goCreatePolicy = () => {
+    onOpenChange(false);
+    // Defer scroll until dialog unmounts
+    window.setTimeout(() => {
+      const el = document.getElementById(INSURANCE_POLICY_MASTER_ANCHOR_ID);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el?.querySelector<HTMLInputElement>('input')?.focus();
+    }, 120);
   };
 
   const saveMutation = useMutation({
@@ -203,10 +346,13 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
       if (!currentCompanyId) throw new Error('No company selected');
 
       const payload = buildInsuranceParticipantApiPayload(currentCompanyId, {
-        employee_id: selectedEmployeeId ?? editingInsurance?.employee_id,
+        employee_id: selectedEmployeeId ?? data.employee_id ?? editingInsurance?.employee_id,
         employee_code: data.employee_code,
         employee_name: data.employee_name,
         department: data.department,
+        policy_id: data.policy_id,
+        insurer_key: data.insurer_key,
+        insurance_type: data.insurance_type,
         social_insurance_number: data.social_insurance_number,
         health_insurance_number: data.health_insurance_number,
         unemployment_insurance_number: data.unemployment_insurance_number,
@@ -240,11 +386,34 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
   });
 
   const onSubmit = (data: FormData) => {
-    saveMutation.mutate(data);
+    const empId = selectedEmployeeId ?? data.employee_id ?? editingInsurance?.employee_id;
+    if (!isEditing && !empId?.trim()) {
+      form.setError('employee_id', { message: d('selectEmployee') });
+      toast.error(d('selectEmployee'));
+      return;
+    }
+    if (!isEditing && policyBlocked) {
+      form.setError('policy_id', {
+        message: 'Chưa có chính sách BH đang hiệu lực — tạo và kích hoạt trước khi ghi danh',
+      });
+      toast.error('Chưa có chính sách BH đang hiệu lực. Tạo chính sách BH trước.');
+      return;
+    }
+    if (!isEditing && !data.policy_id?.trim() && policyPickerOptions.length > 0) {
+      form.setError('policy_id', {
+        message: policyAmbig
+          ? 'Chọn chính sách BH (nhiều chính sách đang hiệu lực)'
+          : 'Chọn chính sách BH',
+      });
+      toast.error('Chọn chính sách bảo hiểm trước khi Lưu');
+      return;
+    }
+    saveMutation.mutate({ ...data, employee_id: empId });
   };
 
   const handleEmployeeSelect = (employeeId: string) => {
     setSelectedEmployeeId(employeeId);
+    form.setValue('employee_id', employeeId);
     const employee = employees.find((e) => e.id === employeeId);
     if (employee) {
       form.setValue('employee_code', employee.employee_code);
@@ -380,6 +549,121 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
               )}
             />
 
+            {/* E3 — insurer + type catalog codes */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="insurer_key"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nhà bảo hiểm</FormLabel>
+                    <CatalogSearchPicker
+                      options={insurerOptions}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      loading={catalogsLoading}
+                      placeholder="Chọn nhà BH…"
+                      emptyHint={
+                        <a href={settingsCta} className="text-primary underline text-xs font-medium">
+                          Mở Cài đặt — Nhà bảo hiểm
+                        </a>
+                      }
+                      aria-label="Nhà bảo hiểm"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="insurance_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Loại bảo hiểm</FormLabel>
+                    <CatalogSearchPicker
+                      options={typeOptions}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      loading={catalogsLoading}
+                      placeholder="Chọn loại BH…"
+                      emptyHint={
+                        <a href={settingsCta} className="text-primary underline text-xs font-medium">
+                          Mở Cài đặt — Loại bảo hiểm
+                        </a>
+                      }
+                      aria-label="Loại bảo hiểm"
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* D-HDSD-BF-03-BH-FE-PICKER-01 — policy_id picker / CTA when 0 active */}
+            {!isEditing ? (
+              <FormField
+                control={form.control}
+                name="policy_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Chính sách bảo hiểm *</FormLabel>
+                    {policiesQuery.isFetching && policyPickerOptions.length === 0 ? (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Đang tải chính sách…
+                      </div>
+                    ) : policyBlocked ? (
+                      <div
+                        className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 p-3 space-y-2"
+                        data-testid="ins-participant-policy-empty"
+                      >
+                        <p className="text-sm text-amber-900 dark:text-amber-100">
+                          Chưa có chính sách BH đang hiệu lực trong phạm vi. Tạo chính sách rồi
+                          chuyển trạng thái sang Hiệu lực trước khi ghi danh nhân viên.
+                        </p>
+                        <Button
+                          type="button"
+                          variant="default"
+                          size="sm"
+                          onClick={goCreatePolicy}
+                          data-testid="ins-create-policy-cta"
+                        >
+                          Tạo chính sách BH
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        {policyAmbig ? (
+                          <p className="text-xs text-muted-foreground">
+                            Có nhiều chính sách đang hiệu lực — chọn rõ chính sách để ghi danh.
+                          </p>
+                        ) : null}
+                        <Select
+                          value={field.value || undefined}
+                          onValueChange={field.onChange}
+                          disabled={policiesQuery.isFetching && policyPickerOptions.length === 0}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="ins-participant-policy-picker">
+                              <SelectValue placeholder="Chọn chính sách BH…" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {policyPickerOptions.map((pol) => (
+                              <SelectItem key={pol.id} value={pol.id}>
+                                {formatInsurancePolicyPickerLabel(pol)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
+
             {/* Insurance Numbers */}
             <div className="space-y-4">
               <h3 className="font-medium text-sm text-muted-foreground">{d('insuranceNumbers')}</h3>
@@ -481,7 +765,13 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
                   <FormItem>
                     <FormLabel>{d('baseSalary')}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="VNÄ" {...field} />
+                      <ViMoneyInput
+                        value={Number(field.value) || 0}
+                        onValueChange={(n) => field.onChange(n === 0 ? undefined : n)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        placeholder="VNĐ"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -632,8 +922,9 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
               </Button>
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || policyBlocked}
                 data-capability={ACT_HRM_INS_LINK_CAPABILITY}
+                data-testid="ins-participant-save"
               >
                 {isPending ? d('saving') : isEditing ? d('update') : d('save')}
               </Button>

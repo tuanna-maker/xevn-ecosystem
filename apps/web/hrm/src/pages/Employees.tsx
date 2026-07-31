@@ -1,3 +1,26 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /employees — table + filters + CRUD dialogs
+ * UC:          J-HRM-02 list→profile · UC-HRM-21 · AC-EMP-COL-01..07 · TC-HRM-HDSD-025
+ * WorkItem:    P1-HRM-SCALE-FE-W1 · D-HRM-EMP-COMPANY-COL-FE-01 · D-HDSD-BF-03-SOFTDEL-FE-01
+ * Purpose:     Server-paged Employees table (RQ); company column = Plane A LE SoT.
+ * must_keep:   navigate(`/employees/${id}`); do not change portal iframe key.
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-20 C-P1-HRM-PERF-02-CURSOR-FE
+ *   Export/archive still call listAllEmployees; transport now walks next_cursor
+ *   (no OFFSET page+=1). Dashboard tiles stay on useEmployeesSummary (FE-04).
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-22 D-HRM-EMP-COMPANY-COL-FE-01
+ * what: Company column uses resolveEmployeeCompanyColumnLabel (reject Khối)
+ * why: BA-HRM-EMP-COMPANY-COL-01 — «Thông tin công ty» = ĐVTV/LE not OU Khối
+ * must_keep: Option C rejected (do not rename header to keep Khối); HOLD_DEPLOY
+ *
+ * @CODE-MEMORY-CHANGE 2026-07-31 D-HDSD-BF-03-SOFTDEL-FE-01
+ * change_mode: FIX
+ * What: Row-actions cell stopPropagation + onSelect for Xóa/Sửa/Xem (no row→profile steal)
+ * Why: QA R-MUTATE-SOFTDEL-01 — menuitem Xóa bubbled onRowClick → profile; archive dialog blocked
+ * must_keep: Plain row click → profile; softDeleteEmployee → POST …/archive; TC-06/07/08 untouched
+ */
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -62,21 +85,13 @@ import { useEmployeesSummary } from '@/hooks/useEmployeesSummary';
 import { useCanAddEmployee } from '@/hooks/useCompanySubscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
-import { resolveOperatingUnitDisplayName } from '@/lib/hrmOperatingUnits';
+import { resolveEmployeeCompanyColumnLabel } from '@/lib/employeeCompanyDisplayName';
 import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { listAllEmployees } from '@/integrations/hrmApi';
 import { mapHrmEmployeeRecord } from '@/hooks/useEmployee';
 import { PermissionGate } from '@/components/auth/PermissionGate';
-
-/**
- * @CODE-MEMORY
- * Screen:     /employees — table + filters + CRUD dialogs
- * UC:          J-HRM-02 list→profile
- * WorkItem:    P1-HRM-SCALE-FE-W1
- * Purpose:     Server-paged Employees table (RQ); no listAllEmployees on mount.
- * must_keep:   navigate(`/employees/${id}`); do not change portal iframe key.
- */
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -187,12 +202,13 @@ export default function Employees() {
     .filter((m) => m.company)
     .map((m) => ({ id: m.company_id, name: m.company!.name }));
 
-  const getCompanyName = (companyId: string) => {
-    return (
-      resolveOperatingUnitDisplayName(companyId, operatingUnitLabelMap) ??
-      userCompanies.find((c) => c.id === companyId)?.name ??
-      '—'
-    );
+  const getCompanyName = (emp: Employee) => {
+    return resolveEmployeeCompanyColumnLabel({
+      companyId: emp.company_id,
+      companyDisplayName: emp.company_display_name,
+      operatingUnitLabelMap,
+      membershipCompanyName: userCompanies.find((c) => c.id === emp.company_id)?.name,
+    });
   };
 
   const { data: employeeLimit } = useCanAddEmployee();
@@ -302,7 +318,7 @@ export default function Employees() {
       header: t('company.title'),
       hideOnMobile: true,
       render: (emp: Employee) => (
-        <span className="text-sm">{getCompanyName(emp.company_id)}</span>
+        <span className="text-sm">{getCompanyName(emp)}</span>
       ),
     },
     {
@@ -335,39 +351,65 @@ export default function Employees() {
       key: 'actions',
       header: '',
       render: (emp: Employee) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigate(`/employees/${emp.id}`)}>
-              <Eye className="w-4 h-4 mr-2" />
-              {t('common.view')}
-            </DropdownMenuItem>
-            <PermissionGate module="employees" action="edit">
+        <div
+          data-stop-row-click=""
+          data-testid="employee-row-actions"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label={t('common.actions', { defaultValue: 'Thao tác' })}
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              onCloseAutoFocus={(e) => e.preventDefault()}
+            >
               <DropdownMenuItem
-                onClick={() => {
-                  setEditingEmployee(emp);
-                  setFormDialogOpen(true);
+                onSelect={(e) => {
+                  e.preventDefault();
+                  navigate(`/employees/${emp.id}`);
                 }}
               >
-                <Edit className="w-4 h-4 mr-2" />
-                {t('common.edit')}
+                <Eye className="w-4 h-4 mr-2" />
+                {t('common.view')}
               </DropdownMenuItem>
-            </PermissionGate>
-            <PermissionGate module="employees" action="delete">
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={() => setDeleteConfirm(emp)}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                {t('common.delete')}
-              </DropdownMenuItem>
-            </PermissionGate>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <PermissionGate module="employees" action="edit">
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setEditingEmployee(emp);
+                    setFormDialogOpen(true);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  {t('common.edit')}
+                </DropdownMenuItem>
+              </PermissionGate>
+              <PermissionGate module="employees" action="delete">
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setDeleteConfirm(emp);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {t('common.delete')}
+                </DropdownMenuItem>
+              </PermissionGate>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
     },
   ];
@@ -408,6 +450,8 @@ export default function Employees() {
             <PermissionGate module="employees" action="create">
               <Button
                 size="sm"
+                data-testid={HDSD_MUTATE_TEST_IDS.employeesCreateBtn}
+                aria-label="Thêm nhân viên"
                 onClick={() => {
                   if (employeeLimit && !employeeLimit.canAdd) {
                     toast.error(
@@ -537,7 +581,6 @@ export default function Employees() {
           if (!open) setEditingEmployee(null);
         }}
         employee={editingEmployee}
-        departments={departments}
         companies={userCompanies}
         onSubmit={editingEmployee ? handleEditEmployee : handleAddEmployee}
         isLoading={isSubmitting}

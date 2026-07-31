@@ -1,3 +1,32 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Catalog extensions — insurance / bonus / tax participants + sales / face
+ * UC:         UC-HRM-25 · UF-HRM-04 · AC-E3-INS-PART
+ * BR:         BR-INS-01 · BR-LINK-07
+ * SRS:        docs/hrm/SRS.md §UC-HRM-25
+ * TechSpec:   docs/hrm/API_DESIGN_HRM_ERP_E3.md §13 · docs/hrm/API_DESIGN_HRM_ERP_E2.md §8
+ * Purpose:    Nest catalog-extension tables + insurance policy participant enroll
+ *             (policy_id + employee_id soft FK). List/create/PATCH/DELETE participants
+ *             share resolveHrmListScope / pushCompanyIdFilter.
+ * WorkItem:   D-HDSD-BF-03-BH-400-01
+ * Coded:      2026-08-01
+ * Callers:    catalog-extensions.controller → POST/GET/PATCH/DELETE insurance-policy-participants
+ * Callees:    HrmDbService · hrm_insurance_policies · hrm_insurance_policy_participants · employees
+ * FEActions:  Thêm BH dialog → POST /api/hrm/insurance-policy-participants → 201 HRM-INS-P-201
+ * BEChain:    resolve policy_id (explicit | insurer_key | single active) → assert employee → INSERT
+ * Impact:     Sai resolve → enroll sai chính sách / 400 TC-049; orphan policy_id=NULL vi phạm E3.
+ * must_keep:  Explicit policy_id path; active-only enroll; HRM-INS-P-DUP; insurance list GET 200;
+ *             không nới orphan (policy_id NULL) khi không resolve được.
+ * SOLID:      Resolve helper tách khỏi INSERT; controller mỏng.
+ * LastVerified: catalog-extensions.service.spec.ts · d-hdsd-bf-03-bh-400-01.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-BF-03-BH-400-01
+ * change_mode: FIX
+ * What: Khi thiếu policy_id — resolve 1 active policy (ưu tiên insurer_key) trong scope;
+ *       0 → HRM-INS-POL-404; >1 → HRM-INS-POL-AMBIG. Cấm insert orphan.
+ * Why: TC-049 FE dialog gửi employee+insurer không gửi policy_id → 400 cứng.
+ * must_keep: Explicit UUID path; status=active; employee scope assert; no false orphan widen.
+ */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -11,6 +40,13 @@ import {
 } from '../common/hrm-list-scope';
 import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 import { HrmDbService } from '../db/hrm-db.service';
+
+/** Stable enroll codes — API_DESIGN_HRM_ERP_E3 §13 + D-HDSD-BF-03-BH-400-01. */
+export const HRM_INS_POL_404 = 'HRM-INS-POL-404';
+export const HRM_INS_POL_STATUS = 'HRM-INS-POL-STATUS';
+export const HRM_INS_POL_AMBIG = 'HRM-INS-POL-AMBIG';
+export const HRM_INS_EMP_404 = 'HRM-INS-EMP-404';
+export const HRM_INS_P_DUP = 'HRM-INS-P-DUP';
 
 @Injectable()
 export class CatalogExtensionsService {
@@ -117,6 +153,22 @@ export class CatalogExtensionsService {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+    // E3 — soft policy_id / insurer_key on participants
+    await this.db.query(
+      `ALTER TABLE public.hrm_insurance_policy_participants ADD COLUMN IF NOT EXISTS policy_id UUID NULL;`,
+    );
+    await this.db.query(
+      `ALTER TABLE public.hrm_insurance_policy_participants ADD COLUMN IF NOT EXISTS insurer_key TEXT NULL;`,
+    );
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_hrm_ins_participants_policy
+      ON public.hrm_insurance_policy_participants (policy_id);
+    `);
+    await this.db.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_hrm_ins_participants_policy_employee
+      ON public.hrm_insurance_policy_participants (policy_id, employee_id)
+      WHERE policy_id IS NOT NULL AND employee_id IS NOT NULL;
     `);
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.hrm_tax_policy_participants (
@@ -486,45 +538,152 @@ export class CatalogExtensionsService {
     return { total: res.rows.length, data: res.rows };
   }
 
+  /**
+   * AC-E3-INS-PART + D-HDSD-BF-03-BH-400-01:
+   * explicit policy_id → scope peek;
+   * else resolve exactly one active policy (prefer insurer_key match).
+   * Never enroll with policy_id NULL (orphan widen forbidden).
+   */
+  private async resolvePolicyForParticipantEnroll(
+    payload: Record<string, unknown>,
+    companyId: string,
+    authorization: string | undefined,
+  ): Promise<{ id: string; insurer_key: string | null }> {
+    const scope = resolveHrmListScope(authorization, companyId);
+    const explicitId = payload.policy_id ? String(payload.policy_id).trim() : '';
+    const insurerKeyHint = payload.insurer_key ? String(payload.insurer_key).trim() : '';
+
+    if (explicitId) {
+      const policyFilters: string[] = ['id = $1::uuid'];
+      const policyValues: unknown[] = [explicitId];
+      pushCompanyIdFilter(policyFilters, policyValues, scope.companyIds);
+      const policyPeek = await this.db.query<{
+        id: string;
+        company_id: string;
+        status: string;
+        insurer_key: string | null;
+      }>(
+        `SELECT id, company_id, status, insurer_key FROM public.hrm_insurance_policies
+         WHERE ${policyFilters.join(' AND ')} LIMIT 1;`,
+        policyValues,
+      );
+      if (!policyPeek.rows[0]) {
+        throw new ApiException(HRM_INS_POL_404, 'Insurance policy not found', HttpStatus.NOT_FOUND);
+      }
+      if (policyPeek.rows[0].status !== 'active') {
+        throw new ApiException(
+          HRM_INS_POL_STATUS,
+          'Policy must be active to enroll participants',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return { id: policyPeek.rows[0].id, insurer_key: policyPeek.rows[0].insurer_key };
+    }
+
+    // Soft resolve — FE dialog (ACT-HRM-INS-LINK) historically omitted policy_id.
+    const filters: string[] = [`status = 'active'`];
+    const values: unknown[] = [];
+    pushCompanyIdFilter(filters, values, scope.companyIds);
+    if (insurerKeyHint) {
+      values.push(insurerKeyHint);
+      filters.push(`insurer_key = $${values.length}`);
+    }
+    const candidates = await this.db.query<{ id: string; insurer_key: string | null }>(
+      `SELECT id, insurer_key FROM public.hrm_insurance_policies
+       WHERE ${filters.join(' AND ')}
+       ORDER BY updated_at DESC NULLS LAST, created_at DESC
+       LIMIT 2;`,
+      values,
+    );
+    if (candidates.rows.length === 1) {
+      return { id: candidates.rows[0].id, insurer_key: candidates.rows[0].insurer_key };
+    }
+    if (candidates.rows.length === 0) {
+      throw new ApiException(
+        HRM_INS_POL_404,
+        insurerKeyHint
+          ? 'No active insurance policy for insurer_key; create a policy or send policy_id'
+          : 'policy_id is required for participant enroll (no active policy in scope)',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    throw new ApiException(
+      HRM_INS_POL_AMBIG,
+      'policy_id is required when multiple active policies match',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
   async createInsurancePolicyParticipant(payload: Record<string, unknown>, authorization?: string) {
     await this.ensureSchema();
     const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
-    const id = randomUUID();
-    const res = await this.db.query(
-      `INSERT INTO public.hrm_insurance_policy_participants (
-        id, company_id, employee_id, employee_code, employee_name, employee_avatar, position, department,
-        insurance_type, social_insurance_number, health_insurance_number, unemployment_insurance_number,
-        social_insurance_rate, health_insurance_rate, unemployment_insurance_rate, base_salary,
-        effective_date, expiry_date, status, notes, created_by, created_by_position
-      ) VALUES (
-        $1,$2,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17::date,$18::date,$19,$20,$21,$22
-      ) RETURNING *;`,
-      [
-        id,
-        companyId,
-        payload.employee_id ?? null,
-        payload.employee_code,
-        payload.employee_name,
-        payload.employee_avatar ?? null,
-        payload.position ?? null,
-        payload.department ?? null,
-        payload.insurance_type ?? 'all',
-        payload.social_insurance_number ?? null,
-        payload.health_insurance_number ?? null,
-        payload.unemployment_insurance_number ?? null,
-        payload.social_insurance_rate ?? null,
-        payload.health_insurance_rate ?? null,
-        payload.unemployment_insurance_rate ?? null,
-        payload.base_salary ?? 0,
-        payload.effective_date ?? null,
-        payload.expiry_date ?? null,
-        payload.status ?? 'active',
-        payload.notes ?? null,
-        payload.created_by ?? null,
-        payload.created_by_position ?? null,
-      ],
+    const employeeId = payload.employee_id ? String(payload.employee_id).trim() : '';
+    // E3 — soft FK policy + employee (AC-E3-INS-PART); BH-400 soft-resolve when policy_id omitted
+    const policy = await this.resolvePolicyForParticipantEnroll(payload, companyId, authorization);
+    const policyId = policy.id;
+    const scope = resolveHrmListScope(authorization, companyId);
+    if (!employeeId) {
+      throw new ApiException(HRM_INS_EMP_404, 'employee_id is required', HttpStatus.BAD_REQUEST);
+    }
+    const empFilters: string[] = ['id = $1::uuid', 'archived_at IS NULL'];
+    const empValues: unknown[] = [employeeId];
+    pushCompanyIdFilter(empFilters, empValues, scope.companyIds);
+    const empPeek = await this.db.query<{ id: string }>(
+      `SELECT id FROM public.employees WHERE ${empFilters.join(' AND ')} LIMIT 1;`,
+      empValues,
     );
-    return res.rows[0];
+    if (!empPeek.rows[0]) {
+      throw new ApiException(HRM_INS_EMP_404, 'Employee not found in scope', HttpStatus.NOT_FOUND);
+    }
+    const insurerKey =
+      (payload.insurer_key ? String(payload.insurer_key).trim() : '') ||
+      policy.insurer_key ||
+      null;
+    const id = randomUUID();
+    try {
+      const res = await this.db.query(
+        `INSERT INTO public.hrm_insurance_policy_participants (
+          id, company_id, policy_id, insurer_key, employee_id, employee_code, employee_name, employee_avatar, position, department,
+          insurance_type, social_insurance_number, health_insurance_number, unemployment_insurance_number,
+          social_insurance_rate, health_insurance_rate, unemployment_insurance_rate, base_salary,
+          effective_date, expiry_date, status, notes, created_by, created_by_position
+        ) VALUES (
+          $1,$2,$3::uuid,$4,$5::uuid,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19::date,$20::date,$21,$22,$23,$24
+        ) RETURNING *;`,
+        [
+          id,
+          companyId,
+          policyId,
+          insurerKey || null,
+          employeeId,
+          payload.employee_code,
+          payload.employee_name,
+          payload.employee_avatar ?? null,
+          payload.position ?? null,
+          payload.department ?? null,
+          payload.insurance_type ?? 'all',
+          payload.social_insurance_number ?? null,
+          payload.health_insurance_number ?? null,
+          payload.unemployment_insurance_number ?? null,
+          payload.social_insurance_rate ?? null,
+          payload.health_insurance_rate ?? null,
+          payload.unemployment_insurance_rate ?? null,
+          payload.base_salary ?? 0,
+          payload.effective_date ?? null,
+          payload.expiry_date ?? null,
+          payload.status ?? 'active',
+          payload.notes ?? null,
+          payload.created_by ?? null,
+          payload.created_by_position ?? null,
+        ],
+      );
+      return res.rows[0];
+    } catch (err: unknown) {
+      if ((err as { code?: string })?.code === '23505') {
+        throw new ApiException(HRM_INS_P_DUP, 'Employee already enrolled on this policy', HttpStatus.CONFLICT);
+      }
+      throw err;
+    }
   }
 
   async updateInsurancePolicyParticipant(
@@ -544,7 +703,7 @@ export class CatalogExtensionsService {
       'employee_id', 'employee_code', 'employee_name', 'employee_avatar', 'position', 'department',
       'insurance_type', 'social_insurance_number', 'health_insurance_number', 'unemployment_insurance_number',
       'social_insurance_rate', 'health_insurance_rate', 'unemployment_insurance_rate', 'base_salary',
-      'effective_date', 'expiry_date', 'status', 'notes',
+      'effective_date', 'expiry_date', 'status', 'notes', 'policy_id', 'insurer_key',
     ];
     const fields: string[] = [];
     const values: unknown[] = [];

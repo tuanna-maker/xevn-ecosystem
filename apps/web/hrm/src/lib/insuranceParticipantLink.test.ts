@@ -5,7 +5,12 @@ import {
   attachParticipantIdToListItem,
   buildInsuranceParticipantApiPayload,
   buildPolicyParticipantIdByCode,
+  filterActiveInsurancePolicies,
+  formatInsurancePolicyPickerLabel,
+  isInsuranceParticipantPolicyAmbig,
+  isInsuranceParticipantPolicyBlocked,
   resolveInsuranceParticipantMutateTarget,
+  resolveInsurancePolicyPickerOptions,
   resolveParticipantIdForListItem,
 } from './insuranceParticipantLink';
 
@@ -93,5 +98,70 @@ describe('ACT-HRM-INS-LINK participant helpers', () => {
     expect(payload.employee_id).toBe('emp-uuid-1');
     expect(payload.employee_code).toBe('LOG-0003');
     expect(payload.insurance_type).toBe('all');
+    expect(payload).not.toHaveProperty('policy_id');
+  });
+
+  it('includes policy_id when selected (cấm orphan null)', () => {
+    const withId = buildInsuranceParticipantApiPayload('main', {
+      employee_id: 'emp-uuid-1',
+      employee_code: 'LOG-0003',
+      employee_name: 'Lê Văn An',
+      base_salary: 12_000_000,
+      status: 'active',
+      policy_id: '  pol-uuid-1  ',
+    });
+    expect(withId.policy_id).toBe('pol-uuid-1');
+    const blank = buildInsuranceParticipantApiPayload('main', {
+      employee_id: 'emp-uuid-1',
+      employee_code: 'LOG-0003',
+      employee_name: 'Lê Văn An',
+      base_salary: 0,
+      status: 'active',
+      policy_id: '   ',
+    });
+    expect(blank).not.toHaveProperty('policy_id');
+  });
+
+  it('resolves active policy picker options (0 / match / AMBIG fallback)', () => {
+    const rows = [
+      {
+        id: 'p1',
+        policy_code: 'POL-A',
+        policy_name: 'BHXH A',
+        insurer_key: 'bao_viet',
+        status: 'active',
+      },
+      {
+        id: 'p2',
+        policy_code: 'POL-B',
+        policy_name: 'BHXH B',
+        insurer_key: 'bao_viet',
+        status: 'active',
+      },
+      {
+        id: 'p3',
+        policy_code: 'POL-DRAFT',
+        policy_name: 'Draft',
+        insurer_key: 'bao_viet',
+        status: 'draft',
+      },
+      {
+        id: 'p4',
+        policy_code: 'POL-C',
+        policy_name: 'Other',
+        insurer_key: 'pvi',
+        status: 'active',
+      },
+    ];
+    expect(filterActiveInsurancePolicies(rows)).toHaveLength(3);
+    expect(resolveInsurancePolicyPickerOptions([], 'bao_viet')).toEqual([]);
+    expect(isInsuranceParticipantPolicyBlocked([])).toBe(true);
+    const matched = resolveInsurancePolicyPickerOptions(rows, 'bao_viet');
+    expect(matched.map((r) => r.id)).toEqual(['p1', 'p2']);
+    expect(isInsuranceParticipantPolicyAmbig(matched)).toBe(true);
+    const singleInsurer = resolveInsurancePolicyPickerOptions(rows, 'pvi');
+    expect(singleInsurer.map((r) => r.id)).toEqual(['p4']);
+    expect(isInsuranceParticipantPolicyAmbig(singleInsurer)).toBe(false);
+    expect(formatInsurancePolicyPickerLabel(rows[0]!)).toBe('POL-A — BHXH A');
   });
 });
