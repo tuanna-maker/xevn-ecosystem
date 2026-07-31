@@ -82,15 +82,22 @@ grep -E '^(PORTAL_FE|HRM_FE|XBOS_FE|HRM_BE|XBOS_BE)_PORT=' .env 2>/dev/null || t
 
 echo "[deploy] listening before up (host):"
 
-ss -tlnp 2>/dev/null | grep -E ':(8088|8080|5173|3001|3002)\s' || netstat -tlnp 2>/dev/null | grep -E ':(8088|8080|5173|3001|3002)\s' || true
+ss -tlnp 2>/dev/null | grep -E ':(8088|8080|5173|3001|28002)\s' || netstat -tlnp 2>/dev/null | grep -E ':(8088|8080|5173|3001|28002)\s' || true
 
-docker compose --env-file .env up -d --build --remove-orphans
+# Durable XBOS override: build + node dist/main.js (avoid start:dev missing dist/main on VPS)
+COMPOSE_ARGS=(-f docker-compose.yml)
+if [ -f docker-compose.xbos-node.yml ]; then
+  COMPOSE_ARGS+=(-f docker-compose.xbos-node.yml)
+  echo "[deploy] override: docker-compose.xbos-node.yml (xbos-be build+node)"
+fi
+
+docker compose "${COMPOSE_ARGS[@]}" --env-file .env up -d --build --remove-orphans
 
 echo "[deploy] published ports:"
 
-docker compose ps --format "table {{.Name}}\t{{.Ports}}"
+docker compose "${COMPOSE_ARGS[@]}" ps --format "table {{.Name}}\t{{.Ports}}"
 
-for port in 8088 8080 5173 3001 3002; do
+for port in 8088 8080 5173 3001 28002; do
 
   CODE=$(curl -so /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/" 2>/dev/null || echo 000)
 
@@ -98,11 +105,19 @@ for port in 8088 8080 5173 3001 3002; do
 
 done
 
+CODE=$(curl -so /dev/null -w "%{http_code}" http://127.0.0.1:3001/api/hrm/metrics 2>/dev/null || echo 000)
+
+echo "[deploy] smoke :3001/api/hrm/metrics -> HTTP $CODE"
+
+CODE=$(curl -so /dev/null -w "%{http_code}" http://127.0.0.1:28002/api/xbos/metrics 2>/dev/null || echo 000)
+
+echo "[deploy] smoke :28002/api/xbos/metrics -> HTTP $CODE"
+
 CODE=$(curl -so /dev/null -w "%{http_code}" http://127.0.0.1:8088/command-center 2>/dev/null || echo 000)
 
 echo "[deploy] smoke :8088/command-center -> HTTP $CODE"
 
-docker compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+docker compose "${COMPOSE_ARGS[@]}" ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 
 echo "[deploy] HEAD=$(git -C "$REPO" rev-parse --short HEAD)"
 
@@ -231,7 +246,9 @@ $remoteDeployNormalized = ($REMOTE_DEPLOY -replace "`r`n", "`n" -replace "`r", "
 $b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($remoteDeployNormalized))
 
 # Decode to a temp script, strip any accidental CR, syntax-check, then execute.
-$remoteCmd = "tmp=`$(mktemp /tmp/xevn-deploy.XXXXXX.sh) && printf '%s' '$b64' | base64 -d | tr -d '\r' > `"$tmp`" && chmod +x `"$tmp`" && bash -n `"$tmp`" && bash `"$tmp`"; rc=`$?; rm -f `"$tmp`"; exit `$rc"
+# IMPORTANT: build remoteCmd from single-quoted fragments so PowerShell does NOT expand
+# bash `$tmp` / `$?` (SkipCommit path previously failed with unexpected EOF).
+$remoteCmd = 'tmp=$(mktemp /tmp/xevn-deploy.XXXXXX.sh) && printf ''%s'' ''' + $b64 + ''' | base64 -d | tr -d ''\r'' > "$tmp" && chmod +x "$tmp" && bash -n "$tmp" && bash "$tmp"; rc=$?; rm -f "$tmp"; exit $rc'
 
 
 
