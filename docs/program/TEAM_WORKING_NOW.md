@@ -2,11 +2,9 @@
 
 | WI | Status |
 |----|--------|
-| DO-REC-8088-JOBREQ-UI-EXPORT-01 | **READY** hasExport=1 |
-| QA-REC-HDSD-COVERAGE-01A-RET | **IN FLIGHT** |
-| QA-REC-HDSD-COVERAGE-01B-RET | **IN FLIGHT** |
-| QA-REC-13-S2-SUBMIT-INBOX-8088-RET | **IN FLIGHT** |
-| QC SoftDel+BH GATE | in flight |
-| Updated | 2026-08-01T16:51:00+07:00 |
+| SoftDel+BH Dev8088 | QC evidence on disk — park until sponsor resumes |
+| HDSD 01A/01B RET + S2 Inbox RET | evidence on disk — park / intake next if residual |
+| **NEW** | **AWAITING SPONSOR** |
+| Updated | 2026-08-03T11:48:00+07:00 |
 
 SoT: bus

@@ -1,0 +1,29 @@
+COPY-PASTE INTO CLAUDE CODE NOW:
+
+Ban dang co nguy co ghi nham folder NFC/ASCII. Khoa path:
+
+1) Chi lam viec tai (copy nguyen dong, dung go lai dau):
+C:\Users\ADMIN\OneDrive\Tài liệu\Vibe Coding\projects\xevn-ecosystem
+
+2) Chay ngay:
+cd "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem"
+pwd
+head -1 CLAUDE.md
+test -d .git && test -d apps && echo CANON_OK
+git rev-parse --show-toplevel
+git log -1 --oneline
+
+3) PASS khi:
+- CLAUDE.md dong 1 = hello claude abc abc abc
+- co .git va apps/
+- toplevel nam tren path Tai lieu NFD, KHONG phai "Tai lieu" ASCII hay "Tai lieu" NFC
+
+4) Doc docs/program/PATH_CANONICAL_LOCK.md
+
+5) CAM viet vao:
+   - OneDrive\Tai lieu\...   (ASCII)
+   - OneDrive\Tài liệu\...   (NFC, hex 54c3a069206c69e1bb8775)
+
+6) File da viet nham o NFC: liet ke path + cho PM copy allow-list vao canonical git.
+
+Sau CANON_OK: doc duoi docs/program/AGENT_MESSAGE_BUS.md; dung hoi "muon lam gi".

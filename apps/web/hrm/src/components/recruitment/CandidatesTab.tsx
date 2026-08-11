@@ -1,5 +1,88 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-IV-ONE-ACTIVE-FE-02
+ * change_mode: FIX narrow
+ * What: Merge Lane A listCandidates active_interview onto pool list (email key); keep badge testids
+ * Why: QA FAIL FE-WIRE-POOL-ACTIVE-PROJECTION — pool API lacks projection; spine list has it
+ * must_keep: pool mutate paths (stage/delete/import); U65 · badge testids
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-FE-01
+ * change_mode: ADD
+ * What: Merge spine YCTD+position display-ready; context ?requisition_id= prefill; list YCTD/position cols;
+ *       create testids; open YCTD tab CTA — no free-text SoT
+ * Why: AC-REC-UV-02/04 · F-REC-UV-YCTD-05 · UF-REC-UV-05-F5 / UF-REC-UV-07
+ * must_keep: pool mutate · active_interview merge · U65 · no job_postings · no recruitment_uat_ready
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-FE-02
+ * change_mode: FIX
+ * What: Union spine-only Lane A rows into list SoT after pool+YCTD merge; spine stage display-only
+ * Why: QA FAIL R-UV-YCTD-LANE-A-LIST-GAP — Lane A POST not in candidates-pool → list/F5 empty YCTD cells
+ * must_keep: FE-01 YCTD SELECT + derived position + context prefill · pool mutate paths · no dual-write
+ *            · no job_postings · U65 · no recruitment_uat_ready
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-FE-01
+ * change_mode: ADD
+ * What: Stage Select binds F-REC-CAT-EFF; hire uses hiredOutcomeKey; UNKNOWN toast via toErrorMessage
+ * Why: AC-PLT-REC-02..05 · QC CONDITION browser residual
+ * must_keep: YCTD · IV badge · pool mutate · hire soft-link · U65 · recruitment_uat_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06A-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Badge/calendar → ManageActiveInterviewDialog (cancel/complete/no_show/R-A); schedule only when 0 ACTIVE
+ * Why: AC-REC-IV-03..06 residual · Lane A path lock · RETAIN create/409/badge GWC
+ * must_keep: mergeActiveInterview · badge testids · U65 · honesty false · C-SLICE · REC-03 OUT
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06a-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-05-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: YCTD-bound UV → CandidateStageTransitionDialog POST …/candidates/:id/transitions + Timeline in detail;
+ *       EFF empty CTA; reject note; RETAIN pool stage only when không gắn YCTD (≠ FR-05 SoT)
+ * Why: AC-REC-05-01..04 · O1/O3/O5 · BR-BP-CV-02 · DENY Nest /rec · pool-as-SoT · honesty flip
+ * must_keep: IV manage · UV-YCTD union · hire soft-link pool path · U65 · C-SLICE · REC-03 OUT
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-05-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06-CLUSTER-FE-01
+ * change_mode: ADD / UPGRADE
+ * What: YCTD → Gửi thư (CandidateMailDialog POST …/mail) + Đánh giá Pass/Fail neo Lane A;
+ *       optional APP-02 after eval; Network /recruitment/ only; toast MAIL / EVAL family
+ * Why: UC-BP-REC-06 Diễn biến #1–#2 · O1/O2/O5/O7/O8 · DENY Nest /rec · Campaign · stage từ mail
+ * must_keep: REC-05 transitions · 06a manage · UV-YCTD · U65 · honesty false · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-07-CLUSTER-FE-01
+ * change_mode: ADD / UPGRADE
+ * What: YCTD offer-ready → Chấp nhận offer (CandidateAcceptOfferDialog POST …/applications/:id/accept-offer)
+ *       + APP-02 hired-outcome + HTP surface; toast HIRE family; DENY Nest /rec · mail=hire · picker-as-DONE
+ * Why: UC-BP-REC-07 Diễn biến #1–#2 · O1/O3/O4/O6 · BR-BP-LC-01 · U65
+ * must_keep: REC-06 mail ≠ hire · REC-05 transitions · hire soft-link residual · U65 · honesty false · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-07-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-CHANNELS-CONSUMER-FE-01
+ * change_mode: ADD
+ * What: source filter + list badge bind recruitment_channels catalog (AC-REC-02/03)
+ * Why: BA-HRM-REC-CHANNELS-CONSUMER-01 · BR-REC-CH-SOT-01
+ * must_keep: pool mutate · YCTD · stage EFF · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-CHANNELS-CONSUMER-AC-REC-02-FILTER-01
+ * change_mode: ADD
+ * What: HDSD testid on source filter trigger + options (AC-REC-02 harness)
+ * Why: QA retest #4 — combobox locator không có text «Nguồn» trên trigger
+ * must_keep: channel consumer wiring FE-01 · pool mutate · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-G4-REC-ACCEPT-OFFER-CTA-FE-01
+ * change_mode: FIX
+ * What: ?candidateId= deep-link opens detail; spine stage/status merge drives accept-offer CTA
+ * Why: QA BLOCKED DEF-REC-ACCEPT-OFFER-CTA-OFFER-STAGE · J-HRM-CTR-HIRE-01
+ * must_keep: U65 · YCTD · stage transition · no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-G4-REC-ACCEPT-OFFER-CTA-FE-02
+ * change_mode: FIX
+ * What: resolveRecruitmentEmbedSearchParams for ?candidateId=; match pool or recruitment_candidate_id
+ * Why: DEF-REC-EMBED-DEEPLINK-TAB-CANDIDATES — parent CC URL carries tab/candidateId; iframe src omits them
+ * must_keep: U65 · YCTD · stage transition · no seed
+ */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import {
@@ -61,14 +144,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ScheduleInterviewDialog } from './ScheduleInterviewDialog';
+import { ManageActiveInterviewDialog } from './ManageActiveInterviewDialog';
 import { CandidateFormDialog } from './CandidateFormDialog';
 import { CandidateDetailView } from './CandidateDetailView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
+import { CandidateMailDialog } from './CandidateMailDialog';
+import { CandidateAcceptOfferDialog } from './CandidateAcceptOfferDialog';
 import { CandidateImportDialog } from './CandidateImportDialog';
 import { HireEmployeeLinkDialog } from './HireEmployeeLinkDialog';
+import { CandidateStageTransitionDialog } from './CandidateStageTransitionDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { deleteCandidatePool, listCandidatesPool, startCandidatePipeline, updateCandidatePoolStage } from '@/integrations/hrmApi';
+import { deleteCandidatePool, listCandidatesPool, listRecruitmentCandidates, startCandidatePipeline, updateCandidatePoolStage } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   detectRecruitmentSpawnMissing,
@@ -76,8 +163,39 @@ import {
   RECRUITMENT_WF_LOCKED_HINT_VI,
 } from '@/lib/recruitmentWorkflowUi';
 import { mapRecruitmentFunnelStage, RECRUITMENT_FUNNEL_LABEL_VI } from '@/lib/recruitmentFunnel';
-import { needsHireEmployeePicker } from '@/lib/recruitmentHireLink';
+import {
+  needsHireEmployeePicker,
+  resolveHireTargetStage,
+} from '@/lib/recruitmentHireLink';
+import { buildContractHireCtaPath } from '@/lib/contractWorkspaceHireCta';
+import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { recruitmentChannelOptionsFromCatalog } from '@/lib/catalogSearchPicker';
+import {
+  candidateSourceFilterValues,
+  resolveCandidateSourceDisplayLabel,
+} from '@/lib/candidateRecruitmentChannelUi';
+import { REC_PIPELINE_STAGE_EMPTY_CTA_VI } from '@/lib/recPipelineStageCatalog';
+import {
+  shouldUseLaneAStageTransition,
+} from '@/lib/recCandidateStageTransition';
+import { shouldShowAcceptOfferCta } from '@/lib/recCandidateAcceptOffer';
 import { RecruitmentWfSpawnBanner } from '@/components/recruitment/RecruitmentWfSpawnBanner';
+import {
+  getActiveInterviewId,
+  getCandidateActiveInterviewBadge,
+  mergeActiveInterviewOntoPoolCandidates,
+} from './candidateActiveInterview';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
+import {
+  mergeYctdDisplayOntoPoolCandidates,
+  parseRequisitionIdFromSearch,
+  resolveCandidatePositionLabel,
+  resolveCandidateYctdLabel,
+  unionSpineOnlyCandidatesIntoList,
+  resolveCandidatePipelineStage,
+} from '@/lib/candidateUvYctdUi';
+import { resolveRecruitmentEmbedSearchParams } from '@/lib/recruitmentEmbedDeepLink';
 
 interface Candidate {
   id: string;
@@ -86,8 +204,16 @@ interface Candidate {
   email: string;
   phone?: string | null;
   position?: string | null;
+  position_key?: string | null;
+  position_name?: string | null;
+  requisition_id?: string | null;
+  recruitment_request_id?: string | null;
+  yctd_title?: string | null;
+  yctd_code?: string | null;
   source?: string | null;
   stage?: string | null;
+  /** Lane A spine status when pool row enriched (offer-ready CTA gate). */
+  status?: string | null;
   rating?: number | null;
   applied_date?: string | null;
   expected_start_date?: string | null;
@@ -99,17 +225,39 @@ interface Candidate {
   /** Soft hire link — FR-HRM-INT-01 / G-DB-01. */
   employee_id?: string | null;
   workflow_instance_id?: string | null;
+  /** Lane A spine-only row — not in candidates-pool (FE-02 union). */
+  list_lane?: 'pool' | 'spine';
+  /** Lane A id when pool enriched by YCTD merge (FR-05 transitions). */
+  recruitment_candidate_id?: string | null;
+  has_active_interview?: boolean | null;
+  active_interview_id?: string | null;
+  active_interview_status?: string | null;
+  active_interview_at?: string | null;
+  active_interview_display_time_vi_vn?: string | null;
+  active_interview_badge_label?: string | null;
+  active_interview?: {
+    has_active_interview?: boolean | null;
+    active_interview_id?: string | null;
+    active_interview_status?: string | null;
+    active_interview_at?: string | null;
+    active_interview_display_time_vi_vn?: string | null;
+    active_interview_badge_label?: string | null;
+  } | null;
   created_at: string;
 }
 
+function isSpineOnlyListRow(c: Candidate): boolean {
+  return c.list_lane === 'spine';
+}
+
 const getStageConfig = (t: any): Record<string, { label: string; color: string; icon: React.ReactNode }> => ({
-  new: { label: RECRUITMENT_FUNNEL_LABEL_VI.new, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
-  applied: { label: t('recruitment.ct.stages.applied'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
-  screening: { label: t('recruitment.ct.stages.screening'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: <Clock className="w-4 h-4" /> },
-  interview: { label: t('recruitment.ct.stages.interview'), color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', icon: <UserCheck className="w-4 h-4" /> },
-  offer: { label: t('recruitment.ct.stages.offer'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: <CheckCircle className="w-4 h-4" /> },
-  hired: { label: t('recruitment.ct.stages.hired'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: <CheckCircle className="w-4 h-4" /> },
-  rejected: { label: t('recruitment.ct.stages.rejected'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: <XCircle className="w-4 h-4" /> },
+  new: { label: RECRUITMENT_FUNNEL_LABEL_VI.new, color: 'bg-primary/10 text-primary', icon: <Users className="w-4 h-4" /> },
+  applied: { label: t('recruitment.ct.stages.applied'), color: 'bg-primary/10 text-primary', icon: <Users className="w-4 h-4" /> },
+  screening: { label: t('recruitment.ct.stages.screening'), color: 'bg-warning/15 text-warning', icon: <Clock className="w-4 h-4" /> },
+  interview: { label: t('recruitment.ct.stages.interview'), color: 'bg-xevn-accent/15 text-xevn-accent', icon: <UserCheck className="w-4 h-4" /> },
+  offer: { label: t('recruitment.ct.stages.offer'), color: 'bg-warning/15 text-warning', icon: <CheckCircle className="w-4 h-4" /> },
+  hired: { label: t('recruitment.ct.stages.hired'), color: 'bg-success/15 text-success', icon: <CheckCircle className="w-4 h-4" /> },
+  rejected: { label: t('recruitment.ct.stages.rejected'), color: 'bg-destructive/15 text-destructive', icon: <XCircle className="w-4 h-4" /> },
 });
 
 function displayStageKey(stage: string | null | undefined): string {
@@ -124,20 +272,20 @@ function candidateStageLocked(c: Candidate): boolean {
 
 const getSourceConfig = (source: string, t: any) => {
   const sourceConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
-    'LinkedIn': { label: 'LinkedIn', icon: Linkedin, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    'Website': { label: 'Website', icon: Globe, color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
-    'Giới thiệu': { label: t('recruitment.ct.sources.referral'), icon: Users, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-    'Referral': { label: t('recruitment.ct.sources.referral'), icon: Users, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-    'Email': { label: 'Email', icon: Mail, color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
-    'TopCV': { label: 'TopCV', icon: Briefcase, color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
-    'VietnamWorks': { label: 'VietnamWorks', icon: Briefcase, color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-    'Facebook': { label: 'Facebook', icon: Facebook, color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
-    'Hội chợ việc làm': { label: t('recruitment.ct.sources.jobFair'), icon: Users, color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
+    'LinkedIn': { label: 'LinkedIn', icon: Linkedin, color: 'bg-primary/10 text-primary' },
+    'Website': { label: 'Website', icon: Globe, color: 'bg-xevn-accent/15 text-xevn-accent' },
+    'Giới thiệu': { label: t('recruitment.ct.sources.referral'), icon: Users, color: 'bg-success/15 text-success' },
+    'Referral': { label: t('recruitment.ct.sources.referral'), icon: Users, color: 'bg-success/15 text-success' },
+    'Email': { label: 'Email', icon: Mail, color: 'bg-warning/15 text-warning' },
+    'TopCV': { label: 'TopCV', icon: Briefcase, color: 'bg-success/15 text-success' },
+    'VietnamWorks': { label: 'VietnamWorks', icon: Briefcase, color: 'bg-destructive/15 text-destructive' },
+    'Facebook': { label: 'Facebook', icon: Facebook, color: 'bg-primary/10 text-primary' },
+    'Hội chợ việc làm': { label: t('recruitment.ct.sources.jobFair'), icon: Users, color: 'bg-warning/15 text-warning' },
   };
   return sourceConfig[source] || {
     label: source || t('recruitment.ct.sources.other'),
     icon: Briefcase,
-    color: 'bg-muted text-muted-foreground',
+    color: 'bg-xevn-neutral/15 text-xevn-textSecondary',
   };
 };
 
@@ -145,7 +293,48 @@ export function CandidatesTab() {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
   const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
   const stageConfig = getStageConfig(t);
+  const {
+    stageOptions: catalogStageOptions,
+    hiredOutcomeKey,
+    catalogCount,
+    stageDisplayLabel,
+    items: pipelineStageItems,
+  } = useRecPipelineStagesEffective();
+
+  const { catalogs } = useSettingsCatalogsOverview();
+  const channelCatalogOptions = useMemo(
+    () => recruitmentChannelOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const channelCatalogCount = channelCatalogOptions.length;
+
+  const resolveSourceDisplayLabel = useCallback(
+    (source: string) =>
+      resolveCandidateSourceDisplayLabel(
+        channelCatalogOptions,
+        channelCatalogCount,
+        source,
+        (code) => getSourceConfig(code, t).label,
+      ),
+    [channelCatalogOptions, channelCatalogCount, t],
+  );
+
+  /** AC-PLT-REC-02 — when effective >0 bind catalog; empty = soft-allow starter display (U65). */
+  const transitionStageOptions = useMemo(() => {
+    if (catalogCount > 0) {
+      return catalogStageOptions.map((o) => ({
+        value: o.value,
+        label: o.label,
+        color: stageConfig[o.value]?.color || 'bg-primary/10 text-primary',
+      }));
+    }
+    return Object.entries(stageConfig)
+      .filter(([key]) => key !== 'new')
+      .map(([key, config]) => ({ value: key, label: config.label, color: config.color }));
+  }, [catalogCount, catalogStageOptions, stageConfig]);
   
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -156,25 +345,54 @@ export function CandidatesTab() {
   
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
+  const [contextRequisitionId, setContextRequisitionId] = useState<string>('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingCandidate, setDeletingCandidate] = useState<Candidate | null>(null);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [selectedCandidateForInterview, setSelectedCandidateForInterview] = useState<Candidate | null>(null);
+  const [isManageInterviewOpen, setIsManageInterviewOpen] = useState(false);
+  const [manageInterviewId, setManageInterviewId] = useState<string | null>(null);
+  const [selectedCandidateForManage, setSelectedCandidateForManage] = useState<Candidate | null>(null);
   const [selectedCandidateForDetail, setSelectedCandidateForDetail] = useState<Candidate | null>(null);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [evaluatingCandidate, setEvaluatingCandidate] = useState<Candidate | null>(null);
+  const [isMailDialogOpen, setIsMailDialogOpen] = useState(false);
+  const [mailingCandidate, setMailingCandidate] = useState<Candidate | null>(null);
+  const [isAcceptOfferOpen, setIsAcceptOfferOpen] = useState(false);
+  const [acceptOfferCandidate, setAcceptOfferCandidate] = useState<Candidate | null>(null);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [spawnMissingBanner, setSpawnMissingBanner] = useState(false);
   const [pipelineSubmittingId, setPipelineSubmittingId] = useState<string | null>(null);
   const [hirePending, setHirePending] = useState<Candidate | null>(null);
+  const [hirePendingStage, setHirePendingStage] = useState<string | null>(null);
   const [hireSubmitting, setHireSubmitting] = useState(false);
+  const [stageTransitionOpen, setStageTransitionOpen] = useState(false);
+  const [stageTransitionCandidate, setStageTransitionCandidate] = useState<Candidate | null>(null);
+  const [stageTransitionInitial, setStageTransitionInitial] = useState<string | null>(null);
+  const [stageHistoryRefreshToken, setStageHistoryRefreshToken] = useState(0);
 
   const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) return;
     setLoading(true);
     try {
-      const response = await listCandidatesPool({ company_id: currentCompanyId });
-      setCandidates(response.data ?? []);
+      const [poolResponse, spineResponse] = await Promise.all([
+        listCandidatesPool({ company_id: currentCompanyId }),
+        listRecruitmentCandidates({ company_id: currentCompanyId, page: 1, page_size: 500 }),
+      ]);
+      const spineRows = spineResponse.data ?? [];
+      const withInterview = mergeActiveInterviewOntoPoolCandidates(
+        poolResponse.data ?? [],
+        spineRows,
+      );
+      const merged = mergeYctdDisplayOntoPoolCandidates(withInterview, spineRows);
+      // AC-REC-UV-02: Lane A POST writes spine only — union spine-only into list SoT (no dual-write).
+      const list = unionSpineOnlyCandidatesIntoList(merged, spineRows);
+      setCandidates(list as Candidate[]);
+      setSelectedCandidateForDetail((prev) => {
+        if (!prev) return prev;
+        const next = (list as Candidate[]).find((c) => c.id === prev.id);
+        return next ?? prev;
+      });
     } catch (error: any) {
       console.error('Error fetching candidates:', error);
       toast({
@@ -190,6 +408,45 @@ export function CandidatesTab() {
   useEffect(() => {
     fetchCandidates();
   }, [fetchCandidates]);
+
+  /** Deep-link — ?candidateId= opens detail after list SoT loads (J-HRM-CTR-HIRE / QA harness). */
+  const candidateIdFromUrl = useMemo(() => {
+    const id = resolveRecruitmentEmbedSearchParams(location.search).get('candidateId')?.trim();
+    return id || null;
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!candidateIdFromUrl || loading || candidates.length === 0) return;
+    const match = candidates.find(
+      (c) =>
+        c.id === candidateIdFromUrl ||
+        (c.recruitment_candidate_id ?? '').trim() === candidateIdFromUrl,
+    );
+    if (match) {
+      setSelectedCandidateForDetail(match);
+    }
+  }, [candidateIdFromUrl, candidates, loading]);
+
+  /** AC-REC-UV-04 — open create prefilled when ?requisition_id= present. */
+  useEffect(() => {
+    const reqId = parseRequisitionIdFromSearch(location.search);
+    if (!reqId) return;
+    setContextRequisitionId(reqId);
+    setEditingCandidate(null);
+    setIsFormDialogOpen(true);
+  }, [location.search]);
+
+  const clearContextRequisitionFromUrl = useCallback(() => {
+    const params = new URLSearchParams(location.search);
+    if (!params.has('requisition_id') && !params.has('recruitment_request_id')) return;
+    params.delete('requisition_id');
+    params.delete('recruitment_request_id');
+    const next = params.toString();
+    navigate(
+      { pathname: location.pathname, search: next ? `?${next}` : '' },
+      { replace: true },
+    );
+  }, [location.pathname, location.search, navigate]);
 
   const handleDelete = async () => {
     if (!deletingCandidate || !currentCompanyId) return;
@@ -221,12 +478,85 @@ export function CandidatesTab() {
 
   const handleCreate = () => {
     setEditingCandidate(null);
+    setContextRequisitionId(parseRequisitionIdFromSearch(location.search));
     setIsFormDialogOpen(true);
+  };
+
+  const handleOpenYctdTab = () => {
+    const params = new URLSearchParams(location.search);
+    params.set('tab', 'requisitions');
+    params.delete('requisition_id');
+    params.delete('recruitment_request_id');
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` });
   };
 
   const handleScheduleInterview = (candidate: Candidate) => {
     setSelectedCandidateForInterview(candidate);
     setIsScheduleDialogOpen(true);
+  };
+
+  const handleManageActiveInterview = (candidate: Candidate, interviewIdOverride?: string | null) => {
+    const id = interviewIdOverride?.trim() || getActiveInterviewId(candidate);
+    setSelectedCandidateForManage(candidate);
+    setManageInterviewId(id);
+    setIsManageInterviewOpen(true);
+  };
+
+  const handleActiveConflictFromSchedule = (payload: {
+    interviewId: string;
+    candidate: { id: string; fullName: string; email: string; phone?: string; position?: string };
+  }) => {
+    const row =
+      candidates.find((c) => c.id === payload.candidate.id) ||
+      candidates.find((c) => c.email?.toLowerCase() === payload.candidate.email.toLowerCase()) ||
+      ({
+        id: payload.candidate.id,
+        company_id: currentCompanyId || '',
+        full_name: payload.candidate.fullName,
+        email: payload.candidate.email,
+        phone: payload.candidate.phone || null,
+        position: payload.candidate.position || null,
+        active_interview: {
+          has_active_interview: true,
+          active_interview_id: payload.interviewId,
+          active_interview_badge_label: 'Đã có lịch',
+        },
+      } as Candidate);
+    handleManageActiveInterview(
+      {
+        ...row,
+        active_interview: {
+          ...(row.active_interview ?? { has_active_interview: true }),
+          has_active_interview: true,
+          active_interview_id: payload.interviewId,
+        },
+      },
+      payload.interviewId,
+    );
+  };
+
+  const openLaneAStageTransition = (candidate: Candidate, initialToStage?: string | null) => {
+    if (candidateStageLocked(candidate)) {
+      toast({
+        title: t('common.error'),
+        description: RECRUITMENT_WF_LOCKED_HINT_VI,
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (catalogCount <= 0) {
+      toast({
+        title: 'Chưa có danh mục giai đoạn',
+        description: REC_PIPELINE_STAGE_EMPTY_CTA_VI,
+        variant: 'destructive',
+      });
+      return;
+    }
+    setStageTransitionCandidate(candidate);
+    setStageTransitionInitial(
+      initialToStage ?? resolveCandidatePipelineStage(candidate) ?? null,
+    );
+    setStageTransitionOpen(true);
   };
 
   const applyCandidateStage = async (
@@ -235,6 +565,7 @@ export function CandidatesTab() {
     employeeId?: string | null,
   ) => {
     if (!currentCompanyId) throw new Error('No company selected');
+    // RETAIN pool path — only for non-YCTD rows (≠ FR-05 timeline SoT).
     await updateCandidatePoolStage(candidateId, currentCompanyId, newStage, employeeId);
     toast({
       title: t('common.success'),
@@ -255,9 +586,15 @@ export function CandidatesTab() {
         });
         return;
       }
-      // FR-HRM-INT-01 #3/#5 — chốt hired: gắn / xác nhận hồ sơ trước PATCH.
-      if (needsHireEmployeePicker(newStage, row?.employee_id)) {
+      // FR-05 O1/O3 — YCTD-bound → POST transitions dialog (not pool PATCH).
+      if (row && shouldUseLaneAStageTransition(row)) {
+        openLaneAStageTransition(row, newStage);
+        return;
+      }
+      // FR-HRM-INT-01 #3/#5 — chốt hired / hired-outcome: gắn / xác nhận hồ sơ trước PATCH pool.
+      if (needsHireEmployeePicker(newStage, row?.employee_id, hiredOutcomeKey)) {
         setHirePending(row ?? { id: candidateId, company_id: currentCompanyId, full_name: '', email: '', created_at: '' });
+        setHirePendingStage(newStage);
         return;
       }
       await applyCandidateStage(candidateId, newStage, row?.employee_id);
@@ -275,8 +612,16 @@ export function CandidatesTab() {
     if (!hirePending) return;
     setHireSubmitting(true);
     try {
-      await applyCandidateStage(hirePending.id, 'hired', employeeId);
+      const targetStage = resolveHireTargetStage(hirePendingStage, hiredOutcomeKey);
+      await applyCandidateStage(hirePending.id, targetStage, employeeId);
       setHirePending(null);
+      setHirePendingStage(null);
+      await fetchCandidates();
+      toast({
+        title: 'Đã chốt tuyển',
+        description: 'Mở workspace tạo HĐ cho nhân viên vừa gắn.',
+      });
+      navigate(buildContractHireCtaPath(employeeId));
     } catch (error: unknown) {
       console.error('Error confirming hire link:', error);
       toast({
@@ -326,7 +671,8 @@ export function CandidatesTab() {
       [t('recruitment.ct.exFullName')]: candidate.full_name,
       'Email': candidate.email,
       [t('recruitment.ct.exPhone')]: candidate.phone || '',
-      [t('recruitment.ct.exPosition')]: candidate.position || '',
+      [t('recruitment.ct.exPosition')]: resolveCandidatePositionLabel(candidate),
+      YCTD: resolveCandidateYctdLabel(candidate),
       [t('recruitment.ct.exSource')]: candidate.source || '',
       [t('recruitment.ct.exStage')]: stageConfig[candidate.stage || 'applied']?.label || '',
       [t('recruitment.ct.exRating')]: candidate.rating || '',
@@ -356,12 +702,11 @@ export function CandidatesTab() {
   };
 
   const uniqueSources = useMemo(() => {
-    const sources = new Set<string>();
-    candidates.forEach((c) => {
-      if (c.source) sources.add(c.source);
-    });
-    return Array.from(sources).sort();
-  }, [candidates]);
+    const fromCandidates = candidates
+      .map((c) => c.source?.trim())
+      .filter((s): s is string => Boolean(s));
+    return candidateSourceFilterValues(channelCatalogOptions, channelCatalogCount, fromCandidates);
+  }, [candidates, channelCatalogOptions, channelCatalogCount]);
 
   const filteredCandidates = useMemo(() => {
     return candidates.filter((candidate) => {
@@ -369,7 +714,9 @@ export function CandidatesTab() {
         !searchQuery ||
         candidate.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         candidate.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.position?.toLowerCase().includes(searchQuery.toLowerCase());
+        candidate.position?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resolveCandidatePositionLabel(candidate).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resolveCandidateYctdLabel(candidate).toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesStageTab =
         activeStageTab === 'all' ||
@@ -404,7 +751,7 @@ export function CandidatesTab() {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-3 h-3 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+            className={`h-3 w-3 ${star <= rating ? 'fill-warning text-warning' : 'text-xevn-textMuted'}`}
           />
         ))}
       </div>
@@ -420,10 +767,10 @@ export function CandidatesTab() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="rec-candidates-tab-precision">
       <RecruitmentWfSpawnBanner visible={spawnMissingBanner} />
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">{t('recruitment.ct.title')}</h2>
+        <h2 className="font-display text-[20px] font-bold tracking-tight text-xevn-text">{t('recruitment.ct.title')}</h2>
         <div className="flex items-center gap-2">
           <Button onClick={() => setIsImportDialogOpen(true)} variant="outline" size="sm">
             <Upload className="w-4 h-4 mr-2" />
@@ -437,7 +784,7 @@ export function CandidatesTab() {
             <RefreshCw className="w-4 h-4 mr-2" />
             {t('recruitment.ct.refresh')}
           </Button>
-          <Button onClick={handleCreate}>
+          <Button onClick={handleCreate} data-testid={HDSD_MUTATE_TEST_IDS.candidateCreateBtn}>
             <Plus className="w-4 h-4 mr-2" />
             {t('recruitment.ct.addCandidate')}
           </Button>
@@ -464,7 +811,7 @@ export function CandidatesTab() {
             <div className="p-4 border-b">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="relative flex-1 min-w-[200px] max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textMuted" />
                   <Input
                     placeholder={t('recruitment.ct.searchPlaceholder')}
                     className="pl-10"
@@ -474,19 +821,39 @@ export function CandidatesTab() {
                 </div>
 
                 <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger
+                    className="w-[180px]"
+                    data-testid={HDSD_MUTATE_TEST_IDS.candidateFilterSource}
+                  >
                     <div className="flex items-center gap-2">
                       <Filter className="w-4 h-4" />
                       <SelectValue placeholder={t('recruitment.ct.sourcePlaceholder')} />
                     </div>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('recruitment.ct.allSources')}</SelectItem>
+                    <SelectItem
+                      value="all"
+                      data-testid={`${HDSD_MUTATE_TEST_IDS.candidateFilterSourceOptionPrefix}-all`}
+                    >
+                      {t('recruitment.ct.allSources')}
+                    </SelectItem>
                     {uniqueSources.map((source) => {
-                      const config = getSourceConfig(source, t);
+                      const label = resolveSourceDisplayLabel(source);
+                      const config =
+                        channelCatalogCount > 0
+                          ? {
+                              label,
+                              icon: Briefcase,
+                              color: 'bg-xevn-neutral/15 text-xevn-textSecondary',
+                            }
+                          : getSourceConfig(source, t);
                       const Icon = config.icon;
                       return (
-                        <SelectItem key={source} value={source}>
+                        <SelectItem
+                          key={source}
+                          value={source}
+                          data-testid={`${HDSD_MUTATE_TEST_IDS.candidateFilterSourceOptionPrefix}-${source}`}
+                        >
                           <div className="flex items-center gap-2">
                             <Icon className="w-4 h-4" />
                             <span>{config.label}</span>
@@ -516,7 +883,7 @@ export function CandidatesTab() {
                   )}
                   {sourceFilter !== 'all' && (
                     <Badge variant="secondary" className="flex items-center gap-1">
-                      {t('recruitment.ct.sourceLabel')}: {getSourceConfig(sourceFilter, t).label}
+                      {t('recruitment.ct.sourceLabel')}: {resolveSourceDisplayLabel(sourceFilter)}
                       <X className="w-3 h-3 cursor-pointer" onClick={() => setSourceFilter('all')} />
                     </Badge>
                   )}
@@ -545,6 +912,7 @@ export function CandidatesTab() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t('recruitment.ct.thCandidate')}</TableHead>
+                    <TableHead>YCTD</TableHead>
                     <TableHead>{t('recruitment.ct.thPosition')}</TableHead>
                     <TableHead>{t('recruitment.ct.thSource')}</TableHead>
                     <TableHead>{t('recruitment.ct.thAppliedDate')}</TableHead>
@@ -555,8 +923,17 @@ export function CandidatesTab() {
                 </TableHeader>
                 <TableBody>
                   {filteredCandidates.map((candidate) => {
-                    const sourceConf = getSourceConfig(candidate.source || '', t);
+                    const sourceLabel = resolveSourceDisplayLabel(candidate.source || '');
+                    const sourceConf =
+                      channelCatalogCount > 0
+                        ? {
+                            label: sourceLabel,
+                            icon: Briefcase,
+                            color: 'bg-xevn-neutral/15 text-xevn-textSecondary',
+                          }
+                        : getSourceConfig(candidate.source || '', t);
                     const SourceIcon = sourceConf.icon;
+                    const activeInterviewBadge = getCandidateActiveInterviewBadge(candidate);
                     return (
                       <TableRow key={candidate.id}>
                         <TableCell>
@@ -568,10 +945,39 @@ export function CandidatesTab() {
                             <div>
                               <p className="font-medium">{candidate.full_name}</p>
                               <p className="text-sm text-muted-foreground">{candidate.email}</p>
+                              {activeInterviewBadge ? (
+                                <button
+                                  type="button"
+                                  className="mt-1 flex flex-wrap items-center gap-2 text-left hover:opacity-90"
+                                  data-testid="candidate-active-interview-badge"
+                                  onClick={() => handleManageActiveInterview(candidate)}
+                                  title="Xem / quản lý lịch đang hiệu lực"
+                                >
+                                  <Badge variant="secondary" className="bg-warning/15 text-warning">
+                                    {activeInterviewBadge.label}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground" data-testid="candidate-active-interview-time">
+                                    {activeInterviewBadge.time}
+                                  </span>
+                                </button>
+                              ) : null}
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{candidate.position || '-'}</TableCell>
+                        <TableCell
+                          data-testid={HDSD_MUTATE_TEST_IDS.candidateListYctd}
+                          data-requisition-id={
+                            candidate.requisition_id || candidate.recruitment_request_id || ''
+                          }
+                        >
+                          {resolveCandidateYctdLabel(candidate)}
+                        </TableCell>
+                        <TableCell
+                          data-testid={HDSD_MUTATE_TEST_IDS.candidateListPosition}
+                          data-position-key={candidate.position_key || ''}
+                        >
+                          {resolveCandidatePositionLabel(candidate)}
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`${sourceConf.color} border-0`}>
                             <SourceIcon className="w-3 h-3 mr-1" />
@@ -587,31 +993,70 @@ export function CandidatesTab() {
                           {candidateStageLocked(candidate) ? (
                             <div className="space-y-1">
                               <Badge className={stageConfig[displayStageKey(candidate.stage)]?.color || 'bg-gray-100'}>
-                                {stageConfig[displayStageKey(candidate.stage)]?.label ||
-                                  RECRUITMENT_FUNNEL_LABEL_VI[mapRecruitmentFunnelStage(candidate.stage)]}
+                                {stageDisplayLabel(
+                                  candidate.stage,
+                                  stageConfig[displayStageKey(candidate.stage)]?.label ||
+                                    RECRUITMENT_FUNNEL_LABEL_VI[mapRecruitmentFunnelStage(candidate.stage)],
+                                )}
                               </Badge>
                               <p className="max-w-[8rem] text-[10px] leading-tight text-muted-foreground">
                                 QT XBOS · không đổi tay
                               </p>
                             </div>
+                          ) : shouldUseLaneAStageTransition(candidate) ? (
+                            <div className="space-y-1">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-8 max-w-[11rem] justify-start px-2"
+                                data-testid="hdsd-rec-candidate-stage-picker"
+                                data-lane="yctd-transitions"
+                                onClick={() => openLaneAStageTransition(candidate)}
+                              >
+                                <Badge className={stageConfig[displayStageKey(candidate.stage)]?.color || 'bg-gray-100'}>
+                                  {stageDisplayLabel(
+                                    candidate.stage,
+                                    stageConfig[displayStageKey(candidate.stage)]?.label || candidate.stage,
+                                  )}
+                                </Badge>
+                              </Button>
+                              {catalogCount <= 0 ? (
+                                <p className="max-w-[10rem] text-[10px] leading-tight text-muted-foreground">
+                                  {REC_PIPELINE_STAGE_EMPTY_CTA_VI}
+                                </p>
+                              ) : null}
+                            </div>
+                          ) : isSpineOnlyListRow(candidate) ? (
+                            <div className="space-y-1">
+                              <Badge className={stageConfig[displayStageKey(candidate.stage)]?.color || 'bg-gray-100'}>
+                                {stageDisplayLabel(
+                                  candidate.stage,
+                                  stageConfig[displayStageKey(candidate.stage)]?.label ||
+                                    RECRUITMENT_FUNNEL_LABEL_VI[mapRecruitmentFunnelStage(candidate.stage)],
+                                )}
+                              </Badge>
+                            </div>
                           ) : (
                             <Select
                               value={candidate.stage === 'new' ? 'applied' : candidate.stage || 'applied'}
                               onValueChange={(value) => handleUpdateStage(candidate.id, value)}
+                              data-testid="hdsd-rec-candidate-stage-picker"
                             >
-                              <SelectTrigger className="w-32 h-8">
+                              <SelectTrigger className="w-40 h-8">
                                 <Badge className={stageConfig[displayStageKey(candidate.stage)]?.color || 'bg-gray-100'}>
-                                  {stageConfig[displayStageKey(candidate.stage)]?.label || candidate.stage}
+                                  {stageDisplayLabel(
+                                    candidate.stage,
+                                    stageConfig[displayStageKey(candidate.stage)]?.label || candidate.stage,
+                                  )}
                                 </Badge>
                               </SelectTrigger>
                               <SelectContent>
-                                {Object.entries(stageConfig)
-                                  .filter(([key]) => key !== 'new')
-                                  .map(([key, config]) => (
-                                    <SelectItem key={key} value={key}>
-                                      <Badge className={config.color}>{config.label}</Badge>
-                                    </SelectItem>
-                                  ))}
+                                {transitionStageOptions.map((opt) => (
+                                  <SelectItem key={opt.value} value={opt.value}>
+                                    <Badge className={opt.color}>{opt.label}</Badge>
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                           )}
@@ -619,7 +1064,7 @@ export function CandidatesTab() {
                         <TableCell>{renderStars(candidate.rating)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            {!candidate.workflow_instance_id ? (
+                            {!candidate.workflow_instance_id && !isSpineOnlyListRow(candidate) ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
@@ -644,36 +1089,57 @@ export function CandidatesTab() {
                             </Tooltip>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="sm" onClick={() => handleScheduleInterview(candidate)}>
-                                  <CalendarClock className="w-4 h-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>{t('recruitment.ct.scheduleInterview')}</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="sm" onClick={() => handleEdit(candidate)}>
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>{t('recruitment.ct.edit')}</TooltipContent>
-                            </Tooltip>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-destructive hover:text-destructive"
-                                  onClick={() => {
-                                    setDeletingCandidate(candidate);
-                                    setIsDeleteDialogOpen(true);
-                                  }}
+                                  data-testid={
+                                    activeInterviewBadge
+                                      ? 'candidate-manage-interview-btn'
+                                      : 'candidate-schedule-interview-btn'
+                                  }
+                                  onClick={() =>
+                                    activeInterviewBadge
+                                      ? handleManageActiveInterview(candidate)
+                                      : handleScheduleInterview(candidate)
+                                  }
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <CalendarClock className="w-4 h-4" />
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent>{t('recruitment.ct.delete')}</TooltipContent>
+                              <TooltipContent>
+                                {activeInterviewBadge
+                                  ? 'Quản lý lịch phỏng vấn'
+                                  : t('recruitment.ct.scheduleInterview')}
+                              </TooltipContent>
                             </Tooltip>
+                            {!isSpineOnlyListRow(candidate) ? (
+                              <>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="sm" onClick={() => handleEdit(candidate)}>
+                                      <Edit className="w-4 h-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>{t('recruitment.ct.edit')}</TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-destructive hover:text-destructive"
+                                      onClick={() => {
+                                        setDeletingCandidate(candidate);
+                                        setIsDeleteDialogOpen(true);
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>{t('recruitment.ct.delete')}</TooltipContent>
+                                </Tooltip>
+                              </>
+                            ) : null}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -688,15 +1154,26 @@ export function CandidatesTab() {
 
       <CandidateFormDialog
         open={isFormDialogOpen}
-        onOpenChange={setIsFormDialogOpen}
+        onOpenChange={(next) => {
+          setIsFormDialogOpen(next);
+          if (!next) {
+            setContextRequisitionId('');
+            clearContextRequisitionFromUrl();
+          }
+        }}
         candidate={editingCandidate}
         companyId={currentCompanyId || ''}
         onSuccess={fetchCandidates}
+        defaultRequisitionId={editingCandidate ? null : contextRequisitionId}
+        onOpenYctdTab={handleOpenYctdTab}
       />
 
       <ScheduleInterviewDialog
         open={isScheduleDialogOpen}
         onOpenChange={setIsScheduleDialogOpen}
+        onSuccess={fetchCandidates}
+        onActiveConflict={handleActiveConflictFromSchedule}
+        candidateStage={selectedCandidateForInterview?.stage ?? null}
         candidate={
           selectedCandidateForInterview
             ? {
@@ -705,6 +1182,38 @@ export function CandidatesTab() {
                 email: selectedCandidateForInterview.email,
                 phone: selectedCandidateForInterview.phone || null,
                 position: selectedCandidateForInterview.position || null,
+              }
+            : null
+        }
+      />
+
+      <ManageActiveInterviewDialog
+        open={isManageInterviewOpen}
+        onOpenChange={setIsManageInterviewOpen}
+        onSuccess={fetchCandidates}
+        interviewId={manageInterviewId}
+        badge={
+          selectedCandidateForManage
+            ? getCandidateActiveInterviewBadge(selectedCandidateForManage)
+            : null
+        }
+        scheduledAtIso={
+          selectedCandidateForManage?.active_interview?.active_interview_at ??
+          selectedCandidateForManage?.active_interview_at ??
+          null
+        }
+        statusLabel={
+          selectedCandidateForManage?.active_interview?.active_interview_status ??
+          selectedCandidateForManage?.active_interview_status ??
+          null
+        }
+        candidate={
+          selectedCandidateForManage
+            ? {
+                id: selectedCandidateForManage.id,
+                fullName: selectedCandidateForManage.full_name,
+                email: selectedCandidateForManage.email,
+                position: selectedCandidateForManage.position || null,
               }
             : null
         }
@@ -735,6 +1244,33 @@ export function CandidatesTab() {
           <div className="h-full overflow-auto p-6">
             <CandidateDetailView
               candidate={selectedCandidateForDetail}
+              stageHistoryRefreshToken={stageHistoryRefreshToken}
+              onOpenStageTransition={
+                shouldUseLaneAStageTransition(selectedCandidateForDetail) &&
+                !candidateStageLocked(selectedCandidateForDetail)
+                  ? () => openLaneAStageTransition(selectedCandidateForDetail)
+                  : undefined
+              }
+              onOpenMail={
+                shouldUseLaneAStageTransition(selectedCandidateForDetail)
+                  ? () => {
+                      setMailingCandidate(selectedCandidateForDetail);
+                      setIsMailDialogOpen(true);
+                    }
+                  : undefined
+              }
+              onOpenAcceptOffer={
+                shouldShowAcceptOfferCta(
+                  selectedCandidateForDetail,
+                  pipelineStageItems,
+                  catalogCount,
+                )
+                  ? () => {
+                      setAcceptOfferCandidate(selectedCandidateForDetail);
+                      setIsAcceptOfferOpen(true);
+                    }
+                  : undefined
+              }
               onBack={() => setSelectedCandidateForDetail(null)}
               onEvaluate={() => {
                 setEvaluatingCandidate(selectedCandidateForDetail);
@@ -749,16 +1285,74 @@ export function CandidatesTab() {
         </div>
       )}
 
+      <CandidateStageTransitionDialog
+        open={stageTransitionOpen}
+        onOpenChange={(open) => {
+          setStageTransitionOpen(open);
+          if (!open) {
+            setStageTransitionCandidate(null);
+            setStageTransitionInitial(null);
+          }
+        }}
+        candidate={stageTransitionCandidate}
+        initialToStage={stageTransitionInitial}
+        onSuccess={async () => {
+          setStageHistoryRefreshToken((n) => n + 1);
+          await fetchCandidates();
+        }}
+      />
+
+      <CandidateMailDialog
+        open={isMailDialogOpen}
+        onOpenChange={(open) => {
+          setIsMailDialogOpen(open);
+          if (!open) setMailingCandidate(null);
+        }}
+        candidate={mailingCandidate}
+        onSuccess={async () => {
+          await fetchCandidates();
+        }}
+      />
+
+      <CandidateAcceptOfferDialog
+        open={isAcceptOfferOpen}
+        onOpenChange={(open) => {
+          setIsAcceptOfferOpen(open);
+          if (!open) setAcceptOfferCandidate(null);
+        }}
+        candidate={acceptOfferCandidate}
+        onSuccess={async (hireResult) => {
+          setStageHistoryRefreshToken((n) => n + 1);
+          await fetchCandidates();
+          if (hireResult.employee_id && selectedCandidateForDetail) {
+            setSelectedCandidateForDetail({
+              ...selectedCandidateForDetail,
+              employee_id: hireResult.employee_id,
+              stage: hireResult.hired_outcome_stage || selectedCandidateForDetail.stage,
+            });
+          }
+        }}
+      />
+
       <CandidateEvaluationDialog
         candidate={evaluatingCandidate ? {
           id: evaluatingCandidate.id,
           full_name: evaluatingCandidate.full_name,
           email: evaluatingCandidate.email,
           position: evaluatingCandidate.position || null,
+          recruitment_candidate_id: evaluatingCandidate.recruitment_candidate_id,
+          list_lane: evaluatingCandidate.list_lane,
+          requisition_id: evaluatingCandidate.requisition_id,
+          recruitment_request_id: evaluatingCandidate.recruitment_request_id,
         } : null}
         open={isEvaluationDialogOpen}
         onOpenChange={setIsEvaluationDialogOpen}
         onSaved={fetchCandidates}
+        onSuggestStageTransition={
+          evaluatingCandidate && shouldUseLaneAStageTransition(evaluatingCandidate)
+            ? () => openLaneAStageTransition(evaluatingCandidate)
+            : undefined
+        }
       />
 
       <CandidateImportDialog
@@ -771,7 +1365,10 @@ export function CandidatesTab() {
       <HireEmployeeLinkDialog
         open={!!hirePending}
         onOpenChange={(open) => {
-          if (!open && !hireSubmitting) setHirePending(null);
+          if (!open && !hireSubmitting) {
+            setHirePending(null);
+            setHirePendingStage(null);
+          }
         }}
         candidateName={hirePending?.full_name || 'ứng viên'}
         initialEmployeeId={hirePending?.employee_id}

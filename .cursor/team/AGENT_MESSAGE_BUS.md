@@ -60985,3 +60985,338 @@ console.log(JSON.stringify(summary,null,2));
 - summary: Mount PASS (export CLOSED). Create blocked GET job-templates 404. CTA Gửi duyệt QT clicked → POST submit-workflow 404 HRM-DATA-404 Cannot POST. Inbox not earned. UF-HRM-12 not demoted. No seed.
 - next_owner: devops
 - pm_dispatch_hint: DO-REC-13-S2-HRM-API-ROUTES-8088-01 — redeploy hrm-api job-templates + requisitions/:id/submit-workflow
+
+## 2026-08-03T04:49:11.704Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`pnpm run pm:idle:check 2>&1 | Select-Object -Last 40; Write-Host "---"; Get-Content "docs/program/TEAM_WORKING_NOW.md" -ErrorAction SilentlyContinue | Select-Object -First 40; Write-Host "---"; Get-Content "docs/program/AGENT_MESSAGE_BUS.md" -Tail 40`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-08-03T04:51:37.093Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`Write-Host "=== Cursor/PM cwd ==="; (Get-Location).Path; Write-Host "=== NFD marker CLAUDE.md ==="; $nfd = "C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem"; Test-Path "$nfd\CLAUDE.md"; Get-Content "$nfd\CLAUDE.md" -ErrorAction SilentlyContinue; Write-Host "=== git -C NFD ==="; git -C $nfd rev-parse --show-toplevel 2>&1; git -C $nfd log -1 --oneline 2>&1; Write-Host "=== sibling folders under OneDrive ==="; Get-ChildItem "C:\Users\ADMIN\OneDrive" -Directory | ForEach-Object { $name=$_.Name; $bytes=[System.Text.Encoding]::UTF8.GetBytes($name); "$name | bytes=$([BitConverter]::ToString($bytes)) | full=$($_.FullName)" }; Write-Host "=== Vibe Coding projects dirs ==="; Get-ChildItem "C:\Users\ADMIN\OneDrive" -Recurse -Directory -Filter "xevn-ecosystem" -ErrorAction SilentlyContinue -Depth 5 | ForEach-Object { $p=$_.FullName; $hasGit=Test-Path (Join-Path $p ".git"); $claude=if(Test-Path (Join-Path $p "CLAUDE.md")){(Get-Content (Join-Path $p "CLAUDE.md") -Raw).Trim()}else{"(no)"}; "PATH=$p | git=$hasGit | CLAUDE=$claude" }`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-08-03T04:51:59.639Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`# Resolve real paths via .NET / cmd to avoid console mojibake
+$roots = @(
+  'C:\Users\ADMIN\OneDrive'
+)
+# List dirs matching *li*u under OneDrive with short names + git/CLAUDE/BRD stats
+Add-Type -AssemblyName System.Core
+$dirs = [System.IO.Directory]::GetDirectories('C:\Users\ADMIN\OneDrive')
+foreach ($d in $dirs) {
+  $leaf = [System.IO.Path]::GetFileName($d)
+  if ($leaf -notmatch 'li') { continue }
+  $proj = Join-Path $d 'Vibe Coding\projects\xevn-ecosystem'
+  $exists = [System.IO.Directory]::Exists($proj)
+  $git = $exists -and [System.IO.Directory]::Exists((Join-Path $proj '.git'))
+  $claudePath = Join-Path $proj 'CLAUDE.md'
+  $brdPath = Join-Path $proj 'docs\brand-new-documents-20270801\BRD_NEW.md'
+  $claude = if ([System.IO.File]::Exists($claudePath)) { ([System.IO.File]::ReadAllText($claudePath)).Trim().Substring(0, [Math]::Min(40, ([System.IO.File]::ReadAllText($claudePath)).Trim().Length)) } else { '-' }
+  $brdLines = if ([System.IO.File]::Exists($brdPath)) { ([System.IO.File]::ReadAllLines($brdPath)).Length } else { -1 }
+  $utf8 = [System.Text.Encoding]::UTF8.GetBytes($leaf)
+  $hex = ($utf8 | ForEach-Object { $_.ToString('X2') }) -join '-'
+  "LEAF_HEX=$hex"
+  "  FULL=$d"
+  "  projExists=$exists git=$git brdLines=$brdLines claudeSnippet=[$claude]"
+  ""
+}
+Write-Host "=== Canonical (workspace) BRD + git ==="
+$canon = (git rev-parse --show-toplevel)
+"CANON=$canon"
+"BRD_lines=$((Get-Content (Join-Path $canon 'docs\brand-new-documents-20270801\BRD_NEW.md')).Count)"
+"CLAUDE=$((Get-Content (Join-Path $canon 'CLAUDE.md') -Raw).Trim())"
+git -C $canon log -3 --oneline
+Write-Host "=== Claude terminal cwd bytes ==="
+# from terminals meta we know cwd; compare to canon
+$termCwd = 'C:\Users\ADMIN\OneDrive\Tà€i liĂª̀£u\Vibe Coding\projects\xevn-ecosystem'
+"termEqCanon=$($termCwd -eq $canon -or (Resolve-Path $termCwd).Path -eq (Resolve-Path $canon).Path)"
+try { "Resolve term=$((Resolve-Path -LiteralPath $termCwd).Path)"; "Resolve canon=$((Resolve-Path -LiteralPath $canon).Path)" } catch { $_ }`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-08-03T04:52:15.692Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`python -c "
+import os, pathlib, subprocess, hashlib
+onedrive = pathlib.Path(r'C:\Users\ADMIN\OneDrive')
+print('=== OneDrive children matching *li* ===')
+for p in sorted(onedrive.iterdir()):
+    if not p.is_dir():
+        continue
+    name = p.name
+    if 'li' not in name.lower() and 'Li' not in name:
+        continue
+    hexname = name.encode('utf-8').hex()
+    proj = p / 'Vibe Coding' / 'projects' / 'xevn-ecosystem'
+    print(f'NAME={name!r}')
+    print(f'  utf8_hex={hexname}')
+    print(f'  full={p}')
+    if not proj.exists():
+        print('  (no xevn-ecosystem)')
+        continue
+    git = (proj/'.git').exists()
+    claude = proj/'CLAUDE.md'
+    brd = proj/'docs'/'brand-new-documents-20270801'/'BRD_NEW.md'
+    claude_txt = claude.read_text(encoding='utf-8', errors='replace')[:80].replace('\n',' | ') if claude.exists() else None
+    brd_n = sum(1 for _ in brd.open(encoding='utf-8', errors='replace')) if brd.exists() else None
+    apps = (proj/'apps').exists()
+    print(f'  proj={proj}')
+    print(f'  git={git} apps={apps} brd_lines={brd_n}')
+    print(f'  CLAUDE={claude_txt!r}')
+    if git:
+        try:
+            top = subprocess.check_output(['git','-C',str(proj),'rev-parse','--show-toplevel'], text=True).strip()
+            head = subprocess.check_output(['git','-C',str(proj),'log','-1','--oneline'], text=True).strip()
+            print(f'  git_toplevel={top}')
+            print(f'  HEAD={head}')
+        except Exception as e:
+            print(f'  git_err={e}')
+    print()
+"
+`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-08-03T04:53:07.251Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$env:PYTHONIOENCODING='utf-8'; python -c "
+import pathlib, sys
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+onedrive = pathlib.Path(r'C:\Users\ADMIN\OneDrive')
+nfd = None
+nfc = None
+ascii_p = None
+for p in onedrive.iterdir():
+    h = p.name.encode('utf-8').hex()
+    if h == '5461cc8069206c69c3aacca375':
+        nfd = p
+    elif h == '54c3a069206c69e1bb8775':
+        nfc = p
+    elif h == '546169206c696575':
+        ascii_p = p
+root = nfd / 'Vibe Coding' / 'projects' / 'xevn-ecosystem'
+lock = root / 'docs' / 'program' / 'PATH_CANONICAL_LOCK.md'
+lock.parent.mkdir(parents=True, exist_ok=True)
+text = '''# PATH CANONICAL LOCK â€” xevn-ecosystem (Sponsor 2026-08-03)
+
+## Canonical (ONLY write / git here)
+
+```
+C:\\\\Users\\\\ADMIN\\\\OneDrive\\\\Tà€i liĂª̀£u\\\\Vibe Coding\\\\projects\\\\xevn-ecosystem
+```
+
+- Unicode form: **NFD** folder name `Tà€i liĂª̀£u` (UTF-8 hex of parent leaf: `5461cc8069206c69c3aacca375`)
+- Marker file: `CLAUDE.md` content = `hello claude abc abc abc` (1 line)
+- Must have: `.git/` + `apps/` + `packages/`
+- Verify before every write:
+
+```bash
+pwd
+test -f CLAUDE.md && head -1 CLAUDE.md
+test -d .git && test -d apps && echo CANON_OK
+git rev-parse --show-toplevel
+```
+
+Expected CLAUDE first line: `hello claude abc abc abc`
+
+## FORBIDDEN shadow roots (do not write)
+
+| Root | Why |
+|------|-----|
+| `C:\\\\Users\\\\ADMIN\\\\OneDrive\\\\Tai lieu\\\\...` | ASCII â€” no git, thin copy |
+| `C:\\\\Users\\\\ADMIN\\\\OneDrive\\\\TĂ i liá»‡u\\\\...` (NFC `54c3a069206c69e1bb8775`) | No git; Claude drift writes (BRD 320 lines, long CLAUDE.md) |
+
+## If you discover you are on a shadow
+
+1. STOP editing.
+2. `cd` to canonical path above (copy from this file; do not retype accents from memory).
+3. Re-run verify block until `CANON_OK`.
+4. Ask Cursor-PM / sponsor before copying files from NFC shadow into git tree.
+
+## BRD note
+
+- Git HEAD on canonical may already contain enterprise BRD (`git show HEAD:docs/brand-new-documents-20270801/BRD_NEW.md`).
+- Working tree stub (~40 lines) = regression; do not treat shadow NFC 320-line file as SoT until merged via allow-list copy + review.
+'''
+lock.write_text(text, encoding='utf-8')
+print('WROTE', lock)
+# also short paste card for Claude Code
+card = root / 'docs' / 'program' / 'CLAUDE_CODE_PATH_CARD.txt'
+card.write_text('''COPY-PASTE INTO CLAUDE CODE NOW:
+
+Báº¡n Ä‘ang cĂ³ nguy cÆ¡ ghi nháº§m folder NFC/ASCII. KhĂ³a path:
+
+1) Chá»‰ lĂ m viá»‡c táº¡i:
+C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem
+
+2) Cháº¡y ngay:
+cd \"C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem\"
+pwd
+head -1 CLAUDE.md
+test -d .git && test -d apps && echo CANON_OK
+git rev-parse --show-toplevel
+git log -1 --oneline
+
+3) PASS khi:
+- CLAUDE.md dĂ²ng 1 = hello claude abc abc abc
+- cĂ³ .git vĂ  apps/
+- toplevel chá»©a trĂªn path Tà€i liĂª̀£u (NFD), KHĂ”NG pháº£i Tai lieu (ASCII) hay TĂ i liá»‡u (NFC)
+
+4) Äá»c docs/program/PATH_CANONICAL_LOCK.md
+5) Cáº¤M viáº¿t vĂ o OneDrive/TĂ i liá»‡u/... hoáº·c OneDrive/Tai lieu/...
+6) File Ä‘Ă£ viáº¿t nháº§m á»Ÿ NFC: bĂ¡o cĂ¡o list path â€” chá» PM copy allow-list vĂ o canonical git.
+
+Dá»«ng há»i \"muá»‘n lĂ m gĂ¬\"; sau CANON_OK thĂ¬ chá» sponsor / Ä‘á»c AGENT_MESSAGE_BUS.md Ä‘uĂ´i.
+''', encoding='utf-8')
+print('WROTE', card)
+# peer ping if inbox exists
+inbox = root / '.cursor' / 'team' / 'inbox'
+inbox.mkdir(parents=True, exist_ok=True)
+ping = inbox / 'peer-pm.jsonl'
+import json, time
+rec = {
+  'ts': '2026-08-03T11:51:00+07:00',
+  'from': 'CURSOR-PM',
+  'to': 'CLAUDE-CODE',
+  'ack_status': 'OPEN',
+  'subject': 'PATH_CANONICAL_LOCK â€” stop NFC/ASCII drift',
+  'body': 'Canonical NFD only. Read docs/program/PATH_CANONICAL_LOCK.md and CLAUDE_CODE_PATH_CARD.txt. NFC TĂ i liá»‡u has your BRD/SRS writes without git â€” do not continue there.',
+}
+with ping.open('a', encoding='utf-8') as f:
+    f.write(json.dumps(rec, ensure_ascii=False) + '\n')
+print('PING', ping)
+"
+`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-08-03T06:45:03.408Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$env:PYTHONIOENCODING='utf-8'; python -c "
+import pathlib, sys, os
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+onedrive = pathlib.Path(r'C:\Users\ADMIN\OneDrive')
+nfc=nfd=None
+for p in onedrive.iterdir():
+    h=p.name.encode('utf-8').hex()
+    if h=='54c3a069206c69e1bb8775': nfc=p/'Vibe Coding'/'projects'/'xevn-ecosystem'
+    if h=='5461cc8069206c69c3aacca375': nfd=p/'Vibe Coding'/'projects'/'xevn-ecosystem'
+print('NFC', nfc.exists(), nfc)
+print('NFD', nfd.exists(), nfd)
+
+def list_rel(root, prefixes):
+    out=[]
+    for f in root.rglob('*'):
+        if not f.is_file(): continue
+        rel=f.relative_to(root).as_posix()
+        if any(rel==p or rel.startswith(p.rstrip('/')+'/') for p in prefixes):
+            if 'node_modules' in rel or '.git/' in rel: continue
+            out.append((rel, f.stat().st_size))
+    return sorted(out)
+
+prefixes=[
+ 'CLAUDE.md','.claude/','.cursor/rules/','.cursor/skills/','.agentmemory/','docs/brand-new-documents-20270801/',
+ 'docs/journal/','docs/knowledge/','docs/design/','MEMORY.md','.agents/',
+]
+# also any md at root
+print('=== NFC interesting ===')
+for rel,sz in list_rel(nfc, prefixes):
+    dest=nfd/rel
+    print(f'NFC {sz:6d} | NFD {\"Y\"+str(dest.stat().st_size) if dest.exists() else \"MISSING\":8s} | {rel}')
+print('=== NFC root files ===')
+for f in sorted(nfc.iterdir()):
+    if f.is_file():
+        print(f.name, f.stat().st_size, '-> NFD', (nfd/f.name).exists())
+print('=== NFD .claude / CLAUDE ===')
+for p in [nfd/'CLAUDE.md', nfd/'.claude', nfd/'.cursor'/'rules']:
+    print(p, 'exists', p.exists())
+if (nfd/'.claude').exists():
+    for f in (nfd/'.claude').rglob('*'):
+        if f.is_file(): print(' ', f.relative_to(nfd))
+"
+`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO
+
+## 2026-08-03T06:45:15.271Z | Hook afterShellExecution -> PM-Tech | MEDIUM
+- Topic: Auto incident intake from shell
+- Work Item: INCIDENT-AUTO-HOOK
+- Request / Handoff: Command failed and matched incident pattern. Command=`$env:PYTHONIOENCODING='utf-8'; python -c @'
+import pathlib, sys
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+onedrive = pathlib.Path(r"C:\Users\ADMIN\OneDrive")
+nfc = nfd = None
+for p in onedrive.iterdir():
+    h = p.name.encode("utf-8").hex()
+    if h == "54c3a069206c69e1bb8775":
+        nfc = p / "Vibe Coding" / "projects" / "xevn-ecosystem"
+    if h == "5461cc8069206c69c3aacca375":
+        nfd = p / "Vibe Coding" / "projects" / "xevn-ecosystem"
+print("NFC", nfc)
+print("NFD", nfd)
+
+def walk_interesting(root):
+    rows = []
+    for f in root.rglob("*"):
+        if not f.is_file():
+            continue
+        rel = f.relative_to(root).as_posix()
+        if "node_modules" in rel.split("/") or ".git/" in rel or rel.startswith(".git/"):
+            continue
+        keep = (
+            rel == "CLAUDE.md"
+            or rel.startswith(".claude/")
+            or rel.startswith(".cursor/rules/")
+            or rel.startswith(".cursor/skills/")
+            or rel.startswith(".agentmemory/")
+            or rel.startswith("docs/brand-new-documents-20270801/")
+            or rel.startswith("docs/journal/")
+            or rel.startswith("docs/knowledge/")
+            or rel.startswith("docs/design/")
+            or rel == "MEMORY.md"
+            or rel.startswith(".agents/")
+            or (rel.endswith(".md") and "/" not in rel)
+        )
+        if keep:
+            rows.append((rel, f.stat().st_size))
+    return sorted(rows)
+
+print("=== NFC vs NFD ===")
+missing = []
+for rel, sz in walk_interesting(nfc):
+    dest = nfd / rel
+    if dest.exists():
+        status = "OK dest=%d" % dest.stat().st_size
+    else:
+        status = "MISSING"
+        missing.append(rel)
+    print("%6d NFC | %-16s | %s" % (sz, status, rel))
+print("MISSING_COUNT", len(missing))
+for m in missing:
+    print("  MISS", m)
+print("=== all NFC docs/brand-new count ===")
+bn = list((nfc/"docs"/"brand-new-documents-20270801").rglob("*")) if (nfc/"docs"/"brand-new-documents-20270801").exists() else []
+print("nfc brand-new files", sum(1 for f in bn if f.is_file()))
+bn2 = list((nfd/"docs"/"brand-new-documents-20270801").rglob("*")) if (nfd/"docs"/"brand-new-documents-20270801").exists() else []
+print("nfd brand-new files", sum(1 for f in bn2 if f.is_file()))
+'@
+`
+- Needed by: Next orchestration cycle
+- Evidence: .cursor/team/PM_INCIDENT_QUEUE.json
+- ACK: AUTO

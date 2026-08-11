@@ -1,0 +1,21 @@
+Mã tài liệu:
+XEVN/SRS-XEVN-OS-001
+Phiên bản 2.2  ·  Tháng 6/2026  ·  Giai đoạn 1 UAT
+Software Requirements Specification (SRS)
+XeVN
+/
+ECOSYSTEM OS
+Yêu cầu phần mềm — Hệ sinh thái đa phân hệ
+Khách hàng:
+Tập đoàn XeVN Group
+Đơn vị phát triển:
+XeVN Group
+XeVN Group
+© 2026 — All Rights Reserved
+Mã tài liệu:
+XEVN/SRS-XEVN-OS-001
+Phiên bản 2.2  ·  Tháng 6/2026  ·  Giai đoạn 1 UAT
+Mục lục
+Nhấn vào từng mục để di chuyển nhanh đến phần nội dung tương ứng.
+XeVN Group
+XeVN ECOSYSTEM OS — SRS

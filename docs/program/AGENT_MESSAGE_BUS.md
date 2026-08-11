@@ -28464,3 +28464,39 @@ pm_dispatch_hint: QA-HDSD-BF-03-SOFTDEL-RET-01 ? browser U65 soft-delete archive
 - PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
 - Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
 - Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-08-01T01:05:35.059Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-08-01T17:38:19.574Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-08-01T17:48:20.878Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-08-02T07:57:51.333Z | Hook sessionStart (global) -> PM
+- Reminder: read bus tail; on PASS_TO_PM dispatch Task in same session
+- PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
+- Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
+- Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-08-03T11:48:00+07:00 | pm -> all | SESSION READY — await sponsor new work
+- Composer PM online · park prior SoftDel/HDSD/S2 wave as carry (evidence already on disk)
+- SoftDel QC evidence present; HDSD 01A/01B RET + S2 Inbox RET evidence present — intake deferred to next dispatch if residual open
+- pm:idle:check broken (missing scripts/lib/pm-peer-claude-watchdog.mjs) — devops residual when capacity
+
+## 2026-08-03T11:51:00+07:00 | pm -> claude-code | PATH DRIFT INTAKE
+- Claude Code terminal cwd = NFD canonical OK
+- Substantial writes found on NFC shadow `OneDrive\Tài liệu\...\xevn-ecosystem` (no git): BRD 320 lines, SRS/TECH_SPEC/DB, long CLAUDE.md
+- ASCII `Tai lieu` = thin no-git copy — ignore
+- Canonical working tree BRD stubbed to ~40 lines vs HEAD ~190 (dc930c5) — do not lose HEAD
+- SoT lock: docs/program/PATH_CANONICAL_LOCK.md · paste card: docs/program/CLAUDE_CODE_PATH_CARD.txt

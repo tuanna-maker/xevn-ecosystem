@@ -28,9 +28,85 @@
  * What: Jobs/Candidates/Interviews — trigger click setActiveTab ngay; menu portalScope=iframe + data-testid menuitem
  * Why: DEF-E1A-JP-NAV-01 — headless portal=1 không thấy menuitem → không mở JobPostingsTab create
  * must_keep: Tab ids; submenu filter; PermissionGate; WH/DEC/Leave/EmployeeForm/JobTemplates/E1-B Settings
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Wire proposals→YCTD out_of_plan redirect; createPreset for JobRequisitionsTab
+ * Why: BA O5 HOLD · UC-BP-REC-02b
+ * must_keep: REC-01 Định biên · JD soft bind · honesty false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 PO-E2E-SPINE-01-FE-REC-MOUNT
+ * change_mode: FIX
+ * What: Restore missing eager chain JobTemplatesTab + HireEmployeeLinkDialog + CandidatePipelineFunnel + recruitmentHireLink (stash 43c479a UTF-8)
+ * Why: QA R-PO-SPINE01-REC-MOUNT — Vite Failed to resolve JobTemplatesTab → hire-to-pay HP-02/04 blocked
+ * must_keep: Tab ids; shared recruitmentJobTemplatesState; leave/AUTH/EMP/CAT CLOSED; U65 no seed
+ * LastVerified: docs/qa/evidence/po-e2e-spine-01-fe-rec-mount.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A
+ * change_mode: UPGRADE
+ * What: Precision Motion MVP spine — tab primary lock; dashboard title ≥20; sharp KPI strip
+ * Why: ADR §16 · inventory R01–R05/R08/R11–R12/R15 · B4 cấm purple AI · S3=A honesty on reports campaigns
+ * must_keep: Tab ids + submenu deep-link; HireEmployeeLinkDialog wire; JobTemplates mount; U65; no remaster DONE; no Face/ATT invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-rec-a.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A-FIX-01
+ * change_mode: UPGRADE
+ * What: Remove Jobs shell text-xl h2; title now in JobPostingsTab inside rec-jobs-tab-precision (≥20 Montserrat)
+ * Why: QA DEF R04 — computed 17.5px Source Sans (text-xl) vs AC ≥20 Montserrat; harness measures testid h2 first
+ * must_keep: Tab ids · Hire bind · CatalogSearchPicker · ViMoneyInput · WF · R12/R15 dialog chrome PASS · Reports S3=A · U65
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-rec-a-fix.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-PLAN-CONSOLE-FE-01
+ * change_mode: FIX
+ * What: Plan create + plan detail dept maps — keyed Fragment (was <> without key → React unique-key console error)
+ * Why: Sponsor «Kế hoạch tuyển dụng đầy lỗi» — plan open/detail console red on Recruitment
+ * must_keep: plan mutate APIs · định biên SoT · compare/candidate BA wave · no remaster_done · no jd_dynamic_done
+ * LastVerified: docs/qa/evidence/po-hrm-rec-plan-console-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-CMP-FE-01
+ * change_mode: ADD
+ * What: Compare open button HDSD testid (hdsd-rec-compare-open-btn) — So sánh theo YCTD
+ * Why: J-HRM-REC-CMP-01 / UF-REC-CMP-01 harness entry
+ * must_keep: Tab ids · CandidateComparisonDialog mount · FE-01 UV form ownership · U65 · recruitment_uat_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-STAGE-CATALOG-CNS-FE-01
+ * change_mode: ADD
+ * What: Kanban board columns bind GET …/pipeline-stages/effective when EFF>0; soft-empty + CTA when EFF=0
+ * Why: BA-01 VAL-REC-CNS-04 · AC-PLT-REC-STAGE-05k — cấm hardcode starter-six SoT
+ * must_keep: hire hiredOutcomeKey · CandidatesTab EFF · Settings N+1 · IV one-active · recruitment_uat_ready=false
+ * LastVerified: docs/qa/evidence/po-hrm-dynamic-config-platform-rec-stage-catalog-cns-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-01-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Single «Cần tuyển» column (remove ns/dx dual editors); label Định biên synonym;
+ *       CatalogSearchPicker dept/pos keys; wire PUT upsert + spawn-requests feedback; post-2xx refetch
+ * Why: BA O1–O5 · API-01 F-REC-HC-01/05 · AC-REC-HC-01 ALT-03 · VAL-REC-HC-15
+ * must_keep: XBOS WF · JD bind · REC-03 OUT · UF-HRM-12 · honesty false · U65 · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-01-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-01-CLUSTER-FE-01 (re-dispatch)
+ * change_mode: UPGRADE
+ * What: O3 qty_drift AlertDialog + allow_override PUT; O4 vượt HC warn-on-approve; HT snapshot read-only
+ * Why: BA O3/O4 AC · interrupt resume — complete residual FE wiring
+ * must_keep: single need_hire editor · CatalogSearchPicker · spawn feedback · honesty false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Dashboard subtab → Nest GET /recruitment/dashboard* bind; remove cost/VND + FE aggregator KH;
+ *       YCTD drill → JobRequisitionsTab detail (J-HRM-05); Reports O8 via same Nest subset
+ * Why: UC-BP-REC-08 · BA O1–O10 · SOLID 25 §3.1 · U65
+ * must_keep: chrome tabs · Board kanban · sealed REC-01/02 · honesty false · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-08-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-G4-REC-ACCEPT-OFFER-CTA-FE-02
+ * change_mode: FIX
+ * What: resolveRecruitmentTabFromSearch — merge parent portal ?tab= for CC embed deep-link
+ * Why: DEF-REC-EMBED-DEEPLINK-TAB-CANDIDATES — iframe src omits tab; stayed on Dashboard
+ * must_keep: Tab ids · G4 URL seal · U65
  */
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Fragment, useState, useEffect, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,7 +135,6 @@ import {
   Eye,
   CalendarIcon,
   MapPin,
-  DollarSign,
   Building2,
   Trash2,
   GripVertical,
@@ -77,6 +152,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -114,16 +199,29 @@ import {
 // Job postings are managed by JobPostingsTab component with real DB data
 import { KanbanCandidate } from '@/hooks/useKanbanCandidates';
 import { useRecruitmentDashboard } from '@/hooks/useRecruitmentDashboard';
-import { formatRecruitmentCostVnd } from '@/lib/recruitmentDashboardAggregator';
 import { useRecruitmentPlans, RecruitmentPlan } from '@/hooks/useRecruitmentPlans';
 import { useCandidateEvaluations, CandidateEvaluation } from '@/hooks/useCandidateEvaluations';
 import { StatusBadge } from '@/components/common/StatusBadge';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  departmentOptionsFromCatalog,
+  jobTitleOptionsFromCatalog,
+} from '@/lib/catalogSearchPicker';
+import {
+  countOverHeadcountCells,
+  detectQtyDriftInDepartments,
+  emptyHeadcountYear,
+  HRM_HC_KEY_UNKNOWN_TOAST_VI,
+  HRM_HC_OVER_HC_WARN_VI,
+  HRM_HC_QTY_DRIFT_CONFIRM_VI,
+  HRM_HC_QTY_DRIFT_TITLE_VI,
+  withNeedHireAt,
+  type HeadcountMonthCell,
+} from '@/lib/recruitmentPlanHeadcount';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { RecruitmentLineChart } from '@/components/recruitment/RecruitmentLineChart';
-import { RecruitmentPieChart } from '@/components/recruitment/RecruitmentPieChart';
-import { RecruitmentBarChart } from '@/components/recruitment/RecruitmentBarChart';
 import { CampaignsTab } from '@/components/recruitment/CampaignsTab';
 import { CandidateEvaluationDialog } from '@/components/recruitment/CandidateEvaluationDialog';
 import { CandidateComparisonDialog } from '@/components/recruitment/CandidateComparisonDialog';
@@ -133,7 +231,7 @@ import { JobPostingsTab } from '@/components/recruitment/JobPostingsTab';
 import { JobRequisitionsTab } from '@/components/recruitment/JobRequisitionsTab';
 import { JobTemplatesTab } from '@/components/recruitment/JobTemplatesTab';
 import { useJobTemplates } from '@/hooks/useJobTemplates';
-import { CandidatePipelineFunnel } from '@/components/recruitment/CandidatePipelineFunnel';
+import { RecruitmentNestDashboardPanel } from '@/components/recruitment/RecruitmentNestDashboardPanel';
 import { RecruitmentWfSpawnBanner } from '@/components/recruitment/RecruitmentWfSpawnBanner';
 import { CandidateSourceStats } from '@/components/recruitment/CandidateSourceStats';
 import { CandidatesTab } from '@/components/recruitment/CandidatesTab';
@@ -142,10 +240,17 @@ import { RecruitmentReportsTab } from '@/components/recruitment/RecruitmentRepor
 import { HireEmployeeLinkDialog } from '@/components/recruitment/HireEmployeeLinkDialog';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
-import { buildRecruitmentFunnelCounts, funnelStageToKanbanStage } from '@/lib/recruitmentFunnel';
-import type { RecruitmentFunnelStage } from '@/lib/recruitmentFunnel';
+import { resolveRecruitmentTabFromSearch } from '@/lib/recruitmentEmbedDeepLink';
 import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
-import { needsHireEmployeePicker } from '@/lib/recruitmentHireLink';
+import {
+  needsHireEmployeePicker,
+  resolveHireTargetStage,
+} from '@/lib/recruitmentHireLink';
+import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
+import {
+  buildRecPipelineKanbanColumns,
+  REC_PIPELINE_STAGE_EMPTY_CTA_VI,
+} from '@/lib/recPipelineStageCatalog';
 
 // Recruitment plan form schema
 const recruitmentPlanSchema = z.object({
@@ -161,13 +266,31 @@ type RecruitmentPlanFormValues = z.infer<typeof recruitmentPlanSchema>;
 interface PlanPosition {
   id: string;
   name: string;
-  months: { ns: number; dx: number }[];
+  position_key: string;
+  months: HeadcountMonthCell[];
 }
 
 interface PlanDepartment {
   id: string;
   name: string;
+  department_key: string;
   positions: PlanPosition[];
+}
+
+function createEmptyPlanDepartment(id = '1'): PlanDepartment {
+  return {
+    id,
+    name: '',
+    department_key: '',
+    positions: [
+      {
+        id: `${id}-1`,
+        name: '',
+        position_key: '',
+        months: emptyHeadcountYear(),
+      },
+    ],
+  };
 }
 
 // Job posting form schema
@@ -198,13 +321,13 @@ const getTopNavTabs = (t: any) => [
   { id: 'campaigns', label: t('recruitment.tabs.campaigns'), icon: Megaphone },
   { id: 'interviews', label: t('recruitment.tabs.interviews'), icon: Video, hasDropdown: true },
   { id: 'evaluations', label: t('recruitment.tabs.evaluations'), icon: ClipboardCheck },
-  { id: 'plans', label: t('recruitment.tabs.plans'), icon: CalendarClock },
+  { id: 'plans', label: t('recruitment.tabs.plansDinhBien'), icon: CalendarClock },
   { id: 'reports', label: t('recruitment.tabs.reports'), icon: BarChart3 },
 ];
 
 const recTabButtonClass = (isActive: boolean) =>
   cn(
-    'px-2.5 md:px-4 py-2 text-sm font-medium transition-all rounded-lg flex items-center gap-1.5 md:gap-2 whitespace-nowrap group',
+    'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-semibold transition-all group md:gap-2 md:px-4',
     isActive
       ? 'bg-primary text-primary-foreground shadow-sm'
       : 'text-xevn-textSecondary hover:bg-muted hover:text-xevn-text',
@@ -402,7 +525,19 @@ export default function Recruitment() {
   const candidatesMenuItems = getCandidatesMenuItems(t);
   const interviewsMenuItems = getInterviewsMenuItems(t);
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === 'undefined') return 'dashboard';
+    return resolveRecruitmentTabFromSearch(window.location.search) ?? 'dashboard';
+  });
+  /** O5 / REC-02 — open YCTD create with out_of_plan (or in_plan cell) preset. */
+  const [yctdCreatePreset, setYctdCreatePreset] = useState<{
+    headcount_mode?: 'in_plan' | 'out_of_plan';
+    headcount_cell_id?: string;
+    headcount?: number;
+    open?: boolean;
+  } | null>(null);
+  /** UC-BP-REC-08 drill → J-HRM-05 YCTD detail */
+  const [focusRequisitionId, setFocusRequisitionId] = useState<string | null>(null);
   const [activeJobsType, setActiveJobsType] = useState('all');
   const [activeCandidatesType, setActiveCandidatesType] = useState('all');
   const [activeInterviewsType, setActiveInterviewsType] = useState('scheduled');
@@ -416,24 +551,8 @@ export default function Recruitment() {
   }, [activeTab, recruitmentJobTemplatesState.refetch]);
 
   useEffect(() => {
-    const tab = new URLSearchParams(location.search).get('tab')?.trim();
-    if (!tab) return;
-    const allowed = new Set([
-      'dashboard',
-      'requisitions',
-      'jd-library',
-      'jobs',
-      'candidates',
-      'proposals',
-      'campaigns',
-      'interviews',
-      'evaluations',
-      'plans',
-      'reports',
-    ]);
-    if (allowed.has(tab)) {
-      setActiveTab(tab);
-    }
+    const tab = resolveRecruitmentTabFromSearch(location.search);
+    if (tab) setActiveTab(tab);
   }, [location.search]);
   const [selectedCandidate, setSelectedCandidate] = useState<KanbanCandidate | null>(null);
   const [selectedProposal, setSelectedProposal] = useState<typeof staffingProposals[0] | null>(null);
@@ -442,43 +561,66 @@ export default function Recruitment() {
   const [planSpawnMissing, setPlanSpawnMissing] = useState(false);
   const [isJobDialogOpen, setIsJobDialogOpen] = useState(false);
   const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
+  /** Baseline months when opening edit — O3 qty_drift compare. */
+  const [planEditBaseline, setPlanEditBaseline] = useState<PlanDepartment[]>([]);
+  const [qtyDriftConfirmOpen, setQtyDriftConfirmOpen] = useState(false);
+  const [pendingPlanSave, setPendingPlanSave] = useState<{
+    data: RecruitmentPlanFormValues;
+    status: string;
+  } | null>(null);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState(false);
   const [evaluatingCandidate, setEvaluatingCandidate] = useState<KanbanCandidate | null>(null);
   const [hirePendingKanban, setHirePendingKanban] = useState<KanbanCandidate | null>(null);
+  const [hirePendingKanbanStage, setHirePendingKanbanStage] = useState<string | null>(null);
   const [hireSubmitting, setHireSubmitting] = useState(false);
+  const {
+    items: pipelineStageItems,
+    hiredOutcomeKey,
+    catalogCount: pipelineCatalogCount,
+    isLoading: pipelineStagesLoading,
+  } = useRecPipelineStagesEffective();
   const [planDepartments, setPlanDepartments] = useState<PlanDepartment[]>([
-    {
-      id: '1',
-      name: 'Phòng Kinh doanh',
-      positions: [
-        { id: '1-1', name: 'Nhân viên kinh doanh', months: Array(12).fill({ ns: 0, dx: 0 }) },
-      ],
-    },
+    createEmptyPlanDepartment('1'),
   ]);
 
-  const dashboardEnabled = activeTab === 'dashboard';
   const {
-    candidates,
-    candidatesLoading,
-    updateCandidateStage,
-    stats: candidateStats,
-    departmentChartData,
-    monthlyChartData,
-    costSummary,
-    targetHeadcount,
-    loading: dashboardLoading,
-  } = useRecruitmentDashboard(dashboardEnabled);
+    catalogs: planCatalogs,
+    isLoading: planCatalogsLoading,
+    isError: planCatalogsError,
+  } = useSettingsCatalogsOverview({ enabled: activeTab === 'plans' || isPlanDialogOpen });
+  const planPositionOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(planCatalogs ?? []),
+    [planCatalogs],
+  );
+  const planDepartmentOptions = useMemo(
+    () => departmentOptionsFromCatalog(planCatalogs ?? []),
+    [planCatalogs],
+  );
+  const planCatalogEff =
+    planPositionOptions.length > 0 || planDepartmentOptions.length > 0;
 
-  // Fetch recruitment plans from Supabase
+  const dashboardEnabled = activeTab === 'dashboard';
+  const { candidates, updateCandidateStage } = useRecruitmentDashboard(dashboardEnabled);
+
+  // Fetch recruitment plans (Nest physical /recruitment-plans*)
   const {
     plans: recruitmentPlans,
     loading: plansLoading,
     stats: planStats,
     createPlan,
+    upsertPlan,
     updatePlanStatus,
     submitPlanWorkflow,
+    spawnPlanRequests,
   } = useRecruitmentPlans();
+
+  useEffect(() => {
+    if (!selectedPlan) return;
+    const refreshed = recruitmentPlans.find((p) => p.id === selectedPlan.id);
+    if (refreshed) setSelectedPlan(refreshed);
+  }, [recruitmentPlans, selectedPlan?.id]);
 
   const evaluationsTabEnabled = activeTab === 'evaluations';
   const {
@@ -501,8 +643,11 @@ export default function Recruitment() {
     const newStage = destination.droppableId as KanbanCandidate['stage'];
     const row = candidates.find((c) => c.id === candidateId);
 
-    if (needsHireEmployeePicker(newStage, row?.employeeId)) {
-      if (row) setHirePendingKanban(row);
+    if (needsHireEmployeePicker(newStage, row?.employeeId, hiredOutcomeKey)) {
+      if (row) {
+        setHirePendingKanban(row);
+        setHirePendingKanbanStage(newStage);
+      }
       return;
     }
 
@@ -515,8 +660,10 @@ export default function Recruitment() {
     if (!hirePendingKanban) return;
     setHireSubmitting(true);
     try {
-      await updateCandidateStage(hirePendingKanban.id, 'hired', { employeeId });
+      const targetStage = resolveHireTargetStage(hirePendingKanbanStage, hiredOutcomeKey);
+      await updateCandidateStage(hirePendingKanban.id, targetStage, { employeeId });
       setHirePendingKanban(null);
+      setHirePendingKanbanStage(null);
     } finally {
       setHireSubmitting(false);
     }
@@ -559,104 +706,229 @@ export default function Recruitment() {
     form.reset();
   };
 
-  const onSubmitPlan = async (data: RecruitmentPlanFormValues) => {
-    const success = await createPlan({
-      title: data.title,
-      startMonth: parseInt(data.startMonth),
-      endMonth: parseInt(data.endMonth),
-      year: parseInt(data.year),
-      note: data.note,
-      departments: planDepartments.map(dept => ({
-        name: dept.name,
-        positions: dept.positions.map(pos => ({
-          name: pos.name,
-          months: pos.months,
-        })),
+  const resetPlanEditor = () => {
+    setEditingPlanId(null);
+    setPlanEditBaseline([]);
+    setPendingPlanSave(null);
+    setQtyDriftConfirmOpen(false);
+    planForm.reset();
+    setPlanDepartments([createEmptyPlanDepartment('1')]);
+  };
+
+  const assertPlanCatalogKeys = (): boolean => {
+    if (!planCatalogEff) return true;
+    for (const dept of planDepartments) {
+      if (!dept.department_key.trim()) {
+        toast({
+          title: t('messages.error'),
+          description: HRM_HC_KEY_UNKNOWN_TOAST_VI,
+          variant: 'destructive',
+        });
+        return false;
+      }
+      for (const pos of dept.positions) {
+        if (!pos.position_key.trim()) {
+          toast({
+            title: t('messages.error'),
+            description: HRM_HC_KEY_UNKNOWN_TOAST_VI,
+            variant: 'destructive',
+          });
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const buildPlanPayload = (
+    data: RecruitmentPlanFormValues,
+    status: string,
+    allowOverride = false,
+  ) => ({
+    title: data.title,
+    startMonth: parseInt(data.startMonth, 10),
+    endMonth: parseInt(data.endMonth, 10),
+    year: parseInt(data.year, 10),
+    note: data.note,
+    status,
+    allow_override: allowOverride || undefined,
+    departments: planDepartments.map((dept) => ({
+      name:
+        planDepartmentOptions.find((o) => o.value === dept.department_key)?.label ??
+        dept.name,
+      department_key: dept.department_key,
+      positions: dept.positions.map((pos) => ({
+        name:
+          planPositionOptions.find((o) => o.value === pos.position_key)?.label ?? pos.name,
+        position_key: pos.position_key,
+        months: pos.months,
       })),
-    });
-    
+    })),
+  });
+
+  const persistPlan = async (
+    data: RecruitmentPlanFormValues,
+    status: string,
+    allowOverride: boolean,
+  ): Promise<boolean> => {
+    const payload = buildPlanPayload(data, status, allowOverride);
+    const success = editingPlanId
+      ? await upsertPlan(editingPlanId, payload)
+      : await createPlan(payload);
     if (success) {
       setIsPlanDialogOpen(false);
-      planForm.reset();
-      setPlanDepartments([
-        {
-          id: '1',
-          name: 'Phòng Kinh doanh',
-          positions: [
-            { id: '1-1', name: 'Nhân viên kinh doanh', months: Array(12).fill({ ns: 0, dx: 0 }) },
-          ],
-        },
-      ]);
+      resetPlanEditor();
     }
+    return success;
+  };
+
+  const trySavePlan = async (data: RecruitmentPlanFormValues, status: string) => {
+    if (!assertPlanCatalogKeys()) return;
+    if (editingPlanId) {
+      const driftHits = detectQtyDriftInDepartments(planEditBaseline, planDepartments);
+      if (driftHits.length > 0) {
+        setPendingPlanSave({ data, status });
+        setQtyDriftConfirmOpen(true);
+        return;
+      }
+    }
+    await persistPlan(data, status, false);
+  };
+
+  const onSubmitPlan = async (data: RecruitmentPlanFormValues) => {
+    await trySavePlan(data, 'draft');
+  };
+
+  const onSavePlanDraft = async () => {
+    const valid = await planForm.trigger();
+    if (!valid) return;
+    const data = planForm.getValues();
+    await trySavePlan(data, 'draft');
+  };
+
+  const confirmQtyDriftSave = async () => {
+    if (!pendingPlanSave) return;
+    const { data, status } = pendingPlanSave;
+    setQtyDriftConfirmOpen(false);
+    setPendingPlanSave(null);
+    await persistPlan(data, status, true);
+  };
+
+  const openEditPlan = (plan: RecruitmentPlan) => {
+    setEditingPlanId(plan.id);
+    planForm.reset({
+      title: plan.title,
+      startMonth: String(plan.startMonth),
+      endMonth: String(plan.endMonth),
+      year: String(plan.year),
+      note: plan.note ?? '',
+    });
+    const nextDepts =
+      plan.departments.length > 0
+        ? plan.departments.map((dept) => ({
+            id: dept.id,
+            name: dept.name,
+            department_key: dept.department_key ?? '',
+            positions:
+              dept.positions.length > 0
+                ? dept.positions.map((pos) => ({
+                    id: pos.id,
+                    name: pos.name,
+                    position_key: pos.position_key ?? '',
+                    months: pos.months?.length === 12 ? pos.months : emptyHeadcountYear(),
+                  }))
+                : [
+                    {
+                      id: `${dept.id}-1`,
+                      name: '',
+                      position_key: '',
+                      months: emptyHeadcountYear(),
+                    },
+                  ],
+          }))
+        : [createEmptyPlanDepartment('1')];
+    setPlanDepartments(nextDepts);
+    setPlanEditBaseline(
+      nextDepts.map((d) => ({
+        ...d,
+        positions: d.positions.map((p) => ({
+          ...p,
+          months: p.months.map((m) => ({ ...m })),
+        })),
+      })),
+    );
+    setIsPlanDialogOpen(true);
   };
 
   const addDepartment = () => {
     const newId = (planDepartments.length + 1).toString();
-    setPlanDepartments([
-      ...planDepartments,
-      {
-        id: newId,
-        name: '',
-        positions: [
-          { id: `${newId}-1`, name: '', months: Array(12).fill({ ns: 0, dx: 0 }) },
-        ],
-      },
-    ]);
+    setPlanDepartments([...planDepartments, createEmptyPlanDepartment(newId)]);
   };
 
   const addPosition = (deptId: string) => {
-    setPlanDepartments(planDepartments.map(dept => {
-      if (dept.id === deptId) {
+    setPlanDepartments(
+      planDepartments.map((dept) => {
+        if (dept.id !== deptId) return dept;
         const newPosId = `${deptId}-${dept.positions.length + 1}`;
         return {
           ...dept,
           positions: [
             ...dept.positions,
-            { id: newPosId, name: '', months: Array(12).fill({ ns: 0, dx: 0 }) },
+            {
+              id: newPosId,
+              name: '',
+              position_key: '',
+              months: emptyHeadcountYear(),
+            },
           ],
         };
-      }
-      return dept;
-    }));
+      }),
+    );
   };
 
-  const updateDepartmentName = (deptId: string, name: string) => {
-    setPlanDepartments(planDepartments.map(dept =>
-      dept.id === deptId ? { ...dept, name } : dept
-    ));
+  const updateDepartmentKey = (deptId: string, departmentKey: string) => {
+    const label =
+      planDepartmentOptions.find((o) => o.value === departmentKey)?.label ?? '';
+    setPlanDepartments(
+      planDepartments.map((dept) =>
+        dept.id === deptId
+          ? { ...dept, department_key: departmentKey, name: label || dept.name }
+          : dept,
+      ),
+    );
   };
 
-  const updatePositionName = (deptId: string, posId: string, name: string) => {
-    setPlanDepartments(planDepartments.map(dept => {
-      if (dept.id === deptId) {
+  const updatePositionKey = (deptId: string, posId: string, positionKey: string) => {
+    const label = planPositionOptions.find((o) => o.value === positionKey)?.label ?? '';
+    setPlanDepartments(
+      planDepartments.map((dept) => {
+        if (dept.id !== deptId) return dept;
         return {
           ...dept,
-          positions: dept.positions.map(pos =>
-            pos.id === posId ? { ...pos, name } : pos
+          positions: dept.positions.map((pos) =>
+            pos.id === posId
+              ? { ...pos, position_key: positionKey, name: label || pos.name }
+              : pos,
           ),
         };
-      }
-      return dept;
-    }));
+      }),
+    );
   };
 
-  const updateMonthValue = (deptId: string, posId: string, monthIdx: number, field: 'ns' | 'dx', value: number) => {
-    setPlanDepartments(planDepartments.map(dept => {
-      if (dept.id === deptId) {
+  const updateMonthNeedHire = (deptId: string, posId: string, monthIdx: number, value: number) => {
+    setPlanDepartments(
+      planDepartments.map((dept) => {
+        if (dept.id !== deptId) return dept;
         return {
           ...dept,
-          positions: dept.positions.map(pos => {
-            if (pos.id === posId) {
-              const newMonths = [...pos.months];
-              newMonths[monthIdx] = { ...newMonths[monthIdx], [field]: value };
-              return { ...pos, months: newMonths };
-            }
-            return pos;
-          }),
+          positions: dept.positions.map((pos) =>
+            pos.id === posId
+              ? { ...pos, months: withNeedHireAt(pos.months, monthIdx, value) }
+              : pos,
+          ),
         };
-      }
-      return dept;
-    }));
+      }),
+    );
   };
 
   const removeDepartment = (deptId: string) => {
@@ -687,26 +959,16 @@ export default function Recruitment() {
     return months;
   };
 
-  const stages = [
-    { id: 'applied', label: t('recruitment.applied'), color: 'bg-muted' },
-    { id: 'screening', label: t('recruitment.screening'), color: 'bg-primary/20' },
-    { id: 'interview', label: t('recruitment.interview'), color: 'bg-accent/20' },
-    { id: 'offer', label: t('recruitment.offer'), color: 'bg-warning/20' },
-    { id: 'hired', label: t('recruitment.hired'), color: 'bg-success/20' },
-    { id: 'rejected', label: t('recruitment.rejected', { defaultValue: 'Từ chối' }), color: 'bg-destructive/20' },
-  ];
+  /** VAL-REC-CNS-04 — EFF>0 = Nest columns (incl. N+1); EFF=0 = soft-empty (no invent starter-six SoT). */
+  const stages = useMemo(
+    () => buildRecPipelineKanbanColumns(pipelineStageItems),
+    [pipelineStageItems],
+  );
+  const kanbanSoftEmpty =
+    !pipelineStagesLoading && pipelineCatalogCount === 0 && stages.length === 0;
 
   const getCandidatesByStage = (stage: string) =>
     candidates.filter((c) => c.stage === stage);
-
-  const funnelCounts = buildRecruitmentFunnelCounts(
-    candidates.map((c) => ({ stage: c.stage })),
-  );
-
-  const onFunnelStageClick = (stage: RecruitmentFunnelStage) => {
-    setActiveTab('candidates');
-    setActiveCandidatesType(funnelStageToKanbanStage(stage) === 'applied' ? 'new' : funnelStageToKanbanStage(stage));
-  };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => (
@@ -906,11 +1168,13 @@ export default function Recruitment() {
         >
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-4">
+          <div className="space-y-4" data-testid="rec-dashboard-tab-precision">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-lg font-semibold tracking-tight md:text-xl">{t('recruitment.dashboardTitle')}</h2>
+              <h2 className="font-display text-[20px] font-bold tracking-tight text-xevn-text">
+                {t('recruitment.dashboardTitle')}
+              </h2>
               <PermissionGate module="recruitment" action="create">
-                <Button size="sm" className="shrink-0">
+                <Button size="sm" className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
                   <Plus className="mr-1.5 h-3.5 w-3.5" />
                   {t('recruitment.createJobPosting')}
                 </Button>
@@ -925,250 +1189,129 @@ export default function Recruitment() {
               </TabsList>
 
               <TabsContent value="dashboard" className="mt-3 space-y-3">
-                <CandidatePipelineFunnel
-                  counts={funnelCounts}
-                  loading={dashboardLoading}
-                  title="Pipeline ứng viên (6 giai đoạn)"
-                  onStageClick={onFunnelStageClick}
+                <RecruitmentNestDashboardPanel
+                  onOpenYctd={(requisitionId) => {
+                    setFocusRequisitionId(requisitionId);
+                    setActiveTab('requisitions');
+                  }}
+                  onOpenPlans={() => setActiveTab('plans')}
                 />
-
-                {/*
-                  Bố cục kiểu analytics (Stripe / GA): KPI = một dải mỏng; metric cần nhãn dài = full width;
-                  biểu đồ cần chiều ngang (bar ngang) = full width; pie + feed = một hàng 2 cột.
-                */}
-                <Card className="overflow-hidden shadow-sm">
-                  <CardContent className="p-0">
-                    <div className="grid grid-cols-2 divide-x divide-border sm:grid-cols-4">
-                      {(
-                        [
-                          {
-                            label: t('recruitment.target'),
-                            value: targetHeadcount > 0 ? String(targetHeadcount) : t('common.noData'),
-                          },
-                          {
-                            label: t('recruitment.cvApplied'),
-                            value: String(candidateStats.total),
-                          },
-                          {
-                            label: t('recruitment.interviewed'),
-                            value: String(candidateStats.interview + candidateStats.offer + candidateStats.hired),
-                          },
-                          {
-                            label: t('recruitment.hired'),
-                            value: String(candidateStats.hired),
-                          },
-                        ] as const
-                      ).map((k) => (
-                        <div
-                          key={k.label}
-                          className="relative min-w-0 px-2.5 py-2 sm:px-3 sm:py-2.5 bg-xevn-background"
-                        >
-                          <span
-                            className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-primary sm:top-2.5 sm:bottom-2.5"
-                            aria-hidden
-                          />
-                          <div className="pl-2">
-                            <p className="line-clamp-2 text-sm font-medium leading-tight text-xevn-textSecondary sm:line-clamp-1">
-                              {k.label}
-                            </p>
-                            <p className="text-lg font-bold tabular-nums leading-tight text-xevn-text sm:text-xl">
-                              {k.value}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {costSummary.hasData ? (
-                  <Card className="shadow-sm">
-                    <CardContent className="p-0">
-                      <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-                        <div className="flex gap-3 px-4 py-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-xevn-neutral/15">
-                            <DollarSign className="h-4 w-4 text-xevn-textSecondary" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium leading-snug text-xevn-textSecondary">
-                              {t('recruitment.avgCostPerCandidate')}
-                            </p>
-                            <p className="text-base font-bold tabular-nums text-xevn-text sm:text-lg">
-                              {formatRecruitmentCostVnd(costSummary.avgCostPerCandidate) ?? t('common.noData')}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex gap-3 px-4 py-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-xevn-neutral/15">
-                            <DollarSign className="h-4 w-4 text-xevn-textSecondary" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium leading-snug text-xevn-textSecondary">
-                              {t('recruitment.costTopCV')}
-                            </p>
-                            <p className="text-base font-bold tabular-nums text-xevn-text sm:text-lg">
-                              {formatRecruitmentCostVnd(costSummary.costTopCV) ?? t('common.noData')}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex gap-3 px-4 py-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-xevn-neutral/15">
-                            <DollarSign className="h-4 w-4 text-xevn-textSecondary" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium leading-snug text-xevn-textSecondary">
-                              {t('recruitment.cost24h')}
-                            </p>
-                            <p className="text-base font-bold tabular-nums text-xevn-text sm:text-lg">
-                              {formatRecruitmentCostVnd(costSummary.cost24h) ?? t('common.noData')}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card className="shadow-sm">
-                    <CardContent className="flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground">
-                      <DollarSign className="h-4 w-4 shrink-0" />
-                      <span>{t('common.noData')}</span>
-                    </CardContent>
-                  </Card>
-                )}
-
-                <Card className="shadow-sm">
-                  <CardHeader className="space-y-0 px-4 py-2 pb-0">
-                    <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChart')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-3 pb-3 pt-1 sm:px-4">
-                    <RecruitmentLineChart data={monthlyChartData} loading={dashboardLoading} />
-                  </CardContent>
-                </Card>
-
-                <div className="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-2">
-                  <Card className="min-w-0 shadow-sm">
-                    <CardHeader className="space-y-0 px-4 py-2 pb-0">
-                      <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChartByStatus')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-3 pb-3 pt-1 sm:px-4">
-                      <RecruitmentPieChart candidates={candidates} />
-                    </CardContent>
-                  </Card>
-
-                  <Card className="min-w-0 shadow-sm">
-                    <CardHeader className="px-4 py-2">
-                      <CardTitle className="text-sm font-semibold">{t('recruitment.recentActivity')}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-3 pt-0">
-                      <div className="divide-y divide-border">
-                        {candidates.slice(0, 5).map((candidate) => (
-                          <div key={candidate.id} className="flex items-center gap-3 py-2.5 first:pt-0">
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                              {candidate.fullName.split(' ').pop()?.charAt(0)}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-medium">{candidate.fullName}</p>
-                              <p className="truncate text-xs text-muted-foreground">
-                                {t('recruitment.appliedForPosition', { position: candidate.position })}
-                              </p>
-                            </div>
-                            <div className="shrink-0 text-xs text-muted-foreground">
-                              {new Date(candidate.appliedDate).toLocaleDateString('vi-VN')}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card className="min-w-0 shadow-sm">
-                  <CardHeader className="space-y-0 px-4 py-2 pb-0">
-                    <CardTitle className="text-sm font-semibold">{t('recruitment.recruitmentChartByDept')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="min-w-0 px-2 pb-3 pt-1 sm:px-4">
-                    <RecruitmentBarChart data={departmentChartData} loading={dashboardLoading} />
-                  </CardContent>
-                </Card>
               </TabsContent>
 
               <TabsContent value="board" className="mt-4">
-                {/* Kanban Board with Drag and Drop */}
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-                    {stages.map((stage) => (
-                      <div key={stage.id} className="kanban-column">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-semibold text-sm">{stage.label}</h3>
-                          <Badge variant="secondary" className="text-xs">
-                            {getCandidatesByStage(stage.id).length}
-                          </Badge>
-                        </div>
-                        <Droppable droppableId={stage.id}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.droppableProps}
-                              className={cn(
-                                "space-y-2 min-h-[200px] p-2 rounded-lg transition-colors",
-                                snapshot.isDraggingOver ? "bg-primary/10" : "bg-transparent"
-                              )}
-                            >
-                              {getCandidatesByStage(stage.id).map((candidate, index) => (
-                                <Draggable
-                                  key={candidate.id}
-                                  draggableId={candidate.id}
-                                  index={index}
-                                  isDragDisabled={isRecruitmentWorkflowLocked(
-                                    candidate.workflowInstanceId,
-                                    candidate.stage,
-                                    'candidate',
-                                  )}
-                                >
-                                  {(provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      className={cn(
-                                        "kanban-card group",
-                                        snapshot.isDragging && "shadow-lg ring-2 ring-primary"
-                                      )}
-                                      onClick={() => setSelectedCandidate(candidate)}
-                                    >
-                                      <div className="flex items-start justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                          <div
-                                            {...provided.dragHandleProps}
-                                            className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-                                          >
-                                            <GripVertical className="w-4 h-4 text-muted-foreground" />
-                                          </div>
-                                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs">
-                                            {candidate.fullName.split(' ').pop()?.charAt(0)}
-                                          </div>
-                                        </div>
-                                        <div className="flex">{renderStars(candidate.rating)}</div>
-                                      </div>
-                                      <p className="font-medium text-sm mb-1">{candidate.fullName}</p>
-                                      <p className="text-xs text-muted-foreground mb-2">
-                                        {candidate.position}
-                                      </p>
-                                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                        <span>{candidate.source}</span>
-                                        <span>{new Date(candidate.appliedDate).toLocaleDateString('vi-VN')}</span>
-                                      </div>
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      </div>
-                    ))}
+                {/* Kanban Board — VAL-REC-CNS-04 Nest EFF columns when catalog >0 */}
+                {pipelineStagesLoading ? (
+                  <p
+                    className="text-sm text-xevn-textSecondary py-8 text-center"
+                    data-testid="rec-kanban-stages-loading"
+                  >
+                    Đang tải danh mục giai đoạn pipeline…
+                  </p>
+                ) : kanbanSoftEmpty ? (
+                  <div
+                    className="rounded-card border border-dashed border-xevn-border bg-muted/30 px-4 py-8 text-center space-y-3"
+                    data-testid="rec-kanban-stages-empty"
+                  >
+                    <p className="text-sm text-xevn-textSecondary">{REC_PIPELINE_STAGE_EMPTY_CTA_VI}</p>
+                    <Link
+                      to="/settings"
+                      className="inline-block text-sm font-medium text-primary underline"
+                      data-testid="rec-kanban-stages-empty-cta"
+                    >
+                      Mở Cài đặt → Giai đoạn REC
+                    </Link>
                   </div>
-                </DragDropContext>
+                ) : (
+                  <DragDropContext onDragEnd={handleDragEnd}>
+                    <div
+                      className="flex gap-3 overflow-x-auto pb-2"
+                      data-testid="rec-kanban-board"
+                    >
+                      {stages.map((stage) => (
+                        <div
+                          key={stage.id}
+                          className="kanban-column min-w-[160px] w-[180px] flex-shrink-0"
+                        >
+                          <div className="flex items-center justify-between mb-3 gap-2">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span
+                                className={cn('inline-block h-2.5 w-2.5 rounded-sm shrink-0', stage.color)}
+                                aria-hidden
+                              />
+                              <h3 className="font-semibold text-sm truncate" title={stage.label}>
+                                {stage.label}
+                              </h3>
+                            </div>
+                            <Badge variant="secondary" className="text-xs shrink-0">
+                              {getCandidatesByStage(stage.id).length}
+                            </Badge>
+                          </div>
+                          <Droppable droppableId={stage.id}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={cn(
+                                  "space-y-2 min-h-[200px] p-2 rounded-lg transition-colors",
+                                  snapshot.isDraggingOver ? "bg-primary/10" : "bg-transparent"
+                                )}
+                              >
+                                {getCandidatesByStage(stage.id).map((candidate, index) => (
+                                  <Draggable
+                                    key={candidate.id}
+                                    draggableId={candidate.id}
+                                    index={index}
+                                    isDragDisabled={isRecruitmentWorkflowLocked(
+                                      candidate.workflowInstanceId,
+                                      candidate.stage,
+                                      'candidate',
+                                    )}
+                                  >
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        className={cn(
+                                          "kanban-card group",
+                                          snapshot.isDragging && "shadow-lg ring-2 ring-primary"
+                                        )}
+                                        onClick={() => setSelectedCandidate(candidate)}
+                                      >
+                                        <div className="flex items-start justify-between mb-2">
+                                          <div className="flex items-center gap-2">
+                                            <div
+                                              {...provided.dragHandleProps}
+                                              className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                              <GripVertical className="w-4 h-4 text-muted-foreground" />
+                                            </div>
+                                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs">
+                                              {candidate.fullName.split(' ').pop()?.charAt(0)}
+                                            </div>
+                                          </div>
+                                          <div className="flex">{renderStars(candidate.rating)}</div>
+                                        </div>
+                                        <p className="font-medium text-sm mb-1">{candidate.fullName}</p>
+                                        <p className="text-xs text-muted-foreground mb-2">
+                                          {candidate.position}
+                                        </p>
+                                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                          <span>{candidate.source}</span>
+                                          <span>{new Date(candidate.appliedDate).toLocaleDateString('vi-VN')}</span>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </div>
+                      ))}
+                    </div>
+                  </DragDropContext>
+                )}
               </TabsContent>
             </Tabs>
           </div>
@@ -1181,6 +1324,10 @@ export default function Recruitment() {
             jobTemplatesLoading={recruitmentJobTemplatesState.loading}
             refetchJobTemplates={recruitmentJobTemplatesState.refetch}
             hydrateJobTemplates={recruitmentJobTemplatesState.hydrateTemplates}
+            createPreset={yctdCreatePreset ?? undefined}
+            onCreatePresetConsumed={() => setYctdCreatePreset(null)}
+            focusRequisitionId={focusRequisitionId}
+            onFocusRequisitionConsumed={() => setFocusRequisitionId(null)}
           />
         )}
 
@@ -1188,19 +1335,21 @@ export default function Recruitment() {
           <JobTemplatesTab sharedTemplates={recruitmentJobTemplatesState} />
         )}
 
-        {/* Jobs Tab */}
-        {activeTab === 'jobs' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold mb-4">{t('recruitment.jobPostings')}</h2>
-            <JobPostingsTab />
-          </div>
-        )}
+        {/* Jobs Tab — page title lives in JobPostingsTab (rec-jobs-tab-precision) for QA measure parity */}
+        {activeTab === 'jobs' && <JobPostingsTab />}
 
 
         {activeTab === 'candidates' && <CandidatesTab />}
 
-        {/* Proposals Tab */}
-        {activeTab === 'proposals' && <HeadcountProposalTab />}
+        {/* Proposals Tab — O5 HOLD ≠ YCTD SoT; CTA redirect only */}
+        {activeTab === 'proposals' && (
+          <HeadcountProposalTab
+            onCreateOutOfPlanYctd={() => {
+              setYctdCreatePreset({ headcount_mode: 'out_of_plan', open: true });
+              setActiveTab('requisitions');
+            }}
+          />
+        )}
 
         {/* Campaigns Tab */}
         {activeTab === 'campaigns' && <CampaignsTab />}
@@ -1215,7 +1364,10 @@ export default function Recruitment() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">{t('recruitment.evaluateCandidate')}</h2>
-              <Button onClick={() => setIsComparisonDialogOpen(true)}>
+              <Button
+                onClick={() => setIsComparisonDialogOpen(true)}
+                data-testid="hdsd-rec-compare-open-btn"
+              >
                 <BarChart3 className="w-4 h-4 mr-2" />
                 {t('recruitment.compareCandidates')}
               </Button>
@@ -1244,7 +1396,7 @@ export default function Recruitment() {
               <Card>
                 <CardContent className="pt-4">
                   <p className="text-sm text-muted-foreground">{t('recruitment.pendingReview')}</p>
-                  <p className="text-3xl font-bold text-orange-500">{evaluationStats.pending + evaluationStats.hold}</p>
+                  <p className="text-3xl font-bold text-warning">{evaluationStats.pending + evaluationStats.hold}</p>
                 </CardContent>
               </Card>
             </div>
@@ -1339,11 +1491,28 @@ export default function Recruitment() {
             {!selectedPlan ? (
               <>
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold">{t('recruitment.recruitmentPlans')}</h2>
+                  <h2 className="text-xl font-bold" data-testid="rec-hc-plan-title">
+                    {t('recruitment.recruitmentPlansDinhBien')}
+                  </h2>
                   <PermissionGate module="recruitment" action="create">
-                    <Dialog open={isPlanDialogOpen} onOpenChange={setIsPlanDialogOpen}>
+                    <Dialog
+                      open={isPlanDialogOpen}
+                      onOpenChange={(open) => {
+                        setIsPlanDialogOpen(open);
+                        if (!open) resetPlanEditor();
+                        if (open && !editingPlanId) {
+                          resetPlanEditor();
+                        }
+                      }}
+                    >
                       <DialogTrigger asChild>
-                        <Button>
+                        <Button
+                          data-testid="rec-hc-create-plan-btn"
+                          onClick={() => {
+                            setEditingPlanId(null);
+                            resetPlanEditor();
+                          }}
+                        >
                           <Plus className="w-4 h-4 mr-2" />
                            {t('recruitment.createPlan')}
                         </Button>
@@ -1352,7 +1521,9 @@ export default function Recruitment() {
                       <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                           <CalendarClock className="w-5 h-5 text-primary" />
-                          {t('recruitment.createNewPlan')}
+                          {editingPlanId
+                            ? t('recruitment.editPlanDinhBien')
+                            : t('recruitment.createNewPlanDinhBien')}
                         </DialogTitle>
                       </DialogHeader>
                       <Form {...planForm}>
@@ -1459,35 +1630,42 @@ export default function Recruitment() {
                             </div>
                           </div>
 
-                          {/* Headcount Table */}
+                          {/* Headcount Table — single Cần tuyển (O1 · ALT-03) */}
                           <div className="flex-1 overflow-hidden py-4">
                             <div className="flex items-center justify-between mb-3">
                               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                                {t('recruitment.headcountTableTitle')}
+                                {t('recruitment.headcountTableTitleNeedHire')}
                               </h3>
                               <Button type="button" variant="outline" size="sm" onClick={addDepartment}>
                                 <Plus className="w-4 h-4 mr-1" />
                                 {t('recruitment.addDepartment')}
                               </Button>
                             </div>
+                            {planCatalogEff ? null : (
+                              <p className="mb-2 text-xs text-muted-foreground">
+                                Danh mục phòng ban / chức danh trống —{' '}
+                                <Link to="/settings" className="text-primary underline font-medium">
+                                  mở Cài đặt → Danh mục nghiệp vụ
+                                </Link>
+                                . Khi EFF&gt;0 bắt buộc chọn mã catalog (không free-text SoT).
+                              </p>
+                            )}
 
                             <ScrollArea className="h-[350px] border rounded-lg">
-                              <Table>
+                              <Table data-testid="rec-hc-plan-grid">
                                 <TableHeader className="sticky top-0 bg-background z-10">
                                   <TableRow className="bg-muted/50">
-                                    <TableHead className="min-w-[200px] sticky left-0 bg-muted/50">
+                                    <TableHead className="min-w-[220px] sticky left-0 bg-muted/50">
                                        <div>{t('recruitment.department')} / {t('recruitment.position')}</div>
-                                      <div className="flex gap-4 text-xs font-normal text-muted-foreground mt-1">
-                                        <span>{t('recruitment.nsLabel')}</span>
-                                        <span className="text-orange-500">{t('recruitment.dxLabel')}</span>
+                                      <div className="text-xs font-normal text-warning mt-1">
+                                        {t('recruitment.needHireLabel')}
                                       </div>
                                     </TableHead>
                                     {getSelectedMonths().map((month) => (
-                                      <TableHead key={month} className="text-center min-w-[100px]">
+                                      <TableHead key={month} className="text-center min-w-[72px]">
                                         <div>{t('recruitment.month', { num: month })}</div>
-                                        <div className="flex justify-center gap-3 text-xs font-normal mt-1">
-                                          <span className="text-muted-foreground">{t('recruitment.ns')}</span>
-                                          <span className="text-orange-500">{t('recruitment.dx')}</span>
+                                        <div className="text-xs font-normal text-warning mt-1">
+                                          {t('recruitment.needHireShort')}
                                         </div>
                                       </TableHead>
                                     ))}
@@ -1496,16 +1674,30 @@ export default function Recruitment() {
                                 </TableHeader>
                                 <TableBody>
                                   {planDepartments.map((dept) => (
-                                    <>
-                                      <TableRow key={`dept-${dept.id}`} className="bg-muted/30">
+                                    <Fragment key={dept.id}>
+                                      <TableRow className="bg-muted/30">
                                         <TableCell className="sticky left-0 bg-muted/30">
-                                          <div className="flex items-center gap-2">
-                                            <Building2 className="w-4 h-4 text-muted-foreground" />
-                                            <Input
-                                              value={dept.name}
-                                              onChange={(e) => updateDepartmentName(dept.id, e.target.value)}
+                                          <div className="flex items-center gap-2 min-w-[200px]">
+                                            <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
+                                            <CatalogSearchPicker
+                                              options={planDepartmentOptions}
+                                              value={dept.department_key}
+                                              onValueChange={(v) => updateDepartmentKey(dept.id, v)}
                                               placeholder={t('recruitment.departmentName')}
-                                              className="h-8 w-[180px] font-semibold"
+                                              loading={planCatalogsLoading}
+                                              errorText={
+                                                planCatalogsError
+                                                  ? t('settings.catalogs.loadError')
+                                                  : undefined
+                                              }
+                                              emptyHint={
+                                                <Link
+                                                  to="/settings"
+                                                  className="text-primary underline text-xs font-medium"
+                                                >
+                                                  Mở Cài đặt → Danh mục
+                                                </Link>
+                                              }
                                             />
                                           </div>
                                         </TableCell>
@@ -1528,35 +1720,72 @@ export default function Recruitment() {
                                         </TableCell>
                                       </TableRow>
                                       {dept.positions.map((pos) => (
-                                        <TableRow key={`pos-${pos.id}`}>
+                                        <TableRow key={pos.id}>
                                           <TableCell className="pl-8 sticky left-0 bg-background">
-                                            <Input
-                                              value={pos.name}
-                                              onChange={(e) => updatePositionName(dept.id, pos.id, e.target.value)}
+                                            <CatalogSearchPicker
+                                              options={planPositionOptions}
+                                              value={pos.position_key}
+                                              onValueChange={(v) =>
+                                                updatePositionKey(dept.id, pos.id, v)
+                                              }
                                               placeholder={t('recruitment.positionName')}
-                                              className="h-8 w-[180px]"
+                                              loading={planCatalogsLoading}
+                                              errorText={
+                                                planCatalogsError
+                                                  ? t('settings.catalogs.loadError')
+                                                  : undefined
+                                              }
+                                              emptyHint={
+                                                <Link
+                                                  to="/settings"
+                                                  className="text-primary underline text-xs font-medium"
+                                                >
+                                                  Mở Cài đặt → Danh mục
+                                                </Link>
+                                              }
                                             />
                                           </TableCell>
-                                          {getSelectedMonths().map((month, monthIdx) => (
-                                            <TableCell key={month} className="text-center">
-                                              <div className="flex justify-center gap-1">
-                                                <Input
-                                                  type="number"
-                                                  min={0}
-                                                  value={pos.months[monthIdx]?.ns || 0}
-                                                  onChange={(e) => updateMonthValue(dept.id, pos.id, monthIdx, 'ns', parseInt(e.target.value) || 0)}
-                                                  className="h-7 w-12 text-center px-1"
-                                                />
-                                                <Input
-                                                  type="number"
-                                                  min={0}
-                                                  value={pos.months[monthIdx]?.dx || 0}
-                                                  onChange={(e) => updateMonthValue(dept.id, pos.id, monthIdx, 'dx', parseInt(e.target.value) || 0)}
-                                                  className="h-7 w-12 text-center px-1 border-orange-300 focus:ring-orange-500"
-                                                />
-                                              </div>
-                                            </TableCell>
-                                          ))}
+                                          {getSelectedMonths().map((month) => {
+                                            const monthIdx = month - 1;
+                                            const cell = pos.months[monthIdx];
+                                            const needHire = cell?.need_hire ?? 0;
+                                            const currentHc = cell?.headcount_current ?? 0;
+                                            const overHc = needHire >= 1 && needHire > currentHc;
+                                            return (
+                                              <TableCell key={month} className="text-center">
+                                                <div className="flex flex-col items-center gap-0.5">
+                                                  <Input
+                                                    type="number"
+                                                    min={0}
+                                                    data-testid={`rec-hc-need-hire-${dept.id}-${pos.id}-m${month}`}
+                                                    value={needHire}
+                                                    onChange={(e) =>
+                                                      updateMonthNeedHire(
+                                                        dept.id,
+                                                        pos.id,
+                                                        monthIdx,
+                                                        parseInt(e.target.value, 10) || 0,
+                                                      )
+                                                    }
+                                                    className={cn(
+                                                      'h-7 w-14 text-center px-1 mx-auto border-orange-300 focus:ring-orange-500',
+                                                      overHc && 'border-warning',
+                                                    )}
+                                                    aria-label={`Cần tuyển tháng ${month}`}
+                                                  />
+                                                  {currentHc > 0 ? (
+                                                    <span
+                                                      className="text-[10px] text-muted-foreground"
+                                                      title="Hiện tại (snapshot — chỉ đọc)"
+                                                      data-testid={`rec-hc-current-ro-${dept.id}-${pos.id}-m${month}`}
+                                                    >
+                                                      HT {currentHc}
+                                                    </span>
+                                                  ) : null}
+                                                </div>
+                                              </TableCell>
+                                            );
+                                          })}
                                           <TableCell>
                                             <Button
                                               type="button"
@@ -1585,7 +1814,7 @@ export default function Recruitment() {
                                           </Button>
                                         </TableCell>
                                       </TableRow>
-                                    </>
+                                    </Fragment>
                                   ))}
                                 </TableBody>
                               </Table>
@@ -1600,17 +1829,15 @@ export default function Recruitment() {
                             <Button
                               type="button"
                               variant="outline"
+                              data-testid="rec-hc-save-draft-btn"
                               onClick={() => {
-                                toast({
-                                  title: t('recruitment.savedDraft'),
-                                  description: t('recruitment.planSavedDraft'),
-                                });
+                                void onSavePlanDraft();
                               }}
                             >
                               {t('recruitment.saveDraft')}
                             </Button>
-                            <Button type="submit">
-                              {t('recruitment.createPlan')}
+                            <Button type="submit" data-testid="rec-hc-save-plan-btn">
+                              {editingPlanId ? t('recruitment.savePlan') : t('recruitment.createPlan')}
                             </Button>
                           </div>
                         </form>
@@ -1638,7 +1865,7 @@ export default function Recruitment() {
                   <Card>
                     <CardContent className="pt-4">
                       <p className="text-sm text-muted-foreground">{t('recruitment.pending')}</p>
-                      <p className="text-3xl font-bold text-orange-500">
+                      <p className="text-3xl font-bold text-warning">
                         {planStats.pending}
                       </p>
                     </CardContent>
@@ -1676,9 +1903,9 @@ export default function Recruitment() {
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-medium">
-                                  {plan.creator.charAt(0)}
+                                  {(plan.creator || '?').charAt(0)}
                                 </div>
-                                {plan.creator}
+                                {plan.creator || '—'}
                               </div>
                             </TableCell>
                             <TableCell>{plan.createdDate}</TableCell>
@@ -1755,7 +1982,7 @@ export default function Recruitment() {
                     <div>
                       <h3 className="font-semibold mb-4 flex items-center gap-2">
                         <FileText className="w-4 h-4" />
-                         {t('recruitment.proposalContent')}
+                         {t('recruitment.dinhBienContent')}
                       </h3>
 
                       {selectedPlan.departments.length === 0 ? (
@@ -1765,20 +1992,20 @@ export default function Recruitment() {
                         </div>
                       ) : (
                         <ScrollArea className="w-full">
-                          <Table>
+                          <Table data-testid="rec-hc-plan-detail-grid">
                             <TableHeader>
                               <TableRow className="bg-muted/50">
                                 <TableHead className="min-w-[200px]">
                                    <div>{t('recruitment.department')}</div>
-                                  <div className="text-xs font-normal text-muted-foreground mt-1">{t('recruitment.nsLabel')}</div>
-                                  <div className="text-xs font-normal text-muted-foreground">{t('recruitment.dxLabel')}</div>
+                                  <div className="text-xs font-normal text-warning mt-1">
+                                    {t('recruitment.needHireLabel')}
+                                  </div>
                                 </TableHead>
-                                {(selectedPlan.departments[0]?.positions[0]?.months || []).map((_, i) => (
-                                  <TableHead key={i} className="text-center min-w-[90px]">
-                                    <div>{t('recruitment.month', { num: selectedPlan.startMonth + i })}</div>
-                                    <div className="flex justify-center gap-3 text-xs font-normal mt-1">
-                                      <span className="text-muted-foreground">{t('recruitment.ns')}</span>
-                                      <span className="text-orange-500">{t('recruitment.dx')}</span>
+                                {(selectedPlan.departments[0]?.positions[0]?.months || []).map((m, i) => (
+                                  <TableHead key={m.month || i} className="text-center min-w-[72px]">
+                                    <div>{t('recruitment.month', { num: m.month || selectedPlan.startMonth + i })}</div>
+                                    <div className="text-xs font-normal text-warning mt-1">
+                                      {t('recruitment.needHireShort')}
                                     </div>
                                   </TableHead>
                                 ))}
@@ -1786,30 +2013,52 @@ export default function Recruitment() {
                             </TableHeader>
                             <TableBody>
                               {selectedPlan.departments.map((dept, deptIdx) => (
-                                <>
-                                  <TableRow key={`dept-${deptIdx}`} className="bg-muted/30">
+                                <Fragment key={dept.id || `dept-${deptIdx}`}>
+                                  <TableRow className="bg-muted/30">
                                     <TableCell colSpan={(selectedPlan.departments[0]?.positions[0]?.months.length || 0) + 1} className="font-semibold">
                                       {dept.name}
+                                      {dept.department_key ? (
+                                        <span className="ml-2 text-xs font-normal text-muted-foreground">
+                                          ({dept.department_key})
+                                        </span>
+                                      ) : null}
                                     </TableCell>
                                   </TableRow>
                                   {dept.positions.map((pos, posIdx) => (
-                                    <TableRow key={`pos-${deptIdx}-${posIdx}`}>
-                                      <TableCell className="pl-8">{pos.name}</TableCell>
-                                      {pos.months.map((month, monthIdx) => (
-                                        <TableCell key={monthIdx} className="text-center">
-                                          <div className="flex justify-center gap-4">
-                                            <span className={month.ns > 0 ? 'text-foreground' : 'text-muted-foreground'}>
-                                              {month.ns}
+                                    <TableRow key={pos.id || `pos-${deptIdx}-${posIdx}`}>
+                                      <TableCell className="pl-8">
+                                        {pos.name}
+                                        {pos.position_key ? (
+                                          <span className="ml-2 text-xs text-muted-foreground">
+                                            ({pos.position_key})
+                                          </span>
+                                        ) : null}
+                                      </TableCell>
+                                      {pos.months.map((month, monthIdx) => {
+                                        const locked =
+                                          selectedPlan.status === 'approved' &&
+                                          month.lifecycle_status === 'need_hire_approved';
+                                        const needHire = month.need_hire ?? 0;
+                                        return (
+                                          <TableCell key={month.month || monthIdx} className="text-center">
+                                            <span
+                                              className={
+                                                needHire > 0
+                                                  ? locked
+                                                    ? 'text-success font-semibold'
+                                                    : 'text-warning font-medium'
+                                                  : 'text-muted-foreground'
+                                              }
+                                              title={locked ? 'Ô Cần tuyển đã khóa sau duyệt' : undefined}
+                                            >
+                                              {needHire}
                                             </span>
-                                            <span className={month.dx > 0 ? 'text-orange-500 font-medium' : 'text-muted-foreground'}>
-                                              {month.dx}
-                                            </span>
-                                          </div>
-                                        </TableCell>
-                                      ))}
+                                          </TableCell>
+                                        );
+                                      })}
                                     </TableRow>
                                   ))}
-                                </>
+                                </Fragment>
                               ))}
                             </TableBody>
                           </Table>
@@ -1826,27 +2075,58 @@ export default function Recruitment() {
                         selectedPlan.status,
                         'plan',
                       ) ? (
-                        <p className="text-xs text-amber-800 dark:text-amber-200">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
+                        <p className="text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
                       ) : null}
-                      <div className="flex justify-end gap-3">
-                        <Button variant="outline">
-                          <Edit className="w-4 h-4 mr-2" />
-                          {t('common.edit')}
-                        </Button>
+                      <div className="flex justify-end gap-3 flex-wrap">
+                        {(selectedPlan.status === 'draft' ||
+                          selectedPlan.status === 'pending' ||
+                          selectedPlan.status === 'rejected') &&
+                        !isRecruitmentWorkflowLocked(
+                          selectedPlan.workflowInstanceId,
+                          selectedPlan.status,
+                          'plan',
+                        ) ? (
+                          <Button
+                            variant="outline"
+                            data-testid="rec-hc-edit-plan-btn"
+                            onClick={() => openEditPlan(selectedPlan)}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            {t('common.edit')}
+                          </Button>
+                        ) : null}
                         {!selectedPlan.workflowInstanceId &&
                         (selectedPlan.status === 'pending' ||
                           selectedPlan.status === 'draft' ||
-                          selectedPlan.status === 'pending_approval') ? (
+                          selectedPlan.status === 'pending_approval' ||
+                          selectedPlan.status === 'rejected') ? (
                           <Button
                             variant="secondary"
+                            data-testid="rec-hc-submit-wf-btn"
                             onClick={() => {
                               void (async () => {
                                 const res = await submitPlanWorkflow(selectedPlan.id);
                                 setPlanSpawnMissing(res.spawnMissing);
+                                if (res.ok) {
+                                  const refreshed = recruitmentPlans.find((p) => p.id === selectedPlan.id);
+                                  if (refreshed) setSelectedPlan(refreshed);
+                                }
                               })();
                             }}
                           >
                             Gửi duyệt QT
+                          </Button>
+                        ) : null}
+                        {selectedPlan.status === 'approved' ? (
+                          <Button
+                            data-testid="rec-hc-spawn-yctd-btn"
+                            onClick={() => {
+                              void (async () => {
+                                await spawnPlanRequests(selectedPlan.id);
+                              })();
+                            }}
+                          >
+                            Sinh YCTD từ Cần tuyển
                           </Button>
                         ) : null}
                         {(selectedPlan.status === 'pending' || selectedPlan.status === 'draft') &&
@@ -1865,7 +2145,23 @@ export default function Recruitment() {
                             </Button>
                             <Button
                               className="bg-green-600 hover:bg-green-700"
-                              onClick={() => void updatePlanStatus(selectedPlan.id, 'approved')}
+                              data-testid="rec-hc-approve-plan-btn"
+                              onClick={() => {
+                                void (async () => {
+                                  const overCount = countOverHeadcountCells(
+                                    selectedPlan.departments,
+                                  );
+                                  if (overCount > 0) {
+                                    toast({
+                                      title: 'Cảnh báo vượt Hiện tại',
+                                      description: `${HRM_HC_OVER_HC_WARN_VI} (${overCount} ô).`,
+                                    });
+                                  }
+                                  await updatePlanStatus(selectedPlan.id, 'approved', undefined, {
+                                    overHcWarned: overCount > 0,
+                                  });
+                                })();
+                              }}
                             >
                               {t('recruitment.approvePlan')}
                             </Button>
@@ -1906,10 +2202,40 @@ export default function Recruitment() {
         onOpenChange={setIsComparisonDialogOpen}
       />
 
+      {/* O3 qty_drift — confirm version / controlled update (no silent YCTD overwrite) */}
+      <AlertDialog
+        open={qtyDriftConfirmOpen}
+        onOpenChange={(open) => {
+          setQtyDriftConfirmOpen(open);
+          if (!open) setPendingPlanSave(null);
+        }}
+      >
+        <AlertDialogContent data-testid="rec-hc-qty-drift-confirm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{HRM_HC_QTY_DRIFT_TITLE_VI}</AlertDialogTitle>
+            <AlertDialogDescription>{HRM_HC_QTY_DRIFT_CONFIRM_VI}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="rec-hc-qty-drift-cancel">Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              data-testid="rec-hc-qty-drift-confirm-btn"
+              onClick={() => {
+                void confirmQtyDriftSave();
+              }}
+            >
+              Xác nhận cập nhật có kiểm soát
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <HireEmployeeLinkDialog
         open={!!hirePendingKanban}
         onOpenChange={(open) => {
-          if (!open && !hireSubmitting) setHirePendingKanban(null);
+          if (!open && !hireSubmitting) {
+            setHirePendingKanban(null);
+            setHirePendingKanbanStage(null);
+          }
         }}
         candidateName={hirePendingKanban?.fullName || 'ứng viên'}
         initialEmployeeId={hirePendingKanban?.employeeId}
