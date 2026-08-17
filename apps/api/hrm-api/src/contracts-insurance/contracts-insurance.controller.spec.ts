@@ -3,7 +3,11 @@ import { createHmac } from 'node:crypto';
 import { PATH_METADATA } from '@nestjs/common/constants';
 import { ContractsInsuranceController } from './contracts-insurance.controller';
 import { ContractsInsuranceService } from './contracts-insurance.service';
+import { ContractLegalPrintService } from './contract-legal-print.service';
+import { ContractLibraryPublishService } from './contract-library-publish.service';
 import { EmployeeCompensationService } from './employee-compensation.service';
+import { SiInsuranceTypeService } from './si-insurance-type.service';
+import { SiInsurerService } from './si-insurer.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
@@ -38,6 +42,61 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
     listHistory: jest.fn().mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
   };
 
+  const legalPrintMock = {
+    listTemplates: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
+    getTemplateById: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
+    updateTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
+    activateTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1', status: 'active' }),
+    putTemplateClauses: jest.fn().mockResolvedValue({ id: 'tpl-1', clauses: [] }),
+    listClauses: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    createClause: jest.fn().mockResolvedValue({ id: 'cl-1' }),
+    getClauseById: jest.fn().mockResolvedValue({ id: 'cl-1' }),
+    updateClause: jest.fn().mockResolvedValue({ id: 'cl-1' }),
+    activateClause: jest.fn().mockResolvedValue({ id: 'cl-1', status: 'active' }),
+    retireClause: jest.fn().mockResolvedValue({ id: 'cl-1', status: 'retired' }),
+    listPackRules: jest.fn().mockResolvedValue({ total: 0, data: [], allowed_packs: [] }),
+    putPackRules: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    resolvePackForEmployee: jest.fn().mockResolvedValue({ suggested_pack: 'GENERAL' }),
+    previewContract: jest.fn().mockResolvedValue({ can_issue: false }),
+    createPrintVersion: jest.fn().mockResolvedValue({ id: 'pv-1' }),
+    listPrintVersions: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    getPrintVersionById: jest.fn().mockResolvedValue({ id: 'pv-1' }),
+    renderPrintVersionPdf: jest.fn().mockResolvedValue({
+      content_type: 'application/pdf',
+      filename: 'x.pdf',
+      body: Buffer.from('%PDF-1.4 mock'),
+      stub: false,
+      format: 'pdf',
+    }),
+  };
+
+  const libraryPublishMock = {
+    publishLibrary: jest.fn().mockResolvedValue({ publish_version: 1, checksum: 'abc' }),
+    listPublishes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    getPublishByVersion: jest.fn().mockResolvedValue({ publish_version: 1 }),
+    pullLibrary: jest.fn().mockResolvedValue({ publish_version: 1, upserted: [] }),
+    applyLibrary: jest.fn().mockResolvedValue({ publish_version: 1, print_versions_mutated: false }),
+  };
+
+  const siInsuranceTypeMock = {
+    listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listInsuranceTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    upsertInsuranceType: jest.fn().mockResolvedValue({ id: 'sit-1', insuranceTypeKey: 'BHXH' }),
+    getInsuranceTypeById: jest.fn().mockResolvedValue({ id: 'sit-1', insuranceTypeKey: 'BHXH' }),
+    patchInsuranceType: jest.fn().mockResolvedValue({ id: 'sit-1' }),
+    retireInsuranceType: jest.fn().mockResolvedValue({ id: 'sit-1', status: 'retired' }),
+  };
+
+  const siInsurerMock = {
+    listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listInsurers: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    upsertInsurer: jest.fn().mockResolvedValue({ id: 'sin-1', insurerKey: 'VSS' }),
+    getInsurerById: jest.fn().mockResolvedValue({ id: 'sin-1', insurerKey: 'VSS' }),
+    patchInsurer: jest.fn().mockResolvedValue({ id: 'sin-1' }),
+    retireInsurer: jest.fn().mockResolvedValue({ id: 'sin-1', status: 'retired' }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     process.env.INTERNAL_API_KEY = 'test-key';
@@ -46,6 +105,10 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       providers: [
         { provide: ContractsInsuranceService, useValue: serviceMock },
         { provide: EmployeeCompensationService, useValue: compensationMock },
+        { provide: ContractLegalPrintService, useValue: legalPrintMock },
+        { provide: ContractLibraryPublishService, useValue: libraryPublishMock },
+        { provide: SiInsuranceTypeService, useValue: siInsuranceTypeMock },
+        { provide: SiInsurerService, useValue: siInsurerMock },
       ],
     }).compile();
 
@@ -251,5 +314,25 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       `Bearer ${token}`,
       { tenantId: 'xevn' },
     );
+  });
+
+  it('F-SI-CAT-EFF-01 registers GET insurance-types/effective', async () => {
+    const routePath = Reflect.getMetadata(PATH_METADATA, controller.listEffectiveInsuranceTypes);
+    expect(routePath).toBe('insurance-types/effective');
+    const res = await controller.listEffectiveInsuranceTypes(undefined, 'test-key', 'xevn', {
+      company_id: 'holding',
+    });
+    expect(res.code).toBe('HRM-SI-INS-TYPE-200');
+    expect(siInsuranceTypeMock.listEffective).toHaveBeenCalled();
+  });
+
+  it('F-SI-CAT-INS-EFF-01 registers GET insurers/effective', async () => {
+    const routePath = Reflect.getMetadata(PATH_METADATA, controller.listEffectiveInsurers);
+    expect(routePath).toBe('insurers/effective');
+    const res = await controller.listEffectiveInsurers(undefined, 'test-key', 'xevn', {
+      company_id: 'holding',
+    });
+    expect(res.code).toBe('HRM-SI-INSURER-200');
+    expect(siInsurerMock.listEffective).toHaveBeenCalled();
   });
 });

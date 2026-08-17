@@ -1,4 +1,4 @@
-# Báo cáo trạng thái dự án — XeVN OS Phase 1
+﻿# Báo cáo trạng thái dự án — XeVN OS Phase 1
 
 **Báo cáo số:** `PSR-2026-06-09-MOB-UX-16-PM-01`  
 **Ngày:** 2026-06-09  
@@ -142,3 +142,26 @@ Các condition W12 (`C-W12QC-01` mobile P5, `C-W12QC-02` contracts ratio) **CLOS
 - U71: 21 physical F.1 pairs · G-RULE-11 CLOSED (tm-u71-physical-backlog-close-01-20260727.md)
 - U72: HRM R3 + XBOS R2 GWC local · HOLD_DEPLOY · NOT Phase1/PROD/:8088
 - Soft OpenAPI/G-DTO/leave/G-IM deferred P2–P3
+
+---
+
+## DOC-ENT lean pack (2026-08-03) — docs SoT only
+
+| Field | Value |
+|-------|--------|
+| **Verdict** | **GO WITH CONDITIONS** (docs gate) — **không** Phase 1 product DONE |
+| **SoT** | docs/brand-new-documents-20270801/{BRD,SRS,TECH_SPEC,DB_DESIGN,API_CONTRACT}_NEW.md |
+| **Versions** | BRD v1.2 · SRS/TechSpec/DB/API v1.1 |
+| **Evidence** | docs/qa/evidence/doc-ent-qc-docs-01.md (+ brd/srs/ts/db/api-01) |
+| **Drift** | D-SRS-DRIFT-01 · D-TS-DRIFT-01 **CLOSED** (DOC-ENT-RESTORE-01) |
+| **Hygiene open** | C-DOC-META-DRIFT-01 **CLOSED** (`doc-ent-api-meta-01.md`); C-DOC-CLUTTER-01 (gen_* / *_VN / 	est_* NON-SoT — cấm chạy gen đè pack) |
+| **Product backlog** | Q-INS-01 · D-EMP-JSON-01 · D-PAY-SM-01 · R-API-DTO-DEC-01 |
+
+
+## Delta 2026-08-03T17:28:00+07:00 — HRM mindmap docs (PARTIAL GĐ1)
+- **GWC** docs chain: SRS_NEW **v1.2** §3.7 AC-MMAP-* · TECH_SPEC_NEW **v1.2** §4.12 · API_CONTRACT + DB_DESIGN remain **v1.1** (ba-data no-delta).
+- Evidence QC: `docs/qa/evidence/doc-ent-hrm-mmap-qc-01.md`.
+- Residuals deferred (not blocking inventory): R-MMAP-API-RC · R-MMAP-DB-LV · R-MMAP-OUT LOCKED.
+- **Không** claim Phase 1 / product UAT DONE.
+
+- **2026-08-03T17:29:44+07:00** C-MMAP-API-SRS-REF CLOSED (API_CONTRACT meta SRS/TS v1.2; body v1.1).

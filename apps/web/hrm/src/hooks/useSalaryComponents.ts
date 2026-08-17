@@ -8,15 +8,14 @@
  * Callers:    SalaryComponentsTab
  * Callees:    hrmApi list/create/update/delete salary-components
  * must_keep:  component_type = pay_types code (FE picker); không HARDCODE SoT
- * LastVerified: docs/qa/evidence/d-fe-erp-e2-01-20260728.md
- *
- * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E2-01
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-PAY-CATALOG-CNS-FE-01
  * change_mode: ADD
- * What: componentTypes export → [] (nature SoT chuyển CatalogSearchPicker pay_types)
- * Why: AC-E2-PAY-NATURE-01 · key lock pay_types ≠ TX rows
+ * What: listCompanyId scope (U19) + invalidate peer key note; Nest SoT for consumers.
+ * must_keep: payroll_e2e_ready=false · no Settings sole SoT · U65
  */
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
 import {
@@ -28,6 +27,8 @@ import {
   listSalaryComponents,
   updateSalaryComponent,
 } from '@/integrations/hrmApi';
+import { SALARY_COMPONENTS_EFFECTIVE_QUERY_KEY } from '@/hooks/useSalaryComponentsEffective';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface SalaryComponentCategory {
   id: string;
@@ -116,13 +117,20 @@ function mapComponent(row: Record<string, unknown>): SalaryComponent {
 
 export const useSalaryComponents = () => {
   const { currentCompanyId } = useAuth();
+  const { listCompanyId } = useHrmOperatingUnitFilter();
+  const companyId = (listCompanyId || currentCompanyId || '').trim() || null;
+  const queryClient = useQueryClient();
   const [components, setComponents] = useState<SalaryComponent[]>([]);
   const [categories, setCategories] = useState<SalaryComponentCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const invalidateEffectivePickers = () => {
+    void queryClient.invalidateQueries({ queryKey: [SALARY_COMPONENTS_EFFECTIVE_QUERY_KEY] });
+  };
+
   const fetchComponents = async () => {
-    if (!currentCompanyId) {
+    if (!companyId) {
       setComponents([]);
       setIsLoading(false);
       return;
@@ -130,7 +138,7 @@ export const useSalaryComponents = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await listSalaryComponents(currentCompanyId);
+      const res = await listSalaryComponents(companyId);
       setComponents((res.data ?? []).map(mapComponent));
     } catch (err: unknown) {
       console.error('Error fetching salary components:', err);
@@ -142,12 +150,12 @@ export const useSalaryComponents = () => {
   };
 
   const fetchCategories = async () => {
-    if (!currentCompanyId) {
+    if (!companyId) {
       setCategories([]);
       return;
     }
     try {
-      const res = await listSalaryComponentCategories(currentCompanyId);
+      const res = await listSalaryComponentCategories(companyId);
       setCategories((res.data ?? []) as SalaryComponentCategory[]);
     } catch (err: unknown) {
       console.error('Error fetching categories:', err);
@@ -156,14 +164,15 @@ export const useSalaryComponents = () => {
   };
 
   const createComponent = async (formData: SalaryComponentFormData): Promise<SalaryComponent | null> => {
-    if (!currentCompanyId) {
+    if (!companyId) {
       toast.error('Vui lòng chọn công ty');
       return null;
     }
     try {
-      await createSalaryComponent({ company_id: currentCompanyId, ...formData });
+      await createSalaryComponent({ company_id: companyId, ...formData });
       toast.success('Thêm thành phần lương thành công');
       await fetchComponents();
+      invalidateEffectivePickers();
       return null;
     } catch (err: unknown) {
       console.error('Error creating salary component:', err);
@@ -176,11 +185,12 @@ export const useSalaryComponents = () => {
     id: string,
     formData: Partial<SalaryComponentFormData>,
   ): Promise<boolean> => {
-    if (!currentCompanyId) return false;
+    if (!companyId) return false;
     try {
-      await updateSalaryComponent(id, currentCompanyId, formData);
+      await updateSalaryComponent(id, companyId, formData);
       toast.success('Cập nhật thành phần lương thành công');
       await fetchComponents();
+      invalidateEffectivePickers();
       return true;
     } catch (err: unknown) {
       console.error('Error updating salary component:', err);
@@ -190,11 +200,12 @@ export const useSalaryComponents = () => {
   };
 
   const deleteComponent = async (id: string): Promise<boolean> => {
-    if (!currentCompanyId) return false;
+    if (!companyId) return false;
     try {
-      await deleteSalaryComponent(id, currentCompanyId);
+      await deleteSalaryComponent(id, companyId);
       toast.success('Xóa thành phần lương thành công');
       await fetchComponents();
+      invalidateEffectivePickers();
       return true;
     } catch (err: unknown) {
       console.error('Error deleting salary component:', err);
@@ -208,9 +219,9 @@ export const useSalaryComponents = () => {
   };
 
   const createCategory = async (formData: CategoryFormData): Promise<SalaryComponentCategory | null> => {
-    if (!currentCompanyId) return null;
+    if (!companyId) return null;
     try {
-      const created = await createSalaryComponentCategory({ company_id: currentCompanyId, ...formData });
+      const created = await createSalaryComponentCategory({ company_id: companyId, ...formData });
       toast.success('Thêm nhóm thành phần thành công');
       await fetchCategories();
       return created as SalaryComponentCategory;
@@ -221,9 +232,9 @@ export const useSalaryComponents = () => {
   };
 
   const deleteCategory = async (id: string): Promise<boolean> => {
-    if (!currentCompanyId) return false;
+    if (!companyId) return false;
     try {
-      await deleteSalaryComponentCategory(id, currentCompanyId);
+      await deleteSalaryComponentCategory(id, companyId);
       toast.success('Xóa nhóm thành phần thành công');
       await fetchCategories();
       return true;
@@ -234,11 +245,11 @@ export const useSalaryComponents = () => {
   };
 
   const initializeDefaultComponents = async (): Promise<boolean> => {
-    if (!currentCompanyId) return false;
+    if (!companyId) return false;
     try {
       for (const [idx, item] of systemSalaryComponents.entries()) {
         await createSalaryComponent({
-          company_id: currentCompanyId,
+          company_id: companyId,
           code: item.code,
           name: item.name,
           component_type: item.componentType,
@@ -253,6 +264,7 @@ export const useSalaryComponents = () => {
         });
       }
       await fetchComponents();
+      invalidateEffectivePickers();
       toast.success('Đã khởi tạo thành phần lương mặc định');
       return true;
     } catch (err: unknown) {
@@ -264,7 +276,7 @@ export const useSalaryComponents = () => {
   useEffect(() => {
     void fetchComponents();
     void fetchCategories();
-  }, [currentCompanyId]);
+  }, [companyId]);
 
   return {
     components,

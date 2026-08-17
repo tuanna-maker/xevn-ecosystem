@@ -1,3 +1,10 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-A
+ * change_mode: UPGRADE
+ * What: employeeCode caption → text-xevn-textSecondary; keep storage stub honesty
+ * Why: ADR-20260805 E07/E11 avatar chrome
+ * must_keep: hrmStorageUploadStub / removeStub — no fake upload invent
+ */
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, Loader2, X, User } from 'lucide-react';
@@ -116,7 +123,7 @@ export function EmployeeAvatarUpload({
           {t('avatar.remove')}
         </Button>
       )}
-      <p className="text-xs text-muted-foreground text-center">{employeeCode}</p>
+      <p className="text-center text-xs text-xevn-textSecondary">{employeeCode}</p>
     </div>
   );
 }

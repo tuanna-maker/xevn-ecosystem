@@ -69,6 +69,25 @@
  * What: Loại HĐ = CatalogSearchPicker contract_types (persist code); đóng R-E1A-A8-CTYPE
  * Why: FR-HRM-CI-TYPE-E2-01 · AC-E2-CI-TYPE-01 — cấm HARDCODE khi items>0
  * must_keep: position_key E1-A; F5 salary off body; open-ended expiry policy
+ 
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; purple AI chrome → xevn primary/accent
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-B
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no Nest/seed; no OCR/QR invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-FE-CB-01
+ * change_mode: ADD
+ * What: data-testid hdsd-emp-contracts-tab-dai-ngo for U65 FE-CB click path
+ * Why: R-EMP-SH-FE-CB-CLICK — QA latch Đãi ngộ tab without role-text flakiness
+ * must_keep: salary not on HĐ body · compensation panels SRP · F5
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-WAVE-G3
+ * change_mode: FIX
+ * What: View/edit/create HĐ → openContractWorkspace navigate /contracts?workspace=…&employee_id=
+ * Why: Unified ContractWorkspaceDialog; bỏ legacy view dialog snapshot
+ * must_keep: renew/history dialogs · F5 salary off body · compensation SRP · U65 no seed
  */
 import { useMemo, useState, useRef } from 'react';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
@@ -83,6 +102,9 @@ import {
 } from '@/lib/catalogSearchPicker';
 
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { buildContractWorkspacePath } from '@/lib/contractWorkspaceDeepLink';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import { useEmployeeContracts } from '@/hooks/useEmployeeContracts';
 import { EmployeeCompensationPanel } from '@/components/employee/EmployeeCompensationPanel';
 import { EmployeeCompensationHistoryPanel } from '@/components/employee/EmployeeCompensationHistoryPanel';
@@ -195,16 +217,16 @@ const getStatusConfig = (status: string, _t?: unknown) => {
   const label = resolveContractStatusDisplay(status);
   switch ((status ?? '').trim().toLowerCase()) {
     case 'active':
-      return { label, color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', icon: CheckCircle };
+      return { label, color: 'bg-xevn-success/15 text-xevn-success dark:bg-xevn-success/25', icon: CheckCircle };
     case 'pending':
-      return { label, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300', icon: Clock };
+      return { label, color: 'bg-xevn-warning/15 text-xevn-warning dark:bg-xevn-warning/25', icon: Clock };
     case 'expired':
-      return { label, color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300', icon: XCircle };
+      return { label, color: 'bg-xevn-danger/15 text-xevn-danger dark:bg-xevn-danger/25', icon: XCircle };
     case 'terminated':
-      return { label, color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: AlertCircle };
+      return { label, color: 'bg-xevn-background text-xevn-textSecondary border border-xevn-border', icon: AlertCircle };
     default:
       // U72 fail-closed: never render raw status slug
-      return { label: EM_DASH, color: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300', icon: FileText };
+      return { label: EM_DASH, color: 'bg-xevn-background text-xevn-textSecondary border border-xevn-border', icon: FileText };
   }
 };
 
@@ -249,6 +271,7 @@ export function EmployeeContracts({
   department 
 }: EmployeeContractsProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { currentCompanyId } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
@@ -275,7 +298,6 @@ export function EmployeeContracts({
   };
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState<EmployeeContract | null>(null);
   const [renewingFromContract, setRenewingFromContract] = useState<EmployeeContract | null>(null);
@@ -317,6 +339,25 @@ export function EmployeeContracts({
     const stamp = format(new Date(), 'yyyyMMdd');
     const suffix = Date.now().toString().slice(-4);
     return `HD-${stamp}-${suffix}`;
+  };
+
+  const openContractWorkspace = (
+    mode: 'create' | 'edit' | 'view',
+    opts?: { contractId?: string; templateCode?: string },
+  ) => {
+    navigate(
+      hrmPathWithEmbedSearch(
+        buildContractWorkspacePath(mode, {
+          contractId: opts?.contractId,
+          prefill: {
+            subject_type: 'employee',
+            employee_id: employeeId,
+            lock_subject_employee: true,
+            ...(opts?.templateCode ? { template_code: opts.templateCode } : {}),
+          },
+        }),
+      ),
+    );
   };
 
   const handleOpenDialog = (contract?: EmployeeContract) => {
@@ -492,8 +533,7 @@ export function EmployeeContracts({
   };
 
   const handleViewContract = (contract: EmployeeContract) => {
-    setSelectedContract(contract);
-    setIsViewOpen(true);
+    openContractWorkspace('view', { contractId: contract.id });
   };
 
   // Function to calculate new expiry date based on contract type (code or legacy label)
@@ -639,7 +679,11 @@ export function EmployeeContracts({
             <FileSignature className="h-4 w-4" />
             Hợp đồng
           </TabsTrigger>
-          <TabsTrigger value="dai-ngo" className="gap-1.5">
+          <TabsTrigger
+            value="dai-ngo"
+            className="gap-1.5"
+            data-testid="hdsd-emp-contracts-tab-dai-ngo"
+          >
             <Wallet className="h-4 w-4" />
             Đãi ngộ
           </TabsTrigger>
@@ -703,12 +747,12 @@ export function EmployeeContracts({
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                <FileSignature className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-primary/10 dark:bg-xevn-primary/20 flex items-center justify-center">
+                <FileSignature className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{contracts?.length || 0}</p>
-                <p className="text-xs text-muted-foreground">{t('ec.totalContracts')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('ec.totalContracts')}</p>
               </div>
             </div>
           </CardContent>
@@ -716,14 +760,14 @@ export function EmployeeContracts({
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-success/15 dark:bg-xevn-success/25 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-xevn-success" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
                   {contracts?.filter(c => c.status === 'active').length || 0}
                 </p>
-                <p className="text-xs text-muted-foreground">{t('ec.activeContracts')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('ec.activeContracts')}</p>
               </div>
             </div>
           </CardContent>
@@ -731,14 +775,14 @@ export function EmployeeContracts({
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-warning/15 dark:bg-xevn-warning/25 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-xevn-warning" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
                   {contracts?.filter(c => c.status === 'pending').length || 0}
                 </p>
-                <p className="text-xs text-muted-foreground">{t('ec.pendingContracts')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('ec.pendingContracts')}</p>
               </div>
             </div>
           </CardContent>
@@ -746,14 +790,14 @@ export function EmployeeContracts({
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900 flex items-center justify-center">
-                <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-danger/15 dark:bg-xevn-danger/25 flex items-center justify-center">
+                <XCircle className="w-5 h-5 text-xevn-danger" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
                   {contracts?.filter(c => c.status === 'expired').length || 0}
                 </p>
-                <p className="text-xs text-muted-foreground">{t('ec.expiredContracts')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('ec.expiredContracts')}</p>
               </div>
             </div>
           </CardContent>
@@ -767,7 +811,7 @@ export function EmployeeContracts({
             <FileSignature className="w-5 h-5" />
             {t('ec.title')}
           </CardTitle>
-          <Button size="sm" onClick={() => handleOpenDialog()}>
+          <Button size="sm" onClick={() => openContractWorkspace('create')} data-testid="ec-open-contract-workspace-create">
             <Plus className="w-4 h-4 mr-2" />
             {t('ec.add')}
           </Button>
@@ -775,13 +819,13 @@ export function EmployeeContracts({
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <Loader2 className="w-6 h-6 animate-spin text-xevn-textSecondary" />
             </div>
           ) : !contracts?.length ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <FileSignature className="w-12 h-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground mb-2">{t('ec.empty')}</p>
-              <p className="text-sm text-muted-foreground">
+              <FileSignature className="w-12 h-12 text-xevn-textSecondary/50 mb-4" />
+              <p className="text-xevn-textSecondary mb-2">{t('ec.empty')}</p>
+              <p className="text-sm text-xevn-textSecondary">
                 {t('ec.emptyHint')}
               </p>
             </div>
@@ -821,7 +865,7 @@ export function EmployeeContracts({
                             PDF
                           </Button>
                         ) : (
-                          <span className="text-muted-foreground text-sm">-</span>
+                          <span className="text-xevn-textSecondary text-sm">-</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -845,7 +889,7 @@ export function EmployeeContracts({
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => handleOpenDialog(contract)}
+                            onClick={() => openContractWorkspace('edit', { contractId: contract.id })}
                             title="Chỉnh sửa"
                           >
                             <Edit className="w-4 h-4" />
@@ -865,7 +909,7 @@ export function EmployeeContracts({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 text-blue-600"
+                              className="h-8 w-8 text-xevn-primary"
                               onClick={() => handleViewHistory(contract)}
                               title="Xem lịch sử gia hạn"
                             >
@@ -892,7 +936,7 @@ export function EmployeeContracts({
         </CardContent>
       </Card>
 
-      {/* Add/Edit Dialog */}
+      {/* @deprecated PO-HRM-CTR-WORKSPACE-G3 — renewal pre-fill only; create/edit/view → openContractWorkspace */}
       <Dialog open={isDialogOpen} onOpenChange={(open) => !open && handleCloseDialog()}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -1016,7 +1060,7 @@ export function EmployeeContracts({
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground rounded-input border bg-muted/40 px-3 py-2">
+            <p className="text-xs text-xevn-textSecondary rounded-input border bg-muted/40 px-3 py-2">
               Lương / phụ cấp không nhập trên form HĐ — dùng tab «Đãi ngộ».
             </p>
 
@@ -1096,7 +1140,7 @@ export function EmployeeContracts({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{selectedFile.name}</p>
-                    <p className="text-xs text-muted-foreground">{formatFileSize(selectedFile.size)}</p>
+                    <p className="text-xs text-xevn-textSecondary">{formatFileSize(selectedFile.size)}</p>
                   </div>
                   <Button
                     type="button"
@@ -1114,7 +1158,7 @@ export function EmployeeContracts({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{t('ec.fileUploaded')}</p>
-                    <p className="text-xs text-muted-foreground">{t('ec.clickToReplace')}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('ec.clickToReplace')}</p>
                   </div>
                   <Button
                     type="button"
@@ -1131,9 +1175,9 @@ export function EmployeeContracts({
                   onClick={() => fileInputRef.current?.click()}
                   className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
                 >
-                  <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">{t('ec.clickToUpload')}</p>
-                  <p className="text-xs text-muted-foreground">{t('ec.maxSize')}</p>
+                  <Upload className="w-8 h-8 text-xevn-textSecondary mb-2" />
+                  <p className="text-sm text-xevn-textSecondary">{t('ec.clickToUpload')}</p>
+                  <p className="text-xs text-xevn-textSecondary">{t('ec.maxSize')}</p>
                 </div>
               )}
             </div>
@@ -1161,118 +1205,6 @@ export function EmployeeContracts({
         </DialogContent>
       </Dialog>
 
-      {/* View Contract Dialog */}
-      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileSignature className="w-5 h-5" />
-              {t('ec.viewDetail')}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedContract && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.contractCode')}</p>
-                  <p className="font-medium">{selectedContract.contract_code}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.contractType')}</p>
-                  <p className="font-medium">{displayContractType(selectedContract.contract_type)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.signingDate')}</p>
-                  <p className="font-medium">{formatDate(selectedContract.signing_date)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.status')}</p>
-                  <Badge className={getStatusConfig(selectedContract.status, t).color}>
-                    {getStatusConfig(selectedContract.status, t).label}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.effectiveDate')}</p>
-                  <p className="font-medium">{formatDate(selectedContract.effective_date)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.expiryDate')}</p>
-                  <p className="font-medium">{formatDate(selectedContract.expiry_date)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.position')}</p>
-                  <p className="font-medium">{selectedContract.position || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.department')}</p>
-                  <p className="font-medium">{selectedContract.department || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.workLocation')}</p>
-                  <p className="font-medium">{selectedContract.work_location || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.probationPeriod')}</p>
-                  <p className="font-medium">{selectedContract.probation_period ? t('ec.probationDays', { days: selectedContract.probation_period }) : '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.probationEndDate')}</p>
-                  <p className="font-medium">{formatDate(selectedContract.probation_end_date)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.signerName')}</p>
-                  <p className="font-medium">{selectedContract.signer_name || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('ec.signerPosition')}</p>
-                  <p className="font-medium">{selectedContract.signer_position || '-'}</p>
-                </div>
-              </div>
-
-              {selectedContract.notes && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">{t('ec.notes')}</p>
-                  <p className="text-sm bg-muted/50 p-3 rounded-lg">{selectedContract.notes}</p>
-                </div>
-              )}
-
-              {selectedContract.file_url && (
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
-                  <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900 flex items-center justify-center">
-                    <File className="w-5 h-5 text-red-600 dark:text-red-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{t('ec.contractFileLabel')}</p>
-                    <p className="text-xs text-muted-foreground">PDF</p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(selectedContract.file_url!, '_blank')}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Tải xuống
-                  </Button>
-                </div>
-              )}
-
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsViewOpen(false)}>
-                  Đóng
-                </Button>
-                <Button onClick={() => {
-                  setIsViewOpen(false);
-                  handleOpenDialog(selectedContract);
-                }}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Chỉnh sửa
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
       {/* Renewal History Dialog */}
       <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -1284,7 +1216,7 @@ export function EmployeeContracts({
           </DialogHeader>
           {selectedContract && (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-xevn-textSecondary">
                 Theo dõi chuỗi hợp đồng từ hợp đồng gốc đến các lần gia hạn
               </p>
               
@@ -1332,7 +1264,7 @@ export function EmployeeContracts({
                                     {statusConfig.label}
                                   </Badge>
                                   {isFirst && !contract.renewed_from_id && (
-                                    <Badge variant="outline" className="text-blue-600 border-blue-300">
+                                    <Badge variant="outline" className="text-xevn-primary border-xevn-primary/40">
                                       Hợp đồng gốc
                                     </Badge>
                                   )}
@@ -1345,21 +1277,21 @@ export function EmployeeContracts({
                                 
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                                   <div>
-                                    <span className="text-muted-foreground">Loại:</span>
+                                    <span className="text-xevn-textSecondary">Loại:</span>
                                     <p className="font-medium">
                                       {displayContractType(contract.contract_type)}
                                     </p>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground">Hiệu lực:</span>
+                                    <span className="text-xevn-textSecondary">Hiệu lực:</span>
                                     <p className="font-medium">{formatDate(contract.effective_date)}</p>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground">Hết hạn:</span>
+                                    <span className="text-xevn-textSecondary">Hết hạn:</span>
                                     <p className="font-medium">{formatDate(contract.expiry_date)}</p>
                                   </div>
                                   <div>
-                                    <span className="text-muted-foreground">Trạng thái:</span>
+                                    <span className="text-xevn-textSecondary">Trạng thái:</span>
                                     <Badge className={statusConfig.color}>
                                       <StatusIcon className="w-3 h-3 mr-1" />
                                       {statusConfig.label}
@@ -1368,7 +1300,7 @@ export function EmployeeContracts({
                                 </div>
                                 
                                 {contract.notes && contract.notes.includes('Gia hạn từ') && (
-                                  <p className="text-xs text-muted-foreground italic">
+                                  <p className="text-xs text-xevn-textSecondary italic">
                                     {contract.notes}
                                   </p>
                                 )}
@@ -1395,7 +1327,7 @@ export function EmployeeContracts({
                         {/* Arrow indicator */}
                         {!isLast && (
                           <div className="absolute left-2 -bottom-2 w-5 flex justify-center">
-                            <div className="text-muted-foreground text-xs">↓</div>
+                            <div className="text-xevn-textSecondary text-xs">↓</div>
                           </div>
                         )}
                       </div>

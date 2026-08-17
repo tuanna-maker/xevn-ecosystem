@@ -39,7 +39,7 @@ async function fetchSession() {
   const j = await res.json();
   if (!j.success) throw new Error(`API login failed: ${j.code ?? res.status}`);
   const d = j.data;
-  const a = d.active_membership ?? {};
+  const a = d.active_membership ?? d.memberships?.[0] ?? {};
   return {
     token: d.access_token,
     refresh: d.refresh_token ?? '',
@@ -47,6 +47,13 @@ async function fetchSession() {
     company: a.company_id ?? d.default_company_id ?? 'holding',
     uuid: a.company_uuid ?? d.company_uuid ?? '',
     emp: a.employee_id ?? d.employee?.id ?? '',
+    // W1-B-04 — pass BE display-ready labels into deep-link (Scope «Đang dùng»)
+    company_label: a.company_label ?? '',
+    tenant_label: a.tenant_label ?? '',
+    role_label: a.role_label ?? '',
+    job_title_label: a.job_title_label ?? '',
+    employee_code: a.employee_code ?? '',
+    employee_name: a.employee_name ?? '',
   };
 }
 
@@ -59,6 +66,12 @@ function buildDeepLink(session) {
     company_uuid: session.uuid,
     employee_id: session.emp,
     base_url: API_BASE,
+    company_label: session.company_label ?? '',
+    tenant_label: session.tenant_label ?? '',
+    role_label: session.role_label ?? '',
+    job_title_label: session.job_title_label ?? '',
+    employee_code: session.employee_code ?? '',
+    employee_name: session.employee_name ?? '',
   });
   return `xevn://qa-login?${q.toString()}`;
 }

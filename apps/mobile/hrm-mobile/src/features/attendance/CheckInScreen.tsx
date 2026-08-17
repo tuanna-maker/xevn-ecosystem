@@ -14,12 +14,17 @@
  * must_keep:  StickyFooter thumbZone; testID check-in-sticky-footer / check-in-submit; hide FAB on CheckIn
  * SOLID:      Screen owns submit; location util tách
  * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-MOB-A
+ * What: CheckInMethodSelector + FaceEnrollChromePanel (MOB-04/04b); GPS-only submit; face_live=false
  */
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import React, { useCallback, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { CheckInHeroCard } from '../../components/attendance/CheckInHeroCard';
+import { CheckInMethodSelector } from '../../components/attendance/CheckInMethodSelector';
+import { FaceEnrollChromePanel } from '../../components/attendance/FaceEnrollChromePanel';
 import { ProfileSectionCard } from '../../components/profile/ProfileSectionCard';
 import { AppScreenLayout } from '../../components/ui/AppScreenLayout';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
@@ -41,6 +46,11 @@ import {
 } from '../../utils/checkInLocation';
 import { formatHrmDate } from '../../utils/formatHrm';
 import { OFFLINE_CHECKIN_QUEUED_MESSAGE } from '../../utils/scopeError';
+import {
+  canSubmitCheckInWithChannel,
+  resolveDefaultCheckInChannel,
+  type CheckInChannelId,
+} from '../../utils/checkInChannel';
 
 async function captureDeviceLocation(): Promise<DeviceLocationSnapshot> {
   try {
@@ -73,6 +83,7 @@ export function CheckInScreen() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [locationState, setLocationState] = useState<DeviceLocationUiState>('idle');
   const [locationSnapshot, setLocationSnapshot] = useState<DeviceLocationSnapshot>({ granted: false });
+  const [checkInChannel, setCheckInChannel] = useState<CheckInChannelId>(resolveDefaultCheckInChannel);
 
   const cid = auth.getAttendanceCompanyId();
   const employeeId = auth.employeeId.trim();
@@ -118,6 +129,13 @@ export function CheckInScreen() {
   );
 
   const submit = async () => {
+    if (!canSubmitCheckInWithChannel(checkInChannel)) {
+      Alert.alert(
+        'Khuôn mặt (MVP)',
+        'Chấm công bằng nhận diện khuôn mặt chưa golive. Chọn «Vị trí GPS» để chấm công.',
+      );
+      return;
+    }
     if (!cid) {
       Alert.alert('Thiếu phạm vi công ty', 'Vào Cài đặt để cấu hình phạm vi chấm công.');
       return;
@@ -185,7 +203,7 @@ export function CheckInScreen() {
           <PrimaryButton
             label={busy ? vi.loading : 'Chấm công vào'}
             onPress={() => void submit()}
-            disabled={busy || profileLoading}
+            disabled={busy || profileLoading || !canSubmitCheckInWithChannel(checkInChannel)}
             loading={busy}
             testID="check-in-submit"
           />
@@ -212,6 +230,11 @@ export function CheckInScreen() {
         loading={profileLoading}
       />
 
+      <CheckInMethodSelector value={checkInChannel} onChange={setCheckInChannel} />
+
+      {checkInChannel === 'face_mvp' ? <FaceEnrollChromePanel /> : null}
+
+      {checkInChannel === 'gps' ? (
       <ProfileSectionCard title="Vị trí thiết bị" icon="navigate-outline" testID="check-in-location-section">
         <Text style={styles.locationStatus} testID="check-in-location-label">
           {locationLabel}
@@ -224,6 +247,7 @@ export function CheckInScreen() {
           </Text>
         ) : null}
       </ProfileSectionCard>
+      ) : null}
     </AppScreenLayout>
   );
 }

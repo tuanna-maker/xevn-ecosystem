@@ -13,6 +13,13 @@
  * must_keep:  Pure factory; empty catalog → chặn Lưu khi required; cấm HARDCODE SoT
  * SOLID:      Pure schema factory
  * LastVerified: docs/qa/evidence/d-fe-erp-e3-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 BUILD-GAP-INSURANCE-POLICY-FORM-SCHEMA-01
+ * change_mode: ADD (restore)
+ * What: Khôi phục insurancePolicyFormSchema.ts + insurancePolicyFormSchema.test.ts từ git 43c479a (Vite resolve @/lib/insurancePolicyFormSchema).
+ * Why: Build gap sau decisionListUi — InsurancePolicyMasterPanel import thiếu file trên disk.
+ * must_keep: MD panel · decisionListUi · performanceFormSchema · Contracts/Payroll · Leave · InsurancePolicyMasterPanel logic không rewrite.
+ * WorkItem: BUILD-GAP-INSURANCE-POLICY-FORM-SCHEMA-01
  */
 
 import { z } from 'zod';

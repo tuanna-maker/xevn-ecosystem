@@ -57,10 +57,49 @@ function resolveBundleEnvFlags(target) {
   const qaDeepLink =
     process.env.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK ??
     (isQaDevice ? '1' : '0');
+  /** qa-device NT-02: enable push registration chain on bundle (release pilot stays 0 unless env set). */
+  const pushRegistration =
+    process.env.EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION ??
+    (isQaDevice ? '1' : '0');
+  /**
+   * qa-device NT-02 FCM gap: when google-services.json absent, JS may POST Expo-format fallback token.
+   * Release stays 0 — real outbound push still needs sponsor Firebase file (Option A).
+   */
+  const qaPushFallback =
+    process.env.EXPO_PUBLIC_QA_PUSH_TOKEN_FALLBACK ??
+    (isQaDevice ? '1' : '0');
   return {
     EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN: qaDevLogin,
     EXPO_PUBLIC_ENABLE_QA_DEEP_LINK: qaDeepLink,
+    EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION: pushRegistration,
+    EXPO_PUBLIC_QA_PUSH_TOKEN_FALLBACK: qaPushFallback,
   };
+}
+
+/**
+ * Option A: sync real google-services.json into android/app before Gradle.
+ * Sources (first win): GOOGLE_SERVICES_JSON env path · existing android/app/google-services.json.
+ * Never copies *.example (placeholders break Firebase; qa-device uses JS fallback instead).
+ */
+function ensureGoogleServicesJson() {
+  const dest = path.join(androidDir, 'app', 'google-services.json');
+  const fromEnv = (process.env.GOOGLE_SERVICES_JSON || '').trim();
+  if (fromEnv) {
+    if (!fs.existsSync(fromEnv)) {
+      throw new Error(`GOOGLE_SERVICES_JSON not found: ${fromEnv}`);
+    }
+    fs.copyFileSync(fromEnv, dest);
+    log(`Synced google-services.json from GOOGLE_SERVICES_JSON → ${dest}`);
+    return true;
+  }
+  if (fs.existsSync(dest)) {
+    log(`Using existing google-services.json @ ${dest}`);
+    return true;
+  }
+  log(
+    'google-services.json absent — FCM native off; qa-device may use EXPO_PUBLIC_QA_PUSH_TOKEN_FALLBACK=1 (see google-services.json.example)',
+  );
+  return false;
 }
 const nativeDrawableDir = path.join(androidDir, 'app/src/main/res/drawable');
 const NATIVE_DRAWABLE_KEEP = new Set(['rn_edit_text_material.xml', 'splashscreen.xml']);
@@ -126,7 +165,7 @@ function prebundle(target, bundleFlags) {
   const metroRoot = useJunction ? mobileRoot : bundleRoot;
   const metroRepoRoot = useJunction ? repoRoot : bundleRepoRoot;
   log(
-    `Bundle JS @ ${metroRoot} → ${bundleFile} (BUILD_TARGET=${target}, QA_DEV_LOGIN=${bundleFlags.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN}, QA_DEEP_LINK=${bundleFlags.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK})`,
+    `Bundle JS @ ${metroRoot} → ${bundleFile} (BUILD_TARGET=${target}, QA_DEV_LOGIN=${bundleFlags.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN}, QA_DEEP_LINK=${bundleFlags.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK}, PUSH_REG=${bundleFlags.EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION}, QA_PUSH_FALLBACK=${bundleFlags.EXPO_PUBLIC_QA_PUSH_TOKEN_FALLBACK})`,
   );
   const r = spawnSync(
     process.execPath,
@@ -149,9 +188,8 @@ function prebundle(target, bundleFlags) {
         CI: '1',
         EXPO_PUBLIC_HRM_API_BASE_URL:
           process.env.EXPO_PUBLIC_HRM_API_BASE_URL || 'http://14.225.217.232:3001',
-        /* Pilot release APK has no google-services.json — keep push registration off unless FCM is wired. */
-        EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION:
-          process.env.EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION || '0',
+        EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION: bundleFlags.EXPO_PUBLIC_ENABLE_PUSH_REGISTRATION,
+        EXPO_PUBLIC_QA_PUSH_TOKEN_FALLBACK: bundleFlags.EXPO_PUBLIC_QA_PUSH_TOKEN_FALLBACK,
         EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN: bundleFlags.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN,
         EXPO_PUBLIC_ENABLE_QA_DEEP_LINK: bundleFlags.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK,
         BABEL_ENV: 'production',
@@ -311,13 +349,21 @@ function copyApk(target) {
     localBuildRoot ? path.join(localBuildRoot, '_app', 'outputs', 'apk', 'release') : null,
     localBuildRoot ? path.join(localBuildRoot, 'app', 'outputs', 'apk', 'release') : null,
   ].filter(Boolean);
-  const releaseDir = releaseCandidates.find((d) => fs.existsSync(d));
-  if (!releaseDir) {
-    throw new Error(`Không thấy thư mục APK. Tried: ${releaseCandidates.join(' | ')}`);
+  let releaseDir = null;
+  let apks = [];
+  for (const dir of releaseCandidates) {
+    if (!fs.existsSync(dir)) continue;
+    const found = fs.readdirSync(dir).filter((f) => f.endsWith('.apk'));
+    if (found.length) {
+      releaseDir = dir;
+      apks = found;
+      break;
+    }
   }
-  const apks = fs.readdirSync(releaseDir).filter((f) => f.endsWith('.apk'));
-  if (!apks.length) {
-    throw new Error(`Không có file .apk trong ${releaseDir}`);
+  if (!releaseDir || !apks.length) {
+    throw new Error(
+      `Không có file .apk. Tried: ${releaseCandidates.join(' | ')}`,
+    );
   }
   const src = path.join(releaseDir, apks[0]);
   fs.mkdirSync(distDir, { recursive: true });
@@ -349,6 +395,7 @@ function main() {
       'Đường dẫn có Unicode/khoảng trắng. Nên build qua: mklink /J C:\\xevn-ecosystem "<repo>" rồi cd C:\\xevn-ecosystem\\apps\\mobile\\hrm-mobile',
     );
   }
+  ensureGoogleServicesJson();
   prebundle(target, bundleFlags);
   const code = runGradle(target);
   if (code !== 0) {

@@ -38,6 +38,12 @@
  * What: canSubmitRequisitionWorkflow — visible Gửi duyệt QT after YCTD create (open, no wi)
  * Why: QC residual R-REC-13-S2-SUBMIT-INBOX — submit CTA missing on list after POST 201
  * must_keep: UF-HRM-12 create+F5; J-REC-WF historic greens; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: open_for_hire terminal for lock; block submit when receivable; draft still submit-ready
+ * Why: UC-BP-REC-02 O3 · Y-S7 create→draft → pending → open_for_hire
+ * must_keep: UF-HRM-12 create+F5; spawnMissing retry when pending without wi
  */
 
 export const HRM_REC_WF_LOCKED_CODE = 'HRM-REC-WF-LOCKED';
@@ -51,11 +57,24 @@ export const HRM_REC_WF_REQUIRED_CODES = [
 ] as const;
 
 const PLAN_TERMINAL = new Set(['approved', 'rejected', 'cancelled']);
-const REQUISITION_TERMINAL = new Set(['open', 'approved', 'rejected', 'closed', 'cancelled']);
+const REQUISITION_TERMINAL = new Set([
+  'open',
+  'approved',
+  'rejected',
+  'closed',
+  'cancelled',
+  'open_for_hire',
+]);
 const CANDIDATE_TERMINAL = new Set(['hired', 'rejected']);
 
-/** Statuses that must not offer submit-workflow (already closed or terminal). */
-const REQUISITION_SUBMIT_BLOCKED = new Set(['closed', 'rejected', 'cancelled', 'approved']);
+/** Statuses that must not offer submit-workflow (already closed or terminal receivable). */
+const REQUISITION_SUBMIT_BLOCKED = new Set([
+  'closed',
+  'rejected',
+  'cancelled',
+  'approved',
+  'open_for_hire',
+]);
 
 export type RecruitmentWfEntity = 'plan' | 'requisition' | 'candidate';
 

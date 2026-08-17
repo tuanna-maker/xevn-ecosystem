@@ -23,6 +23,13 @@
  * SOLID:      Một file SoT — không fork palette theo màn
  * LastVerified: src/theme/__tests__/tokens.test.ts · docs/qa/evidence/mob-xevn-brand-tokens-l1-01-20260722.md
  *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-MOB-A
+ * change_mode: UPGRADE
+ * What: brand.barWidth 4px · fontFamily display/body (Montserrat · Source Sans 3) · export brand bundle MOB-13
+ * Why: ADR-20260805 §16 LOCK · W4-MOB-A parity web dialog chrome · face_live=false
+ * must_keep: primary #1E40AF; touchTargetMin ≥44; không claim remaster DONE
+ *
  * Spec refs (authoritative order):
  * 1. docs/architecture/ADR-XEVN-THEME-SHARP-OPS-20260722.md §4 — token law
  * 2. docs/program/XEVN_BRAND_UIUX_PROPOSAL.md §3.1–3.3 (APPROVED-SPONSOR)
@@ -92,6 +99,12 @@ export const colors = {
   homeTileLetters: '#EDE9FE',
 } as const;
 
+/** Precision Motion brand chrome — dialog bar + typography roles (ADR §16). */
+export const brand = {
+  barWidth: 4,
+  wordmark: 'XeVN',
+} as const;
+
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -150,6 +163,13 @@ export const borderWidth = {
 export const typography = {
   fontFamily: {
     sans: 'System',
+    /** Loaded via BrandFontsProvider — @expo-google-fonts Montserrat */
+    display: 'Montserrat_600SemiBold',
+    displayBold: 'Montserrat_700Bold',
+    /** Loaded via BrandFontsProvider — Source Sans 3 */
+    body: 'SourceSans3_400Regular',
+    bodyMedium: 'SourceSans3_500Medium',
+    bodySemibold: 'SourceSans3_600SemiBold',
   },
   fontSize: {
     tabLabel: 10,
@@ -277,6 +297,7 @@ export const textStyles = {
 /** Convenience bundle for StyleSheet consumers */
 export const tokens = {
   colors,
+  brand,
   spacing,
   layout,
   radius,

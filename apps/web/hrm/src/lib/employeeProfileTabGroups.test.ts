@@ -6,13 +6,14 @@ import {
   PROFILE_NON_CORE_GROUP_IDS,
   isCoreProfileTab,
   isPinnableProfileTab,
+  parseProfileTabParam,
   resolveProfileTabGroup,
 } from './employeeProfileTabGroups';
 
 describe('D-UX-PROFILE-TABS-01 — employeeProfileTabGroups', () => {
-  it('covers exactly 15 distinct tab ids', () => {
-    expect(PROFILE_ALL_TAB_IDS).toHaveLength(15);
-    expect(new Set(PROFILE_ALL_TAB_IDS).size).toBe(15);
+  it('covers exactly 16 distinct tab ids', () => {
+    expect(PROFILE_ALL_TAB_IDS).toHaveLength(16);
+    expect(new Set(PROFILE_ALL_TAB_IDS).size).toBe(16);
   });
 
   it('keeps Core strip at 4 always-visible tabs', () => {
@@ -41,6 +42,7 @@ describe('D-UX-PROFILE-TABS-01 — employeeProfileTabGroups', () => {
       'workHistory',
       'degrees',
       'certificates',
+      'documents',
       'skills',
     ]);
     expect([...PROFILE_GROUP_TAB_IDS.personal]).toEqual(['family']);
@@ -63,5 +65,13 @@ describe('D-UX-PROFILE-TABS-01 — employeeProfileTabGroups', () => {
     for (const groupId of PROFILE_NON_CORE_GROUP_IDS) {
       expect(PROFILE_GROUP_TAB_IDS[groupId].length).toBeGreaterThan(0);
     }
+  });
+
+  it('parseProfileTabParam accepts insurance + documents deep-link', () => {
+    expect(parseProfileTabParam('insurance')).toBe('insurance');
+    expect(parseProfileTabParam('documents')).toBe('documents');
+    expect(parseProfileTabParam('general')).toBe('general');
+    expect(parseProfileTabParam('bogus')).toBeNull();
+    expect(parseProfileTabParam(null)).toBeNull();
   });
 });

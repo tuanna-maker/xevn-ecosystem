@@ -1,8 +1,54 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Chấm công → Đơn từ (OT/BT/LE/SC)
+ * UC:         HRM-AT-10 · ATT-C4
+ * SRS:        docs/hrm/SRS.md · FR-HRM-AT-10 · TECHSPEC §14.4–14.5
+ * Purpose:    OT/BT/late-early/shift-change TXN list/create/decide với scope TEXT slug.
+ * WorkItem:    PO-MFD-M2-ATT-SCOPE-01
+ * must_keep:   U78 update-requests pattern; normalizePayrollListCompanyId on list/decide
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 · PO-MFD-M2-ATT-SCOPE-01 · FIX
+ * What: normalizePayrollListCompanyId on OT list/decide/delete; create OT nhận resolvedCompanyId từ controller.
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08
+ * WorkItem: PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-SHIFT-CATALOG-BE-01
+ * change_mode: FIX
+ * What: createShiftChangeRequest asserts current_shift/requested_shift ∈ Nest work_shifts
+ *       when active>0 → HRM-ATT-SHIFT-KEY (VAL-ATT-SHIFT-CNS-01 · AC-01b).
+ * Why: BA Option B deepen · admin≠consumer · empty active skip · no seed
+ * must_keep: OT no invent KEY · Settings/shifts REF · ATT-CODE/leave/worksite seals · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08
+ * WorkItem: PO-HRM-DYNAMIC-CONFIG-PLATFORM-OT-TYPE-CATALOG-BE-01
+ * change_mode: ADD
+ * What: createOvertimeRequest asserts overtime_type ∈ Nest att_ot_type EFF when >0
+ *       → HRM-ATT-OT-TYPE-KEY (VAL-ATT-OT-CNS-01 · AC-PLT-ATT-OT-01b); EFF=0 soft-skip.
+ * Why: BA+DATA CONFIRMED Option B · admin≠consumer · DTO remain open string · no seed
+ * must_keep: approve path no type re-assert · leave/code/worksite/shifts seals · formula HOLD · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08
+ * WorkItem: PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CATALOG-BE-01
+ * change_mode: ADD
+ * What: createOvertimeRequest asserts compensation_type ∈ Nest att_ot_comp_type EFF when >0
+ *       → HRM-ATT-OT-COMP-KEY (VAL-ATT-COMP-CNS-01 · AC-PLT-ATT-COMP-01b); EFF=0 soft-skip.
+ * Why: BA+DATA CONFIRMED Option B · orthogonal vs overtime_type (att_ot_type SEAL) · no seed
+ * must_keep: KEEP overtime_requests.compensation_type TEXT soft key · approve path no re-assert ·
+ *            att_ot_type / leave / code / worksite / shifts seals · payroll formula HOLD · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10
+ * WorkItem: PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01
+ * change_mode: ADD
+ * What: approveOvertimeRequest → F-ATT-OT-COMP-ACCRUE when policy ON + comp maps leave;
+ *       idempotent replay when OT already approved; ≠ sheet close trigger.
+ * Why:  API-01 §4.6/§4.9 · DATA §5.2 · SRS FR-UC-BP-ATT-06 Diễn biến #1
+ * must_keep: pending_days hold RETAIN · DENY att_leave_hold · DENY merge buckets
+ */
+import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  normalizePayrollListCompanyId,
   pushCompanyIdFilter,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
@@ -10,6 +56,13 @@ import {
   type HrmListScope,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
+import { AttendanceCatalogService } from './attendance-catalog.service';
+import { AttOtTypeService } from './att-ot-type.service';
+import { AttOtCompTypeService } from './att-ot-comp-type.service';
+import {
+  AttOtCompLeavePolicyService,
+  type OtCompAccrualResult,
+} from './att-ot-comp-leave-policy.service';
 import { CreateBusinessTripRequestDto } from './dto/create-business-trip-request.dto';
 import { CreateLateEarlyRequestDto } from './dto/create-late-early-request.dto';
 import { CreateOvertimeRequestDto } from './dto/create-overtime-request.dto';
@@ -21,7 +74,17 @@ type ScopedRow = { company_id: string };
 
 @Injectable()
 export class AttendanceRequestsService {
-  constructor(private readonly db: HrmDbService) {}
+  constructor(
+    private readonly db: HrmDbService,
+    /** F-ATT-CAT-SHIFT — optional for legacy specs; production injects AttendanceCatalogService. */
+    @Optional() private readonly attendanceCatalog?: AttendanceCatalogService,
+    /** F-ATT-CAT-OT — optional for legacy specs; production injects AttOtTypeService. */
+    @Optional() private readonly attOtTypeCatalog?: AttOtTypeService,
+    /** F-ATT-CAT-OTC — optional for legacy specs; production injects AttOtCompTypeService. */
+    @Optional() private readonly attOtCompTypeCatalog?: AttOtCompTypeService,
+    /** F-ATT-OT-COMP-POLICY / ACCRUE — optional for legacy specs. */
+    @Optional() private readonly attOtCompLeavePolicy?: AttOtCompLeavePolicyService,
+  ) {}
 
   async ensureSchema() {
     await this.db.query(`
@@ -184,7 +247,8 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
     const existing = await this.loadCompanyId(table, requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ATT-REQ-404',
@@ -226,7 +290,8 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
     const existing = await this.loadCompanyId(table, requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ATT-REQ-404',
@@ -248,15 +313,52 @@ export class AttendanceRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
     const { sql, params } = this.buildListSql('overtime_requests', 'ot', scope, query);
     const res = await this.db.query(sql, params);
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createOvertimeRequest(body: CreateOvertimeRequestDto, authorization?: string) {
+  async createOvertimeRequest(
+    body: CreateOvertimeRequestDto,
+    authorization?: string,
+    resolvedCompanyId?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.company_id ?? resolvedCompanyId,
+    );
+    // VAL-ATT-OT-CNS-01 — invent KEY when Nest EFF>0; skip when empty (01c · U65).
+    let overtimeType = body.overtime_type.trim();
+    let coefficient = body.coefficient ?? 1.5;
+    if (this.attOtTypeCatalog) {
+      const hit = await this.attOtTypeCatalog.assertOtTypeInEffectiveCatalog({
+        companyId,
+        overtimeType: body.overtime_type,
+        authorization,
+      });
+      if (hit) {
+        overtimeType = hit.code;
+        if (body.coefficient === undefined) {
+          coefficient = hit.defaultCoeff;
+        }
+      }
+    }
+    // VAL-ATT-COMP-CNS-01 — compensation_type invent KEY when Nest EFF>0; skip empty (01c · U65).
+    // KEEP overtime_requests.compensation_type TEXT soft key; orthogonal vs overtime_type.
+    let compensationType = body.compensation_type?.trim() || 'salary';
+    if (this.attOtCompTypeCatalog) {
+      const compHit = await this.attOtCompTypeCatalog.assertCompTypeInEffectiveCatalog({
+        companyId,
+        compensationType,
+        authorization,
+      });
+      if (compHit) {
+        compensationType = compHit.code;
+      }
+    }
     const id = randomUUID();
     const res = await this.db.query(
       `
@@ -283,10 +385,10 @@ export class AttendanceRequestsService {
         body.start_time,
         body.end_time,
         body.total_hours,
-        body.overtime_type.trim(),
-        body.coefficient ?? 1.5,
+        overtimeType,
+        coefficient,
         body.reason.trim(),
-        body.compensation_type?.trim() ?? 'salary',
+        compensationType,
         body.approver_name?.trim() ?? null,
       ],
     );
@@ -297,14 +399,98 @@ export class AttendanceRequestsService {
     return row;
   }
 
-  approveOvertimeRequest(
+  async approveOvertimeRequest(
     requestId: string,
     body: DecideLeaveRequestDto,
     companyId: string,
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('overtime_requests', requestId, 'approved', body, companyId, authorization, tenantId);
+    await this.ensureSchema();
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const loaded = await this.db.query(
+      `
+        SELECT id, company_id, employee_id, status, total_hours, compensation_type, overtime_date
+        FROM public.overtime_requests
+        WHERE id = $1::uuid
+        LIMIT 1;
+      `,
+      [requestId],
+    );
+    const before = loaded.rows[0] as
+      | {
+          id: string;
+          company_id: string;
+          employee_id: string;
+          status: string;
+          total_hours: string | number;
+          compensation_type: string | null;
+          overtime_date: string | Date | null;
+        }
+      | undefined;
+    if (!before) {
+      throw new ApiException('HRM-ATT-REQ-404', 'Attendance request not found', HttpStatus.NOT_FOUND);
+    }
+    assertResourceInHrmScope({ company_id: before.company_id }, scope, {
+      notFoundCode: 'HRM-ATT-REQ-404',
+      mismatchCode: 'HRM-ATT-REQ-409',
+    });
+
+    let row = before;
+    let accrual: OtCompAccrualResult | null | undefined;
+
+    if (before.status === 'approved') {
+      accrual = this.attOtCompLeavePolicy
+        ? await this.attOtCompLeavePolicy.accrueOnApprovedOvertime(before)
+        : null;
+      return this.mapOvertimeApproveResponse(row, accrual);
+    }
+
+    if (before.status !== 'pending') {
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    row = (await this.decideRequest(
+      'overtime_requests',
+      requestId,
+      'approved',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    )) as typeof before;
+
+    if (this.attOtCompLeavePolicy) {
+      accrual = await this.attOtCompLeavePolicy.accrueOnApprovedOvertime({
+        ...row,
+        status: 'approved',
+      });
+    }
+
+    return this.mapOvertimeApproveResponse(row, accrual);
+  }
+
+  private mapOvertimeApproveResponse(
+    row: Record<string, unknown>,
+    accrual?: OtCompAccrualResult | null,
+  ) {
+    if (!accrual) {
+      return row;
+    }
+    return {
+      ...row,
+      accrual: {
+        credited_days: accrual.credited_days,
+        balance_year: accrual.balance_year,
+        ledger_id: accrual.ledger_id,
+        idempotent_replay: accrual.idempotent_replay,
+      },
+    };
   }
 
   rejectOvertimeRequest(
@@ -503,6 +689,15 @@ export class AttendanceRequestsService {
   async createShiftChangeRequest(body: CreateShiftChangeRequestDto, authorization?: string) {
     await this.ensureSchema();
     const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id);
+    // VAL-ATT-SHIFT-CNS-01 — invent KEY when Nest active>0; skip when empty (01c · U65).
+    if (this.attendanceCatalog) {
+      await this.attendanceCatalog.assertShiftKeysForConsumer({
+        companyId,
+        currentShift: body.current_shift,
+        requestedShift: body.requested_shift,
+        authorization,
+      });
+    }
     const id = randomUUID();
     const res = await this.db.query(
       `

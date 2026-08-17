@@ -15,6 +15,12 @@
  * must_keep:  group_ceo / ceo / hrbp_manager / member_ceo / subsidiary_ceo VI; empty → em dash
  * SOLID:      Shared label map only — layout stays in HrmOperatingUnitFilter
  * LastVerified: scopeRoleLabels.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-02-EMP-FE-LIBS-01
+ * change_mode: ADD (restore)
+ * What: Restore scopeRoleLabels (+ test) transitive dep of embedWorkingContext from stash 43c479a
+ * Why: Unblock HRM SPA boot after D-HRM-LIB-MISSING-01
+ * must_keep: subsidiary_ceo / group_ceo / member_ceo VI maps · empty → em dash
  */
 /** Vietnamese labels for portal/HRM scope chips (AC-CD-F3-01 / BM-AC-02-01). */
 const ROLE_LABEL_VI: Record<string, string> = {

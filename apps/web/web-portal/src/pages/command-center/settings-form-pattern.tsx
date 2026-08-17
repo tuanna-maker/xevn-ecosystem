@@ -15,6 +15,20 @@
  * SOLID:      Constants-only module; no business fetch
  * LastVerified: docs/qa/evidence/fe-xevn-brand-tokens-l1-01-20260722.md
  *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-A · 2026-08-05
+ * change_mode: UPGRADE
+ * What: NAV sub-sidebar / rail chrome labels — `text-slate-500|600` → `text-xevn-textSecondary`
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8 pale ban · PORT-03/05/08 shell
+ * must_keep: SETTINGS_RADIUS_*; dialog surface; no Nest/seed; settings table content out of this seat
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-B · 2026-08-05
+ * change_mode: UPGRADE
+ * What: Add `SETTINGS_TABLE_TH_CLASS` — table column headers use textSecondary (ADR §8)
+ * Why: PORT-A-QA residual CC settings tables; PORT-B remaster
+ * must_keep: NAV_* · dialog surface · no Nest/seed
+ *
  * XeVN Symmetrical Grid Law (Apple-style rhythm)
  *
  * Viewport: `XEVN_VIEWPORT_PADDING` = `xevn-safe-inline` (clamp đối xứng px-8 → px-12). Kèm `XEVN_FLUID_SHELL` max-width 1920px.
@@ -106,11 +120,11 @@ export const SETTINGS_COL = {
 
 /** Label trường form — 0.9375rem (~15px @ 16px), scales with --xevn-ui-density */
 export const SETTINGS_LABEL_CLASS =
-  'block min-w-0 break-words text-left text-[0.9375rem] font-medium leading-snug text-slate-500 hyphens-auto';
+  'block min-w-0 break-words text-left text-[0.9375rem] font-medium leading-snug text-xevn-textSecondary hyphens-auto';
 
 /**
  * Thứ bậc Typography (Workspace):
- * Page title (2xl) → Section trong card (xl) → Field label (16px/base medium slate-500).
+ * Page title (2xl) → Section trong card (xl) → Field label (16px/base medium textSecondary).
  */
 
 /** Tiêu đề trang trong Workspace (vd. "Thiết lập công ty") — cấp 1 */
@@ -119,7 +133,7 @@ export const SETTINGS_PAGE_TITLE_CLASS =
 
 /** Phụ đề dưới tiêu đề trang */
 export const SETTINGS_PAGE_SUBTITLE_CLASS =
-  'mt-1 text-sm font-medium leading-snug text-slate-600 sm:text-[0.9375rem]';
+  'mt-1 text-sm font-medium leading-snug text-xevn-textSecondary sm:text-[0.9375rem]';
 
 /** Tiêu đề khối trong card (vd. "Khối Định danh") — cấp 2, dưới page title */
 export const SETTINGS_SECTION_TITLE_CLASS =
@@ -131,7 +145,7 @@ export const NAV_SUBSIDEBAR_TITLE_CLASS =
 
 /** Dòng phụ dưới tiêu đề cột Sub-sidebar */
 export const NAV_SUBSIDEBAR_HELPER_CLASS =
-  'mt-1 text-xs font-medium leading-snug text-slate-500 sm:text-[0.8125rem]';
+  'mt-1 text-xs font-medium leading-snug text-xevn-textSecondary sm:text-[0.8125rem]';
 
 /** Icon ↔ nhãn mục Sub-sidebar (hàng ngang): gap-1 hoặc gap-2 */
 export const NAV_SUBSIDEBAR_ITEM_ROW_GAP = 'gap-2';
@@ -142,7 +156,7 @@ export const NAV_SUBSIDEBAR_ITEM_ROW_GAP = 'gap-2';
 export const NAV_SUBSIDEBAR_ITEM_BASE_CLASS =
   'min-w-0 flex-1 text-left text-[0.875rem] leading-snug break-words hyphens-auto';
 
-export const NAV_SUBSIDEBAR_ITEM_IDLE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLASS} font-normal text-slate-500`;
+export const NAV_SUBSIDEBAR_ITEM_IDLE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLASS} font-normal text-xevn-textSecondary`;
 
 export const NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS = `${NAV_SUBSIDEBAR_ITEM_BASE_CLASS} font-bold text-xevn-primary`;
 
@@ -168,7 +182,7 @@ export const NAV_SUBSIDEBAR_WIDTH_COLLAPSED_CLASS = 'w-12 min-w-12 max-w-12';
 
 /** Rail: nhãn nhóm trên cùng ("Phân hệ") */
 export const NAV_RAIL_GROUP_LABEL_CLASS =
-  'mb-3 text-center text-[0.6875rem] font-semibold uppercase tracking-wider text-slate-500';
+  'mb-3 text-center text-[0.6875rem] font-semibold uppercase tracking-wider text-xevn-textSecondary';
 
 /**
  * Identity Block: icon + tên phân hệ — gap dọc chặt (4px; tối đa 8px nếu cần chỉnh).
@@ -181,21 +195,25 @@ export const NAV_RAIL_MODULE_STACK = 'space-y-6';
 
 /** Rail: caption dưới icon — 15px, font-normal; full width trong cột có px-3; active: font-bold ở component */
 export const NAV_RAIL_ICON_CAPTION_CLASS =
-  'w-full text-balance text-center text-[0.8125rem] font-normal leading-snug text-slate-600 break-words';
+  'w-full text-balance text-center text-[0.8125rem] font-normal leading-snug text-xevn-textSecondary break-words';
 
 /** Rail: nút phụ / mô tả persona */
 export const NAV_RAIL_META_TEXT_CLASS =
-  'text-center text-[0.75rem] font-medium leading-snug text-slate-600 sm:text-sm';
+  'text-center text-[0.75rem] font-medium leading-snug text-xevn-textSecondary sm:text-sm';
 
 /** Rail: tiêu đề vùng link ("Mở phân hệ") */
 export const NAV_RAIL_LINK_SECTION_LABEL_CLASS =
-  'text-[0.6875rem] font-semibold uppercase tracking-wide text-slate-500';
+  'text-[0.6875rem] font-semibold uppercase tracking-wide text-xevn-textSecondary';
 
 /** Khoảng cách dọc đồng nhất giữa các section / widget hàng đầu */
 export const SETTINGS_SECTION_STACK = 'space-y-4';
 
 /** Chuẩn chữ trong ô nhập (Input / Select / Textarea) — break-words trong Safe Area */
 export const SETTINGS_CONTROL_TEXT = 'break-words text-[0.9375rem] leading-snug';
+
+/** Tiêu đề cột bảng Workspace / settings — ADR §8 textSecondary (không slate-500) */
+export const SETTINGS_TABLE_TH_CLASS =
+  'text-left text-sm font-medium text-xevn-textSecondary';
 
 /** Ô select/input/textarea: không tràn ô lưới */
 export const SETTINGS_FIELD_COMPACT =

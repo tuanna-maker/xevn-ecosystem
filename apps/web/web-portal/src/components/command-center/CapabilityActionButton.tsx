@@ -1,3 +1,11 @@
+/**
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: R-SPINE-WEB-APPROVE-UX-01 · 2026-08-03
+ * change_mode: ADD
+ * What: accessibleName + data-testid props — leave Duyệt overrides registry aria «Xử lý nhanh»
+ * Why: getByRole/HDSD harness missed Duyệt when aria-label locked to capability labelVi
+ * must_keep: resolveCapabilityActionState enable/block; wireMode api
+ */
 import React from 'react';
 import {
   resolveCapabilityActionState,
@@ -12,6 +20,13 @@ export type CapabilityActionButtonProps = {
   className?: string;
   type?: 'button' | 'submit';
   variant?: 'primary' | 'secondary' | 'ghost';
+  /**
+   * Overrides registry `labelVi` for accessible name (getByRole / HDSD «Duyệt»).
+   * Visible children stay authoritative for what the user sees.
+   */
+  accessibleName?: string;
+  /** Optional stable harness hook (leave Duyệt · R-SPINE-WEB-APPROVE-UX-01). */
+  'data-testid'?: string;
 };
 
 const VARIANT_CLASS: Record<NonNullable<CapabilityActionButtonProps['variant']>, string> = {
@@ -31,19 +46,24 @@ export function CapabilityActionButton({
   className,
   type = 'button',
   variant = 'primary',
+  accessibleName,
+  'data-testid': dataTestId,
 }: CapabilityActionButtonProps) {
   const state = resolveCapabilityActionState(capabilityCode, runtime);
   const enabled = state?.enabled ?? false;
   const title = state?.titleAttr ?? capabilityCode;
   const mergedClass = className ?? VARIANT_CLASS[variant];
+  const ariaLabel =
+    accessibleName?.trim() || state?.definition.labelVi || capabilityCode;
 
   return (
     <button
       type={type}
       disabled={!enabled}
-      title={title}
-      aria-label={state?.definition.labelVi ?? capabilityCode}
+      title={accessibleName?.trim() ? accessibleName : title}
+      aria-label={ariaLabel}
       aria-disabled={!enabled}
+      data-testid={dataTestId}
       onClick={enabled ? onClick : undefined}
       className={mergedClass}
     >

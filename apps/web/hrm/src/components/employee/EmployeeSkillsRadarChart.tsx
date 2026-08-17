@@ -23,7 +23,7 @@ export function EmployeeSkillsRadarChart({ data }: EmployeeSkillsRadarChartProps
   if (!data?.length) {
     return (
       <div
-        className="flex h-[280px] items-center justify-center text-sm text-muted-foreground"
+        className="flex h-[280px] items-center justify-center text-sm text-xevn-textSecondary"
         role="status"
       >
         Chưa có dữ liệu kỹ năng

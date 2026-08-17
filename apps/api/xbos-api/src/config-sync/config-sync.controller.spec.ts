@@ -22,6 +22,19 @@ describe('ConfigSyncController', () => {
       appliedCount: 1,
       applied: [{ tenantId: 'xe-du-lich', companyId: 'main', version: 1, checksum: 'sha256:x' }],
     }),
+    cloneCatalog: jest.fn().mockResolvedValue({
+      catalogKey: 'job_titles',
+      onConflict: 'reject',
+      source: { tenantId: 'xevn', companyId: 'holding', version: 4, checksum: 'sha256:s', itemCount: 2 },
+      dest: { tenantId: 'xe-du-lich', companyId: 'main', version: 1, checksum: 'sha256:d', itemCount: 2 },
+    }),
+    cloneCatalogBundle: jest.fn().mockResolvedValue({
+      copiedCount: 2,
+      skippedCount: 0,
+      domains: ['logistics'],
+      source: { tenantId: 'xevn', companyId: 'holding' },
+      dest: { tenantId: 'xevn', companyId: 'logistics' },
+    }),
     getCatalogForTarget: jest.fn().mockResolvedValue({ key: 'job_titles' }),
     listCatalogsForTarget: jest.fn().mockResolvedValue({ total: 1, target: 'hrm', data: [] }),
   };
@@ -160,6 +173,25 @@ describe('ConfigSyncController', () => {
     expect(serviceMock.getCatalogForTarget).toHaveBeenCalledWith('job_titles', 'hrm', 'xevn', 'holding');
   });
 
+  it('PO-UC-TC-W3-BE-LOG09-SCOPE: group CEO JWT main GET catalog companyId=logistics (dest reload)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    await controller.getCatalogForSystem(
+      'log_dm_1',
+      'xbos',
+      'xevn',
+      'logistics',
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(serviceMock.getCatalogForTarget).toHaveBeenCalledWith('log_dm_1', 'xbos', 'xevn', 'logistics');
+  });
+
   it('UC-XBOS-03/04/UC-CC-P0-05: get/list catalogs return XBOS-CFG-201/202', async () => {
     const one = await controller.getCatalogForSystem('job_titles', 'hrm', 'xevn', 'vtc', undefined, 'test-key');
     const many = await controller.listCatalogsForSystem('hrm', 'xevn', 'vtc', undefined, 'test-key');
@@ -284,5 +316,154 @@ describe('ConfigSyncController', () => {
         actor: 'group_ceo',
       }),
     );
+  });
+
+  it('XBOS-DM-LOG-09 HP: clone-bundle returns XBOS-CFG-205 and main→holding source', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const result = await controller.cloneCatalogBundle(
+      {
+        sourceTenantId: 'xevn',
+        sourceCompanyId: 'main',
+        destTenantId: 'xevn',
+        destCompanyId: 'logistics',
+        domains: ['logistics'],
+        actor: 'ceo@xe.vn',
+      },
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.success).toBe(true);
+    expect(result.code).toBe('XBOS-CFG-205');
+    expect(serviceMock.cloneCatalogBundle).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sourceTenantId: 'xevn',
+        sourceCompanyId: 'holding',
+        destTenantId: 'xevn',
+        destCompanyId: 'logistics',
+        domains: ['logistics'],
+      }),
+    );
+  });
+
+  it('XBOS-DM-LOG-09 AU: member JWT forbidden on clone-bundle', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'company_ceo',
+    });
+    await expect(
+      controller.cloneCatalogBundle(
+        {
+          sourceTenantId: 'xevn',
+          sourceCompanyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'logistics',
+          domains: ['logistics'],
+        },
+        `Bearer ${token}`,
+        'test-key',
+      ),
+    ).rejects.toThrow('Catalog bundle clone requires group catalog admin');
+    expect(serviceMock.cloneCatalogBundle).not.toHaveBeenCalled();
+  });
+
+  it('XBOS-DM-LOG-09 AU: anonymous clone-bundle → XBOS-AUTH-001', async () => {
+    await expect(
+      controller.cloneCatalogBundle(
+        {
+          sourceTenantId: 'xevn',
+          sourceCompanyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'logistics',
+          domains: ['logistics'],
+        },
+        undefined,
+        undefined,
+      ),
+    ).rejects.toThrow('Unauthorized bootstrap access');
+    expect(serviceMock.cloneCatalogBundle).not.toHaveBeenCalled();
+  });
+
+  it('XBOS-DM-09: clone requires auth', async () => {
+    await expect(
+      controller.cloneCatalog(
+        'job_titles',
+        {
+          tenantId: 'xevn',
+          companyId: 'holding',
+          destTenantId: 'xe-du-lich',
+          destCompanyId: 'main',
+        },
+        undefined,
+        undefined,
+      ),
+    ).rejects.toThrow('Unauthorized bootstrap access');
+    expect(serviceMock.cloneCatalog).not.toHaveBeenCalled();
+  });
+
+  it('XBOS-DM-09 TC-DM09-CPY-HP-001: clone returns XBOS-CFG-206 and maps group JWT main→holding', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const result = await controller.cloneCatalog(
+      'job_titles',
+      {
+        tenantId: 'xevn',
+        companyId: 'holding',
+        destTenantId: 'xe-du-lich',
+        destCompanyId: 'main',
+        actor: 'group_ceo',
+      },
+      `Bearer ${token}`,
+      'test-key',
+    );
+    expect(result.success).toBe(true);
+    expect(result.code).toBe('XBOS-CFG-206');
+    expect(serviceMock.cloneCatalog).toHaveBeenCalledWith(
+      'job_titles',
+      expect.objectContaining({
+        tenantId: 'xevn',
+        companyId: 'holding',
+        destTenantId: 'xe-du-lich',
+        destCompanyId: 'main',
+        actor: 'group_ceo',
+      }),
+    );
+  });
+
+  it('XBOS-DM-09 TC-DM09-CPY-AU-001: member JWT cannot clone (XBOS-AUTH-003)', async () => {
+    const token = createInternalJwt({
+      iss: 'xevn-internal',
+      aud: 'xevn-api',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'company_ceo',
+    });
+    await expect(
+      controller.cloneCatalog(
+        'job_titles',
+        {
+          tenantId: 'xevn',
+          companyId: 'holding',
+          destTenantId: 'xe-tmdv',
+          destCompanyId: 'main',
+        },
+        `Bearer ${token}`,
+        'test-key',
+      ),
+    ).rejects.toMatchObject({ code: 'XBOS-AUTH-003' });
+    expect(serviceMock.cloneCatalog).not.toHaveBeenCalled();
   });
 });

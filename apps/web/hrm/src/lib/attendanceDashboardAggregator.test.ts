@@ -34,6 +34,7 @@ describe('attendanceDashboardAggregator', () => {
       check_in_at: '2026-06-02T08:05:00.000Z',
       check_out_at: '2026-06-02T17:00:00.000Z',
       status: 'present',
+      status_label: 'Có mặt',
       note: null,
       created_by: null,
       created_at: '2026-06-02T08:05:00.000Z',
@@ -47,6 +48,11 @@ describe('attendanceDashboardAggregator', () => {
       check_in_at: null,
       check_out_at: null,
       status: 'leave',
+      status_label: 'Nghỉ phép',
+      leave_request_id: 'lr-1',
+      leave_type: 'annual',
+      leave_type_key: 'annual',
+      leave_type_label: 'Phép năm',
       note: null,
       created_by: null,
       created_at: '2026-06-03T00:00:00.000Z',
@@ -65,11 +71,34 @@ describe('attendanceDashboardAggregator', () => {
     expect(JSON.stringify(rows)).not.toMatch(/CÔNG TY DEMO|Chi nhánh Đà Nẵng|SAIGON NEWPORT/i);
   });
 
+  it('weekly leave cell binds status_label · leave_type_label (F-ATT-LEAVE-FUNNEL-03)', () => {
+    const range = resolveWeeklyDateRange({
+      start_date: '2026-06-02',
+      end_date: '2026-06-08',
+    });
+    const rows = buildWeeklyAttendanceRows(records, employees, range);
+    const leaveDay = rows[0]?.days.find((d) => d.dateIso === '2026-06-03');
+    expect(leaveDay?.shifts[0]).toMatchObject({
+      type: 'leave',
+      status: 'leave',
+      name: 'Nghỉ phép · Phép năm',
+    });
+  });
+
   it('maps attendance records to table rows without 2021 mock dates', () => {
     const tableRows = mapAttendanceRecordsToTableRows(records, employees);
     expect(tableRows[0]?.date).toBe('02/06/2026');
     expect(tableRows.some((row) => row.date.includes('2021'))).toBe(false);
     expect(tableRows[0]?.unit).toBe('Phòng Nhân sự');
+  });
+
+  it('Bản ghi table row exposes leave display-ready fields', () => {
+    const tableRows = mapAttendanceRecordsToTableRows(records, employees);
+    const leaveRow = tableRows.find((r) => r.id === 'r2');
+    expect(leaveRow?.status).toBe('leave');
+    expect(leaveRow?.status_label).toBe('Nghỉ phép');
+    expect(leaveRow?.leave_type_label).toBe('Phép năm');
+    expect(leaveRow?.leave_display_label).toBe('Nghỉ phép · Phép năm');
   });
 
   it('sums leave type chart values for center label', () => {

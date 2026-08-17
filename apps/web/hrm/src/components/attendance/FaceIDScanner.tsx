@@ -1,3 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /attendance → Clock-In → Khuôn mặt (S17–S18 shell)
+ * UC:         MOB-04 Face MVP (mobile) · web = honesty only
+ * BR:         R-FACE-01 web STUB · ADR A5 stub honesty
+ * SRS:        docs/program/HRM_UI_BRAND_SCREEN_INVENTORY.md S17–S18
+ * TechSpec:   ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10
+ * Purpose:    Shell nhận diện khuôn mặt web — chrome Precision Motion; featureHold chặn mutate LIVE.
+ * WorkItem:   PO-HRM-UI-BRAND-W3-ATT-G1
+ * Coded:      2026-08-05
+ * must_keep:  featureHold block check-in/out; không claim Face LIVE; PROP-03e QR card SKIP riêng
+ * SOLID:      Scanner UI tách hook useFaceRecognition
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-G1
+ * change_mode: UPGRADE
+ * What: Remaster Face scan chrome — titles ≥20, primary #1E40AF, ban blue/orange AI; keep featureHold
+ * Why: inventory W3-ATT-G1 S17–S18 · ADR §8–§10
+ * must_keep: featureHold mutate block; no Face LIVE invent; parent pointer-events-none shell
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-G1 stall#2
+ * change_mode: FIX
+ * What: Confirm GĐ2-HOLD chrome + DialogTitle ≥20; no LIVE enable; evidence close
+ * Why: PM RE-DISPATCH stall evidence MISS
+ * must_keep: featureHold; no Face LIVE invent
+ */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +50,6 @@ import {
   Camera,
   CameraOff,
   CheckCircle2,
-  XCircle,
   LogIn,
   LogOut,
   Clock,
@@ -35,7 +59,6 @@ import {
   AlertCircle,
   Loader2,
   UserCheck,
-  RefreshCw,
 } from 'lucide-react';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useAttendanceRecords, type AttendanceRecord } from '@/hooks/useAttendanceRecords';
@@ -47,9 +70,11 @@ import { useTranslation } from 'react-i18next';
 
 interface FaceIDScannerProps {
   onCheckInOut?: (record: AttendanceRecord) => void;
+  /** GĐ2-HOLD — block mutate + success toasts (PO-MFD-M2). */
+  featureHold?: boolean;
 }
 
-export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
+export function FaceIDScanner({ onCheckInOut, featureHold = false }: FaceIDScannerProps) {
   const { t, i18n } = useTranslation();
   const { employees } = useEmployees();
   const { checkIn, checkOut, fetchTodayRecord } = useAttendanceRecords();
@@ -237,6 +262,10 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
   };
 
   const handleConfirmAttendance = async (action: 'checkin' | 'checkout') => {
+    if (featureHold) {
+      toast.error(t('attPage.faceIdHold'));
+      return;
+    }
     if (!matchedEmployee) return;
 
     setIsProcessing(true);
@@ -304,15 +333,15 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
   const getStatusMessage = () => {
     switch (scanStatus) {
       case 'scanning':
-        return { text: t('faceIdScanner.scanning'), color: 'text-blue-500' };
+        return { text: t('faceIdScanner.scanning'), color: 'text-xevn-primary' };
       case 'detected':
-        return { text: t('faceIdScanner.detected'), color: 'text-yellow-500' };
+        return { text: t('faceIdScanner.detected'), color: 'text-xevn-warning' };
       case 'matched':
-        return { text: t('faceIdScanner.matched'), color: 'text-green-500' };
+        return { text: t('faceIdScanner.matched'), color: 'text-xevn-success' };
       case 'no_match':
-        return { text: t('faceIdScanner.noMatch'), color: 'text-red-500' };
+        return { text: t('faceIdScanner.noMatch'), color: 'text-xevn-danger' };
       default:
-        return { text: t('faceIdScanner.idle'), color: 'text-muted-foreground' };
+        return { text: t('faceIdScanner.idle'), color: 'text-xevn-textSecondary' };
     }
   };
 
@@ -320,35 +349,38 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
 
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full rounded-card border-xevn-border bg-xevn-surface" data-testid="att-faceid-scanner-precision">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Scan className="h-5 w-5 text-primary" />
+          <div className="flex items-center justify-between gap-3">
+            <CardTitle className="flex flex-wrap items-center gap-2 text-[20px] font-bold text-xevn-text">
+              <Scan className="h-5 w-5 text-xevn-primary" />
               {t('faceIdScanner.title')}
+              {featureHold ? (
+                <Badge variant="outline" className="border-xevn-border text-xevn-textSecondary text-[10px] font-semibold">
+                  {t('attPage.gd2HoldBadge', 'GĐ2')}
+                </Badge>
+              ) : null}
             </CardTitle>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-xevn-primary tabular-nums">
                 {format(currentTime, 'HH:mm:ss')}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-xevn-textSecondary">
                 {format(currentTime, 'EEEE, dd/MM/yyyy', { locale: getDateLocale() })}
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Loading Models */}
           {isLoadingModels && (
-            <div className="flex items-center justify-center p-8 bg-muted/30 rounded-lg">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mr-3" />
-              <span>{t('faceIdScanner.loadingModels')}</span>
+            <div className="flex items-center justify-center p-8 bg-xevn-background rounded-lg border border-xevn-border">
+              <Loader2 className="h-8 w-8 animate-spin text-xevn-primary mr-3" />
+              <span className="text-[15px] text-xevn-text">{t('faceIdScanner.loadingModels')}</span>
             </div>
           )}
 
-          {/* Camera Area */}
           {!isLoadingModels && (
-            <div className="relative rounded-lg overflow-hidden bg-black aspect-video">
+            <div className="relative rounded-lg overflow-hidden bg-black aspect-video border border-xevn-border">
               <video
                 ref={videoRef}
                 autoPlay
@@ -362,27 +394,28 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
               />
 
               {!isScanning && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/30">
-                  <Scan className="h-24 w-24 text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground text-center px-4">
-                    {t('faceIdScanner.clickToStart')}
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-xevn-background/90">
+                  <Scan className="h-24 w-24 text-xevn-textMuted mb-4" />
+                  <p className="text-xevn-textSecondary text-center px-4 text-[15px]">
+                    {featureHold
+                      ? t('attPage.faceIdHold')
+                      : t('faceIdScanner.clickToStart')}
                   </p>
                 </div>
               )}
 
-              {/* Scanning Overlay */}
               {isScanning && (
                 <div className="absolute bottom-4 left-4 right-4">
-                  <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 text-white text-center">
+                  <div className="bg-black/60 rounded-lg p-3 text-white text-center">
                     <div className="flex items-center justify-center gap-2">
                       {scanStatus === 'scanning' && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin text-xevn-primary" />
                       )}
                       {scanStatus === 'detected' && (
-                        <UserCheck className="h-4 w-4 text-yellow-400" />
+                        <UserCheck className="h-4 w-4 text-xevn-warning" />
                       )}
                       {scanStatus === 'matched' && (
-                        <CheckCircle2 className="h-4 w-4 text-green-400" />
+                        <CheckCircle2 className="h-4 w-4 text-xevn-success" />
                       )}
                       <span className={status.color}>{status.text}</span>
                     </div>
@@ -392,13 +425,14 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
             </div>
           )}
 
-          {/* Control Buttons */}
           <div className="flex gap-3">
             {!isScanning ? (
               <Button
                 onClick={startScanning}
-                disabled={!modelsLoaded || isLoadingModels}
-                className="flex-1 h-12"
+                disabled={featureHold || !modelsLoaded || isLoadingModels}
+                className="flex-1 h-12 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+                title={featureHold ? t('attPage.faceIdHold') : undefined}
+                data-testid="att-faceid-start-scan"
               >
                 <Camera className="mr-2 h-5 w-5" />
                 {t('faceIdScanner.startScan')}
@@ -411,13 +445,12 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
             )}
           </div>
 
-          {/* Instructions */}
-          <div className="p-4 bg-muted/30 rounded-lg">
-            <h4 className="font-medium mb-2 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-primary" />
+          <div className="p-4 bg-xevn-background rounded-lg border border-xevn-border">
+            <h4 className="font-semibold text-[15px] text-xevn-text mb-2 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-xevn-primary" />
               {t('faceIdScanner.instructions')}
             </h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
+            <ul className="text-sm text-xevn-textSecondary space-y-1">
               <li>• {t('faceIdScanner.instruction1')}</li>
               <li>• {t('faceIdScanner.instruction2')}</li>
               <li>• {t('faceIdScanner.instruction3')}</li>
@@ -427,29 +460,33 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
         </CardContent>
       </Card>
 
-      {/* Confirmation Dialog */}
+      {/* S18 Confirm — honesty when featureHold; chrome Precision Motion */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md border-xevn-border" data-testid="att-faceid-confirm-dialog">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5 text-green-500" />
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
+              <UserCheck className="h-5 w-5 text-xevn-success" />
               {t('faceIdScanner.confirmAttendance')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Matched Employee */}
+            {featureHold ? (
+              <p className="text-[15px] text-xevn-textSecondary" data-testid="att-faceid-confirm-hold">
+                {t('attPage.faceIdHold')}
+              </p>
+            ) : null}
             {matchedEmployee && (
-              <div className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-center gap-4 p-4 bg-xevn-success/10 rounded-lg border border-xevn-border">
                 <Avatar className="h-16 w-16">
                   <AvatarImage src={matchedEmployee.avatar_url || ''} />
-                  <AvatarFallback className="text-xl bg-primary/10 text-primary">
+                  <AvatarFallback className="text-xl bg-xevn-primary/10 text-xevn-primary">
                     {matchedEmployee.full_name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="font-semibold text-lg">{matchedEmployee.full_name}</div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <div className="font-semibold text-lg text-xevn-text">{matchedEmployee.full_name}</div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-xevn-textSecondary">
                     <span className="flex items-center gap-1">
                       <User className="h-3.5 w-3.5" />
                       {matchedEmployee.employee_code}
@@ -461,36 +498,34 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
                       </span>
                     )}
                   </div>
-                  <Badge variant="secondary" className="mt-2">
+                  <Badge variant="secondary" className="mt-2 text-xevn-text">
                     {t('faceIdScanner.accuracy')}: {matchedEmployee.confidence}%
                   </Badge>
                 </div>
               </div>
             )}
 
-            {/* Current Time */}
-            <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
-              <Clock className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-2 p-3 bg-xevn-primary/10 rounded-lg border border-xevn-border">
+              <Clock className="h-5 w-5 text-xevn-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">{t('faceIdScanner.time')}</div>
-                <div className="font-semibold text-lg">
+                <div className="text-sm text-xevn-textSecondary">{t('faceIdScanner.time')}</div>
+                <div className="font-semibold text-lg text-xevn-text">
                   {format(currentTime, 'HH:mm:ss - dd/MM/yyyy')}
                 </div>
               </div>
             </div>
 
-            {/* Today's Status */}
             {currentRecord && (
-              <div className="p-3 border rounded-lg space-y-2">
-                <div className="text-sm font-medium">{t('faceIdScanner.todayStatus')}</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="p-3 border border-xevn-border rounded-lg space-y-2">
+                <div className="text-sm font-medium text-xevn-text">{t('faceIdScanner.todayStatus')}</div>
+                <div className="grid grid-cols-2 gap-2 text-sm text-xevn-text">
                   <div className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4 text-green-500" />
+                    <LogIn className="h-4 w-4 text-xevn-success" />
                     <span>{t('faceIdScanner.checkIn')}:</span>
                     <strong>{currentRecord.check_in_time || '--:--'}</strong>
                   </div>
                   <div className="flex items-center gap-2">
-                    <LogOut className="h-4 w-4 text-orange-500" />
+                    <LogOut className="h-4 w-4 text-xevn-primary" />
                     <span>{t('faceIdScanner.checkOut')}:</span>
                     <strong>{currentRecord.check_out_time || '--:--'}</strong>
                   </div>
@@ -498,18 +533,16 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
               </div>
             )}
 
-            {/* Already Completed */}
             {isCompleted && (
-              <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg text-green-700 dark:text-green-300">
+              <div className="flex items-center gap-2 p-3 bg-xevn-success/10 rounded-lg text-xevn-success border border-xevn-border">
                 <CheckCircle2 className="h-5 w-5" />
                 <span className="text-sm">{t('faceIdScanner.completedToday')}</span>
               </div>
             )}
 
-            {/* Attendance Type (for check-in) */}
             {canCheckIn && (
               <div className="space-y-2">
-                <Label>{t('faceIdScanner.attendanceType')}</Label>
+                <Label className="text-xevn-text">{t('faceIdScanner.attendanceType')}</Label>
                 <Select value={attendanceType} onValueChange={setAttendanceType}>
                   <SelectTrigger>
                     <SelectValue />
@@ -523,29 +556,29 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
               </div>
             )}
 
-            {/* Location */}
             {(canCheckIn || canCheckOut) && (
               <>
                 <div className="space-y-2">
-                  <Label>{t('faceIdScanner.location')}</Label>
+                  <Label className="text-xevn-text">{t('faceIdScanner.location')}</Label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-xevn-textMuted" />
                     <Input
                       placeholder={t('faceIdScanner.locationPlaceholder')}
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      className="pl-9"
+                      className="pl-9 text-xevn-text"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('faceIdScanner.notes')}</Label>
+                  <Label className="text-xevn-text">{t('faceIdScanner.notes')}</Label>
                   <Textarea
                     placeholder={t('faceIdScanner.notesPlaceholder')}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
+                    className="text-xevn-text"
                   />
                 </div>
               </>
@@ -559,15 +592,16 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
                 setDialogOpen(false);
                 resetScanner();
               }}
-              className="sm:flex-1"
+              className="sm:flex-1 border-xevn-border text-xevn-text"
             >
               {t('common.cancel')}
             </Button>
             {canCheckIn && (
               <Button
                 onClick={() => handleConfirmAttendance('checkin')}
-                disabled={isProcessing}
-                className="sm:flex-1"
+                disabled={isProcessing || featureHold}
+                className="sm:flex-1 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+                title={featureHold ? t('attPage.faceIdHold') : undefined}
               >
                 <LogIn className="mr-2 h-4 w-4" />
                 {isProcessing ? t('common.processing') : t('faceIdScanner.checkIn')}
@@ -576,9 +610,9 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
             {canCheckOut && (
               <Button
                 onClick={() => handleConfirmAttendance('checkout')}
-                disabled={isProcessing}
-                variant="destructive"
-                className="sm:flex-1"
+                disabled={isProcessing || featureHold}
+                className="sm:flex-1 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+                title={featureHold ? t('attPage.faceIdHold') : undefined}
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 {isProcessing ? t('common.processing') : t('faceIdScanner.checkOut')}
@@ -590,7 +624,7 @@ export function FaceIDScanner({ onCheckInOut }: FaceIDScannerProps) {
                   setDialogOpen(false);
                   resetScanner();
                 }}
-                className="sm:flex-1"
+                className="sm:flex-1 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
               >
                 {t('common.close')}
               </Button>

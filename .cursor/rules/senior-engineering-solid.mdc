@@ -1,9 +1,11 @@
 ---
-description: Enforce senior engineering mindset with SOLID principles, clean boundaries, and long-term maintainability
 alwaysApply: true
 ---
-
 # Senior Engineering SOLID Rule
+
+Training SoT (chi tiết): `_vibe-team-os/25-SOLID-AND-CODING-CONVENTION.md`  
+Dev lanes FE/BE/Mobile: `_vibe-team-os/26-DEV-LANES-WEB-MOBILE-BE.md`  
+Project read map: `docs/program/SUBAGENT_READ_MAP.md` · `AGENTS.md`
 
 Apply this rule to all implementation and refactoring work.
 
@@ -26,6 +28,8 @@ Apply this rule to all implementation and refactoring work.
 - Business logic buried in controllers/views.
 - Tight coupling to external SDKs across core domain.
 - Large functions with implicit side effects and no tests.
+- FE joining multiple API entities into a domain aggregate, payroll/insurance formulas on FE, or FE-built nested write DTOs (see OS `25` §3.1 · `26` §7 · SoT `28-FE-BE-SEPARATION-DISPLAY-READY.md`).
+- Missing `solid_convention_ack` FE–BE boundary / display-ready fields on list-mutate waves.
 
 ## Acceptance
 - No major change marked DONE without SOLID-oriented review notes.

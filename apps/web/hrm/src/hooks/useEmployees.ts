@@ -25,6 +25,12 @@
  *   Document enabled-gate pattern for dialog consumers (TaskFormDialog, InternalServices).
  *   Profile must not import this hook for list — useEmployeeMutations only.
  *
+ * @CODE-MEMORY-CHANGE 2026-08-03 R-SPINE-MGR-HIER-01-FE
+ * change_mode: ADD
+ * What: EmployeeFormData.manager_id + Employee.manager_label (display-ready)
+ * Why: UC-H01 Option B wire QL trực tiếp → POST/PATCH manager_id
+ * must_keep: picker cap W2; SoftDel; leave approve UX untouched
+ *
  * Callers:
  *   - Satellite pickers (attendance/payroll/tasks) → useEmployees(..., { enabled })
  *   - NOT Employees.tsx table (use useEmployeesPage)
@@ -81,6 +87,8 @@ export interface Employee {
   avatar_url: string | null;
   salary: number | null;
   manager_id: string | null;
+  /** Display-ready QL trực tiếp (U72) when BE/FE resolved — never raw UUID alone. */
+  manager_label?: string | null;
   gender: string | null;
   birth_date: string | null;
   id_number: string | null;
@@ -112,6 +120,8 @@ export interface EmployeeFormData {
   phone?: string | null;
   department?: string | null;
   position?: string | null;
+  /** Direct manager employee UUID (FR-UC-H01); null clears. */
+  manager_id?: string | null;
   start_date?: string | null;
   salary?: number | null;
   status?: string;

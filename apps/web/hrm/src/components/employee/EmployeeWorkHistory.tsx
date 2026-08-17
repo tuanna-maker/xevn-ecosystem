@@ -1,3 +1,18 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → Lịch sử công việc (E25)
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-B
+ * Purpose:    Precision Motion remaster — sharp ops chrome.
+ * must_keep:  SoftDel; no Nest/seed; no OCR/QR invent; stub honesty
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; purple AI chrome → xevn primary/accent
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-B
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no Nest/seed; no OCR/QR invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ */
 import { useState, useMemo } from 'react';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useTasks } from '@/hooks/useTasks';
@@ -265,10 +280,10 @@ export function EmployeeWorkHistory() {
 
   const getStatusBadge = (status: TaskItem['status']) => {
     const config = {
-      pending: { label: t('workHistory.tasks.status.pending'), icon: Clock, color: 'text-yellow-600 bg-yellow-100' },
-      in_progress: { label: t('workHistory.tasks.status.inProgress'), icon: TrendingUp, color: 'text-blue-600 bg-blue-100' },
-      completed: { label: t('workHistory.tasks.status.completed'), icon: CheckCircle2, color: 'text-green-600 bg-green-100' },
-      cancelled: { label: t('workHistory.tasks.status.cancelled'), icon: XCircle, color: 'text-gray-600 bg-gray-100' },
+      pending: { label: t('workHistory.tasks.status.pending'), icon: Clock, color: 'text-amber-700 bg-amber-100' },
+      in_progress: { label: t('workHistory.tasks.status.inProgress'), icon: TrendingUp, color: 'text-xevn-primary bg-xevn-primary/10' },
+      completed: { label: t('workHistory.tasks.status.completed'), icon: CheckCircle2, color: 'text-xevn-success bg-xevn-success/15' },
+      cancelled: { label: t('workHistory.tasks.status.cancelled'), icon: XCircle, color: 'text-xevn-textSecondary bg-xevn-background' },
     };
     return config[status];
   };
@@ -393,11 +408,11 @@ export function EmployeeWorkHistory() {
             <Card>
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
+                  <div className="p-2 rounded-lg bg-xevn-primary/10 text-xevn-primary">
                     <ListTodo className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('workHistory.tasks.total')}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('workHistory.tasks.total')}</p>
                     <p className="text-2xl font-bold">{taskStats.total}</p>
                   </div>
                 </div>
@@ -407,11 +422,11 @@ export function EmployeeWorkHistory() {
             <Card>
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-green-100 text-green-600">
+                  <div className="p-2 rounded-lg bg-xevn-success/15 text-xevn-success">
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('workHistory.tasks.completed')}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('workHistory.tasks.completed')}</p>
                     <p className="text-2xl font-bold">{taskStats.completed}</p>
                   </div>
                 </div>
@@ -421,11 +436,11 @@ export function EmployeeWorkHistory() {
             <Card>
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-yellow-100 text-yellow-600">
+                  <div className="p-2 rounded-lg bg-xevn-warning/15 text-xevn-warning">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('workHistory.tasks.inProgress')}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('workHistory.tasks.inProgress')}</p>
                     <p className="text-2xl font-bold">{taskStats.inProgress}</p>
                   </div>
                 </div>
@@ -435,11 +450,11 @@ export function EmployeeWorkHistory() {
             <Card>
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+                  <div className="p-2 rounded-lg bg-xevn-accent/15 text-xevn-primary">
                     <Target className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('workHistory.tasks.completionRate')}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('workHistory.tasks.completionRate')}</p>
                     <p className="text-2xl font-bold">{taskStats.completionRate}%</p>
                   </div>
                 </div>
@@ -450,7 +465,7 @@ export function EmployeeWorkHistory() {
           {/* Progress Overview */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-medium">{t('workHistory.charts.progressOverview')}</CardTitle>
+              <CardTitle className="text-base font-semibold text-xevn-text">{t('workHistory.charts.progressOverview')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -475,12 +490,12 @@ export function EmployeeWorkHistory() {
 
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-gray-400" />
-                    <span className="text-sm">{t('workHistory.tasks.pending')}: <span className="font-medium">{taskStats.pending}</span></span>
+                    <div className="w-3 h-3 rounded-full bg-xevn-textMuted" />
+                    <span className="text-sm text-xevn-text">{t('workHistory.tasks.pending')}: <span className="font-medium">{taskStats.pending}</span></span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-gray-300" />
-                    <span className="text-sm">{t('workHistory.tasks.status.cancelled')}: <span className="font-medium">{taskStats.cancelled}</span></span>
+                    <div className="w-3 h-3 rounded-full bg-xevn-border" />
+                    <span className="text-sm text-xevn-text">{t('workHistory.tasks.status.cancelled')}: <span className="font-medium">{taskStats.cancelled}</span></span>
                   </div>
                 </div>
               </div>
@@ -531,17 +546,17 @@ export function EmployeeWorkHistory() {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground mb-2">{task.description}</p>
+                          <p className="text-xs text-xevn-textSecondary mb-2">{task.description}</p>
                           <div className="flex flex-wrap gap-2 text-xs">
-                            <span className="flex items-center gap-1 text-muted-foreground">
+                            <span className="flex items-center gap-1 text-xevn-textSecondary">
                               <Briefcase className="w-3 h-3" />
                               {task.project}
                             </span>
-                            <span className="flex items-center gap-1 text-muted-foreground">
+                            <span className="flex items-center gap-1 text-xevn-textSecondary">
                               <Users className="w-3 h-3" />
                               {t('workHistory.tasks.assignedBy')}: {task.assignedBy}
                             </span>
-                            <span className="flex items-center gap-1 text-muted-foreground">
+                            <span className="flex items-center gap-1 text-xevn-textSecondary">
                               <Calendar className="w-3 h-3" />
                               {formatDate(task.assignedDate)} - {formatDate(task.dueDate)}
                             </span>
@@ -575,7 +590,7 @@ export function EmployeeWorkHistory() {
                 })}
 
                 {filteredTasks.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-xevn-textSecondary">
                     <ListTodo className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>{t('workHistory.charts.noTasks')}</p>
                   </div>
@@ -589,7 +604,7 @@ export function EmployeeWorkHistory() {
         <TabsContent value="charts" className="space-y-4">
           {tasksLoading ? (
             <Card>
-              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+              <CardContent className="py-8 text-center text-sm text-xevn-textSecondary">
                 {t('common.loading', 'Đang tải…')}
               </CardContent>
             </Card>
@@ -805,7 +820,7 @@ export function EmployeeWorkHistory() {
                             return (
                               <div className="bg-background border rounded-lg p-2 shadow-md">
                                 <p className="text-sm font-medium">{payload[0].name}</p>
-                                <p className="text-sm text-muted-foreground">{payload[0].value} {t('workHistory.charts.tasks')}</p>
+                                <p className="text-sm text-xevn-textSecondary">{payload[0].value} {t('workHistory.charts.tasks')}</p>
                               </div>
                             );
                           }
@@ -835,7 +850,7 @@ export function EmployeeWorkHistory() {
                     <div key={project.name} className="space-y-2">
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-medium">{project.name}</span>
-                        <span className="text-muted-foreground">
+                        <span className="text-xevn-textSecondary">
                           {project.completed}/{project.tasks} ({completionRate}%)
                         </span>
                       </div>
@@ -920,7 +935,7 @@ export function EmployeeWorkHistory() {
                       <div className="flex items-start justify-between mb-2 pr-10">
                         <div>
                           <h4 className="font-semibold text-sm">{item.position}</h4>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1 text-xs text-xevn-textSecondary">
                             <Building2 className="w-3 h-3" />
                             {item.company}
                           </div>
@@ -931,19 +946,19 @@ export function EmployeeWorkHistory() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mb-1">
+                      <p className="text-xs text-xevn-textSecondary mb-1">
                         {item.department} • {formatMonthYear(item.startDate)} - {item.isCurrent ? t('workHistory.current') : formatMonthYear(item.endDate)}
                       </p>
                       <p className="text-sm">{item.description}</p>
                       
                       {item.fileUrl && (
                         <div className="flex items-center gap-1 mt-2 text-xs">
-                          <FileText className="w-3 h-3 text-blue-500" />
-                          <a 
-                            href={item.fileUrl} 
-                            target="_blank" 
+                          <FileText className="w-3 h-3 text-xevn-primary" />
+                          <a
+                            href={item.fileUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline flex items-center gap-1"
+                            className="text-xevn-primary hover:underline flex items-center gap-1"
                           >
                             {item.fileName || t('workHistory.dialog.viewAttachment')}
                             <ExternalLink className="w-3 h-3" />
@@ -955,7 +970,7 @@ export function EmployeeWorkHistory() {
                 ))}
 
                 {workHistory.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-xevn-textSecondary">
                     <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>{t('workHistory.empty')}</p>
                     <p className="text-sm">{t('workHistory.emptyHint')}</p>
@@ -1069,15 +1084,15 @@ export function EmployeeWorkHistory() {
                   onChange={handleFileChange}
                 />
                 <label htmlFor="work-history-file" className="cursor-pointer">
-                  <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                  <Upload className="w-8 h-8 mx-auto text-xevn-textSecondary mb-2" />
                   {selectedFile ? (
                     <p className="text-sm font-medium text-primary">{selectedFile.name}</p>
                   ) : formData.fileName ? (
                     <p className="text-sm font-medium text-primary">{formData.fileName}</p>
                   ) : (
                     <>
-                      <p className="text-sm text-muted-foreground">{t('workHistory.dialog.fileHint')}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{t('workHistory.dialog.fileFormat')}</p>
+                      <p className="text-sm text-xevn-textSecondary">{t('workHistory.dialog.fileHint')}</p>
+                      <p className="text-xs text-xevn-textSecondary mt-1">{t('workHistory.dialog.fileFormat')}</p>
                     </>
                   )}
                 </label>

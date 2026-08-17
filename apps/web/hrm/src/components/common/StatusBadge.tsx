@@ -39,11 +39,14 @@ type StatusType =
   | 'leave'
   | 'open'
   | 'closed'
-  | 'completed';
+  | 'completed'
+  | 'cancelled';
 
 interface StatusBadgeProps {
   /** API / domain status code; unknown codes render muted + raw text. */
   status: StatusType | string;
+  /** Optional display-ready label (prefer BE status_label / Nest catalog nameVi). */
+  label?: string | null;
   className?: string;
 }
 
@@ -58,6 +61,7 @@ const I18N_STATUS_CODES = new Set<string>([
   'paid',
   'locked',
   'closed',
+  'cancelled',
 ]);
 
 const statusClassName: Record<string, string> = {
@@ -67,6 +71,7 @@ const statusClassName: Record<string, string> = {
   pending: 'bg-warning/10 text-warning',
   approved: 'bg-success/10 text-success',
   rejected: 'bg-destructive/10 text-destructive',
+  cancelled: 'bg-muted text-muted-foreground',
   paid: 'bg-success/10 text-success',
   draft: 'bg-muted text-muted-foreground',
   processed: 'bg-primary/10 text-primary',
@@ -89,6 +94,7 @@ const statusFallbackLabel: Record<string, string> = {
   pending: 'Chờ duyệt',
   approved: 'Đã duyệt',
   rejected: 'Từ chối',
+  cancelled: 'Đã hủy',
   paid: 'Đã thanh toán',
   draft: 'Nháp',
   processed: 'Đã xử lý',
@@ -103,16 +109,24 @@ const statusFallbackLabel: Record<string, string> = {
   completed: 'Hoàn thành',
 };
 
-export function StatusBadge({ status, className }: StatusBadgeProps) {
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-CATALOG-FE-01
+ * change_mode: ADD
+ * What: Optional `label` prop — prefer BE status_label / Nest catalog nameVi when caller supplies
+ * Why: SA Option A · OS 28 display-ready · cấm invent join Settings when EFF>0
+ * must_keep: payroll i18n leaves; unknown → raw code; no mutation
+ */
+export function StatusBadge({ status, label: labelProp, className }: StatusBadgeProps) {
   const { t } = useTranslation();
   const normalized = String(status ?? '')
     .trim()
     .toLowerCase();
   const style = statusClassName[normalized] ?? 'bg-muted text-muted-foreground';
   const fallback = statusFallbackLabel[normalized] ?? String(status ?? '');
-  const label = I18N_STATUS_CODES.has(normalized)
+  const i18nLabel = I18N_STATUS_CODES.has(normalized)
     ? t(`common.status.${normalized}`, { defaultValue: fallback })
     : fallback;
+  const label = (labelProp ?? '').trim() || i18nLabel;
 
   return (
     <span className={cn('status-badge', style, className)}>

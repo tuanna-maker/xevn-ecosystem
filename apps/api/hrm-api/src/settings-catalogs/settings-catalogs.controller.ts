@@ -41,6 +41,13 @@
  * WorkItem: D-HRM-SETTINGS-MD-POS-SEED-BE-01
  * change_mode: UPGRADE
  * What: seed/tenant-position-catalog* gated bootstrap-only (G-ORPH-BE-03); SoT = XBOS/Settings
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-BE-SYNC-XBOSS-500
+ * change_mode: FIX
+ * What: sync-from-xbos path hardened in service (parallel + HRM-SYNC-001); controller
+ *   still main→holding via resolveHrmSettingsCatalogCompanyId only (pull ≠ apply ≠ clone).
+ * must_keep: Leave L2 untouched; no apply-to-members / clone wiring
  */
 import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import { ok } from '../common/api-response';

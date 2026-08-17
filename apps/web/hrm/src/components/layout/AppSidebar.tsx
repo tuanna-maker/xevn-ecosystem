@@ -1,3 +1,27 @@
+/**
+ * @CODE-MEMORY
+ * Screen: HRM AppSidebar — standalone nav (PORT-08 · embed+standalone)
+ * UC: J-HRM-* shell · dual-surface inside iframe/standalone
+ * BR: ADR-XEVN-PRECISION-MOTION-TOKENS · primary `#1E40AF` active nav
+ * SRS: N/A theme remaster (no SRS mutate)
+ * TechSpec: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§9
+ * Purpose: Dark sidebar chrome + sharp nav labels; active = sidebar-primary brand; no pale body.
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-A
+ * Coded: 2026-08-05
+ * Callers: AppLayout (standalone only — embed uses portal chrome)
+ * Callees: usePermissions · branding_config localStorage
+ * must_keep: module permission filter; portal embed hides this sidebar; no invent Face web
+ * SOLID: Nav chrome only — routes stay in pages/*
+ * LastVerified: verify:xevn:theme-contrast --strict
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-A · 2026-08-05
+ * change_mode: UPGRADE
+ * What: Remove indigo chip → primary; section labels `sidebar-muted` → `sidebar-foreground/90`;
+ *       cite ADR-20260805; active `.sidebar-link` = primary HSL
+ * Why: Inventory PORT-08 nav density · pale ban §8 · no purple AI
+ * must_keep: permission gate; badge count wiring; help link; soft-nav paths
+ */
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -78,7 +102,7 @@ const mainNavItems: NavItemWithChildren[] = [
     titleKey: 'nav.hr', 
     icon: Users, 
     children: [
-      { titleKey: 'nav.employees', icon: Users, path: '/employees', color: 'bg-indigo-500', module: 'employees' },
+      { titleKey: 'nav.employees', icon: Users, path: '/employees', color: 'bg-primary', module: 'employees' },
       { titleKey: 'nav.contracts', icon: FileSignature, path: '/contracts', color: 'bg-emerald-500', module: 'contracts' },
       { titleKey: 'nav.insurance', icon: Shield, path: '/insurance', color: 'bg-amber-500', module: 'insurance' },
       { titleKey: 'nav.decisions', icon: FileText, path: '/decisions', color: 'bg-rose-500', module: 'decisions' },
@@ -215,7 +239,7 @@ function MobileSidebarContent({ onClose }: { onClose: () => void }) {
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
         <div className="px-3 mb-6">
-          <span className="text-xs font-semibold text-sidebar-muted uppercase tracking-wider px-3">
+          <span className="px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/90">
             {t('nav.mainMenu')}
           </span>
           <ul className="mt-2 space-y-1">
@@ -295,7 +319,7 @@ function MobileSidebarContent({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="px-3">
-          <span className="text-xs font-semibold text-sidebar-muted uppercase tracking-wider px-3">
+          <span className="px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/90">
             {t('nav.management')}
           </span>
           <ul className="mt-2 space-y-1">
@@ -418,7 +442,7 @@ export function AppSidebar() {
       <nav className="flex-1 py-4 overflow-y-auto">
         <div className="px-3 mb-6">
           {!collapsed && (
-            <span className="text-xs font-semibold text-sidebar-muted uppercase tracking-wider px-3">
+            <span className="px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/90">
               {t('nav.mainMenu')}
             </span>
           )}
@@ -504,7 +528,7 @@ export function AppSidebar() {
 
         <div className="px-3">
           {!collapsed && (
-            <span className="text-xs font-semibold text-sidebar-muted uppercase tracking-wider px-3">
+            <span className="px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/90">
               {t('nav.management')}
             </span>
           )}

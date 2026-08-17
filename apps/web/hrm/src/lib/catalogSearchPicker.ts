@@ -13,7 +13,13 @@
  * Impact:     Free-text SoT / không search khi >10 item → FAIL AC-HRM-PICKER-01
  * must_keep:  value = catalog code/id; filter by code+label; Khối fail-closed trên company options
  * SOLID:      Pure lib — no React
- * LastVerified: catalogSearchPicker.test.ts (leaveType + departmentOptionsFromCatalog)
+ * LastVerified: catalogSearchPicker.test.ts (leaveType + departmentOptionsFromCatalog + recruitmentChannel)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-CHANNELS-CONSUMER-FE-01
+ * change_mode: ADD
+ * What: recruitmentChannelOptionsFromCatalog + resolveRecruitmentChannelLabel
+ * Why: FR-HRM-SC-CH-01 · AC-SC-CH-03 · AC-SET-CONSUMER-CH-REC-01..03 — Candidate source code SoT
+ * must_keep: DEPTCONREG1 sealed · empty → []; value=code; U65 no seed
  *
  * @CODE-MEMORY-CHANGE 2026-07-25 D-HRM-SETTINGS-MD-LEAVE-FE-01
  * change_mode: UPGRADE
@@ -76,6 +82,24 @@
  * What: Reconstruct lib (transitive of CatalogSearchPicker / AddInsuranceDialog) after Vite 500
  * Why: QA SMOKE-02 missing module on disk; restore from Cursor local history + call sites
  * must_keep: SoftDel · BH insurer/type helpers · TC-041 · U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-FE-01
+ * change_mode: FIX
+ * What: insuranceTypeOptionsFromCatalog marked REF-only / deprecated as sole picker SoT
+ * Why: VAL-SI-CNS-04 · AC-PLT-SI-INS-01 — Nest F-SI-CAT-EFF is consumer SoT; insurers MD retain
+ * must_keep: insurerOptionsFromCatalog · E1/E2 helpers · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-FE-01
+ * change_mode: FIX
+ * What: insurerOptionsFromCatalog marked REF-only / deprecated as sole picker SoT
+ * Why: VAL-SI-INR-CNS-01 · AC-PLT-SI-INSURER-01 — Nest F-SI-CAT-INS-EFF is consumer SoT
+ * must_keep: SI type EFF helpers · E1/E2 helpers · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 D-FE-HRM-WH-POSITION-PICKER-01
+ * change_mode: ADD
+ * What: resolveWorkTimelinePositionFromCatalog — QTCT Vị trí payload alias (job_titles)
+ * Why: AC-SET-CONSUMER-JT-WH-01 · UF-HRM-10 — trace WH consumer separate from generic E1-A
+ * must_keep: buildPositionKeyFields semantics; settings_catalog_e2e_ready=false honesty; U65
  */
 
 import { asLegalCompanyDisplayName } from '@/lib/employeeCompanyDisplayName';
@@ -359,6 +383,17 @@ export function buildPositionKeyFields(
 }
 
 /**
+ * QTCT (work timeline) — Vị trí từ catalog `job_titles` (AC-SET-CONSUMER-JT-WH-01).
+ * POST/PATCH body: position_key + position snapshot; cấm label-only / free-text SoT.
+ */
+export function resolveWorkTimelinePositionFromCatalog(
+  positionKey: string | null | undefined,
+  options: readonly CatalogPickerOption[],
+): { position_key: string; position: string } | null {
+  return buildPositionKeyFields(positionKey, options);
+}
+
+/**
  * E1-A MD-BIND — persist department_key (catalog code) + label snapshot.
  * Returns null when code missing / not in catalog (cấm name-as-value).
  */
@@ -404,6 +439,44 @@ export function resolvePayTypeLabel(
 }
 
 /**
+ * Salary component catalog picker — Settings `salary_components` (+ payroll_components).
+ * @deprecated Option B (PAY-CATALOG-CNS-FE-01): consumer SoT = Nest
+ * `GET /api/hrm/payroll/salary-components` via `nestSalaryComponentsToPickerOptions` /
+ * `useSalaryComponentsEffective`. Settings extension = REF/alias only (L-PAY-AC-02) —
+ * **FORBIDDEN** as sole consumer picker SoT. Kept for unit tests / legacy REF reads.
+ */
+export function salaryComponentOptionsFromCatalog(
+  catalogs: readonly { catalogKey: string; effectiveItems?: readonly CatalogItemLike[] }[],
+): CatalogPickerOption[] {
+  return toCatalogPickerOptions(
+    mergeEffectiveItemsByKeys(catalogs, HRM_MASTER_DATA_CATALOG_KEYS.salaryComponents),
+  );
+}
+
+/** Resolve salary_components code → VI label; unknown → «—» (U72). */
+export function resolveSalaryComponentLabel(
+  options: readonly CatalogPickerOption[],
+  componentCode: string | null | undefined,
+): string {
+  const code = componentCode?.trim() ?? '';
+  if (!code) return '—';
+  return resolveCatalogPickerSelection(options, code)?.label ?? '—';
+}
+
+/**
+ * Build payroll instance fields from catalog selection — code SoT + name snapshot.
+ * Returns null when code missing / not in catalog (never invent free-text SoT).
+ */
+export function buildSalaryComponentCatalogFields(
+  componentCode: string | null | undefined,
+  options: readonly CatalogPickerOption[],
+): { code: string; name: string } | null {
+  const hit = resolveCatalogPickerSelection(options, componentCode);
+  if (!hit) return null;
+  return { code: hit.value, name: hit.label };
+}
+
+/**
  * Contract type picker — Settings `contract_types`. Persist value=code (closes R-E1A-A8).
  * Empty → []; cấm HARDCODE fallback khi product locks required (AC-E2-CI-TYPE-01).
  */
@@ -425,9 +498,109 @@ export function resolveContractTypeCatalogLabel(
   return resolveCatalogPickerSelection(options, code)?.label ?? '—';
 }
 
+function foldContractTypeLegacyKey(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/đ/g, 'd')
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/\s+/g, ' ');
+}
+
+/** Legacy list labels / slugs → catalog code (QACONPAYSTQC1 · NV001-HD «Hợp đồng 3 năm»). */
+export function inferContractTypeCatalogCodeFromLegacy(
+  raw: string,
+  options: readonly CatalogPickerOption[],
+): CatalogPickerOption | null {
+  const key = foldContractTypeLegacyKey(raw);
+  if (!key) return null;
+
+  const pick = (pred: (o: CatalogPickerOption) => boolean) => options.find(pred) ?? null;
+
+  if (key.includes('3 nam') || key.includes('3y') || key.includes('3_year') || key.includes('36 thang')) {
+    return (
+      pick((o) => o.value.includes('36') || foldContractTypeLegacyKey(o.label).includes('36 thang')) ??
+      pick((o) => foldContractTypeLegacyKey(o.label).includes('3 nam'))
+    );
+  }
+  if (key.includes('2 nam') || key.includes('2y') || key.includes('2_year') || key.includes('24 thang')) {
+    return pick((o) => o.value.includes('24') || foldContractTypeLegacyKey(o.label).includes('24 thang'));
+  }
+  if (key.includes('1 nam') || key.includes('1y') || key.includes('1_year') || key.includes('12 thang')) {
+    return (
+      pick((o) => o.value.includes('12') || foldContractTypeLegacyKey(o.label).includes('12 thang')) ??
+      pick((o) => foldContractTypeLegacyKey(o.label).includes('1 nam'))
+    );
+  }
+  if (key.includes('thu viec') || key === 'probation' || key === 'hdtv_60') {
+    return pick((o) => o.value.startsWith('HDTV') || foldContractTypeLegacyKey(o.label).includes('thu viec'));
+  }
+  if (key.includes('hoc viec') || key === 'apprentice' || key === 'hdhv') {
+    return pick((o) => o.value === 'HDHV' || foldContractTypeLegacyKey(o.label).includes('hoc viec'));
+  }
+  if (
+    key.includes('khong thoi han') ||
+    key.includes('khong xac dinh') ||
+    key === 'indefinite' ||
+    key === 'permanent' ||
+    key === 'hdld_kth'
+  ) {
+    return pick(
+      (o) =>
+        o.value === 'HDLD_KTH' ||
+        foldContractTypeLegacyKey(o.label).includes('khong xac dinh') ||
+        foldContractTypeLegacyKey(o.label).includes('khong thoi han'),
+    );
+  }
+  if (key === 'fixed_term' || key.includes('co thoi han')) {
+    return pick((o) => o.value === 'HDLD_XDHN_12') ?? pick((o) => o.value.startsWith('HDLD_XDHN'));
+  }
+
+  if (key.length >= 4) {
+    const byOverlap = options.find((o) => {
+      const ol = foldContractTypeLegacyKey(o.label);
+      return ol.includes(key) || key.includes(ol);
+    });
+    if (byOverlap) return byOverlap;
+  }
+
+  return null;
+}
+
 /**
- * Insurer picker — Settings `insurers` (+ insurance_providers / bhxh_providers).
- * Empty → []; persist value=code (AC-INS-02).
+ * Map stored contract_type (code or legacy VI label) → catalog code for picker + PATCH.
+ * EFF>0: match value/code (case-insensitive), exact label, or legacy phrase; unknown → ''.
+ * EFF=0: keep raw when no catalog hit (empty CTA path).
+ */
+export function resolveContractTypeEditValue(
+  options: readonly CatalogPickerOption[],
+  storedContractType: string | null | undefined,
+  catalogBound: boolean,
+): string {
+  const raw = (storedContractType ?? '').trim();
+  if (!raw) return '';
+  const byCode = options.find(
+    (o) =>
+      o.value === raw ||
+      o.code === raw ||
+      o.value.toLowerCase() === raw.toLowerCase() ||
+      (o.code ?? '').toLowerCase() === raw.toLowerCase(),
+  );
+  if (byCode) return byCode.value;
+  const byLabel = options.find((o) => o.label.trim() === raw);
+  if (byLabel) return byLabel.value;
+  const legacy = inferContractTypeCatalogCodeFromLegacy(raw, options);
+  if (legacy) return legacy.value;
+  if (!catalogBound) return raw;
+  return '';
+}
+
+/**
+ * Insurer picker — Settings MD `insurers` REF helper only.
+ * @deprecated Consumer SoT = Nest GET …/insurers/effective (F-SI-CAT-INS-EFF-01).
+ * Do not use as sole picker SoT when Nest EFF is live (VAL-SI-INR-CNS-01 · AC-PLT-SI-INSURER-01).
+ * Persist value=code (AC-INS-02 deepen).
  */
 export function insurerOptionsFromCatalog(
   catalogs: readonly { catalogKey: string; effectiveItems?: readonly CatalogItemLike[] }[],
@@ -447,7 +620,10 @@ export function resolveInsurerLabel(
 }
 
 /**
- * Insurance type picker — Settings `insurance_types`. Persist value=code (AC-INS-03).
+ * Insurance type picker — Settings MD `insurance_types` REF helper only.
+ * @deprecated Consumer SoT = Nest GET …/insurance-types/effective (F-SI-CAT-EFF-01).
+ * Do not use as sole picker SoT when Nest EFF is live (VAL-SI-CNS-04 · AC-PLT-SI-INS-01).
+ * Persist value=code (AC-INS-03 deepen).
  */
 export function insuranceTypeOptionsFromCatalog(
   catalogs: readonly { catalogKey: string; effectiveItems?: readonly CatalogItemLike[] }[],
@@ -502,6 +678,28 @@ export function resolveJobGradeLabel(
   gradeCode: string | null | undefined,
 ): string {
   const code = gradeCode?.trim() ?? '';
+  if (!code) return '—';
+  return resolveCatalogPickerSelection(options, code)?.label ?? '—';
+}
+
+/**
+ * Recruitment channel / candidate source picker — Settings catalog SoT (FR-HRM-SC-CH-01).
+ * Keys: recruitment_channels | candidate_sources | channels. Empty → [] (honest empty + CTA).
+ */
+export function recruitmentChannelOptionsFromCatalog(
+  catalogs: readonly { catalogKey: string; effectiveItems?: readonly CatalogItemLike[] }[],
+): CatalogPickerOption[] {
+  return toCatalogPickerOptions(
+    mergeEffectiveItemsByKeys(catalogs, HRM_MASTER_DATA_CATALOG_KEYS.recruitmentChannels),
+  );
+}
+
+/** Resolve recruitment_channels code → VI label; unknown → «—» (U72). */
+export function resolveRecruitmentChannelLabel(
+  options: readonly CatalogPickerOption[],
+  channelCode: string | null | undefined,
+): string {
+  const code = channelCode?.trim() ?? '';
   if (!code) return '—';
   return resolveCatalogPickerSelection(options, code)?.label ?? '—';
 }

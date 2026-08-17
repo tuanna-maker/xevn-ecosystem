@@ -13,8 +13,23 @@
  * Callees:    HrmDbService — candidates.employee_id · employees.candidate_id (soft)
  * must_keep:  G-RC-01 headcount · leave CREATE · U65 no seed · dual catalog twin không rewrite
  * SOLID:      Thuần resolve/assert — service chỉ gọi trước khi ghi hired
- * LastVerified: be-hrm-g-db-01-hire-link-01.spec.ts
+ * LastVerified: hire-employee-link.spec.ts (PO-SPEC-UNIT-TEST-IMPL-01)
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem:   PO-SPEC-UNIT-TEST-IMPL-01
+ * Date:       2026-08-03
+ * Change:     LastVerified path → hire-employee-link.spec.ts (HIRE-400/409 + resolve priority); no product logic change.
+ * must_keep:  soft FK hire bind · HRM-REC-HIRE-400/409 codes · dual catalog twin
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01
+ * EXPAND isHiredStage(optional hiredOutcomeKey) for open catalog hire target (VAL-REC-STG-14).
+ * change_mode: ADD · must_keep default `hired` when catalog empty · soft FK
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02
+ * ADD assertPersistedHireSoftLinkOrThrow — re-read Lane A soft + reverse after stamp
+ * (R-REC-07-ASSERT-BYPASS). must_keep resolveHireEmployeeId priority for INT-01 stage path.
  */
+
 import { HttpStatus } from '@nestjs/common';
 import type { QueryResult, QueryResultRow } from 'pg';
 import { ApiException } from '../common/api.exception';
@@ -33,8 +48,19 @@ export type HireLinkDb = {
   ) => Promise<QueryResult<T>>;
 };
 
-export function isHiredStage(stage: string | null | undefined): boolean {
-  return (stage ?? '').trim().toLowerCase() === 'hired';
+/**
+ * Hire spine target — default starter key `hired`.
+ * When open catalog has hiredOutcomeKey / isHiredOutcome hit, pass that key (VAL-REC-STG-14).
+ */
+export function isHiredStage(
+  stage: string | null | undefined,
+  hiredOutcomeKey?: string | null,
+): boolean {
+  const s = (stage ?? '').trim().toLowerCase();
+  if (!s) return false;
+  const outcome = hiredOutcomeKey?.trim().toLowerCase();
+  if (outcome) return s === outcome;
+  return s === 'hired';
 }
 
 /**
@@ -126,4 +152,78 @@ export async function assertHireEmployeeLinkOrThrow(
     );
   }
   return assertEmployeeInCandidateCompany(db, resolved, candidateCompanyId);
+}
+
+/**
+ * Post-stamp seal (REC-07) — re-read Lane A soft `recruitment_candidates.employee_id`
+ * + reverse `employees.candidate_id`. Does NOT trust in-memory `existingEmployeeId`.
+ * Soft and reverse must both equal `expectedEmployeeId` (same company).
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02
+ * Harden R-REC-07-ASSERT-BYPASS — DB soft+reverse after stamp.
+ */
+export async function assertPersistedHireSoftLinkOrThrow(
+  db: HireLinkDb,
+  candidateId: string,
+  candidateCompanyId: string,
+  expectedEmployeeId: string,
+): Promise<string> {
+  const expected = expectedEmployeeId.trim();
+  if (!expected) {
+    throw new ApiException(
+      HRM_REC_HIRE_400,
+      'Hire requires a linked employee profile (employee_id)',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  let softId: string | null = null;
+  try {
+    const soft = await db.query<{ employee_id: string | null }>(
+      `SELECT employee_id::text AS employee_id
+       FROM public.recruitment_candidates
+       WHERE id = $1::uuid
+       LIMIT 1`,
+      [candidateId],
+    );
+    softId = soft.rows[0]?.employee_id?.trim() || null;
+  } catch {
+    softId = null;
+  }
+
+  let reverseId: string | null = null;
+  try {
+    const rev = await db.query<{ id: string }>(
+      `SELECT id::text AS id FROM public.employees
+       WHERE candidate_id = $1::uuid AND archived_at IS NULL
+       LIMIT 1`,
+      [candidateId],
+    );
+    reverseId = rev.rows[0]?.id?.trim() || null;
+  } catch {
+    reverseId = null;
+  }
+
+  if (!softId || softId !== expected) {
+    throw new ApiException(
+      HRM_REC_HIRE_400,
+      'Hire soft stamp missing on recruitment_candidates.employee_id',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  if (!reverseId || reverseId !== expected) {
+    throw new ApiException(
+      HRM_REC_HIRE_400,
+      'Hire reverse stamp missing on employees.candidate_id',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  if (softId !== reverseId) {
+    throw new ApiException(
+      HRM_REC_HIRE_409,
+      'Conflict: soft and reverse hire links disagree',
+      HttpStatus.CONFLICT,
+    );
+  }
+  return assertEmployeeInCandidateCompany(db, expected, candidateCompanyId);
 }

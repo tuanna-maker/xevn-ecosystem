@@ -42,10 +42,61 @@
  * SRS/BR: UX-UI-ERP-ANALYSIS.md §9 PermissionFallback · UX-07
  * must_keep: Profile C2 groups · pin key · PermissionGate portal bypass · Payroll D5/P0-c · Clock-In
  * LastVerified: docs/qa/evidence/d-ux-permission-fallback-fe-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 R-SPINE-MGR-HIER-01-FE
+ * change_mode: ADD
+ * What: workInfo «Quản lý trực tiếp» — bind manager_label / resolve via getEmployeeById (display-ready)
+ * Why: Option B FE after PATCH+F5 must show manager name (FR-UC-H01 · FR-UC-H03); cấm raw UUID only
+ * must_keep: LeaveOverviewRecentPanel / leave approve UX; SoftDel; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-A
+ * change_mode: UPGRADE
+ * What: Precision Motion shell + Thông tin chung (E10–E11) — sharp text; no purple legend
+ * Why: ADR-20260805 §8–§10 pale ban + dual-surface light ops canvas
+ * must_keep: tab groups/pin; list→detail company_id; SoftDel; no OCR invent; stub honesty
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-01
+ * change_mode: ADD
+ * What: HireReadinessBanner on contract tab (F-CORE-HTP-05 honesty)
+ * Why: AC-HTP-05-01..03 — không giả ready khi BE chưa expose
+ * must_keep: PermissionFallback salary; tab groups; deep link company_id; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-03
+ * change_mode: FIX
+ * What: ?tab= deep-link + CTA «Bảo hiểm & Phúc lợi» on general (open nested HR insurance)
+ * Why: R-EMP-SI-FE-ACTION-UI — insurance tab in HR popover; text click missed → no employee-insurances GET
+ * must_keep: tab groups/pin; D2 WH / D6 HTP / FE-02 QSĐ; U65; companyId query
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-01-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: General tab — hide salary/bank/tax/SI InfoItems from public GET; AC-CORE-CB-MAP-01 redirect
+ *       CTA → tab salary / insurance (CORE-02 peer); F5 no C&B leak from employee.* public DTO
+ * Why: UC-BP-CORE-01 O4 · AC-CORE-PUB-02 · DENY same-form / public DTO bind as C&B SoT
+ * must_keep: PermissionGate view_salary; HTP; tab groups; Nest /employees; hire≠CORE DONE; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-03-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: Lazy tab `documents` → EmployeeDocumentChecklist (F-CORE-CHK-01 physical document-checklist*)
+ * Why: UC-BP-CORE-03 Diễn biến #1–#2 · J-HRM-CORE-03-04 · deep-link ?tab=documents
+ * must_keep: DOC/ET Settings RETAIN · Nest /core DENY · no invent DOC SoT · CORE-07 OUT · honesty false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-07-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: General sidebar → EmployeeActivatePanel (F-CORE-ACT-01 POST …/activate · GATE 409)
+ * Why: UC-BP-CORE-07 Diễn biến #1–#2 · can_activate/blocking_items/effective_date · J-HRM-CORE-07-01..05
+ * must_keep: Nest /core DENY · checklist≠DONE · soft≠CORE-06 DONE · CORE03QC1 · honesty false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-MVP-GD1-ATT-12-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: General sidebar ATT-12 confirm strip via EmployeeActivatePanel (panel + ca)
+ * Why: AC-ATT-12-FE-CONFIRM · J-HRM-ATT-12-05
+ * must_keep: CORE-07 activate · tab groups · company_id deep link · U65
  */
-import { lazy, Suspense, useState, useCallback, useMemo, type ReactNode } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { lazy, Suspense, useState, useCallback, useMemo, useEffect, type ReactNode } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { format } from 'date-fns';
 import {
@@ -56,12 +107,12 @@ import {
   Mail,
   MapPin,
   Calendar,
-  Heart,
   Building2,
   ChevronDown,
   Briefcase,
   GraduationCap,
   FileCheck,
+  ClipboardList,
   Zap,
   Users,
   FileText,
@@ -105,6 +156,8 @@ import type { EmployeeFormData } from '@/hooks/useEmployees';
 import { useEmployeeMutations } from '@/hooks/useEmployeeMutations';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useAuth } from '@/contexts/AuthContext';
+import { getEmployeeById } from '@/integrations/hrmApi';
+import { formatEmployeePickerLabel } from '@/lib/employeePickerLabel';
 import { EmployeeFormDialog } from '@/components/employee/EmployeeFormDialog';
 import { EmployeeAvatarUpload } from '@/components/employee/EmployeeAvatarUpload';
 import { EmployeeSkillsRadarChart } from '@/components/employee/EmployeeSkillsRadarChart';
@@ -113,6 +166,7 @@ import { EmployeeStatsCards } from '@/components/employee/EmployeeStatsCards';
 import { EmployeeJobList } from '@/components/employee/EmployeeJobList';
 import { EmployeeContracts } from '@/components/employee/EmployeeContracts';
 import { EmployeeSalary } from '@/components/employee/EmployeeSalary';
+import { HireReadinessBanner } from '@/components/employee/HireReadinessBanner';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { PermissionFallback } from '@/components/auth/PermissionFallback';
 import {
@@ -122,8 +176,10 @@ import {
   type ProfileTabGroupId,
   type ProfileTabId,
   isPinnableProfileTab,
+  parseProfileTabParam,
   resolveProfileTabGroup,
 } from '@/lib/employeeProfileTabGroups';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 
 /** Lazy non-Core panels — Core (job/contract/salary) stays eager for 1-click happy path. */
 const EmployeeDegrees = lazy(() =>
@@ -166,6 +222,16 @@ const EmployeeRewardsDiscipline = lazy(() =>
     default: m.EmployeeRewardsDiscipline,
   })),
 );
+const EmployeeDocumentChecklist = lazy(() =>
+  import('@/components/employee/EmployeeDocumentChecklist').then((m) => ({
+    default: m.EmployeeDocumentChecklist,
+  })),
+);
+const EmployeeActivatePanel = lazy(() =>
+  import('@/components/employee/EmployeeActivatePanel').then((m) => ({
+    default: m.EmployeeActivatePanel,
+  })),
+);
 const LazyEmployeeWorkTimeline = lazy(() =>
   import('@/components/employee/EmployeeWorkTimeline').then((m) => ({
     default: m.EmployeeWorkTimeline,
@@ -180,22 +246,24 @@ type TabMeta = {
   description?: string;
 };
 
+/** Tab chrome — ADR §8/A1: no purple/indigo AI palette; primary + DNA status hues only. */
 const TAB_ICON_COLOR: Record<ProfileTabId, { icon: typeof User; color: string }> = {
-  general: { icon: User, color: 'bg-indigo-500' },
-  work: { icon: Briefcase, color: 'bg-amber-500' },
-  contract: { icon: FileSignature, color: 'bg-emerald-500' },
-  salary: { icon: DollarSign, color: 'bg-rose-500' },
-  cv: { icon: FileText, color: 'bg-purple-500' },
-  kpi: { icon: Target, color: 'bg-amber-500' },
-  insurance: { icon: Shield, color: 'bg-green-500' },
-  training: { icon: BookOpen, color: 'bg-cyan-500' },
-  assets: { icon: Package, color: 'bg-indigo-500' },
-  rewards: { icon: Award, color: 'bg-rose-500' },
-  workHistory: { icon: Briefcase, color: 'bg-orange-500' },
-  degrees: { icon: GraduationCap, color: 'bg-blue-500' },
-  certificates: { icon: FileCheck, color: 'bg-teal-500' },
-  skills: { icon: Zap, color: 'bg-yellow-500' },
-  family: { icon: Users, color: 'bg-pink-500' },
+  general: { icon: User, color: 'bg-primary' },
+  work: { icon: Briefcase, color: 'bg-amber-600' },
+  contract: { icon: FileSignature, color: 'bg-emerald-600' },
+  salary: { icon: DollarSign, color: 'bg-rose-600' },
+  cv: { icon: FileText, color: 'bg-cyan-600' },
+  kpi: { icon: Target, color: 'bg-amber-600' },
+  insurance: { icon: Shield, color: 'bg-emerald-600' },
+  training: { icon: BookOpen, color: 'bg-cyan-600' },
+  assets: { icon: Package, color: 'bg-primary' },
+  rewards: { icon: Award, color: 'bg-rose-600' },
+  workHistory: { icon: Briefcase, color: 'bg-orange-600' },
+  degrees: { icon: GraduationCap, color: 'bg-primary' },
+  certificates: { icon: FileCheck, color: 'bg-teal-600' },
+  documents: { icon: ClipboardList, color: 'bg-primary' },
+  skills: { icon: Zap, color: 'bg-amber-500' },
+  family: { icon: Users, color: 'bg-rose-500' },
 };
 
 const GROUP_CHROME: Record<
@@ -203,8 +271,8 @@ const GROUP_CHROME: Record<
   { icon: typeof Layers; color: string }
 > = {
   hr: { icon: FolderKanban, color: 'bg-emerald-600' },
-  career: { icon: Sparkles, color: 'bg-violet-600' },
-  personal: { icon: Users, color: 'bg-pink-600' },
+  career: { icon: Sparkles, color: 'bg-cyan-700' },
+  personal: { icon: Users, color: 'bg-rose-600' },
 };
 
 const formatDate = (dateString: string | null) => {
@@ -219,6 +287,7 @@ const formatDate = (dateString: string | null) => {
 const getStatusInfo = (status: string, t: (key: string) => string) => {
   const statusConfig: Record<string, { className: string }> = {
     active: { className: 'bg-green-100 text-green-700 hover:bg-green-100' },
+    pending_docs: { className: 'bg-amber-100 text-amber-800 hover:bg-amber-100' },
     inactive: { className: 'bg-gray-100 text-gray-700 hover:bg-gray-100' },
     probation: { className: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100' },
     suspended: { className: 'bg-red-100 text-red-700 hover:bg-red-100' },
@@ -257,7 +326,7 @@ function LazyTabPanel({ children }: { children: ReactNode }) {
     <Suspense
       fallback={
         <div
-          className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground"
+          className="flex items-center justify-center gap-2 py-12 text-sm text-xevn-textSecondary"
           data-testid="profile-tab-lazy-fallback"
         >
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -275,13 +344,15 @@ export default function EmployeeProfile() {
   const [pinnedTabs, setPinnedTabs] = useState<string[]>(getInitialPinnedTabs);
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<string>('general');
+  const initialTab = parseProfileTabParam(searchParams.get('tab')) ?? 'general';
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isEditLoading, setIsEditLoading] = useState(false);
   const [isAvatarSaving, setIsAvatarSaving] = useState(false);
 
-  const { memberships } = useAuth();
+  const { memberships, currentCompanyId } = useAuth();
   const { hasPermission } = usePermissions();
   const { employee, isLoading, error, refetch } = useEmployee(id);
   const { updateEmployee } = useEmployeeMutations({ onMutated: refetch });
@@ -302,6 +373,28 @@ export default function EmployeeProfile() {
       jobTitleOptions,
     );
   }, [employee, jobTitleOptions]);
+
+  const managerId = employee?.manager_id?.trim() || null;
+  const { data: managerRow } = useQuery({
+    queryKey: ['profile-direct-manager', managerId, employee?.company_id ?? null],
+    queryFn: async () => {
+      if (!managerId || !employee) return null;
+      const scopes = [
+        employee.company_id,
+        currentCompanyId,
+        ...memberships.map((m) => m.company_id),
+      ].filter(Boolean) as string[];
+      return getEmployeeById(managerId, scopes);
+    },
+    enabled: Boolean(managerId && employee && !employee.manager_label),
+    staleTime: 60_000,
+  });
+  const directManagerDisplay = useMemo(() => {
+    if (!managerId) return '—';
+    if (employee?.manager_label?.trim()) return employee.manager_label.trim();
+    if (managerRow) return formatEmployeePickerLabel(managerRow);
+    return '—';
+  }, [employee?.manager_label, managerId, managerRow]);
 
   const handleAvatarChange = useCallback(async (url: string | null) => {
     if (!employee) return;
@@ -385,7 +478,41 @@ export default function EmployeeProfile() {
     }
     setActiveTab(tabId);
     setOpenGroup(null);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('tab', tabId);
+        return next;
+      },
+      { replace: true },
+    );
   };
+
+  const selectCoreTab = (tabId: ProfileTabId) => {
+    setActiveTab(tabId);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('tab', tabId);
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  useEffect(() => {
+    const fromUrl = parseProfileTabParam(searchParams.get('tab'));
+    if (!fromUrl) return;
+    setActiveTab((prev) => (prev === fromUrl ? prev : fromUrl));
+    if (isPinnableProfileTab(fromUrl)) {
+      setPinnedTabs((prev) => {
+        if (prev.includes(fromUrl)) return prev;
+        const next = [...prev, fromUrl];
+        localStorage.setItem('employee-pinned-tabs', JSON.stringify(next));
+        return next;
+      });
+    }
+  }, [searchParams, id]);
 
   if (isLoading) {
     return (
@@ -419,8 +546,8 @@ export default function EmployeeProfile() {
   if (error || !employee) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-        <AlertCircle className="w-12 h-12 text-muted-foreground" />
-        <p className="text-lg text-muted-foreground">{error || t('employeeProfile.notFound')}</p>
+        <AlertCircle className="w-12 h-12 text-xevn-textMuted" />
+        <p className="text-lg font-medium text-xevn-text">{error || t('employeeProfile.notFound')}</p>
         <Button onClick={() => navigate('/employees')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('employeeProfile.backToList')}
@@ -445,7 +572,7 @@ export default function EmployeeProfile() {
         <Button variant="ghost" size="icon" className="shrink-0" onClick={() => navigate('/employees')}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-base sm:text-xl font-bold truncate">{employee.full_name}</h1>
+        <h1 className="truncate text-base font-bold text-xevn-text sm:text-xl">{employee.full_name}</h1>
         <Badge variant="outline" className="shrink-0">
           {employee.employee_code}
         </Badge>
@@ -469,7 +596,7 @@ export default function EmployeeProfile() {
               variant={activeTab === tab.id ? 'default' : 'ghost'}
               size="sm"
               data-testid={`profile-tab-${tab.id}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => selectCoreTab(tab.id)}
               className={cn(
                 'shrink-0 gap-2',
                 activeTab === tab.id && 'bg-primary text-primary-foreground',
@@ -512,7 +639,7 @@ export default function EmployeeProfile() {
                               variant={activeTab === tab.id ? 'default' : 'ghost'}
                               size="sm"
                               data-testid={`profile-pinned-tab-${tab.id}`}
-                              onClick={() => setActiveTab(tab.id)}
+                              onClick={() => selectCoreTab(tab.id)}
                               className={cn(
                                 'shrink-0 gap-1 pr-1',
                                 activeTab === tab.id && 'bg-primary text-primary-foreground',
@@ -607,7 +734,7 @@ export default function EmployeeProfile() {
                   align="start"
                   data-testid={`profile-group-panel-${groupId}`}
                 >
-                  <p className="text-xs font-medium text-muted-foreground mb-2 px-1">
+                  <p className="mb-2 px-1 text-xs font-medium text-xevn-textSecondary">
                     {t(`employeeProfile.groups.${groupId}`, {
                       defaultValue:
                         groupId === 'hr' ? 'Nhân sự' : groupId === 'career' ? 'Sự nghiệp' : 'Cá nhân',
@@ -634,9 +761,9 @@ export default function EmployeeProfile() {
                           <tab.icon className="w-5 h-5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-sm">{tab.label}</p>
+                          <p className="text-sm font-medium text-xevn-text">{tab.label}</p>
                           {tab.description ? (
-                            <p className="text-xs text-muted-foreground">{tab.description}</p>
+                            <p className="text-xs text-xevn-textSecondary">{tab.description}</p>
                           ) : null}
                         </div>
                       </button>
@@ -676,11 +803,11 @@ export default function EmployeeProfile() {
                       </Avatar>
                     </div>
                   )}
-                  <h3 className="text-lg font-bold">{employee.full_name}</h3>
-                  <p className="text-sm text-muted-foreground mb-1">
+                  <h3 className="text-lg font-bold text-xevn-text">{employee.full_name}</h3>
+                  <p className="mb-1 text-sm text-xevn-textSecondary">
                     {positionDisplayLabel}
                   </p>
-                  <p className="text-xs text-muted-foreground mb-2">
+                  <p className="mb-2 text-xs text-xevn-textSecondary">
                     {employee.department || t('employeeProfile.noDepartment')}
                   </p>
                   <Badge className={statusInfo.className}>
@@ -690,9 +817,17 @@ export default function EmployeeProfile() {
               </CardContent>
             </Card>
 
+            <Suspense fallback={null}>
+              <EmployeeActivatePanel
+                employeeId={employee.id}
+                status={employee.status}
+                onActivated={() => void refetch()}
+              />
+            </Suspense>
+
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
                   <User className="w-4 h-4" />
                   {t('employeeProfile.sections.personalInfo')}
                 </CardTitle>
@@ -716,7 +851,7 @@ export default function EmployeeProfile() {
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
                   <Home className="w-4 h-4" />
                   {t('employeeProfile.sections.address')}
                 </CardTitle>
@@ -729,7 +864,7 @@ export default function EmployeeProfile() {
 
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
                   <AlertCircle className="w-4 h-4" />
                   {t('employeeProfile.sections.emergencyContact')}
                 </CardTitle>
@@ -744,7 +879,7 @@ export default function EmployeeProfile() {
           <div className="lg:col-span-5 space-y-6">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
                   <Briefcase className="w-4 h-4" />
                   {t('employeeProfile.sections.workInfo')}
                 </CardTitle>
@@ -752,6 +887,11 @@ export default function EmployeeProfile() {
               <CardContent className="space-y-3">
                 <InfoItem icon={Building2} label={t('employeeProfile.fields.department')} value={employee.department || '--'} />
                 <InfoItem icon={Briefcase} label={t('employeeProfile.fields.position')} value={positionDisplayLabel} />
+                <InfoItem
+                  icon={Users}
+                  label={t('employeeProfile.workInfo.directManager')}
+                  value={directManagerDisplay}
+                />
                 <InfoItem icon={MapPin} label={t('employeeProfile.fields.workLocation')} value={employee.work_location || '--'} />
                 <InfoItem icon={Calendar} label={t('employeeProfile.fields.startDate')} value={formatDate(employee.start_date)} />
                 <InfoItem icon={Calendar} label={t('employeeProfile.fields.endDate')} value={formatDate(employee.end_date)} />
@@ -766,24 +906,42 @@ export default function EmployeeProfile() {
             <PermissionGate
               module="employees"
               action="view_salary"
-              fallback={<PermissionFallback className="py-8" />}
+              fallback={
+                <Card data-testid="emp-core-cb-map-hidden">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
+                      <DollarSign className="w-4 h-4" />
+                      {t('employeeProfile.sections.financialInfo')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PermissionFallback className="py-4" />
+                  </CardContent>
+                </Card>
+              }
             >
-              <Card>
+              <Card data-testid="emp-core-cb-map-redirect">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
                     <DollarSign className="w-4 h-4" />
                     {t('employeeProfile.sections.financialInfo')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <InfoItem
-                    icon={DollarSign}
-                    label={t('employeeProfile.fields.baseSalary')}
-                    value={employee.salary ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(employee.salary) : '--'}
-                  />
-                  <InfoItem icon={CreditCard} label={t('employeeProfile.fields.bank')} value={employee.bank_name || '--'} />
-                  <InfoItem icon={CreditCard} label={t('employeeProfile.fields.bankAccount')} value={employee.bank_account || '--'} />
-                  <InfoItem icon={FileText} label={t('employeeProfile.fields.taxCode')} value={employee.tax_code || '--'} />
+                  <p className="text-sm text-xevn-textSecondary">
+                    Lương / tài khoản / MST không hiển thị trên hồ sơ công khai. Mở tab Lương & thu nhập
+                    (vòng C&B / HĐ–BH) — không lấy từ GET hồ sơ hành chính.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => selectGroupedTab('salary')}
+                    data-testid="emp-core-cb-map-open-salary"
+                  >
+                    {t('employeeProfile.tabs.salary', { defaultValue: 'Lương & thu nhập' })}
+                  </Button>
                 </CardContent>
               </Card>
             </PermissionGate>
@@ -795,37 +953,59 @@ export default function EmployeeProfile() {
             >
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-base font-semibold text-xevn-text">
                     <Shield className="w-4 h-4" />
                     {t('employeeProfile.sections.insuranceInfo')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <InfoItem icon={Shield} label={t('employeeProfile.fields.socialInsurance')} value={employee.social_insurance_number || '--'} />
-                  <InfoItem icon={Heart} label={t('employeeProfile.fields.healthInsurance')} value={employee.health_insurance_number || '--'} />
+                  <p className="text-sm text-xevn-textSecondary">
+                    Số BHXH / BHYT chi tiết thuộc vòng C&B — mở tab Bảo hiểm & Phúc lợi.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    data-testid={HDSD_MUTATE_TEST_IDS.profileOpenInsuranceTab}
+                    onClick={() => selectGroupedTab('insurance')}
+                  >
+                    {t('employeeProfile.tabs.insurance')}
+                  </Button>
                 </CardContent>
               </Card>
             </PermissionGate>
+            {/* Always visible — opens nested HR «Bảo hiểm & Phúc lợi» (CORE-10 / D5). */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full"
+              data-testid={`${HDSD_MUTATE_TEST_IDS.profileOpenInsuranceTab}-footer`}
+              onClick={() => selectGroupedTab('insurance')}
+            >
+              {t('employeeProfile.tabs.insurance')}
+            </Button>
           </div>
 
           <div className="lg:col-span-4 space-y-6">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-medium">{t('employeeProfile.sections.workSkills')}</CardTitle>
+                <CardTitle className="text-base font-semibold text-xevn-text">{t('employeeProfile.sections.workSkills')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <EmployeeSkillsRadarChart />
-                <div className="flex justify-center gap-6 mt-2 text-xs flex-wrap">
+                <div className="mt-2 flex flex-wrap justify-center gap-6 text-xs text-xevn-textSecondary">
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-blue-500/30 border border-blue-500" />
+                    <div className="h-3 w-3 rounded-full border border-xevn-primary bg-xevn-primary/30" />
                     <span>{t('employeeProfile.skillsLegend.benchmark')}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <div className="h-3 w-3 rounded-full bg-xevn-success" />
                     <span>{t('employeeProfile.skillsLegend.manager')}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-purple-500" />
+                    <div className="h-3 w-3 rounded-full bg-xevn-accent" />
                     <span>{t('employeeProfile.skillsLegend.director')}</span>
                   </div>
                 </div>
@@ -841,11 +1021,14 @@ export default function EmployeeProfile() {
       {activeTab === 'work' && <EmployeeJobList employeeId={employee.id} />}
 
       {activeTab === 'contract' && (
-        <EmployeeContracts
-          employeeId={employee.id}
-          employeeName={employee.full_name}
-          department={employee.department || undefined}
-        />
+        <div className="space-y-4">
+          <HireReadinessBanner employeeId={employee.id} />
+          <EmployeeContracts
+            employeeId={employee.id}
+            employeeName={employee.full_name}
+            department={employee.department || undefined}
+          />
+        </div>
       )}
 
       {activeTab === 'salary' && (
@@ -873,6 +1056,12 @@ export default function EmployeeProfile() {
       {activeTab === 'certificates' && (
         <LazyTabPanel>
           <EmployeeCertificates employeeId={id!} />
+        </LazyTabPanel>
+      )}
+
+      {activeTab === 'documents' && (
+        <LazyTabPanel>
+          <EmployeeDocumentChecklist employeeId={employee.id} />
         </LazyTabPanel>
       )}
 
@@ -955,8 +1144,8 @@ function InfoItem({
         <Icon className="w-4 h-4 text-primary" />
       </div>
       <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value || '--'}</p>
+        <p className="text-xs font-medium text-xevn-textSecondary">{label}</p>
+        <p className="truncate text-sm font-medium text-xevn-text">{value || '--'}</p>
       </div>
     </div>
   );

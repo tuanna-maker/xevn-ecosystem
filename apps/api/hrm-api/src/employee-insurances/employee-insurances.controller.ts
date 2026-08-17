@@ -4,6 +4,7 @@ import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { CreateEmployeeInsuranceDto } from './dto/create-employee-insurance.dto';
+import { InsuranceActionDto } from './dto/insurance-action.dto';
 import { ListEmployeeInsurancesQueryDto } from './dto/list-employee-insurances.query.dto';
 import { UpdateEmployeeInsuranceDto } from './dto/update-employee-insurance.dto';
 import { EmployeeInsurancesService } from './employee-insurances.service';
@@ -31,6 +32,22 @@ export class EmployeeInsurancesController {
     return this.service
       .list(query, authorization)
       .then((data) => ok(data, 'HRM-EINS-200', 'Employee insurances listed'));
+  }
+
+  @Post(':insuranceId/actions')
+  applyAction(
+    @Param('insuranceId') insuranceId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Body() body: InsuranceActionDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    return this.service
+      .applyAction(insuranceId, body, authorization)
+      .then((data) => ok(data, 'HRM-EINS-200', 'Employee insurance action applied'));
   }
 
   @Get(':insuranceId')

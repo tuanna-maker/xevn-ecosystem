@@ -2,6 +2,7 @@ import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { ContractsInsuranceService } from './contracts-insurance.service';
+import { ContractLegalPrintService } from './contract-legal-print.service';
 
 describe('ContractsInsuranceService', () => {
   let service: ContractsInsuranceService;
@@ -400,7 +401,7 @@ describe('ContractsInsuranceService', () => {
 
   it('lists expiring insurance records with default days', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_insurance_records') && sql.includes('ORDER BY expiry_date ASC')) {
+      if (sql.includes('FROM public.employee_insurances') && sql.includes('ORDER BY end_date ASC')) {
         return {
           rows: [
             {
@@ -441,7 +442,8 @@ describe('ContractsInsuranceService', () => {
       if (sql.includes('SELECT company_id::text AS company_id FROM public.employee_contracts')) {
         return { rows: [{ company_id: 'holding' }] } as never;
       }
-      if (sql.includes('DELETE FROM public.employee_contracts')) {
+      // Soft-delete (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01) — archived_at, not hard DELETE
+      if (sql.includes('UPDATE public.employee_contracts') && sql.includes('archived_at = NOW()')) {
         return { rows: [{ id: contractId }] } as never;
       }
       return { rows: [] } as never;
@@ -471,7 +473,7 @@ describe('ContractsInsuranceService', () => {
       if (sql.includes('chk_contract_date_range')) {
         schemaSql.push(sql);
       }
-      if (sql.includes('FROM public.employee_insurance_records ir')) {
+      if (sql.includes('FROM public.employee_insurances ei')) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
@@ -492,7 +494,7 @@ describe('ContractsInsuranceService', () => {
       roleCode: 'group_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_insurance_records ir')) {
+      if (sql.includes('FROM public.employee_insurances ei')) {
         return {
           rows: [
             {
@@ -523,6 +525,7 @@ describe('ContractsInsuranceService', () => {
       social_insurance_number: 'BHXH-2026-0001',
       employee_name: 'Nguyen Van A',
       effective_date: '2026-01-01',
+      enrollment_id: 'ins1',
     });
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('e.archived_at IS NULL'),
@@ -538,7 +541,7 @@ describe('ContractsInsuranceService', () => {
       roleCode: 'group_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_insurance_records ir')) {
+      if (sql.includes('FROM public.employee_insurances ei')) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
@@ -547,9 +550,9 @@ describe('ContractsInsuranceService', () => {
     await service.listInsurance({ company_id: 'main' }, `Bearer ${token}`);
 
     const listCall = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_insurance_records ir'),
+      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_insurances ei'),
     );
-    expect(listCall?.[0]).toEqual(expect.stringContaining('ir.employee_id IN'));
+    expect(listCall?.[0]).toEqual(expect.stringContaining('ei.employee_id IN'));
     expect(listCall?.[0]).toEqual(expect.stringContaining("custom_fields->>'tenant_id'"));
     expect(listCall?.[1]).toEqual(expect.arrayContaining(['xevn', expect.any(Array)]));
   });
@@ -562,7 +565,7 @@ describe('ContractsInsuranceService', () => {
       roleCode: 'group_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_insurance_records ir')) {
+      if (sql.includes('FROM public.employee_insurances ei')) {
         return {
           rows: [
             {
@@ -593,6 +596,7 @@ describe('ContractsInsuranceService', () => {
       effective_date: '2026-03-15',
       created_at: '2026-03-15T10:00:00.000Z',
       updated_at: '2026-03-15T10:00:00.000Z',
+      enrollment_id: 'ins1',
     });
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('company_id = ANY'),
@@ -667,7 +671,7 @@ describe('ContractsInsuranceService', () => {
     const contractId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
     db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
       if (sql.includes('INSERT INTO public.employee_contracts') && sql.includes('notes')) {
-        expect(params?.[7]).toBe(notes);
+        expect(params?.[10]).toBe(notes);
         return {
           rows: [
             {
@@ -1088,6 +1092,104 @@ describe('ContractsInsuranceService', () => {
           position_key: 'INVENT_FREE_TEXT',
         }),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-POS-KEY' });
+    });
+  });
+
+  describe('PO-HRM-CTR-WORKSPACE-BE-LAYOUT-01', () => {
+    const contractId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+    const clauseId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+    const employeeId = '11111111-1111-4111-8111-111111111111';
+
+    function contractDetailRow(overlay: string[] | null = [clauseId]) {
+      return {
+        id: contractId,
+        company_id: 'holding',
+        employee_id: employeeId,
+        contract_type: 'indefinite',
+        start_date: '2026-01-01',
+        end_date: null,
+        status: 'active',
+        template_code: 'XEVN_FT_12M_OFFICE',
+        pack_code: 'GENERAL',
+        print_overlay_clause_ids: overlay,
+        created_at: '2026-01-01T00:00:00.000Z',
+        updated_at: '2026-01-01T00:00:00.000Z',
+        employee_name: 'Nguyen Van A',
+        employee_code: 'NV0001',
+        department: 'Nhân sự',
+      };
+    }
+
+    it('getContractById merges clause_layout + can_issue from print service', async () => {
+      const layoutMock = {
+        resolveContractDetailLayout: jest.fn().mockResolvedValue({
+          clause_ids: [clauseId],
+          print_overlay_clause_ids: [clauseId],
+          clause_layout: [
+            {
+              id: clauseId,
+              code: 'JOB_DUTIES',
+              title_vi: 'Công việc',
+              body_vi: 'Nội dung điều khoản',
+              clause_group: 'general',
+              mandatory: true,
+              sort_order: 0,
+            },
+          ],
+          can_issue: true,
+          preview_summary: {
+            pack_code: 'GENERAL',
+            template_code: 'XEVN_FT_12M_OFFICE',
+            missing_fields: [],
+            missing_clauses: [],
+          },
+        }),
+      } as unknown as ContractLegalPrintService;
+
+      const svc = new ContractsInsuranceService(db, undefined, undefined, undefined, undefined, undefined, undefined, layoutMock);
+
+      db.query.mockImplementation(async (sql: string) => {
+        if (sql.includes('FROM public.employee_contracts ec') && sql.includes('ec.id = $1::uuid')) {
+          return { rows: [contractDetailRow()] } as never;
+        }
+        return { rows: [] } as never;
+      });
+
+      const result = await svc.getContractById(contractId, 'main');
+
+      expect(layoutMock.resolveContractDetailLayout).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: contractId,
+          company_id: 'holding',
+          employee_id: employeeId,
+          print_overlay_clause_ids: [clauseId],
+        }),
+        'main',
+        undefined,
+        undefined,
+      );
+      expect(result.clause_ids).toEqual([clauseId]);
+      expect(result.clause_layout).toHaveLength(1);
+      expect(result.clause_layout?.[0]?.body_vi).toBe('Nội dung điều khoản');
+      expect(result.can_issue).toBe(true);
+      expect(result.preview_summary?.missing_fields).toEqual([]);
+    });
+
+    it('getContractById without print service returns empty layout and can_issue false', async () => {
+      const svc = new ContractsInsuranceService(db);
+
+      db.query.mockImplementation(async (sql: string) => {
+        if (sql.includes('FROM public.employee_contracts ec') && sql.includes('ec.id = $1::uuid')) {
+          return { rows: [contractDetailRow()] } as never;
+        }
+        return { rows: [] } as never;
+      });
+
+      const result = await svc.getContractById(contractId, 'main');
+
+      expect(result.clause_ids).toEqual([clauseId]);
+      expect(result.clause_layout).toEqual([]);
+      expect(result.can_issue).toBe(false);
     });
   });
 });

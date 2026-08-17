@@ -1,19 +1,26 @@
 /**
  * @CODE-MEMORY
  * Screen:     Auth / Settings — ScopeScreen (phạm vi công ty)
- * UC:         UC-HRM-MOB-02 · AC-BRAND-DNA-06
+ * UC:         UC-HRM-MOB-02 · AC-BRAND-DNA-06 · FR-UC-M01
  * BR:         Shell header via AppScreenLayout; cards = SurfaceCard L2 DNA
- * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md §3 L3m
- * TechSpec:   THEME_USAGE.md § L3
+ * SRS:        docs/brand-new-documents-20270801/SRS_NEW.md v1.1 §3.2 · FR-UC-M01
+ * TechSpec:   docs/brand-new-documents-20270801/API_CONTRACT_NEW.md §8.4–8.5
  * Purpose:    Chọn membership / đơn vị vận hành — chrome dùng L1 text tokens + L2 SurfaceCard.
  * WorkItem:   MOB-XEVN-BRAND-SHELL-L3-01
  * Coded:      2026-07-22
  * Callers:    RootNavigator / Settings stack
- * Callees:    AppScreenLayout · SurfaceCard · colors.text|textSecondary
+ * Callees:    AppScreenLayout · SurfaceCard · membershipDisplay · selectMembership
  * Impact:     Hex nhạt trên title/hint → lệch sharp-ops ADR
  * must_keep:  colors.text / textSecondary; không remaster ESS list domain (L4c)
  * SOLID:      Copy helpers ở scopeScreenCopy — UI shell tách nghiệp vụ scope
- * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ * LastVerified: src/features/auth/membershipDisplay.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-04-AUTH-MOB
+ * change_mode: UPGRADE
+ * What: Hàng membership + «Đang dùng» bind company_label / tenant_label / role_label /
+ *       job_title_label từ BE; cấm resolveCompanyDisplayVi invent slug trên auth path.
+ * Why: OS 28 · W1-B-03-AUTH-BE · slice DOC-ENT-P0-AUTH-M01
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -36,11 +43,8 @@ import {
 import { vi } from '../../i18n/vi';
 import { colors, spacing, typography } from '../../theme/tokens';
 import { SCOPE_SCREEN_TEST_ID } from '../../utils/profileSettingsNav';
-import { resolveCompanyDisplayVi } from '../../utils/companyDisplayVi';
 import {
-  resolveMembershipRowMeta,
   resolveMembershipRowSubtitle,
-  resolveMembershipRowTitle,
   resolveMembershipSectionTitle,
   resolveOperatingUnitRowMeta,
   resolveOperatingUnitRowSubtitle,
@@ -49,6 +53,13 @@ import {
   resolveRollupOperatingUnitSubtitle,
   resolveScopeScreenSubtitle,
 } from '../../utils/scopeScreenCopy';
+import {
+  resolveMembershipCompanyLabel,
+  resolveMembershipJobTitleLabel,
+  resolveMembershipRoleLabel,
+  resolveMembershipScopeMeta,
+  resolveMembershipTenantLabel,
+} from './membershipDisplay';
 
 /**
  * UC-HRM-MOB-02 + U39 — phạm vi tenant/công ty và lọc đơn vị vận hành (group CEO).
@@ -64,12 +75,14 @@ export function ScopeScreen() {
   const showOperatingUnits = isGroupCeoMasterTenant(auth.tenantId);
   const selectedOpUnit = readOperatingUnitFilterSelection(auth.companyId);
   const headerWire = resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
-  const companyLabel = resolveCompanyDisplayVi(auth.companyId, {
-    membershipCompanyDisplay: auth.memberships.find(
-      (m) => m.employee_id === auth.employeeId && m.tenant_id === auth.tenantId,
-    )?.company_display,
-    operatingUnits: units.length ? units : undefined,
-  });
+  const activeMembership = auth.memberships.find(
+    (m) => m.employee_id === auth.employeeId && m.tenant_id === auth.tenantId,
+  );
+  // Xử lý: bind label BE — không fallback company_id slug khi thiếu label.
+  const companyLabel = resolveMembershipCompanyLabel(activeMembership);
+  const tenantLabel = resolveMembershipTenantLabel(activeMembership);
+  const roleLabel = resolveMembershipRoleLabel(activeMembership);
+  const jobTitleLabel = resolveMembershipJobTitleLabel(activeMembership);
 
   const memberships = auth.memberships.length
     ? auth.memberships
@@ -82,7 +95,11 @@ export function ScopeScreen() {
             employee_id: auth.employeeId,
             employee_code: '',
             employee_name: '',
-            company_display: auth.companyId,
+            company_display: '—',
+            company_label: '—',
+            tenant_label: '—',
+            role_label: '—',
+            job_title_label: '—',
             is_primary: true,
           } satisfies MobileMembership,
         ]
@@ -133,7 +150,10 @@ export function ScopeScreen() {
         Alert.alert(vi.error, 'Không đổi được phạm vi — thử đăng nhập lại.');
         return;
       }
-      Alert.alert('Đã lưu', `${m.company_display} (${m.tenant_id})`);
+      Alert.alert(
+        'Đã lưu',
+        `${resolveMembershipCompanyLabel(m)} · ${resolveMembershipTenantLabel(m)}`,
+      );
       if (isGroupCeoMasterTenant(m.tenant_id)) {
         void loadOperatingUnits();
       }
@@ -154,12 +174,18 @@ export function ScopeScreen() {
       emptyMessage="Chưa có phạm vi — đăng nhập lại bằng email/mật khẩu."
     >
       <SurfaceCard title="Đang dùng">
-        <Text style={styles.scopeMeta}>
+        <Text style={styles.scopeMeta} testID="scope-active-company-label">
           Công ty: {companyLabel}
+          {'\n'}
+          Pháp nhân: {tenantLabel}
+          {'\n'}
+          Vai trò: {roleLabel}
+          {'\n'}
+          Chức danh: {jobTitleLabel}
           {typeof __DEV__ !== 'undefined' && __DEV__ ? (
             <>
               {'\n'}
-              Tenant: {auth.tenantId || '—'}
+              Tenant key: {auth.tenantId || '—'}
               {'\n'}
               Query `company_id`: {auth.companyId || '—'}
               {'\n'}
@@ -234,9 +260,9 @@ export function ScopeScreen() {
                 style={({ pressed }) => [pressed && !busy && styles.pressed, busy && styles.disabled]}
               >
                 <ListRow
-                  title={resolveMembershipRowTitle(m, units)}
+                  title={resolveMembershipCompanyLabel(m)}
                   subtitle={resolveMembershipRowSubtitle(m)}
-                  meta={resolveMembershipRowMeta(m)}
+                  meta={resolveMembershipScopeMeta(m)}
                   trailing={
                     active ? <StatusBadge status="approved" label="Đang dùng" tone="success" /> : undefined
                   }

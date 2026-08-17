@@ -85,6 +85,11 @@ export function navigateToUpdateRequests(navigation: MainTabNav): void {
   navigateProfileStackScreen(navigation, 'UpdateRequests');
 }
 
+/** Home FAB / Settings / hub «Đi muộn» → CreateUpdateRequest (AT-01 · R-SPINE-AT-NAV-01). */
+export function navigateToCreateUpdateRequest(navigation: MainTabNav): void {
+  navigateProfileStackScreen(navigation, 'CreateUpdateRequest');
+}
+
 export function navigateToUpdateRequestDetail(navigation: MainTabNav, id: string): void {
   navigateProfileStackScreen(navigation, 'UpdateRequestDetail', { id });
 }

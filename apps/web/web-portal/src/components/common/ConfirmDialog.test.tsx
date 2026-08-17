@@ -15,6 +15,8 @@ describe('ConfirmDialog (G-UX-01 foundation)', () => {
     );
     expect(screen.getByRole('alertdialog')).toBeTruthy();
     expect(screen.getByRole('alertdialog').className).toContain('xevn-dialog-surface');
+    expect(document.querySelector('.xevn-dialog-header-glass')).toBeTruthy();
+    expect(document.querySelector('.xevn-dialog-wordmark')).toBeTruthy();
     expect(screen.getByText('Xóa cổ đông')).toBeTruthy();
     expect(screen.getByText('Bạn có chắc muốn xóa cổ đông này?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Hủy' })).toBeTruthy();

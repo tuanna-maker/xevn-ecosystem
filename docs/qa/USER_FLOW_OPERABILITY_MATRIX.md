@@ -90,6 +90,7 @@ QA sau FE waves: checklist trong evidence BA §3 (`QA-UX-VI-FORMAT-01`). Không 
 | **UF-HRM-12** | **Tuyển dụng** — tạo/sửa requisition UI + F5 | Group CEO | UC-HRM-22 · J-HRM-05 | 🟢 | **Dev8088 GWC retest 2026-07-17 PASS** (@397ac81) — Thêm/Sửa/Chi tiết present; PATCH status **200** → FE «Đang tuyển» → F5; Đề xuất POST **201** → FE row → F5; J-HRM-05 GET by id **200**; no eval storm / RATE-429 — [QA](./evidence/gwc-hrm-rec-uf12-01-qa-20260717.md) · prior FAIL [menu](./evidence/p1-hrm-menu-recruitment-20260717.md) |
 | **UF-HRM-13** | Member CEO — contract/employee mutate UI | Member CEO | UC-HRM-SCOPE-02 | 🟢 | **Dev8088 R6** — `du-lich.ceo@xe.vn` login **201** · HRM **18** NV · scope negatives **403/409** OK — [R6](./evidence/p1-browser-e2e-hrm-wave-8088-r6-20260620.md) |
 | **UF-HRM-16** | **Bảng chấm công** — tạo kỳ + Công chuẩn → list → mở lưới / empty; **cấm** reload storm | Group CEO | UC-HRM-23 · HRM-AT-14 · **J-HRM-06b** | 🟢 | **Dev8088 2026-07-21 PASS** — POST sheet **201** → list row → open weekly settled empty (no forever spinner); records GET idle **0**/10s (storm CLOSED); F5 list persists; 0 Invalid time · U65 — [QA](./evidence/qa-hrm-att-sheet-ac-01-20260721.md) · [QC GWC](./evidence/qc-hrm-att-sheet-ac-01-20260721.md) · [BA AC](./evidence/ba-hrm-att-sheet-ac-01-20260721.md) · promote [UF16](./evidence/qa-uf-hrm-16-promote-01-20260721.md) |
+| **UF-HRM-ATT-SIGN** | **Ký chốt bảng công kỳ** — list → mở `submitted` → panel ký → NV/QL/HCNS **Xác nhận** → **Chốt** → F5; **cấm** seed · một nút «Chốt» bypass WF | NV · QL trực tiếp · HCNS | **UC-BP-ATT-11** · **J-HRM-06c** · BR-BP-TS-02 · **AC-ATT-SIGN-04** | ⬜ | **UNTESTED** — BA click path + **AC-ATT-SIGN-UF-01..07** + post-mutation FE sealed; prerequisite **UF-HRM-16** 🟢 + sheet `submitted` (U65); QA when Dev **`READY_FOR_QA`** — [BA UF](./evidence/po-hrm-bp-att-sign-uf-ba-01.md) |
 
 ---
 
@@ -185,6 +186,7 @@ Mỗi UF-ID khi PASS phải ghi: `Local=🟢` và/hoặc `Dev8088=🟢` trong ev
 | Tab Bảo hiểm — drill NV | Liên kết BH ↔ NV | UF-HRM-04 |
 | Tab Chấm công — xem bản ghi | Đọc chấm công | UF-HRM-05 |
 | Tab Chấm công — tạo/mở bảng kỳ | CRUD bảng chấm công + lưới tuần | UF-HRM-16 · J-HRM-06b |
+| Tab Chấm công — ký chốt bảng kỳ | Workflow ký NV/QL/HCNS → chốt (BR-BP-TS-02) | UF-HRM-ATT-SIGN · J-HRM-06c |
 | Tab Lương — phiếu lương | Xem payroll | UF-HRM-06 |
 | Settings catalogs — sync/sửa | Danh mục HRM từ XBOS | UF-HRM-10 |
 | Metadata queue — duyệt | Phê duyệt thay đổi metadata NV | UF-HRM-11 |
@@ -196,4 +198,4 @@ Mỗi UF-ID khi PASS phải ghi: `Local=🟢` và/hoặc `Dev8088=🟢` trong ev
 
 **§4b Local (2026-07-20):** UF-HRM-MENU-01..16 **🟢** load · MENU-17 **🟡** (P3 metadata ids) · Dev8088 **⬜** — BA `BA-HRM-MENU-UF-MATRIX-01` · QC GWC Local only.
 
-**Cập nhật lần cuối:** 2026-07-21 — QA `P1-UF-HRM-16-PROMOTE-01` (§4 UF-HRM-16 🟢) · prior BA `BA-UX-VI-FORMAT-AC-01` (§2b) · `BA-HRM-MENU-UF-MATRIX-01` (§4b).
+**Cập nhật lần cuối:** 2026-08-05 — BA `PO-HRM-BP-ATT-SIGN-UF-BA-01` (§4 **UF-HRM-ATT-SIGN** ⬜ · J-HRM-06c) · prior QA `P1-UF-HRM-16-PROMOTE-01` (UF-HRM-16 🟢).

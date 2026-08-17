@@ -15,6 +15,12 @@
  * must_keep:  FL-01 GET only · U65 · HOLD_DEPLOY · no create mutate
  * SOLID:      Hook owns server state; page owns presentation
  * LastVerified: lib/fleetCatalogUx.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-02-EMP-FE-FLEET-01
+ * change_mode: ADD (restore)
+ * What: Restore useFleetVehicles with Fleet page (stash 43c479a)
+ * Why: Transitive dep of pages/Fleet — required for App.tsx lazy resolve
+ * must_keep: GET list only · q debounce · no invent upsert · U65
  */
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';

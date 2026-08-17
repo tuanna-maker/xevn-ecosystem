@@ -15,6 +15,11 @@ export class ListCandidatesQueryDto {
   @IsUUID()
   requisition_id?: string;
 
+  /** Alias of requisition_id (AV-UV-YCTD-ALIAS-01). */
+  @IsOptional()
+  @IsUUID()
+  recruitment_request_id?: string;
+
   @IsOptional()
   @Transform(({ value, obj }) => {
     const raw = value ?? obj?.page;

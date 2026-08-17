@@ -3,10 +3,15 @@ import { ConfigSyncService } from './config-sync.service';
 import type { PublishCatalogPayload } from './config-sync.service';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest } from '../common/internal-auth';
+import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
-import { resolveXbosGroupLegalReadScopeContext } from '../common/xbos-group-legal-scope';
+import {
+  isGroupCeoOnMasterTenant,
+  resolveXbosGroupLegalReadScopeContext,
+} from '../common/xbos-group-legal-scope';
 import { ApplyCatalogToMembersDto } from './dto/apply-catalog-to-members.dto';
+import { CloneCatalogDto } from './dto/clone-catalog.dto';
+import { CloneCatalogBundleDto } from './dto/clone-catalog-bundle.dto';
 import { PublishCatalogDto } from './dto/publish-catalog.dto';
 
 @Controller('config-sync')
@@ -19,6 +24,31 @@ export class ConfigSyncController {
         'XBOS-AUTH-001',
         'Unauthorized bootstrap access',
         HttpStatus.UNAUTHORIZED,
+      );
+    }
+  }
+
+  /**
+   * XBOS-DM-LOG-09 AU — member JWT cannot clone cross-company catalog bundles.
+   * Internal API key without JWT remains DevOps bootstrap path (TECHSPEC_M03 §2).
+   */
+  private assertCatalogCloneActor(authorization?: string) {
+    const jwt = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+    if (!jwt) {
+      return;
+    }
+    const roleCode = String(jwt.roleCode ?? jwt.role_code ?? jwt.role ?? '')
+      .trim()
+      .toLowerCase();
+    const tenantId = String(jwt.tenantId ?? jwt.tenant_id ?? jwt.tid ?? '')
+      .trim()
+      .toLowerCase();
+    if (!isGroupCeoOnMasterTenant(tenantId, roleCode)) {
+      throw new ApiException(
+        'XBOS-AUTH-003',
+        'Catalog bundle clone requires group catalog admin on master tenant',
+        HttpStatus.FORBIDDEN,
+        { tenantId, roleCode },
       );
     }
   }
@@ -80,6 +110,64 @@ export class ConfigSyncController {
       actor: payload.actor,
     });
     return ok(data, 'XBOS-CFG-204', 'Catalog applied to members');
+  }
+
+  /**
+   * XBOS-DM-09 — Sao chép một bộ danh mục (single catalog_key) partition→partition.
+   * Default onConflict=reject → XBOS-CFG-409 when dest has overlapping item codes.
+   * Distinct from apply-to-members (DM-HRM-07) and catalogs/clone-bundle (LOG-09).
+   */
+  @Post('catalog/:catalogKey/clone')
+  async cloneCatalog(
+    @Param('catalogKey') catalogKey: string,
+    @Body() payload: CloneCatalogDto,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    this.assertInternalAccess(authorization, internalApiKey);
+    this.assertCatalogCloneActor(authorization);
+    const sourceScope = resolveXbosGroupLegalReadScopeContext(authorization, {
+      tenantId: payload.tenantId,
+      companyId: payload.companyId,
+    });
+    const data = await this.configSyncService.cloneCatalog(catalogKey, {
+      tenantId: sourceScope.tenantId,
+      companyId: sourceScope.companyId,
+      destTenantId: payload.destTenantId,
+      destCompanyId: payload.destCompanyId,
+      onConflict: payload.onConflict,
+      actor: payload.actor,
+    });
+    return ok(data, 'XBOS-CFG-206', 'Catalog cloned');
+  }
+
+  /**
+   * XBOS-DM-LOG-09 / XBOS-DM-09 — clone catalog bundle CT→CT with domain filter.
+   * LOG-09: body.domains = ['logistics']. Shared with DM-09 (other domains).
+   */
+  @Post('catalogs/clone-bundle')
+  async cloneCatalogBundle(
+    @Body() payload: CloneCatalogBundleDto,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    this.assertInternalAccess(authorization, internalApiKey);
+    this.assertCatalogCloneActor(authorization);
+    const sourceScope = resolveXbosGroupLegalReadScopeContext(authorization, {
+      tenantId: payload.sourceTenantId,
+      companyId: payload.sourceCompanyId,
+    });
+    const data = await this.configSyncService.cloneCatalogBundle({
+      sourceTenantId: sourceScope.tenantId,
+      sourceCompanyId: sourceScope.companyId,
+      destTenantId: payload.destTenantId,
+      destCompanyId: payload.destCompanyId,
+      domains: payload.domains,
+      keyPrefix: payload.keyPrefix,
+      onConflict: payload.onConflict,
+      actor: payload.actor,
+    });
+    return ok(data, 'XBOS-CFG-205', 'Catalog bundle cloned');
   }
 
   @Get('catalog/:catalogKey')

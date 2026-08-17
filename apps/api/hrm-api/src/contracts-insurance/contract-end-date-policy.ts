@@ -56,6 +56,23 @@ export function contractTypeRequiresEndDate(contractType: string): boolean {
  * - open-ended: end_date optional; if present must be >= start_date
  * - fixed/other: end_date required; must be >= start_date
  */
+/**
+ * Wizard Step1→2 draft (NV-first): default effective date when FE omits start_date.
+ * SRS BA-01 O5 — user may apply template suggestion later; draft must persist.
+ */
+export function resolveContractStartDateForCreate(input: {
+  startDate?: string | null;
+  effectiveFrom?: string | null;
+  defaultToday?: () => string;
+}): string {
+  const trimmed = input.startDate?.trim() || input.effectiveFrom?.trim();
+  if (trimmed) return trimmed;
+  const fallback =
+    input.defaultToday ??
+    (() => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date()));
+  return fallback();
+}
+
 export function assertContractEndDateForCreate(input: {
   contractType: string;
   startDate: string;

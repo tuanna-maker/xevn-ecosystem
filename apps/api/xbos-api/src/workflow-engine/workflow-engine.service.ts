@@ -40,6 +40,11 @@ import {
   buildHrmRecruitmentPlanApprovalDefinition,
   buildHrmRequisitionApprovalDefinition,
 } from './workflow-catalog.constants';
+import {
+  enrichWorkflowInboxTaskRow,
+  ensureGroupApproverAmongInboxSteps,
+  readSubjectTitleFromContext,
+} from './workflow-inbox-display';
 
 /**
  * @CODE-MEMORY-CHANGE 2026-07-19 XHRM-REC-WF-BE-01
@@ -79,6 +84,30 @@ import {
  * (tenant_id,workflow_code,version) when FE sends version≥2. Recruitment start
  * also looks up MASTER_TENANT_XEVN when spawn tenant is member. must_keep Option B
  * partition pick · J-REC-WF-02/03. change_mode: UPGRADE
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 PO-E2E-SPINE-01-BE-INBOX-01
+ * FIX J-REC-WF-03 / HP-03: listStepTasks enrich subject_title → workflow_name so
+ * CC Inbox shows YCTD stamp (holding spawn visible under main CEO assignee list).
+ * Recruitment spawn ensures GROUP_APPROVER_USER among inbox steps when role_code
+ * fan-out omits ceo@xe.vn. Soft backfill subjectTitle from HRM for legacy rows.
+ * must_keep: Leave/AUTH/EMP/CAT · U65 no seed · assignee filter
+ * change_mode: ADD
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-BE-WF-SELF-FD-01
+ * FIX BR-WF-04 on completeStepTask: reject when actor userId equals instance
+ * context.submitter.userId (case-insensitive) with XBOS-WF-422 — resolver
+ * skip-self alone is insufficient for UI/API self-approve FD.
+ * must_keep: Leave ladder · inbox approve XBOS-WF-200 non-self · DEPT VAL-014 ·
+ * clone paths · AUTH-003 · rejectStepTask · U65 no seed
+ * change_mode: FIX · UC-CC-P0-06 / UC-XBOS-CC-06
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-BE-WF-SELF-FD-02
+ * FIX live JOIN skew: completeStepTask SELECT uses i.context AS instance_context
+ * (not bare i.context after t.*) so node-pg row exposes instance submitter for
+ * BR-WF-04. Prefer instance_context then fallback context. Nest must load rebuilt
+ * dist (restart watch if stale). must_keep: non-self 201 · AUTH-003 · Leave L2
+ * SPEC_GAP · U65 no seed · resolver skip-self
+ * change_mode: FIX · UC-CC-P0-06 / UC-XBOS-CC-06
  */
 
 type WorkflowGraphStepRow = Record<string, unknown>;
@@ -118,6 +147,13 @@ function parseGraphObject(raw: unknown): Record<string, unknown> {
     return raw as Record<string, unknown>;
   }
   return {};
+}
+
+/** Instance context from task JOIN — prefer aliased column to avoid t.* / i.context name collisions. */
+function parseInstanceContextFromTaskRow(task: Record<string, unknown>): Record<string, unknown> {
+  const primary = parseGraphObject(task.instance_context);
+  if (Object.keys(primary).length > 0) return primary;
+  return parseGraphObject(task.context);
 }
 
 function resolveHandlerInboxTarget(handlerRoleId: string): { hatKey: string; assigneeUserId: string } {
@@ -595,7 +631,13 @@ export class WorkflowEngineService {
       steps = this.spawnResolverFallbackSteps(workflowCode, graphSteps);
     }
 
+    // J-REC-WF-03 — role_code group_ceo may return admin@ only; keep portal CEO inbox.
+    if (isHrmRecruitmentWorkflowCode(workflowCode)) {
+      steps = ensureGroupApproverAmongInboxSteps(steps, GROUP_APPROVER_USER);
+    }
+
     const firstOrder = Number(sortWorkflowSteps(graphSteps)[0]?.order ?? 1);
+    const subjectTitle = readSubjectTitleFromContext(bodyContext);
 
     return this.startInstance(tenantId, persistCompanyId, {
       definitionId: def.id,
@@ -608,6 +650,9 @@ export class WorkflowEngineService {
         currentStepOrder: firstOrder,
         applyingEntityId: applyingEntityId || null,
         applyingEntityPartition: resolvedPartition,
+        ...(subjectTitle
+          ? { subjectTitle, businessTitle: subjectTitle }
+          : {}),
       },
       steps,
     });
@@ -685,7 +730,126 @@ export class WorkflowEngineService {
     `,
       params,
     );
-    return rows;
+    const withSubjects = await this.backfillMissingRecruitmentSubjectTitles(
+      rows as Array<Record<string, unknown>>,
+    );
+    return withSubjects.map((row) => enrichWorkflowInboxTaskRow(row));
+  }
+
+  /**
+   * Legacy FE-spawned requisitions may lack context.subjectTitle — soft-fetch HRM
+   * titles once and persist so Inbox this-wave stamp matches without seed.
+   */
+  private async backfillMissingRecruitmentSubjectTitles(
+    rows: Array<Record<string, unknown>>,
+  ): Promise<Array<Record<string, unknown>>> {
+    const needIds = new Map<string, { companyId: string; instanceId: string }>();
+    for (const row of rows) {
+      const businessType = String(row.business_type ?? '').trim().toLowerCase();
+      if (businessType !== WF_BUSINESS_TYPE_HRM_REQUISITION) continue;
+      if (readSubjectTitleFromContext(row.context)) continue;
+      const businessId = String(row.business_id ?? '').trim();
+      const instanceId = String(row.instance_id ?? '').trim();
+      if (!businessId || !instanceId) continue;
+      if (!needIds.has(businessId)) {
+        needIds.set(businessId, {
+          companyId: String(row.company_id ?? MASTER_COMPANY_HOLDING).trim() || MASTER_COMPANY_HOLDING,
+          instanceId,
+        });
+      }
+    }
+    if (needIds.size === 0) return rows;
+
+    const titleById = new Map<string, string>();
+    await Promise.all(
+      [...needIds.entries()].slice(0, 20).map(async ([businessId, meta]) => {
+        const title = await this.fetchHrmRequisitionSubjectTitle(businessId, meta.companyId);
+        if (title) titleById.set(businessId, title);
+      }),
+    );
+    if (titleById.size === 0) return rows;
+
+    for (const [businessId, title] of titleById) {
+      const meta = needIds.get(businessId);
+      if (!meta) continue;
+      try {
+        await this.db.query(
+          `UPDATE public.xbos_workflow_instance
+           SET context = coalesce(context, '{}'::jsonb) || $2::jsonb,
+               updated_at = NOW()
+           WHERE id = $1::uuid
+             AND (
+               context->>'subjectTitle' IS NULL
+               OR btrim(coalesce(context->>'subjectTitle', '')) = ''
+             )`,
+          [
+            meta.instanceId,
+            JSON.stringify({ subjectTitle: title, businessTitle: title }),
+          ],
+        );
+      } catch (err) {
+        this.logger.warn(
+          `XBOS-WF-INBOX-SUBJECT-BACKFILL-SOFT instance=${meta.instanceId} ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
+
+    return rows.map((row) => {
+      const businessId = String(row.business_id ?? '').trim();
+      const title = titleById.get(businessId);
+      if (!title || readSubjectTitleFromContext(row.context)) return row;
+      const context =
+        row.context && typeof row.context === 'object' && !Array.isArray(row.context)
+          ? { ...(row.context as Record<string, unknown>), subjectTitle: title, businessTitle: title }
+          : { subjectTitle: title, businessTitle: title };
+      return { ...row, context };
+    });
+  }
+
+  private async fetchHrmRequisitionSubjectTitle(
+    requisitionId: string,
+    companyId: string,
+  ): Promise<string | null> {
+    const scopeCompany = normalizePersistCompanyId(companyId);
+    try {
+      const res = await fetch(
+        `${resolveHrmApiBaseUrl()}/api/hrm/recruitment/requisitions/${encodeURIComponent(requisitionId)}?company_id=${encodeURIComponent(scopeCompany)}`,
+        {
+          method: 'GET',
+          headers: {
+            'x-internal-api-key': internalApiKey(),
+            'x-company-id': scopeCompany,
+            'x-tenant-id': MASTER_TENANT_XEVN,
+            'content-type': 'application/json',
+          },
+        },
+      );
+      if (!res.ok) {
+        // Group CEO main↔holding parity — retry alternate slug once
+        const alt = scopeCompany === MASTER_COMPANY_HOLDING ? 'main' : MASTER_COMPANY_HOLDING;
+        const retry = await fetch(
+          `${resolveHrmApiBaseUrl()}/api/hrm/recruitment/requisitions/${encodeURIComponent(requisitionId)}?company_id=${encodeURIComponent(alt)}`,
+          {
+            method: 'GET',
+            headers: {
+              'x-internal-api-key': internalApiKey(),
+              'x-company-id': alt,
+              'x-tenant-id': MASTER_TENANT_XEVN,
+              'content-type': 'application/json',
+            },
+          },
+        );
+        if (!retry.ok) return null;
+        const retryJson = (await retry.json()) as { data?: { title?: string } };
+        const t = retryJson.data?.title?.trim();
+        return t || null;
+      }
+      const json = (await res.json()) as { data?: { title?: string } };
+      const title = json.data?.title?.trim();
+      return title || null;
+    } catch {
+      return null;
+    }
   }
 
   async getTaskById(taskId: string) {
@@ -1022,10 +1186,11 @@ export class WorkflowEngineService {
   }
 
   async completeStepTask(taskId: string, body: Record<string, unknown>) {
-    const userId = String(body.userId ?? '');
+    const userId = String(body.userId ?? body.user_id ?? '');
     const hatKey = String(body.hatKey ?? '');
     const { rows: taskRows } = await this.db.query(
-      `SELECT t.*, i.tenant_id, i.company_id, i.business_type, i.business_id, i.context, i.id AS instance_id
+      `SELECT t.*, i.tenant_id, i.company_id, i.business_type, i.business_id,
+              i.context AS instance_context, i.id AS instance_id
        FROM public.xbos_workflow_step_task t
        JOIN public.xbos_workflow_instance i ON i.id = t.instance_id
        WHERE t.id = $1::uuid`,
@@ -1033,6 +1198,21 @@ export class WorkflowEngineService {
     );
     const task = taskRows[0] as Record<string, unknown> | undefined;
     if (!task) throw new ApiException('XBOS-WF-404', 'Task not found', HttpStatus.NOT_FOUND);
+
+    // BR-WF-04: submitter must not complete their own instance (self-approve FD).
+    const actorUserId = userId.trim().toLowerCase();
+    const instanceContext = parseInstanceContextFromTaskRow(task);
+    const submitter = (instanceContext.submitter ?? {}) as Record<string, unknown>;
+    const submitterUserId = String(submitter.userId ?? submitter.user_id ?? '')
+      .trim()
+      .toLowerCase();
+    if (actorUserId && submitterUserId && actorUserId === submitterUserId) {
+      throw new ApiException(
+        'XBOS-WF-422',
+        'Self-approve forbidden: actor is instance submitter (BR-WF-04)',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
 
     const instanceId = String(task.instance_id ?? '');
     const sameUserOtherHats = await this.db.query(

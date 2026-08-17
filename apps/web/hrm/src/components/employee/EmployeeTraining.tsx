@@ -1,3 +1,45 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → nhóm HR → tab Đào tạo
+ * UC:         UC-HRM-21 · matrix #19 SCR-TAB-TRAINING · HDSD CH06 §6.2
+ * BR:         Tab Đào tạo: summary cards + list + CRUD dialog
+ * SRS:        docs/client-delivery/hdsd/hrm/HDSD_XEVN_CH06_HRM_NHAN_SU.md §6.2
+ * TechSpec:   FE bind list từ Nest GET …/training; stats client-side
+ * Purpose:    Hiển thị khóa đào tạo NV; Thêm/Sửa/Xóa; summary completed/in-progress/hours/cost
+ * WorkItem:   PO-MFD-M3-EMP-TRAINING-FIX-01
+ * Coded:      2026-08-04
+ * change_mode: FIX
+ *
+ * Callers: pages/EmployeeProfile.tsx (lazy)
+ * Callees: useEmployeeTraining → getStats / computeTrainingStats
+ *
+ * FE-Actions:
+ *   | User action        | Handler           | Module                |
+ *   |--------------------|-------------------|-----------------------|
+ *   | Mở tab Đào tạo     | mount → fetch     | useEmployeeTraining   |
+ *   | Summary cards      | getStats()        | EMPTY_TRAINING_STATS  |
+ *   | Thêm / Sửa / Xóa   | handleSave/Delete | Nest training CRUD    |
+ *
+ * Impact:     Đọc stats.completed khi stats undefined → crash trắng tab
+ * must_keep:  LIST #1–6 · CREATE #7 · DETAIL #10–12 · IMPORT #8 · SCOPE #28
+ * SOLID:      UI only; stats pure từ hook
+ * LastVerified: useEmployeeTraining.stats.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-MFD-M3-EMP-TRAINING-FIX-01
+ * change_mode: FIX
+ * What: Dùng getStats() (parity Assets/KPI/Rewards) + fallback EMPTY_TRAINING_STATS;
+ *       không destructure `stats` từ hook (trước đây luôn undefined)
+ * Why: QA RUNTIME #19 TypeError reading 'completed' sau GET training 200
+ * SRS/BR: HDSD CH06 §6.2 · matrix #19
+ * must_keep: Không đụng tab khác; không invent Nest stats payload
+ 
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; purple AI chrome → xevn primary/accent
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-B
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no Nest/seed; no OCR/QR invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ */
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -19,13 +61,18 @@ import {
   Award, BookOpen, Users, Video, MapPin, 
   CheckCircle2, PlayCircle, PauseCircle, PackageOpen
 } from 'lucide-react';
-import { useEmployeeTraining, TrainingItem, TrainingFormData } from '@/hooks/useEmployeeTraining';
+import {
+  useEmployeeTraining,
+  TrainingItem,
+  TrainingFormData,
+  EMPTY_TRAINING_STATS,
+} from '@/hooks/useEmployeeTraining';
 
 const typeColors: Record<string, string> = {
-  internal: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  external: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
-  online: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-  certification: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'
+  internal: 'bg-xevn-primary/10 text-xevn-primary dark:bg-xevn-primary/20 dark:text-xevn-accent',
+  external: 'bg-xevn-accent/15 text-xevn-primary dark:bg-xevn-accent/25 dark:text-xevn-accent',
+  online: 'bg-xevn-success/15 text-xevn-success dark:bg-xevn-success/25',
+  certification: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
 };
 
 const statusIcons: Record<string, React.ReactNode> = {
@@ -46,11 +93,13 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
   const {
     trainings,
     isLoading,
-    stats,
+    getStats,
     createTraining,
     updateTraining,
     deleteTraining,
   } = useEmployeeTraining(employeeId);
+  // Matrix #19: never read `.completed` on undefined — Nest list omits stats body.
+  const stats = getStats?.() ?? EMPTY_TRAINING_STATS;
 
   const typeLabels: Record<string, string> = {
     internal: t('training.types.internal'),
@@ -230,11 +279,11 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900">
-                <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <div className="p-2 rounded-lg bg-xevn-success/15 dark:bg-xevn-success/25">
+                <CheckCircle2 className="h-5 w-5 text-xevn-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('training.completed')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('training.completed')}</p>
                 <p className="text-2xl font-bold">{stats.completed}</p>
               </div>
             </div>
@@ -243,11 +292,11 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
-                <PlayCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="p-2 rounded-lg bg-xevn-primary/10 dark:bg-xevn-primary/20">
+                <PlayCircle className="h-5 w-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('training.inProgress')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('training.inProgress')}</p>
                 <p className="text-2xl font-bold">{stats.inProgress}</p>
               </div>
             </div>
@@ -256,11 +305,11 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">
-                <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <div className="p-2 rounded-lg bg-xevn-accent/15 dark:bg-xevn-accent/25">
+                <Clock className="h-5 w-5 text-xevn-primary dark:text-xevn-accent" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('training.totalHours')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('training.totalHours')}</p>
                 <p className="text-2xl font-bold">{stats.totalHours}h</p>
               </div>
             </div>
@@ -273,7 +322,7 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
                 <Award className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('training.companyCost')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('training.companyCost')}</p>
                 <p className="text-xl font-bold">{formatCurrency(stats.totalCost)}</p>
               </div>
             </div>
@@ -295,7 +344,7 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
         </CardHeader>
         <CardContent>
           {trainings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-8 text-xevn-textSecondary">
               <PackageOpen className="h-12 w-12 mb-2" />
               <p>{t('training.empty')}</p>
               <Button variant="outline" size="sm" className="mt-2" onClick={() => handleOpenDialog()}>
@@ -312,15 +361,15 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
                       {/* Header */}
                       <div className="flex items-start gap-3">
                         <div className={`p-2 rounded-lg ${
-                          training.type === 'online' ? 'bg-green-100 dark:bg-green-900' :
-                          training.type === 'internal' ? 'bg-blue-100 dark:bg-blue-900' :
-                          training.type === 'external' ? 'bg-purple-100 dark:bg-purple-900' :
-                          'bg-orange-100 dark:bg-orange-900'
+                          training.type === 'online' ? 'bg-xevn-success/15 dark:bg-xevn-success/25' :
+                          training.type === 'internal' ? 'bg-xevn-primary/10 dark:bg-xevn-primary/20' :
+                          training.type === 'external' ? 'bg-xevn-accent/15 dark:bg-xevn-accent/25' :
+                          'bg-amber-100 dark:bg-amber-900'
                         }`}>
-                          {training.type === 'online' ? <Video className="h-5 w-5 text-green-600 dark:text-green-400" /> :
-                           training.type === 'internal' ? <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" /> :
-                           training.type === 'external' ? <BookOpen className="h-5 w-5 text-purple-600 dark:text-purple-400" /> :
-                           <Award className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
+                          {training.type === 'online' ? <Video className="h-5 w-5 text-xevn-success" /> :
+                           training.type === 'internal' ? <Users className="h-5 w-5 text-xevn-primary" /> :
+                           training.type === 'external' ? <BookOpen className="h-5 w-5 text-xevn-primary dark:text-xevn-accent" /> :
+                           <Award className="h-5 w-5 text-amber-600 dark:text-amber-400" />}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -337,7 +386,7 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
                             </Badge>
                           </div>
                           {training.provider && (
-                            <p className="text-sm text-muted-foreground mt-1">{training.provider}</p>
+                            <p className="text-sm text-xevn-textSecondary mt-1">{training.provider}</p>
                           )}
                         </div>
                       </div>
@@ -346,7 +395,7 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
                       {training.status !== 'cancelled' && (
                         <div className="space-y-1">
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">{t('training.progress')}</span>
+                            <span className="text-xevn-textSecondary">{t('training.progress')}</span>
                             <span className="font-medium">{t('training.progressWithPercent', { progress: training.progress })}</span>
                           </div>
                           <Progress value={training.progress} className="h-2" />
@@ -357,23 +406,23 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         {(training.start_date || training.end_date) && (
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <Calendar className="h-4 w-4 text-xevn-textSecondary" />
                             <span>{training.start_date || '--'} - {training.end_date || '--'}</span>
                           </div>
                         )}
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <Clock className="h-4 w-4 text-xevn-textSecondary" />
                           <span>{training.duration} {durationUnitLabels[training.duration_unit]}</span>
                         </div>
                         {training.location && (
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            <MapPin className="h-4 w-4 text-xevn-textSecondary" />
                             <span>{training.location}</span>
                           </div>
                         )}
                         {training.instructor && (
                           <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <Users className="h-4 w-4 text-xevn-textSecondary" />
                             <span>{training.instructor}</span>
                           </div>
                         )}
@@ -382,7 +431,7 @@ export const EmployeeTraining = ({ employeeId: propEmployeeId }: EmployeeTrainin
                       {/* Skills */}
                       {training.skills && training.skills.length > 0 && (
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm text-muted-foreground">{t('training.skills')}:</span>
+                          <span className="text-sm text-xevn-textSecondary">{t('training.skills')}:</span>
                           {training.skills.map((skill, idx) => (
                             <Badge key={idx} variant="secondary" className="text-xs">{skill}</Badge>
                           ))}

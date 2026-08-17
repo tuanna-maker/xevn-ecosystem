@@ -17,6 +17,8 @@ import {
   mapWorkflowTaskToUnifiedTask,
   resolveInboxAssigneeUserId,
   fetchCommandCenterInboxTasks,
+  inboxApproveActionLabelVi,
+  isHrmLeaveInboxTask,
 } from './commandCenterInboxApi';
 
 describe('commandCenterInboxApi (BR-INBOX-01 / P0-CRUD-06)', () => {
@@ -42,6 +44,23 @@ describe('commandCenterInboxApi (BR-INBOX-01 / P0-CRUD-06)', () => {
     expect(task.subtitle).toBe('Nghỉ phép');
     expect(task.title).toBe('Phê duyệt nghỉ phép');
     expect(task.moduleCode).toBe('hrm');
+    expect(task.businessType).toBe('hrm_leave');
+  });
+
+  it('R-SPINE-WEB-APPROVE-UX-01: leave approve label is Duyệt', () => {
+    const leave = mapWorkflowTaskToUnifiedTask({
+      id: 't-leave-2',
+      instance_id: 'i-leave-2',
+      status: 'pending',
+      assignee_user_id: 'ceo@xe.vn',
+      business_type: 'hrm_leave',
+      workflow_name: 'Phê duyệt đơn nghỉ phép HRM',
+    });
+    expect(isHrmLeaveInboxTask(leave)).toBe(true);
+    expect(inboxApproveActionLabelVi(leave)).toBe('Duyệt');
+    expect(inboxApproveActionLabelVi({ businessType: 'hrm_requisition', title: 'YCTD' })).toBe(
+      'Xử lý nhanh',
+    );
   });
 
   it('mapWorkflowTaskToUnifiedTask maps hat_key for multi-hat complete', () => {
@@ -61,9 +80,24 @@ describe('commandCenterInboxApi (BR-INBOX-01 / P0-CRUD-06)', () => {
     expect(task.subtitle).toBe('Tiền lương');
   });
 
+  it('PO-E2E-SPINE-01-BE-INBOX-01: prefers display_title / subject_title for this-wave stamp', () => {
+    const task = mapWorkflowTaskToUnifiedTask({
+      id: 't-rec',
+      instance_id: '5590cbb1-80ff-4c1b-af72-4a78ce3a3782',
+      status: 'pending',
+      assignee_user_id: 'ceo@xe.vn',
+      business_type: 'hrm_requisition',
+      workflow_name: 'Phê duyệt yêu cầu tuyển dụng HRM',
+      subject_title: 'YCTD HireToPay SP2SDD8FM8',
+      display_title: 'Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8',
+    });
+    expect(task.title).toContain('SP2SDD8FM8');
+    expect(task.subtitle).toMatch(/tuyển|YCTD|requisition/i);
+  });
+
   it('fetchCommandCenterInboxTasks filters by logged-in assignee', async () => {
     listWorkflowTasks.mockResolvedValue([]);
     await fetchCommandCenterInboxTasks('xevn');
-    expect(listWorkflowTasks).toHaveBeenCalledWith('xevn', 'pending', 'ceo@xe.vn');
+    expect(listWorkflowTasks).toHaveBeenCalledWith('xevn', 'pending', 'ceo@xe.vn', undefined);
   });
 });

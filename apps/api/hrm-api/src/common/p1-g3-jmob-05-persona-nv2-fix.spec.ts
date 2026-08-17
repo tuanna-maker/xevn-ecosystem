@@ -19,7 +19,7 @@ describe('P1-G3-JMOB-05-PERSONA-NV2-FIX', () => {
     expect(auth.isManagerRoles(roles)).toBe(true);
   });
 
-  it('mobile login STAFF + mobile_persona emp stays non-manager for nv0001 lane', async () => {
+  it('mobile login STAFF + mobile_persona emp stays non-manager when 0 direct reports', async () => {
     const auth = new MobileAuthService({
       query: jest.fn().mockResolvedValue({ rows: [{ count: 0 }] }),
     } as never);
@@ -34,5 +34,22 @@ describe('P1-G3-JMOB-05-PERSONA-NV2-FIX', () => {
     });
     expect(roles).toEqual(['employee']);
     expect(auth.isManagerRoles(roles)).toBe(false);
+  });
+
+  it('R-SPINE-MGR-HIER-01: emp persona + directReports>0 grants manager (BR-MOB-MGR-REPORTS-01)', async () => {
+    const auth = new MobileAuthService({
+      query: jest.fn().mockResolvedValue({ rows: [{ count: 3 }] }),
+    } as never);
+    const roles = await auth.resolveRolesForEmployee({
+      id: employeeId,
+      company_id: 'holding',
+      email: 'uat.nv0001@xe.vn',
+      full_name: 'UAT NV',
+      employee_code: 'HLD-0001',
+      job_title_key: 'STAFF',
+      custom_fields: { mobile_persona: 'emp', is_manager: 'false' },
+    });
+    expect(roles).toEqual(expect.arrayContaining(['employee', 'manager']));
+    expect(auth.isManagerRoles(roles)).toBe(true);
   });
 });

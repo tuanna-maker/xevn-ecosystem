@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsDateString, IsIn, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
+import { IsDateString, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
 
 function pickScalar(value: unknown): string | undefined {
   if (Array.isArray(value)) {
@@ -25,9 +25,11 @@ export class ListAttendanceRecordsQueryDto {
   @IsUUID()
   employee_id?: string;
 
+  /** Open day-code filter — no closed IsIn(4) ceiling (L-ATT-CODE-04). */
   @IsOptional()
-  @IsIn(['pending', 'present', 'absent', 'leave'])
-  status?: 'pending' | 'present' | 'absent' | 'leave';
+  @IsString()
+  @MaxLength(64)
+  status?: string;
 
   @IsOptional()
   @IsDateString()

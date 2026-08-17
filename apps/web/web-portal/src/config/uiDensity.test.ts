@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { resolveUiDensity } from './uiDensity';
 
 describe('resolveUiDensity', () => {
-  it('defaults to 0.9 when env unset', () => {
+  it('defaults to 1 when env unset', () => {
     vi.stubEnv('VITE_UI_DENSITY', '');
-    expect(resolveUiDensity()).toBe(0.9);
+    expect(resolveUiDensity()).toBe(1);
   });
 
   it('parses valid env and clamps to [0.75, 1]', () => {
@@ -18,6 +18,6 @@ describe('resolveUiDensity', () => {
 
   it('falls back on invalid env', () => {
     vi.stubEnv('VITE_UI_DENSITY', 'not-a-number');
-    expect(resolveUiDensity()).toBe(0.9);
+    expect(resolveUiDensity()).toBe(1);
   });
 });

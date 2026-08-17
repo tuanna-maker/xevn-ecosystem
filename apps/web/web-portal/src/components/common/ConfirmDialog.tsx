@@ -15,6 +15,14 @@
  *             destructive = xevn-danger (không rose marketing)
  * SOLID:      Presentational dialog; hook owns open state
  * LastVerified: ConfirmDialog.test.tsx
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-FE-DIALOG-01
+ * change_mode: UPGRADE
+ * What: Glass header + wordmark left; Montserrat title ≥20; Source Sans 3 body
+ * Why: ADR §16 LOCKED Montserrat+Source Sans 3 · S3=A · portal shell parity ui-neo
+ * must_keep: Escape cancel; focus trap; destructive = xevn-danger; no Nest
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-dialog-01.md
  */
 
 import { useCallback, useEffect, useId, useRef } from 'react';
@@ -106,37 +114,49 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="xevn-dialog-surface w-full max-w-md p-6"
+        className="xevn-dialog-surface w-full max-w-md p-0"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 id={titleId} className="text-lg font-semibold text-xevn-text">
-          {title}
-        </h2>
-        <p id={descriptionId} className="mt-2 text-sm leading-relaxed text-xevn-textSecondary">
-          {description}
-        </p>
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
-            ref={cancelRef}
-            type="button"
-            disabled={confirming}
-            onClick={onCancel}
-            className="rounded-input border border-xevn-border bg-xevn-surface px-4 py-2.5 text-sm font-medium text-xevn-text transition hover:bg-xevn-background disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-xevn-accent"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            type="button"
-            disabled={confirming}
-            onClick={() => void onConfirm()}
-            className={`rounded-input px-4 py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              destructive
-                ? 'bg-xevn-danger hover:opacity-90 focus:ring-xevn-danger'
-                : 'bg-xevn-primary hover:bg-xevn-primaryPressed focus:ring-xevn-primary'
-            }`}
-          >
-            {confirming ? 'Đang xử lý…' : confirmLabel}
-          </button>
+        <div className="xevn-dialog-header-glass flex items-center gap-3 px-5 py-3.5">
+          <img
+            src="/xevn-logo.png"
+            alt=""
+            width={32}
+            height={32}
+            className="xevn-dialog-wordmark !bg-white"
+            aria-hidden="true"
+          />
+          <h2 id={titleId} className="xevn-type-title font-display min-w-0 flex-1 text-xevn-text">
+            {title}
+          </h2>
+        </div>
+        <div className="px-6 pb-6 pt-4">
+          <p id={descriptionId} className="text-sm leading-relaxed text-xevn-textSecondary">
+            {description}
+          </p>
+          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button
+              ref={cancelRef}
+              type="button"
+              disabled={confirming}
+              onClick={onCancel}
+              className="rounded-input border border-xevn-border bg-xevn-surface px-4 py-2.5 text-sm font-medium text-xevn-text transition hover:bg-xevn-background disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-xevn-accent"
+            >
+              {cancelLabel}
+            </button>
+            <button
+              type="button"
+              disabled={confirming}
+              onClick={() => void onConfirm()}
+              className={`rounded-input px-4 py-2.5 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                destructive
+                  ? 'bg-xevn-danger hover:opacity-90 focus:ring-xevn-danger'
+                  : 'bg-xevn-primary hover:bg-xevn-primaryPressed focus:ring-xevn-primary'
+              }`}
+            >
+              {confirming ? 'Đang xử lý…' : confirmLabel}
+            </button>
+          </div>
         </div>
       </div>
     </div>

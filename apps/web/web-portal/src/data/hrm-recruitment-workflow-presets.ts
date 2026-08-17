@@ -29,6 +29,12 @@
  * change_mode: UPGRADE
  * SOLID:      SRP — recruitment bridge codes only; leave/catalog presets stay elsewhere
  * LastVerified: hrm-recruitment-workflow-presets.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-04-AUTH-FE-VITE-02
+ * What: Restore missing module (+ chained CC deps from stash 43c479a) so CommandCenterPage Vite transform succeeds
+ * Why: QA RET2 post-login Vite 500 blocked membership chip / *_label UI (R-AUTH-FE-VITE-CC-PAGE)
+ * must_keep: UF-HRM-12 codes; authSession *_label + TopHeader helpers; U65 no seed; no scopeRoleLabels invent
  */
 
 import {

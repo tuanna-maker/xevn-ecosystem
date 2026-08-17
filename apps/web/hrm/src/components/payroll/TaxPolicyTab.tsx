@@ -1,3 +1,11 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion P03 tax policy — dialog wide + title ≥20; chrome-only
+ * Why: ADR §16 · FE-PAY P0
+ * must_keep: useTaxPolicyParticipants API; no tax formula invent
+ */
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, ChevronDown, ChevronLeft, ChevronRight, Pencil, Trash2, Settings, ArrowUp, ArrowDown, Calendar, Loader2 } from 'lucide-react';
@@ -176,7 +184,9 @@ export function TaxPolicyTab() {
         {/* Header */}
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">{t('taxPolicy.title')}</h1>
+            <h1 className="text-[20px] font-bold font-display text-xevn-text" data-testid="pay-tax-policy-precision">
+              {t('taxPolicy.title')}
+            </h1>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -477,9 +487,9 @@ export function TaxPolicyTab() {
 
       {/* Add Participant Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-[920px] max-h-[80vh] overflow-hidden flex flex-col" data-testid="pay-tax-add-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{t('taxPolicy.addDialogTitle')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{t('taxPolicy.addDialogTitle')}</DialogTitle>
           </DialogHeader>
           
           <div className="flex gap-4 mb-4">

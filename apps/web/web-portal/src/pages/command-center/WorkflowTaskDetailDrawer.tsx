@@ -1,7 +1,16 @@
+/**
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: R-SPINE-WEB-APPROVE-UX-01 · 2026-08-03
+ * change_mode: FIX
+ * What: hrm_leave drawer primary action «Duyệt» (aria + visible); non-leave giữ «Hoàn thành»
+ * Why: QA harness looked for Duyệt after open leave task — was Xử lý nhanh/Hoàn thành only
+ * must_keep: isActionableWorkflowInboxTask gate; ACT-CC-WF-REJECT; U65 zero-seed
+ */
 import { X } from 'lucide-react';
 import { NavTransitionShell } from '../../components/common/NavTransitionShell';
 import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
 import type { UnifiedTask } from '../../data/command-center-mock';
+import { inboxApproveActionLabelVi, isHrmLeaveInboxTask } from '../../integrations/commandCenterInboxApi';
 import type { WorkflowInstanceDetailPayload } from '../../integrations/workflowInstanceMapper';
 import { workflowInstanceStatusLabelVi } from '../../integrations/workflowInstanceMapper';
 import { isActionableWorkflowInboxTask } from '../../modules/hrm/inboxDeepLink';
@@ -43,6 +52,10 @@ export function WorkflowTaskDetailDrawer({
   const instance = detail?.instance;
   const steps = detail?.tasks ?? [];
   const actionable = isActionableWorkflowInboxTask(task);
+  const leaveTask = isHrmLeaveInboxTask(task);
+  /** Leave HDSD = «Duyệt»; other WF drawer keeps «Hoàn thành» (CH04). */
+  const approveLabel = leaveTask ? inboxApproveActionLabelVi(task) : 'Hoàn thành';
+  const approveAria = leaveTask ? approveLabel : 'Xử lý nhanh';
   const completeRuntime = {
     busy,
     blocked: loading || !inboxFromApi || !actionable,
@@ -138,11 +151,13 @@ export function WorkflowTaskDetailDrawer({
           </CapabilityActionButton>
           <CapabilityActionButton
             capabilityCode="BTN-A1-INBOX-QUICK"
+            accessibleName={approveAria}
+            data-testid={leaveTask ? 'hdsd-cc-leave-approve' : 'cc-inbox-task-approve'}
             runtime={completeRuntime}
             className="flex-1 rounded-lg bg-[#1E40AF] px-3 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:opacity-50"
             onClick={onApprove}
           >
-            Hoàn thành
+            {approveLabel}
           </CapabilityActionButton>
         </footer>
       </aside>

@@ -14,6 +14,9 @@
  * must_keep:  paddingTop insets.top; avatarHit / iconButton ≥44
  * SOLID:      Presentational chrome
  * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-MOB-A
+ * What: MOB-03 J-MOB-01 shell — brand typography + 4px shell accent bar
  */
 import { Ionicons } from '@expo/vector-icons';
 
@@ -27,7 +30,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HrmAvatar } from '../ui/HrmAvatar';
 
-import { colors, layout, radius, spacing, typography } from '../../theme/tokens';
+import { brandDisplayText, brandBodyText } from '../../theme/brandTypography';
+import { brand, colors, layout, radius, spacing, typography } from '../../theme/tokens';
 
 
 
@@ -197,6 +201,8 @@ export function HomeTopBar({
 
       ) : null}
 
+      <View style={styles.shellBrandBar} accessibilityElementsHidden testID="home-top-bar-brand-accent" />
+
     </View>
 
   );
@@ -254,25 +260,17 @@ const styles = StyleSheet.create({
   },
 
   displayName: {
-
+    ...brandDisplayText({ fontWeight: '700' }),
     fontSize: typography.fontSize.body,
-
-    fontWeight: typography.fontWeight.semibold,
-
     color: colors.surface,
-
     lineHeight: typography.lineHeight.body,
-
   },
 
   roleSubtitle: {
-
+    ...brandBodyText(),
     fontSize: typography.fontSize.footnote,
-
     color: 'rgba(255,255,255,0.85)',
-
     lineHeight: typography.lineHeight.footnote,
-
   },
 
   iconButton: {
@@ -288,15 +286,19 @@ const styles = StyleSheet.create({
   },
 
   companyLabel: {
-
+    ...brandBodyText(),
     marginTop: spacing.sm,
-
     fontSize: typography.fontSize.footnote,
-
     color: 'rgba(255,255,255,0.85)',
-
     lineHeight: typography.lineHeight.footnote,
+  },
 
+  shellBrandBar: {
+    marginTop: spacing.sm,
+    height: brand.barWidth,
+    borderRadius: radius.full,
+    backgroundColor: colors.brandShell,
+    opacity: 0.35,
   },
 
 });

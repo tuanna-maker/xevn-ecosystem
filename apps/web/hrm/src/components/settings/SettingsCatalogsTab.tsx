@@ -28,8 +28,15 @@
  * Why: BA F-12 / AC-FD-12 FAIL-LABEL-LEAK
  * SRS/BR: docs/hrm/SRS_FIELD_DISPLAY.md §2 F-12 · FR-HRM-U72-LABEL-01
  * must_keep: code cột mono cạnh label; UF-HRM-10 mutate
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-SETTINGS-ATT-LVT-SOT-FE-01
+ * change_mode: FIX
+ * What: leave_types overview — tenantWriter REF-only banner; block extension add/trash; CTA Loại phép ATT
+ * Why: HRM-SC-01 dual SoT — tránh 409 HRM-SC-LEAVE-REF-ONLY trên UF-HRM-10
+ * must_keep: other catalog mutate paths; U65
  */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Plus, Trash2 } from "lucide-react";
@@ -68,6 +75,12 @@ import {
 } from "@/components/ui/select";
 import { resolveCatalogKeyDisplayLabel } from "@/lib/catalogDisplayLabels";
 import { resolveSettingsCatalogItemStatusDisplay } from "@/lib/labelMaps";
+import { hrmPathWithEmbedSearch } from "@/lib/hrmEmbedNavigation";
+import {
+  isLeaveTypesGroupRefReadOnly,
+  LEAVE_TYPES_REF_READONLY_MD_COPY,
+  SETTINGS_ATT_LEAVE_TYPES_PATH,
+} from "@/lib/hrmSettingsLeaveTypeSot";
 
 export function SettingsCatalogsTab() {
   const { t } = useTranslation();
@@ -148,6 +161,15 @@ export function SettingsCatalogsTab() {
 
   const catalogs = overviewQuery.catalogs;
 
+  const attLeaveTypesSettingsHref = hrmPathWithEmbedSearch(SETTINGS_ATT_LEAVE_TYPES_PATH);
+
+  const selectedCatalog = useMemo(
+    () => catalogs.find((c) => c.catalogKey === catalogKeyInput.trim()),
+    [catalogs, catalogKeyInput],
+  );
+
+  const selectedLeaveTypesRefOnly = isLeaveTypesGroupRefReadOnly(selectedCatalog);
+
   useEffect(() => {
     if (catalogs.length > 0 && !catalogKeyInput.trim()) {
       setCatalogKeyInput(catalogs[0].catalogKey);
@@ -195,6 +217,7 @@ export function SettingsCatalogsTab() {
             <div className="space-y-6">
               {catalogs.map((cat) => {
                 const catalogTitle = resolveCatalogKeyDisplayLabel(cat.catalogKey, cat.name);
+                const leaveRefOnly = isLeaveTypesGroupRefReadOnly(cat);
                 return (
                 <div key={cat.catalogKey} className="rounded-lg border p-4 space-y-3">
                   <div className="flex flex-wrap items-center gap-2 justify-between">
@@ -210,6 +233,14 @@ export function SettingsCatalogsTab() {
                             })
                           : t("settings.catalogs.notSyncedYet")}
                       </p>
+                      {leaveRefOnly ? (
+                        <p
+                          className="text-xs text-amber-800 mt-1"
+                          data-testid={`catalog-leave-types-tenant-writer-${cat.catalogKey}`}
+                        >
+                          REF tập đoàn — CRUD tenant: tab Loại phép ATT
+                        </p>
+                      ) : null}
                     </div>
                     <div className="flex gap-2">
                       <Badge variant="secondary">{t("settings.catalogs.badgeXbos", { n: cat.xbosItems.length })}</Badge>
@@ -238,7 +269,7 @@ export function SettingsCatalogsTab() {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <span>{resolveSettingsCatalogItemStatusDisplay(row.status)}</span>
-                              {row.origin === "hrm" && (
+                              {row.origin === "hrm" && !leaveRefOnly && (
                                 <Button
                                   type="button"
                                   size="icon"
@@ -296,6 +327,17 @@ export function SettingsCatalogsTab() {
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">{t("settings.catalogs.catalogKeyHint")}</p>
+            {selectedLeaveTypesRefOnly ? (
+              <div
+                className="rounded-md border border-amber-200 bg-amber-50/80 p-3 space-y-2"
+                data-testid="settings-catalogs-leave-types-ref-readonly"
+              >
+                <p className="text-sm text-foreground">{LEAVE_TYPES_REF_READONLY_MD_COPY}</p>
+                <Button asChild variant="outline" size="sm" data-testid="settings-catalogs-open-att-leave-types">
+                  <Link to={attLeaveTypesSettingsHref}>Mở tab Loại phép ATT</Link>
+                </Button>
+              </div>
+            ) : null}
           </div>
           <div className="space-y-2">
             <Label htmlFor="ext-code">{t("settings.catalogs.colCode")}</Label>
@@ -320,6 +362,7 @@ export function SettingsCatalogsTab() {
               type="button"
               disabled={
                 appendMutation.isPending ||
+                selectedLeaveTypesRefOnly ||
                 !catalogKeyInput.trim() ||
                 !newCode.trim() ||
                 !newLabel.trim()

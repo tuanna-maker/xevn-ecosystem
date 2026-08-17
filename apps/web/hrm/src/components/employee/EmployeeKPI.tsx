@@ -1,3 +1,22 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab KPI (E21)
+ * UC:         E21
+ * Purpose:    KPI nhân sự — ops-dense cards, không pastel AI gradients.
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-C
+ * Coded:      2026-08-05
+ * Callers:    EmployeeProfile activeTab=kpi
+ * Callees:    useEmployeeKPI
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no OCR/QR; no Nest invent
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; blue/purple AI chrome → xevn DNA; KPI ops-dense
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C
+ * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
+ */
+
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -77,10 +96,10 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
   const { t } = useTranslation();
   
   const statusOptions = [
-    { value: 'not_started', label: t('kpi.statuses.notStarted'), color: 'bg-gray-100 text-gray-700' },
-    { value: 'in_progress', label: t('kpi.statuses.inProgress'), color: 'bg-blue-100 text-blue-700' },
-    { value: 'completed', label: t('kpi.statuses.completed'), color: 'bg-emerald-100 text-emerald-700' },
-    { value: 'overdue', label: t('kpi.statuses.overdue'), color: 'bg-red-100 text-red-700' },
+    { value: 'not_started', label: t('kpi.statuses.notStarted'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary' },
+    { value: 'in_progress', label: t('kpi.statuses.inProgress'), color: 'bg-xevn-primary/10 text-xevn-primary' },
+    { value: 'completed', label: t('kpi.statuses.completed'), color: 'bg-xevn-success/15 text-xevn-success' },
+    { value: 'overdue', label: t('kpi.statuses.overdue'), color: 'bg-xevn-danger/15 text-xevn-danger' },
   ];
 
   const getStatusInfo = (status: string) => {
@@ -193,81 +212,81 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-            <Target className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <div className="w-10 h-10 rounded-xl bg-xevn-primary/10 dark:bg-xevn-primary/20 flex items-center justify-center">
+            <Target className="w-5 h-5 text-xevn-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">{t('kpi.title')}</h2>
-            <p className="text-sm text-muted-foreground">{t('kpi.subtitle')}</p>
+            <h2 className="text-lg font-semibold text-xevn-text">{t('kpi.title')}</h2>
+            <p className="text-sm text-xevn-textSecondary">{t('kpi.subtitle')}</p>
           </div>
         </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards — ops-dense (no AI pastel gradients) */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200 dark:border-amber-800">
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('kpi.currentScore')}</p>
-                <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('kpi.currentScore')}</p>
+                <p className="text-3xl font-bold text-xevn-text mt-1">
                   {stats.currentScore}%
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{t('kpi.currentPeriod')}</p>
+                <p className="text-xs text-xevn-textSecondary mt-1">{t('kpi.currentPeriod')}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-                <Target className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-warning/15 flex items-center justify-center">
+                <Target className="w-6 h-6 text-xevn-warning" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border-emerald-200 dark:border-emerald-800">
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('kpi.completedCount')}</p>
-                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('kpi.completedCount')}</p>
+                <p className="text-3xl font-bold text-xevn-text mt-1">
                   {stats.completed}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">/{stats.totalKPIs} KPI</p>
+                <p className="text-xs text-xevn-textSecondary mt-1">/{stats.totalKPIs} KPI</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
-                <Award className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-success/15 flex items-center justify-center">
+                <Award className="w-6 h-6 text-xevn-success" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-800">
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('kpi.inProgressCount')}</p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('kpi.inProgressCount')}</p>
+                <p className="text-3xl font-bold text-xevn-text mt-1">
                   {stats.inProgress}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">/{stats.totalKPIs} KPI</p>
+                <p className="text-xs text-xevn-textSecondary mt-1">/{stats.totalKPIs} KPI</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-primary/10 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-xevn-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30 border-purple-200 dark:border-purple-800">
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('kpi.totalWeight')}</p>
-                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-1">
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('kpi.totalWeight')}</p>
+                <p className="text-3xl font-bold text-xevn-text mt-1">
                   {stats.totalWeight}%
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{stats.totalWeight === 100 ? t('kpi.weightComplete') : t('kpi.weightNeeded')}</p>
+                <p className="text-xs text-xevn-textSecondary mt-1">{stats.totalWeight === 100 ? t('kpi.weightComplete') : t('kpi.weightNeeded')}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-accent/15 flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 text-xevn-primary" />
               </div>
             </div>
           </CardContent>
@@ -280,7 +299,7 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Target className="w-5 h-5 text-amber-500" />
+                <Target className="w-5 h-5 text-xevn-primary" />
                 {t('kpi.currentQuarter')}
               </CardTitle>
               <Button size="sm" onClick={() => handleOpenDialog()}>
@@ -311,7 +330,7 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
                             </Badge>
                           </div>
                           {kpi.notes && (
-                            <p className="text-xs text-muted-foreground">{kpi.notes}</p>
+                            <p className="text-xs text-xevn-textSecondary">{kpi.notes}</p>
                           )}
                         </div>
                         <DropdownMenu>
@@ -345,7 +364,7 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
                         </span>
                       </div>
                       
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between text-xs text-xevn-textSecondary">
                         <span>{t('kpi.actualValue')}: {formatValue(kpi.actual_value || 0, kpi.unit || '%')}</span>
                         <span>{t('kpi.targetValue')}: {formatValue(kpi.target_value, kpi.unit || '%')}</span>
                         <span>{t('kpi.weight')}: {kpi.weight}%</span>
@@ -353,7 +372,7 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
                     </div>
                   );
                 }) : (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-xevn-textSecondary">
                     <Target className="w-12 h-12 mx-auto mb-3 opacity-50" />
                      <p>{t('kpi.empty')}</p>
                     <p className="text-sm">{t('kpi.emptyHint')}</p>
@@ -369,7 +388,7 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-500" />
+                <TrendingUp className="w-5 h-5 text-xevn-success" />
                 {t('kpi.trend')}
               </CardTitle>
             </CardHeader>
@@ -393,7 +412,7 @@ export function EmployeeKPI({ employeeId }: EmployeeKPIProps) {
                   </ResponsiveContainer>
                 </ChartContainer>
               ) : (
-                <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                <div className="h-[200px] flex items-center justify-center text-xevn-textSecondary">
                   <p className="text-sm">{t('kpi.noHistoricalData')}</p>
                 </div>
               )}

@@ -4,6 +4,27 @@
  * What: position/department CatalogSearchPicker; Network position_key + department_key + snapshots
  * Why: AC-E1A-JP-01 · FR-HRM-MD-BIND-E1A-01 · U72
  * must_keep: JobRequisitions JD picker; JobTemplates; U65; HOLD_DEPLOY; not FR-RC-01 SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A
+ * change_mode: UPGRADE
+ * What: Precision Motion — kill purple KPI; DNA priority chips; create/edit dialog glass+compact fields
+ * Why: ADR §16 · inventory R04/R12 · B4 cấm AI purple · ui-neo field widths
+ * must_keep: CatalogSearchPicker wires · ViMoneyInput · mutate create/update · U65 · no Nest invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A-FIX-01
+ * change_mode: UPGRADE
+ * What: Page title h2 «Tin tuyển dụng» inside rec-jobs-tab-precision — font-display text-[20px] + xevn-type-title
+ * Why: QA DEF R04 — shell text-xl computed 17.5px Source Sans; harness measures h2 inside testid first
+ * must_keep: CatalogSearchPicker · ViMoneyInput · R12 dialog chrome · Hire bind · U65 · tab ids
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-rec-a-fix.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-UI-P0-LOGO-FONT-TITLE-01
+ * change_mode: FIX
+ * What: Create/edit job form — `title` FormField absolute first (before Basic Info h3)
+ * Why: Sponsor — popup thêm mới: trường Tiêu đề đứng đầu form
+ * must_keep: CatalogSearchPicker · ViMoneyInput · mutate create/update · U65 · dialog chrome
+ * LastVerified: docs/qa/evidence/po-hrm-ui-p0-logo-font-title-01.md
  */
 import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -188,22 +209,22 @@ export function JobPostingsTab() {
   ];
 
   const priorityOptions = [
-    { value: 'low', label: t('recruitment.jt.priorities.low'), color: 'bg-slate-100 text-slate-700' },
-    { value: 'medium', label: t('recruitment.jt.priorities.medium'), color: 'bg-amber-100 text-amber-700' },
-    { value: 'high', label: t('recruitment.jt.priorities.high'), color: 'bg-orange-100 text-orange-700' },
-    { value: 'urgent', label: t('recruitment.jt.priorities.urgent'), color: 'bg-red-100 text-red-700' },
+    { value: 'low', label: t('recruitment.jt.priorities.low'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary' },
+    { value: 'medium', label: t('recruitment.jt.priorities.medium'), color: 'bg-warning/15 text-warning' },
+    { value: 'high', label: t('recruitment.jt.priorities.high'), color: 'bg-warning/15 text-warning' },
+    { value: 'urgent', label: t('recruitment.jt.priorities.urgent'), color: 'bg-destructive/15 text-destructive' },
   ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0">{t('recruitment.jt.statuses.active')}</Badge>;
+        return <Badge className="border-0 bg-success/15 text-success hover:bg-success/15">{t('recruitment.jt.statuses.active')}</Badge>;
       case 'draft':
-        return <Badge className="bg-slate-100 text-slate-700 hover:bg-slate-100 border-0">{t('recruitment.jt.statuses.draft')}</Badge>;
+        return <Badge className="border-0 bg-xevn-neutral/15 text-xevn-textSecondary hover:bg-xevn-neutral/15">{t('recruitment.jt.statuses.draft')}</Badge>;
       case 'paused':
-        return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-0">{t('recruitment.jt.statuses.paused')}</Badge>;
+        return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.paused')}</Badge>;
       case 'closed':
-        return <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-0">{t('recruitment.jt.statuses.closed')}</Badge>;
+        return <Badge className="border-0 bg-destructive/15 text-destructive hover:bg-destructive/15">{t('recruitment.jt.statuses.closed')}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -499,57 +520,63 @@ export function JobPostingsTab() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Stats Cards */}
+    <div className="space-y-4" data-testid="rec-jobs-tab-precision">
+      {/* R04 page title ≥20 Montserrat — QA harness measures first h2 inside this testid.
+          xevn-type-title = absolute 20px floor (survives html 14px root where text-xl→17.5px). */}
+      <h2 className="xevn-type-title font-display text-[20px] font-bold tracking-tight text-xevn-text">
+        {t('recruitment.jobPostings')}
+      </h2>
+
+      {/* Stats Cards — Precision Motion DNA (no AI purple) */}
       <div className="grid grid-cols-4 gap-4">
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <Briefcase className="w-5 h-5 text-blue-600" />
+              <div className="rounded-lg bg-primary/10 p-2">
+                <Briefcase className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.jt.totalPosts')}</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.jt.totalPosts')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.total}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                <Users className="w-5 h-5 text-emerald-600" />
+              <div className="rounded-lg bg-success/15 p-2">
+                <Users className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.jt.activeRecruitment')}</p>
-                <p className="text-2xl font-bold">{stats.active}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.jt.activeRecruitment')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.active}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-100 dark:bg-slate-900/30 rounded-lg">
-                <Clock className="w-5 h-5 text-slate-600" />
+              <div className="rounded-lg bg-xevn-neutral/15 p-2">
+                <Clock className="h-5 w-5 text-xevn-textSecondary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.jt.draftPosts')}</p>
-                <p className="text-2xl font-bold">{stats.draft}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.jt.draftPosts')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.draft}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                <Users className="w-5 h-5 text-purple-600" />
+              <div className="rounded-lg bg-xevn-accent/15 p-2">
+                <Users className="h-5 w-5 text-xevn-accent" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.jt.needHire')}</p>
-                <p className="text-2xl font-bold">{stats.totalHeadcount}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.jt.needHire')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.totalHeadcount}</p>
               </div>
             </div>
           </CardContent>
@@ -572,7 +599,7 @@ export function JobPostingsTab() {
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-xevn-textMuted" />
             <Input
               placeholder={t('recruitment.jt.searchPlaceholder')}
               value={searchQuery}
@@ -836,34 +863,44 @@ export function JobPostingsTab() {
         </div>
       )}
 
-      {/* Form Dialog */}
+      {/* Form Dialog — R12 Precision Motion (glass/wordmark via DialogHeader) */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          className="max-h-[90vh] overflow-y-auto sm:max-w-[920px]"
+          data-testid="rec-job-create-edit-dialog-precision"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-primary" />
+              <Briefcase className="h-5 w-5 shrink-0 text-primary" />
               {editingJob ? t('recruitment.jt.editPostTitle') : t('recruitment.jt.createPostTitle')}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Title-first (PO-HRM-UI-P0-LOGO-FONT-TITLE-01) — before section chrome */}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('recruitment.jt.titleLabel')} <span className="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                      <Input
+                        className="xevn-field-line"
+                        placeholder={t('recruitment.jt.titlePlaceholder')}
+                        data-testid="rec-job-form-title"
+                        autoFocus
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* Basic Info */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('recruitment.jt.basicInfo')}</h3>
-                
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('recruitment.jt.titleLabel')} <span className="text-destructive">*</span></FormLabel>
-                      <FormControl>
-                        <Input placeholder={t('recruitment.jt.titlePlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-xevn-textSecondary">{t('recruitment.jt.basicInfo')}</h3>
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -928,7 +965,7 @@ export function JobPostingsTab() {
                         <FormLabel>{t('recruitment.jt.typeLabel')} <span className="text-destructive">*</span></FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="xevn-field-select-md">
                               <SelectValue placeholder={t('recruitment.jt.selectType')} />
                             </SelectTrigger>
                           </FormControl>
@@ -951,8 +988,8 @@ export function JobPostingsTab() {
                         <FormLabel>{t('recruitment.jt.locationLabel')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input placeholder={t('recruitment.jt.locationPlaceholder')} className="pl-10" {...field} />
+                            <MapPin className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-xevn-textMuted" />
+                            <Input placeholder={t('recruitment.jt.locationPlaceholder')} className="xevn-field-line pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -967,7 +1004,7 @@ export function JobPostingsTab() {
                       <FormItem>
                         <FormLabel>{t('recruitment.jt.headcountLabel')} <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input type="number" min="1" {...field} />
+                          <Input type="number" min="1" className="xevn-field-num" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1038,8 +1075,8 @@ export function JobPostingsTab() {
                               <Button
                                 variant="outline"
                                 className={cn(
-                                  "pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
+                                  "xevn-field-date pl-3 text-left font-normal",
+                                  !field.value && "text-xevn-textMuted"
                                 )}
                               >
                                 {field.value ? format(field.value, "dd/MM/yyyy") : t('recruitment.jt.selectDate')}
@@ -1070,7 +1107,7 @@ export function JobPostingsTab() {
                         <FormLabel>{t('recruitment.jt.priorityLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="xevn-field-select-sm">
                               <SelectValue placeholder={t('recruitment.jt.selectPriority')} />
                             </SelectTrigger>
                           </FormControl>
@@ -1093,7 +1130,7 @@ export function JobPostingsTab() {
                         <FormLabel>{t('recruitment.jt.statusLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="xevn-field-select-sm">
                               <SelectValue placeholder={t('recruitment.jt.selectStatus')} />
                             </SelectTrigger>
                           </FormControl>
@@ -1113,7 +1150,7 @@ export function JobPostingsTab() {
 
               {/* Details */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{t('recruitment.jt.jobDetails')}</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-xevn-textSecondary">{t('recruitment.jt.jobDetails')}</h3>
                 
                 <FormField
                   control={form.control}
@@ -1158,9 +1195,13 @@ export function JobPostingsTab() {
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t">
+              <div className="xevn-dialog-footer-sticky flex justify-end gap-3 border-t pt-4">
                 <Button type="button" variant="outline" onClick={handleCloseForm}>{t('recruitment.jt.cancelBtn')}</Button>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                <Button
+                  type="submit"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                >
                   {editingJob ? t('recruitment.jt.updateBtn') : t('recruitment.jt.createBtn')}
                 </Button>
               </div>

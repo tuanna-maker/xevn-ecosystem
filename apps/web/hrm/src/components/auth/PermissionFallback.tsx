@@ -19,6 +19,21 @@
  * SRS/BR: UX-UI-ERP-ANALYSIS.md §9 · UX-07 · must_keep portal bypass PermissionGate
  * must_keep: PermissionGate shouldBypassHrmPermissionGate; Profile C2 groups; Payroll D5/P0-c; Clock-In
  * LastVerified: docs/qa/evidence/d-ux-permission-fallback-fe-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-02-EMP-FE-PROFILE-01 · D-HRM-EMP-PROFILE-PERM-FALLBACK-01
+ * change_mode: ADD (restore)
+ * What: Khôi phục PermissionFallback (+ SoT) từ stash 43c479a — Vite resolve fail → EmployeeProfile 500
+ * Why: QA RET3 J-HRM-02 detail whitescreen; list AC1 PASS — chỉ unblock profile mount
+ * SRS/BR: UX-UI-ERP-ANALYSIS.md §9 · UX-07 · J-HRM-02
+ * must_keep: Employees list · FE-LIBS-01 · Fleet · U65 no seed · no EMP BE rewrite
+ * LastVerified: docs/qa/evidence/w1b-02-emp-fe-profile-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Message → text-xevn-textSecondary; border-xevn; title text-xevn-text (E12 gate + E26 RBAC chrome)
+ * Why: ADR-20260805 §8 pale ban · inventory W3-EMP-B E12 E26
+ * must_keep: permission-fallback testid; PermissionGate portal bypass; no Nest
  */
 import { ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -71,28 +86,27 @@ export function PermissionFallback({
       data-variant={variant}
       role="status"
       className={cn(
-        'flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-muted-foreground/30 bg-muted/20 text-center',
+        'flex flex-col items-center justify-center gap-3 rounded-card border border-dashed border-xevn-border bg-xevn-surface text-center',
         isCompact ? 'px-4 py-6 gap-2' : 'px-6 py-12',
         className,
       )}
     >
       <div
         className={cn(
-          'flex items-center justify-center rounded-full bg-amber-500/10 text-amber-700',
+          'flex items-center justify-center rounded-full bg-xevn-warning/15 text-xevn-warning',
           isCompact ? 'h-9 w-9' : 'h-12 w-12',
         )}
       >
         <ShieldAlert className={cn(isCompact ? 'h-4 w-4' : 'h-6 w-6')} aria-hidden />
       </div>
       <div className="space-y-1 max-w-md">
-        <p className={cn('font-semibold text-foreground', isCompact ? 'text-xs' : 'text-sm')}>
+        <p className={cn('font-semibold text-xevn-text', isCompact ? 'text-xs' : 'text-sm')}>
           {resolvedTitle}
         </p>
-        <p className={cn('text-muted-foreground', isCompact ? 'text-xs' : 'text-sm')}>
+        <p className={cn('text-xevn-textSecondary', isCompact ? 'text-xs' : 'text-sm')}>
           {resolvedMessage}
         </p>
-      </div>
-      <Button variant="outline" size="sm" asChild>
+      </div>      <Button variant="outline" size="sm" asChild>
         <a
           href={contactHref}
           data-testid={PERMISSION_FALLBACK_TEST_IDS.contactHr}

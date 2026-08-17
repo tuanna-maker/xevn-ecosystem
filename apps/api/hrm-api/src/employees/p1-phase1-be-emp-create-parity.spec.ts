@@ -4,7 +4,14 @@ import { createHmac } from 'node:crypto';
 import request from 'supertest';
 import { GlobalHttpExceptionFilter } from '../common/http-exception.filter';
 import { HrmDbService } from '../db/hrm-db.service';
+import { EmpDocumentChecklistService } from './emp-document-checklist.service';
+import { EmpDocumentTypeService } from './emp-document-type.service';
+import { EmpEmploymentStatusService } from './emp-employment-status.service';
+import { EmpEmploymentTypeService } from './emp-employment-type.service';
+import { EmpStatusReasonService } from './emp-status-reason.service';
+import { EmployeeDependentsService } from './employee-dependents.service';
 import { EmployeeProfileService } from './employee-profile.service';
+import { EmployeeRewardDisciplineService } from './employee-reward-discipline.service';
 import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
 
@@ -45,6 +52,19 @@ function createInMemoryHrmDb() {
         return { rows: [{ total: String(matched.length) }] };
       }
       if (text.includes('INSERT INTO public.employees') && text.includes('RETURNING')) {
+        // Params: id, company_id, code, email, name, job_title, manager_id, status, hired_at, avatar, custom_fields
+        const rawCf = params?.[10];
+        let customFields: Record<string, string> = {};
+        if (typeof rawCf === 'string' && rawCf.trim()) {
+          try {
+            const parsed = JSON.parse(rawCf) as unknown;
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              customFields = parsed as Record<string, string>;
+            }
+          } catch {
+            customFields = {};
+          }
+        }
         const row: EmployeeRow = {
           id: String(params?.[0]),
           company_id: String(params?.[1]),
@@ -52,11 +72,11 @@ function createInMemoryHrmDb() {
           email: String(params?.[3]),
           full_name: String(params?.[4]),
           job_title_key: (params?.[5] as string | null) ?? null,
-          manager_id: null,
-          status: 'active',
-          hired_at: (params?.[6] as string | null) ?? null,
+          manager_id: (params?.[6] as string | null) ?? null,
+          status: (params?.[7] as string | null) ?? 'active',
+          hired_at: (params?.[8] as string | null) ?? null,
           archived_at: null,
-          custom_fields: JSON.parse(String(params?.[8] ?? '{}')) as Record<string, string>,
+          custom_fields: customFields,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
@@ -141,11 +161,58 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
         EmployeesService,
         { provide: HrmDbService, useFactory: createInMemoryHrmDb },
         {
+          provide: EmployeeDependentsService,
+          useValue: {
+            listDependents: jest.fn(),
+            createDependent: jest.fn(),
+            getDependentById: jest.fn(),
+            updateDependent: jest.fn(),
+            softDeleteDependent: jest.fn(),
+          },
+        },
+        { provide: EmployeeRewardDisciplineService, useValue: {} },
+        { provide: EmpDocumentChecklistService, useValue: {} },
+        {
           provide: EmployeeProfileService,
           useValue: {
             listDegrees: jest.fn(),
             listTraining: jest.fn(),
             listAssets: jest.fn(),
+          },
+        },
+        {
+          provide: EmpDocumentTypeService,
+          useValue: {
+            ensureSchema: jest.fn().mockResolvedValue(undefined),
+            listDocumentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+          },
+        },
+        {
+          provide: EmpEmploymentTypeService,
+          useValue: {
+            ensureSchema: jest.fn().mockResolvedValue(undefined),
+            listEmploymentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+          },
+        },
+        {
+          provide: EmpEmploymentStatusService,
+          useValue: {
+            ensureSchema: jest.fn().mockResolvedValue(undefined),
+            listEmploymentStatuses: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            buildStatusLabelLookup: jest.fn().mockResolvedValue(new Map()),
+            assertStatusInEffectiveCatalog: jest.fn().mockResolvedValue(null),
+          },
+        },
+        {
+          provide: EmpStatusReasonService,
+          useValue: {
+            ensureSchema: jest.fn().mockResolvedValue(undefined),
+            listStatusReasons: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            assertStatusReasonInEffectiveCatalog: jest.fn().mockResolvedValue(null),
           },
         },
       ],

@@ -1,3 +1,22 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Kỹ năng (E22)
+ * UC:         E22
+ * Purpose:    Skills chrome Precision Motion (CV cluster).
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-C
+ * Coded:      2026-08-05
+ * Callers:    EmployeeProfile activeTab=skills
+ * Callees:    listEmployeeSkills / create/update/delete
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no OCR/QR invent
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; blue/purple AI chrome → xevn DNA; KPI ops-dense
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C
+ * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
+ */
+
 ﻿import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,10 +60,10 @@ const categoryIconMap = {
 };
 
 const categoryColorMap: Record<string, string> = {
-  technical: 'bg-blue-500',
-  soft: 'bg-yellow-500',
-  language: 'bg-green-500',
-  tools: 'bg-purple-500',
+  technical: 'bg-xevn-primary',
+  soft: 'bg-xevn-warning',
+  language: 'bg-xevn-success',
+  tools: 'bg-xevn-accent',
 };
 
 export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
@@ -63,10 +82,10 @@ export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
   });
 
   const categoryConfig: Record<string, { name: string; icon: typeof Code; color: string }> = {
-    technical: { name: t('skills.categories.technical'), icon: Code, color: 'bg-blue-500' },
-    soft: { name: t('skills.categories.soft'), icon: Zap, color: 'bg-yellow-500' },
-    language: { name: t('skills.categories.language'), icon: Languages, color: 'bg-green-500' },
-    tools: { name: t('skills.categories.tools'), icon: Wrench, color: 'bg-purple-500' },
+    technical: { name: t('skills.categories.technical'), icon: Code, color: 'bg-xevn-primary' },
+    soft: { name: t('skills.categories.soft'), icon: Zap, color: 'bg-xevn-warning' },
+    language: { name: t('skills.categories.language'), icon: Languages, color: 'bg-xevn-success' },
+    tools: { name: t('skills.categories.tools'), icon: Wrench, color: 'bg-xevn-accent' },
   };
 
   function getSkillBadge(level: number) {
@@ -223,7 +242,7 @@ export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
                   step={5}
                   className="mt-2"
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-xs text-xevn-textSecondary">
                   <span>{t('skills.levels.basic')}</span>
                   <span>{t('skills.levels.intermediate')}</span>
                   <span>{t('skills.levels.good')}</span>
@@ -257,8 +276,8 @@ export function EmployeeSkills({ employeeId }: EmployeeSkillsProps) {
       {skills.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Zap className="w-12 h-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">{t('skills.empty')}</p>
+            <Zap className="w-12 h-12 text-xevn-textSecondary mb-4" />
+            <p className="text-xevn-textSecondary">{t('skills.empty')}</p>
             <Button variant="outline" className="mt-4" onClick={openAddDialog}>
               <Plus className="w-4 h-4 mr-2" />
               {t('skills.addFirst')}

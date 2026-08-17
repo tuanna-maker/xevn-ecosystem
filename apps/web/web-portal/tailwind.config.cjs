@@ -2,8 +2,9 @@
 /**
  * XeVN web-portal — Tailwind class SoT for brand colors / radius / shadow.
  * Hex values MUST stay in lockstep with `:root --xevn-*` in `src/index.css`
- * (proposal §3 · FE-XEVN-BRAND-TOKENS-L1-01). Prefer `bg-xevn-primary` over
- * hardcoded `#1E40AF`. Focus: `ring-xevn-accent` | `ring-xevn-primary`.
+ * (ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §7.3 · PO-HRM-UI-BRAND-FE-FOUND-01).
+ * Prefer `bg-xevn-primary` over hardcoded `#1E40AF`.
+ * Focus: `ring-xevn-accent` | `ring-xevn-primary`.
  */
 module.exports = {
   content: [
@@ -42,7 +43,8 @@ module.exports = {
         background: '#F9FAFB',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Source Sans 3"', 'Source Sans Pro', 'system-ui', 'sans-serif'],
+        display: ['Montserrat', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         xs: '0.75rem',

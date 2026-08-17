@@ -10,6 +10,14 @@
  * Callers:    PermissionFallback.tsx · PermissionFallback.test.ts
  * must_keep:  title/message/cta VI; mailto CTA; i18n key path employeeProfile.permissionFallback.*
  * LastVerified: docs/qa/evidence/d-ux-permission-fallback-fe-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-02-EMP-FE-PROFILE-01 · D-HRM-EMP-PROFILE-PERM-FALLBACK-01
+ * change_mode: ADD (restore)
+ * What: Khôi phục SoT copy VI/EN + testids kèm PermissionFallback (stash 43c479a)
+ * Why: Transitive của PermissionFallback — thiếu → Vite 500 EmployeeProfile
+ * must_keep: PERMISSION_FALLBACK_VI · TEST_IDS · Employees list · FE-LIBS-01 · Fleet
+ * LastVerified: docs/qa/evidence/w1b-02-emp-fe-profile-01.md
  */
 
 export const PERMISSION_FALLBACK_I18N = {

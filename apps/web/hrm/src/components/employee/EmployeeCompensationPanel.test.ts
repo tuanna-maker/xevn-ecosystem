@@ -10,6 +10,19 @@ import {
 import { useEmployeeCompensation } from '@/hooks/useEmployeeCompensation';
 
 vi.mock('@/hooks/useEmployeeCompensation');
+vi.mock('@/hooks/useSalaryComponentsEffective', () => ({
+  useSalaryComponentsEffective: () => ({
+    componentOptions: [
+      { value: 'base', label: 'base', code: 'base' },
+      { value: 'probation', label: 'probation', code: 'probation' },
+      { value: 'PHU_CAP_AN', label: 'PHU_CAP_AN', code: 'PHU_CAP_AN' },
+      { value: 'PHU_CAP_XANG', label: 'PHU_CAP_XANG', code: 'PHU_CAP_XANG' },
+    ],
+    hasEffectiveCatalog: true,
+    isLoading: false,
+    isError: false,
+  }),
+}));
 
 const mockUseEmployeeCompensation = vi.mocked(useEmployeeCompensation);
 
@@ -19,6 +32,7 @@ const baseHookReturn = {
   isLoading: false,
   isHistoryLoading: false,
   fetchError: null,
+  useApi: true,
   refetch: vi.fn(),
   refetchHistory: vi.fn(),
   createPackage: vi.fn(),
@@ -131,6 +145,7 @@ describe('D-UX-VI-COMP-PANEL-LINES-MAP-01 — compensation lines guard', () => {
             line_type: 'base',
             amount: 20_000_000,
             allowance_code: null,
+            component_code: 'base',
             taxable: true,
             note: null,
             sort_order: 0,
@@ -149,5 +164,29 @@ describe('D-UX-VI-COMP-PANEL-LINES-MAP-01 — compensation lines guard', () => {
     );
 
     expect(screen.getByText('20.000.000 ₫')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-revise')).toBeTruthy();
+  });
+
+  it('exposes HDSD create testid when no active package (U65 FE-CB click)', () => {
+    mockUseEmployeeCompensation.mockReturnValue({
+      ...baseHookReturn,
+      active: null,
+      packages: [],
+    });
+
+    render(
+      createElement(EmployeeCompensationPanel, {
+        employeeId: 'emp-1',
+        contracts: [{ id: 'c-1', contract_type: 'indefinite', status: 'active' }],
+      }),
+    );
+
+    expect(screen.getByTestId('hdsd-emp-comp-create')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-base')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-bank-tax')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-bank-account')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-tax-id')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-allowance-amount-0')).toBeTruthy();
+    expect(screen.getByTestId('hdsd-emp-comp-allowance-amount-1')).toBeTruthy();
   });
 });

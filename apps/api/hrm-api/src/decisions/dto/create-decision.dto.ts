@@ -54,6 +54,12 @@ export class CreateDecisionDto {
   @MaxLength(128)
   department?: string;
 
+  /** Catalog SoT (departments.code) — preferred for WH copy (EMP-BE-01). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  department_key?: string;
+
   /** Snapshot label (U72) — optional when position_key denorms from catalog. */
   @IsOptional()
   @IsString()

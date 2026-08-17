@@ -72,6 +72,16 @@ describe('ConfigSyncService', () => {
     });
 
     expect(result.version).toBe(7);
+    // W1-B-03-TC-CAT / OS 28 — display-ready item labels on publish response
+    expect(result.items[0]).toEqual(
+      expect.objectContaining({
+        code: 'CEO',
+        label: 'CEO',
+        status: 'active',
+        status_label: 'Đang dùng',
+        status_tone: 'success',
+      }),
+    );
     const publishUpsertCall = (db.query as jest.Mock).mock.calls.find((call) =>
       String(call[0]).includes('INSERT INTO public.config_catalogs'),
     );
@@ -461,5 +471,300 @@ describe('ConfigSyncService', () => {
       publishSpy.mockRestore();
       jest.spyOn(service, 'getCatalogForTarget').mockRestore();
     }
+  });
+
+  describe('PO-UC-TC-W3-BE-LOG09 / XBOS-DM-LOG-09 cloneCatalogBundle', () => {
+    it('HP: copies logistics domain catalogs to empty dest and leaves source untouched', async () => {
+      (db.query as jest.Mock).mockImplementation((sql: string) => {
+        if (sql.includes('FROM public.config_catalogs c') && sql.includes('lower(c.domain)')) {
+          return Promise.resolve({
+            rows: [
+              {
+                catalog_key: 'log_dm_vehicle_type',
+                name: 'Loại xe',
+                domain: 'logistics',
+                assigned_systems: ['xbos'],
+                items: [{ code: 'TRUCK', label: 'Xe tải', status: 'active', unit: null }],
+              },
+              {
+                catalog_key: 'log_dm_route_type',
+                name: 'Loại tuyến',
+                domain: 'logistics',
+                assigned_systems: ['xbos'],
+                items: [{ code: 'CITY', label: 'Nội thành', status: 'active', unit: null }],
+              },
+            ],
+          });
+        }
+        if (sql.includes('catalog_key = ANY($3::text[])')) {
+          return Promise.resolve({ rows: [] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const publishSpy = jest.spyOn(service, 'publishCatalog').mockImplementation(async (key, body) => ({
+        contractVersion: 'xbos-config-v1' as const,
+        checksumAlgorithm: 'sha256:items-canonical-v1' as const,
+        tenantId: body.tenantId,
+        companyId: body.companyId,
+        key,
+        name: body.name,
+        domain: body.domain,
+        assignedTo: body.assignedTo,
+        version: 1,
+        checksum: `sha256:${key}`,
+        updatedAt: new Date().toISOString(),
+        items: body.items.map((item) => ({
+          ...item,
+          status_label: 'Đang dùng' as const,
+          status_tone: 'success' as const,
+        })),
+      }));
+
+      const result = await service.cloneCatalogBundle({
+        sourceTenantId: 'xevn',
+        sourceCompanyId: 'holding',
+        destTenantId: 'xevn',
+        destCompanyId: 'logistics',
+        domains: ['logistics'],
+        actor: 'ceo@xe.vn',
+      });
+
+      expect(result.copiedCount).toBe(2);
+      expect(result.skippedCount).toBe(0);
+      expect(result.domains).toEqual(['logistics']);
+      expect(result.onConflict).toBe('fail');
+      expect(result.dest).toEqual({ tenantId: 'xevn', companyId: 'logistics' });
+      expect(publishSpy).toHaveBeenCalledTimes(2);
+      expect(publishSpy).toHaveBeenCalledWith(
+        'log_dm_vehicle_type',
+        expect.objectContaining({
+          tenantId: 'xevn',
+          companyId: 'logistics',
+          domain: 'logistics',
+        }),
+      );
+      expect(platformAudit.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'config_catalog.clone_bundle',
+          tenantId: 'xevn',
+          companyId: 'holding',
+        }),
+      );
+      publishSpy.mockRestore();
+    });
+
+    it('FD: onConflict=fail rejects when dest keys collide (no publish / no half-copy)', async () => {
+      (db.query as jest.Mock).mockImplementation((sql: string) => {
+        if (sql.includes('FROM public.config_catalogs c') && sql.includes('lower(c.domain)')) {
+          return Promise.resolve({
+            rows: [
+              {
+                catalog_key: 'log_dm_vehicle_type',
+                name: 'Loại xe',
+                domain: 'logistics',
+                assigned_systems: ['xbos'],
+                items: [{ code: 'TRUCK', label: 'Xe tải', status: 'active' }],
+              },
+            ],
+          });
+        }
+        if (sql.includes('catalog_key = ANY($3::text[])')) {
+          return Promise.resolve({ rows: [{ catalog_key: 'log_dm_vehicle_type' }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+      const publishSpy = jest.spyOn(service, 'publishCatalog');
+
+      await expect(
+        service.cloneCatalogBundle({
+          sourceTenantId: 'xevn',
+          sourceCompanyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'logistics',
+          domains: ['logistics'],
+          onConflict: 'fail',
+        }),
+      ).rejects.toMatchObject<ApiException>({
+        code: 'XBOS-CFG-009',
+        status: HttpStatus.CONFLICT,
+      });
+      expect(publishSpy).not.toHaveBeenCalled();
+      publishSpy.mockRestore();
+    });
+
+    it('FD: empty domains / same source-dest / empty source match are deterministic 4xx', async () => {
+      await expect(
+        service.cloneCatalogBundle({
+          sourceTenantId: 'xevn',
+          sourceCompanyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'holding',
+          domains: ['logistics'],
+        }),
+      ).rejects.toMatchObject<ApiException>({
+        code: 'XBOS-VAL-013',
+        status: HttpStatus.BAD_REQUEST,
+      });
+
+      await expect(
+        service.cloneCatalogBundle({
+          sourceTenantId: 'xevn',
+          sourceCompanyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'logistics',
+          domains: [],
+        }),
+      ).rejects.toMatchObject<ApiException>({
+        code: 'XBOS-VAL-001',
+        status: HttpStatus.BAD_REQUEST,
+      });
+
+      (db.query as jest.Mock).mockResolvedValue({ rows: [] });
+      await expect(
+        service.cloneCatalogBundle({
+          sourceTenantId: 'xevn',
+          sourceCompanyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'logistics',
+          domains: ['logistics'],
+        }),
+      ).rejects.toMatchObject<ApiException>({
+        code: 'XBOS-CFG-008',
+        status: HttpStatus.NOT_FOUND,
+      });
+    });
+  });
+
+  describe('PO-UC-TC-W3-BE-DM09 / XBOS-DM-09 cloneCatalog', () => {
+    const sourceItems = [
+      { code: 'CEO', label: 'CEO', status: 'active' as const },
+      { code: 'MGR', label: 'Manager', status: 'active' as const },
+    ];
+
+    it('HP TC-DM09-CPY-HP-001: clones source partition to dest via publishCatalog', async () => {
+      jest.spyOn(service, 'getCatalogForTarget').mockResolvedValue({
+        contractVersion: 'xbos-config-v1',
+        checksumAlgorithm: 'sha256:items-canonical-v1',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        key: 'job_titles',
+        name: 'Chức danh',
+        domain: 'human_resources',
+        assignedTo: ['hrm', 'xbos'],
+        version: 4,
+        checksum: 'sha256:source',
+        updatedAt: new Date().toISOString(),
+        items: sourceItems,
+      });
+      (db.query as jest.Mock).mockImplementation((sql: string) => {
+        if (sql.includes('code = ANY($4::text[])')) {
+          return Promise.resolve({ rows: [] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+      const publishSpy = jest.spyOn(service, 'publishCatalog').mockResolvedValue({
+        contractVersion: 'xbos-config-v1',
+        checksumAlgorithm: 'sha256:items-canonical-v1',
+        tenantId: 'xe-du-lich',
+        companyId: 'main',
+        key: 'job_titles',
+        name: 'Chức danh',
+        domain: 'human_resources',
+        assignedTo: ['hrm', 'xbos'],
+        version: 1,
+        checksum: 'sha256:dest',
+        updatedAt: new Date().toISOString(),
+        items: sourceItems,
+      });
+
+      const result = await service.cloneCatalog('job_titles', {
+        tenantId: 'xevn',
+        companyId: 'holding',
+        destTenantId: 'xe-du-lich',
+        destCompanyId: 'main',
+        actor: 'group_ceo',
+      });
+
+      expect(result.catalogKey).toBe('job_titles');
+      expect(result.onConflict).toBe('reject');
+      expect(result.source).toEqual(
+        expect.objectContaining({ tenantId: 'xevn', companyId: 'holding', itemCount: 2 }),
+      );
+      expect(result.dest).toEqual(
+        expect.objectContaining({ tenantId: 'xe-du-lich', companyId: 'main', version: 1 }),
+      );
+      expect(publishSpy).toHaveBeenCalledWith(
+        'job_titles',
+        expect.objectContaining({
+          tenantId: 'xe-du-lich',
+          companyId: 'main',
+          name: 'Chức danh',
+          items: sourceItems,
+          actor: 'group_ceo',
+        }),
+      );
+      expect(platformAudit.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'config_catalog.clone',
+          entityId: 'job_titles',
+          tenantId: 'xevn',
+          companyId: 'holding',
+        }),
+      );
+      publishSpy.mockRestore();
+    });
+
+    it('FD TC-DM09-CPY-FD-001: rejects overlapping dest codes with XBOS-CFG-409', async () => {
+      jest.spyOn(service, 'getCatalogForTarget').mockResolvedValue({
+        contractVersion: 'xbos-config-v1',
+        checksumAlgorithm: 'sha256:items-canonical-v1',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        key: 'job_titles',
+        name: 'Chức danh',
+        domain: 'human_resources',
+        assignedTo: ['hrm'],
+        version: 2,
+        checksum: 'sha256:source',
+        updatedAt: new Date().toISOString(),
+        items: sourceItems,
+      });
+      (db.query as jest.Mock).mockImplementation((sql: string) => {
+        if (sql.includes('code = ANY($4::text[])')) {
+          return Promise.resolve({ rows: [{ code: 'CEO' }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+      const publishSpy = jest.spyOn(service, 'publishCatalog');
+
+      await expect(
+        service.cloneCatalog('job_titles', {
+          tenantId: 'xevn',
+          companyId: 'holding',
+          destTenantId: 'xe-du-lich',
+          destCompanyId: 'main',
+        }),
+      ).rejects.toMatchObject<ApiException>({
+        code: 'XBOS-CFG-409',
+        status: HttpStatus.CONFLICT,
+      });
+      expect(publishSpy).not.toHaveBeenCalled();
+      publishSpy.mockRestore();
+    });
+
+    it('rejects self-copy with XBOS-VAL-013', async () => {
+      await expect(
+        service.cloneCatalog('job_titles', {
+          tenantId: 'xevn',
+          companyId: 'holding',
+          destTenantId: 'xevn',
+          destCompanyId: 'holding',
+        }),
+      ).rejects.toMatchObject<ApiException>({
+        code: 'XBOS-VAL-013',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    });
   });
 });

@@ -34,8 +34,38 @@
  * What: Bản chất TP = CatalogSearchPicker pay_types (code); Zod allowed codes; U72 label
  * Why: FR-HRM-PAY-CLEAN-E2-01 · AC-E2-PAY-NATURE-01 — cấm HARDCODE componentTypes SoT
  * must_keep: nature accounting axis; createComponent API; E1-A/E1-B untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion P02/P16 — DNA badges; dialog sm:max-w-[920px] + compact code/name;
+ *       DialogTitle ≥20; FormulaInput chrome kept GĐ1 Form (P18)
+ * Why: ADR §16 · FE-PAY P0 · modal brand bar/glass via Dialog foundation
+ * must_keep: Zod+RHF create/update/delete wires; CatalogSearchPicker; no formula/API invent
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-MVP-GD1-PAY-02-CLUSTER-FE-BROWSER-01
+ * change_mode: ADD
+ * What: QA testids hdsd-pay-salary-component-* · pay_types picker id; cmdk interaction via CatalogSearchPicker
+ * Why: J-HRM-PAY-02-01 browser harness
+ * must_keep: Zod+RHF · N+1 admin CREATE · payroll_e2e_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-PAY-CATALOG-CNS-FE-01
+ * change_mode: ADD
+ * What: Admin CREATE code = open free-text N+1 (L-PAY-AC-01 / BR-PLT-05) — bỏ Settings
+ *       salary_components CatalogSearchPicker làm ceiling; display label từ Nest list;
+ *       pay_types REF giữ; consumers rebind Nest riêng (useSalaryComponentsEffective).
+ * Why: BA-01 Option B — Settings ≠ sole SoT; AC-PLT-PAY-01c retain open admin
+ * must_keep: payroll_e2e_ready=false · DENY formula LIVE · U65 · pay_types picker · Nest CRUD
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 D-FE-HRM-PAY-PAY-TYPE-CONSUMER-REG-01
+ * change_mode: FIX
+ * What: AC-SET-CONSUMER-PT-PAY-01 — CTA Cài đặt master-data (pay_types bucket) embed-safe;
+ *       source locks vitest po-hrm-pay-types-consumer-pay-fe-01
+ * Why: BA-HRM-PAY-TYPES-CONSUMER-PAY-01 · BR-SET-CONSUMER-PT-SOT-02 · peer ET-CTR CTA
+ * must_keep: payTypeOptionsFromCatalog · Zod allowedPayTypeCodes · filter by catalog code · JGRECQC1 seals
  */
 import { useState, useMemo, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,6 +75,11 @@ import {
   payTypeOptionsFromCatalog,
   resolvePayTypeLabel,
 } from '@/lib/catalogSearchPicker';
+import {
+  nestSalaryComponentsToPickerOptions,
+  resolveNestSalaryComponentLabel,
+  PAY_SALARY_COMPONENT_SETTINGS_NOT_SOT_NOTE,
+} from '@/lib/salaryComponentCatalog';
 import {
   Search,
   Plus,
@@ -107,6 +142,9 @@ import {
   systemSalaryComponents,
 } from '@/hooks/useSalaryComponents';
 import { Skeleton } from '@/components/ui/skeleton';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
+
+const PAY_TYPES_SETTINGS_HREF = hrmPathWithEmbedSearch('/settings?tab=master-data');
 
 const initialFormData: SalaryComponentFormData = {
   code: '',
@@ -171,8 +209,16 @@ export const SalaryComponentsTab = () => {
     () => payTypeOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
+  /** Nest TX list — display labels only (admin CREATE remains open slug N+1). */
+  const nestDisplayOptions = useMemo(
+    () => nestSalaryComponentsToPickerOptions(components, { includeInactive: true }),
+    [components],
+  );
   const allowedPayTypeCodesRef = useRef<string[]>([]);
   allowedPayTypeCodesRef.current = payTypeOptions.map((o) => o.value);
+  /** L-PAY-AC-01 — admin CREATE must NOT apply consumer invent ban / Settings ceiling. */
+  const allowedCatalogCodesRef = useRef<string[]>([]);
+  allowedCatalogCodesRef.current = [];
 
   const [activeTab, setActiveTab] = useState<'custom' | 'system'>('custom');
   const [searchTerm, setSearchTerm] = useState('');
@@ -210,6 +256,10 @@ export const SalaryComponentsTab = () => {
         'payroll.salaryComponents.typeNotInCatalog',
         'Chọn bản chất từ danh mục pay_types (Cài đặt).',
       ),
+      codeNotInCatalog: t(
+        'payroll.salaryComponents.codeNotInCatalog',
+        'Mã thành phần không hợp lệ (admin path: format/UQ only — không ceiling Settings).',
+      ),
     }),
     [t],
   );
@@ -220,6 +270,7 @@ export const SalaryComponentsTab = () => {
         salaryComponentFormMessages,
         () => existingCodesRef.current,
         () => allowedPayTypeCodesRef.current,
+        () => allowedCatalogCodesRef.current,
       ),
     [salaryComponentFormMessages],
   );
@@ -382,13 +433,13 @@ export const SalaryComponentsTab = () => {
     switch (nature) {
       case 'income':
         return (
-          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200">
+          <Badge className="bg-success/10 text-success border-success/30">
             {t('salaryComponents.nature.income')}
           </Badge>
         );
       case 'deduction':
         return (
-          <Badge className="bg-rose-500/10 text-rose-600 border-rose-200">
+          <Badge className="bg-destructive/10 text-destructive border-destructive/30">
             {t('salaryComponents.nature.deduction')}
           </Badge>
         );
@@ -420,7 +471,9 @@ export const SalaryComponentsTab = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="p-6 border-b">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">{t('salaryComponents.title')}</h1>
+            <h1 className="text-[20px] font-bold font-display text-xevn-text" data-testid="pay-components-precision">
+              {t('salaryComponents.title')}
+            </h1>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -435,7 +488,7 @@ export const SalaryComponentsTab = () => {
                 <ClipboardList className="w-4 h-4 mr-2" />
                 {t('salaryComponents.initializeDefaults')}
               </Button>
-              <Button className="bg-primary gap-2" onClick={openAddDialog}>
+              <Button className="bg-primary gap-2" onClick={openAddDialog} data-testid="hdsd-pay-salary-component-add">
                 <Plus className="w-4 h-4" />
                 {t('salaryComponents.addNew')}
               </Button>
@@ -452,7 +505,7 @@ export const SalaryComponentsTab = () => {
             <Card>
               <CardContent className="p-4">
                 <p className="text-sm text-muted-foreground">{t('salaryComponents.stats.active')}</p>
-                <p className="text-2xl font-bold text-emerald-600">{stats.active}</p>
+                <p className="text-2xl font-bold text-success">{stats.active}</p>
               </CardContent>
             </Card>
             <Card>
@@ -466,7 +519,7 @@ export const SalaryComponentsTab = () => {
                 <p className="text-sm text-muted-foreground">
                   {t('salaryComponents.stats.deduction')}
                 </p>
-                <p className="text-2xl font-bold text-rose-600">{stats.deduction}</p>
+                <p className="text-2xl font-bold text-destructive">{stats.deduction}</p>
               </CardContent>
             </Card>
           </div>
@@ -543,7 +596,11 @@ export const SalaryComponentsTab = () => {
                           {component.code}
                         </code>
                       </td>
-                      <td className="p-3 font-medium">{component.name}</td>
+                      <td className="p-3 font-medium">
+                        {resolveNestSalaryComponentLabel(nestDisplayOptions, component.code) !== '—'
+                          ? resolveNestSalaryComponentLabel(nestDisplayOptions, component.code)
+                          : component.name}
+                      </td>
                       <td className="p-3">
                         <Badge variant="outline">
                           {resolvePayTypeLabel(payTypeOptions, component.component_type) !== '—'
@@ -563,7 +620,7 @@ export const SalaryComponentsTab = () => {
                       </td>
                       <td className="p-3 text-center">
                         {component.is_taxable ? (
-                          <CheckCircle2 className="w-5 h-5 text-emerald-500 mx-auto" />
+                          <CheckCircle2 className="w-5 h-5 text-success mx-auto" />
                         ) : (
                           <X className="w-5 h-5 text-muted-foreground mx-auto" />
                         )}
@@ -573,7 +630,7 @@ export const SalaryComponentsTab = () => {
                           variant={component.is_active ? 'default' : 'secondary'}
                           className={cn(
                             component.is_active
-                              ? 'bg-emerald-500/10 text-emerald-600'
+                              ? 'bg-success/10 text-success'
                               : 'bg-muted text-muted-foreground',
                           )}
                         >
@@ -652,7 +709,7 @@ export const SalaryComponentsTab = () => {
                     </td>
                     <td className="p-3 text-center">
                       {component.isTaxable ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500 mx-auto" />
+                        <CheckCircle2 className="w-5 h-5 text-success mx-auto" />
                       ) : (
                         <X className="w-5 h-5 text-muted-foreground mx-auto" />
                       )}
@@ -782,10 +839,10 @@ export const SalaryComponentsTab = () => {
           else closeAddDialog();
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-salary-component-add-dialog-precision">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold font-display">
+              <Plus className="w-5 h-5 text-xevn-primary" />
               {t('salaryComponents.form.addTitle')}
             </DialogTitle>
           </DialogHeader>
@@ -814,12 +871,19 @@ export const SalaryComponentsTab = () => {
                             field.onChange(value);
                           }}
                           placeholder={t('salaryComponents.form.codePlaceholder')}
-                          className={fieldState.error ? 'border-destructive' : ''}
+                          className={cn(
+                            'xevn-field-code',
+                            fieldState.error ? 'border-destructive' : '',
+                          )}
+                          data-testid="pay-salary-component-code-input"
                         />
                       </FormControl>
                       <FormMessage className="text-xs" />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-xevn-textSecondary">
                         {t('salaryComponents.form.codeHint')}
+                      </p>
+                      <p className="text-[11px] text-xevn-textSecondary">
+                        {PAY_SALARY_COMPONENT_SETTINGS_NOT_SOT_NOTE}
                       </p>
                     </div>
                   </FormItem>
@@ -839,7 +903,11 @@ export const SalaryComponentsTab = () => {
                         <Input
                           {...field}
                           placeholder={t('salaryComponents.form.namePlaceholder')}
-                          className={fieldState.error ? 'border-destructive' : ''}
+                          className={cn(
+                            'xevn-field-name',
+                            fieldState.error ? 'border-destructive' : '',
+                          )}
+                          data-testid="pay-salary-component-name-input"
                         />
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -865,16 +933,18 @@ export const SalaryComponentsTab = () => {
                           onValueChange={field.onChange}
                           placeholder={t('salaryComponents.form.selectType')}
                           loading={catalogsLoading}
+                          data-testid="hdsd-pay-salary-component-type"
                           errorText={
                             catalogsError ? t('settings.catalogs.loadError') : undefined
                           }
                           emptyHint={
-                            <a
-                              href="/settings"
+                            <Link
+                              to={PAY_TYPES_SETTINGS_HREF}
                               className="text-primary underline text-xs font-medium"
+                              data-testid="pay-salary-component-type-settings-cta"
                             >
                               Mở Cài đặt → Danh mục nghiệp vụ (pay_types)
-                            </a>
+                            </Link>
                           }
                           triggerClassName={
                             fieldState.error ? 'border-destructive' : undefined
@@ -1025,7 +1095,7 @@ export const SalaryComponentsTab = () => {
                 <Button type="button" variant="outline" onClick={closeAddDialog}>
                   {t('salaryComponents.dialogs.cancel')}
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} data-testid="hdsd-pay-salary-component-save">
                   {isSubmitting
                     ? t('salaryComponents.dialogs.saving')
                     : t('salaryComponents.dialogs.add')}
@@ -1048,10 +1118,10 @@ export const SalaryComponentsTab = () => {
           }
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-salary-component-edit-dialog-precision">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Pencil className="w-5 h-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold font-display">
+              <Pencil className="w-5 h-5 text-xevn-primary" />
               {t('salaryComponents.form.editTitle')}
             </DialogTitle>
           </DialogHeader>
@@ -1098,9 +1168,13 @@ export const SalaryComponentsTab = () => {
                   loading={catalogsLoading}
                   errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
                   emptyHint={
-                    <a href="/settings" className="text-primary underline text-xs font-medium">
+                    <Link
+                      to={PAY_TYPES_SETTINGS_HREF}
+                      className="text-primary underline text-xs font-medium"
+                      data-testid="pay-salary-component-type-settings-cta"
+                    >
                       Mở Cài đặt → Danh mục nghiệp vụ (pay_types)
-                    </a>
+                    </Link>
                   }
                 />
                 {formErrors.component_type && (
@@ -1213,9 +1287,9 @@ export const SalaryComponentsTab = () => {
 
       {/* Delete Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" data-testid="pay-salary-component-delete-dialog-precision">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive">
+            <DialogTitle className="flex items-center gap-2 text-destructive text-[20px] font-bold font-display">
               <AlertCircle className="w-5 h-5" />
               {t('salaryComponents.dialogs.deleteTitle')}
             </DialogTitle>

@@ -1,3 +1,21 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Việc làm (E18)
+ * UC:         E18 · RUNTIME Job honesty PARTIAL
+ * Purpose:    Danh sách công việc từ operations/tasks; local fallback khi create fail.
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-C
+ * Coded:      2026-08-05
+ * Callers:    EmployeeProfile activeTab=work
+ * Callees:    useTasks · EmployeeJobProgressChart · createTask
+ * must_keep:  Job honesty banner; SoftDel/navigate outside; stub local fallback; no OCR/QR; no Nest invent; no Employees CLOSED
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; blue/purple KPI chrome → xevn DNA; honesty banner data-testid=emp-job-honesty
+ * Why: ADR-20260805 §8 pale ban · inventory W3-EMP-C E18 Job honesty
+ * must_keep: operations/tasks wire; localJobs fallback honesty; DialogTitle ≥20 inherit; no Nest/seed
+ */
 import { useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -129,16 +147,16 @@ interface EmployeeJobListProps {
 }
 
 const priorityConfig = {
-  high: { label: 'Cao', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-  medium: { label: 'Trung bình', color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' },
-  low: { label: 'Thấp', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+  high: { label: 'Cao', color: 'bg-xevn-danger/15 text-xevn-danger dark:bg-xevn-danger/20' },
+  medium: { label: 'Trung bình', color: 'bg-xevn-warning/15 text-xevn-warning dark:bg-xevn-warning/20' },
+  low: { label: 'Thấp', color: 'bg-xevn-success/15 text-xevn-success dark:bg-xevn-success/20' },
 };
 
 const statusConfig = {
-  completed: { label: 'Hoàn thành', icon: CheckCircle2, color: 'text-green-600' },
-  in_progress: { label: 'Đang thực hiện', icon: Clock, color: 'text-blue-600' },
-  pending: { label: 'Chờ xử lý', icon: Circle, color: 'text-gray-500' },
-  overdue: { label: 'Quá hạn', icon: AlertCircle, color: 'text-red-600' },
+  completed: { label: 'Hoàn thành', icon: CheckCircle2, color: 'text-xevn-success' },
+  in_progress: { label: 'Đang thực hiện', icon: Clock, color: 'text-xevn-primary' },
+  pending: { label: 'Chờ xử lý', icon: Circle, color: 'text-xevn-textSecondary' },
+  overdue: { label: 'Quá hạn', icon: AlertCircle, color: 'text-xevn-danger' },
 };
 
 const jobFormSchema = z.object({
@@ -440,9 +458,24 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
 
   return (
     <div className="space-y-6">
+      <p
+        className="text-sm text-xevn-textSecondary"
+        data-testid="emp-job-honesty"
+      >
+        {t(
+          'employeeProfile.jobs.honestyBanner',
+          'Nguồn: operations/tasks API theo nhân sự. Tạo mới thất bại → chỉ lưu phiên (local) — chưa phải module Việc làm Nest CLOSED. Không OCR/QR.',
+        )}
+        {localJobs.length > 0
+          ? ` ${t(
+              'employeeProfile.jobs.localFallbackHint',
+              `(${localJobs.length} dòng local phiên hiện tại — F5 sẽ mất nếu chưa tạo được trên API.)`,
+            )}`
+          : ''}
+      </p>
       {isLoading ? (
-        <Card>
-          <CardContent className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+        <Card className="border-xevn-border bg-xevn-surface">
+          <CardContent className="flex items-center justify-center gap-2 py-10 text-xevn-textSecondary">
             <Loader2 className="h-5 w-5 animate-spin" />
             {t('common.loading', 'Đang tải…')}
           </CardContent>
@@ -456,54 +489,54 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
         <>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <Briefcase className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-primary/10 dark:bg-xevn-primary/20 flex items-center justify-center">
+                <Briefcase className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.total}</p>
-                <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.totalJobs')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.total}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.totalJobs')}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-success/15 dark:bg-xevn-success/20 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-xevn-success" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.completed}</p>
-                <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.completed')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.completed}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.completed')}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-yellow-600" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-warning/15 dark:bg-xevn-warning/20 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-xevn-warning" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.inProgress}</p>
-                <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.inProgress')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.inProgress}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.inProgress')}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-xevn-border bg-xevn-surface shadow-soft">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-red-600" />
+              <div className="w-10 h-10 rounded-lg bg-xevn-danger/15 dark:bg-xevn-danger/20 flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-xevn-danger" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.overdue}</p>
-                <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.overdue')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.overdue}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.overdue')}</p>
               </div>
             </div>
           </CardContent>
@@ -517,8 +550,8 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
       <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Briefcase className="w-5 h-5" />
+            <CardTitle className="text-lg font-semibold text-xevn-text flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-xevn-primary" />
               {t('employeeProfile.jobs.jobList')}
             </CardTitle>
             <div className="flex items-center gap-2">
@@ -551,7 +584,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-xevn-textSecondary" />
               <Input
                 placeholder={t('employeeProfile.jobs.searchPlaceholder')}
                 value={searchTerm}
@@ -601,7 +634,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
               <TableBody>
                 {filteredJobs.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-xevn-textSecondary">
                       {t('employeeProfile.jobs.noJobs')}
                     </TableCell>
                   </TableRow>
@@ -613,7 +646,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                         <TableCell>
                           <div>
                             <p className="font-medium">{job.title}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-xevn-textSecondary">
                               {t('employeeProfile.jobs.assignedBy')}: {job.assignedBy}
                             </p>
                           </div>
@@ -621,7 +654,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                         <TableCell>
                           <div>
                             <p className="text-sm">{job.project}</p>
-                            <p className="text-xs text-muted-foreground">{job.department}</p>
+                            <p className="text-xs text-xevn-textSecondary">{job.department}</p>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -637,7 +670,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1 text-sm">
-                            <Calendar className="w-3 h-3 text-muted-foreground" />
+                            <Calendar className="w-3 h-3 text-xevn-textSecondary" />
                             {job.dueDate}
                           </div>
                         </TableCell>
@@ -648,15 +681,15 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                                 className={cn(
                                   'h-full rounded-full',
                                   job.progress === 100
-                                    ? 'bg-green-500'
+                                    ? 'bg-xevn-success'
                                     : job.status === 'overdue'
-                                    ? 'bg-red-500'
-                                    : 'bg-blue-500'
+                                    ? 'bg-xevn-danger'
+                                    : 'bg-xevn-primary'
                                 )}
                                 style={{ width: `${job.progress}%` }}
                               />
                             </div>
-                            <span className="text-xs text-muted-foreground">{job.progress}%</span>
+                            <span className="text-xs text-xevn-textSecondary">{job.progress}%</span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -675,7 +708,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                                 <Edit className="w-4 h-4" />
                                 {t('employeeProfile.jobs.edit')}
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2 text-red-600" onClick={() => handleDeleteJob(job.id)}>
+                              <DropdownMenuItem className="gap-2 text-xevn-danger" onClick={() => handleDeleteJob(job.id)}>
                                 <Trash2 className="w-4 h-4" />
                                 {t('employeeProfile.jobs.delete')}
                               </DropdownMenuItem>
@@ -809,7 +842,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                               variant="outline"
                               className={cn(
                                 'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
+                                !field.value && 'text-xevn-textMuted'
                               )}
                             >
                               {field.value ? format(field.value, 'dd/MM/yyyy') : t('employeeProfile.jobs.pickDate')}
@@ -845,7 +878,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                               variant="outline"
                               className={cn(
                                 'w-full pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
+                                !field.value && 'text-xevn-textMuted'
                               )}
                             >
                               {field.value ? format(field.value, 'dd/MM/yyyy') : t('employeeProfile.jobs.pickDate')}
@@ -946,18 +979,18 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold">{viewingJob.title}</h3>
-                <p className="text-sm text-muted-foreground">{viewingJob.project} • {viewingJob.department}</p>
+                <p className="text-sm text-xevn-textSecondary">{viewingJob.project} • {viewingJob.department}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">{t('employeeProfile.jobs.priority')}</p>
+                  <p className="text-xevn-textSecondary">{t('employeeProfile.jobs.priority')}</p>
                   <Badge className={cn('mt-1', priorityConfig[viewingJob.priority].color)}>
                     {priorityConfig[viewingJob.priority].label}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">{t('employeeProfile.jobs.status')}</p>
+                  <p className="text-xevn-textSecondary">{t('employeeProfile.jobs.status')}</p>
                   <div className="flex items-center gap-2 mt-1">
                     {(() => {
                       const StatusIcon = statusConfig[viewingJob.status].icon;
@@ -967,25 +1000,25 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
                   </div>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">{t('employeeProfile.jobs.startDate')}</p>
+                  <p className="text-xevn-textSecondary">{t('employeeProfile.jobs.startDate')}</p>
                   <p className="font-medium">{viewingJob.startDate}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">{t('employeeProfile.jobs.dueDate')}</p>
+                  <p className="text-xevn-textSecondary">{t('employeeProfile.jobs.dueDate')}</p>
                   <p className="font-medium">{viewingJob.dueDate}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">{t('employeeProfile.jobs.assignedBy')}</p>
+                  <p className="text-xevn-textSecondary">{t('employeeProfile.jobs.assignedBy')}</p>
                   <p className="font-medium">{viewingJob.assignedBy}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">{t('employeeProfile.jobs.progress')}</p>
+                  <p className="text-xevn-textSecondary">{t('employeeProfile.jobs.progress')}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className={cn(
                           'h-full rounded-full',
-                          viewingJob.progress === 100 ? 'bg-green-500' : 'bg-blue-500'
+                          viewingJob.progress === 100 ? 'bg-xevn-success' : 'bg-xevn-primary'
                         )}
                         style={{ width: `${viewingJob.progress}%` }}
                       />
@@ -997,7 +1030,7 @@ export function EmployeeJobList({ employeeId }: EmployeeJobListProps) {
 
               {viewingJob.description && (
                 <div>
-                  <p className="text-muted-foreground text-sm">{t('employeeProfile.jobs.description')}</p>
+                  <p className="text-xevn-textSecondary text-sm">{t('employeeProfile.jobs.description')}</p>
                   <p className="mt-1">{viewingJob.description}</p>
                 </div>
               )}

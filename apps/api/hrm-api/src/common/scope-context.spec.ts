@@ -74,6 +74,64 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
     );
   });
 
+  /**
+   * PO-UC-TC-W4-BE-AU-MEMBER-MAIN-SCOPE-01 — TC-HRM-IM-03-SCOPE-AU corrected matrix:
+   * - own tenant + main → accept (ADR §5 operating bucket; not holding rollup)
+   * - group tenant xevn + main → 409
+   * - holding slug → 409
+   */
+  it('PO-UC-TC-W4: member CEO accepts own company_id=main (ADR §5 own bucket)', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+    });
+    expect(scope).toEqual({ tenantId: 'xe-du-lich', companyId: 'main' });
+  });
+
+  it('PO-UC-TC-W4: member CEO blocked on group rollup headers xevn/main', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'main' }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+        getStatus: expect.any(Function),
+      }),
+    );
+    try {
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'main' });
+    } catch (error) {
+      expect((error as ApiException).getStatus()).toBe(HttpStatus.CONFLICT);
+    }
+  });
+
+  it('PO-UC-TC-W4: member CEO blocked on company_id=holding (not own main)', () => {
+    const token = signServiceJwt({
+      sub: 'du-lich.ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    expect(() =>
+      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xe-du-lich', companyId: 'holding' }),
+    ).toThrow(
+      expect.objectContaining<Partial<ApiException>>({
+        code: 'SCOPE_CONTEXT_MISMATCH',
+      }),
+    );
+  });
+
   it('accepts UUID request company_id when token has slug + matching company_uuid (mobile attendance)', () => {
     const companyUuid = '85945933-632a-4bca-8fe9-3bbe8bc9294b';
     const token = signServiceJwt({
@@ -136,6 +194,49 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );
+  });
+
+  it('U78-U84: accepts Plane B′ UUID header when token has matching operating slug without company_uuid', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0002@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'trsport',
+      roleCode: 'employee',
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: '10000000-0000-4000-8000-000000000002',
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'trsport' });
+  });
+
+  it('U78-U84: member portal header main normalizes to JWT operating slug (mgr approve)', () => {
+    const token = signServiceJwt({
+      sub: 'uat.nv0002@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'trsport',
+      company_uuid: '10000000-0000-4000-8000-000000000002',
+      roleCode: 'employee',
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'trsport' });
+  });
+
+  it('U78-U84: group CEO header main stays main (does not rewrite to member slug)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'main' });
   });
 
   it('accepts group CEO pilot company_uuid on metadata submit (UF-HRM-11)', () => {

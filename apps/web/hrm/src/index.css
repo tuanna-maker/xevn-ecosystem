@@ -1,20 +1,130 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM embed — global theme (Precision Motion foundation)
+ * UC:         PO-HRM-UI-BRAND-REMASTER-01 W2
+ * SRS:        docs/program/HRM_UI_BRAND_REMASTER_PROGRAM.md A1–A5
+ * Purpose:    CSS vars + sharp text locks (#111827 body · primary #1E40AF); utilities for ATT remaster start.
+ * WorkItem:   PO-HRM-ATT-03d-05b-FE-01
+ * Coded:      2026-08-05
+ * must_keep:  --xevn-color-primary #1E40AF; text #111827; muted ≠ body; stub honesty chrome later
+ * LastVerified: docs/qa/evidence/po-hrm-att-03d-05b-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-ATT-03d-05b-FE-01
+ * change_mode: ADD
+ * What: .xevn-label / .xevn-body-text / .xevn-hint utilities — foundation before full remaster squad
+ * Why: Skill locks text sharp · body≥15px · program A1–A5
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-FE-FOUNDATION-01
+ * change_mode: ADD
+ * What: Confirm :root --xevn-* + shadcn bridge §7.4 lockstep with portal; cite Accepted ADR
+ * Why: W2 FE foundation — iframe dual-surface; --muted-foreground ≈ #4B5563 (not pale body)
+ * TechSpec: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §7–§10
+ * ADR: ADR-XEVN-PRECISION-MOTION-TOKENS (2026-08-05) · primary #1E40AF · text #111827 · secondary #4B5563
+ * must_keep: Hex lockstep with web-portal; no second primary; no Nest/seed; no W3 screen remaster here
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-foundation-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-FE-FOUND-01
+ * change_mode: UPGRADE
+ * What: Modal `.xevn-dialog-surface` thin primary bar + sticky footer util; gate adds TW hex +
+ *       muted-foreground L-check + BOM-safe baseline; DialogContent wires surface; rule pointer
+ * Why: Dispatch FOUND-01 exit — shared modal chrome ADR §10; pale gate restore hardened
+ * must_keep: ATT .xevn-label/.xevn-body-text utilities; honesty banners; no W3 remaster
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-found-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-A
+ * change_mode: UPGRADE
+ * What: `.sidebar-link` idle → full sidebar-foreground (no /80 pale); PORT-08 nav density
+ * Why: W3-PORT-A remaster · ADR-20260805 §8–§9
+ * must_keep: sidebar-primary = #1E40AF HSL; dual-surface; honesty banners; no ATT/EMP business
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w3-port-a.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-FE-FOUND-01-R1
+ * change_mode: FIX
+ * What: `--xevn-type-title-min` + `.xevn-type-title` → absolute **20px** floor + font-weight **700**
+ * Why: QA FAIL — under html 87.5% (14px) rem `1.25rem` = 17.5px < ADR §7/§10 title ≥20 bold
+ * ADR: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §7 type floors · §10 modal title
+ * must_keep: primary #1E40AF; pale gate; no Nest/API; no W3 remaster rewrite
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-found-01-r1.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-FE-DIALOG-01
+ * change_mode: UPGRADE
+ * What: Montserrat + Source Sans 3; glass dialog header + 4px brand bar; field-width utils
+ * Why: ADR §16 LOCKED Body=Source Sans 3 · Display=Montserrat · S3=A · B4 cấm AI
+ * must_keep: leave/OT/GPS wires; ATT-03d/05b; Face HOLD; theme-contrast; no Nest invent
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-dialog-01.md
+ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * @STYLE-MEMORY
+ * Surface:    HRM embed global CSS — Precision Motion + shadcn HSL bridge
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §7.4 · §9 dual-surface
+ * Program:    PO-HRM-UI-BRAND-REMASTER-01 · W2 foundation
+ * WorkItem:   PO-HRM-UI-BRAND-FE-FOUND-01
+ * Purpose:    Same --xevn-* hex as portal; --muted-foreground = secondary #4B5563 class
+ *             (never pale slate-400 body); html root 100% (16px); iframe-safe tokens.
+ * must_keep:  primary HSL 226 71% 40%; muted-foreground readable; honesty banners;
+ *             module --hrm-* chips ≠ replacement for CTA primary
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-found-01.md
+ *
+ * @CODE-MEMORY
+ * Screen:     HRM web global theme (embed + standalone)
+ * UC:         Brand remaster foundation · UF shell load
+ * BR:         ADR §8 pale ban · §7.4 muted ≠ body
+ * SRS:        ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 (UI SoT)
+ * TechSpec:   docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ * Purpose:    Lockstep portal hex + shadcn bridge; dialog surface utilities shared.
+ * WorkItem:   PO-HRM-UI-BRAND-FE-FOUNDATION-01
+ * Coded:      2026-08-05
+ * Callers:    main.tsx → App; DialogContent; saas-table
+ * Callees:    none (CSS only)
+ * must_keep:  #1E40AF / #111827 / #4B5563; stub honesty chrome
+ * SOLID:      Tokens + bridge here; W3 squads remaster screens only
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-foundation-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-FE-FOUNDATION-01
+ * change_mode: UPGRADE
+ * What: STYLE/CODE-MEMORY cite ADR-20260805; dialog brand-bar utility; dual-surface note
+ * Why: W2 foundation — restore governance SoT after missing 20260722 ADR
+ * must_keep: muted-foreground ≈ #4B5563; no full-screen remaster this seat
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-UI-DIALOG-CENTER-01-R2
+ * change_mode: FIX
+ * What: `.xevn-dialog-surface` chrome-only; `position/overflow` only on `:not(.fixed)`
+ *       so DialogContent `fixed inset-0 m-auto overflow-y-auto` wins (CC embed).
+ * Why: DEF-DIALOG-CENTER-CSS-OVERRIDE — utilities layer overrode Tailwind fixed
+ * must_keep: ::before 4px brand bar; glass/wordmark; login card relative via :not(.fixed);
+ *            LOGO-02 white pad untouched
+ * LastVerified: docs/qa/evidence/po-hrm-ui-dialog-center-01-r2.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-UI-P0-LOGO-FONT-TITLE-01
+ * change_mode: FIX
+ * What: `.xevn-dialog-wordmark` pad SURFACE white (was brand-shell #000); html root
+ *       87.5%→100% (16px) + body font-weight 500 — ADR §7 prefer body 16 + sharper
+ * Why: Sponsor — dialog logo nền đen; font toàn hệ nhỏ/mờ
+ * must_keep: brand-shell #000 for login/splash only; dialog center R2; LOGO-02 login pad
+ * LastVerified: docs/qa/evidence/po-hrm-ui-p0-logo-font-title-01.md
+ */
+
 @layer base {
-  /* Đồng bộ mật độ chữ với web-portal (~87.5%) */
+  /* Enterprise type root — 100% = 16px (ADR §7 prefer body 16; was ops 87.5%/14px) */
   html {
-    font-size: 87.5%;
+    font-size: 100%;
   }
 
   :root {
     /**
-     * XeVN Precision Motion — CSS vars + shadcn HSL bridge (proposal §3.1).
-     * Class SoT remains Tailwind `xevn.*` (same hex as portal).
+     * XeVN Precision Motion — CSS vars + shadcn HSL bridge (ADR §7 / §7.4).
+     * Class SoT remains Tailwind `xevn.*` (same hex as portal — dual-surface §9).
      * Light `--primary: 226 71% 40%` ≡ #1E40AF.
+     * `--muted-foreground` ≈ #4B5563 (readable secondary) — NEVER body via slate-400.
      * L2: `.dark --primary` / `--ring` / `--sidebar-primary` aligned to brand HSL
      * (was 221 83% 60% blue-600 drift — FE-XEVN-BRAND-PRIMITIVES-L2-01).
      */
@@ -45,8 +155,11 @@
     --xevn-space-3xl: 4rem;
     --xevn-type-body-min: 0.9375rem;
     --xevn-type-table-min: 0.875rem;
-    --xevn-type-title-min: 1.25rem;
+    /* Absolute px — rem under html 14px root made 1.25rem = 17.5px (ADR §7 ≥20) */
+    --xevn-type-title-min: 20px;
     --xevn-type-label-min: 0.875rem;
+    --xevn-font-display: "Montserrat", system-ui, sans-serif;
+    --xevn-font-body: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
 
     /* Canvas #F9FAFB → HSL */
     --background: 210 20% 98%;
@@ -164,9 +277,12 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--xevn-font-body);
     font-size: max(1rem, var(--xevn-type-body-min));
+    font-weight: 500;
     color: var(--xevn-color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Custom scrollbar */
@@ -189,6 +305,26 @@
 }
 
 @layer components {
+  /**
+   * Precision Motion — sharp text utilities (ATT GPS / leave panel start).
+   * Prefer these over pale text-muted-foreground for labels/body on business surfaces.
+   */
+  .xevn-label {
+    @apply text-[15px] font-medium text-xevn-textSecondary;
+  }
+
+  .xevn-body-text {
+    @apply text-[15px] text-xevn-text;
+  }
+
+  .xevn-hint {
+    @apply text-sm text-xevn-textMuted;
+  }
+
+  .xevn-title {
+    @apply text-xl font-bold text-xevn-text;
+  }
+
   /* SaaS Data Table Styles */
   .saas-table {
     @apply w-full text-sm;
@@ -238,8 +374,12 @@
   }
 
   /* Sidebar animation */
+  /**
+   * PORT-08 — sharp nav labels (ADR-20260805 §8). Idle = readable sidebar-foreground;
+   * active = sidebar-primary (#1E40AF HSL). Cấm pale /80 body on nav.
+   */
   .sidebar-link {
-    @apply flex items-center gap-2 md:gap-3 px-3 py-2 md:py-2.5 rounded-lg text-sidebar-foreground/80 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-foreground;
+    @apply flex items-center gap-2 md:gap-3 px-3 py-2 md:py-2.5 rounded-lg text-sidebar-foreground transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
   }
 
   .sidebar-link.active {
@@ -262,7 +402,7 @@
 
   .page-title {
     @apply font-bold text-foreground;
-    font-size: max(1.25rem, var(--xevn-type-title-min));
+    font-size: max(20px, var(--xevn-type-title-min));
   }
 
   /* Action bar */
@@ -334,12 +474,131 @@
     outline-offset: 2px;
   }
 
+  /**
+   * Dialog / modal panel chrome (ADR §15.4 — glass + full-bleed brand bar).
+   * SoT visual: docs/client-delivery/hrm-enterprise-blueprint/ui-neo/
+   *
+   * PO-HRM-UI-DIALOG-CENTER-01-R2: do NOT set position/overflow on the base class —
+   * DialogContent uses Tailwind `fixed inset-0 m-auto … overflow-y-auto` and this
+   * utility layer previously overrode them (computed position:relative → off-screen
+   * in CC parent portal). Cards/login keep containing block via :not(.fixed).
+   */
   .xevn-dialog-surface {
     border-radius: var(--xevn-radius-card);
     border: 1px solid var(--xevn-color-border);
     background-color: var(--xevn-color-surface);
     box-shadow: var(--xevn-shadow-overlay);
     color: var(--xevn-color-text);
+  }
+  /* Non-fixed consumers (login card, ConfirmDialog panel) — brand-bar containing block */
+  .xevn-dialog-surface:not(.fixed) {
+    position: relative;
+    overflow: hidden;
+  }
+  .xevn-dialog-surface::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: var(--xevn-color-primary);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .xevn-dialog-header-glass {
+    position: relative;
+    background: color-mix(in srgb, var(--xevn-color-surface) 82%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid color-mix(in srgb, var(--xevn-color-border) 90%, transparent);
+  }
+  .xevn-dialog-header-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      color-mix(in srgb, var(--xevn-color-primary) 6%, transparent) 0%,
+      transparent 55%
+    );
+    pointer-events: none;
+  }
+  .xevn-dialog-header-glass > * {
+    position: relative;
+    z-index: 1;
+  }
+  .xevn-dialog-wordmark {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 6px;
+    /* Dialog/AlertDialog wordmark — SURFACE white (brand-shell #000 = login/splash only) */
+    background-color: var(--xevn-color-surface, #ffffff);
+    flex-shrink: 0;
+  }
+  .xevn-dialog-footer-sticky {
+    position: sticky;
+    bottom: 0;
+    backdrop-filter: blur(12px);
+    background-color: color-mix(in srgb, var(--xevn-color-surface) 80%, transparent);
+    border-top: 1px solid var(--xevn-color-border);
+  }
+
+  /* Compact field widths (ui-neo / ADR §15.4 U3) */
+  .xevn-field-date {
+    max-width: 8.75rem;
+    width: 100%;
+  }
+  .xevn-field-time {
+    max-width: 6.5rem;
+    width: 100%;
+  }
+  .xevn-field-code {
+    max-width: 10rem;
+    width: 100%;
+  }
+  .xevn-field-num {
+    max-width: 7.5rem;
+    width: 100%;
+  }
+  .xevn-field-phone {
+    max-width: 11.25rem;
+    width: 100%;
+  }
+  .xevn-field-select-sm {
+    max-width: 12.5rem;
+    width: 100%;
+  }
+  .xevn-field-select-md {
+    max-width: 17.5rem;
+    width: 100%;
+  }
+  .xevn-field-name {
+    max-width: 17.5rem;
+    width: 100%;
+  }
+  .xevn-field-line {
+    max-width: 24rem;
+    width: 100%;
+  }
+  .xevn-field-reason {
+    width: 100%;
+    max-width: 100%;
+    min-height: 5.5rem;
+  }
+  @media (max-width: 720px) {
+    .xevn-field-date,
+    .xevn-field-time,
+    .xevn-field-code,
+    .xevn-field-num,
+    .xevn-field-phone,
+    .xevn-field-select-sm,
+    .xevn-field-select-md,
+    .xevn-field-name,
+    .xevn-field-line {
+      max-width: 100%;
+    }
   }
 
   .animate-fade-in {
@@ -408,15 +667,18 @@
   }
 
   .xevn-type-title {
-    font-size: max(1.25rem, var(--xevn-type-title-min));
-    font-weight: 600;
+    /* Absolute floor — survives html 14px ops density (ADR §7 / §15.4) */
+    font-family: var(--xevn-font-display);
+    font-size: max(20px, var(--xevn-type-title-min));
+    font-weight: 700;
     line-height: 1.25;
+    letter-spacing: -0.02em;
     color: var(--xevn-color-text);
   }
 
   .xevn-type-label {
     font-size: max(0.875rem, var(--xevn-type-label-min));
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.375;
     color: var(--xevn-color-text-secondary);
   }
@@ -433,6 +695,20 @@
   .xevn-safe-inline {
     padding-left: clamp(2rem, 4vw + 1rem, 3rem);
     padding-right: clamp(2rem, 4vw + 1rem, 3rem);
+  }
+
+  /** Cài đặt HRM — full width trong embed, không cộng thêm safe-inline */
+  .settings-page {
+    width: 100%;
+    max-width: none;
+  }
+
+  .settings-panel-card .settings-panel-card__header {
+    padding: 0.875rem 1rem 0.625rem;
+  }
+
+  .settings-panel-card .settings-panel-card__content {
+    padding: 0 1rem 1rem;
   }
 
   /** Workflow Canvas — nền slate-50 + lưới chấm 20px */

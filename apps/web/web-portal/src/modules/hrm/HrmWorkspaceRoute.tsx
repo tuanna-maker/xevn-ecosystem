@@ -72,6 +72,12 @@ import { shouldForceEmbedSrcReload } from './portalEmbedSoftNavGuard';
  * what: Stop rendering HrmEmbedScopeBar above iframe (Ngữ cảnh / JWT / AC hint strip)
  * why: Sponsor — annotation wastes space; F3 ACs remain via TopHeader + iframe OU filter
  * must_keep: membership switch TopHeader (AC-CD-F3-04); iframe OU filter (AC-CD-F3-03)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-A
+ * change_mode: UPGRADE
+ * what: Embed chrome canvas — `bg-slate-50`/`text-slate-600` → `bg-xevn-background`/`text-xevn-textSecondary`
+ * why: ADR-20260805 §9 dual-surface — portal owns iframe chrome colors lockstep with HRM
+ * must_keep: soft-nav / embedScopeKey / TopHeader membership; no Nest; honesty ApiLoadBanner
  */
 
 /** Soft-nav verify window — long enough for flushSync navigate, short for UX. */
@@ -247,7 +253,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
 
   if (!tenantReady) {
     return (
-      <div className="flex min-h-[min(24rem,55dvh)] flex-1 items-center justify-center rounded-lg border border-xevn-border bg-slate-50 p-6 text-sm text-slate-600">
+      <div className="flex min-h-[min(24rem,55dvh)] flex-1 items-center justify-center rounded-lg border border-xevn-border bg-xevn-background p-6 text-sm text-xevn-textSecondary">
         <NavTransitionShell
           variant="embed"
           className="w-full max-w-2xl"
@@ -267,7 +273,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
 
   if (!embedScopeKey || !lockedEmbedSrc) {
     return (
-      <div className="flex min-h-[min(24rem,55dvh)] flex-1 items-center justify-center rounded-lg border border-xevn-border bg-slate-50 p-6 text-sm text-slate-600">
+      <div className="flex min-h-[min(24rem,55dvh)] flex-1 items-center justify-center rounded-lg border border-xevn-border bg-xevn-background p-6 text-sm text-xevn-textSecondary">
         <NavTransitionShell
           variant="embed"
           className="w-full max-w-2xl"
@@ -281,14 +287,14 @@ export const HrmWorkspaceRoute: React.FC = () => {
 
   return (
     <div className="flex h-full min-h-[min(32rem,70dvh)] w-full min-w-0 flex-1 flex-col gap-0">
-      <div className="relative flex min-h-[min(32rem,70dvh)] w-full min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-xevn-border bg-slate-50 shadow-soft">
+      <div className="relative flex min-h-[min(32rem,70dvh)] w-full min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-xevn-border bg-xevn-background shadow-soft">
         {showEmbedShell && !iframeLoadFailed ? (
           <div className="absolute inset-0 z-10 animate-in fade-in duration-200">
             <NavTransitionShell variant="embed" className="h-full" label="Đang tải module HRM…" />
           </div>
         ) : null}
         {iframeLoadFailed ? (
-          <div className="shrink-0 border-b border-xevn-border bg-white px-3 py-2">
+          <div className="shrink-0 border-b border-xevn-border bg-xevn-surface px-3 py-2">
             <ApiLoadBanner
               loadFailed
               title="Trạng thái HRM embed"
@@ -301,7 +307,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
           key={embedScopeKey}
           src={lockedEmbedSrc}
           title="HRM Workspace"
-          className={`min-h-[min(24rem,55dvh)] min-w-0 w-full flex-1 border-0 bg-slate-50 transition-opacity duration-200 ${
+          className={`min-h-[min(24rem,55dvh)] min-w-0 w-full flex-1 border-0 bg-xevn-background transition-opacity duration-200 ${
             showEmbedShell ? 'opacity-0' : 'opacity-100'
           }`}
           onLoad={() => {

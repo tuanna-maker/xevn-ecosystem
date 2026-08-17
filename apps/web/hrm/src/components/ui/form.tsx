@@ -3,6 +3,13 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import { Controller, ControllerProps, FieldPath, FieldValues, FormProvider, useFormContext } from "react-hook-form";
 
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-A
+ * change_mode: UPGRADE
+ * What: FormLabel → text-xevn-text; FormDescription → text-xevn-textSecondary
+ * Why: ADR-20260805 §8 — ops form labels must not use muted-as-body (E07 EmployeeFormDialog)
+ * must_keep: RHF Controller/id wiring; error → text-destructive
+ */
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 
@@ -78,7 +85,14 @@ const FormLabel = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { error, formItemId } = useFormField();
 
-  return <Label ref={ref} className={cn(error && "text-destructive", className)} htmlFor={formItemId} {...props} />;
+  return (
+    <Label
+      ref={ref}
+      className={cn("text-xevn-text", error && "text-destructive", className)}
+      htmlFor={formItemId}
+      {...props}
+    />
+  );
 });
 FormLabel.displayName = "FormLabel";
 
@@ -103,7 +117,14 @@ const FormDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttribu
   ({ className, ...props }, ref) => {
     const { formDescriptionId } = useFormField();
 
-    return <p ref={ref} id={formDescriptionId} className={cn("text-sm text-muted-foreground", className)} {...props} />;
+    return (
+      <p
+        ref={ref}
+        id={formDescriptionId}
+        className={cn("text-sm text-xevn-textSecondary", className)}
+        {...props}
+      />
+    );
   },
 );
 FormDescription.displayName = "FormDescription";

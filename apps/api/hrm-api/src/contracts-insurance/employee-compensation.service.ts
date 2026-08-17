@@ -41,6 +41,24 @@
  * What: ensureCompensationSchema single-flight + swallow pg_type_typname_nsp_index (23505) race
  * Why:  Cold FE loads list+/active in parallel → concurrent CREATE TABLE IF NOT EXISTS → 500 before first create
  * must_keep: F5 ACs (create/revise/history/active window/scope parity) already PASS — no contract/salary overwrite
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-BE-SRC-02-01
+ * What: ADD component_code on lines + index + backfill · validate salary_components · overlap 409
+ * Why:  BR-AMIS-PAY-SRC-02 per-component fixed PC · DATA-01 §3.2 EXPAND
+ * must_keep: revise versioning · contract pointer only · scope parity · no parallel salary_history table
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-PAY-CATALOG-CNS-BE-01
+ * change_mode: ADD
+ * What: S-PAY-CNS-03/04 — assert ALL derived codes via assertComponentCodeInEffectiveCatalog → HRM-SC-COMP-KEY
+ *       when Nest active >0; soft allow empty; HRM-COMP-004 documented 1:1 alias (no longer primary emit)
+ * must_keep: revise versioning · payroll_e2e_ready=false · U65 · admin SC open N+1
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01
+ * change_mode: UPGRADE
+ * What: F-CORE-EMP-02 residual — bank/MST header + history snapshot; C&B AuthZ HRM-CORE-CB-AUTHZ-403 +
+ *       access audit; VAL-400; OVERLAP alias; display-ready amounts; U19 RETAIN
+ * Why: API-01 CONFIRMED · DATA §4 · BA O1–O12 · FR-UC-BP-CORE-02
+ * must_keep: packages ONE SoT · HRM-COMP-409-OVERLAP · Nest /core DENY · public CB-403 · no seed · honesty false
  */
 
 import { HttpStatus, Injectable } from '@nestjs/common';
@@ -57,13 +75,21 @@ import {
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
 } from '../common/hrm-list-scope';
-import { HrmDbService } from '../db/hrm-db.service';
+import { HrmDbQueryFn, HrmDbService } from '../db/hrm-db.service';
 import {
   CompensationLineDto,
   CreateCompensationPackageDto,
   ReviseCompensationPackageDto,
 } from './dto/create-compensation-package.dto';
 import { ListCompensationQueryDto } from './dto/list-compensation.query.dto';
+import { assertComponentCodeInEffectiveCatalog } from '../payroll/salary-component-consumer-assert';
+import {
+  assertCompensationCbAccess,
+  ensureCbAccessAuditSchema,
+  formatAmountDisplayVi,
+  HRM_CORE_CB_OVERLAP_409,
+  HRM_CORE_CB_VAL_400,
+} from './compensation-cb-authz';
 
 export type CompensationLineType = 'base' | 'probation' | 'allowance';
 
@@ -74,10 +100,13 @@ export type CompensationLineRow = {
   amount: string | number;
   currency: string;
   allowance_code: string | null;
+  component_code: string | null;
   taxable: boolean;
   note: string | null;
   sort_order: number;
   created_at: string | Date;
+  /** Display-ready vi-VN thousand grouping (O11). */
+  amount_display?: string;
 };
 
 export type CompensationPackageRow = {
@@ -91,6 +120,10 @@ export type CompensationPackageRow = {
   effective_to: string | null;
   currency: string;
   change_reason: string | null;
+  bank_account: string | null;
+  bank_name: string | null;
+  bank_branch: string | null;
+  tax_id: string | null;
   created_at: string | Date;
   updated_at: string | Date;
 };
@@ -98,6 +131,15 @@ export type CompensationPackageRow = {
 export type CompensationPackageDetail = CompensationPackageRow & {
   lines: CompensationLineRow[];
 };
+
+const PACKAGE_SELECT_COLS = `
+  p.id, p.company_id, p.employee_id, p.contract_id, p.version, p.supersedes_package_id,
+  p.effective_from::text AS effective_from,
+  p.effective_to::text AS effective_to,
+  p.currency, p.change_reason,
+  p.bank_account, p.bank_name, p.bank_branch, p.tax_id,
+  p.created_at, p.updated_at
+`;
 
 export type CompensationHistoryRow = {
   id: string;
@@ -235,9 +277,192 @@ export class EmployeeCompensationService {
       CREATE INDEX IF NOT EXISTS idx_comp_history_employee
       ON public.employee_compensation_history (company_id, employee_id, created_at DESC);
     `);
+    await this.runCompensationDdl(`
+      ALTER TABLE public.employee_compensation_lines
+      ADD COLUMN IF NOT EXISTS component_code TEXT NULL;
+    `);
+    await this.runCompensationDdl(`
+      CREATE INDEX IF NOT EXISTS idx_comp_lines_pkg_component
+      ON public.employee_compensation_lines (package_id, lower(component_code))
+      WHERE component_code IS NOT NULL;
+    `);
+    // DATA §4 — bank/MST on package header (ONE C&B SoT; DENY public employees cols).
+    await this.runCompensationDdl(`
+      ALTER TABLE public.employee_compensation_packages
+      ADD COLUMN IF NOT EXISTS bank_account TEXT NULL;
+    `);
+    await this.runCompensationDdl(`
+      ALTER TABLE public.employee_compensation_packages
+      ADD COLUMN IF NOT EXISTS bank_name TEXT NULL;
+    `);
+    await this.runCompensationDdl(`
+      ALTER TABLE public.employee_compensation_packages
+      ADD COLUMN IF NOT EXISTS bank_branch TEXT NULL;
+    `);
+    await this.runCompensationDdl(`
+      ALTER TABLE public.employee_compensation_packages
+      ADD COLUMN IF NOT EXISTS tax_id TEXT NULL;
+    `);
+    await ensureCbAccessAuditSchema(this.db);
+    await this.backfillComponentCodes();
+  }
+
+  /** One-time idempotent backfill per DATA-01 §10. */
+  private async backfillComponentCodes(): Promise<void> {
+    try {
+      await this.db.query(`
+        UPDATE public.employee_compensation_lines
+        SET component_code = lower(trim(allowance_code))
+        WHERE line_type = 'allowance'
+          AND component_code IS NULL
+          AND allowance_code IS NOT NULL
+          AND trim(allowance_code) <> '';
+      `);
+      await this.db.query(`
+        UPDATE public.employee_compensation_lines
+        SET component_code = 'base'
+        WHERE line_type = 'base'
+          AND component_code IS NULL;
+      `);
+      await this.db.query(`
+        UPDATE public.employee_compensation_lines l
+        SET component_code = 'probation'
+        WHERE l.line_type = 'probation'
+          AND l.component_code IS NULL
+          AND EXISTS (
+            SELECT 1
+            FROM public.employee_compensation_packages p
+            JOIN public.salary_components sc
+              ON lower(sc.code) = 'probation'
+             AND sc.company_id = p.company_id
+             AND sc.is_active = TRUE
+            WHERE p.id = l.package_id
+            LIMIT 1
+          );
+      `);
+    } catch {
+      // salary_components may be absent on cold bootstrap — soft skip
+    }
+  }
+
+  private normalizeComponentCode(code: string): string {
+    return code.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+  }
+
+  private deriveComponentCodeForLine(line: CompensationLineDto): string | null {
+    const explicit = line.component_code?.trim();
+    if (explicit) return this.normalizeComponentCode(explicit);
+    if (line.line_type === 'allowance') {
+      const ac = line.allowance_code?.trim();
+      return ac ? this.normalizeComponentCode(ac) : null;
+    }
+    if (line.line_type === 'base') return 'base';
+    if (line.line_type === 'probation') return 'probation';
+    return null;
+  }
+
+  private async assertComponentCodeInCatalog(
+    componentCode: string,
+    companyId: string,
+    authorization?: string,
+  ): Promise<void> {
+    await assertComponentCodeInEffectiveCatalog({
+      query: this.db.query.bind(this.db) as HrmDbQueryFn,
+      companyId,
+      componentCode,
+      authorization,
+    });
+  }
+
+  private assertUniqueComponentCodesOnPayload(lines: CompensationLineDto[]): void {
+    const seen = new Set<string>();
+    for (const line of lines) {
+      const code = this.deriveComponentCodeForLine(line);
+      if (!code) continue;
+      if (seen.has(code)) {
+        throw new ApiException(
+          'HRM-COMP-005',
+          'Trùng thành phần trong cùng gói lương',
+          HttpStatus.CONFLICT,
+        );
+      }
+      seen.add(code);
+    }
+  }
+
+  private async assertNoOverlappingPackages(input: {
+    employeeId: string;
+    companyId: string;
+    effectiveFrom: string;
+    effectiveTo?: string | null;
+    excludePackageId?: string;
+  }): Promise<void> {
+    const values: unknown[] = [
+      input.employeeId,
+      input.companyId,
+      input.effectiveFrom,
+      input.effectiveTo ?? '9999-12-31',
+    ];
+    let excludeClause = '';
+    if (input.excludePackageId) {
+      values.push(input.excludePackageId);
+      excludeClause = `AND p.id <> $${values.length}::uuid`;
+    }
+    const res = await this.db.query<{ id: string }>(
+      `
+        SELECT p.id::text AS id
+        FROM public.employee_compensation_packages p
+        WHERE p.employee_id = $1::uuid
+          AND p.company_id = $2
+          AND p.effective_from::date <= $4::date
+          AND (p.effective_to IS NULL OR p.effective_to::date >= $3::date)
+          ${excludeClause}
+        LIMIT 1;
+      `,
+      values,
+    );
+    if (res.rows[0]) {
+      throw new ApiException(
+        'HRM-COMP-409-OVERLAP',
+        'Khoảng hiệu lực gói lương bị chồng',
+        HttpStatus.CONFLICT,
+        { alias: HRM_CORE_CB_OVERLAP_409 },
+      );
+    }
+  }
+
+  private normalizeOptionalText(value: string | null | undefined): string | null {
+    if (value == null) return null;
+    const trimmed = String(value).trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
+  private assertEffectiveFromPresent(effectiveFrom: string | undefined): string {
+    const v = effectiveFrom?.trim();
+    if (!v) {
+      throw new ApiException(
+        HRM_CORE_CB_VAL_400,
+        'effective_from is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return v;
+  }
+
+  private assertLineAmountsValid(lines: CompensationLineDto[]): void {
+    for (const line of lines) {
+      if (!Number.isFinite(line.amount) || line.amount < 0) {
+        throw new ApiException(
+          HRM_CORE_CB_VAL_400,
+          'amount must be a non-negative number',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
   }
 
   private validateLines(lines: CompensationLineDto[]): void {
+    this.assertLineAmountsValid(lines);
     const types = new Set(lines.map((l) => l.line_type));
     if (!types.has('base')) {
       throw new ApiException(
@@ -263,6 +488,21 @@ export class EmployeeCompensationService {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+    this.assertUniqueComponentCodesOnPayload(lines);
+  }
+
+  private async validateLinesForWrite(
+    lines: CompensationLineDto[],
+    companyId: string,
+    authorization?: string,
+  ): Promise<void> {
+    this.validateLines(lines);
+    for (const line of lines) {
+      const code = this.deriveComponentCodeForLine(line);
+      if (!code) continue;
+      // S-PAY-CNS-03/04 — when Nest active >0, ALL derived codes must ∈ catalog (not only explicit).
+      await this.assertComponentCodeInCatalog(code, companyId, authorization);
     }
   }
 
@@ -355,9 +595,11 @@ export class EmployeeCompensationService {
   }
 
   private mapLine(row: CompensationLineRow): CompensationLineRow {
+    const amount = Number(row.amount);
     return {
       ...row,
-      amount: Number(row.amount),
+      amount,
+      amount_display: formatAmountDisplayVi(amount),
       created_at:
         row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
     };
@@ -366,6 +608,10 @@ export class EmployeeCompensationService {
   private mapPackage(row: CompensationPackageRow): CompensationPackageRow {
     return {
       ...row,
+      bank_account: row.bank_account ?? null,
+      bank_name: row.bank_name ?? null,
+      bank_branch: row.bank_branch ?? null,
+      tax_id: row.tax_id ?? null,
       created_at:
         row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
       updated_at:
@@ -384,12 +630,13 @@ export class EmployeeCompensationService {
       const id = randomUUID();
       const sortOrder = line.sort_order ?? sort;
       sort += 1;
+      const componentCode = this.deriveComponentCodeForLine(line);
       const res = await this.db.query<CompensationLineRow>(
         `
           INSERT INTO public.employee_compensation_lines
-            (id, package_id, line_type, amount, currency, allowance_code, taxable, note, sort_order)
-          VALUES ($1::uuid, $2::uuid, $3, $4, $5, $6, $7, $8, $9)
-          RETURNING id, package_id, line_type, amount, currency, allowance_code, taxable, note, sort_order, created_at;
+            (id, package_id, line_type, amount, currency, allowance_code, component_code, taxable, note, sort_order)
+          VALUES ($1::uuid, $2::uuid, $3, $4, $5, $6, $7, $8, $9, $10)
+          RETURNING id, package_id, line_type, amount, currency, allowance_code, component_code, taxable, note, sort_order, created_at;
         `,
         [
           id,
@@ -398,6 +645,7 @@ export class EmployeeCompensationService {
           line.amount,
           line.currency?.trim() || defaultCurrency,
           line.line_type === 'allowance' ? line.allowance_code!.trim() : null,
+          componentCode,
           line.taxable ?? true,
           line.note?.trim() ?? null,
           sortOrder,
@@ -419,6 +667,10 @@ export class EmployeeCompensationService {
     effectiveFrom: string;
     effectiveTo: string | null;
     currency: string;
+    bankAccount: string | null;
+    bankName: string | null;
+    bankBranch: string | null;
+    taxId: string | null;
   }): Promise<void> {
     await this.db.query(
       `
@@ -438,11 +690,17 @@ export class EmployeeCompensationService {
           effective_from: input.effectiveFrom,
           effective_to: input.effectiveTo,
           currency: input.currency,
+          bank_account: input.bankAccount,
+          bank_name: input.bankName,
+          bank_branch: input.bankBranch,
+          tax_id: input.taxId,
           lines: input.lines.map((l) => ({
             line_type: l.line_type,
             amount: Number(l.amount),
+            amount_display: formatAmountDisplayVi(Number(l.amount)),
             currency: l.currency,
             allowance_code: l.allowance_code,
+            component_code: l.component_code,
             taxable: l.taxable,
             note: l.note,
           })),
@@ -454,7 +712,7 @@ export class EmployeeCompensationService {
   private async loadLines(packageId: string): Promise<CompensationLineRow[]> {
     const res = await this.db.query<CompensationLineRow>(
       `
-        SELECT id, package_id, line_type, amount, currency, allowance_code, taxable, note, sort_order, created_at
+        SELECT id, package_id, line_type, amount, currency, allowance_code, component_code, taxable, note, sort_order, created_at
         FROM public.employee_compensation_lines
         WHERE package_id = $1::uuid
         ORDER BY sort_order ASC, created_at ASC;
@@ -483,11 +741,7 @@ export class EmployeeCompensationService {
     });
     const res = await this.db.query<CompensationPackageRow>(
       `
-        SELECT
-          p.id, p.company_id, p.employee_id, p.contract_id, p.version, p.supersedes_package_id,
-          p.effective_from::text AS effective_from,
-          p.effective_to::text AS effective_to,
-          p.currency, p.change_reason, p.created_at, p.updated_at
+        SELECT ${PACKAGE_SELECT_COLS}
         FROM public.employee_compensation_packages p
         WHERE ${qualified.join(' AND ')}
         LIMIT 1;
@@ -502,8 +756,16 @@ export class EmployeeCompensationService {
     authorization?: string,
   ): Promise<CompensationPackageDetail> {
     await this.ensureCompensationSchema();
-    this.validateLines(payload.lines);
     const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    await assertCompensationCbAccess({
+      db: this.db,
+      authorization,
+      action: 'mutate',
+      companyId,
+      employeeId: payload.employee_id,
+    });
+    const effectiveFrom = this.assertEffectiveFromPresent(payload.effective_from);
+    await this.validateLinesForWrite(payload.lines, companyId, authorization);
     await this.assertEmployeeInScope(payload.employee_id, companyId, authorization);
     await this.assertProbationLinesAllowed(
       payload.lines,
@@ -515,7 +777,7 @@ export class EmployeeCompensationService {
 
     if (
       payload.effective_to &&
-      new Date(payload.effective_from).getTime() > new Date(payload.effective_to).getTime()
+      new Date(effectiveFrom).getTime() > new Date(payload.effective_to).getTime()
     ) {
       throw new ApiException(
         'HRM-COMP-001',
@@ -548,29 +810,47 @@ export class EmployeeCompensationService {
       }
     }
 
+    await this.assertNoOverlappingPackages({
+      employeeId: payload.employee_id,
+      companyId,
+      effectiveFrom,
+      effectiveTo: payload.effective_to ?? null,
+    });
+
     const packageId = randomUUID();
     const currency = payload.currency?.trim() || 'VND';
     const changeReason = payload.change_reason?.trim() ?? 'initial';
+    const bankAccount = this.normalizeOptionalText(payload.bank_account);
+    const bankName = this.normalizeOptionalText(payload.bank_name);
+    const bankBranch = this.normalizeOptionalText(payload.bank_branch);
+    const taxId = this.normalizeOptionalText(payload.tax_id);
     const pkgRes = await this.db.query<CompensationPackageRow>(
       `
         INSERT INTO public.employee_compensation_packages
           (id, company_id, employee_id, contract_id, version, supersedes_package_id,
-           effective_from, effective_to, currency, change_reason)
-        VALUES ($1::uuid, $2, $3::uuid, $4::uuid, 1, NULL, $5::date, $6::date, $7, $8)
+           effective_from, effective_to, currency, change_reason,
+           bank_account, bank_name, bank_branch, tax_id)
+        VALUES ($1::uuid, $2, $3::uuid, $4::uuid, 1, NULL, $5::date, $6::date, $7, $8,
+                $9, $10, $11, $12)
         RETURNING
           id, company_id, employee_id, contract_id, version, supersedes_package_id,
           effective_from::text AS effective_from, effective_to::text AS effective_to,
-          currency, change_reason, created_at, updated_at;
+          currency, change_reason, bank_account, bank_name, bank_branch, tax_id,
+          created_at, updated_at;
       `,
       [
         packageId,
         companyId,
         payload.employee_id,
         payload.contract_id ?? null,
-        payload.effective_from,
+        effectiveFrom,
         payload.effective_to ?? null,
         currency,
         changeReason,
+        bankAccount,
+        bankName,
+        bankBranch,
+        taxId,
       ],
     );
     const lines = await this.insertLines(packageId, payload.lines, currency);
@@ -582,9 +862,13 @@ export class EmployeeCompensationService {
       version: 1,
       changeReason,
       lines,
-      effectiveFrom: payload.effective_from,
+      effectiveFrom,
       effectiveTo: payload.effective_to ?? null,
       currency,
+      bankAccount,
+      bankName,
+      bankBranch,
+      taxId,
     });
 
     if (payload.link_to_contract && payload.contract_id) {
@@ -609,7 +893,6 @@ export class EmployeeCompensationService {
     scopeContext?: HrmListScopeContext,
   ): Promise<CompensationPackageDetail> {
     await this.ensureCompensationSchema();
-    this.validateLines(payload.lines);
     const { scope, expandedCompanyIds } = this.resolveListScope(
       authorization,
       requestedCompanyId,
@@ -619,6 +902,16 @@ export class EmployeeCompensationService {
     if (!existing) {
       throw new ApiException('HRM-COMP-404', 'Compensation package not found', HttpStatus.NOT_FOUND);
     }
+    await assertCompensationCbAccess({
+      db: this.db,
+      authorization,
+      action: 'mutate',
+      companyId: existing.company_id,
+      employeeId: existing.employee_id,
+      resourceId: packageId,
+    });
+    const effectiveFrom = this.assertEffectiveFromPresent(payload.effective_from);
+    await this.validateLinesForWrite(payload.lines, existing.company_id, authorization);
     await this.assertProbationLinesAllowed(
       payload.lines,
       existing.employee_id,
@@ -629,7 +922,7 @@ export class EmployeeCompensationService {
 
     if (
       payload.effective_to &&
-      new Date(payload.effective_from).getTime() > new Date(payload.effective_to).getTime()
+      new Date(effectiveFrom).getTime() > new Date(payload.effective_to).getTime()
     ) {
       throw new ApiException(
         'HRM-COMP-001',
@@ -639,7 +932,7 @@ export class EmployeeCompensationService {
     }
 
     // Close prior version the day before new effective_from (BR-CD-F5-04/05 — no destructive UPDATE of lines).
-    const priorEnd = new Date(payload.effective_from);
+    const priorEnd = new Date(effectiveFrom);
     priorEnd.setUTCDate(priorEnd.getUTCDate() - 1);
     const priorEndIso = priorEnd.toISOString().slice(0, 10);
     await this.db.query(
@@ -655,6 +948,30 @@ export class EmployeeCompensationService {
       [priorEndIso, packageId],
     );
 
+    await this.assertNoOverlappingPackages({
+      employeeId: existing.employee_id,
+      companyId: existing.company_id,
+      effectiveFrom,
+      effectiveTo: payload.effective_to ?? null,
+      excludePackageId: packageId,
+    });
+
+    // DATA §4.2 — omit bank/MST keys → copy-forward prior header.
+    const bankAccount =
+      payload.bank_account !== undefined
+        ? this.normalizeOptionalText(payload.bank_account)
+        : existing.bank_account;
+    const bankName =
+      payload.bank_name !== undefined
+        ? this.normalizeOptionalText(payload.bank_name)
+        : existing.bank_name;
+    const bankBranch =
+      payload.bank_branch !== undefined
+        ? this.normalizeOptionalText(payload.bank_branch)
+        : existing.bank_branch;
+    const taxId =
+      payload.tax_id !== undefined ? this.normalizeOptionalText(payload.tax_id) : existing.tax_id;
+
     const newId = randomUUID();
     const currency = payload.currency?.trim() || existing.currency || 'VND';
     const changeReason = payload.change_reason?.trim() ?? 'revise';
@@ -663,12 +980,15 @@ export class EmployeeCompensationService {
       `
         INSERT INTO public.employee_compensation_packages
           (id, company_id, employee_id, contract_id, version, supersedes_package_id,
-           effective_from, effective_to, currency, change_reason)
-        VALUES ($1::uuid, $2, $3::uuid, $4::uuid, $5, $6::uuid, $7::date, $8::date, $9, $10)
+           effective_from, effective_to, currency, change_reason,
+           bank_account, bank_name, bank_branch, tax_id)
+        VALUES ($1::uuid, $2, $3::uuid, $4::uuid, $5, $6::uuid, $7::date, $8::date, $9, $10,
+                $11, $12, $13, $14)
         RETURNING
           id, company_id, employee_id, contract_id, version, supersedes_package_id,
           effective_from::text AS effective_from, effective_to::text AS effective_to,
-          currency, change_reason, created_at, updated_at;
+          currency, change_reason, bank_account, bank_name, bank_branch, tax_id,
+          created_at, updated_at;
       `,
       [
         newId,
@@ -677,10 +997,14 @@ export class EmployeeCompensationService {
         existing.contract_id,
         nextVersion,
         packageId,
-        payload.effective_from,
+        effectiveFrom,
         payload.effective_to ?? null,
         currency,
         changeReason,
+        bankAccount,
+        bankName,
+        bankBranch,
+        taxId,
       ],
     );
     const lines = await this.insertLines(newId, payload.lines, currency);
@@ -692,9 +1016,13 @@ export class EmployeeCompensationService {
       version: nextVersion,
       changeReason,
       lines,
-      effectiveFrom: payload.effective_from,
+      effectiveFrom,
       effectiveTo: payload.effective_to ?? null,
       currency,
+      bankAccount,
+      bankName,
+      bankBranch,
+      taxId,
     });
 
     if (existing.contract_id) {
@@ -727,6 +1055,14 @@ export class EmployeeCompensationService {
     if (!row) {
       throw new ApiException('HRM-COMP-404', 'Compensation package not found', HttpStatus.NOT_FOUND);
     }
+    await assertCompensationCbAccess({
+      db: this.db,
+      authorization,
+      action: 'open',
+      companyId: row.company_id,
+      employeeId: row.employee_id,
+      resourceId: packageId,
+    });
     const lines = await this.loadLines(packageId);
     return { ...row, lines };
   }
@@ -737,6 +1073,13 @@ export class EmployeeCompensationService {
     scopeContext?: HrmListScopeContext,
   ): Promise<{ total: number; page: number; page_size: number; data: CompensationPackageDetail[] }> {
     await this.ensureCompensationSchema();
+    await assertCompensationCbAccess({
+      db: this.db,
+      authorization,
+      action: 'open',
+      companyId: query.company_id,
+      employeeId: query.employee_id ?? null,
+    });
     const { scope, expandedCompanyIds } = this.resolveListScope(
       authorization,
       query.company_id,
@@ -762,11 +1105,7 @@ export class EmployeeCompensationService {
     });
     const res = await this.db.query<CompensationPackageRow>(
       `
-        SELECT
-          p.id, p.company_id, p.employee_id, p.contract_id, p.version, p.supersedes_package_id,
-          p.effective_from::text AS effective_from,
-          p.effective_to::text AS effective_to,
-          p.currency, p.change_reason, p.created_at, p.updated_at
+        SELECT ${PACKAGE_SELECT_COLS}
         FROM public.employee_compensation_packages p
         WHERE ${qualified.join(' AND ')}
         ORDER BY p.effective_from DESC, p.version DESC;
@@ -794,6 +1133,13 @@ export class EmployeeCompensationService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    await assertCompensationCbAccess({
+      db: this.db,
+      authorization,
+      action: 'open',
+      companyId: query.company_id,
+      employeeId: query.employee_id,
+    });
     const { scope, expandedCompanyIds } = this.resolveListScope(
       authorization,
       query.company_id,
@@ -822,11 +1168,7 @@ export class EmployeeCompensationService {
 
     const res = await this.db.query<CompensationPackageRow>(
       `
-        SELECT
-          p.id, p.company_id, p.employee_id, p.contract_id, p.version, p.supersedes_package_id,
-          p.effective_from::text AS effective_from,
-          p.effective_to::text AS effective_to,
-          p.currency, p.change_reason, p.created_at, p.updated_at
+        SELECT ${PACKAGE_SELECT_COLS}
         FROM public.employee_compensation_packages p
         WHERE ${qualified.join(' AND ')}
         ORDER BY p.version DESC, p.effective_from DESC
@@ -845,6 +1187,14 @@ export class EmployeeCompensationService {
     scopeContext?: HrmListScopeContext,
   ): Promise<{ total: number; page: number; page_size: number; data: CompensationHistoryRow[] }> {
     await this.ensureCompensationSchema();
+    await assertCompensationCbAccess({
+      db: this.db,
+      authorization,
+      action: 'open',
+      companyId: query.company_id,
+      employeeId: query.employee_id ?? null,
+      resourceId: query.package_id ?? null,
+    });
     const { scope, expandedCompanyIds } = this.resolveListScope(
       authorization,
       query.company_id,

@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { RELEASE_PILOT_HRM_API_BASE_URL } from '../../config/pilotApiBase';
 import {
+  formatAttendanceRecordsPostLogLine,
   getDefaultBaseUrl,
   hrmRequest,
+  isAttendanceRecordsCheckInPost,
   resolveHrmCompanyHeaderId,
   resolveHrmWriteHeaderId,
 } from '../hrmApiClient';
@@ -153,6 +155,80 @@ describe('hrmRequest x-company-id header', () => {
     );
 
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe('MOB-04 attendance POST QA log line', () => {
+  const prevDeepLink = process.env.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK;
+  const prevDevLogin = process.env.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN;
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    if (prevDeepLink === undefined) delete process.env.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK;
+    else process.env.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK = prevDeepLink;
+    if (prevDevLogin === undefined) delete process.env.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN;
+    else process.env.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN = prevDevLogin;
+  });
+
+  it('isAttendanceRecordsCheckInPost matches POST check-in only', () => {
+    expect(isAttendanceRecordsCheckInPost('/attendance/records', 'POST')).toBe(true);
+    expect(isAttendanceRecordsCheckInPost('/attendance/records?company_id=x', 'GET')).toBe(false);
+    expect(isAttendanceRecordsCheckInPost('/attendance/records?x=1', 'POST')).toBe(true);
+    expect(isAttendanceRecordsCheckInPost('/attendance/update-requests', 'POST')).toBe(false);
+  });
+
+  it('formatAttendanceRecordsPostLogLine includes http from response when envelope ok', () => {
+    const line = formatAttendanceRecordsPostLogLine(
+      { ok: true, data: {}, code: 'HRM-ATT-201', requestId: 'r1' },
+      201,
+    );
+    expect(line).toBe('attendance/records POST ok=true code=HRM-ATT-201 http=201');
+  });
+
+  it('emits [HRM-MOB] attendance/records POST line on qa-device QA flags', async () => {
+    process.env.EXPO_PUBLIC_ENABLE_QA_DEEP_LINK = '1';
+    process.env.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN = '1';
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+    const fetchMock = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          success: true,
+          code: 'HRM-ATT-201',
+          data: { id: 'rec-1' },
+          message: '',
+          timestamp: '',
+        }),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await hrmRequest(
+      {
+        baseUrl: 'http://10.0.2.2:28001',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        companyUuid: HOLDING_UUID,
+        accessToken: 'Bearer test',
+      },
+      '/attendance/records',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          company_id: HOLDING_UUID,
+          employee_id: 'emp-1',
+          check_in_channel: 'gps',
+        }),
+      },
+    );
+
+    expect(
+      infoSpy.mock.calls.some((args) =>
+        String(args[0]).includes('[HRM-MOB] attendance/records POST ok=true code=HRM-ATT-201 http=201'),
+      ),
+    ).toBe(true);
   });
 });
 

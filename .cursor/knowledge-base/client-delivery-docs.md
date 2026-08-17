@@ -139,6 +139,102 @@ AC-HTML-BRAND-01..06 **PASS**; grep `logo-unicom` / `UNICOM | AI SOFTWARE FACTOR
 
 ---
 
+## Entry — SI insurer catalog DOC-DELTA (2026-08-08)
+
+### Context
+
+QC GWC seal SI-INSURER L1 (`SIINRQA-MSJB1WLH`); U88 ba-docs residual after peer SI type CH06b pattern; KEY taxonomy INSURER ≠ TYPE.
+
+### Action
+
+ADD-only: API F-SI-CAT-INS-01/02 · INS-EFF-01 · F-SI-REC-01 · EXPAND F-SI-POL-01 (`HRM-INS-INSURER-KEY`); SRS CORE-10/CORE-02 v0.29 AC-SI-INR-01..03; HDSD CH06c; DB footer pointer. No wipe type L1 / CTR / enrollment; no invent FE-01; no fold into `si_insurance_type`.
+
+### Outcome
+
+**DOC-DELTA ACCEPT** · `PASS_TO_PM` · honesty printable/personnel=false LOCKED.
+
+### Evidence
+
+`docs/qa/evidence/po-hrm-dynamic-config-platform-si-insurer-catalog-docs-01.md`
+
+### Reuse-tag
+
+`si-insurer-catalog-docs`, `admin-ne-consumer`, `hrm-ins-insurer-key`, `peer-type-key-separate`
+
+---
+
+## Entry — ATT work-sites catalog DOC-DELTA (2026-08-08)
+
+### Context
+
+After ATT-WORKSITE-CATALOG-QC-01 GWC (`ATTWSQA-MSJC3IN9`), U88 ba-docs residual for Nest `attendance_work_sites` / F-ATT-CAT-WS — peer ATT-LEAVE / PAY catalog docs pattern.
+
+### Action
+
+ADD-only: API F-ATT-CAT-WS-01/02 · EXPAND F-ATT-PUNCH-01 (`HRM-ATT-GEO-001` / `HRM-ATT-GEO-REQ`); SRS ATT-03d v0.30; HDSD CH05b + CH05 pointer; DB footer. SITE-UNKNOWN HOLD · J-MOB-02 OOS · CNS-05 note without inventing FE · honesty `attendance_uat_ready=false` · seals RETAIN.
+
+### Outcome
+
+**DOC-DELTA ACCEPT** · `PASS_TO_PM` · no module ATT UAT / Phase1.
+
+### Evidence
+
+`docs/qa/evidence/po-hrm-dynamic-config-platform-att-worksite-catalog-docs-01.md`
+
+### Reuse-tag
+
+`att-worksite-catalog-docs`, `admin-ne-consumer`, `hrm-att-geo-001`, `soft-retire-active-false`
+
+---
+
+## Entry — EMP custom-field catalog DOC-DELTA (2026-08-08)
+
+### Context
+
+After EMP-CUSTOM-FIELD-QC-01 GWC (`EMPCFQA-MSK14LUH`), U88 ba-docs residual for Settings extension SoT / invent `HRM-EMP-CUSTOM-FIELD-KEY` — peer ATT-WORKSITE / PAY catalog docs pattern. GAP `EMPCFCNSGAP-MSJCUBJB` CLOSED; EXT `EMPTOKEXTQA-MSJ57PE1` SEAL RETAIN; R-EMP-CF-FE-01 P2 HOLD (no invent FE).
+
+### Action
+
+ADD-only: API F-EMP-CF-01..03 · F-EMP-CF-CNS-01/02 · EXPAND F-EMP-TOK-03 RETAIN; SRS CORE-02b / PLT-01 v0.31; HDSD CH06d + CH06 pointer; DB footer. DENY Nest `emp_custom_field` / mega-EAV / personnel flip / reopen EXT · honesty false · `C-SLICE-≠-MODULE`.
+
+### Outcome
+
+**DOC-DELTA ACCEPT** · `PASS_TO_PM` · no module EMP UAT / Phase1 / UF 🟢 · no invent FE.
+
+### Evidence
+
+`docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-docs-01.md`
+
+### Reuse-tag
+
+`emp-custom-field-docs`, `admin-ne-consumer`, `hrm-emp-custom-field-key`, `settings-extension-sot`
+
+---
+
+## Entry — ATT work_shifts catalog DOC-DELTA (2026-08-08)
+
+### Context
+
+After ATT-SHIFT-CATALOG-QC-01 GWC (`ATTSHIFTQA-MSK5FXP3`), U88 ba-docs residual for Nest `work_shifts` SoT / invent `HRM-ATT-SHIFT-KEY` — peer ATT-CODE / ATT-WORKSITE docs pattern. FE CNS-02 Condition OPEN (no invent FE / no claim product invent closed). ATT-CODE / leave / worksite seals RETAIN.
+
+### Action
+
+ADD-only: API F-ATT-CAT-SHIFT-01/02 · EFF-01 · F-ATT-SHIFT-CNS-01 · EXPAND F-ATT-SHIFT-01; SRS PLT-01 / ATT-01 v0.36; HDSD CH05d + CH05/5b/5c pointers; DB footer; BA_TRACE §21e proposed J-HRM-ATT-SHIFT-CAT-*. Settings/`shifts` REF only · soft-retire inactive · admin≠consumer · honesty false · `C-SLICE-≠-MODULE`.
+
+### Outcome
+
+**DOC-DELTA ACCEPT** · `PASS_TO_PM` · no module ATT UAT / Phase1 / UF 🟢 · FE CNS-02 note only (Condition OPEN).
+
+### Evidence
+
+`docs/qa/evidence/po-hrm-dynamic-config-platform-att-shift-catalog-docs-01.md`
+
+### Reuse-tag
+
+`att-shift-catalog-docs`, `admin-ne-consumer`, `hrm-att-shift-key`, `settings-shifts-ref-only`, `soft-retire-inactive`
+
+---
+
 ## Quick reference (agent)
 
 | Câu hỏi user | Làm ngay |

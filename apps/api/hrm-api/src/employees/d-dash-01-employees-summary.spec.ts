@@ -1,7 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+import { EmpDocumentChecklistService } from './emp-document-checklist.service';
+import { EmpDocumentTypeService } from './emp-document-type.service';
+import { EmpEmploymentStatusService } from './emp-employment-status.service';
+import { EmpEmploymentTypeService } from './emp-employment-type.service';
+import { EmpStatusReasonService } from './emp-status-reason.service';
+import { EmployeeDependentsService } from './employee-dependents.service';
 import { EmployeeProfileService } from './employee-profile.service';
+import { EmployeeRewardDisciplineService } from './employee-reward-discipline.service';
 import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
 
@@ -46,6 +53,18 @@ describe('D-DASH-01 employees summary route order', () => {
       providers: [
         { provide: EmployeesService, useValue: serviceMock },
         {
+          provide: EmployeeDependentsService,
+          useValue: {
+            listDependents: jest.fn(),
+            createDependent: jest.fn(),
+            getDependentById: jest.fn(),
+            updateDependent: jest.fn(),
+            softDeleteDependent: jest.fn(),
+          },
+        },
+        { provide: EmployeeRewardDisciplineService, useValue: {} },
+        { provide: EmpDocumentChecklistService, useValue: {} },
+        {
           provide: EmployeeProfileService,
           useValue: {
             listDegrees: jest.fn(),
@@ -53,6 +72,10 @@ describe('D-DASH-01 employees summary route order', () => {
             listAssets: jest.fn(),
           },
         },
+        { provide: EmpDocumentTypeService, useValue: {} },
+        { provide: EmpEmploymentTypeService, useValue: {} },
+        { provide: EmpEmploymentStatusService, useValue: {} },
+        { provide: EmpStatusReasonService, useValue: {} },
       ],
     }).compile();
 

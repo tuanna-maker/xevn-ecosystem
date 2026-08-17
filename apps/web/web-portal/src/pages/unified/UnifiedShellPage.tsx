@@ -1,13 +1,20 @@
 /**
  * @CODE-MEMORY
- * Screen: Unified Shell entry (WP-SHELL-UNIFIED)
+ * Screen: Unified Shell entry (WP-SHELL-UNIFIED · PORT-02)
  * UC: portal entry · L-OPS
- * BR: ADR-XEVN-THEME-SHARP-OPS · inventory FE-W1
+ * BR: ADR-XEVN-PRECISION-MOTION-TOKENS · inventory FE-PORTAL
  * Purpose: Cổng vào — mark XeVN + CTA Cockpit / Command Center; không KPI chip thừa.
  * WorkItem: XEVN-THM-FE-W1
  * Coded: 2026-07-22
  * must_keep: mark+wordmark; primary CTA Cockpit; không stats strip
  * LastVerified: visual + theme-contrast
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-A · 2026-08-05
+ * change_mode: UPGRADE
+ * What: Sticky header glass + xevn tokens confirmed; cite ADR-20260805 §9 light ops canvas
+ * Why: PORT-02 ops home chrome remaster batch
+ * must_keep: no marketing hero / stats strip; Cockpit + CC CTAs
  */
 import React from 'react';
 import { Link } from 'react-router-dom';

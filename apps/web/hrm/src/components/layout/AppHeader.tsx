@@ -21,6 +21,32 @@ import { ThemeToggle } from './ThemeToggle';
 import { MobileSidebarTrigger } from './AppSidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useHrmInboxNotifications } from '@/hooks/useHrmInboxNotifications';
+import {
+  canMarkHrmInboxPersonalRead,
+  inboxNotificationSummary,
+  isHrmInboxUnread,
+} from '@/lib/hrmInboxNotificationDisplay';
+
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-FE-NT01-INBOX-MARK-READ-01
+ * change_mode: ADD
+ * What: Bell dropdown uses HRM inbox API when employee_id + isHrmNestApiReachable (proxy or origin); no mock «3»
+ * Why: HRM-NT-01 web embed · parity mobile InAppNotificationsScreen mark read
+ * must_keep: password dialog; company switcher; U65 no fake unread
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-FE-NT01-MARK-COMPANY-UUID-01
+ * change_mode: FIX
+ * What: bell click mark-read only when canMarkHrmInboxPersonalRead (not broadcast NULL)
+ * Why: QA R3 BA AC-NT01-MARK-01 personal-only; UUID company_id resolved in hook/API
+ * must_keep: GET inbox proxy; ceo@ EXPECTED_NO_INBOX; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-B
+ * change_mode: UPGRADE
+ * What: Muted icon/hint density — text-muted-foreground → text-xevn-textMuted (icons) / textSecondary (labels)
+ * Why: PORT-A-QA residual AppHeader; ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8
+ * must_keep: inbox mark-read; company switcher; password dialog; membership labels; U65 no seed
+ */
 
 // Route to translation key mapping
 const routeMap: Record<string, { key: string; parent?: string }> = {
@@ -35,6 +61,7 @@ const routeMap: Record<string, { key: string; parent?: string }> = {
   '/company': { key: 'nav.company' },
   '/reports': { key: 'nav.reports' },
   '/settings': { key: 'nav.settings' },
+  '/notifications': { key: 'header.notifications' },
 };
 
 export function AppHeader() {
@@ -42,6 +69,13 @@ export function AppHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, memberships, currentCompanyId, setCurrentCompanyId, signOut } = useAuth();
+  const {
+    enabled: inboxApiEnabled,
+    rows: inboxRows,
+    unreadCount,
+    isLoading: inboxLoading,
+    markRead,
+  } = useHrmInboxNotifications({ limit: 8 });
 
   // Change password dialog
   const [pwDialogOpen, setPwDialogOpen] = useState(false);
@@ -135,7 +169,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-border bg-card px-3 md:px-6">
+    <header className="z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-xevn-border bg-xevn-surface px-3 md:px-6">
       {/* Left Section - Mobile Menu & Breadcrumb */}
       <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
         {/* Mobile Menu Trigger - hidden since bottom nav exists */}
@@ -145,21 +179,21 @@ export function AppHeader() {
 
         {/* App Grid - hidden on mobile */}
         <Button variant="ghost" size="icon" className="h-9 w-9 hidden md:flex">
-          <LayoutGrid className="w-5 h-5 text-muted-foreground" />
+          <LayoutGrid className="w-5 h-5 text-xevn-textMuted" />
         </Button>
 
         {/* Breadcrumb - simplified on mobile */}
         <nav className="flex items-center gap-1 text-sm min-w-0">
           <Link 
             to="/" 
-            className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            className="flex items-center gap-1 text-xevn-textSecondary hover:text-xevn-text transition-colors shrink-0"
           >
             <Home className="w-4 h-4" />
           </Link>
           {breadcrumbs.slice(-1).map((item, index) => (
             <div key={index} className="flex items-center gap-1 min-w-0">
-              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span className="font-medium text-foreground truncate">
+              <ChevronRight className="w-4 h-4 text-xevn-textMuted shrink-0" />
+              <span className="font-medium text-xevn-text truncate">
                 {t(item.key)}
               </span>
             </div>
@@ -168,10 +202,10 @@ export function AppHeader() {
 
         {/* Search - hidden on mobile */}
         <div className="relative ml-4 hidden lg:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-xevn-textMuted" />
           <Input
             placeholder={t('common.search')}
-            className="pl-10 w-64 bg-muted/50 border-0 focus-visible:ring-1"
+            className="pl-10 w-64 bg-xevn-background border-0 focus-visible:ring-1"
           />
         </div>
       </div>
@@ -186,7 +220,7 @@ export function AppHeader() {
               <span className="font-medium text-sm max-w-[80px] md:max-w-[150px] truncate hidden sm:inline">
                 {currentCompany?.name || t('header.selectCompany')}
               </span>
-              <ChevronDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
+              <ChevronDown className="w-4 h-4 text-xevn-textMuted hidden sm:block" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
@@ -211,8 +245,8 @@ export function AppHeader() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{membership.company?.name}</p>
-                    <p className="text-xs text-muted-foreground capitalize">{membership.role}</p>
+                    <p className="text-sm font-medium text-xevn-text">{membership.company?.name}</p>
+                    <p className="text-xs text-xevn-textSecondary capitalize">{membership.role}</p>
                   </div>
                   {membership.company_id === currentCompanyId && (
                     <div className="w-2 h-2 rounded-full bg-primary" />
@@ -225,8 +259,8 @@ export function AppHeader() {
                   <Building2 className="w-4 h-4 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">{t('header.noCompany')}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-medium text-xevn-text">{t('header.noCompany')}</p>
+                  <p className="text-xs text-xevn-textSecondary">
                     {t('header.createCompanyPrompt')}
                   </p>
                 </div>
@@ -255,47 +289,69 @@ export function AppHeader() {
         {/* Theme Toggle */}
         <ThemeToggle />
 
-        {/* Notifications */}
+        {/* Notifications — HRM inbox when API + employee_id; no mock unread (HRM-NT-01) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative h-9 w-9">
+            <Button variant="ghost" size="icon" className="relative h-9 w-9" aria-label={t('header.notifications')}>
               <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-destructive text-destructive-foreground text-[10px] md:text-xs font-medium rounded-full flex items-center justify-center">
-                3
-              </span>
+              {inboxApiEnabled && unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[1rem] md:min-w-[1.25rem] h-4 md:h-5 px-0.5 bg-destructive text-destructive-foreground text-[10px] md:text-xs font-medium rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72 md:w-80">
             <DropdownMenuLabel className="flex items-center justify-between">
               <span>{t('header.notifications')}</span>
-              <Button variant="ghost" size="sm" className="text-xs text-primary h-auto py-1">
-                {t('header.markAllRead')}
-              </Button>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-              <p className="text-sm font-medium">{t('header.notif.newLeaveTitle')}</p>
-              <p className="text-xs text-muted-foreground">
-                {t('header.notif.newLeaveDesc')}
-              </p>
-              <p className="text-xs text-muted-foreground">{t('header.notif.time5min')}</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-              <p className="text-sm font-medium">{t('header.notif.payrollApprovedTitle')}</p>
-              <p className="text-xs text-muted-foreground">
-                {t('header.notif.payrollApprovedDesc')}
-              </p>
-              <p className="text-xs text-muted-foreground">{t('header.notif.time1hour')}</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-              <p className="text-sm font-medium">{t('header.notif.newCandidateTitle')}</p>
-              <p className="text-xs text-muted-foreground">
-                {t('header.notif.newCandidateDesc')}
-              </p>
-              <p className="text-xs text-muted-foreground">{t('header.notif.time2hours')}</p>
-            </DropdownMenuItem>
+            {!inboxApiEnabled && (
+              <DropdownMenuItem className="flex flex-col items-start gap-1 py-3 cursor-default focus:bg-transparent">
+                <p className="text-xs text-xevn-textSecondary">
+                  {t(
+                    'header.inboxRequiresEmployee',
+                    'Thông báo HRM cần tài khoản gắn mã nhân viên trên công ty đang chọn.',
+                  )}
+                </p>
+              </DropdownMenuItem>
+            )}
+            {inboxApiEnabled && inboxLoading && (
+              <DropdownMenuItem className="flex items-center gap-2 py-3 cursor-default focus:bg-transparent">
+                <Loader2 className="h-4 w-4 animate-spin text-xevn-textMuted" />
+                <span className="text-xs text-xevn-textSecondary">{t('common.loading', 'Đang tải…')}</span>
+              </DropdownMenuItem>
+            )}
+            {inboxApiEnabled && !inboxLoading && inboxRows.length === 0 && (
+              <DropdownMenuItem className="flex flex-col items-start gap-1 py-3 cursor-default focus:bg-transparent">
+                <p className="text-xs text-xevn-textSecondary">{t('header.inboxEmpty', 'Chưa có thông báo.')}</p>
+              </DropdownMenuItem>
+            )}
+            {inboxApiEnabled &&
+              !inboxLoading &&
+              inboxRows.slice(0, 5).map((row) => (
+                <DropdownMenuItem
+                  key={row.id}
+                  className="flex flex-col items-start gap-1 py-3 cursor-pointer"
+                  onClick={() => {
+                    if (canMarkHrmInboxPersonalRead(row)) {
+                      void markRead(row).catch(() => undefined);
+                    }
+                  }}
+                >
+                  <p className={`text-sm ${isHrmInboxUnread(row) ? 'font-medium text-xevn-text' : 'font-normal text-xevn-textSecondary'}`}>
+                    {inboxNotificationSummary(row)}
+                  </p>
+                  <p className="text-xs text-xevn-textMuted">
+                    {new Date(row.created_at).toLocaleString('vi-VN')}
+                  </p>
+                </DropdownMenuItem>
+              ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-center text-primary text-sm">
+            <DropdownMenuItem
+              className="text-center text-primary text-sm cursor-pointer"
+              onClick={() => navigate('/notifications')}
+            >
               {t('header.viewAllNotifications')}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -312,21 +368,21 @@ export function AppHeader() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-col items-start hidden lg:flex">
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-xevn-text">
                   {profile?.full_name || user?.email?.split('@')[0] || 'User'}
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-xevn-textSecondary">
                   {t(`roles.${currentMembership?.role || 'user'}`)}
                 </span>
               </div>
-              <ChevronDown className="w-4 h-4 text-muted-foreground hidden lg:block" />
+              <ChevronDown className="w-4 h-4 text-xevn-textMuted hidden lg:block" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <span>{profile?.full_name || 'User'}</span>
-                <span className="text-xs font-normal text-muted-foreground">
+                <span className="text-xevn-text">{profile?.full_name || 'User'}</span>
+                <span className="text-xs font-normal text-xevn-textSecondary">
                   {user?.email}
                 </span>
               </div>
@@ -374,7 +430,7 @@ export function AppHeader() {
                   placeholder={t('header.passwordMinLength', 'Tối thiểu 8 ký tự')}
                   maxLength={128}
                 />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowNew(v => !v)}>
+                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-xevn-textMuted hover:text-xevn-text" onClick={() => setShowNew(v => !v)}>
                   {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -390,7 +446,7 @@ export function AppHeader() {
                   maxLength={128}
                   onKeyDown={e => e.key === 'Enter' && handleChangePassword()}
                 />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirm(v => !v)}>
+                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-xevn-textMuted hover:text-xevn-text" onClick={() => setShowConfirm(v => !v)}>
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>

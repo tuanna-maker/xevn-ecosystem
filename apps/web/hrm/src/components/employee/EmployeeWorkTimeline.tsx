@@ -23,6 +23,40 @@
  * What: CatalogSearchPicker position_key + department_key; Network sends keys; U72 display
  * Why: Layer A MD-BIND — cấm Input free-text Vị trí / Select name-as-value dept
  * SRS/BR: FR-HRM-MD-BIND-E1A-01 · AC-E1A-PICKER-01 · AC-E1A-WIRE-01 · sa-erp-e1a-ack-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-A
+ * change_mode: UPGRADE
+ * What: Sharp secondary text on timeline empty/meta; contract chip cyan (no purple)
+ * Why: Embedded on E11 general — ADR §8 pale ban · inventory W3-EMP-A
+ * must_keep: CatalogSearchPicker keys; U72 labels; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-01
+ * change_mode: ADD
+ * What: Surface decision_id/decision_code/source_module badge; HDSD testids; mapWorkTimelineList
+ * Why: AC-DEC-WH-02 F5 neo QSĐ→WH · AC-WH-PICK harness · F-CORE-WH-01 display-ready
+ * SRS/TechSpec: EMP-SPEC-01 §D.2/D.3 · EMP-SA-01 F-CORE-WH-01/02 · DB-01 CONFIRMED
+ * must_keep: CatalogSearchPicker position_key SoT; no free-text; U65; no C&B on WH
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-POSITION-CATALOG-FE-01-R2
+ * change_mode: ADD
+ * What: Invent KEY toast HRM-EMP-POSITION-KEY / HRM-WH-PICK-REQUIRED; empty EFF CTA CH06f class
+ * Why: SA Option A · R-PLT-EMP-POS-FE-01 · AC-PLT-EMP-01b/01c · peer EMP-STATUS KEY toast
+ * must_keep: POSITION KEY · CatalogSearchPicker position_key SoT; Nest emp_position DENY;
+ *            EMP-STATUS FE CLOSED · LVRULE HOLD · EMP-CUSTOM · ATT · U65 · personnel=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-DEPT-CATALOG-FE-01
+ * change_mode: ADD
+ * What: Save catch surfaces DEPT invent KEY toast first (HRM-EMP-DEPT-KEY / WH alias HRM-WH-DEPT-KEY)
+ *       via empDeptKeyToastFirst → then POSITION KEY; department_key picker SoT retained (Settings EFF).
+ * Why: SA Option A · R-PLT-EMP-DEPT-FE-01 · AC-PLT-EMP-DEPT-01b — invent dept → 400 KEY + VI toast · no persist
+ * must_keep: DEPT KEY · POSITION KEY · CatalogSearchPicker department_key/position_key SoT;
+ *            Nest emp_department DENY · Nest emp_position DENY · EMP-STATUS FE CLOSED · LVRULE HOLD · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 D-FE-HRM-WH-POSITION-PICKER-01
+ * change_mode: ADD
+ * What: resolveWorkTimelinePositionFromCatalog on save; HDSD workTimelinePositionPicker retained
+ * Why: AC-SET-CONSUMER-JT-WH-01 · UF-HRM-10 — job_titles CatalogSearchPicker → position_key Network
+ * must_keep: settings_catalog_e2e_ready=false; sealed dept/REC-CH/CTR; att-leave-types SoT; U65
  */
 
 import { useMemo, useState, useEffect } from 'react';
@@ -48,36 +82,39 @@ import {
   updateEmployeeWorkTimelineItem,
 } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
+import {
+  HRM_WH_PICK_EMPTY_CATALOG_CODE,
+  empPositionKeyToastMessage,
+} from '@/lib/empPositionCatalog';
+import { empDeptKeyToastFirst } from '@/lib/empDeptCatalog';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   buildDepartmentKeyFields,
-  buildPositionKeyFields,
   departmentOptionsFromCatalog,
   isCatalogPickerValueAllowed,
   jobTitleOptionsFromCatalog,
   resolveDepartmentLabel,
   resolvePositionDisplayLabel,
+  resolveWorkTimelinePositionFromCatalog,
 } from '@/lib/catalogSearchPicker';
+import {
+  isDecisionSourcedWorkTimeline,
+  mapWorkTimelineList,
+  workTimelineDecisionLabel,
+  type WorkTimelineDisplayItem,
+} from '@/lib/employeeWorkTimelineUi';
+import {
+  HDSD_MUTATE_TEST_IDS,
+  hdsdWorkTimelineDecisionTestId,
+} from '@/lib/hdsdMutateTestIds';
+import { Link } from 'react-router-dom';
 
 interface EmployeeWorkTimelineProps {
   employeeId: string;
 }
 
-interface WorkHistoryItem {
-  id: string;
-  event_date: string;
-  title: string;
-  description: string | null;
-  event_type: string;
-  status: string;
-  contract_code: string | null;
-  department: string | null;
-  department_key?: string | null;
-  position: string | null;
-  position_key?: string | null;
-  notes: string | null;
-}
+type WorkHistoryItem = WorkTimelineDisplayItem;
 
 const emptyForm = {
   event_date: '',
@@ -95,7 +132,7 @@ const getEventTypeConfig = (t: (k: string) => string) => ({
   position: { label: t('workTimeline.eventTypes.position'), icon: Briefcase, color: 'bg-blue-500' },
   promotion: { label: t('workTimeline.eventTypes.promotion'), icon: ArrowUpRight, color: 'bg-green-500' },
   transfer: { label: t('workTimeline.eventTypes.transfer'), icon: ArrowLeftRight, color: 'bg-orange-500' },
-  contract: { label: t('workTimeline.eventTypes.contract'), icon: FileSignature, color: 'bg-purple-500' },
+  contract: { label: t('workTimeline.eventTypes.contract'), icon: FileSignature, color: 'bg-cyan-600' },
 });
 
 const getStatusConfig = (t: (k: string) => string) => ({
@@ -105,9 +142,17 @@ const getStatusConfig = (t: (k: string) => string) => ({
 });
 
 const settingsCatalogCta = (
-  <a href="/settings" className="text-primary underline text-xs font-medium">
-    Mở Cài đặt → Danh mục nghiệp vụ
-  </a>
+  <span
+    data-hrm-empty-catalog={HRM_WH_PICK_EMPTY_CATALOG_CODE}
+    className="text-xs text-muted-foreground space-y-1 block"
+  >
+    <span className="block">
+      Danh mục chức danh/phòng ban trống — cấu hình trong Cài đặt (CH06f). Không nhập tự do · không seed.
+    </span>
+    <a href="/settings" className="text-primary underline text-xs font-medium">
+      Mở Cài đặt → Danh mục nghiệp vụ
+    </a>
+  </span>
 );
 
 export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) {
@@ -147,7 +192,7 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
     if (!currentCompanyId) return;
     try {
       const result = await listEmployeeWorkTimeline(employeeId, currentCompanyId);
-      setItems((result.data ?? []) as unknown as WorkHistoryItem[]);
+      setItems(mapWorkTimelineList(result));
     } catch (error) {
       console.error('Error fetching work history:', error);
       toast.error(toErrorMessage(error, t('workTimeline.loadError')));
@@ -191,7 +236,10 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
       return;
     }
 
-    const positionFields = buildPositionKeyFields(formData.position_key, positionOptions);
+    const positionFields = resolveWorkTimelinePositionFromCatalog(
+      formData.position_key,
+      positionOptions,
+    );
     if (!positionFields) {
       toast.error('Chọn vị trí từ danh mục (không nhập tự do).');
       return;
@@ -237,7 +285,10 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
       void fetchWorkHistory();
     } catch (error) {
       console.error('Error saving work history:', error);
-      toast.error(toErrorMessage(error, t('workTimeline.saveError')));
+      // DEPT invent KEY (HRM-EMP-DEPT-KEY / WH-DEPT) first, then POSITION KEY (peer).
+      toast.error(
+        empDeptKeyToastFirst(error, t('workTimeline.saveError'), empPositionKeyToastMessage),
+      );
     } finally {
       setSaving(false);
     }
@@ -270,17 +321,20 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid={HDSD_MUTATE_TEST_IDS.workTimelineRoot}>
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">{t('workTimeline.title')}</h3>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={openAddDialog}>
+            <Button onClick={openAddDialog} data-testid={HDSD_MUTATE_TEST_IDS.workTimelineAddBtn}>
               <Plus className="w-4 h-4 mr-2" />
               {t('workTimeline.addNew')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent
+            className="max-w-lg"
+            data-testid={HDSD_MUTATE_TEST_IDS.workTimelineFormDialog}
+          >
             <DialogHeader>
               <DialogTitle>{editingItem ? t('workTimeline.editInfo') : t('workTimeline.addWorkHistory')}</DialogTitle>
             </DialogHeader>
@@ -334,6 +388,7 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
                     errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
                     emptyHint={settingsCatalogCta}
                     aria-label={t('workTimeline.department')}
+                    data-testid={HDSD_MUTATE_TEST_IDS.workTimelineDepartmentPicker}
                   />
                 </div>
                 <div className="space-y-2">
@@ -347,6 +402,7 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
                     errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
                     emptyHint={settingsCatalogCta}
                     aria-label={t('workTimeline.position')}
+                    data-testid={HDSD_MUTATE_TEST_IDS.workTimelinePositionPicker}
                   />
                 </div>
               </div>
@@ -404,7 +460,11 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
                   {t('workTimeline.cancel')}
                 </Button>
-                <Button onClick={handleSave} disabled={saving || !canSave}>
+                <Button
+                  onClick={handleSave}
+                  disabled={saving || !canSave}
+                  data-testid={HDSD_MUTATE_TEST_IDS.workTimelineSubmit}
+                >
                   {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {editingItem ? t('workTimeline.update') : t('workTimeline.addNew')}
                 </Button>
@@ -417,8 +477,8 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
       {items.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Briefcase className="w-12 h-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">{t('workTimeline.noData')}</p>
+            <Briefcase className="mb-4 h-12 w-12 text-xevn-textMuted" />
+            <p className="text-xevn-textSecondary">{t('workTimeline.noData')}</p>
             <Button variant="outline" className="mt-4" onClick={openAddDialog}>
               <Plus className="w-4 h-4 mr-2" />
               {t('workTimeline.addWorkHistory')}
@@ -428,7 +488,7 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
       ) : (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium">{t('workTimeline.workProcess')}</CardTitle>
+            <CardTitle className="text-base font-semibold text-xevn-text">{t('workTimeline.workProcess')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="relative">
@@ -464,21 +524,21 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <p className="text-xs text-muted-foreground mb-1">
+                          <p className="mb-1 text-xs text-xevn-textSecondary">
                             {format(new Date(item.event_date), 'dd/MM/yyyy')}
                           </p>
-                          <p className="font-medium text-sm">{item.title}</p>
+                          <p className="text-sm font-medium text-xevn-text">{item.title}</p>
                           {item.description && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            <p className="mt-1 line-clamp-2 text-xs text-xevn-textSecondary">
                               {item.description}
                             </p>
                           )}
                           {(deptShow || posShow) && (
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="mt-1 text-xs text-xevn-textSecondary">
                               {[deptShow, posShow].filter(Boolean).join(' - ')}
                             </p>
                           )}
-                          <div className="flex items-center gap-2 mt-2">
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
                             <Badge variant="outline" className="text-xs">
                               {eventConfig.label}
                             </Badge>
@@ -486,7 +546,28 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
                               {statusConf.label}
                             </Badge>
                             {item.contract_code && (
-                              <span className="text-xs text-muted-foreground">{item.contract_code}</span>
+                              <span className="text-xs text-xevn-textSecondary">{item.contract_code}</span>
+                            )}
+                            {isDecisionSourcedWorkTimeline(item) && (
+                              <Badge
+                                variant="secondary"
+                                className="text-xs"
+                                data-testid={hdsdWorkTimelineDecisionTestId(item.id)}
+                                data-decision-id={item.decision_id ?? undefined}
+                                data-source-module={item.source_module ?? 'decision'}
+                              >
+                                {item.decision_id ? (
+                                  <Link
+                                    to={`/decisions`}
+                                    className="hover:underline"
+                                    title={item.decision_id}
+                                  >
+                                    {workTimelineDecisionLabel(item)}
+                                  </Link>
+                                ) : (
+                                  workTimelineDecisionLabel(item)
+                                )}
+                              </Badge>
                             )}
                           </div>
                         </div>

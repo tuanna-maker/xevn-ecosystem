@@ -14,9 +14,16 @@
  * must_keep:  borderRadius = radius.card (12); borderWidth = borderWidth.hairline; borderColor = colors.border
  * SOLID:      Shell card tách khỏi LoginScreen fields
  * LastVerified: src/theme/__tests__/mobL3Shell.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-MOB-A
+ * change_mode: UPGRADE
+ * What: BrandDialogChrome header (4px bar + wordmark) trên login card MOB-01
+ * Why: W4 parity portal login glass · ADR §16
  */
 import React from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { BrandDialogChrome } from '../brand/BrandDialogChrome';
 import { borderWidth, colors, layout, radius, shadow, spacing } from '../../theme/tokens';
 
 export type BrandedLoginCardProps = {
@@ -32,6 +39,7 @@ export type BrandedLoginCardProps = {
 export function BrandedLoginCard({ children, style, testID = 'branded-login-card' }: BrandedLoginCardProps) {
   return (
     <View style={[styles.card, style]} testID={testID}>
+      <BrandDialogChrome title="Đăng nhập" subtitle="Ứng dụng nhân sự XeVN" />
       {children}
     </View>
   );
@@ -42,11 +50,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.card,
     padding: spacing.lg,
+    paddingTop: 0,
     gap: spacing.md,
     marginHorizontal: layout.screenPaddingH,
     marginTop: -spacing['2xl'],
     ...shadow.soft,
-    borderWidth: borderWidth.hairline,
-    borderColor: colors.border,
+    borderWidth: borderWidth.thin,
+    borderColor: colors.primary,
+    overflow: 'hidden',
   },
 });

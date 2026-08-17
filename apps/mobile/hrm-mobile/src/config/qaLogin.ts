@@ -1,6 +1,6 @@
 /**
  * Sponsor/pilot release APK: `EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN=0` (email+password only).
- * QA-device APK: `pnpm run android:apk:qa-device` sets flag `1` (dev JWT form + deep link).
+ * QA-device APK: `pnpm run android:apk:qa-device` sets flag `1` (dev JWT form + deep link + `xevn://qa-logout` assist).
  */
 export function isQaDevLoginEnabled(): boolean {
   const flag = process.env.EXPO_PUBLIC_ENABLE_QA_DEV_LOGIN?.trim().toLowerCase();

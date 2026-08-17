@@ -17,7 +17,12 @@ import {
   resolveRequisitionDepartmentDefault,
   resolveEffectiveJobTemplates,
   unwrapJobDescriptionTemplateRows,
+  filterBindableJobTemplates,
+  composeLocalYctdPreview,
+  resolveRequisitionJdDisplay,
+  REQUISITION_JD_STATUS_BLOCKED_VI,
 } from '@/lib/jobRequisitionUi';
+import { ApiClientError, toErrorMessage } from '@/lib/apiError';
 
 describe('jobRequisitionUi', () => {
   it('maps open requisition to active UI status', () => {
@@ -245,9 +250,10 @@ describe('D-HDSD-MUTATE-FE-12 — YCTD dept hydrate + template source', () => {
     expect(src).not.toMatch(/useInternalTemplates/);
   });
 
-  it('await refetch before open defaults when library empty', () => {
+  it('await bindable list / refetch before open defaults when library empty', () => {
+    expect(src).toContain('bindable: true');
+    expect(src).toMatch(/activeTemplates = \[\.\.\.bindableRows\]/);
     expect(src).toMatch(/let fetched = await refetchTemplates\(\)/);
-    expect(src).toMatch(/activeTemplates = fetched/);
   });
 });
 
@@ -312,6 +318,7 @@ describe('D-HDSD-MUTATE-FE-14 — shared jd-library ↔ requisitions source', ()
   it('handleOpenCreate — direct listJobDescriptionTemplates fallback when refetch []', () => {
     expect(tabSrc).toContain('listJobDescriptionTemplates');
     expect(tabSrc).toMatch(/if \(fetched\.length === 0\)/);
+    expect(tabSrc).toContain('bindable: true');
   });
 
   it('JobTemplatesTab — accepts sharedTemplates prop', () => {
@@ -368,5 +375,79 @@ describe('D-HDSD-MUTATE-FE-15 — job-templates row unwrap + sync hydrate', () =
 
   it('Recruitment page — passes hydrateJobTemplates to requisitions tab', () => {
     expect(pageSrc).toContain('hydrateJobTemplates={recruitmentJobTemplatesState.hydrateTemplates}');
+  });
+});
+
+describe('PO-HRM-JD-YCTD-REF-FE-01 — bindable picker + preview + jd display', () => {
+  const tabSrc = readFileSync(
+    join(process.cwd(), 'src/components/recruitment/JobRequisitionsTab.tsx'),
+    'utf8',
+  );
+
+  it('filterBindableJobTemplates drops draft/retired/inactive', () => {
+    const rows = [
+      { id: 'a', title: 'Active', is_active: true, status: 'active' },
+      { id: 'd', title: 'Draft', is_active: true, status: 'draft' },
+      { id: 'r', title: 'Retired', is_active: false, status: 'retired' },
+      { id: 'u', title: 'Unknown', is_active: true },
+    ];
+    expect(filterBindableJobTemplates(rows).map((r) => r.id)).toEqual(['a', 'u']);
+  });
+
+  it('composeLocalYctdPreview uses short_description then job_description', () => {
+    expect(
+      composeLocalYctdPreview({
+        id: 't1',
+        title: 'JD Title',
+        code: 'JD-01',
+        short_description: 'Short',
+        job_description: 'Long body',
+      }).short_description,
+    ).toBe('Short');
+    expect(
+      composeLocalYctdPreview({
+        id: 't2',
+        title: 'JD Title',
+        code: 'JD-02',
+        job_description: 'Long body',
+      }).short_description,
+    ).toBe('Long body');
+  });
+
+  it('resolveRequisitionJdDisplay prefers jd_code + jd_title', () => {
+    expect(
+      resolveRequisitionJdDisplay({
+        jd_code: 'JD-01',
+        jd_title: 'Chuyen vien KD',
+        job_template_id: 'x',
+      }),
+    ).toBe('JD-01 · Chuyen vien KD');
+    expect(
+      resolveRequisitionJdDisplay(
+        { job_template_id: 'tpl-1' },
+        [{ id: 'tpl-1', title: 'From cache', code: 'C-1' }],
+      ),
+    ).toBe('C-1 · From cache');
+  });
+
+  it('JobRequisitionsTab wires bindable GET + preview + STATUS/REQUIRED + jd ref UI', () => {
+    expect(tabSrc).toContain('bindable: true');
+    expect(tabSrc).toContain('getJobDescriptionTemplateYctdPreview');
+    expect(tabSrc).toContain('filterBindableJobTemplates');
+    expect(tabSrc).toContain('yctd-jd-preview');
+    expect(tabSrc).toContain('yctd-jd-ref-detail');
+    expect(tabSrc).toContain('HRM-JD-YCTD-STATUS');
+    expect(tabSrc).toContain('HRM-JD-YCTD-REQUIRED');
+    expect(tabSrc).not.toMatch(/import .*JobPostingsTab/);
+  });
+
+  it('toErrorMessage maps HRM-JD-YCTD-* codes', () => {
+    expect(
+      toErrorMessage(new ApiClientError({ code: 'HRM-JD-YCTD-STATUS', message: 'en' }), 'fb'),
+    ).toMatch(/Hiệu lực|Hieu luc|Nháp|Ngừng/i);
+    expect(
+      toErrorMessage(new ApiClientError({ code: 'HRM-JD-YCTD-REQUIRED', message: 'en' }), 'fb'),
+    ).toMatch(/Bắt buộc|JD/i);
+    expect(REQUISITION_JD_STATUS_BLOCKED_VI).toMatch(/Hiệu lực|Nháp|Ngừng/);
   });
 });

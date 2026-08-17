@@ -51,3 +51,18 @@ Mỗi dispatch kèm mục liên quan từ `.cursor/team/PM_COACHING_FOR_ROLES.md
 
 - PM tự `Write`/`StrReplace` `apps/**` sau dispatch Dev (trừ user nói «tự sửa»).
 - Báo «đã xong» khi chưa có QA evidence hoặc user vẫn báo lỗi trên UI.
+
+## Sau QC GO / GWC (U88 — bắt buộc)
+
+QC `PASS_TO_PM` / GWC / GO **không** được kết thúc bằng seal seat alone.
+
+Trong **cùng phiên** sau QC:
+
+1. Seal bus + must_keep stamps.
+2. Task residual execution từ evidence (`next_dispatch_prompt` / Residual P0–P2).
+3. **Task ≥1 governance kế:** `sa` và/hoặc `ba-process` / `ba-data` cho vertical/AC/physical **đoạn sau** (peer ATT→REC→EMP→QSĐ… hoặc residual program board).
+4. Cập nhật `TEAM_WORKING_NOW` + continuous board.
+
+**Idle-ok một slice ≠ idle program.** Rule: `.cursor/rules/pm-continuous-pipeline-after-qc.mdc` (**U88**).
+
+**Cấm:** chờ sponsor nhắc «mở liên tục» / «còn việc không» mới mở SA/BA.

@@ -6,8 +6,10 @@ import {
   applyStandaloneSessionScope,
   clearPortalSession,
   getPortalAccessToken,
+  getPortalEmbedEmployeeId,
   getPortalSessionUser,
   hasPortalSession,
+  persistMobileMembershipsSnapshot,
   PORTAL_SESSION_READY_EVENT,
 } from '@/lib/portalAuthBridge';
 import { mobileLogin, persistMobileSession } from '@/integrations/hrmMobileAuth';
@@ -68,13 +70,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function portalMembership(companyId: string): CompanyMembership {
+  const coerced = coerceHrmListCompanyId(companyId);
   return {
     id: 'portal-membership',
-    company_id: companyId,
+    company_id: coerced,
     role: 'portal',
     is_primary: true,
-    employee_id: null,
-    company: { id: companyId, name: companyId, code: null, logo_url: null },
+    employee_id: getPortalEmbedEmployeeId(coerced),
+    company: { id: coerced, name: coerced, code: null, logo_url: null },
   };
 }
 
@@ -195,6 +198,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const result = await mobileLogin(email, password);
       persistMobileSession(result, email);
+      if (result.memberships?.length) {
+        persistMobileMembershipsSnapshot(result.memberships);
+      }
       hydrateFromPortalToken();
       if (result.memberships?.length) {
         const primary =

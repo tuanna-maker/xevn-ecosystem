@@ -20,6 +20,12 @@
  * What: position via resolveJobTitleDisplayLabel (không bind raw job_title_key)
  * Why: AC-FD-U02 parity with profile header
  * must_keep: resume upload; gender map; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: purple/blue/emerald/amber/rose icon chrome → xevn DNA; labels textSecondary
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C E22 CV cluster
+ * must_keep: resume upload; gender/job_title maps; SoftDel; navigate; no OCR/QR; no Nest/seed
  */
 import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -127,10 +133,10 @@ interface ResumeFile {
 const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value: string }) => (
   <div className="flex items-start gap-3 py-2">
     <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
-      <Icon className="w-4 h-4 text-muted-foreground" />
+      <Icon className="w-4 h-4 text-xevn-textSecondary" />
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-xs text-xevn-textSecondary">{label}</p>
       <p className="text-sm font-medium truncate">{value || 'â€”'}</p>
     </div>
   </div>
@@ -278,14 +284,14 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
   if (isLoadingEmployee) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        <Loader2 className="w-8 h-8 animate-spin text-xevn-textSecondary" />
       </div>
     );
   }
 
   if (!employee) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
+      <div className="text-center py-12 text-xevn-textSecondary">
         <p>{t('resume.employeeNotFound')}</p>
       </div>
     );
@@ -296,12 +302,12 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-            <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+          <div className="w-10 h-10 rounded-xl bg-xevn-accent/15 dark:bg-xevn-accent/20 flex items-center justify-center">
+            <FileText className="w-5 h-5 text-xevn-primary dark:text-xevn-accent" />
           </div>
           <div>
             <h2 className="text-lg font-semibold">{t('resume.title')}</h2>
-            <p className="text-sm text-muted-foreground">{t('resume.subtitle')}</p>
+            <p className="text-sm text-xevn-textSecondary">{t('resume.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -311,7 +317,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <User className="w-5 h-5 text-blue-500" />
+              <User className="w-5 h-5 text-xevn-primary" />
               {t('resume.personalInfo')}
             </CardTitle>
           </CardHeader>
@@ -333,7 +339,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <FileUp className="w-5 h-5 text-emerald-500" />
+              <FileUp className="w-5 h-5 text-xevn-success" />
               {t('resume.attachments')}
             </CardTitle>
             <Button size="sm" onClick={() => setIsFileDialogOpen(true)}>
@@ -344,10 +350,10 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
           <CardContent>
             {isLoadingFiles ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                <Loader2 className="w-6 h-6 animate-spin text-xevn-textSecondary" />
               </div>
             ) : !resumeFiles?.length ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-xevn-textSecondary">
                 <FileUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>{t('resume.noAttachments')}</p>
                 <p className="text-sm">{t('resume.noAttachmentsHint')}</p>
@@ -359,12 +365,12 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
                     key={file.id}
                     className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900 flex items-center justify-center shrink-0">
-                      <FileText className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    <div className="w-10 h-10 rounded-lg bg-xevn-danger/15 dark:bg-xevn-danger/20 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5 text-xevn-danger" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-xevn-textSecondary">
                         {file.file_size} â€¢ {format(new Date(file.created_at), 'dd/MM/yyyy', { locale: vi })}
                       </p>
                     </div>
@@ -407,7 +413,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-amber-500" />
+              <CreditCard className="w-5 h-5 text-xevn-warning" />
               {t('resume.identityInfo')}
             </CardTitle>
           </CardHeader>
@@ -424,7 +430,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-rose-500" />
+              <Briefcase className="w-5 h-5 text-xevn-primary" />
               {t('resume.workInfo')}
             </CardTitle>
           </CardHeader>
@@ -485,9 +491,9 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
                   onClick={() => fileInputRef.current?.click()}
                   className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
                 >
-                  <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">{t('resume.clickToSelect')}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{t('resume.acceptedFormats')}</p>
+                  <Upload className="w-10 h-10 mx-auto text-xevn-textSecondary mb-2" />
+                  <p className="text-sm text-xevn-textSecondary">{t('resume.clickToSelect')}</p>
+                  <p className="text-xs text-xevn-textSecondary mt-1">{t('resume.acceptedFormats')}</p>
                 </div>
               )}
             </div>

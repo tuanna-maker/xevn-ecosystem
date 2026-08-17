@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T14:44:48.988132+07:00",
+  "generatedAt": "2026-08-11T08:28:00+07:00",
   "freezeReady": true,
   "devReady": true,
   "qaReady": true,
@@ -13,9 +13,10 @@
     },
     {
       "phase": "B",
-      "total": 5,
+      "total": 14,
       "done": 1,
-      "open": 4
+      "open": 0,
+      "dispatched": 13
     },
     {
       "phase": "C",
@@ -64,7 +65,9 @@
       "to": "A9",
       "reason": "Perform PM-Tech gate review and close wave",
       "task": "PM-GATE",
-      "priority": "HIGH"
+      "priority": "HIGH",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:15:00+07:00"
     },
     {
       "to": "A2",
@@ -72,7 +75,9 @@
       "task": "BA-R1",
       "priority": "MEDIUM",
       "queueId": "Q-B-002",
-      "phase": "B"
+      "phase": "B",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:15:00+07:00"
     },
     {
       "to": "A4",
@@ -80,7 +85,9 @@
       "task": "DEV-R1",
       "priority": "MEDIUM",
       "queueId": "Q-B-003",
-      "phase": "B"
+      "phase": "B",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:16:00+07:00"
     },
     {
       "to": "A6",
@@ -88,7 +95,9 @@
       "task": "DEV-R2",
       "priority": "MEDIUM",
       "queueId": "Q-B-004",
-      "phase": "B"
+      "phase": "B",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:17:00+07:00"
     },
     {
       "to": "A7",
@@ -96,7 +105,9 @@
       "task": "QA-R1",
       "priority": "MEDIUM",
       "queueId": "Q-B-005",
-      "phase": "B"
+      "phase": "B",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:18:00+07:00"
     },
     {
       "phase": "B",
@@ -105,7 +116,9 @@
       "module": "Wave B",
       "priority": "HIGH",
       "queueId": "Q-B-006",
-      "reason": "Brand token L1 verification; emit qc->pm verdict"
+      "reason": "Brand token L1 verification; emit qc->pm verdict",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:19:00+07:00"
     },
     {
       "phase": "B",
@@ -114,7 +127,9 @@
       "module": "Wave B",
       "priority": "HIGH",
       "queueId": "Q-B-007",
-      "reason": "Brand primitives L2 verification; emit qc->pm verdict"
+      "reason": "Brand primitives L2 verification; emit qc->pm verdict",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:20:00+07:00"
     },
     {
       "phase": "B",
@@ -123,7 +138,9 @@
       "module": "HRM",
       "priority": "HIGH",
       "queueId": "Q-B-008",
-      "reason": "Company-col sync visual regression; emit qc->pm verdict"
+      "reason": "Company-col sync visual regression; emit qc->pm verdict",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:21:00+07:00"
     },
     {
       "phase": "B",
@@ -132,7 +149,9 @@
       "module": "Spec",
       "priority": "MEDIUM",
       "queueId": "Q-B-009",
-      "reason": "Orphan code sample audit; emit qa->pm READY_FOR_QC"
+      "reason": "Orphan code sample audit; emit qa->pm READY_FOR_QC",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:22:00+07:00"
     },
     {
       "phase": "B",
@@ -141,7 +160,9 @@
       "module": "PROD",
       "priority": "HIGH",
       "queueId": "Q-B-010",
-      "reason": "HTTPS residual R3 verification; reconcile state"
+      "reason": "HTTPS residual R3 verification; reconcile state",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:23:00+07:00"
     },
     {
       "phase": "B",
@@ -150,7 +171,9 @@
       "module": "HRM",
       "priority": "HIGH",
       "queueId": "Q-B-011",
-      "reason": "Master data settlement QA probe; emit qa->pm PASS_TO_PM"
+      "reason": "Master data settlement QA probe; emit qa->pm PASS_TO_PM",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:24:00+07:00"
     },
     {
       "phase": "B",
@@ -159,7 +182,9 @@
       "module": "ERP",
       "priority": "P0",
       "queueId": "Q-B-012",
-      "reason": "Narrow probe ERP fidelity multi-domain spot; emit qc->pm verdict"
+      "reason": "Narrow probe ERP fidelity multi-domain spot; emit qc->pm verdict",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:25:00+07:00"
     },
     {
       "phase": "B",
@@ -168,7 +193,9 @@
       "module": "HRM",
       "priority": "P0",
       "queueId": "Q-B-013",
-      "reason": "Narrow probe HRM settings picker spot; emit qc->pm verdict"
+      "reason": "Narrow probe HRM settings picker spot; emit qc->pm verdict",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:26:00+07:00"
     },
     {
       "phase": "B",
@@ -177,7 +204,119 @@
       "module": "HRM",
       "priority": "HIGH",
       "queueId": "Q-B-014",
-      "reason": "Verify markdown picker spot on HRM settings"
+      "reason": "Verify markdown picker spot on HRM settings",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T08:27:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-AMIS-PARITY-PAY-DEPTH-01",
+      "to": "A2,A1",
+      "module": "Payroll-CNTT",
+      "priority": "P0",
+      "queueId": "Q-B-015",
+      "reason": "BA+SA co-read: BR/AC DOC on template columns + SRC priority + input pack types",
+      "status": "PASS_TO_PM",
+      "dispatchedAt": "2026-08-11T13:00:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-AMIS-PARITY-PAY-TPL-DATA-01",
+      "to": "A4",
+      "module": "Payroll-CNTT",
+      "priority": "P0",
+      "queueId": "Q-B-016",
+      "reason": "Physicalize pay_sheet_template + columns + override_formula_definition_id FK per SA Option B; cite pay-depth-01 BR/AC",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T14:45:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01",
+      "to": "A6",
+      "module": "Payroll-CNTT",
+      "priority": "P0",
+      "queueId": "Q-B-017",
+      "reason": "Formula evaluator + SRC resolver + process engine; closed timesheet vars; dual-control; payslip lines ≠ 0₫",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T15:30:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "D-HRM-CO-01-INDUSTRY-FE-01",
+      "to": "A4",
+      "module": "HRM-CO-01",
+      "priority": "P0",
+      "queueId": "Q-B-018",
+      "reason": "UC-HRM-CO-01 industry/business_lines column (planned → e2e_pass); XBOS catalog bind",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T15:35:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "QA-HRM-CO-01-INDUSTRY-01",
+      "to": "A7",
+      "module": "HRM-CO-01",
+      "priority": "P0",
+      "queueId": "Q-B-019",
+      "reason": "U65 browser: industry column from catalog; F5 persist; zero seed",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T15:40:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-SETTINGS-CTR-TPL-COMPOSER-FE-01",
+      "to": "A4",
+      "module": "Settings-CTR",
+      "priority": "P0",
+      "queueId": "Q-B-020",
+      "reason": "Contract template composer dialog (FR-09d); clause pick/sort/preview; GĐ1 form only",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T15:45:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-MVP-GD1-PAY-09-DATA-01",
+      "to": "A4",
+      "module": "Payroll-PAY-09",
+      "priority": "P0",
+      "queueId": "Q-B-021",
+      "reason": "pay_payroll_group physical DDL; applicability_json OU/BP/province; unlocks PAY-09 BE",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T15:50:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "HRM-MVP-GD1-PAY-09-CLUSTER-01",
+      "to": "A6",
+      "module": "Payroll-PAY-09",
+      "priority": "P0",
+      "queueId": "Q-B-022",
+      "reason": "PAY-09 payroll_group CRUD + resolveForEmployee; multi-template per BP (VP-T/LX-T)",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T15:55:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-MVP-GD1-REC-01-BE-01",
+      "to": "A2",
+      "module": "Recruitment-Embed",
+      "priority": "P0",
+      "queueId": "Q-B-023",
+      "reason": "Recruitment embed UC-HRM-22 DATA/API; J-HRM-REC-HC-01..02b; XBOS sync tenant config",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T16:00:00+07:00"
+    },
+    {
+      "phase": "B",
+      "task": "PO-HRM-MVP-GD1-CORE-02-DATA-01",
+      "to": "A2,A4",
+      "module": "Core-Embed",
+      "priority": "P0",
+      "queueId": "Q-B-024",
+      "reason": "Core embed UC-HRM-21 C&B AuthZ + salary history timeline (feeds PAY SRC-02); Settings catalog sync",
+      "status": "DISPATCHED",
+      "dispatchedAt": "2026-08-11T16:05:00+07:00"
     }
   ]
 }

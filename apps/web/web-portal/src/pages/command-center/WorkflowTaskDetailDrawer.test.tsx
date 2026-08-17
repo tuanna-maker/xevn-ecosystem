@@ -12,10 +12,19 @@ const task: UnifiedTask = {
   orgUnitId: 'main',
   moduleCode: 'hrm',
   title: 'Phê duyệt nghỉ phép',
-  subtitle: 'hrm_leave',
+  subtitle: 'Nghỉ phép',
+  businessType: 'hrm_leave',
   assigneeUserId: 'user-1',
   assigneeName: 'Nguyễn Văn A',
   priority: 'medium',
+};
+
+const nonLeaveTask: UnifiedTask = {
+  ...task,
+  cardId: 'task-rec',
+  title: 'Phê duyệt yêu cầu tuyển dụng HRM',
+  subtitle: 'Yêu cầu tuyển dụng',
+  businessType: 'hrm_requisition',
 };
 
 const baseProps = {
@@ -59,7 +68,7 @@ describe('WorkflowTaskDetailDrawer', () => {
     render(<WorkflowTaskDetailDrawer {...baseProps} inboxFromApi={false} />);
 
     expect(screen.getByRole('button', { name: 'Từ chối nhiệm vụ' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Xử lý nhanh' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Duyệt' })).toBeDisabled();
   });
 
   it('ACT-CC-WF-REJECT: reject triggers onRejectRequest, not onApprove', () => {
@@ -78,7 +87,7 @@ describe('WorkflowTaskDetailDrawer', () => {
     expect(onApprove).not.toHaveBeenCalled();
   });
 
-  it('approve triggers onApprove directly', () => {
+  it('R-SPINE-WEB-APPROVE-UX-01: leave drawer exposes actionable Duyệt', () => {
     const onApprove = vi.fn();
     const onRejectRequest = vi.fn();
     render(
@@ -89,9 +98,17 @@ describe('WorkflowTaskDetailDrawer', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Xử lý nhanh' }));
+    const duyet = screen.getByRole('button', { name: 'Duyệt' });
+    expect(duyet).not.toBeDisabled();
+    expect(duyet.getAttribute('data-testid')).toBe('hdsd-cc-leave-approve');
+    fireEvent.click(duyet);
     expect(onApprove).toHaveBeenCalledTimes(1);
     expect(onRejectRequest).not.toHaveBeenCalled();
+  });
+
+  it('non-leave drawer keeps Hoàn thành / Xử lý nhanh accessible name', () => {
+    render(<WorkflowTaskDetailDrawer {...baseProps} task={nonLeaveTask} />);
+    expect(screen.getByRole('button', { name: 'Xử lý nhanh' })).toHaveTextContent('Hoàn thành');
   });
 
   it('R-XHRM-REC-WF-DEEPLINK-TASKID: blocks Xử lý when cardId is instance-only synthetic', () => {
@@ -104,6 +121,6 @@ describe('WorkflowTaskDetailDrawer', () => {
     render(<WorkflowTaskDetailDrawer {...baseProps} task={synthetic} />);
 
     expect(screen.getByRole('button', { name: 'Từ chối nhiệm vụ' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Xử lý nhanh' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Duyệt' })).toBeDisabled();
   });
 });

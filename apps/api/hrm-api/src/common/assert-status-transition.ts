@@ -71,7 +71,8 @@ const ALLOWED: Record<StatusTransitionDomain, Record<string, string[]>> = {
   },
   leave: {
     pending: ['pending', 'approved', 'rejected', 'cancelled'],
-    approved: ['approved'],
+    /** ADD PO-HRM-ATT-LEAVE-FUNNEL-BE-01 — reverse markers on cancel after approve (F-ATT-LEAVE-FUNNEL-02). */
+    approved: ['approved', 'cancelled'],
     rejected: ['rejected'],
     cancelled: ['cancelled'],
   },

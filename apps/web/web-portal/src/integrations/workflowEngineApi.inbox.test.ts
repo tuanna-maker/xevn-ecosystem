@@ -13,9 +13,15 @@ vi.mock('./authSession', () => ({
   getStoredUser: () => ({ userId: 'ceo@xe.vn', displayName: 'CEO' }),
 }));
 
+vi.mock('./commandCenterScope', () => ({
+  resolveXbosStrictCompanyId: (_tenant?: string | null, company?: string | null) =>
+    (company && String(company).trim()) || 'main',
+}));
+
 import {
   applyWorkflowInboxTaskDecision,
   buildWorkflowTaskActionPayload,
+  completeWorkflowTask,
 } from './workflowEngineApi';
 
 describe('workflowEngineApi inbox decisions (P0-CRUD-06)', () => {
@@ -52,6 +58,8 @@ describe('workflowEngineApi inbox decisions (P0-CRUD-06)', () => {
       '/workflow-engine/tasks/task-uuid-1/complete',
       expect.objectContaining({
         method: 'POST',
+        companyId: 'main',
+        tenantId: 'xevn',
         body: JSON.stringify({
           outcome: 'approved',
           userId: 'ceo@xe.vn',
@@ -67,7 +75,35 @@ describe('workflowEngineApi inbox decisions (P0-CRUD-06)', () => {
       '/workflow-engine/tasks/task-uuid-2/reject',
       expect.objectContaining({
         method: 'POST',
+        companyId: 'main',
         body: expect.stringContaining('rejected_from_portal'),
+      }),
+    );
+  });
+
+  it('completeWorkflowTask always passes companyId for x-company-id parity (R-W4E1-INB-X-COMPANY)', async () => {
+    await completeWorkflowTask('task-uuid-3', { outcome: 'approved', userId: 'ceo@xe.vn' }, 'xevn');
+    expect(xbosFetch).toHaveBeenCalledWith(
+      '/workflow-engine/tasks/task-uuid-3/complete',
+      expect.objectContaining({
+        method: 'POST',
+        companyId: 'main',
+        tenantId: 'xevn',
+      }),
+    );
+  });
+
+  it('completeWorkflowTask respects explicit companyIdHint', async () => {
+    await completeWorkflowTask(
+      'task-uuid-4',
+      { outcome: 'approved' },
+      'xevn',
+      'trsport',
+    );
+    expect(xbosFetch).toHaveBeenCalledWith(
+      '/workflow-engine/tasks/task-uuid-4/complete',
+      expect.objectContaining({
+        companyId: 'trsport',
       }),
     );
   });

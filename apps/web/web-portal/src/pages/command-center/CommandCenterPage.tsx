@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
   ChevronRight,
   AlertTriangle,
   Info,
@@ -31,6 +30,8 @@ import {
   LayoutGrid,
   Package,
   Share2,
+  Copy,
+  Layers,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -226,6 +227,8 @@ import {
 } from '../../integrations/commandCenterCatalogApi';
 import {
   fetchCommandCenterInboxTasks,
+  inboxApproveActionLabelVi,
+  isHrmLeaveInboxTask,
   resolveInboxAssigneeUserId,
 } from '../../integrations/commandCenterInboxApi';
 import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
@@ -233,7 +236,10 @@ import { fetchPortalAlerts } from '../../integrations/portalAlertsApi';
 import { useCommandCenterKpiRail } from '../../hooks/useCommandCenterKpiRail';
 import { useDeptSystemTemplates } from '../../hooks/useDeptSystemTemplates';
 import { useTenantScope } from '../../contexts/GlobalFilterContext';
-import { describeScopePlaneForUi } from '../../integrations/commandCenterScope';
+import {
+  describeScopePlaneForUi,
+  isGroupCeoOnMasterTenant,
+} from '../../integrations/commandCenterScope';
 import {
   applyWorkflowInboxTaskDecision,
   fetchWorkflowInstanceDetail,
@@ -277,6 +283,8 @@ import { listHrmEmployees } from '../../modules/hrm/hrmApiClient';
 import { WorkflowTaskDetailDrawer } from './WorkflowTaskDetailDrawer';
 import { CatalogGovernancePanel } from './CatalogGovernancePanel';
 import { ApplyCatalogToMembersPanel } from './ApplyCatalogToMembersPanel';
+import { CloneCatalogPanel } from './CloneCatalogPanel';
+import { CloneCatalogBundlePanel } from './CloneCatalogBundlePanel';
 import { AssetRequestPanel } from './AssetRequestPanel';
 import {
   apiRowToWorkflowDefinition,
@@ -358,6 +366,8 @@ type SettingsMenuKey =
   | 'pricing'
   | 'hrm_catalog_governance'
   | 'hrm_catalog_apply_members'
+  | 'hrm_catalog_clone'
+  | 'log_catalog_clone_bundle'
   | 'asset_requests';
 
 const COMPANY_SETUP_MENU_KEYS: CompanySetupMenuKey[] = [
@@ -907,6 +917,54 @@ function createEmptyWorkflowDefinition(tempId: string): WorkflowDefinition {
  * SRS: UC-XBOS-INF-01 / UC-XBOS-CC-07 · BR-FCAT-SCOPE-04
  * TechSpec: docs/xbos/API_DESIGN_XBOS_INFRASTRUCTURE.md §0/§4
  * must_keep: infraEntityIdsMatch; CO-HC/OP/MD GWC; không rewrite apps/api
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: W1-B-04-AUTH-FE-CC-CHIP-01 · 2026-08-03
+ * Change: Root h-dvh → h-full min-h-0 — vừa shell ExecutiveDashboardLayout + TopHeader membership
+ * must_keep: page transform 200; persona BOD/Quản lý ≠ BE role_label; không invent scopeRoleLabels
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: R-SPINE-WEB-APPROVE-UX-01 · 2026-08-03
+ * change_mode: FIX
+ * What: CC home inbox — hrm_leave «Duyệt» label + testid; non-leave giữ Xử lý nhanh
+ * Why: SPINE-02 WEB_APPROVE BLOCKED — leave FE-origin visible, Duyệt not actionable
+ * must_keep: LV-03/04 attach GWC out of scope; deep-link task id; U65 zero-seed; no invent L2 ladder
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W3-FE-DM09
+ * change_mode: ADD
+ * What: Settings menu «Sao chép bộ danh mục» → CloneCatalogPanel (POST …/catalog/{key}/clone)
+ * Why: QA R-DM09-FE-WIRE — API CFG-206 PASS; FE thiếu wire DM-09
+ * SRS: XBOS-DM-09 · OpenAPI configSyncCloneCatalog
+ * must_keep: ApplyCatalogToMembersPanel = DM-HRM-07 only; hide clone menu for non–group CEO; leave L2
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-DEV-BE-DEPT-VAL-01
+ * change_mode: FIX
+ * What: submitDepartmentRow — bỏ tự sinh `PB-${Date}` / «Phòng ban» khi mã/tên trống; gửi nguyên để BE `XBOS-VAL-014`
+ * Why: R-W4E1-DEPT-EMPTY-201 — Lưu dòng trống vẫn POST 201 vì FE bịa mã/tên
+ * UC: UC-CC-P0-03 · TC-CC-P0-03-DEPT-ADD-FD-001
+ * must_keep: happy CRUD dept với mã hợp lệ; AU member 409; không đụng RACI/AUTH
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-A
+ * change_mode: UPGRADE
+ * What: CC shell chrome — persona hover + settings sub-sidebar icons → xevn tokens (ADR §8–§9)
+ * Why: Precision Motion remaster PORT-03; dual-surface CC chrome vs HRM iframe
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ * must_keep: TopHeader membership; honesty banners; settings mutate logic; no Nest/seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-B
+ * change_mode: UPGRADE
+ * What: CC settings table headers / empty / helper `text-slate-500` → `text-xevn-textSecondary` (ADR §8)
+ * Why: PORT-A-QA residual P2; Precision Motion readable ops labels on settings panels
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ * must_keep: honesty banners; soft-nav; membership labels; settings mutate / Nest contracts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-UI-HEADER-JD-DND-FE-01
+ * change_mode: FIX
+ * What: REMOVE duplicate in-page brand strip (grid + «XeVN OS / Command Center»);
+ *       KEEP ExecutiveDashboardLayout TopHeader (portal-brand-mark) + slim persona pills bar.
+ * Why: Sponsor P0 — /command-center showed two headers; remaster SoT = TopHeader is NEW chrome
+ * must_keep: TopHeader membership; persona BOD/Quản lý/Nhân viên usable; honesty banners
+ * LastVerified: docs/qa/evidence/po-hrm-ui-header-jd-dnd-fe-01.md
  */
 /** Minimal inbox card for wfInstanceId deep link before list/detail hydrates (J-XBOS-01). */
 function syntheticInboxTaskFromInstanceId(instanceId: string, taskId?: string | null): UnifiedTask {
@@ -1214,6 +1272,8 @@ const settingsMenusAfterCompany: Array<{ key: SettingsMenuKey; label: string; Ic
   { key: 'company_group_hr', label: 'Danh mục hồ sơ nhân sự', Icon: UserCheck },
   { key: 'hrm_catalog_governance', label: 'Duyệt danh mục HRM', Icon: FileArchive },
   { key: 'hrm_catalog_apply_members', label: 'Áp dụng danh mục HRM', Icon: Share2 },
+  { key: 'hrm_catalog_clone', label: 'Sao chép bộ danh mục', Icon: Copy },
+  { key: 'log_catalog_clone_bundle', label: 'Sao chép bộ danh mục LOG', Icon: Layers },
   { key: 'permission', label: 'Hệ thống phân quyền', Icon: ShieldCheck },
   { key: 'workflow', label: 'Hệ thống quy trình', Icon: GitBranch },
   { key: 'asset_requests', label: 'Yêu cầu tài sản', Icon: Package },
@@ -1242,6 +1302,8 @@ function settingsWorkspaceTitle(
     company_group_hr: 'Danh mục hồ sơ nhân sự',
     hrm_catalog_governance: 'Duyệt danh mục HRM',
     hrm_catalog_apply_members: 'Áp dụng danh mục HRM',
+    hrm_catalog_clone: 'Sao chép bộ danh mục',
+    log_catalog_clone_bundle: 'Sao chép bộ danh mục LOG',
     permission: 'Hệ thống phân quyền',
     workflow: 'Hệ thống quy trình',
     asset_requests: 'Yêu cầu tài sản',
@@ -2245,7 +2307,7 @@ const CommandCenterPage: React.FC = () => {
   useEffect(() => {
     let cancelled = false;
     setInboxTasksLoadFailed(false);
-    void fetchCommandCenterInboxTasks(MASTER_TENANT_ID)
+    void fetchCommandCenterInboxTasks(MASTER_TENANT_ID, undefined, companyId)
       .then((tasks) => {
         if (cancelled) return;
         setInboxTasksLoadFailed(false);
@@ -2268,7 +2330,7 @@ const CommandCenterPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [companyId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -3402,10 +3464,12 @@ const CommandCenterPage: React.FC = () => {
         setPublishMessage('Không xác định được pháp nhân trên org-foundation. Làm mới danh sách pháp nhân rồi thử lại.');
         return;
       }
-      const deptCode = row.code.trim() || `PB-${Date.now()}`;
+      // Prefer BE truth (XBOS-VAL-014): do not invent code/name when blank — UC-CC-P0-03 FD
+      const deptCode = row.code.trim();
+      const deptName = row.name.trim();
       const deptPayload = {
         code: deptCode,
-        name: row.name.trim() || 'Phòng ban',
+        name: deptName,
         orgType: 'department',
         parentId: row.parentDeptId && isPersistedApiId(row.parentDeptId) ? row.parentDeptId : null,
         legalEntityId: ctx.legalEntityId,
@@ -4404,7 +4468,7 @@ const CommandCenterPage: React.FC = () => {
 
   const reloadInboxTasks = async () => {
     try {
-      const tasks = await fetchCommandCenterInboxTasks(MASTER_TENANT_ID);
+      const tasks = await fetchCommandCenterInboxTasks(MASTER_TENANT_ID, undefined, companyId);
       setInboxTasksLoadFailed(false);
       if (tasks.length) {
         setInboxTasks(tasks);
@@ -4487,6 +4551,7 @@ const CommandCenterPage: React.FC = () => {
         outcome,
         MASTER_TENANT_ID,
         resolveInboxAssigneeUserId(),
+        companyId,
       );
       setMenuNotice(`Đã ${outcome === 'approved' ? 'hoàn thành' : 'từ chối'}: ${inboxDetailTask.title}`);
       closeInboxTaskDetail();
@@ -4527,6 +4592,7 @@ const CommandCenterPage: React.FC = () => {
         'approved',
         MASTER_TENANT_ID,
         resolveInboxAssigneeUserId(),
+        companyId,
       );
       setMenuNotice(`Đã xử lý nhanh: ${task.title}`);
       await reloadInboxTasks();
@@ -4574,13 +4640,13 @@ const CommandCenterPage: React.FC = () => {
               type="button"
               onClick={() => setCompanySetupGroupOpen((o) => !o)}
               className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-3 text-left transition active:scale-95 ${
-                companyGroupActive ? 'bg-xevn-primary/10' : 'hover:bg-slate-100'
+                companyGroupActive ? 'bg-xevn-primary/10' : 'hover:bg-xevn-background'
               }`}
               aria-expanded={companySetupGroupOpen}
             >
               <span className={`flex min-w-0 items-center ${NAV_SUBSIDEBAR_ITEM_ROW_GAP}`}>
                 <Building2
-                  className={`h-5 w-5 shrink-0 ${companyGroupActive ? 'text-xevn-primary' : 'text-slate-500'}`}
+                  className={`h-5 w-5 shrink-0 ${companyGroupActive ? 'text-xevn-primary' : 'text-xevn-textMuted'}`}
                   strokeWidth={RAIL_STROKE}
                 />
                 <span
@@ -4594,9 +4660,9 @@ const CommandCenterPage: React.FC = () => {
                 </span>
               </span>
               {companySetupGroupOpen ? (
-                <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={RAIL_STROKE} />
+                <ChevronDown className="h-4 w-4 shrink-0 text-xevn-textMuted" strokeWidth={RAIL_STROKE} />
               ) : (
-                <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={RAIL_STROKE} />
+                <ChevronRight className="h-4 w-4 shrink-0 text-xevn-textMuted" strokeWidth={RAIL_STROKE} />
               )}
             </button>
             {companySetupGroupOpen ? (
@@ -4614,11 +4680,11 @@ const CommandCenterPage: React.FC = () => {
                         setActiveSettingsMenu(key);
                       }}
                       className={`flex w-full items-center ${NAV_SUBSIDEBAR_ITEM_ROW_GAP} rounded-lg px-2 py-2.5 text-left transition active:scale-95 ${
-                        active ? 'bg-xevn-primary/10' : 'hover:bg-slate-100'
+                        active ? 'bg-xevn-primary/10' : 'hover:bg-xevn-background'
                       }`}
                     >
                       <Icon
-                        className={`h-5 w-5 shrink-0 ${active ? 'text-xevn-primary' : 'text-slate-500'}`}
+                        className={`h-5 w-5 shrink-0 ${active ? 'text-xevn-primary' : 'text-xevn-textMuted'}`}
                         strokeWidth={RAIL_STROKE}
                       />
                       <span
@@ -4635,7 +4701,12 @@ const CommandCenterPage: React.FC = () => {
             ) : null}
           </div>
 
-          {settingsMenusAfterCompany.map(({ key, label, Icon }) => (
+          {settingsMenusAfterCompany
+            .filter(
+              (item) =>
+                item.key !== 'hrm_catalog_clone' || isGroupCeoOnMasterTenant(),
+            )
+            .map(({ key, label, Icon }) => (
             <button
               key={key}
               type="button"
@@ -4646,12 +4717,12 @@ const CommandCenterPage: React.FC = () => {
                 setActiveSettingsMenu(key);
               }}
               className={`flex w-full items-center ${NAV_SUBSIDEBAR_ITEM_ROW_GAP} rounded-lg px-2.5 py-3 text-left transition active:scale-95 ${
-                activeSettingsMenu === key ? 'bg-xevn-primary/10' : 'hover:bg-slate-100'
+                activeSettingsMenu === key ? 'bg-xevn-primary/10' : 'hover:bg-xevn-background'
               }`}
             >
               <Icon
                 className={`h-5 w-5 shrink-0 ${
-                  activeSettingsMenu === key ? 'text-xevn-primary' : 'text-slate-500'
+                  activeSettingsMenu === key ? 'text-xevn-primary' : 'text-xevn-textMuted'
                 }`}
                 strokeWidth={RAIL_STROKE}
               />
@@ -4868,18 +4939,18 @@ const CommandCenterPage: React.FC = () => {
                   <table className={`min-w-[880px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên pháp nhân</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Cấp bậc</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Trực thuộc</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Trạng thái</th>
-                        <th className="px-3 py-2 text-right text-sm font-medium text-slate-500">Thao tác</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Mã</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Tên pháp nhân</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Cấp bậc</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Trực thuộc</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Trạng thái</th>
+                        <th className="px-3 py-2 text-right text-sm font-medium text-xevn-textSecondary">Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
                       {settingsLegalEntities.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="px-3 py-8 text-center text-slate-500">
+                          <td colSpan={6} className="px-3 py-8 text-center text-xevn-textSecondary">
                             {groupMemberUnitsLoading
                               ? 'Đang tải đơn vị thành viên…'
                               : 'Chưa có dữ liệu — kiểm tra XBOS API (cổng 28002) và seed org.'}
@@ -4899,7 +4970,7 @@ const CommandCenterPage: React.FC = () => {
                             <td className="px-3 py-2">
                               <span
                                 className={
-                                  row.status === 'active' ? 'font-medium text-emerald-700' : 'text-slate-500'
+                                  row.status === 'active' ? 'font-medium text-emerald-700' : 'text-xevn-textSecondary'
                                 }
                               >
                                 {row.status === 'active' ? 'Hoạt động' : 'Ngừng'}
@@ -4993,7 +5064,7 @@ const CommandCenterPage: React.FC = () => {
                         ))}
                       </select>
                       <ChevronDown
-                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                         strokeWidth={RAIL_STROKE}
                         aria-hidden
                       />
@@ -5162,7 +5233,7 @@ const CommandCenterPage: React.FC = () => {
                         <option value="state-owned">Doanh nghiệp nhà nước</option>
                       </select>
                       <ChevronDown
-                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                         strokeWidth={RAIL_STROKE}
                         aria-hidden
                       />
@@ -5266,7 +5337,7 @@ const CommandCenterPage: React.FC = () => {
                         <option value="Người đại diện theo pháp luật">Người đại diện theo pháp luật</option>
                       </select>
                       <ChevronDown
-                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                         strokeWidth={RAIL_STROKE}
                         aria-hidden
                       />
@@ -5371,7 +5442,7 @@ const CommandCenterPage: React.FC = () => {
                   <table className={`min-w-[760px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="w-10 px-2 py-2 text-center text-sm font-medium text-slate-500">
+                        <th className="w-10 px-2 py-2 text-center text-sm font-medium text-xevn-textSecondary">
                           <input
                             type="checkbox"
                             aria-label="Chọn tất cả cổ đông"
@@ -5383,13 +5454,13 @@ const CommandCenterPage: React.FC = () => {
                             className="h-4 w-4 rounded border-xevn-border"
                           />
                         </th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">
                           Họ tên/Tên tổ chức
                         </th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã định danh</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tỷ lệ (%)</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Giá trị góp vốn</th>
-                        <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Action</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Mã định danh</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Tỷ lệ (%)</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Giá trị góp vốn</th>
+                        <th className="px-3 py-2 text-center text-sm font-medium text-xevn-textSecondary">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -5502,12 +5573,12 @@ const CommandCenterPage: React.FC = () => {
                   <table className={`min-w-[880px] w-full ${SETTINGS_CONTROL_TEXT}`}>
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên tài liệu</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã số</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Ngày cấp</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Ngày hết hạn</th>
-                        <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">File</th>
-                        <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Action</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Tên tài liệu</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Mã số</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Ngày cấp</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Ngày hết hạn</th>
+                        <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">File</th>
+                        <th className="px-3 py-2 text-center text-sm font-medium text-xevn-textSecondary">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -5716,16 +5787,16 @@ const CommandCenterPage: React.FC = () => {
                       <table className="min-w-[900px] w-full text-base text-xevn-text">
                         <thead className="bg-white/70 backdrop-blur-md">
                           <tr>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Mã danh mục
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Tên danh mục
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Phạm vi (pháp nhân)
                             </th>
-                            <th className="px-4 py-3 text-right text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-right text-base font-medium text-xevn-textSecondary">
                               Thao tác
                             </th>
                           </tr>
@@ -5733,7 +5804,7 @@ const CommandCenterPage: React.FC = () => {
                         <tbody>
                           {displayableFoundationCategories.length === 0 ? (
                             <tr className="border-t border-xevn-border">
-                              <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                              <td colSpan={4} className="px-4 py-8 text-center text-xevn-textSecondary">
                                 Chưa có danh mục nền đã lưu — bấm «Thêm danh mục nền» để mở wizard.
                               </td>
                             </tr>
@@ -5793,25 +5864,25 @@ const CommandCenterPage: React.FC = () => {
                       <table className="min-w-[1100px] w-full text-base text-xevn-text">
                         <thead className="bg-white/70 backdrop-blur-md">
                           <tr>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Mã điểm
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Tên hạ tầng
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Loại hình
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Đơn vị trực thuộc
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Sức chứa
                             </th>
-                            <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                               Trạng thái
                             </th>
-                            <th className="px-4 py-3 text-right text-base font-medium text-slate-500">
+                            <th className="px-4 py-3 text-right text-base font-medium text-xevn-textSecondary">
                               Thao tác
                             </th>
                           </tr>
@@ -5838,7 +5909,7 @@ const CommandCenterPage: React.FC = () => {
                                         ? 'font-medium text-emerald-700'
                                         : site.status === 'maintenance'
                                           ? 'font-medium text-amber-700'
-                                          : 'text-slate-500'
+                                          : 'text-xevn-textSecondary'
                                     }
                                   >
                                     {INFRA_STATUS_LABELS[site.status]}
@@ -5942,7 +6013,7 @@ const CommandCenterPage: React.FC = () => {
                           ))}
                         </select>
                         <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -5974,7 +6045,7 @@ const CommandCenterPage: React.FC = () => {
                           ))}
                         </select>
                         <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -6002,7 +6073,7 @@ const CommandCenterPage: React.FC = () => {
                           ))}
                         </select>
                         <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -6083,7 +6154,7 @@ const CommandCenterPage: React.FC = () => {
                                   ))}
                                 </select>
                                 <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                   strokeWidth={RAIL_STROKE}
                                   aria-hidden
                                 />
@@ -6230,7 +6301,7 @@ const CommandCenterPage: React.FC = () => {
                                   ))}
                                 </select>
                                 <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                   strokeWidth={RAIL_STROKE}
                                   aria-hidden
                                 />
@@ -6290,7 +6361,7 @@ const CommandCenterPage: React.FC = () => {
                           ))}
                         </select>
                         <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -6374,7 +6445,7 @@ const CommandCenterPage: React.FC = () => {
                                   ))}
                                 </select>
                                 <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                   strokeWidth={RAIL_STROKE}
                                   aria-hidden
                                 />
@@ -6464,7 +6535,7 @@ const CommandCenterPage: React.FC = () => {
                                       ))}
                                     </select>
                                     <ChevronDown
-                                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                       strokeWidth={RAIL_STROKE}
                                       aria-hidden
                                     />
@@ -6584,7 +6655,7 @@ const CommandCenterPage: React.FC = () => {
                               <span className="block text-[15px] font-semibold text-xevn-text">
                                 Cấp {row.level}
                                 {row.level === 6 ? (
-                                  <span className="font-normal text-slate-500"> (ngăn cách / trống)</span>
+                                  <span className="font-normal text-xevn-textSecondary"> (ngăn cách / trống)</span>
                                 ) : null}
                               </span>
                               {row.titles.length ? (
@@ -6592,7 +6663,7 @@ const CommandCenterPage: React.FC = () => {
                                   {row.titles.join(' · ')}
                                 </span>
                               ) : (
-                                <span className="mt-1 block text-sm italic text-slate-500">
+                                <span className="mt-1 block text-sm italic text-xevn-textSecondary">
                                   Không gán chức danh — giữ chỗ trên sơ đồ
                                 </span>
                               )}
@@ -6698,7 +6769,7 @@ const CommandCenterPage: React.FC = () => {
                         quay lại tab này để kiểm tra (dữ liệu được làm mới khi chuyển tab).
                       </p>
                       {deptTemplatesHook.isLoading ? (
-                        <p className={`mt-4 ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                        <p className={`mt-4 ${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>
                           Đang tải khung từ DB…
                         </p>
                       ) : deptSystemTemplates.length ? (
@@ -6729,7 +6800,7 @@ const CommandCenterPage: React.FC = () => {
                           ) : null}
                         </div>
                       ) : (
-                        <p className={`mt-4 ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                        <p className={`mt-4 ${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>
                           Chưa có khung đã lưu — tạo tại tab <strong>Danh mục khung</strong> → Chi tiết → Lưu khung
                           phòng/ban.
                         </p>
@@ -6738,7 +6809,7 @@ const CommandCenterPage: React.FC = () => {
                     <details className="rounded-xl border border-xevn-border bg-white/60 p-4">
                       <summary className="cursor-pointer list-none text-[15px] font-semibold text-xevn-text marker:content-none [&::-webkit-details-marker]:hidden">
                         <span className="inline-flex items-center gap-2">
-                          <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={RAIL_STROKE} />
+                          <ChevronDown className="h-4 w-4 shrink-0 text-xevn-textSecondary" strokeWidth={RAIL_STROKE} />
                           Chuẩn tập đoàn (read-only)
                         </span>
                       </summary>
@@ -6766,14 +6837,14 @@ const CommandCenterPage: React.FC = () => {
                       {deptSystemTemplates.length ? ` · ${deptSystemTemplates.length} khung` : ''}
                     </p>
                     {deptTemplatesHook.isLoading ? (
-                      <p className={`py-10 text-center ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                      <p className={`py-10 text-center ${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>
                         Đang tải danh mục khung từ DB…
                       </p>
                     ) : (
                     <div className="overflow-x-auto">
                       <table className={`min-w-[640px] w-full border-collapse text-left ${SETTINGS_CONTROL_TEXT}`}>
                         <thead>
-                          <tr className="border-b border-xevn-border bg-white/80 text-[15px] font-medium text-slate-500">
+                          <tr className="border-b border-xevn-border bg-white/80 text-[15px] font-medium text-xevn-textSecondary">
                             <th className="px-2 py-2">Mã khung</th>
                             <th className="px-2 py-2">Tên khung</th>
                             <th className="px-2 py-2 text-center">Số pháp nhân</th>
@@ -6819,7 +6890,7 @@ const CommandCenterPage: React.FC = () => {
                     </div>
                     )}
                     {!deptTemplatesHook.isLoading && deptSystemTemplates.length === 0 ? (
-                      <p className={`mt-4 text-center ${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                      <p className={`mt-4 text-center ${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>
                         Chưa có khung nào — nhấn &quot;Thêm khung mới&quot; hoặc &quot;Làm mới từ DB&quot; sau khi
                         seed business-master.
                       </p>
@@ -6836,6 +6907,14 @@ const CommandCenterPage: React.FC = () => {
 
           {activeSettingsMenu === 'hrm_catalog_apply_members' ? (
             <ApplyCatalogToMembersPanel onStatusMessage={setMenuNotice} />
+          ) : null}
+
+          {activeSettingsMenu === 'hrm_catalog_clone' ? (
+            <CloneCatalogPanel onStatusMessage={setMenuNotice} />
+          ) : null}
+
+          {activeSettingsMenu === 'log_catalog_clone_bundle' ? (
+            <CloneCatalogBundlePanel onStatusMessage={setMenuNotice} />
           ) : null}
 
           {activeSettingsMenu === 'asset_requests' ? (
@@ -6877,7 +6956,7 @@ const CommandCenterPage: React.FC = () => {
                       message={`Trưởng bộ phận: ${deptHeadOptionsError} — chọn trưởng bộ phận tạm thời bị khóa.`}
                     />
                   ) : deptHeadOptionsLoading ? (
-                    <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>
+                    <p className={`${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>
                       Đang tải danh sách nhân viên cho Trưởng bộ phận…
                     </p>
                   ) : null}
@@ -6937,7 +7016,7 @@ const CommandCenterPage: React.FC = () => {
                                   ))}
                                 </select>
                                 <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                   strokeWidth={RAIL_STROKE}
                                   aria-hidden
                                 />
@@ -6959,7 +7038,7 @@ const CommandCenterPage: React.FC = () => {
                                   ))}
                                 </select>
                                 <ChevronDown
-                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                   strokeWidth={RAIL_STROKE}
                                   aria-hidden
                                 />
@@ -7003,7 +7082,7 @@ const CommandCenterPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => addDepartmentRow()}
-                        className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                        className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-xevn-textSecondary transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
                       >
                         + Thêm dòng phòng ban
                       </button>
@@ -7084,7 +7163,7 @@ const CommandCenterPage: React.FC = () => {
                         className="rounded-input border border-xevn-border bg-white/90 p-4 shadow-sm"
                       >
                         <h5 className="text-[15px] font-semibold text-xevn-primary">{group.groupLabel}</h5>
-                        <p className="mt-1 text-xs text-slate-500">{group.fields.length} trường</p>
+                        <p className="mt-1 text-xs text-xevn-textSecondary">{group.fields.length} trường</p>
                         <ul className="mt-3 max-h-48 space-y-1 overflow-y-auto text-[14px] text-slate-700">
                           {group.fields.map((f) => (
                             <li
@@ -7129,14 +7208,14 @@ const CommandCenterPage: React.FC = () => {
                     >
                       <p className="text-lg font-bold text-xevn-primary">{x.letter}</p>
                       <p className="text-[15px] font-medium text-xevn-text">{x.labelVi}</p>
-                      <p className="text-xs text-slate-500">{x.labelEn}</p>
+                      <p className="text-xs text-xevn-textSecondary">{x.labelEn}</p>
                     </div>
                   ))}
                 </div>
                 <div className="overflow-x-auto">
                   <table className={`min-w-[720px] w-full border-collapse text-left ${SETTINGS_CONTROL_TEXT}`}>
                     <thead>
-                      <tr className="border-b border-xevn-border bg-white/80 text-[15px] font-medium text-slate-500">
+                      <tr className="border-b border-xevn-border bg-white/80 text-[15px] font-medium text-xevn-textSecondary">
                         <th className="px-2 py-2">Mã cột</th>
                         <th className="px-2 py-2">Đơn vị / khối</th>
                         <th className="px-2 py-2">Chức danh (Excel)</th>
@@ -7202,7 +7281,7 @@ const CommandCenterPage: React.FC = () => {
                         aria-expanded={open}
                       >
                         <ChevronDown
-                          className={`h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 ${
+                          className={`h-5 w-5 shrink-0 text-xevn-textSecondary transition-transform duration-200 ${
                             open ? 'rotate-0' : '-rotate-90'
                           }`}
                           strokeWidth={RAIL_STROKE}
@@ -7211,7 +7290,7 @@ const CommandCenterPage: React.FC = () => {
                         <span className="text-base font-bold tracking-tight text-xevn-text">
                           {mod.title}
                         </span>
-                        <span className="ml-auto text-[15px] font-medium tabular-nums text-slate-500">
+                        <span className="ml-auto text-[15px] font-medium tabular-nums text-xevn-textSecondary">
                           {rowsInMod.length} chức năng
                         </span>
                       </button>
@@ -7279,7 +7358,7 @@ const CommandCenterPage: React.FC = () => {
                                     )}
                                   </select>
                                   <ChevronDown
-                                    className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                    className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                     strokeWidth={RAIL_STROKE}
                                     aria-hidden
                                   />
@@ -7350,11 +7429,11 @@ const CommandCenterPage: React.FC = () => {
                           data-wf-exists={exists ? '1' : '0'}
                         >
                           <span className="font-semibold text-xevn-text">{preset.nameVi}</span>
-                          <span className="font-mono text-[12px] text-slate-500">
+                          <span className="font-mono text-[12px] text-xevn-textSecondary">
                             {preset.workflowCode}
                             {exists ? ' · đã có' : ' · tạo mới'}
                           </span>
-                          <span className="text-[12px] text-slate-500">{preset.shortHintVi}</span>
+                          <span className="text-[12px] text-xevn-textSecondary">{preset.shortHintVi}</span>
                         </button>
                       );
                     })}
@@ -7364,22 +7443,22 @@ const CommandCenterPage: React.FC = () => {
                   <table className="min-w-[920px] w-full text-base font-normal text-xevn-text">
                     <thead className="bg-white/70 backdrop-blur-md">
                       <tr>
-                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                           Mã quy trình
                         </th>
-                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                           Tên quy trình
                         </th>
-                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                           Đơn vị áp dụng
                         </th>
-                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                           Số bước
                         </th>
-                        <th className="px-4 py-3 text-left text-base font-medium text-slate-500">
+                        <th className="px-4 py-3 text-left text-base font-medium text-xevn-textSecondary">
                           SLA tổng (giờ)
                         </th>
-                        <th className="px-4 py-3 text-right text-base font-medium text-slate-500">
+                        <th className="px-4 py-3 text-right text-base font-medium text-xevn-textSecondary">
                           Thao tác
                         </th>
                       </tr>
@@ -7462,7 +7541,7 @@ const CommandCenterPage: React.FC = () => {
                           ))}
                         </select>
                         <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -7493,7 +7572,7 @@ const CommandCenterPage: React.FC = () => {
                           ))}
                         </select>
                         <ChevronDown
-                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                          className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                           strokeWidth={RAIL_STROKE}
                           aria-hidden
                         />
@@ -7576,7 +7655,7 @@ const CommandCenterPage: React.FC = () => {
                   <div className="-mx-1 overflow-x-auto px-1 pb-1">
                     <div className="w-full min-w-0 space-y-6 lg:min-w-[68rem]">
                   <div className="mb-3 hidden lg:block">
-                    <div className={`${WORKFLOW_STEPS_TABLE_GRID} text-[15px] font-medium text-slate-500`}>
+                    <div className={`${WORKFLOW_STEPS_TABLE_GRID} text-[15px] font-medium text-xevn-textSecondary`}>
                       <div className="min-w-0">Stt</div>
                       <div className="min-w-0">Tên đầu việc</div>
                       <div className="min-w-0">Vai trò</div>
@@ -7584,7 +7663,7 @@ const CommandCenterPage: React.FC = () => {
                       <div className="min-w-0">SLA</div>
                       <div className="min-w-0">
                         <span className="block">Luồng đi tiếp (Đồng ý / Từ chối* / BOD)</span>
-                        <span className="mt-1 block text-sm font-normal leading-snug text-slate-500">
+                        <span className="mt-1 block text-sm font-normal leading-snug text-xevn-textSecondary">
                           *Từ chối chỉ cấu hình được với vai trò có thẩm quyền phê duyệt — xanh / đỏ / cam trên sơ đồ
                         </span>
                       </div>
@@ -7660,7 +7739,7 @@ const CommandCenterPage: React.FC = () => {
                                 ))}
                               </select>
                               <ChevronDown
-                                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                 strokeWidth={RAIL_STROKE}
                                 aria-hidden
                               />
@@ -7691,7 +7770,7 @@ const CommandCenterPage: React.FC = () => {
                                 )}
                               </select>
                               <ChevronDown
-                                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                 strokeWidth={RAIL_STROKE}
                                 aria-hidden
                               />
@@ -7724,10 +7803,10 @@ const CommandCenterPage: React.FC = () => {
                                     key={kind}
                                     className={`min-w-0 rounded-input border border-dashed border-xevn-border/80 bg-slate-50/80 px-3 py-2`}
                                   >
-                                    <span className="block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-slate-500">
+                                    <span className="block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-xevn-textSecondary">
                                       → {WORKFLOW_EDGE_FULL_LABELS[kind]}
                                     </span>
-                                    <p className="mt-1 text-sm font-normal leading-snug text-slate-500">
+                                    <p className="mt-1 text-sm font-normal leading-snug text-xevn-textSecondary">
                                       Không áp dụng — vai trò này không có thẩm quyền từ chối trong quy trình; khi vận
                                       hành sẽ không có hành động Từ chối cho bước này.
                                     </p>
@@ -7736,7 +7815,7 @@ const CommandCenterPage: React.FC = () => {
                               }
                               return (
                                 <label key={kind} className={`min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
-                                  <span className="block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-slate-500 hyphens-auto">
+                                  <span className="block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-xevn-textSecondary hyphens-auto">
                                     → {WORKFLOW_EDGE_FULL_LABELS[kind]}
                                   </span>
                                   <div className="relative min-w-0">
@@ -7756,7 +7835,7 @@ const CommandCenterPage: React.FC = () => {
                                       ))}
                                     </select>
                                     <ChevronDown
-                                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                       strokeWidth={RAIL_STROKE}
                                       aria-hidden
                                     />
@@ -7791,7 +7870,7 @@ const CommandCenterPage: React.FC = () => {
                                 ))}
                               </select>
                               <ChevronDown
-                                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                                 strokeWidth={RAIL_STROKE}
                                 aria-hidden
                               />
@@ -7840,7 +7919,7 @@ const CommandCenterPage: React.FC = () => {
                 subtitle="Danh mục từ XBOS — chỉnh sửa inline, lưu tự động"
               />
               {docCatalogLoading ? (
-                <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Đang tải danh mục…</p>
+                <p className={`${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>Đang tải danh mục…</p>
               ) : (
                 <>
                   {documentRows.length === 0 ? (
@@ -7852,10 +7931,10 @@ const CommandCenterPage: React.FC = () => {
                     <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
                       <thead className="bg-white/70 backdrop-blur-md">
                         <tr>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tên văn bản</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Version</th>
-                          <th className="px-3 py-2 text-center text-sm font-medium text-slate-500">Hiệu lực</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Mã</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Tên văn bản</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Version</th>
+                          <th className="px-3 py-2 text-center text-sm font-medium text-xevn-textSecondary">Hiệu lực</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -7918,7 +7997,7 @@ const CommandCenterPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setDocumentRows((prev) => [...prev, createCcRegulationRow()])}
-                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-xevn-textSecondary transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
                   >
                     + Thêm dòng
                   </button>
@@ -7934,7 +8013,7 @@ const CommandCenterPage: React.FC = () => {
                 subtitle="Biểu mẫu và bảng nhập liệu — lưu tự động"
               />
               {measureCatalogLoading ? (
-                <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Đang tải danh mục…</p>
+                <p className={`${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>Đang tải danh mục…</p>
               ) : (
                 <>
                   {measurementRows.length === 0 ? (
@@ -7946,10 +8025,10 @@ const CommandCenterPage: React.FC = () => {
                     <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
                       <thead className="bg-white/70 backdrop-blur-md">
                         <tr>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Metric Key</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn vị</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Tiền tệ</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Độ chính xác</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Metric Key</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Đơn vị</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Tiền tệ</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Độ chính xác</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -8012,7 +8091,7 @@ const CommandCenterPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setMeasurementRows((prev) => [...prev, createCcMeasurementRow()])}
-                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-xevn-textSecondary transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
                   >
                     + Thêm dòng
                   </button>
@@ -8028,7 +8107,7 @@ const CommandCenterPage: React.FC = () => {
                 subtitle="Bảng giá chỉnh sửa theo dòng — lưu tự động"
               />
               {pricingCatalogLoading ? (
-                <p className={`${SETTINGS_CONTROL_TEXT} text-slate-500`}>Đang tải danh mục…</p>
+                <p className={`${SETTINGS_CONTROL_TEXT} text-xevn-textSecondary`}>Đang tải danh mục…</p>
               ) : (
                 <>
                   {pricingRows.length === 0 ? (
@@ -8040,9 +8119,9 @@ const CommandCenterPage: React.FC = () => {
                     <table className={`min-w-full ${SETTINGS_CONTROL_TEXT}`}>
                       <thead className="bg-white/70 backdrop-blur-md">
                         <tr>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Mã giá</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Diễn giải</th>
-                          <th className="px-3 py-2 text-left text-sm font-medium text-slate-500">Đơn giá</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Mã giá</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Diễn giải</th>
+                          <th className="px-3 py-2 text-left text-sm font-medium text-xevn-textSecondary">Đơn giá</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -8093,7 +8172,7 @@ const CommandCenterPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setPricingRows((prev) => [...prev, createCcPricingRow()])}
-                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-slate-500 transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
+                    className="w-full rounded-input border border-dashed border-xevn-border py-3 text-center text-[15px] font-medium text-xevn-textSecondary transition hover:border-xevn-primary hover:text-xevn-primary active:scale-[0.99]"
                   >
                     + Thêm dòng
                   </button>
@@ -8241,7 +8320,7 @@ const CommandCenterPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setWorkflowCanvasSelectedStepId(null)}
-                      className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100"
+                      className="rounded-lg p-2 text-xevn-textSecondary transition hover:bg-slate-100"
                       aria-label="Đóng"
                     >
                       <X className="h-5 w-5" strokeWidth={RAIL_STROKE} />
@@ -8265,7 +8344,7 @@ const CommandCenterPage: React.FC = () => {
                         inputClassName={deptInputClass}
                       />
                     </div>
-                    <p className="mt-3 text-sm text-slate-500">
+                    <p className="mt-3 text-sm text-xevn-textSecondary">
                       Resolver hiện tại:{' '}
                       <span className="font-medium text-xevn-text">
                         {workflowResolverLabel(step.resolverType)}
@@ -8309,7 +8388,7 @@ const CommandCenterPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setInfrastructureFieldsConfigOpen(false)}
-                className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100"
+                className="rounded-lg p-2 text-xevn-textSecondary transition hover:bg-slate-100"
                 aria-label="Đóng"
               >
                 <X className="h-5 w-5" strokeWidth={RAIL_STROKE} />
@@ -8423,7 +8502,7 @@ const CommandCenterPage: React.FC = () => {
                         >
                           <div>
                             <p className="text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
-                            <p className="text-xs text-slate-500">Thứ tự: {b.order}</p>
+                            <p className="text-xs text-xevn-textSecondary">Thứ tự: {b.order}</p>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
@@ -8787,7 +8866,7 @@ const CommandCenterPage: React.FC = () => {
                         >
                           <div className="min-w-[14rem]">
                             <p className="text-[15px] font-semibold text-xevn-text">{f.labelVi}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-xevn-textSecondary">
                               {EMPLOYEE_METADATA_DATA_TYPES.find((t) => t.value === f.dataType)?.label ?? '—'} ·{' '}
                               {f.visible ? 'Hiển thị' : 'Ẩn'}
                             </p>
@@ -8928,7 +9007,7 @@ const CommandCenterPage: React.FC = () => {
                                     onClick={() => setInfraSelectedCustomBlockCode(b.blockCode)}
                                   >
                                     <p className="truncate text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
-                                    <p className="mt-0.5 truncate text-xs text-slate-500">
+                                    <p className="mt-0.5 truncate text-xs text-xevn-textSecondary">
                                       Thứ tự: {b.order}
                                     </p>
                                   </button>
@@ -8965,7 +9044,7 @@ const CommandCenterPage: React.FC = () => {
                             })}
                           </div>
                         ) : (
-                          <p className="text-sm text-slate-500 pt-1">Chưa có custom block.</p>
+                          <p className="text-sm text-xevn-textSecondary pt-1">Chưa có custom block.</p>
                         )}
                       </div>
                     );
@@ -9273,7 +9352,7 @@ const CommandCenterPage: React.FC = () => {
                         >
                           <div className="min-w-[14rem]">
                             <p className="text-[15px] font-semibold text-xevn-text">{f.labelVi}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-xevn-textSecondary">
                               {f.fieldCode} · {f.dataType} · {f.visible ? 'Hiển thị' : 'Ẩn'}
                             </p>
                           </div>
@@ -9609,7 +9688,7 @@ const CommandCenterPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => closeGroupHrFieldsConfig()}
-                className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100"
+                className="rounded-lg p-2 text-xevn-textSecondary transition hover:bg-slate-100"
                 aria-label="Đóng"
               >
                 <X className="h-5 w-5" strokeWidth={RAIL_STROKE} />
@@ -9657,7 +9736,7 @@ const CommandCenterPage: React.FC = () => {
                         <div key={b.id} className={`flex items-center justify-between gap-2 rounded-input border border-xevn-border bg-white px-3 py-2 shadow-soft transition ${selectedCode === b.blockCode ? 'ring-2 ring-xevn-accent/30' : ''}`}>
                           <button type="button" className="min-w-0 flex-1 text-left" onClick={() => setGroupHrSelectedCustomBlockCode(b.blockCode)}>
                             <p className="truncate text-[15px] font-semibold text-xevn-text">{b.labelVi}</p>
-                            <p className="text-xs text-slate-500">{fieldCount} trường</p>
+                            <p className="text-xs text-xevn-textSecondary">{fieldCount} trường</p>
                           </button>
                           <button type="button" disabled className="rounded-input bg-white px-2 py-1 text-[13px] font-medium text-xevn-textMuted opacity-60">Xóa</button>
                         </div>
@@ -9838,17 +9917,17 @@ const CommandCenterPage: React.FC = () => {
                         <h4 className="text-base font-bold text-xevn-text">
                           Danh mục trường trong khối ({rows.length})
                         </h4>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-xevn-textSecondary">
                           Đồng bộ HRM qua nút Xác nhận (áp dụng) bên dưới
                         </p>
                       </div>
                       {rows.length === 0 ? (
-                        <p className="text-sm text-slate-500">Chưa có trường trong khối này.</p>
+                        <p className="text-sm text-xevn-textSecondary">Chưa có trường trong khối này.</p>
                       ) : (
                         <div className="overflow-x-auto">
                           <table className={`min-w-[720px] w-full border-collapse text-left ${SETTINGS_CONTROL_TEXT}`}>
                             <thead>
-                              <tr className="border-b border-xevn-border bg-slate-50 text-[14px] font-medium text-slate-500">
+                              <tr className="border-b border-xevn-border bg-slate-50 text-[14px] font-medium text-xevn-textSecondary">
                                 <th className="px-2 py-2">Tên trường</th>
                                 <th className="px-2 py-2">Kiểu dữ liệu</th>
                                 <th className="px-2 py-2">Hiển thị</th>
@@ -10131,7 +10210,7 @@ const CommandCenterPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setEmployeeMetadataPreviewOpen(false)}
-                className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100"
+                className="rounded-lg p-2 text-xevn-textSecondary transition hover:bg-slate-100"
                 aria-label="Đóng"
               >
                 <X className="h-5 w-5" strokeWidth={RAIL_STROKE} />
@@ -10213,7 +10292,7 @@ const CommandCenterPage: React.FC = () => {
                             ))}
                           </select>
                           <ChevronDown
-                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
                             strokeWidth={RAIL_STROKE}
                             aria-hidden
                           />
@@ -10241,51 +10320,46 @@ const CommandCenterPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-xevn-background text-xevn-text">
-      <header className="shrink-0 z-20 border-b border-xevn-border bg-xevn-surface/80 shadow-soft backdrop-blur-md">
-        <div className={`flex w-full flex-wrap items-center justify-between gap-4 ${XEVN_VIEWPORT_PADDING} py-4`}>
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-xevn-primary text-white shadow-soft">
-              <LayoutDashboard className="h-6 w-6" strokeWidth={2} />
-            </div>
-            <div>
-              {/* @CODE-MEMORY-CHANGE XEVN-THM-FE-W1-TITLE-01 — hero = XeVN OS; module secondary = Command Center; must_keep TopHeader portal-brand-mark untouched */}
-              <h1 className="page-title text-xl font-semibold tracking-tight text-xevn-text">
-                XeVN OS
-              </h1>
-              <p className="body-text text-sm text-xevn-textSecondary">Command Center</p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex rounded-xl border border-xevn-border bg-xevn-surface p-1 shadow-sm">
-              {(
-                [
-                  { id: 'bod' as const, label: 'BOD', Icon: Building2 },
-                  { id: 'manager' as const, label: 'Quản lý', Icon: CircleUser },
-                  { id: 'employee' as const, label: 'Nhân viên', Icon: User },
-                ] as const
-              ).map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => {
-                    setLoading(true);
-                    setPersona(id);
-                    setSelectedModule('all');
-                    navigate('/command-center');
-                  }}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition active:scale-95 ${
-                    persona === id
-                      ? 'bg-xevn-primary text-white shadow-sm'
-                      : 'text-xevn-textSecondary hover:bg-slate-100'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" strokeWidth={RAIL_STROKE} />
-                  {label}
-                </button>
-              ))}
-            </div>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-xevn-background text-xevn-text">
+      {/* Brand chrome = TopHeader only (W1 remaster). This bar = persona filter — not a second logo/title header. */}
+      <header
+        className="shrink-0 z-20 border-b border-xevn-border bg-xevn-surface/80 shadow-soft backdrop-blur-md"
+        data-testid="cc-persona-bar"
+        aria-label="Bộ lọc góc nhìn Command Center"
+      >
+        <div className={`flex w-full flex-wrap items-center justify-end gap-3 ${XEVN_VIEWPORT_PADDING} py-2`}>
+          <div
+            className="flex rounded-xl border border-xevn-border bg-xevn-surface p-1 shadow-sm"
+            data-testid="cc-persona-switcher"
+            role="group"
+            aria-label="Persona BOD / Quản lý / Nhân viên"
+          >
+            {(
+              [
+                { id: 'bod' as const, label: 'BOD', Icon: Building2 },
+                { id: 'manager' as const, label: 'Quản lý', Icon: CircleUser },
+                { id: 'employee' as const, label: 'Nhân viên', Icon: User },
+              ] as const
+            ).map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => {
+                  setLoading(true);
+                  setPersona(id);
+                  setSelectedModule('all');
+                  navigate('/command-center');
+                }}
+                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition active:scale-95 ${
+                  persona === id
+                    ? 'bg-xevn-primary text-white shadow-sm'
+                    : 'text-xevn-textSecondary hover:bg-xevn-background'
+                }`}
+              >
+                <Icon className="h-4 w-4" strokeWidth={RAIL_STROKE} />
+                {label}
+              </button>
+            ))}
           </div>
         </div>
         {workspaceMetaFailed && !allowMockFallback() ? (
@@ -10526,10 +10600,14 @@ const CommandCenterPage: React.FC = () => {
                       )}
                     </li>
                   ) : (
-                    filteredCards.map((task) => (
+                    filteredCards.map((task) => {
+                      const leaveTask = isHrmLeaveInboxTask(task);
+                      const approveLabel = inboxApproveActionLabelVi(task);
+                      return (
                       <li
                         key={task.cardId}
                         data-testid="cc-inbox-task-card"
+                        data-business-type={leaveTask ? 'hrm_leave' : (task.businessType ?? task.moduleCode)}
                         className="flex flex-col gap-3 rounded-xl border border-xevn-border bg-white/90 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
                       >
                         <div className="min-w-0 flex-1">
@@ -10576,6 +10654,8 @@ const CommandCenterPage: React.FC = () => {
                           </CapabilityActionButton>
                           <CapabilityActionButton
                             capabilityCode="BTN-A1-INBOX-QUICK"
+                            accessibleName={approveLabel}
+                            data-testid={leaveTask ? 'hdsd-cc-leave-approve' : 'cc-inbox-task-approve'}
                             runtime={{
                               busy: inboxActionBusyId === task.cardId,
                               blocked: inboxTasksSource !== 'api',
@@ -10585,12 +10665,13 @@ const CommandCenterPage: React.FC = () => {
                             className="inline-flex items-center gap-1 rounded-lg bg-xevn-primary px-3 py-2 text-base font-medium text-white shadow-sm transition active:scale-95 hover:opacity-90 disabled:opacity-60"
                             onClick={() => void quickCompleteInboxTask(task)}
                           >
-                            {inboxActionBusyId === task.cardId ? 'Đang xử lý…' : 'Xử lý nhanh'}
+                            {inboxActionBusyId === task.cardId ? 'Đang xử lý…' : approveLabel}
                             <RefreshCw className="h-4 w-4" strokeWidth={RAIL_STROKE} />
                           </CapabilityActionButton>
                         </div>
                       </li>
-                    ))
+                      );
+                    })
                   )}
                 </ul>
               </section>

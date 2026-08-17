@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Source Sans 3"', 'Source Sans Pro', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Montserrat', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -75,7 +76,7 @@ export default {
           payroll: "hsl(var(--hrm-payroll))",
           employee: "hsl(var(--hrm-employee))",
         },
-        /** XeVN tokens — SoT mirrors portal / proposal §3.1 (XEVN-THM-FE-00) */
+        /** XeVN tokens — SoT mirrors portal / ADR-20260805 §7.3 (PO-HRM-UI-BRAND-FE-FOUND-01) */
         xevn: {
           primary: "#1E40AF",
           primaryPressed: "#1E3A8A",

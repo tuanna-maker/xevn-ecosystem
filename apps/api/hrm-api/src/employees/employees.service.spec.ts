@@ -12,7 +12,17 @@ describe('EmployeesService', () => {
       query: jest.fn(),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
-    db.query.mockResolvedValue({ rows: [] } as never);
+    // F-EMP-CF-CNS-01 soft-empty default — existing specs retain EFF=0 invent skip (AC-01d).
+    db.query.mockImplementation(async (sql: string) => {
+      const s = String(sql);
+      if (s.includes('hrm_catalog_extension_items')) {
+        if (s.includes('COUNT')) {
+          return { rows: [{ c: '0' }] };
+        }
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
     service = new EmployeesService(db);
   });
 
@@ -519,7 +529,7 @@ describe('EmployeesService', () => {
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
     });
 
-    it('AC-ESS-01: self PATCH custom_fields phone merges and preserves HR keys', async () => {
+    it('AC-ESS-01: self PATCH phone merges; preserves HR keys in DB; public DTO strips salary', async () => {
       const token = signServiceJwt({
         sub: 'uat.nv0001@xe.vn',
         tenantId: 'xevn',
@@ -558,7 +568,6 @@ describe('EmployeesService', () => {
             phone_number: '0911111111',
             work_phone: '0287654321',
             gender: 'female',
-            salary: '1',
             tenant_id: 'hacked',
           },
         },
@@ -566,7 +575,13 @@ describe('EmployeesService', () => {
         `Bearer ${token}`,
       );
 
-      expect(result.custom_fields).toEqual(updatedRow.custom_fields);
+      // Public ring — salary omitted from DTO even if retained in DB write.
+      expect(result.custom_fields).toEqual({
+        tenant_id: 'xevn',
+        gender: 'male',
+        phone_number: '0911111111',
+        work_phone: '0287654321',
+      });
       const lastCall = db.query.mock.calls[db.query.mock.calls.length - 1];
       expect(String(lastCall?.[0])).toContain('custom_fields = $1::jsonb');
       expect(JSON.parse(String(lastCall?.[1]?.[0]))).toEqual({
@@ -577,6 +592,29 @@ describe('EmployeesService', () => {
         salary: '12000000',
       });
       expect(lastCall?.[1]?.[1]).toBe(employeeId);
+    });
+
+    it('AC-CORE-PUB O3: self PATCH with salary in body → HRM-CORE-CB-403 (no silent strip)', async () => {
+      const token = signServiceJwt({
+        sub: 'uat.nv0001@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        employee_id: employeeId,
+        roles: ['employee'],
+      });
+      await expect(
+        service.updateEmployee(
+          employeeId,
+          {
+            custom_fields: {
+              phone_number: '0911111111',
+              salary: '1',
+            },
+          },
+          'holding',
+          `Bearer ${token}`,
+        ),
+      ).rejects.toMatchObject({ code: 'HRM-CORE-CB-403' });
     });
 
     it('self PATCH custom_fields without phone keys is forbidden', async () => {
@@ -688,6 +726,309 @@ describe('EmployeesService', () => {
       const result = await service.getEmployeeById(employeeId, { company_id: 'holding' });
 
       expect(result.avatar_url).toBe(avatarUrl);
+    });
+  });
+
+  describe('W1-B-02-EMP display-ready + scope parity', () => {
+    const employeeId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
+    const displayRow = {
+      id: employeeId,
+      company_id: 'holding',
+      employee_code: 'HLD-0996',
+      email: 'legal@xe.vn',
+      full_name: 'Phạm Đức Hùng',
+      job_title_key: 'LEGAL_SPECIALIST',
+      manager_id: null,
+      status: 'active',
+      hired_at: '2024-01-01',
+      archived_at: null,
+      avatar_url: null,
+      custom_fields: {
+        tenant_id: 'xevn',
+        department: 'Pháp chế',
+        job_title_label: 'Chuyên viên Pháp chế',
+        phone_number: '0901111222',
+      },
+      created_at: '2024-01-01T00:00:00.000Z',
+      updated_at: '2024-01-01T00:00:00.000Z',
+    };
+
+    it('list + get return display-ready status_label / department / job_title_label', async () => {
+      db.query.mockResolvedValueOnce({
+        rows: [{ ...displayRow, list_total: '1', created_at_cursor: '2024-01-01T00:00:00.000000Z' }],
+      } as never);
+
+      const listed = await service.listEmployees({ company_id: 'holding', page: 1, page_size: 20 });
+      expect(listed.data[0]).toMatchObject({
+        display_name: 'Phạm Đức Hùng',
+        department: 'Pháp chế',
+        job_title_label: 'Chuyên viên Pháp chế',
+        status_label: 'Đang làm việc',
+        phone_number: '0901111222',
+        job_title_key: 'LEGAL_SPECIALIST',
+      });
+
+      db.query.mockResolvedValueOnce({ rows: [displayRow] } as never);
+      const got = await service.getEmployeeById(employeeId, { company_id: 'holding' });
+      expect(got).toMatchObject({
+        display_name: 'Phạm Đức Hùng',
+        department: 'Pháp chế',
+        job_title_label: 'Chuyên viên Pháp chế',
+        status_label: 'Đang làm việc',
+      });
+      expect(got.job_title_label).not.toBe('LEGAL_SPECIALIST');
+    });
+
+    it('get-by-id with company_id=main finds holding row (list↔get scope parity)', async () => {
+      const token = signServiceJwt({
+        sub: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'main',
+        roleCode: 'group_ceo',
+      });
+      db.query.mockResolvedValueOnce({ rows: [displayRow] } as never);
+
+      const result = await service.getEmployeeById(
+        employeeId,
+        { company_id: 'main' },
+        `Bearer ${token}`,
+        { tenantId: 'xevn' },
+      );
+      expect(result.id).toBe(employeeId);
+      expect(result.company_id).toBe('holding');
+      expect(result.department).toBe('Pháp chế');
+      expect(db.query).toHaveBeenCalledWith(
+        expect.stringContaining('company_id = ANY'),
+        expect.arrayContaining([employeeId, expect.any(Array)]),
+      );
+    });
+
+    it('PATCH with company_id=main updates holding employee (list↔get↔patch parity)', async () => {
+      const token = signServiceJwt({
+        sub: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'main',
+        roleCode: 'group_ceo',
+      });
+      const updatedRow = {
+        ...displayRow,
+        full_name: 'Phạm Đức Hùng (đã sửa)',
+        updated_at: '2026-08-03T00:00:00.000Z',
+      };
+      db.query
+        .mockResolvedValueOnce({ rows: [displayRow] } as never)
+        .mockResolvedValueOnce({ rows: [updatedRow] } as never);
+
+      const result = await service.updateEmployee(
+        employeeId,
+        { full_name: 'Phạm Đức Hùng (đã sửa)' },
+        'main',
+        `Bearer ${token}`,
+        { tenantId: 'xevn' },
+      );
+
+      expect(result.display_name).toBe('Phạm Đức Hùng (đã sửa)');
+      expect(result.department).toBe('Pháp chế');
+      expect(result.job_title_label).toBe('Chuyên viên Pháp chế');
+      expect(result.status_label).toBe('Đang làm việc');
+      expect(db.query).toHaveBeenCalledWith(
+        expect.stringContaining('company_id = ANY'),
+        expect.arrayContaining([employeeId, expect.any(Array)]),
+      );
+    });
+
+    it('never exposes snake job_title_key as job_title_label when label missing', async () => {
+      const rawKeyRow = {
+        ...displayRow,
+        custom_fields: { tenant_id: 'xevn', department: 'Pháp chế' },
+      };
+      db.query.mockResolvedValueOnce({ rows: [rawKeyRow] } as never);
+
+      const result = await service.getEmployeeById(employeeId, { company_id: 'holding' });
+      expect(result.job_title_key).toBe('LEGAL_SPECIALIST');
+      expect(result.job_title_label).toBeNull();
+      expect(result.department).toBe('Pháp chế');
+    });
+  });
+
+  describe('R-SPINE-MGR-HIER-01-BE manager_id write', () => {
+    const subordinateId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+    const managerId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+    const hrToken = () =>
+      signServiceJwt({
+        sub: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'main',
+        roleCode: 'group_ceo',
+      });
+
+    const subordinateRow = {
+      id: subordinateId,
+      company_id: 'holding',
+      employee_code: 'HLD-SUB',
+      email: 'uat.nv0099@xe.vn',
+      full_name: 'NV Subordinate',
+      job_title_key: null,
+      manager_id: null as string | null,
+      status: 'active',
+      hired_at: null,
+      archived_at: null,
+      avatar_url: null,
+      custom_fields: { tenant_id: 'xevn' },
+      created_at: '2026-08-03T00:00:00.000Z',
+      updated_at: '2026-08-03T00:00:00.000Z',
+    };
+
+    it('PATCH sets manager_id (happy path)', async () => {
+      const updated = {
+        ...subordinateRow,
+        manager_id: managerId,
+        updated_at: '2026-08-03T01:00:00.000Z',
+      };
+      db.query
+        .mockResolvedValueOnce({ rows: [subordinateRow] } as never) // getEmployeeById
+        .mockResolvedValueOnce({
+          rows: [{ id: managerId, company_id: 'holding', archived_at: null }],
+        } as never) // manager lookup
+        .mockResolvedValueOnce({ rows: [] } as never) // cycle walk
+        .mockResolvedValueOnce({ rows: [updated] } as never); // UPDATE
+
+      const result = await service.updateEmployee(
+        subordinateId,
+        { manager_id: managerId },
+        'holding',
+        `Bearer ${hrToken()}`,
+        { tenantId: 'xevn' },
+      );
+
+      expect(result.manager_id).toBe(managerId);
+      expect(db.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('manager_id = $1::uuid'),
+        expect.arrayContaining([managerId, subordinateId]),
+      );
+    });
+
+    it('PATCH clears manager_id with null', async () => {
+      const withMgr = { ...subordinateRow, manager_id: managerId };
+      const cleared = { ...subordinateRow, manager_id: null };
+      db.query
+        .mockResolvedValueOnce({ rows: [withMgr] } as never)
+        .mockResolvedValueOnce({ rows: [cleared] } as never);
+
+      const result = await service.updateEmployee(
+        subordinateId,
+        { manager_id: null },
+        'holding',
+        `Bearer ${hrToken()}`,
+        { tenantId: 'xevn' },
+      );
+
+      expect(result.manager_id).toBeNull();
+      expect(db.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('manager_id = $1::uuid'),
+        expect.arrayContaining([null, subordinateId]),
+      );
+    });
+
+    it('PATCH rejects self manager_id', async () => {
+      db.query.mockResolvedValueOnce({ rows: [subordinateRow] } as never);
+
+      await expect(
+        service.updateEmployee(
+          subordinateId,
+          { manager_id: subordinateId },
+          'holding',
+          `Bearer ${hrToken()}`,
+          { tenantId: 'xevn' },
+        ),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-SELF' });
+    });
+
+    it('PATCH rejects cross-company manager_id', async () => {
+      db.query
+        .mockResolvedValueOnce({ rows: [subordinateRow] } as never)
+        .mockResolvedValueOnce({
+          rows: [{ id: managerId, company_id: 'trsport', archived_at: null }],
+        } as never);
+
+      await expect(
+        service.updateEmployee(
+          subordinateId,
+          { manager_id: managerId },
+          'holding',
+          `Bearer ${hrToken()}`,
+          { tenantId: 'xevn' },
+        ),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-SCOPE' });
+    });
+
+    it('PATCH rejects cycle manager_id', async () => {
+      db.query
+        .mockResolvedValueOnce({ rows: [subordinateRow] } as never)
+        .mockResolvedValueOnce({
+          rows: [{ id: managerId, company_id: 'holding', archived_at: null }],
+        } as never)
+        .mockResolvedValueOnce({ rows: [{ id: subordinateId }] } as never);
+
+      await expect(
+        service.updateEmployee(
+          subordinateId,
+          { manager_id: managerId },
+          'holding',
+          `Bearer ${hrToken()}`,
+          { tenantId: 'xevn' },
+        ),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-CYCLE' });
+    });
+
+    it('create persists manager_id when valid', async () => {
+      const created = {
+        ...subordinateRow,
+        id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+        manager_id: managerId,
+      };
+      db.query
+        .mockResolvedValueOnce({
+          rows: [{ id: managerId, company_id: 'holding', archived_at: null }],
+        } as never)
+        .mockResolvedValueOnce({ rows: [created] } as never);
+
+      const result = await service.createEmployee(
+        {
+          company_id: 'main',
+          employee_code: 'HLD-NEW',
+          email: 'new.sub@xe.vn',
+          full_name: 'New Sub',
+          manager_id: managerId,
+        },
+        `Bearer ${hrToken()}`,
+        { tenantId: 'xevn' },
+      );
+
+      expect(result.manager_id).toBe(managerId);
+      expect(db.query).toHaveBeenLastCalledWith(
+        expect.stringContaining('INSERT INTO public.employees'),
+        expect.arrayContaining([managerId]),
+      );
+    });
+
+    it('self ESS cannot PATCH manager_id', async () => {
+      const token = signServiceJwt({
+        sub: 'uat.nv0099@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'holding',
+        employee_id: subordinateId,
+        roles: ['employee'],
+      });
+
+      await expect(
+        service.updateEmployee(
+          subordinateId,
+          { manager_id: managerId },
+          'holding',
+          `Bearer ${token}`,
+        ),
+      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
     });
   });
 });

@@ -400,9 +400,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       expect.arrayContaining([candidateId, instanceId]),
     );
     const startBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
-      submitter?: { employeeId?: string };
+      submitter?: { employeeId?: string; userId?: string };
     };
     expect(startBody.submitter?.employeeId).toBe(submitterEmpId);
+    expect(startBody.submitter?.userId).toBe(submitterEmpId);
 
     fetchMock.mockResolvedValueOnce({
       ok: false,
@@ -430,6 +431,9 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       }
       if (sql.includes('UPDATE') && sql.includes('pending_approval')) {
         return { rows: [] };
+      }
+      if (sql.includes('FROM public.job_requisitions') && sql.includes('AS subject')) {
+        return { rows: [{ subject: 'YCTD HireToPay SP2SDD8FM8' }] };
       }
       if (sql.includes('FROM public.employees') && sql.includes('lower(email)')) {
         return { rows: [{ id: submitterEmpId }] };
@@ -464,13 +468,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       workflowCode: string;
       businessType: string;
       businessId: string;
-      submitter: { employeeId: string; userId: string };
+      submitter: { employeeId: string; userId: string; submitterPortalEmail?: string };
+      context?: { subjectTitle?: string; memberCompanyId?: string };
     };
     expect(body.workflowCode).toBe('hrm_requisition_approval');
     expect(body.businessType).toBe(WF_BUSINESS_TYPE_HRM_REQUISITION);
     expect(body.businessId).toBe(candidateId);
     expect(body.submitter.employeeId).toBe(submitterEmpId);
-    expect(body.submitter.userId).toBe('ceo@xe.vn');
+    expect(body.submitter.userId).toBe(submitterEmpId);
+    expect(body.submitter.submitterPortalEmail).toBe('ceo@xe.vn');
+    expect(body.context?.subjectTitle).toBe('YCTD HireToPay SP2SDD8FM8');
+    expect(body.context?.memberCompanyId).toBe('holding');
     expect(queryMock).toHaveBeenCalledWith(
       expect.stringContaining('SET workflow_instance_id'),
       expect.arrayContaining([candidateId, instanceId]),
@@ -559,9 +567,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [, init] = fetchMock.mock.calls[0] as [string, { body: string }];
     const body = JSON.parse(init.body) as {
-      submitter: { employeeId: string; userId: string };
+      submitter: { employeeId: string; userId: string; submitterPortalEmail?: string };
     };
-    expect(body.submitter.userId).toBe('ceo@xe.vn');
+    expect(body.submitter.userId).toBe(body.submitter.employeeId);
+    expect(body.submitter.submitterPortalEmail).toBe('ceo@xe.vn');
     expect(body.submitter.employeeId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     );

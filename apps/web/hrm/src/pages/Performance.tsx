@@ -29,6 +29,13 @@
  * Why: FR-HRM-PERF-SM-E3-01 · AC-PERF-* · AC-E3-ZOD · sa-erp-e3-ack
  * SRS: BA_ERP_E3_SRS · DB/API_DESIGN_HRM_ERP_E3
  * must_keep: cycle status ≠ eval SM; E1 pickers elsewhere; E2 pay/contract untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: BUILD-GAP-PERF-FORM-SCHEMA-01
+ * change_mode: FIX
+ * What: Import @/lib/performanceFormSchema — module restored on disk (git 43c479a)
+ * Why: Vite build failed missing module; no page logic change
+ * must_keep: cycle mutate payload; MD panel · Leave · AUTH/EMP/CAT lanes untouched
  */
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";

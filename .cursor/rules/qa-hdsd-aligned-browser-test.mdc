@@ -12,6 +12,12 @@
 3. **Không** chỉ chạy “happy path kỹ thuật” lệch menu HDSD (sai tab, sai tên nút, bỏ submenu HDSD có liệt kê).
 4. Thiếu control trên FE so với HDSD → **🟡 product_gap** + `spec_ref` HDSD § — **không** fake 🟢.
 5. U65 vẫn giữ: zero-seed · FE-only · FE sau 2xx + F5.
+6. **Case matrix (sponsor 2026-08-03):** trên đúng path HDSD, điền/thao tác đủ nhóm:
+   - **A — Fail nghiệp vụ sâu** (khớp Diễn biến SRS fail, không chỉ auth)
+   - **B — Success** đúng chuỗi HDSD → Lưu/Gửi → FE sau 2xx + F5
+   - **C — Logic BR** (nhánh/edge SRS)
+   - Cấm chỉ 1 happy path / chỉ probe API rồi 🟢
+7. **Cấm idle viewport:** mở emulator/web rồi **đứng im** không click/login/nhập = **FAIL process** (`QA-IDLE-VIEWPORT`). Evidence phải có timestamp thao tác + Network/UI đổi — không chỉ screenshot màn đứng.
 
 ## PM dispatch
 
@@ -21,14 +27,22 @@ Mỗi Task QA/QC phải có:
 hdsd_align: true
 hdsd_sot: <path HTML/PDF hoặc inventory md>
 hdsd_coverage: bảng menu×màn×nút bắt buộc trong evidence
+case_matrix: fail_deep + success_hdsd + logic_br
+srs_branch_trace: Dev hot-path if/switch comment UC + Diễn biến #
+test_log_required: true
+test_log_md: docs/qa/evidence/<WI>-test-log.md
+test_log_json: docs/qa/evidence/<WI>-test-log.json
 ```
+
+(U78 / OS `31-WORLD-STANDARD-TEST-LOG.md` — IEEE 829 / ISO 29119-3 lean.)
 
 ## QC
 
-NO-GO / từ chối clean GO nếu evidence thiếu bảng HDSD coverage hoặc click path lệch HDSD mà vẫn claim 🟢.
+NO-GO / từ chối clean GO nếu evidence thiếu bảng HDSD coverage, thiếu case matrix A+B+C, hoặc click path lệch HDSD mà vẫn claim 🟢.
 
 ## Liên kết
 
+- OS SoT: `_vibe-team-os/30-HDSD-ALIGNED-QA-AND-SRS-BRANCH-TRACE.md`
 - U63 · U65 · `qa-fe-outside-browser-gate.mdc`
 - Lesson: `docs/program/knowledge/PM_LESSON_PRIMARY_FLOW_E2E_ORCHESTRATION.md`
 - Ví dụ E2E: `docs/qa/P1_BROWSER_E2E_RECRUITMENT_13STEP_XBOS_HRM.md`

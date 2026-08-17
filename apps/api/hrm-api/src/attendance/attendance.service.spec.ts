@@ -17,7 +17,12 @@ describe('AttendanceService', () => {
       onUpdateRequestCreated: jest.fn().mockResolvedValue(undefined),
       onUpdateRequestDecided: jest.fn().mockResolvedValue(undefined),
     };
-    service = new AttendanceService(db, fanout as never);
+    const config = {
+      ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
+      isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
+      countActiveWorkSites: jest.fn().mockResolvedValue(0),
+    };
+    service = new AttendanceService(db, fanout as never, config as never);
   });
 
   it('BR-ATT-DATE-01: rejects epoch attendance_date on create', async () => {
@@ -282,6 +287,89 @@ describe('AttendanceService', () => {
     expect(out.total).toBe(1);
   });
 
+  it('U78-U84: listUpdateRequests Group CEO company_id=trsport includes Plane B′ UUID (CO-TMDV F5)', async () => {
+    const trsportUuid = '10000000-0000-4000-8000-000000000002';
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('SELECT aur.*')) {
+        return Promise.resolve({
+          rows: [{ id: 'ur-tmdv', company_id: trsportUuid, status: 'pending' }],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const out = await service.listUpdateRequests(
+      { company_id: 'trsport', status: 'pending' },
+      `Bearer ${token}`,
+      'xevn',
+    );
+    const [sql, params] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    expect(String(sql)).toContain('aur.company_id::text = ANY');
+    expect(params?.[0]).toEqual(expect.arrayContaining(['trsport', trsportUuid]));
+    expect(out.total).toBe(1);
+  });
+
+  it('U78-U84: approveUpdateRequest allows mgr when row company_id is trsport Plane B′ UUID', async () => {
+    const trsportUuid = '10000000-0000-4000-8000-000000000002';
+    const requestId = '579f8426-3b31-4add-813b-99b8625b2e18';
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.attendance_update_requests WHERE id')) {
+        return { rows: [{ company_id: trsportUuid }] } as never;
+      }
+      if (sql.includes('UPDATE public.attendance_update_requests')) {
+        return {
+          rows: [
+            {
+              id: requestId,
+              company_id: trsportUuid,
+              employee_id: 'b06422c0-f640-45d1-8cab-cb4a609848d6',
+              employee_code: 'VTH-0007',
+              employee_name: 'Phan Van An',
+              department: null,
+              position: null,
+              attendance_date: '2026-07-26',
+              update_type: 'forgot_check',
+              current_check_in: null,
+              current_check_out: null,
+              requested_check_in: '2026-07-26T01:00:00.000Z',
+              requested_check_out: '2026-07-26T10:30:00.000Z',
+              reason: 'stamp',
+              evidence_url: null,
+              approver_name: 'Mgr',
+              status: 'approved',
+              approved_at: '2026-08-04T00:00:00.000Z',
+              rejected_reason: null,
+              notes: null,
+              created_at: '2026-08-04T00:00:00.000Z',
+              updated_at: '2026-08-04T00:00:00.000Z',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+    const token = signServiceJwt({
+      sub: 'uat.nv0002@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'trsport',
+      company_uuid: trsportUuid,
+      roleCode: 'employee',
+    });
+    const out = await service.approveUpdateRequest(
+      requestId,
+      { approver_name: 'Mgr' },
+      'trsport',
+      `Bearer ${token}`,
+      'xevn',
+    );
+    expect(out).toMatchObject({ id: requestId, status: 'approved' });
+  });
+
   it('listRecords uses workforce scope for group CEO on company_id=main (P1-R1-BE-01)', async () => {
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('SELECT COUNT(*)::text AS total FROM public.attendance_records')) {
@@ -528,5 +616,204 @@ describe('AttendanceService', () => {
     );
     expect(String(insertCall?.[0])).toContain('$2::uuid');
     expect(insertCall?.[1]?.[1]).toBe('10000000-0000-4000-8000-000000000001');
+  });
+
+  it('HRM-ATT-GEO-001: rejects check-in outside active work sites', async () => {
+    const config = {
+      ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
+      isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
+      countActiveWorkSites: jest.fn().mockResolvedValue(1),
+    };
+    service = new AttendanceService(db, {
+      onUpdateRequestCreated: jest.fn(),
+      onUpdateRequestDecided: jest.fn(),
+    } as never, config as never);
+
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('FROM public.attendance_work_sites')) {
+        return Promise.resolve({
+          rows: [
+            {
+              name: 'HQ',
+              latitude: 21.0285,
+              longitude: 105.8542,
+              radius_meters: 50,
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+
+    await expect(
+      service.createRecord({
+        company_id: 'holding',
+        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        attendance_date: '2026-04-22',
+        latitude: 10,
+        longitude: 10,
+      }),
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-GEO-001' });
+  });
+
+  it('VAL-ATT-WS-CNS-04: soft-retired site excluded from geofence (empty active → skip)', async () => {
+    const config = {
+      ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
+      isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
+      countActiveWorkSites: jest.fn().mockResolvedValue(0),
+    };
+    service = new AttendanceService(db, {
+      onUpdateRequestCreated: jest.fn(),
+      onUpdateRequestDecided: jest.fn(),
+    } as never, config as never);
+
+    db.query.mockImplementation((sql: string) => {
+      // assertWithinWorkSite filters active=TRUE — retired site not returned
+      if (sql.includes('FROM public.attendance_work_sites') && sql.includes('active = TRUE')) {
+        return Promise.resolve({ rows: [] } as never);
+      }
+      if (sql.includes('INSERT INTO public.attendance_records')) {
+        return Promise.resolve({
+          rows: [
+            {
+              id: 'r-soft-retire',
+              company_id: '10000000-0000-4000-8000-000000000001',
+              employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+              attendance_date: '2026-04-22',
+              check_in_at: null,
+              check_out_at: null,
+              status: 'pending',
+              note: null,
+              created_by: null,
+              created_at: '2026-04-22T00:00:00.000Z',
+              updated_at: '2026-04-22T00:00:00.000Z',
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+
+    await expect(
+      service.createRecord({
+        company_id: 'holding',
+        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        attendance_date: '2026-04-22',
+        latitude: 21.0285,
+        longitude: 105.8542,
+      }),
+    ).resolves.toMatchObject({ id: 'r-soft-retire' });
+  });
+
+  it('VAL-ATT-WS-CNS-05: gps method omit lat/lon + active>0 → HRM-ATT-GEO-REQ', async () => {
+    const config = {
+      ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
+      isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
+      countActiveWorkSites: jest.fn().mockResolvedValue(1),
+    };
+    service = new AttendanceService(db, {
+      onUpdateRequestCreated: jest.fn(),
+      onUpdateRequestDecided: jest.fn(),
+    } as never, config as never);
+
+    await expect(
+      service.createRecord({
+        company_id: 'holding',
+        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        attendance_date: '2026-04-22',
+        check_in_method: 'gps',
+      }),
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-GEO-REQ' });
+  });
+
+  it('VAL-ATT-WS-CNS-05: manual omit lat/lon soft-skips (not GEO PASS invent)', async () => {
+    const config = {
+      ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
+      isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
+      countActiveWorkSites: jest.fn().mockResolvedValue(1),
+    };
+    service = new AttendanceService(db, {
+      onUpdateRequestCreated: jest.fn(),
+      onUpdateRequestDecided: jest.fn(),
+    } as never, config as never);
+
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('INSERT INTO public.attendance_records')) {
+        return Promise.resolve({
+          rows: [
+            {
+              id: 'r-manual',
+              company_id: '10000000-0000-4000-8000-000000000001',
+              employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+              attendance_date: '2026-04-22',
+              check_in_at: null,
+              check_out_at: null,
+              status: 'pending',
+              note: null,
+              created_by: null,
+              created_at: '2026-04-22T00:00:00.000Z',
+              updated_at: '2026-04-22T00:00:00.000Z',
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+
+    await expect(
+      service.createRecord({
+        company_id: 'holding',
+        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        attendance_date: '2026-04-22',
+        check_in_method: 'manual',
+      }),
+    ).resolves.toMatchObject({ id: 'r-manual' });
+    expect(config.countActiveWorkSites).not.toHaveBeenCalled();
+  });
+
+  it('skips geofence when gps_enabled is false on rules', async () => {
+    const config = {
+      ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
+      isGpsGeofenceEnabled: jest.fn().mockResolvedValue(false),
+      countActiveWorkSites: jest.fn().mockResolvedValue(1),
+    };
+    service = new AttendanceService(db, {
+      onUpdateRequestCreated: jest.fn(),
+      onUpdateRequestDecided: jest.fn(),
+    } as never, config as never);
+
+    db.query.mockImplementation((sql: string) => {
+      if (sql.includes('INSERT INTO public.attendance_records')) {
+        return Promise.resolve({
+          rows: [
+            {
+              id: 'r-gps-off',
+              company_id: '10000000-0000-4000-8000-000000000001',
+              employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+              attendance_date: '2026-04-22',
+              check_in_at: null,
+              check_out_at: null,
+              status: 'pending',
+              note: null,
+              created_by: null,
+              created_at: '2026-04-22T00:00:00.000Z',
+              updated_at: '2026-04-22T00:00:00.000Z',
+            },
+          ],
+        } as never);
+      }
+      return Promise.resolve({ rows: [] } as never);
+    });
+
+    await service.createRecord({
+      company_id: 'holding',
+      employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      attendance_date: '2026-04-22',
+      latitude: 10,
+      longitude: 10,
+    });
+
+    const siteQueries = db.query.mock.calls.filter((c) => String(c[0]).includes('attendance_work_sites'));
+    expect(siteQueries).toHaveLength(0);
   });
 });

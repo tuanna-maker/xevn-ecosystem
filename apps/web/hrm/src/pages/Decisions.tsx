@@ -46,12 +46,37 @@
  * What: decision_type options merge hr_decision_types ∪ decision_types (alias — không MISS live)
  * Why: AC-SC-DEC-ALIAS-02 · AC-SET-UI-05
  * must_keep: hardcode DECISION_TYPES chỉ khi catalog empty
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-01
+ * change_mode: ADD
+ * What: Person-bound bắt employee_id; toast/hint QSĐ effective → WH F5; HDSD testids
+ * Why: AC-DEC-WH-01/02 · BR-DEC-05 · F-CORE-DEC-01/02 · EMP-SPEC-01 §D.2/D.7
+ * must_keep: CatalogSearchPicker position/dept; density empty; U65 no seed; J-HRM-01..04
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-02
+ * change_mode: FIX
+ * What: HDSD labels F-FRM-POS/STATUS + testids code/title/position/status; validateDecisionCreateForm
+ * Why: R-EMP-DEC-WH-BROWSER-01 — harness miss «Chức vụ»/«Tình trạng»/code → toast bắt buộc, no POST
+ * must_keep: CatalogSearchPicker position required; person-bound employee_id; D2/D6 PASS; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-UAT-EMP-SOFT-OBS-FE-01
+ * change_mode: FIX
+ * What: WH hint gate uses isWorkHistoryNeoDecisionType (HRD_01/02) not only legacy appointment
+ * Why: OBS-D1-HINT — hintVisible=false when catalog type HRD_01 + effective
+ * must_keep: D1 WH neo sealed; HRD_03 no WH hint; D5 company_id; R-J03-DIALOG; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-FE-01
+ * change_mode: ADD
+ * What: decision_type picker binds GET /decisions/decision-types/effective (open catalog dual SoT)
+ * Why: R-PLT-DEC-FE-01 · AC-PLT-DEC · L1 SEAL DECPLATQA-MSJ1FB3D · CNS HRM-DEC-TYPE-UNKNOWN toast
+ * must_keep: F-CORE-DEC create/approve/WH · person-bound + WH neo defaults · density empty · U65 · decisions UAT=false
  */
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDecisions } from '@/hooks/useDecisions';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useDecDecisionTypesEffective } from '@/hooks/useDecDecisionTypesEffective';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   buildDepartmentKeyFields,
@@ -65,11 +90,19 @@ import {
   toCatalogPickerOptions,
   type CatalogPickerOption,
 } from '@/lib/catalogSearchPicker';
+import { withDecDecisionTypeHistoryOption } from '@/lib/decDecisionTypeCatalog';
 import { hrmStorageUploadStub } from '@/lib/hrmStorageUploadStub';
 import {
   resolveCreateDialogDecisionType,
   resolveListVisibilityAfterCreate,
 } from '@/lib/decisionListUi';
+import {
+  isDecisionEffectiveStatus,
+  isPersonBoundDecisionType,
+  isWorkHistoryNeoDecisionType,
+  validateDecisionCreateForm,
+} from '@/lib/decisionPersonBound';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -248,6 +281,20 @@ export default function Decisions() {
     isError: catalogsError,
   } = useSettingsCatalogsOverview();
 
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  const {
+    decisionTypeOptions: effectiveDecisionTypeOptions,
+    personBoundKeys: catalogPersonBoundKeys,
+    workHistoryKeys: catalogWorkHistoryKeys,
+    decisionTypeDisplayLabel,
+    hasEffectiveCatalog,
+    isLoading: decisionTypesLoading,
+    isError: decisionTypesError,
+  } = useDecDecisionTypesEffective({
+    historyKey: formData.decision_type,
+  });
+
   const positionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
     [catalogs],
@@ -258,17 +305,30 @@ export default function Decisions() {
   );
 
   const decisionTypeOptions = useMemo((): CatalogPickerOption[] => {
-    // E1-B: dual-read hr_decision_types ∪ decision_types — không MISS khi chỉ live key có items
+    // F-DEC-CAT-EFF — prefer open catalog effective (DEC native ∪ group_ref) when non-empty.
+    if (hasEffectiveCatalog) {
+      return effectiveDecisionTypeOptions;
+    }
+    // Fallback E1-B: dual-read settings catalogs — không MISS khi effective empty (U65 soft).
     const fromCatalog = toCatalogPickerOptions(
       mergeEffectiveItemsByKeys(catalogs, HRM_MASTER_DATA_CATALOG_KEYS.decisionTypes),
     );
-    if (fromCatalog.length > 0) return fromCatalog;
+    if (fromCatalog.length > 0) {
+      return withDecDecisionTypeHistoryOption(fromCatalog, formData.decision_type);
+    }
     return DECISION_TYPES.filter((dt) => dt.key !== 'all').map((dt) => ({
       value: dt.key,
       label: t(dt.labelKey),
       code: dt.key,
     }));
-  }, [catalogs, DECISION_TYPES, t]);
+  }, [
+    hasEffectiveCatalog,
+    effectiveDecisionTypeOptions,
+    formData.decision_type,
+    catalogs,
+    DECISION_TYPES,
+    t,
+  ]);
 
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -283,7 +343,6 @@ export default function Decisions() {
   const [editingDecision, setEditingDecision] = useState<Decision | null>(null);
   const [viewingDecision, setViewingDecision] = useState<Decision | null>(null);
   const [deletingDecision, setDeletingDecision] = useState<Decision | null>(null);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string>('');
@@ -495,12 +554,19 @@ export default function Decisions() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.decision_code || !formData.employee_name || !formData.title) {
-      toast.error(t('decisions.requiredFields'));
-      return;
-    }
-    if (!buildPositionKeyFields(formData.position_key, positionOptions)) {
-      toast.error('Chọn vị trí từ danh mục (không nhập tự do).');
+    const gate = validateDecisionCreateForm({
+      decision_code: formData.decision_code,
+      title: formData.title,
+      employee_name: formData.employee_name,
+      decision_type: formData.decision_type,
+      employee_id: formData.employee_id,
+      positionCatalogOk: Boolean(
+        buildPositionKeyFields(formData.position_key, positionOptions),
+      ),
+      extraPersonBoundTypes: catalogPersonBoundKeys,
+    });
+    if (!gate.ok) {
+      toast.error(gate.message);
       return;
     }
     if (
@@ -527,6 +593,16 @@ export default function Decisions() {
         await createMutation.mutateAsync(formData);
         // Sau POST 2xx: về tab Tất cả + clear filter để dòng mới hiện (AC-DEC-04).
         applyListVisibilityAfterCreate(formData.decision_type);
+      }
+      if (
+        isDecisionEffectiveStatus(formData.status) &&
+        isPersonBoundDecisionType(formData.decision_type, catalogPersonBoundKeys) &&
+        formData.employee_id.trim()
+      ) {
+        toast.success(
+          'QSĐ hiệu lực — lịch sử công tác sẽ phản ánh theo decision_id. Mở hồ sơ NV → Quá trình công tác rồi F5.',
+          { duration: 6000 },
+        );
       }
       handleCloseDialog();
     } catch {
@@ -675,7 +751,14 @@ export default function Decisions() {
   };
 
   const getTypeLabel = (type: string) => {
-    return DECISION_TYPES.find(t2 => t2.key === type)?.labelKey ? t(DECISION_TYPES.find(t2 => t2.key === type)!.labelKey) : type;
+    if (hasEffectiveCatalog) {
+      const fromEff = decisionTypeDisplayLabel(type);
+      if (fromEff && fromEff !== '—') return fromEff;
+    }
+    const hit = decisionTypeOptions.find((o) => o.value === type || o.code === type);
+    if (hit?.label?.trim()) return hit.label.trim();
+    const legacy = DECISION_TYPES.find((t2) => t2.key === type);
+    return legacy?.labelKey ? t(legacy.labelKey) : type;
   };
 
   const handleExport = () => {
@@ -1014,8 +1097,12 @@ export default function Decisions() {
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>{t('decisions.decisionCodeLabel')} <span className="text-destructive">*</span></Label>
+                <Label htmlFor="hdsd-decisions-form-code">
+                  {t('decisions.decisionCodeLabel')} <span className="text-destructive">*</span>
+                </Label>
                 <Input
+                  id="hdsd-decisions-form-code"
+                  data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormCode}
                   placeholder={t('decisions.decisionCodePlaceholder')}
                   value={formData.decision_code}
                   onChange={(e) => setFormData({ ...formData, decision_code: e.target.value })}
@@ -1028,20 +1115,29 @@ export default function Decisions() {
                   value={formData.decision_type}
                   onValueChange={(value) => setFormData({ ...formData, decision_type: value })}
                   placeholder={t('decisions.selectType')}
-                  loading={catalogsLoading}
-                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                  loading={decisionTypesLoading || catalogsLoading}
+                  errorText={
+                    decisionTypesError || catalogsError
+                      ? t('settings.catalogs.loadError')
+                      : undefined
+                  }
                   emptyHint={
                     <Link to="/settings" className="text-primary underline text-xs font-medium">
-                      Mở Cài đặt → Danh mục nghiệp vụ / Loại quyết định
+                      Mở Cài đặt → Loại quyết định DEC
                     </Link>
                   }
+                  data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormType}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>{t('decisions.titleLabel')} <span className="text-destructive">*</span></Label>
+              <Label htmlFor="hdsd-decisions-form-title">
+                {t('decisions.titleLabel')} <span className="text-destructive">*</span>
+              </Label>
               <Input
+                id="hdsd-decisions-form-title"
+                data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormTitle}
                 placeholder={t('decisions.titlePlaceholder')}
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -1049,9 +1145,17 @@ export default function Decisions() {
             </div>
 
             <div className="space-y-2">
-              <Label>{t('decisions.selectEmployeeLabel')}</Label>
-              <Select value={formData.employee_id} onValueChange={handleEmployeeSelect}>
-                <SelectTrigger>
+              <Label>
+                {t('decisions.selectEmployeeLabel')}
+                {isPersonBoundDecisionType(formData.decision_type, catalogPersonBoundKeys) && (
+                  <span className="text-destructive"> *</span>
+                )}
+              </Label>
+              <Select
+                value={formData.employee_id || undefined}
+                onValueChange={handleEmployeeSelect}
+              >
+                <SelectTrigger data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormEmployee}>
                   <SelectValue placeholder={t('decisions.selectEmployeeLabel')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -1062,6 +1166,30 @@ export default function Decisions() {
                   ))}
                 </SelectContent>
               </Select>
+              {isPersonBoundDecisionType(formData.decision_type, catalogPersonBoundKeys) &&
+                !formData.employee_id.trim() && (
+                <p className="text-xs text-destructive">
+                  Loại QSĐ gắn người bắt buộc chọn nhân viên (không chỉ nhập tên).
+                </p>
+              )}
+              {isDecisionEffectiveStatus(formData.status) &&
+                isWorkHistoryNeoDecisionType(formData.decision_type, catalogWorkHistoryKeys) &&
+                formData.employee_id.trim() && (
+                  <p
+                    className="text-xs text-xevn-textSecondary"
+                    data-testid={HDSD_MUTATE_TEST_IDS.decisionsEffectiveWhHint}
+                  >
+                    Khi lưu trạng thái Hiệu lực, dòng lịch sử công tác gắn decision_id sẽ cập nhật —
+                    F5 tab Quá trình công tác trên{' '}
+                    <Link
+                      to={`/employees/${formData.employee_id}`}
+                      className="text-primary underline"
+                    >
+                      hồ sơ NV
+                    </Link>
+                    .
+                  </p>
+                )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -1096,7 +1224,9 @@ export default function Decisions() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('decisions.positionLabel')} *</Label>
+                <Label>
+                  {t('decisions.positionLabel')} <span className="text-destructive">*</span>
+                </Label>
                 <CatalogSearchPicker
                   options={positionOptions}
                   value={formData.position_key}
@@ -1106,7 +1236,13 @@ export default function Decisions() {
                   errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
                   emptyHint={settingsCatalogCta}
                   aria-label={t('decisions.positionLabel')}
+                  data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormPosition}
                 />
+                {!formData.position_key.trim() && (
+                  <p className="text-xs text-destructive">
+                    Bắt buộc chọn vị trí từ danh mục (không nhập tự do).
+                  </p>
+                )}
               </div>
             </div>
 
@@ -1220,7 +1356,7 @@ export default function Decisions() {
                 value={formData.status}
                 onValueChange={(value) => setFormData({ ...formData, status: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormStatus}>
                   <SelectValue placeholder={t('decisions.selectStatus')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -1319,7 +1455,11 @@ export default function Decisions() {
             <Button variant="outline" onClick={handleCloseDialog}>
               {t('decisions.cancelBtn')}
             </Button>
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              data-testid={HDSD_MUTATE_TEST_IDS.decisionsFormSubmit}
+            >
               {isSubmitting ? t('decisions.saving') : editingDecision ? t('decisions.update') : t('decisions.create')}
             </Button>
           </DialogFooter>

@@ -9,7 +9,8 @@ interface RecruitmentPieChartProps {
   candidates: CandidateData[];
 }
 
-const COLORS = ['#6366f1', '#8b5cf6', '#f59e0b', '#22c55e', '#06b6d4'];
+/** Precision Motion DNA — no indigo/violet AI (ADR §16 · W4-REC-A R01) */
+const COLORS = ['#1E40AF', '#F59E0B', '#06B6D4', '#10B981', '#EF4444', '#4B5563'];
 
 export function RecruitmentPieChart({ candidates }: RecruitmentPieChartProps) {
   const { t } = useTranslation();

@@ -60,10 +60,11 @@ describe('P1-WEB-ACCEPTANCE-BE-FIX-01 UF-XBOS-15 extension items', () => {
       { code: 'qa_uf15_new', label: 'QA UF15 New', status: 'active' },
     ]);
 
+    // Product normalizes FE alias `positions` → storage SoT `job_titles` (E1-B family).
     expect(appendSpy).toHaveBeenCalledWith(
       'xevn',
       'holding',
-      'positions',
+      'job_titles',
       expect.arrayContaining([expect.objectContaining({ code: 'qa_uf15_new', status: 'active' })]),
     );
   });

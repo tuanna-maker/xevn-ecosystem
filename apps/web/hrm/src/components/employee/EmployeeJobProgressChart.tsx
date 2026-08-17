@@ -1,9 +1,25 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → Việc làm charts (E18)
+ * UC:         E18
+ * Purpose:    Job progress charts — primary #1E40AF DNA colors.
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-C
+ * Coded:      2026-08-05
+ * Callers:    EmployeeJobList
+ * must_keep: Job honesty parent; no Nest invent
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Chart DNA hex ADR; priority boxes ops-dense; fake Math.random trend → honesty stub
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C E18 Job honesty PARTIAL
+ * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
+ */
+
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
 import {
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -35,17 +51,18 @@ interface EmployeeJobProgressChartProps {
   jobs: Job[];
 }
 
+/** ADR-20260805 DNA hex — chart fill (not Tailwind blue-500 invent). */
 const COLORS = {
-  completed: '#22c55e',
-  in_progress: '#3b82f6',
-  pending: '#6b7280',
-  overdue: '#ef4444',
+  completed: '#10B981',
+  in_progress: '#1E40AF',
+  pending: '#6B7280',
+  overdue: '#EF4444',
 };
 
 const PRIORITY_COLORS = {
-  high: '#ef4444',
-  medium: '#f59e0b',
-  low: '#22c55e',
+  high: '#EF4444',
+  medium: '#F59E0B',
+  low: '#10B981',
 };
 
 export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps) {
@@ -100,14 +117,6 @@ export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps
     },
   ];
 
-  // Giả lập dữ liệu tiến độ theo thời gian (6 tháng gần đây)
-  const months = ['T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
-  const progressOverTime = months.map((month, index) => ({
-    month,
-    completed: Math.floor(Math.random() * 5) + index,
-    total: Math.floor(Math.random() * 3) + index + 3,
-  }));
-
   // Tính tiến độ trung bình
   const averageProgress = jobs.length > 0 
     ? Math.round(jobs.reduce((acc, job) => acc + job.progress, 0) / jobs.length) 
@@ -160,7 +169,7 @@ export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps
                   className="w-3 h-3 rounded-full" 
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-xevn-textSecondary">
                   {item.name}: {item.value}
                 </span>
               </div>
@@ -182,14 +191,14 @@ export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps
             {/* Tiến độ trung bình */}
             <div>
               <div className="flex justify-between mb-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-xevn-textSecondary">
                   {t('employeeProfile.jobs.chartAverageProgress')}
                 </span>
                 <span className="text-sm font-medium">{averageProgress}%</span>
               </div>
               <div className="w-full bg-muted rounded-full h-3">
                 <div 
-                  className="bg-blue-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-xevn-primary h-3 rounded-full transition-all duration-500"
                   style={{ width: `${averageProgress}%` }}
                 />
               </div>
@@ -198,14 +207,14 @@ export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps
             {/* Tỷ lệ hoàn thành */}
             <div>
               <div className="flex justify-between mb-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-xevn-textSecondary">
                   {t('employeeProfile.jobs.chartCompletionRate')}
                 </span>
                 <span className="text-sm font-medium">{completionRate}%</span>
               </div>
               <div className="w-full bg-muted rounded-full h-3">
                 <div 
-                  className="bg-green-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-xevn-success h-3 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
@@ -213,27 +222,27 @@ export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps
 
             {/* Công việc theo ưu tiên */}
             <div className="pt-2">
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-sm text-xevn-textSecondary mb-3">
                 {t('employeeProfile.jobs.chartByPriority')}
               </p>
               <div className="flex gap-4">
-                <div className="flex-1 text-center p-3 rounded-lg bg-red-50 dark:bg-red-900/20">
-                  <p className="text-lg font-bold text-red-600">
+                <div className="flex-1 text-center p-3 rounded-lg border border-xevn-border bg-xevn-danger/10">
+                  <p className="text-lg font-bold text-xevn-danger">
                     {jobs.filter(j => j.priority === 'high').length}
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.priorityHigh')}</p>
+                  <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.priorityHigh')}</p>
                 </div>
-                <div className="flex-1 text-center p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
-                  <p className="text-lg font-bold text-yellow-600">
+                <div className="flex-1 text-center p-3 rounded-lg border border-xevn-border bg-xevn-warning/10">
+                  <p className="text-lg font-bold text-xevn-warning">
                     {jobs.filter(j => j.priority === 'medium').length}
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.priorityMedium')}</p>
+                  <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.priorityMedium')}</p>
                 </div>
-                <div className="flex-1 text-center p-3 rounded-lg bg-green-50 dark:bg-green-900/20">
-                  <p className="text-lg font-bold text-green-600">
+                <div className="flex-1 text-center p-3 rounded-lg border border-xevn-border bg-xevn-success/10">
+                  <p className="text-lg font-bold text-xevn-success">
                     {jobs.filter(j => j.priority === 'low').length}
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('employeeProfile.jobs.priorityLow')}</p>
+                  <p className="text-xs text-xevn-textSecondary">{t('employeeProfile.jobs.priorityLow')}</p>
                 </div>
               </div>
             </div>
@@ -286,51 +295,28 @@ export function EmployeeJobProgressChart({ jobs }: EmployeeJobProgressChartProps
         </CardContent>
       </Card>
 
-      {/* Biểu đồ đường - Xu hướng hoàn thành theo thời gian */}
-      <Card>
+      {/* Trend — no Math.random invent; honesty until history API exists */}
+      <Card className="border-xevn-border bg-xevn-surface" data-testid="emp-job-trend-honesty">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
+          <CardTitle className="text-base font-medium flex items-center gap-2 text-xevn-text">
+            <TrendingUp className="w-4 h-4 text-xevn-primary" />
             {t('employeeProfile.jobs.chartTrend')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={progressOverTime}>
-                <defs>
-                  <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="month" className="text-xs" />
-                <YAxis className="text-xs" />
-                <Tooltip />
-                <Legend wrapperStyle={{ fontSize: '12px' }} />
-                <Area 
-                  type="monotone" 
-                  dataKey="total" 
-                  name={t('employeeProfile.jobs.chartTotalJobs')}
-                  stroke="#3b82f6" 
-                  fillOpacity={1} 
-                  fill="url(#colorTotal)" 
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="completed" 
-                  name={t('employeeProfile.jobs.statusCompleted')}
-                  stroke="#22c55e" 
-                  fillOpacity={1} 
-                  fill="url(#colorCompleted)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="h-[200px] flex flex-col items-center justify-center gap-2 text-center px-4">
+            <p className="text-sm font-medium text-xevn-text">
+              {t(
+                'employeeProfile.jobs.trendUnavailableTitle',
+                'Chưa có dữ liệu xu hướng theo tháng',
+              )}
+            </p>
+            <p className="text-sm text-xevn-textSecondary">
+              {t(
+                'employeeProfile.jobs.trendUnavailableBody',
+                'Biểu đồ xu hướng cần API lịch sử operations/tasks theo kỳ — không hiển thị số giả lập. Pie/bar phía trên dùng dữ liệu job hiện tại.',
+              )}
+            </p>
           </div>
         </CardContent>
       </Card>

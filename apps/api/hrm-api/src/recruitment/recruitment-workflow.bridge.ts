@@ -1,70 +1,52 @@
 /**
  * @CODE-MEMORY
- * Screen: HRM recruitment → XBOS workflow-engine instances/start + step/terminal callbacks
- * UC: UC-HRM-REC-WF-02..06
- * BR: BR-REC-WF-01..09 · BR-REC-WF-MAP-01
- * SRS: docs/hrm/SRS.md §16.5 (delta) · docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_BA_DELTA.md
- * TechSpec: docs/decisions/ADR-XBOS-HRM-RECRUITMENT-WORKFLOW-BRIDGE.md §3–§6
- * DataContract: docs/program/deltas/XBOS_HRM_REC_WF_BRIDGE_DATA_CONTRACT.md §2–§6
- * Purpose: Parallel LeaveWorkflowBridge for plan / requisition / candidate pipeline.
- *   Spawn three workflow_code values; sync stage/status via step+terminal callbacks;
- *   fail-closed STAGE-UNMAPPED / LOCKED / SPAWN-MISSING / CALLBACK-SKIP.
- * WorkItem: XHRM-REC-WF-BE-SPAWN-02
- * Coded: 2026-07-19
- * Callers: RecruitmentWorkflowController · RecruitmentCatalogService · RecruitmentService
- * Callees: CatalogSync → XBOS instances/start · HrmDbService (plans/reqs/candidates + employees email)
- * Impact: Wrong map → funnel F6 drift; leave/catalog bridges must stay untouched
- * must_keep: UF-HRM-12, J-HRM-05, LeaveWorkflowBridge, CatalogWorkflowBridge, AC-CD-F6-*, F4 resolver
- * change_mode: FIX
- * SOLID: SRP — recruitment↔WF bridge only; leave notify path never imported
- * LastVerified: recruitment-workflow.bridge.spec.ts · xhrm-rec-wf-be-spawn-02
+ * Screen:     HRM → Tuyển dụng — XBOS workflow bridge
+ * UC:         FR-UC-H04 · plan/requisition/candidate WF
+ * BR:         Soft spawn; stage map; terminal hire AC
+ * Purpose:    Bridge recruitment entities → XBOS workflow-engine (start + callbacks).
+ * WorkItem:   W1-B-01-BE-DIST-RESTORE
+ * Coded:      2026-08-03
+ * Callers:    recruitment.service · recruitment-catalog.service
+ * Callees:    CatalogSyncService · HrmDbService · leave expandWorkflowResolverCompanyIds
+ * must_keep:  soft null on XBOS fail; Group CEO holding/main; hire_ac_unmet skip; U65 no seed
+ * SOLID:      Bridge tách khỏi RecruitmentService
+ * LastVerified: tsc tsconfig.build.json
  *
- * @CODE-MEMORY-CHANGE 2026-07-19 XHRM-REC-WF-BE-01
- * ADD RecruitmentWorkflowBridge (Option A HRM spawn). Cite data contract §2 map,
- * §4 workflow_instance_id, §5 DTO, §6 codes. Do not REPLACE leave/catalog bridges.
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-01-BE-DIST-RESTORE
+ * change_mode: ADD
+ * What: Restore src from dist recruitment-workflow.bridge.js/.d.ts (export parity)
+ * Why: TS2307 R-HRM-DIST-MISSING blocked nest/tsc
+ * must_keep: WF codes · REC_WF_TASK_TYPE_TO_STAGE · F6 stages · soft spawn
  *
- * @CODE-MEMORY-CHANGE 2026-07-19 XHRM-REC-WF-BE-SPAWN-01
- * FIX instances/start payload: XBOS requires submitter.employeeId (XBOS-WF-400).
- * Resolve from explicit ctx.submitterEmployeeId or employees.email = submitterUserId
- * (x-user-id / JWT subject). Reuse expandWorkflowResolverCompanyIds (leave helper,
- * read-only import — do not mutate LeaveWorkflowBridge). must_keep leave + F6 map.
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: PO-E2E-SPINE-01-BE-INBOX-01
+ * change_mode: ADD
+ * What: Pass context.subjectTitle (YCTD/plan/candidate label) on XBOS start so
+ *   Inbox list can show this-wave stamp without FE join / seed
+ * Why: HP-03 / J-REC-WF-03 — spawn 201 + ceo task present but stamp absent on card
+ * must_keep: soft null on XBOS fail · Group CEO holding/main · Leave bridge untouched
  *
- * @CODE-MEMORY-CHANGE 2026-07-19 XHRM-REC-WF-BE-SPAWN-02
- * FIX Group CEO portal identity (ceo@xe.vn) with no employees.email row (dense
- * holding already seeded → ensureSeedData skip). Resolve chain: explicit → UUID →
- * email → user_company_memberships.employee_id → holding master (PORTAL-GCEO/NV001)
- * → idempotent ensure holding employee for documented portal Group CEO emails.
- * Not QA seed — product ensure for portal↔employee master link. must_keep leave+F6.
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-01-CLUSTER-BE-01
+ * ADD lock need_hire cells on plan WF approve (F-REC-HC-03) · activation_mode snapshot.
+ * change_mode: ADD · must_keep soft spawn · UF-HRM-12 · REC-03 OUT
  *
- * @CODE-MEMORY-CHANGE 2026-07-21 BE-HRM-G-DB-01-HIRE-LINK-01
- * ADD stamp candidates.employee_id on terminal hired when AC met via reverse
- * employees.candidate_id (FR-HRM-INT-01 Diễn biến #7 · TechSpec §17.3 G-DB-01).
- * User-facing reject remains catalog HRM-REC-HIRE-400; WF keeps CALLBACK-SKIP.
- * change_mode: ADD · must_keep leave bridge · G-RC-01 · no hard REFERENCES.
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01
+ * EXPAND status CHK open_for_hire · pass XBOS conditions {headcount_mode,hire_reason}
+ * · terminal approve → open_for_hire (in_plan) / approved+BOD gate (out_of_plan).
+ * change_mode: UPGRADE · must_keep soft spawn · one hrm_requisition_approval · U65 no seed
  *
- * @CODE-MEMORY-CHANGE 2026-07-21 BM-BE-REC-WF-SPAWN-MEMBER-01
- * XBOS owns applyingEntityId group+member spawn semantics + recruitment resolver
- * soft-fallback (G-BM-REC-02). HRM bridge spawn payload unchanged (Option A).
- * must_keep LeaveWorkflowBridge · UF-HRM-12 · G-RC-01 · U65.
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-YCTD-WF-INBOX-BRIDGE-01
+ * FIX XBOS spawn submitter.userId = employeeId (UUID), portal email in submitterPortalEmail —
+ * BR-WF-04 blocks ceo@ inbox Duyệt when userId email equals actor (U65 Group CEO).
+ * must_keep: employeeId SoT · soft spawn · Y-S9 terminal · resolver email lookup unchanged
+ * change_mode: FIX · J-REC-WF / AC-REC-WF-03
  *
- * @CODE-MEMORY-CHANGE 2026-07-22 BM-BE-REC-WF-04-STEP-SYNC-CALLBACK-01
- * FIX mapRecTaskTypeToStage: accept bare F6 step_key (intake|screening|interview|offer)
- * as well as catalog rec_* taskType — XBOS complete falls back to step_key when
- * inbox payload omits taskType (J-REC-WF-04 · QA bm-qa-j-rec-wf-04-step-sync-01).
- * handleStepCallback also tries stepKey when taskType unmapped.
- * change_mode: FIX · must_keep start-pipeline · J-REC-WF-02/03 · U65 no seed.
- *
- * @CODE-MEMORY-CHANGE 2026-07-23 D-HRM-REC-WF-OPTION-B-BE-01
- * ADD spawn context entityCompanyId + memberCompanyId from HRM entity company
- * (slug/holding) so XBOS Option B partition pick receives correct keys.
- * Headers still normalize Group CEO main→holding. must_keep leave bridge ·
- * J-REC-WF spawn smoke · no Bay.vn UI · no Option C clone.
- *
- * @CODE-MEMORY-CHANGE 2026-07-25 D-HRM-REC-WF-OPTION-B-SPAWN-FIX-01
- * Controllers resolve submitter via JWT when x-user-id missing (see
- * resolve-submitter-user-id.ts). Bridge still fail-closed SPAWN-MISSING when
- * identity unresolved. must_keep Option B company partition · J-REC-WF-02/03.
- * change_mode: UPGRADE
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-YCTD-BOD-OPEN-FOR-HIRE-01
+ * FIX out_of_plan terminal: catalog `hrm_requisition_approval` = 1 inbox leg — terminal = WF complete
+ * → open_for_hire + cv_intake_allowed (không kẹt `approved` + BOD 409 UV). POST transitions bod_complete giữ nguyên.
+ * must_keep: in_plan terminal → open_for_hire · manual bod_complete path · spawn submitter UUID
+ * change_mode: FIX · AC-REC-01 · Y-S9
  */
 import { randomUUID } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
@@ -72,38 +54,31 @@ import { expandWorkflowResolverCompanyIds } from '../attendance/leave-workflow.b
 import { CatalogSyncService, resolveXbosApiBaseUrl } from '../catalog-sync/catalog-sync.service';
 import { MASTER_TENANT_ID } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
+import {
+  lockNeedHireCells,
+  projectMonthsForApi,
+  toPersistCell,
+} from './recruitment-plan-headcount';
 
 const GROUP_HOLDING_COMPANY_ID = 'holding';
 const GROUP_OPERATING_MAIN = 'main';
-
-/** Mirror XBOS GROUP_APPROVER_USER — portal Group CEO without mobile employee_id JWT. */
 export const PORTAL_GROUP_CEO_EMAIL = 'ceo@xe.vn';
 const PORTAL_GROUP_CEO_EMPLOYEE_CODE = 'PORTAL-GCEO';
-/** Bootstrap holding NV001 id — prefer when still present and email matches / vacant. */
 const HOLDING_BOOTSTRAP_CEO_EMPLOYEE_ID = '11111111-1111-4111-8111-111111111111';
-
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export const WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE = 'hrm_recruitment_plan_approval';
 export const WF_HRM_REQUISITION_APPROVAL_CODE = 'hrm_requisition_approval';
 export const WF_HRM_CANDIDATE_PIPELINE_CODE = 'hrm_candidate_pipeline';
-
 export const WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN = 'hrm_recruitment_plan';
 export const WF_BUSINESS_TYPE_HRM_REQUISITION = 'hrm_requisition';
 export const WF_BUSINESS_TYPE_HRM_CANDIDATE = 'hrm_candidate';
 
-/**
- * Data contract §2.2 — LOCKED F6 non-terminal map (must_keep AC-CD-F6-*).
- * Keys are catalog `taskType` (`rec_*`). Live XBOS inbox often stores bare
- * `step_key` (intake|screening|…) — see `mapRecTaskTypeToStage` normalization.
- */
 export const REC_WF_TASK_TYPE_TO_STAGE: Readonly<Record<string, string>> = {
   rec_intake: 'new',
   rec_screening: 'screening',
   rec_interview: 'interview',
   rec_offer: 'offer',
-  /** Bare F6 step_key aliases (J-REC-WF-04 step sync). */
   intake: 'new',
   screening: 'screening',
   interview: 'interview',
@@ -120,7 +95,14 @@ export const F6_CANDIDATE_STAGES = [
 ] as const;
 
 const PLAN_TERMINAL = new Set(['approved', 'rejected', 'cancelled']);
-const REQUISITION_TERMINAL = new Set(['open', 'approved', 'rejected', 'closed', 'cancelled']);
+const REQUISITION_TERMINAL = new Set([
+  'open',
+  'open_for_hire',
+  'approved',
+  'rejected',
+  'closed',
+  'cancelled',
+]);
 const CANDIDATE_TERMINAL = new Set(['hired', 'rejected']);
 
 export type RecruitmentBusinessType =
@@ -136,6 +118,12 @@ export type RecruitmentWorkflowSpawnContext = {
   submitterEmployeeId?: string;
   tenantId?: string;
   companySlug?: string;
+  /** YCTD Wave-2 — XBOS matrix conditions (mode + hire_reason). */
+  conditions?: {
+    headcount_mode?: string;
+    hire_reason?: string;
+  };
+  approvalMatrixKey?: string;
 };
 
 export type RecruitmentStepCallbackPayload = {
@@ -159,17 +147,11 @@ export type RecruitmentTerminalCallbackPayload = {
   rejectedReason?: string | null;
 };
 
-/**
- * Map XBOS taskType **or** bare step_key → F6 candidate stage.
- * Accepts `rec_screening` and `screening` (live complete path uses step_key
- * when task payload omits taskType).
- */
 export function mapRecTaskTypeToStage(taskType: string): string | null {
   const key = taskType.trim().toLowerCase();
   if (!key) return null;
   const direct = REC_WF_TASK_TYPE_TO_STAGE[key];
   if (direct) return direct;
-  // Normalize bare ↔ rec_* so either form from XBOS maps.
   if (key.startsWith('rec_')) {
     return REC_WF_TASK_TYPE_TO_STAGE[key.slice(4)] ?? null;
   }
@@ -189,14 +171,18 @@ export function isRecruitmentWorkflowLocked(
 }
 
 function workflowCodeForBusinessType(businessType: RecruitmentBusinessType): string {
-  if (businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN) return WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE;
-  if (businessType === WF_BUSINESS_TYPE_HRM_REQUISITION) return WF_HRM_REQUISITION_APPROVAL_CODE;
+  if (businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN) {
+    return WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE;
+  }
+  if (businessType === WF_BUSINESS_TYPE_HRM_REQUISITION) {
+    return WF_HRM_REQUISITION_APPROVAL_CODE;
+  }
   return WF_HRM_CANDIDATE_PIPELINE_CODE;
 }
 
 function tableForBusinessType(businessType: RecruitmentBusinessType): {
   table: string;
-  statusCol: 'status' | 'stage';
+  statusCol: string;
 } {
   if (businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN) {
     return { table: 'public.recruitment_plans', statusCol: 'status' };
@@ -220,35 +206,67 @@ export class RecruitmentWorkflowBridge {
     return resolveXbosApiBaseUrl();
   }
 
-  /**
-   * XBOS startInstanceFromWorkflowCode requires non-empty submitter.employeeId.
-   * Chain: explicit → UUID userId → employees.email → membership.employee_id →
-   * holding master / ensure for portal Group CEO (ceo@xe.vn).
-   */
+  /** Inbox display-ready subject (YCTD stamp / plan title / candidate name). */
+  async resolveBusinessSubjectTitle(ctx: RecruitmentWorkflowSpawnContext): Promise<string | null> {
+    try {
+      if (ctx.businessType === WF_BUSINESS_TYPE_HRM_CANDIDATE) {
+        const { rows } = await this.db.query<{ subject: string | null }>(
+          `SELECT coalesce(
+             nullif(btrim(full_name), ''),
+             nullif(btrim(email), ''),
+             id::text
+           ) AS subject
+           FROM public.candidates
+           WHERE id = $1::uuid
+           LIMIT 1`,
+          [ctx.businessId],
+        );
+        return rows[0]?.subject?.trim() || null;
+      }
+      if (ctx.businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN) {
+        const { rows } = await this.db.query<{ subject: string | null }>(
+          `SELECT nullif(btrim(title), '') AS subject
+           FROM public.recruitment_plans
+           WHERE id = $1::uuid
+           LIMIT 1`,
+          [ctx.businessId],
+        );
+        return rows[0]?.subject?.trim() || null;
+      }
+      const { rows } = await this.db.query<{ subject: string | null }>(
+        `SELECT nullif(btrim(title), '') AS subject
+         FROM public.job_requisitions
+         WHERE id = $1::uuid
+         LIMIT 1`,
+        [ctx.businessId],
+      );
+      return rows[0]?.subject?.trim() || null;
+    } catch (err) {
+      this.logger.warn(
+        `HRM-REC-WF-SUBJECT-SOFT: title resolve failed businessType=${ctx.businessType} id=${ctx.businessId} ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return null;
+    }
+  }
+
   async resolveSubmitterEmployeeId(ctx: RecruitmentWorkflowSpawnContext): Promise<string | null> {
     const explicit = ctx.submitterEmployeeId?.trim();
     if (explicit) return explicit;
-
     const userKey = ctx.submitterUserId?.trim().toLowerCase();
     if (!userKey) return null;
     if (UUID_RE.test(userKey)) return userKey;
-
     const companyRaw = (ctx.companySlug ?? ctx.companyId ?? '').trim();
     const companyIds = companyRaw ? expandWorkflowResolverCompanyIds(companyRaw) : [];
-
     try {
       const byEmail = await this.resolveEmployeeIdByEmail(userKey, companyIds);
       if (byEmail) return byEmail;
-
       const byMembership = await this.resolveEmployeeIdViaMembership(userKey, companyIds);
       if (byMembership) return byMembership;
-
       if (this.isPortalGroupCeoIdentity(userKey)) {
         const master = await this.resolveHoldingGroupCeoMasterEmployee(userKey);
         if (master) return master;
         return await this.ensureHoldingPortalGroupCeoEmployee(userKey);
       }
-
       return null;
     } catch (err) {
       this.logger.warn(
@@ -278,8 +296,6 @@ export class RecruitmentWorkflowBridge {
       );
       if (scoped.rows[0]?.id) return scoped.rows[0].id;
     }
-
-    // Fallback: email-only (group CEO / multi-hat may sit under holding while slug is main).
     const anyCompany = await this.db.query<{ id: string }>(
       `SELECT id::text AS id
        FROM public.employees
@@ -292,13 +308,13 @@ export class RecruitmentWorkflowBridge {
     return anyCompany.rows[0]?.id ?? null;
   }
 
-  /** HRM admin membership link (portal email → employees.id) when present. */
   private async resolveEmployeeIdViaMembership(
     userKey: string,
     companyIds: string[],
   ): Promise<string | null> {
     try {
-      const scopeKeys = companyIds.length > 0 ? companyIds : [GROUP_HOLDING_COMPANY_ID, GROUP_OPERATING_MAIN];
+      const scopeKeys =
+        companyIds.length > 0 ? companyIds : [GROUP_HOLDING_COMPANY_ID, GROUP_OPERATING_MAIN];
       const linked = await this.db.query<{ employee_id: string }>(
         `SELECT employee_id::text AS employee_id
          FROM public.user_company_memberships
@@ -316,15 +332,10 @@ export class RecruitmentWorkflowBridge {
       );
       return linked.rows[0]?.employee_id ?? null;
     } catch {
-      // Table may be absent on thin DBs — treat as no membership link.
       return null;
     }
   }
 
-  /**
-   * Holding employee master for portal Group CEO: PORTAL-GCEO code, or bootstrap
-   * NV001 id only when email already matches ceo@xe.vn.
-   */
   private async resolveHoldingGroupCeoMasterEmployee(userKey: string): Promise<string | null> {
     const byPortalCode = await this.db.query<{ id: string }>(
       `SELECT id::text AS id
@@ -340,7 +351,6 @@ export class RecruitmentWorkflowBridge {
       await this.linkPortalEmailToEmployeeIfSafe(byPortalCode.rows[0].id, userKey);
       return byPortalCode.rows[0].id;
     }
-
     const bootstrap = await this.db.query<{ id: string; email: string }>(
       `SELECT id::text AS id, lower(email) AS email
        FROM public.employees
@@ -354,7 +364,6 @@ export class RecruitmentWorkflowBridge {
     if (boot?.id && boot.email === userKey) {
       return boot.id;
     }
-
     return null;
   }
 
@@ -381,21 +390,16 @@ export class RecruitmentWorkflowBridge {
         [employeeId, userKey, HOLDING_BOOTSTRAP_CEO_EMPLOYEE_ID],
       );
     } catch {
-      // Unique email race — ignore; caller already has employee id.
+      /* soft */
     }
   }
 
-  /**
-   * Product ensure (not QA seed): create holding employee for documented portal
-   * Group CEO email when workforce density skipped bootstrap ceo@xe.vn row.
-   */
   private async ensureHoldingPortalGroupCeoEmployee(userKey: string): Promise<string | null> {
     const existing = await this.resolveEmployeeIdByEmail(userKey, [
       GROUP_HOLDING_COMPANY_ID,
       GROUP_OPERATING_MAIN,
     ]);
     if (existing) return existing;
-
     const newId = randomUUID();
     try {
       await this.db.query(
@@ -404,20 +408,13 @@ export class RecruitmentWorkflowBridge {
          ) VALUES (
            $1::uuid, $2, $3, $4, $5, 'CEO', 'active', CURRENT_DATE
          )`,
-        [
-          newId,
-          GROUP_HOLDING_COMPANY_ID,
-          PORTAL_GROUP_CEO_EMPLOYEE_CODE,
-          userKey,
-          'CEO Tập đoàn',
-        ],
+        [newId, GROUP_HOLDING_COMPANY_ID, PORTAL_GROUP_CEO_EMPLOYEE_CODE, userKey, 'CEO Tập đoàn'],
       );
       this.logger.log(
         `HRM-REC-WF-SUBMITTER-ENSURE: holding portal Group CEO employee created id=${newId} email=${userKey}`,
       );
       return newId;
     } catch (err) {
-      // Race / unique on (company_id, code|email) — re-select.
       const again = await this.resolveEmployeeIdByEmail(userKey, [
         GROUP_HOLDING_COMPANY_ID,
         GROUP_OPERATING_MAIN,
@@ -484,8 +481,6 @@ export class RecruitmentWorkflowBridge {
       ALTER TABLE public.candidates
       ADD COLUMN IF NOT EXISTS wf_callback_fingerprint TEXT NULL;
     `);
-
-    // ADDITIVE CHECK — keep open/closed/on_hold (UF-HRM-12); add WF lifecycle statuses.
     await this.db.query(`
       DO $$
       BEGIN
@@ -498,14 +493,13 @@ export class RecruitmentWorkflowBridge {
         ALTER TABLE public.job_requisitions
           ADD CONSTRAINT chk_job_requisitions_status
           CHECK (status IN (
-            'open', 'closed', 'on_hold',
+            'open', 'open_for_hire', 'closed', 'on_hold',
             'draft', 'pending_approval', 'approved', 'rejected', 'cancelled'
           ));
       EXCEPTION
         WHEN duplicate_object THEN NULL;
       END $$;
     `);
-
     await this.db.query(`
       CREATE INDEX IF NOT EXISTS idx_recruitment_plans_workflow_instance_id
         ON public.recruitment_plans (workflow_instance_id)
@@ -532,15 +526,14 @@ export class RecruitmentWorkflowBridge {
       (ctx.companySlug ?? GROUP_HOLDING_COMPANY_ID).trim().toLowerCase() || GROUP_HOLDING_COMPANY_ID;
     const workflowCode = workflowCodeForBusinessType(ctx.businessType);
     const { table, statusCol } = tableForBusinessType(ctx.businessType);
-
     const isGroupCeoPortal =
       tenantId === MASTER_TENANT_ID &&
       (companySlug === GROUP_OPERATING_MAIN || companySlug === GROUP_HOLDING_COMPANY_ID);
     const xbosHeaderCompanyId = isGroupCeoPortal ? GROUP_HOLDING_COMPANY_ID : companySlug;
     const memberCompanyId = isGroupCeoPortal ? GROUP_HOLDING_COMPANY_ID : companySlug;
-    const entityCompanyId = ((ctx.companyId ?? companySlug).trim().toLowerCase() || memberCompanyId);
+    const entityCompanyId =
+      (ctx.companyId ?? companySlug).trim().toLowerCase() || memberCompanyId;
 
-    // Mark pending before spawn so SPAWN-MISSING still leaves entity waiting (BR-REC-WF-02).
     if (ctx.businessType === WF_BUSINESS_TYPE_HRM_CANDIDATE) {
       await this.db.query(
         `UPDATE ${table}
@@ -565,14 +558,12 @@ export class RecruitmentWorkflowBridge {
       tenantId,
       companyId: xbosHeaderCompanyId,
     });
-
     const contextKey =
       ctx.businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN
         ? 'planId'
         : ctx.businessType === WF_BUSINESS_TYPE_HRM_REQUISITION
           ? 'requisitionId'
           : 'candidateId';
-
     const submitterEmployeeId = await this.resolveSubmitterEmployeeId(ctx);
     if (!submitterEmployeeId) {
       this.logger.warn(
@@ -580,7 +571,10 @@ export class RecruitmentWorkflowBridge {
       );
       return null;
     }
-
+    const subjectTitle = await this.resolveBusinessSubjectTitle(ctx);
+    const portalSubmitterEmail = ctx.submitterUserId?.trim().toLowerCase() || null;
+    // Portal inbox completes with JWT email (ceo@xe.vn); XBOS BR-WF-04 compares that to context.submitter.userId.
+    const xbosSubmitterUserId = submitterEmployeeId;
     try {
       const res = await fetch(`${this.xbosBaseUrl()}/api/xbos/workflow-engine/instances/start`, {
         method: 'POST',
@@ -593,16 +587,30 @@ export class RecruitmentWorkflowBridge {
           businessType: ctx.businessType,
           businessId: ctx.businessId,
           submitter: {
-            userId: ctx.submitterUserId ?? null,
+            userId: xbosSubmitterUserId,
             employeeId: submitterEmployeeId,
             companyId: entityCompanyId,
             companySlug: memberCompanyId,
+            ...(portalSubmitterEmail ? { submitterPortalEmail: portalSubmitterEmail } : {}),
           },
           context: {
             memberTenantId: tenantId,
             memberCompanyId,
             entityCompanyId,
             [contextKey]: ctx.businessId,
+            ...(subjectTitle
+              ? { subjectTitle, businessTitle: subjectTitle }
+              : {}),
+            ...(ctx.conditions
+              ? {
+                  conditions: ctx.conditions,
+                  headcount_mode: ctx.conditions.headcount_mode,
+                  hire_reason: ctx.conditions.hire_reason,
+                }
+              : {}),
+            ...(ctx.approvalMatrixKey
+              ? { approval_matrix_key: ctx.approvalMatrixKey }
+              : {}),
           },
         }),
       });
@@ -625,7 +633,6 @@ export class RecruitmentWorkflowBridge {
         );
         return null;
       }
-
       await this.db.query(
         `UPDATE ${table}
          SET workflow_instance_id = $2::uuid, updated_at = NOW()
@@ -641,11 +648,13 @@ export class RecruitmentWorkflowBridge {
     }
   }
 
-  async handleStepCallback(
-    payload: RecruitmentStepCallbackPayload,
-  ): Promise<{ applied: boolean; stage?: string; status?: string; skipReason?: string }> {
+  async handleStepCallback(payload: RecruitmentStepCallbackPayload): Promise<{
+    applied: boolean;
+    stage?: string;
+    status?: string;
+    skipReason?: string;
+  }> {
     await this.ensureSchema();
-
     if (
       payload.businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN ||
       payload.businessType === WF_BUSINESS_TYPE_HRM_REQUISITION
@@ -655,14 +664,11 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: false, skipReason: 'plan_req_step_noop' };
     }
-
-    // Prefer taskType; fall back to stepKey (XBOS may send bare step_key only).
     const mappedStage =
       mapRecTaskTypeToStage(payload.taskType) ?? mapRecTaskTypeToStage(payload.stepKey);
     if (!mappedStage) {
       throw new Error('HRM-REC-WF-STAGE-UNMAPPED');
     }
-
     const existing = await this.db.query<{
       stage: string;
       workflow_instance_id: string | null;
@@ -676,7 +682,6 @@ export class RecruitmentWorkflowBridge {
     if (!row) {
       throw new Error('HRM-REC-CP-404');
     }
-
     if (
       row.workflow_instance_id &&
       payload.workflowInstanceId &&
@@ -687,7 +692,6 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: false, stage: row.stage, skipReason: 'instance_mismatch' };
     }
-
     const fingerprint = `${payload.workflowInstanceId}:${payload.stepKey}:${payload.taskId ?? ''}`;
     if (row.wf_callback_fingerprint === fingerprint) {
       this.logger.log(
@@ -695,7 +699,6 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: false, stage: row.stage, skipReason: 'duplicate_step' };
     }
-
     const updated = await this.db.query<{ stage: string }>(
       `UPDATE public.candidates
        SET stage = $2,
@@ -708,11 +711,13 @@ export class RecruitmentWorkflowBridge {
     return { applied: true, stage: updated.rows[0]?.stage ?? mappedStage };
   }
 
-  async handleTerminalCallback(
-    payload: RecruitmentTerminalCallbackPayload,
-  ): Promise<{ applied: boolean; status?: string; stage?: string; skipReason?: string }> {
+  async handleTerminalCallback(payload: RecruitmentTerminalCallbackPayload): Promise<{
+    applied: boolean;
+    status?: string;
+    stage?: string;
+    skipReason?: string;
+  }> {
     await this.ensureSchema();
-
     if (payload.businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN) {
       return this.handlePlanTerminal(payload);
     }
@@ -722,72 +727,101 @@ export class RecruitmentWorkflowBridge {
     return this.handleCandidateTerminal(payload);
   }
 
-  private async handlePlanTerminal(
-    payload: RecruitmentTerminalCallbackPayload,
-  ): Promise<{ applied: boolean; status?: string; skipReason?: string }> {
-    const existing = await this.db.query<{
-      status: string;
-      workflow_instance_id: string | null;
-    }>(
+  private async handlePlanTerminal(payload: RecruitmentTerminalCallbackPayload): Promise<{
+    applied: boolean;
+    status?: string;
+    skipReason?: string;
+  }> {
+    const existing = await this.db.query<{ status: string; workflow_instance_id: string | null }>(
       `SELECT status, workflow_instance_id::text AS workflow_instance_id
        FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1`,
       [payload.businessId],
     );
     const row = existing.rows[0];
     if (!row) throw new Error('HRM-REC-PLAN-404');
-
     if (PLAN_TERMINAL.has((row.status ?? '').toLowerCase())) {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal plan=${payload.businessId} status=${row.status}`,
       );
       return { applied: false, status: row.status, skipReason: 'already_terminal' };
     }
-
     if (
       row.workflow_instance_id &&
       payload.workflowInstanceId &&
       row.workflow_instance_id !== payload.workflowInstanceId
     ) {
-      this.logger.log(`HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch plan=${payload.businessId}`);
+      this.logger.log(
+        `HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch plan=${payload.businessId}`,
+      );
       return { applied: false, status: row.status, skipReason: 'instance_mismatch' };
     }
-
     const nextStatus = payload.terminalStatus === 'completed' ? 'approved' : 'rejected';
     const res = await this.db.query<{ status: string }>(
       `UPDATE public.recruitment_plans
        SET status = $2,
            rejected_reason = CASE WHEN $2 = 'rejected' THEN $3 ELSE rejected_reason END,
+           approved_at = CASE WHEN $2 = 'approved' THEN NOW() ELSE approved_at END,
+           activation_mode = CASE WHEN $2 = 'approved' THEN COALESCE(activation_mode, 'on_approve') ELSE activation_mode END,
            updated_at = NOW()
        WHERE id = $1::uuid
        RETURNING status`,
       [payload.businessId, nextStatus, payload.rejectedReason ?? 'Workflow rejected'],
     );
+    // F-REC-HC-03 — lock need_hire cells after WF approve (Option A).
+    if (nextStatus === 'approved') {
+      await this.lockPlanNeedHireCells(payload.businessId);
+    }
     return { applied: true, status: res.rows[0]?.status ?? nextStatus };
   }
 
-  private async handleRequisitionTerminal(
-    payload: RecruitmentTerminalCallbackPayload,
-  ): Promise<{ applied: boolean; status?: string; skipReason?: string }> {
+  /** PO-HRM-MVP-GD1-REC-01-CLUSTER-BE-01 — cell lock without importing catalog (cycle). */
+  private async lockPlanNeedHireCells(planId: string): Promise<void> {
+    const depts = await this.db.query(
+      `SELECT id FROM public.recruitment_plan_departments WHERE plan_id = $1::uuid`,
+      [planId],
+    );
+    for (const dept of depts.rows as Array<{ id: string }>) {
+      const posRes = await this.db.query(
+        `SELECT id, months_data FROM public.recruitment_plan_positions WHERE department_id = $1::uuid`,
+        [dept.id],
+      );
+      for (const pos of posRes.rows as Array<{ id: string; months_data: unknown }>) {
+        const cells = lockNeedHireCells(projectMonthsForApi(pos.months_data, true));
+        await this.db.query(
+          `UPDATE public.recruitment_plan_positions
+           SET months_data = $2::jsonb, updated_at = NOW()
+           WHERE id = $1::uuid`,
+          [pos.id, JSON.stringify(cells.map(toPersistCell))],
+        );
+      }
+    }
+  }
+
+  private async handleRequisitionTerminal(payload: RecruitmentTerminalCallbackPayload): Promise<{
+    applied: boolean;
+    status?: string;
+    skipReason?: string;
+  }> {
     const existing = await this.db.query<{
       status: string;
       workflow_instance_id: string | null;
+      headcount_mode: string | null;
+      pipeline_flags_json: unknown;
     }>(
-      `SELECT status, workflow_instance_id::text AS workflow_instance_id
+      `SELECT status, workflow_instance_id::text AS workflow_instance_id,
+              headcount_mode, pipeline_flags_json
        FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1`,
       [payload.businessId],
     );
     const row = existing.rows[0];
     if (!row) throw new Error('HRM-REC-404');
-
     const current = (row.status ?? '').toLowerCase();
-    // Terminal for WF unlock: open/approved/rejected/closed/cancelled (data contract §4.1).
-    if (['open', 'approved', 'rejected', 'closed', 'cancelled'].includes(current)) {
+    if (['open', 'open_for_hire', 'rejected', 'closed', 'cancelled'].includes(current)) {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal requisition=${payload.businessId} status=${row.status}`,
       );
       return { applied: false, status: row.status, skipReason: 'already_terminal' };
     }
-
     if (
       row.workflow_instance_id &&
       payload.workflowInstanceId &&
@@ -798,24 +832,49 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: false, status: row.status, skipReason: 'instance_mismatch' };
     }
-
-    // Prefer single write `open` on completed (data contract §3.2).
-    const nextStatus = payload.terminalStatus === 'completed' ? 'open' : 'rejected';
+    const mode = (row.headcount_mode ?? '').trim().toLowerCase();
+    let nextStatus: string;
+    if (payload.terminalStatus === 'rejected') {
+      nextStatus = 'rejected';
+    } else if (mode === 'out_of_plan') {
+      // Y-S9 — XBOS `hrm_requisition_approval` has one step; terminal fires when instance completes.
+      // UV mutate needs open_for_hire (assertYctdReceivableForMutateOrThrow). Second terminal / bod_complete API unchanged.
+      nextStatus = 'open_for_hire';
+    } else {
+      nextStatus = 'open_for_hire';
+    }
+    const flagsRaw =
+      row.pipeline_flags_json && typeof row.pipeline_flags_json === 'object'
+        ? (row.pipeline_flags_json as Record<string, unknown>)
+        : {};
+    const flags =
+      nextStatus === 'open_for_hire'
+        ? { ...flagsRaw, cv_intake_allowed: true }
+        : { ...flagsRaw, cv_intake_allowed: false };
     const res = await this.db.query<{ status: string }>(
       `UPDATE public.job_requisitions
        SET status = $2,
            rejected_reason = CASE WHEN $2 = 'rejected' THEN $3 ELSE rejected_reason END,
+           approved_at = CASE WHEN $2 = 'open_for_hire' THEN NOW() ELSE approved_at END,
+           pipeline_flags_json = $4::jsonb,
            updated_at = NOW()
        WHERE id = $1::uuid
        RETURNING status`,
-      [payload.businessId, nextStatus, payload.rejectedReason ?? 'Workflow rejected'],
+      [
+        payload.businessId,
+        nextStatus,
+        payload.rejectedReason ?? 'Workflow rejected',
+        JSON.stringify(flags),
+      ],
     );
     return { applied: true, status: res.rows[0]?.status ?? nextStatus };
   }
 
-  private async handleCandidateTerminal(
-    payload: RecruitmentTerminalCallbackPayload,
-  ): Promise<{ applied: boolean; stage?: string; skipReason?: string }> {
+  private async handleCandidateTerminal(payload: RecruitmentTerminalCallbackPayload): Promise<{
+    applied: boolean;
+    stage?: string;
+    skipReason?: string;
+  }> {
     const existing = await this.db.query<{
       stage: string;
       workflow_instance_id: string | null;
@@ -829,14 +888,12 @@ export class RecruitmentWorkflowBridge {
     );
     const row = existing.rows[0];
     if (!row) throw new Error('HRM-REC-CP-404');
-
     if (CANDIDATE_TERMINAL.has((row.stage ?? '').toLowerCase())) {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal candidate=${payload.businessId} stage=${row.stage}`,
       );
       return { applied: false, stage: row.stage, skipReason: 'already_terminal' };
     }
-
     if (
       row.workflow_instance_id &&
       payload.workflowInstanceId &&
@@ -847,7 +904,6 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: false, stage: row.stage, skipReason: 'instance_mismatch' };
     }
-
     if (payload.terminalStatus === 'rejected') {
       const res = await this.db.query<{ stage: string }>(
         `UPDATE public.candidates
@@ -860,9 +916,6 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: true, stage: res.rows[0]?.stage ?? 'rejected' };
     }
-
-    // completed → hired only if hire AC met (employee_id or employees.candidate_id link).
-    // FR-HRM-INT-01 / G-DB-01 — stamp soft employee_id when reverse link satisfies AC.
     const hireOk = await this.isHireAcMet(payload.businessId, row.employee_id);
     if (!hireOk) {
       this.logger.log(
@@ -870,7 +923,6 @@ export class RecruitmentWorkflowBridge {
       );
       return { applied: false, stage: row.stage, skipReason: 'hire_ac_unmet' };
     }
-
     const linkedEmployeeId = await this.resolveHireEmployeeIdForStamp(
       payload.businessId,
       row.employee_id,
@@ -892,7 +944,7 @@ export class RecruitmentWorkflowBridge {
 
   private async resolveHireEmployeeIdForStamp(
     candidateId: string,
-    employeeId: string | null,
+    employeeId: string | null | undefined,
   ): Promise<string | null> {
     if (employeeId?.trim()) return employeeId.trim();
     try {
@@ -908,7 +960,10 @@ export class RecruitmentWorkflowBridge {
     }
   }
 
-  private async isHireAcMet(candidateId: string, employeeId: string | null): Promise<boolean> {
+  private async isHireAcMet(
+    candidateId: string,
+    employeeId: string | null | undefined,
+  ): Promise<boolean> {
     if (employeeId?.trim()) return true;
     try {
       const linked = await this.db.query<{ id: string }>(
@@ -919,7 +974,6 @@ export class RecruitmentWorkflowBridge {
       );
       return Boolean(linked.rows[0]?.id);
     } catch {
-      // employees.candidate_id may not exist yet — treat as unmet (fail-closed hire).
       return false;
     }
   }

@@ -13,7 +13,10 @@ import { useAuth } from '../../context/AuthContext';
 import { isBiometricEnabled, promptBiometricIfEnabled, setBiometricEnabled } from '../../integrations/biometricUnlock';
 import { vi } from '../../i18n/vi';
 import type { MainTabParamList } from '../../navigation/types';
-import { navigateToScope } from '../../navigation/profileStackNav';
+import {
+  navigateToCreateUpdateRequest,
+  navigateToScope,
+} from '../../navigation/profileStackNav';
 import { STORAGE } from '../../storage/keys';
 import { colors, spacing, typography } from '../../theme/tokens';
 import {
@@ -31,17 +34,23 @@ import { resolveAuthRolesVi } from '../../utils/scopeScreenCopy';
 /**
  * @CODE-MEMORY
  * Screen:     ProfileStack → Settings (Cài đặt)
- * UC:         UC-HRM-MOB-02 · HDSD §12.9
+ * UC:         UC-HRM-MOB-02 · HDSD §12.9 · AT-01
  * SRS:        docs/hrm/MOBILE_W7_SRS_DELTA.md · HDSD Ch.12 mobile
  * TechSpec:   MOBILE_W7_TECHSPEC_DELTA · scope + biometric local
  * Purpose:    Phạm vi đang dùng, bảo mật sinh trắc, điều hướng nhanh tới Scope và stack con.
  * WorkItem:   MOB-NAV-SETTINGS-01
  * Coded:      2026-08-01
  * Callers:    ProfileSettingsEntry · RootNavigator ProfileStack
- * Callees:    navigateToScope · fetchHrmOperatingUnits · auth.signOut
+ * Callees:    navigateToScope · navigateToCreateUpdateRequest · fetchHrmOperatingUnits · auth.signOut
  * Impact:     Thiếu entry Profile → màn này unreachable (TC-MOB-032 FAIL)
  * must_keep:  testID settings-screen · settings-scope-link; vi.scope «Phạm vi công ty»
- * LastVerified: docs/qa/evidence/dev-mob-nav-settings-01-20260801.md
+ * LastVerified: docs/qa/evidence/r-spine-at-nav-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 R-SPINE-AT-NAV-01
+ * change_mode: ADD
+ * What: Điều hướng nhanh «Đơn công» → CreateUpdateRequest (testID settings-create-update-request)
+ * Why: AT-01 — Settings không có entry tạo đi muộn / đơn công
+ * must_keep: settings-scope-link; leave FAB path không đụng
  */
 export function SettingsScreen() {
   const auth = useAuth();
@@ -120,6 +129,12 @@ export function SettingsScreen() {
       onPress: () => navigateToScope(nav),
     },
     { title: vi.approvals, screen: 'ManagerApprovals', show: auth.isManager },
+    {
+      title: vi.requests,
+      screen: 'CreateUpdateRequest',
+      testID: 'settings-create-update-request',
+      onPress: () => navigateToCreateUpdateRequest(nav),
+    },
     { title: vi.payroll, screen: 'PayrollSummary' },
     { title: vi.contracts, screen: 'Contracts' },
     { title: vi.operations, screen: 'Operations', show: auth.isManager },
@@ -161,7 +176,12 @@ export function SettingsScreen() {
         variant="secondary"
       />
 
-      <PrimaryButton label={vi.logout} onPress={() => void auth.signOut()} variant="danger" />
+      <PrimaryButton
+        label={vi.logout}
+        onPress={() => void auth.signOut()}
+        variant="danger"
+        testID="settings-logout"
+      />
 
       <Text style={styles.sectionTitle}>Điều hướng nhanh</Text>
       <View style={styles.navList}>

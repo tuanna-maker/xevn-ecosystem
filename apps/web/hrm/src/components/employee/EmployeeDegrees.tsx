@@ -1,3 +1,21 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Bằng cấp (E22)
+ * UC:         E22
+ * Purpose:    Degrees chrome Precision Motion (CV cluster).
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-C
+ * Coded:      2026-08-05
+ * Callers:    EmployeeProfile activeTab=degrees
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no OCR/QR invent
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; blue/purple AI chrome → xevn DNA; KPI ops-dense
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C
+ * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
+ */
+
 import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -260,10 +278,10 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            <Loader2 className="w-6 h-6 animate-spin text-xevn-textSecondary" />
           </div>
         ) : !degrees?.length ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-center py-8 text-xevn-textSecondary">
             <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>{t('degrees.empty')}</p>
             <p className="text-sm">{t('degrees.emptyHint')}</p>
@@ -323,8 +341,8 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">{degree.institution}</p>
-                <div className="space-y-1 text-xs text-muted-foreground">
+                <p className="text-sm text-xevn-textSecondary mb-2">{degree.institution}</p>
+                <div className="space-y-1 text-xs text-xevn-textSecondary">
                   <div className="flex items-center gap-1">
                     <Award className="w-3 h-3" />
                     <span>{t('degrees.major')}: {degree.major}</span>
@@ -342,12 +360,12 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
                   )}
                   {degree.file_url && (
                     <div className="flex items-center gap-1 mt-2">
-                      <FileText className="w-3 h-3 text-blue-500" />
+                      <FileText className="w-3 h-3 text-xevn-primary" />
                       <a 
                         href={degree.file_url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline flex items-center gap-1"
+                        className="text-xevn-primary hover:underline flex items-center gap-1"
                       >
                         {degree.file_name || t('degrees.viewAttachment')}
                         <ExternalLink className="w-3 h-3" />

@@ -15,32 +15,38 @@
  * What: resolveLeaveTypeDisplayLabel (+ catalog options); unknown → «—»
  * Why: BA F-06 / AC-FD-06
  * SRS/BR: SRS_FIELD_DISPLAY.md F-06 · FR-HRM-U72-LABEL-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-FE-AT12-L1-APPROVE-SCOPE-01
+ * change_mode: FIX
+ * What: onApproveLeave passes currentCompanyId into approveLeaveRequest (mutate scope)
+ * Why: AT-12 L1 parity — dashboard remind Duyệt must not send x-company-id=main
+ * must_keep: leave_type label; list pending path; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-FE-NT01-INBOX-MARK-READ-01
+ * change_mode: ADD
+ * What: inbox summary via lib/hrmInboxNotificationDisplay (shared with /notifications)
+ * Why: HRM-NT-01 single display map; mark-read invalidates hrm-inbox + hrm-api-reminders
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-LEAVE-TYPES-CONSUMER-ATT-FE-01
+ * change_mode: FIX
+ * What: Pending-leave labels via useAttLeaveTypesEffective (F-ATT-CAT-EFF-01); drop settings MD catalog SoT
+ * Why: AC-SET-CONSUMER-LV-ATT-01 · BR-SET-CONSUMER-LV-SOT-02 · parity LeaveTab
+ * must_keep: approveLeaveRequest scope; ATTLVTSOTQC1; U65 no seed; settings_catalog_e2e_ready=false
  */
 import { useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useAttLeaveTypesEffective } from '@/hooks/useAttLeaveTypesEffective';
 import {
   approveLeaveRequest,
   listHrmInboxNotifications,
   listLeaveRequests,
-  type HrmInboxNotification,
   type HrmLeaveRequest,
 } from '@/integrations/hrmApi';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { leaveTypeOptionsFromCatalog } from '@/lib/catalogSearchPicker';
-import { EM_DASH, resolveLeaveTypeDisplayLabel } from '@/lib/labelMaps';
-
-function inboxSummary(n: HrmInboxNotification): string {
-  if (n.event_type === 'leave_request.created') return 'Đơn nghỉ mới';
-  if (n.event_type === 'leave_request.approved') return 'Đơn nghỉ đã duyệt';
-  if (n.event_type === 'leave_request.rejected') return 'Đơn nghỉ bị từ chối';
-  if (n.event_type === 'service_request.created') return 'Yêu cầu dịch vụ mới';
-  if (n.event_type === 'service_request.approved') return 'Yêu cầu dịch vụ đã duyệt';
-  if (n.event_type === 'service_request.rejected') return 'Yêu cầu dịch vụ bị từ chối';
-  return EM_DASH;
-}
+import { inboxNotificationSummary } from '@/lib/hrmInboxNotificationDisplay';
+import { isHrmNestApiReachable } from '@/lib/hrmDataMode';
 
 export function HrmApiReminders() {
   const queryClient = useQueryClient();
@@ -49,14 +55,9 @@ export function HrmApiReminders() {
     () => memberships.find((m) => m.company_id === currentCompanyId)?.employee_id ?? null,
     [memberships, currentCompanyId],
   );
-  const hrmOrigin = import.meta.env.VITE_HRM_API_ORIGIN?.trim();
-  const enabled = Boolean(hrmOrigin && currentCompanyId && employeeId);
+  const enabled = Boolean(isHrmNestApiReachable() && currentCompanyId && employeeId);
 
-  const { catalogs } = useSettingsCatalogsOverview({ enabled });
-  const leaveTypeOptions = useMemo(
-    () => leaveTypeOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
+  const { leaveTypeDisplayLabel } = useAttLeaveTypesEffective({ enabled });
 
   const q = useQuery({
     queryKey: ['hrm-api-reminders', currentCompanyId, employeeId],
@@ -81,8 +82,16 @@ export function HrmApiReminders() {
   const reviewerName = profile?.full_name?.trim() || 'Web HRM';
 
   const onApproveLeave = async (id: string) => {
+    if (!currentCompanyId) {
+      toast.error('Thiếu phạm vi công ty để duyệt');
+      return;
+    }
     try {
-      await approveLeaveRequest(id, { reviewer_name: reviewerName, reviewer_employee_id: employeeId ?? undefined });
+      await approveLeaveRequest(
+        id,
+        { reviewer_name: reviewerName, reviewer_employee_id: employeeId ?? undefined },
+        currentCompanyId,
+      );
       toast.success('Đã duyệt đơn nghỉ');
       void queryClient.invalidateQueries({ queryKey: ['hrm-api-reminders', currentCompanyId, employeeId] });
     } catch (e: unknown) {
@@ -107,7 +116,7 @@ export function HrmApiReminders() {
           <p className="text-xs text-muted-foreground">Thông báo gần đây</p>
           {workflowInbox.slice(0, 5).map((row) => (
             <p key={row.id} className="text-xs text-slate-700 dark:text-slate-200">
-              {inboxSummary(row)} — {new Date(row.created_at).toLocaleString('vi-VN')}
+              {inboxNotificationSummary(row)} — {new Date(row.created_at).toLocaleString('vi-VN')}
             </p>
           ))}
         </div>
@@ -123,7 +132,7 @@ export function HrmApiReminders() {
               className="flex flex-wrap items-center justify-between gap-2 rounded border border-amber-200/80 bg-amber-50/80 p-2 text-xs dark:border-amber-800 dark:bg-amber-950/40"
             >
               <span className="text-slate-800 dark:text-slate-100">
-                {(row.employee_name ?? '?') as string} — {resolveLeaveTypeDisplayLabel(leaveTypeOptions, row.leave_type)} ({row.start_date} → {row.end_date})
+                {(row.employee_name ?? '?') as string} — {leaveTypeDisplayLabel(row.leave_type)} ({row.start_date} → {row.end_date})
               </span>
               <Button size="sm" variant="default" className="h-7 text-xs" onClick={() => void onApproveLeave(row.id)}>
                 Duyệt

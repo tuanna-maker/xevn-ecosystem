@@ -27,6 +27,13 @@
  * change_mode: UPGRADE
  * What: Replace useEffect(fetchWeeklyData) thrash with RQ; stabilize sheet range on primitives
  * Why: Sponsor :8088 create sheet → weekly spinner forever + «Tải lại» auto-spin (0 console)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-ATT-LEAVE-FUNNEL-FE-01
+ * change_mode: ADD
+ * What: Confirm weekly still single listAttendanceRecords query; leave labels from aggregator (no leave-requests GET)
+ * Why: F-ATT-LEAVE-FUNNEL-03 · INV-4 must_keep J-HRM-06b storm ≤2 GET/10s
+ * must_keep: no refetchInterval; no Option C; attendance_uat_ready=false
  */
 import { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';

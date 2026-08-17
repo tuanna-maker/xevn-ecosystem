@@ -1,19 +1,19 @@
 /**
  * @CODE-MEMORY
  * Screen:     /insurance — chính sách BH master (E3)
- * UC:         FR-HRM-INS-DEPTH-E3-01 · AC-INS-01..05 · AC-E3-ZOD-I-01
- * BR:         BR-HRM-INS-E3-01/03 · BR-HRM-E3-U72-01
- * SRS:        docs/program/deltas/BA_ERP_E3_SRS_01_20260728.md
- * TechSpec:   docs/hrm/API_DESIGN_HRM_ERP_E3.md §6–10 · path freeze contracts-insurance/insurance-policies
- * Purpose:    CRUD policy master + insurer/type CatalogSearchPicker + SM buttons U72 + Empty+CTA.
+ * UC:         FR-HRM-INS-DEPTH-E3-01 · AC-INS-01..05 · AC-E3-ZOD-I-01 · AC-PLT-SI-INS-01 · AC-PLT-SI-INSURER-01
+ * BR:         BR-HRM-INS-E3-01/03 · BR-HRM-E3-U72-01 · BR-PLT-SI-INS-05 · BR-PLT-SI-INR-05
+ * SRS:        docs/program/deltas/BA_ERP_E3_SRS_01_20260728.md · PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-BA-01 · SI-INSURER-CATALOG-BA-01
+ * TechSpec:   docs/hrm/API_DESIGN_HRM_ERP_E3.md §6–10 · F-SI-CAT-EFF-01 · F-SI-CAT-INS-EFF-01
+ * Purpose:    CRUD policy master + insurer Nest EFF + type Nest EFF picker + SM buttons U72 + Empty+CTA.
  * WorkItem:   D-FE-ERP-E3-01
  * Coded:      2026-07-28
  * Callers:    pages/Insurance.tsx
  * Callees:    create/list/update/deleteInsurancePolicy · CatalogSearchPicker · EmptyState · Zod schema
  * Impact:     Free-text insurer SoT / illegal SM UI → FAIL AC-INS
- * must_keep:  E1 pickers · E2 pay_types/contract_types · participant AddInsuranceDialog riêng
+ * must_keep:  E1 pickers · E2 pay_types/contract_types · participant AddInsuranceDialog riêng · CTR seals · SI type L1 RETAIN
  * SOLID:      Panel tách khỏi list participant
- * LastVerified: docs/qa/evidence/d-fe-erp-e3-01-20260728.md
+ * LastVerified: docs/qa/evidence/po-hrm-dynamic-config-platform-si-insurer-catalog-fe-01.md
  *
  * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-BF-03-BH-FE-PICKER-01
  * change_mode: ADD
@@ -26,6 +26,22 @@
  * What: create omit insurer_label; SM/update PATCH body không company_id (query trên hrmApi)
  * Why: QA R-INS-POL-CREATE-LABEL-01 / R-INS-POL-SM-COMPANYID-01 → 400 HRM-VAL-001
  * must_keep: TC-049 enroll picker · SoftDel · TC-025/041 · BE soft-resolve
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-FE-01
+ * change_mode: FIX
+ * What: insurance_type picker binds GET /contracts-insurance/insurance-types/effective; empty CTA → Settings Loại BH
+ * Why: AC-PLT-SI-INS-01/01c · VAL-SI-CNS-04 — REJECT Settings MD sole SoT; insurers OUT retain MD
+ * Spec: PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-BA-01 §4 S-SI-CNS-01
+ * must_keep: enrollment ONE SoT · CTR legal-print · U65 · printable/personnel false
+ * LastVerified: docs/qa/evidence/po-hrm-dynamic-config-platform-si-ins-catalog-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-FE-01
+ * change_mode: FIX
+ * What: insurer_key picker binds GET /contracts-insurance/insurers/effective; empty CTA → Settings Nhà BH
+ * Why: AC-PLT-SI-INSURER-01/01c · VAL-SI-INR-CNS-01 — REJECT Settings MD sole SoT; SI type L1 RETAIN
+ * Spec: PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BA-01 §4 S-SI-INR-CNS-01
+ * must_keep: type EFF picker · enrollment/CTR seals · U65 · printable/personnel false
+ * LastVerified: docs/qa/evidence/po-hrm-dynamic-config-platform-si-insurer-catalog-fe-01.md
  */
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -46,7 +62,8 @@ import {
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { EmptyState } from '@/components/hrm/EmptyState';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useSiInsuranceTypesEffective } from '@/hooks/useSiInsuranceTypesEffective';
+import { useSiInsurersEffective } from '@/hooks/useSiInsurersEffective';
 import {
   createInsurancePolicy,
   deleteInsurancePolicy,
@@ -67,12 +84,8 @@ import {
   buildInsurancePolicyStatusPatchBody,
   buildInsurancePolicyUpdateBody,
 } from '@/lib/insurancePolicyPayload';
-import {
-  insurerOptionsFromCatalog,
-  insuranceTypeOptionsFromCatalog,
-  resolveInsurerLabel,
-  resolveInsuranceTypeCatalogLabel,
-} from '@/lib/catalogSearchPicker';
+import { resolveSiInsurerLabel } from '@/lib/siInsurerCatalog';
+import { resolveSiInsuranceTypeLabel } from '@/lib/siInsuranceTypeCatalog';
 import {
   nextInsurancePolicyStatuses,
   type InsurancePolicyStatus,
@@ -83,9 +96,9 @@ const POLICY_MSG = {
   codeRequired: 'Nhập mã chính sách',
   nameRequired: 'Nhập tên chính sách',
   insurerRequired: 'Chọn nhà bảo hiểm',
-  insurerNotInCatalog: 'Chọn nhà BH từ danh mục (hoặc đồng bộ Settings khi trống)',
+  insurerNotInCatalog: 'Chọn nhà BH từ catalog Nest (Cài đặt → Nhà BH / Insurers)',
   typeRequired: 'Chọn loại bảo hiểm',
-  typeNotInCatalog: 'Chọn loại BH từ danh mục (hoặc đồng bộ Settings khi trống)',
+  typeNotInCatalog: 'Chọn loại BH từ catalog Nest (Cài đặt → Loại BH / SI type)',
   effectiveRequired: 'Chọn ngày hiệu lực',
   dateOrder: 'Ngày hết hạn phải sau ngày hiệu lực',
 };
@@ -93,11 +106,15 @@ const POLICY_MSG = {
 export function InsurancePolicyMasterPanel() {
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
-  const { catalogs, isLoading: catalogsLoading } = useSettingsCatalogsOverview();
   const [editing, setEditing] = useState<HrmInsurancePolicy | null>(null);
-
-  const insurerOptions = useMemo(() => insurerOptionsFromCatalog(catalogs), [catalogs]);
-  const typeOptions = useMemo(() => insuranceTypeOptionsFromCatalog(catalogs), [catalogs]);
+  const {
+    insurerOptions,
+    isLoading: insurersLoading,
+  } = useSiInsurersEffective({ historyKey: editing?.insurer_key });
+  const {
+    insuranceTypeOptions: typeOptions,
+    isLoading: typesLoading,
+  } = useSiInsuranceTypesEffective({ historyKey: editing?.insurance_type });
 
   const schema = useMemo(
     () =>
@@ -189,7 +206,8 @@ export function InsurancePolicyMasterPanel() {
     onError: (error: unknown) => toast.error(toErrorMessage(error)),
   });
 
-  const settingsCta = hrmPathWithEmbedSearch('/settings');
+  const siInsurerSettingsCta = hrmPathWithEmbedSearch('/settings?tab=si-insurers');
+  const siTypeSettingsCta = hrmPathWithEmbedSearch('/settings?tab=si-insurance-types');
   const rows = policiesQuery.data?.data ?? [];
 
   const startEdit = (row: HrmInsurancePolicy) => {
@@ -254,14 +272,19 @@ export function InsurancePolicyMasterPanel() {
                     options={insurerOptions}
                     value={field.value}
                     onValueChange={field.onChange}
-                    loading={catalogsLoading}
+                    loading={insurersLoading}
                     placeholder="Chọn nhà BH…"
                     emptyHint={
-                      <a href={settingsCta} className="text-primary underline text-xs font-medium">
-                        Mở Cài đặt — Nhà bảo hiểm / đồng bộ XBOS
+                      <a
+                        href={siInsurerSettingsCta}
+                        className="text-primary underline text-xs font-medium"
+                        data-testid="hdsd-policy-open-si-insurers"
+                      >
+                        Mở Cài đặt → Nhà BH / Insurers (tạo mã mới)
                       </a>
                     }
                     aria-label="Nhà bảo hiểm"
+                    data-testid="hdsd-policy-insurer-picker"
                   />
                   <FormMessage />
                 </FormItem>
@@ -277,14 +300,19 @@ export function InsurancePolicyMasterPanel() {
                     options={typeOptions}
                     value={field.value}
                     onValueChange={field.onChange}
-                    loading={catalogsLoading}
+                    loading={typesLoading}
                     placeholder="Chọn loại BH…"
                     emptyHint={
-                      <a href={settingsCta} className="text-primary underline text-xs font-medium">
-                        Mở Cài đặt — Loại bảo hiểm
+                      <a
+                        href={siTypeSettingsCta}
+                        className="text-primary underline text-xs font-medium"
+                        data-testid="hdsd-policy-open-si-insurance-types"
+                      >
+                        Mở Cài đặt → Loại BH / SI type (tạo mã mới)
                       </a>
                     }
                     aria-label="Loại bảo hiểm"
+                    data-testid="hdsd-policy-insurance-type-picker"
                   />
                   <FormMessage />
                 </FormItem>
@@ -365,9 +393,9 @@ export function InsurancePolicyMasterPanel() {
             <EmptyState
               mood="none"
               title="Chưa có chính sách bảo hiểm"
-              description="Tạo chính sách với nhà BH và loại từ danh mục. Khi danh mục trống, mở Cài đặt để đồng bộ."
-              actionLabel="Mở Cài đặt"
-              actionTo={settingsCta}
+              description="Tạo chính sách với nhà BH và loại từ catalog Nest. Khi catalog trống, mở Cài đặt → Nhà BH / Loại BH."
+              actionLabel="Mở Cài đặt — Nhà BH"
+              actionTo={siInsurerSettingsCta}
               compact
               data-testid="ins-policies-empty"
             />
@@ -387,8 +415,8 @@ export function InsurancePolicyMasterPanel() {
                         <span className="text-muted-foreground">({row.policy_code})</span>
                       </div>
                       <div className="text-muted-foreground">
-                        {resolveInsurerLabel(insurerOptions, row.insurer_key)} ·{' '}
-                        {resolveInsuranceTypeCatalogLabel(typeOptions, row.insurance_type)} ·{' '}
+                        {resolveSiInsurerLabel(insurerOptions, row.insurer_key)} ·{' '}
+                        {resolveSiInsuranceTypeLabel(typeOptions, row.insurance_type)} ·{' '}
                         {resolveInsurancePolicyStatusDisplay(row.status)}
                       </div>
                       <div className="text-xs text-muted-foreground">

@@ -1,3 +1,17 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Employees → Đã xóa (n) + Khôi phục (E14–E15)
+ * UC:         TC-HRM-HDSD SoftDel archive restore
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-B
+ * Purpose:    Archive list dialog + restore confirm — ops-dense chrome.
+ * must_keep:  onRestore → restoreEmployee API; SoftDel path; no hard-delete invent
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Title sharp; row border-xevn; empty icon textMuted; restore AlertDialog title sharp
+ * Why: ADR pale ban · inventory W3-EMP-B E14 E15
+ */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RotateCcw, Trash2, User, Calendar, AlertCircle } from 'lucide-react';
@@ -72,9 +86,9 @@ export function DeletedEmployeesDialog({
           </DialogHeader>
 
           {deletedEmployees.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertCircle className="w-12 h-12 mb-4 opacity-50" />
-              <p>{t('deletedEmployees.empty')}</p>
+            <div className="flex flex-col items-center justify-center py-12 text-xevn-textSecondary">
+              <AlertCircle className="mb-4 h-12 w-12 text-xevn-textMuted opacity-70" />
+              <p className="text-[15px] text-xevn-textSecondary">{t('deletedEmployees.empty')}</p>
             </div>
           ) : (
             <ScrollArea className="h-[500px] pr-4">
@@ -82,7 +96,7 @@ export function DeletedEmployeesDialog({
                 {deletedEmployees.map((emp) => (
                   <div
                     key={emp.id}
-                    className="flex items-center justify-between p-4 border rounded-lg bg-muted/30"
+                    className="flex items-center justify-between rounded-card border border-xevn-border bg-xevn-surface p-4"
                   >
                     <div className="flex items-center gap-4">
                       <Avatar className="h-12 w-12">
@@ -93,22 +107,22 @@ export function DeletedEmployeesDialog({
                       </Avatar>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{emp.full_name}</span>
+                          <span className="font-medium text-xevn-text">{emp.full_name}</span>
                           <Badge variant="outline" className="text-xs">
                             {emp.employee_code}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-xevn-textSecondary">
                           {emp.department} • {emp.position}
                         </div>
-                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                        <div className="mt-1 flex items-center gap-4 text-xs text-xevn-textSecondary">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {t('deletedEmployees.deletedAt')}: {formatDate(emp.deleted_at)}
                           </span>
                         </div>
                         {emp.delete_reason && (
-                          <div className="text-xs text-muted-foreground mt-1">
+                          <div className="mt-1 text-xs text-xevn-textSecondary">
                             {t('deletedEmployees.reason')}: {emp.delete_reason}
                           </div>
                         )}
@@ -134,8 +148,10 @@ export function DeletedEmployeesDialog({
       <AlertDialog open={!!confirmRestore} onOpenChange={() => setConfirmRestore(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('deletedEmployees.restoreConfirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-[20px] font-bold text-xevn-text">
+              {t('deletedEmployees.restoreConfirmTitle')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xevn-textSecondary">
               {t('deletedEmployees.restoreConfirmDesc', { name: confirmRestore?.full_name, code: confirmRestore?.employee_code })}
             </AlertDialogDescription>
           </AlertDialogHeader>

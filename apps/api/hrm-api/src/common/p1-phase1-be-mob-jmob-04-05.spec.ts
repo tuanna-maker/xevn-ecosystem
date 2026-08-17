@@ -3,13 +3,30 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AttendanceController } from '../attendance/attendance.controller';
 import { AttendanceCatalogService } from '../attendance/attendance-catalog.service';
+import { AttendanceConfigService } from '../attendance/attendance-config.service';
 import { AttendanceOverviewService } from '../attendance/attendance-overview.service';
 import { AttendanceRequestsService } from '../attendance/attendance-requests.service';
 import { AttendanceService } from '../attendance/attendance.service';
+import { AttendanceSheetSignService } from '../attendance/attendance-sheet-sign.service';
+import { AttAttendanceCodeService } from '../attendance/att-attendance-code.service';
+import { AttLeaveAccrualPolicyService } from '../attendance/att-leave-accrual-policy.service';
+import { AttLeaveTypeService } from '../attendance/att-leave-type.service';
+import { AttOtTypeService } from '../attendance/att-ot-type.service';
+import { AttOtCompTypeService } from '../attendance/att-ot-comp-type.service';
+import { AttOtCompLeavePolicyService } from '../attendance/att-ot-comp-leave-policy.service';
+import { AttSickLeaveFundOrderService } from '../attendance/att-sick-leave-fund-order.service';
+import { LeaveBalanceService } from '../attendance/leave-balance.service';
 import { LeaveRequestsService } from '../attendance/leave-requests.service';
-import { PayrollController } from '../payroll/payroll.controller';
+import { AttActivateEnrollService } from '../attendance/att-activate-enroll.service';
+import { AttHolidayCalendarService } from '../attendance/att-holiday-calendar.service';
 import { PayrollCatalogService } from '../payroll/payroll-catalog.service';
+import { PayrollController } from '../payroll/payroll.controller';
 import { PayrollService } from '../payroll/payroll.service';
+import { PayFormulaService } from '../payroll/pay-formula.service';
+import { PaySheetTemplateService } from '../payroll/pay-sheet-template.service';
+import { PayPeriodInputPackService } from '../payroll/pay-period-input-pack.service';
+import { PayPayrollGroupService } from '../payroll/pay-payroll-group.service';
+import { PayCnttSetupService } from '../payroll/pay-cntt-setup.service';
 import { GlobalHttpExceptionFilter } from './http-exception.filter';
 import { signServiceJwt } from './jwt-sign';
 
@@ -43,6 +60,11 @@ describe('P1-PHASE1-BE-MOB-JMOB-04-05-01 (mobile HTTPS scope parity)', () => {
       providers: [
         { provide: PayrollService, useValue: payrollMock },
         { provide: PayrollCatalogService, useValue: {} },
+        { provide: PayFormulaService, useValue: {} },
+        { provide: PaySheetTemplateService, useValue: {} },
+        { provide: PayPeriodInputPackService, useValue: {} },
+        { provide: PayPayrollGroupService, useValue: {} },
+        { provide: PayCnttSetupService, useValue: {} },
       ],
     }).compile();
     const app = moduleRef.createNestApplication();
@@ -87,9 +109,21 @@ describe('P1-PHASE1-BE-MOB-JMOB-04-05-01 (mobile HTTPS scope parity)', () => {
       providers: [
         { provide: AttendanceService, useValue: attendanceMock },
         { provide: AttendanceCatalogService, useValue: {} },
+        { provide: AttendanceConfigService, useValue: {} },
+        { provide: AttLeaveTypeService, useValue: {} },
+        { provide: AttLeaveAccrualPolicyService, useValue: {} },
+        { provide: AttAttendanceCodeService, useValue: {} },
+        { provide: AttOtTypeService, useValue: {} },
+        { provide: AttOtCompTypeService, useValue: {} },
+        { provide: AttOtCompLeavePolicyService, useValue: {} },
+        { provide: AttSickLeaveFundOrderService, useValue: {} },
         { provide: AttendanceOverviewService, useValue: {} },
         { provide: AttendanceRequestsService, useValue: {} },
         { provide: LeaveRequestsService, useValue: {} },
+        { provide: LeaveBalanceService, useValue: {} },
+        { provide: AttActivateEnrollService, useValue: {} },
+        { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttendanceSheetSignService, useValue: {} },
       ],
     }).compile();
     const app = moduleRef.createNestApplication();

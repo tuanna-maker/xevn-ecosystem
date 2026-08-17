@@ -25,12 +25,35 @@ describe('useLeaveRequests portal mode', () => {
     expect(source).toContain('createLeaveRequest');
     expect(source).toContain('approveLeaveRequest');
     expect(source).toContain('rejectLeaveRequest');
+    expect(source).toContain('cancelLeaveRequest');
     expect(source).toContain('useQuery');
     expect(source).toContain('buildLeaveCreatePayload');
     expect(source).toContain('resolveHrmLeaveCreateCompanyId');
     expect(source).toContain('toErrorMessage');
     expect(source).not.toContain('setRequests(data || [])');
     expect(source).not.toContain('@/integrations/supabase/client');
+  });
+
+  it('PO-UC-TC-W4-FE-AT12: passes currentCompanyId into approve/reject leave', () => {
+    const source = readFileSync(join(hooksDir, 'useLeaveRequests.ts'), 'utf8');
+    expect(source).toContain('approveLeaveRequest(');
+    expect(source).toContain('rejectLeaveRequest(');
+    expect(source).toContain('currentCompanyId,');
+    expect(source).toContain('if (!currentCompanyId) return false;');
+    // Approve/reject call arity includes company scope (third arg after payload).
+    expect(source).toMatch(/approveLeaveRequest\([\s\S]*?currentCompanyId,/);
+    expect(source).toMatch(/rejectLeaveRequest\([\s\S]*?currentCompanyId,/);
+  });
+
+  it('PO-HRM-ATT-LEAVE-CANCEL-FE-01: wires cancelLeaveRequest (not stub toast)', () => {
+    const source = readFileSync(join(hooksDir, 'useLeaveRequests.ts'), 'utf8');
+    expect(source).toContain('cancelLeaveRequest');
+    expect(source).toContain('cancelRequest');
+    expect(source).toMatch(/cancelLeaveRequest\([\s\S]*?currentCompanyId,/);
+    expect(source).toContain('WEEKLY_ATTENDANCE_QUERY_KEY');
+    expect(source).not.toMatch(
+      /const deleteRequest = async \(_id: string\): Promise<boolean> => \{\s*toast\(\{/,
+    );
   });
 
   it('maps Nest leave row to attendance LeaveRequest UI model', () => {
@@ -59,6 +82,35 @@ describe('useLeaveRequests portal mode', () => {
     expect(mapped.total_days).toBe(1);
     expect(mapped.approved_at).toBe('2026-06-07T10:00:00.000Z');
     expect(mapped.approver_name).toBe('HR Manager');
+    expect(mapped.statusLabelVi).toBe('Đã duyệt');
+  });
+
+  it('PO-HRM-MVP-GD1-ATT-09: prefers BE status_label for statusLabelVi', () => {
+    const mapped = mapApiLeaveRequestToUi({
+      id: 'lr-9',
+      company_id: 'main',
+      employee_id: 'emp-9',
+      employee_code: 'NV-0009',
+      employee_name: 'Nguyễn Văn A',
+      leave_type: 'annual',
+      start_date: '2026-08-10',
+      end_date: '2026-08-11',
+      reason: null,
+      status: 'pending',
+      status_label: 'Chờ duyệt',
+      requested_at: '2026-08-09T08:00:00.000Z',
+      reviewed_at: null,
+      reviewed_by: null,
+      department: null,
+      position: null,
+      total_days: '2',
+      handover_to: null,
+      handover_tasks: null,
+      approver_employee_id: null,
+      rejected_reason: null,
+    });
+    expect(mapped.statusLabelVi).toBe('Chờ duyệt');
+    expect(mapped.status).toBe('pending');
   });
 });
 
@@ -101,5 +153,31 @@ describe('D-HRM-LEAVE-REQ-CREATE-FE-01 — leave create company_id TEXT slug', (
 
   it('returns null when company slug cannot be resolved', () => {
     expect(buildLeaveCreatePayload({ ...baseForm, company_id: 'unknown-slug' }, null)).toBeNull();
+  });
+});
+
+describe('R-SPINE-LV04-ATTACH-FE-01 — leave create attachment_url', () => {
+  it('includes relative attachment_url on payload when provided', () => {
+    const payload = buildLeaveCreatePayload(
+      {
+        ...baseForm,
+        leave_type: 'LVT_02',
+        total_days: 5,
+        attachment_url:
+          'http://127.0.0.1:28001/api/hrm/files/holding/leave_attachment-1-giay.pdf',
+      },
+      'main',
+    );
+    expect(payload).not.toBeNull();
+    expect(payload!.attachment_url).toBe(
+      '/api/hrm/files/holding/leave_attachment-1-giay.pdf',
+    );
+    expect(payload!.leave_type).toBe('LVT_02');
+  });
+
+  it('omits attachment_url when absent', () => {
+    const payload = buildLeaveCreatePayload({ ...baseForm }, 'main');
+    expect(payload).not.toBeNull();
+    expect(payload).not.toHaveProperty('attachment_url');
   });
 });

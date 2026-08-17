@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createHmac } from 'node:crypto';
 import { RecruitmentController } from './recruitment.controller';
+import { JdDynamicService } from './jd-dynamic.service';
+import { RecPipelineStageService } from './rec-pipeline-stage.service';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
+import { RecruitmentDashboardService } from './recruitment-dashboard.service';
 import { RecruitmentService } from './recruitment.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
@@ -33,6 +36,7 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     getCandidateById: jest.fn().mockResolvedValue({ id: 'cand-1', company_id: 'holding' }),
     scheduleInterview: jest.fn().mockResolvedValue({ id: 'int-1' }),
     updateInterviewStatus: jest.fn().mockResolvedValue({ id: 'int-1', status: 'passed' }),
+    rescheduleInterview: jest.fn().mockResolvedValue({ id: 'int-1', status: 'scheduled' }),
   };
 
   const catalogMock = {
@@ -46,7 +50,15 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     deleteCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
     listCandidateApplications: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     listRecruitmentPlans: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    getRecruitmentPlanById: jest.fn().mockResolvedValue({ id: 'plan-1', company_id: 'holding' }),
+    createRecruitmentPlan: jest.fn().mockResolvedValue({ id: 'plan-1' }),
+    upsertRecruitmentPlan: jest.fn().mockResolvedValue({ id: 'plan-1' }),
+    deleteRecruitmentPlan: jest.fn().mockResolvedValue({ id: 'plan-1' }),
     updateRecruitmentPlanStatus: jest.fn().mockResolvedValue({ id: 'plan-1', status: 'approved' }),
+    spawnRecruitmentPlanRequests: jest.fn().mockResolvedValue({
+      created: [],
+      skipped_duplicate: [],
+    }),
     submitRecruitmentPlanForApproval: jest.fn().mockResolvedValue({
       id: 'plan-1',
       spawn: null,
@@ -67,6 +79,30 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       providers: [
         { provide: RecruitmentService, useValue: serviceMock },
         { provide: RecruitmentCatalogService, useValue: catalogMock },
+        { provide: JdDynamicService, useValue: {} },
+        { provide: RecPipelineStageService, useValue: {
+          listStages: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+          listEffective: jest.fn().mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
+          getStageById: jest.fn(),
+          upsertStage: jest.fn(),
+          patchStage: jest.fn(),
+          retireStage: jest.fn(),
+        } },
+        {
+          provide: RecruitmentDashboardService,
+          useValue: {
+            getDashboard: jest.fn().mockResolvedValue({
+              planned_need: 0,
+              filled_count: 0,
+              funnel: { cv: 0, screening: 0, interview: 0, offer: 0, onboard: 0 },
+              empty_guide: { code: 'NO_APPROVED_HEADCOUNT' },
+            }),
+            getDashboardYctd: jest.fn().mockResolvedValue({ items: [], total: 0, page: 1, page_size: 50 }),
+            denyMutate: jest.fn().mockImplementation(() => {
+              throw new Error('METHOD-405');
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -217,18 +253,57 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     expect(serviceMock.createCandidate).not.toHaveBeenCalled();
   });
 
-  it('creates candidate pool row when requisition_id is omitted', async () => {
-    const res = await controller.createCandidate(undefined, 'test-key', 'xevn', undefined, {
+  it('FR-05a: missing YCTD → HRM-REC-UV-YCTD-REQUIRED (no silent Lane B)', () => {
+    try {
+      controller.createCandidate(undefined, 'test-key', 'xevn', undefined, {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        full_name: 'Pool Candidate',
+        email: 'pool@xe.vn',
+        source: 'career_page',
+      });
+      throw new Error('expected REQUIRED');
+    } catch (err) {
+      expect(err).toMatchObject({ code: 'HRM-REC-UV-YCTD-REQUIRED' });
+    }
+    expect(catalogMock.createCandidatePool).not.toHaveBeenCalled();
+    expect(serviceMock.createCandidate).not.toHaveBeenCalled();
+  });
+
+  it('POST /candidates-pool explicit Lane B still works', async () => {
+    const res = await controller.createCandidatePoolExplicit(undefined, 'test-key', 'xevn', undefined, {
       company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       full_name: 'Pool Candidate',
       email: 'pool@xe.vn',
       source: 'career_page',
     });
     expect(res.code).toBe('HRM-REC-CP-201');
-    expect(catalogMock.createCandidatePool).toHaveBeenCalledWith(
-      expect.objectContaining({ full_name: 'Pool Candidate' }),
-      undefined,
-    );
+    expect(catalogMock.createCandidatePool).toHaveBeenCalled();
+  });
+
+  it('PO-E2E-SPINE-01-BE-CAND-DTO-01 FE-shaped body without YCTD → REQUIRED (pool via candidates-pool)', () => {
+    const feBody = {
+      company_id: 'main',
+      full_name: 'Nguyen Hire Pay SP4SDE70SZ',
+      email: 'sp4sde70sz@xe.vn',
+      phone: null as unknown as undefined,
+      position: 'SP4SDE70SZ Specialist',
+      source: null as unknown as undefined,
+      stage: 'applied',
+      rating: 0,
+      applied_date: '2026-08-03',
+      expected_start_date: null as unknown as undefined,
+      nationality: 'Việt Nam',
+      hometown: null as unknown as undefined,
+      marital_status: null as unknown as undefined,
+      notes: null as unknown as undefined,
+    };
+    try {
+      controller.createCandidate(undefined, 'test-key', 'xevn', undefined, feBody);
+      throw new Error('expected REQUIRED');
+    } catch (err) {
+      expect(err).toMatchObject({ code: 'HRM-REC-UV-YCTD-REQUIRED' });
+    }
+    expect(catalogMock.createCandidatePool).not.toHaveBeenCalled();
     expect(serviceMock.createCandidate).not.toHaveBeenCalled();
   });
 

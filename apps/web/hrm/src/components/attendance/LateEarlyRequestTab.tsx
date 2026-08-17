@@ -1,3 +1,31 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Attendance → Đơn từ → Đi muộn/Về sớm (S48–S49)
+ * UC:         UC-HRM-ATT-LATE-EARLY
+ * Purpose:    Late/early request list + add/detail/delete chrome
+ * WorkItem:   PO-HRM-UI-BRAND-W3-ATT-C
+ * Coded:      2026-08-05
+ * must_keep:  create/approve/reject/delete wires; leave-balance panel untouched; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-C
+ * change_mode: UPGRADE
+ * What: Remaster late/early chrome → Precision Motion; ban orange/purple CTA chrome
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10 · inventory W3-ATT-C
+ * must_keep: mutate wires; Dialog title ≥20; no Nest/seed; no Attendance CLOSED
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-ATT-DIALOG-EXT
+ * change_mode: ADD
+ * What: Wire add/detail/delete dialogs → shared chrome + compact fields + *dialog-precision testids
+ * Why: ADR §16 LOCK · FE-DIALOG-01 shell · inventory S48–S49
+ * must_keep: create/approve/reject/delete wires; leave/OT wires; Face HOLD; U65 no seed
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-att-dialog-ext.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-ATT-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Honesty footer — late_early_requests ≠ mode SoT · ≠ FR-02 / ATT-02 DONE · Nest /core 0
+ * Why: UC-BP-ATT-02 O7 AC-ATT-02-≠-LER · peer RETAIN bind physical /late-early-requests*
+ * must_keep: create/approve/reject/delete wires; U65; attendance_uat_ready=false
+ */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -53,6 +81,7 @@ import { vi, enUS, zhCN } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useLateEarlyRequests, LateEarlyRequestFormData } from '@/hooks/useLateEarlyRequests';
+import { att02HonestyBannerText } from '@/lib/attRuleRing';
 import { CalendarIcon } from 'lucide-react';
 
 export function LateEarlyRequestTab() {
@@ -99,11 +128,23 @@ export function LateEarlyRequestTab() {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'late':
-        return <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">{t('lateEarly.types.late')}</Badge>;
+        return (
+          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-0">
+            {t('lateEarly.types.late')}
+          </Badge>
+        );
       case 'early':
-        return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">{t('lateEarly.types.early')}</Badge>;
+        return (
+          <Badge className="bg-xevn-primary/10 text-xevn-primary hover:bg-xevn-primary/10 border-0">
+            {t('lateEarly.types.early')}
+          </Badge>
+        );
       case 'both':
-        return <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100">{t('lateEarly.types.both')}</Badge>;
+        return (
+          <Badge className="bg-xevn-textSecondary/15 text-xevn-text hover:bg-xevn-textSecondary/15 border-0">
+            {t('lateEarly.types.both')}
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{type}</Badge>;
     }
@@ -204,64 +245,103 @@ export function LateEarlyRequestTab() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="h-8 w-8 animate-spin text-xevn-primary" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4 p-6" data-testid="att-late-early-precision">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{t('lateEarly.title')}</h2>
-        <Button className="gap-2 bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setAddModalOpen(true)}>
+        <h2 className="text-[20px] font-bold text-xevn-text">{t('lateEarly.title')}</h2>
+        <Button
+          className="gap-2 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+          onClick={() => setAddModalOpen(true)}
+        >
           <Plus className="w-4 h-4" />
           {t('lateEarly.addRequest')}
         </Button>
       </div>
+      <p
+        className="text-xs text-xevn-textSecondary leading-relaxed"
+        data-testid="att-02-ler-honesty"
+      >
+        late_early_requests ≠ mode SoT · ≠ FR-02 / ATT-02 DONE · {att02HonestyBannerText()}
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-        <Card className="p-4">
+        <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100"><Clock className="w-5 h-5 text-blue-600" /></div>
-            <div><p className="text-2xl font-bold">{stats.total}</p><p className="text-sm text-muted-foreground">{t('lateEarly.totalRequests')}</p></div>
+            <div className="p-2 rounded-input bg-xevn-primary/10">
+              <Clock className="w-5 h-5 text-xevn-primary" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-xevn-text">{stats.total}</p>
+              <p className="text-sm text-xevn-textSecondary">{t('lateEarly.totalRequests')}</p>
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-yellow-100"><AlertCircle className="w-5 h-5 text-yellow-600" /></div>
-            <div><p className="text-2xl font-bold">{stats.pending}</p><p className="text-sm text-muted-foreground">{t('common.pending')}</p></div>
+            <div className="p-2 rounded-input bg-amber-100">
+              <AlertCircle className="w-5 h-5 text-amber-700" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-xevn-text">{stats.pending}</p>
+              <p className="text-sm text-xevn-textSecondary">{t('common.pending')}</p>
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-green-100"><Check className="w-5 h-5 text-green-600" /></div>
-            <div><p className="text-2xl font-bold">{stats.approved}</p><p className="text-sm text-muted-foreground">{t('common.approved')}</p></div>
+            <div className="p-2 rounded-input bg-green-100">
+              <Check className="w-5 h-5 text-green-700" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-xevn-text">{stats.approved}</p>
+              <p className="text-sm text-xevn-textSecondary">{t('common.approved')}</p>
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-100"><X className="w-5 h-5 text-red-600" /></div>
-            <div><p className="text-2xl font-bold">{stats.rejected}</p><p className="text-sm text-muted-foreground">{t('common.rejected')}</p></div>
+            <div className="p-2 rounded-input bg-red-100">
+              <X className="w-5 h-5 text-red-700" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-xevn-text">{stats.rejected}</p>
+              <p className="text-sm text-xevn-textSecondary">{t('common.rejected')}</p>
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-orange-100"><ArrowRight className="w-5 h-5 text-orange-600" /></div>
-            <div><p className="text-2xl font-bold">{stats.lateCount}</p><p className="text-sm text-muted-foreground">{t('lateEarly.types.late')}</p></div>
+            <div className="p-2 rounded-input bg-amber-100">
+              <ArrowRight className="w-5 h-5 text-amber-700" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-xevn-text">{stats.lateCount}</p>
+              <p className="text-sm text-xevn-textSecondary">{t('lateEarly.types.late')}</p>
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-100"><ArrowLeft className="w-5 h-5 text-purple-600" /></div>
-            <div><p className="text-2xl font-bold">{stats.earlyCount}</p><p className="text-sm text-muted-foreground">{t('lateEarly.types.early')}</p></div>
+            <div className="p-2 rounded-input bg-xevn-primary/10">
+              <ArrowLeft className="w-5 h-5 text-xevn-primary" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-xevn-text">{stats.earlyCount}</p>
+              <p className="text-sm text-xevn-textSecondary">{t('lateEarly.types.early')}</p>
+            </div>
           </div>
         </Card>
       </div>
 
-      <Card className="p-4">
+      <Card className="p-4 rounded-card border-xevn-border bg-xevn-surface">
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-xevn-textMuted" />
             <Input placeholder={t('common.search')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -289,59 +369,59 @@ export function LateEarlyRequestTab() {
         </div>
       </Card>
 
-      <Card>
+      <Card className="rounded-card border-xevn-border bg-xevn-surface">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b bg-muted/30">
+              <tr className="border-b border-xevn-border bg-xevn-background">
                 <th className="p-3 text-left w-10"><Checkbox /></th>
-                <th className="p-3 text-left font-medium text-sm">{t('common.employee')}</th>
-                <th className="p-3 text-left font-medium text-sm">{t('common.department')}</th>
-                <th className="p-3 text-center font-medium text-sm">{t('lateEarly.applyDate')}</th>
-                <th className="p-3 text-center font-medium text-sm">{t('lateEarly.type')}</th>
-                <th className="p-3 text-center font-medium text-sm">{t('lateEarly.arrivalTime')}</th>
-                <th className="p-3 text-center font-medium text-sm">{t('lateEarly.leaveTime')}</th>
-                <th className="p-3 text-left font-medium text-sm">{t('common.reason')}</th>
-                <th className="p-3 text-center font-medium text-sm">{t('common.status.label')}</th>
-                <th className="p-3 text-center font-medium text-sm">{t('common.actions')}</th>
+                <th className="p-3 text-left font-semibold text-sm text-xevn-textSecondary">{t('common.employee')}</th>
+                <th className="p-3 text-left font-semibold text-sm text-xevn-textSecondary">{t('common.department')}</th>
+                <th className="p-3 text-center font-semibold text-sm text-xevn-textSecondary">{t('lateEarly.applyDate')}</th>
+                <th className="p-3 text-center font-semibold text-sm text-xevn-textSecondary">{t('lateEarly.type')}</th>
+                <th className="p-3 text-center font-semibold text-sm text-xevn-textSecondary">{t('lateEarly.arrivalTime')}</th>
+                <th className="p-3 text-center font-semibold text-sm text-xevn-textSecondary">{t('lateEarly.leaveTime')}</th>
+                <th className="p-3 text-left font-semibold text-sm text-xevn-textSecondary">{t('common.reason')}</th>
+                <th className="p-3 text-center font-semibold text-sm text-xevn-textSecondary">{t('common.status.label')}</th>
+                <th className="p-3 text-center font-semibold text-sm text-xevn-textSecondary">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredRequests.map((request) => (
-                <tr key={request.id} className="border-b hover:bg-muted/20 transition-colors">
+                <tr key={request.id} className="border-b border-xevn-border hover:bg-xevn-primary/5 transition-colors">
                   <td className="p-3"><Checkbox /></td>
                   <td className="p-3">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-8 h-8">
-                        <AvatarFallback className="text-xs bg-orange-100 text-orange-600">
+                        <AvatarFallback className="text-xs bg-xevn-primary/10 text-xevn-primary font-medium">
                           {request.employee_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium">{request.employee_name}</p>
-                        <p className="text-xs text-muted-foreground">{request.employee_code}</p>
+                        <p className="text-sm font-medium text-xevn-text">{request.employee_name}</p>
+                        <p className="text-xs text-xevn-textSecondary">{request.employee_code}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="p-3 text-sm text-muted-foreground">{request.department || '-'}</td>
-                  <td className="p-3 text-sm text-center">{request.request_date}</td>
+                  <td className="p-3 text-sm text-xevn-textSecondary">{request.department || '-'}</td>
+                  <td className="p-3 text-sm text-center text-xevn-text">{request.request_date}</td>
                   <td className="p-3 text-center">{getTypeBadge(request.request_type)}</td>
                   <td className="p-3 text-sm text-center">
                     {request.late_time ? (
-                      <span className="text-orange-600 font-medium">{request.late_time}</span>
+                      <span className="text-amber-800 font-medium">{request.late_time}</span>
                     ) : '-'}
                   </td>
                   <td className="p-3 text-sm text-center">
                     {request.early_time ? (
-                      <span className="text-blue-600 font-medium">{request.early_time}</span>
+                      <span className="text-xevn-primary font-medium">{request.early_time}</span>
                     ) : '-'}
                   </td>
-                  <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">{request.reason}</td>
+                  <td className="p-3 text-sm text-xevn-textSecondary max-w-[200px] truncate">{request.reason}</td>
                   <td className="p-3 text-center">{getStatusBadge(request.status)}</td>
                   <td className="p-3">
                     <div className="flex items-center justify-center gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setSelectedRequest(request); setDetailModalOpen(true); }}>
-                        <Eye className="w-4 h-4 text-muted-foreground" />
+                        <Eye className="w-4 h-4 text-xevn-textMuted" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setSelectedRequest(request); setDeleteModalOpen(true); }}>
                         <Trash2 className="w-4 h-4" />
@@ -352,7 +432,7 @@ export function LateEarlyRequestTab() {
               ))}
               {filteredRequests.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="text-center py-8 text-muted-foreground">
+                  <td colSpan={10} className="text-center py-8 text-[15px] text-xevn-textSecondary">
                     {t('lateEarly.noRequests')}
                   </td>
                 </tr>
@@ -362,15 +442,19 @@ export function LateEarlyRequestTab() {
         </div>
       </Card>
 
-      {/* Add Modal */}
+      {/* Add Modal — S49 · W4 dialog chrome + compact fields */}
       <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>{t('lateEarly.addRequest')}</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[920px]" data-testid="att-late-early-add-dialog-precision">
+          <DialogHeader>
+            <DialogTitle className="text-[20px] font-bold text-xevn-text">
+              {t('lateEarly.addRequest')}
+            </DialogTitle>
+          </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>{t('common.employee')} <span className="text-destructive">*</span></Label>
+              <Label className="text-xevn-text">{t('common.employee')} <span className="text-destructive">*</span></Label>
               <Select value={formData.employeeId} onValueChange={(v) => setFormData({...formData, employeeId: v})}>
-                <SelectTrigger><SelectValue placeholder={t('common.selectEmployee')} /></SelectTrigger>
+                <SelectTrigger className="xevn-field-select-md"><SelectValue placeholder={t('common.selectEmployee')} /></SelectTrigger>
                 <SelectContent>
                   {isLoadingEmployees ? (
                     <SelectItem value="" disabled>{t('common.loading')}</SelectItem>
@@ -386,49 +470,51 @@ export function LateEarlyRequestTab() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>{t('lateEarly.applyDate')} <span className="text-destructive">*</span></Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left font-normal">
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.requestDate ? format(formData.requestDate, 'dd/MM/yyyy', { locale: getDateLocale() }) : t('common.selectDate')}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={formData.requestDate} onSelect={(d) => setFormData({...formData, requestDate: d})} locale={getDateLocale()} /></PopoverContent>
-              </Popover>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-12">
+              <div className="space-y-2 sm:col-span-4">
+                <Label className="text-xevn-text">{t('lateEarly.applyDate')} <span className="text-destructive">*</span></Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="xevn-field-date justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4 text-xevn-textMuted" />
+                      {formData.requestDate ? format(formData.requestDate, 'dd/MM/yyyy', { locale: getDateLocale() }) : t('common.selectDate')}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0"><CalendarComponent mode="single" selected={formData.requestDate} onSelect={(d) => setFormData({...formData, requestDate: d})} locale={getDateLocale()} /></PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2 sm:col-span-4">
+                <Label className="text-xevn-text">{t('lateEarly.requestType')}</Label>
+                <Select value={formData.requestType} onValueChange={(v: 'late' | 'early' | 'both') => setFormData({...formData, requestType: v})}>
+                  <SelectTrigger className="xevn-field-select-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="late">{t('lateEarly.types.late')}</SelectItem>
+                    <SelectItem value="early">{t('lateEarly.types.early')}</SelectItem>
+                    <SelectItem value="both">{t('lateEarly.types.both')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {(formData.requestType === 'late' || formData.requestType === 'both') && (
+                <div className="space-y-2 sm:col-span-4">
+                  <Label className="text-xevn-text">{t('lateEarly.expectedArrival')}</Label>
+                  <Input className="xevn-field-time" type="time" value={formData.lateTime} onChange={(e) => setFormData({...formData, lateTime: e.target.value})} />
+                </div>
+              )}
+              {(formData.requestType === 'early' || formData.requestType === 'both') && (
+                <div className="space-y-2 sm:col-span-4">
+                  <Label className="text-xevn-text">{t('lateEarly.expectedLeave')}</Label>
+                  <Input className="xevn-field-time" type="time" value={formData.earlyTime} onChange={(e) => setFormData({...formData, earlyTime: e.target.value})} />
+                </div>
+              )}
             </div>
             <div className="space-y-2">
-              <Label>{t('lateEarly.requestType')}</Label>
-              <Select value={formData.requestType} onValueChange={(v: any) => setFormData({...formData, requestType: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="late">{t('lateEarly.types.late')}</SelectItem>
-                  <SelectItem value="early">{t('lateEarly.types.early')}</SelectItem>
-                  <SelectItem value="both">{t('lateEarly.types.both')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {(formData.requestType === 'late' || formData.requestType === 'both') && (
-              <div className="space-y-2">
-                <Label>{t('lateEarly.expectedArrival')}</Label>
-                <Input type="time" value={formData.lateTime} onChange={(e) => setFormData({...formData, lateTime: e.target.value})} />
-              </div>
-            )}
-            {(formData.requestType === 'early' || formData.requestType === 'both') && (
-              <div className="space-y-2">
-                <Label>{t('lateEarly.expectedLeave')}</Label>
-                <Input type="time" value={formData.earlyTime} onChange={(e) => setFormData({...formData, earlyTime: e.target.value})} />
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label>{t('common.reason')} <span className="text-destructive">*</span></Label>
-              <Textarea value={formData.reason} onChange={(e) => setFormData({...formData, reason: e.target.value})} placeholder={t('lateEarly.reasonPlaceholder')} />
+              <Label className="text-xevn-text">{t('common.reason')} <span className="text-destructive">*</span></Label>
+              <Textarea className="xevn-field-reason" value={formData.reason} onChange={(e) => setFormData({...formData, reason: e.target.value})} placeholder={t('lateEarly.reasonPlaceholder')} />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddModalOpen(false)}>{t('common.cancel')}</Button>
-            <Button className="bg-orange-500 hover:bg-orange-600" onClick={handleAddRequest} disabled={isSubmitting}>
+            <Button className="bg-xevn-primary hover:bg-xevn-primaryPressed text-white" onClick={handleAddRequest} disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               {t('common.add')}
             </Button>
@@ -436,55 +522,59 @@ export function LateEarlyRequestTab() {
         </DialogContent>
       </Dialog>
 
-      {/* Detail Modal */}
+      {/* Detail Modal — S49 */}
       <Dialog open={detailModalOpen} onOpenChange={setDetailModalOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>{t('lateEarly.requestDetail')}</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]" data-testid="att-late-early-detail-dialog-precision">
+          <DialogHeader>
+            <DialogTitle className="text-[20px] font-bold text-xevn-text">
+              {t('lateEarly.requestDetail')}
+            </DialogTitle>
+          </DialogHeader>
           {selectedRequest && (
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
+              <div className="flex items-center gap-4 p-4 rounded-card border border-xevn-border bg-xevn-background">
                 <Avatar className="w-12 h-12">
-                  <AvatarFallback className="bg-orange-100 text-orange-600">
+                  <AvatarFallback className="bg-xevn-primary/10 text-xevn-primary font-medium">
                     {selectedRequest.employee_name.split(' ').pop()?.charAt(0) || 'N'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{selectedRequest.employee_name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedRequest.employee_code} • {selectedRequest.department}</p>
+                  <p className="font-medium text-xevn-text">{selectedRequest.employee_name}</p>
+                  <p className="text-sm text-xevn-textSecondary">{selectedRequest.employee_code} • {selectedRequest.department}</p>
                 </div>
                 <div className="ml-auto">{getStatusBadge(selectedRequest.status)}</div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">{t('lateEarly.applyDate')}</p>
-                  <p className="font-medium">{selectedRequest.request_date}</p>
+                  <p className="text-sm text-xevn-textSecondary">{t('lateEarly.applyDate')}</p>
+                  <p className="font-medium text-xevn-text">{selectedRequest.request_date}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">{t('lateEarly.type')}</p>
+                  <p className="text-sm text-xevn-textSecondary">{t('lateEarly.type')}</p>
                   {getTypeBadge(selectedRequest.request_type)}
                 </div>
                 {selectedRequest.late_time && (
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('lateEarly.arrivalTime')}</p>
-                    <p className="font-medium text-orange-600">{selectedRequest.late_time}</p>
+                    <p className="text-sm text-xevn-textSecondary">{t('lateEarly.arrivalTime')}</p>
+                    <p className="font-medium text-xevn-text">{selectedRequest.late_time}</p>
                     {selectedRequest.late_minutes && (
-                      <p className="text-xs text-muted-foreground">({selectedRequest.late_minutes} {t('lateEarly.minutes')})</p>
+                      <p className="text-xs text-xevn-textSecondary">({selectedRequest.late_minutes} {t('lateEarly.minutes')})</p>
                     )}
                   </div>
                 )}
                 {selectedRequest.early_time && (
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('lateEarly.leaveTime')}</p>
-                    <p className="font-medium text-blue-600">{selectedRequest.early_time}</p>
+                    <p className="text-sm text-xevn-textSecondary">{t('lateEarly.leaveTime')}</p>
+                    <p className="font-medium text-xevn-primary">{selectedRequest.early_time}</p>
                     {selectedRequest.early_minutes && (
-                      <p className="text-xs text-muted-foreground">({selectedRequest.early_minutes} {t('lateEarly.minutes')})</p>
+                      <p className="text-xs text-xevn-textSecondary">({selectedRequest.early_minutes} {t('lateEarly.minutes')})</p>
                     )}
                   </div>
                 )}
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('common.reason')}</p>
-                <p className="font-medium">{selectedRequest.reason}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('common.reason')}</p>
+                <p className="font-medium text-xevn-text">{selectedRequest.reason}</p>
               </div>
               {selectedRequest.status === 'pending' && (
                 <div className="flex gap-2 pt-4">
@@ -501,12 +591,14 @@ export function LateEarlyRequestTab() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation */}
+      {/* Delete Confirmation — S49 */}
       <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent data-testid="att-late-early-delete-dialog-precision">
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('common.confirmDelete')}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-[20px] font-bold text-xevn-text">
+              {t('common.confirmDelete')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-[15px] text-xevn-textSecondary">
               {t('lateEarly.deleteConfirmation')}
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -1,1 +1,93 @@
-{ "checkedAt": "2026-07-31T21:30:00.000Z", "healthy": true, "dispatchRequired": [ { "priority": "P0", "workItemId": "P1-EX-PM-IDLE", "role": "qc", "reason": "qa completed @ 2026-07-30T10:12:37.989Z — followup_suppressed, no_bus_INTAKE, no_pm->qc_DISPATCHED (QA mobile CEO auth retest)", "source": "pipeline-recovery", "subagentAt": "2026-07-30T10:12:37.989Z", "followupSuppressed": true, "status": "suppressed" } ], "followupSuppressedCount": 27, "resolvedSinceLastCheck": 2, "policy": "U59 — interrupt/quota/suppressed-followup → pm:recover:pipeline exit 2 → Task same turn" }
+{
+  "checkedAt": "2026-08-10T07:24:26.957Z",
+  "healthy": false,
+  "dispatchRequired": [
+    {
+      "priority": "P0",
+      "workItemId": "HOOK-dev-fe-f20ac17a",
+      "role": "qa",
+      "reason": "dev-fe completed @ 2026-08-10T05:42:33.850Z — no_bus_INTAKE, no_pm->qa_DISPATCHED (CTR DnD parent portal fix 02)",
+      "source": "pipeline-recovery",
+      "subagentAt": "2026-08-10T05:42:33.850Z",
+      "followupSuppressed": false
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HOOK-dev-fe-eacdb83d",
+      "role": "qa",
+      "reason": "dev-fe completed @ 2026-08-10T05:36:34.372Z — no_bus_INTAKE, no_pm->qa_DISPATCHED (CTR view dialog BE sync)",
+      "source": "pipeline-recovery",
+      "subagentAt": "2026-08-10T05:36:34.372Z",
+      "followupSuppressed": false
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HOOK-dev-fe-bf4a1411",
+      "role": "qa",
+      "reason": "dev-fe completed @ 2026-08-10T05:30:45.272Z — followup_suppressed, no_bus_INTAKE, no_pm->qa_DISPATCHED (CTR inline picker portal fix)",
+      "source": "pipeline-recovery",
+      "subagentAt": "2026-08-10T05:30:45.272Z",
+      "followupSuppressed": true
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HOOK-qa-1b86b055",
+      "role": "qc",
+      "reason": "qa completed @ 2026-08-10T05:27:32.619Z — followup_suppressed, no_bus_INTAKE, no_pm->qc_DISPATCHED (CTR QA-04 DnD retest CC)",
+      "source": "pipeline-recovery",
+      "subagentAt": "2026-08-10T05:27:32.619Z",
+      "followupSuppressed": true
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HOOK-dev-fe-e320d0b0",
+      "role": "qa",
+      "reason": "dev-fe completed @ 2026-08-10T04:46:50.888Z — no_bus_INTAKE, no_pm->qa_DISPATCHED (CTR FE-04 DnD parent fix)",
+      "source": "pipeline-recovery",
+      "subagentAt": "2026-08-10T04:46:50.888Z",
+      "followupSuppressed": false
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HRM-MVP-GD1-PAY-09-CLUSTER-01",
+      "role": "dev-be",
+      "reason": "Trạng thái cuối bus: qa->pm FAIL_TO_PM chưa pm->dev-be DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-08-10 06:42"
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HRM-CTR-CREATE-REDESIGN-01",
+      "role": "dev-be",
+      "reason": "Trạng thái cuối bus: qa->pm FAIL_TO_PM chưa pm->dev-be DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-08-10 10:16"
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HRM-CTR-PICKER-INLINE-PORTAL-01",
+      "role": "dev-be",
+      "reason": "Trạng thái cuối bus: qa->pm FAIL_TO_PM chưa pm->dev-be DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-08-10 12:45"
+    },
+    {
+      "priority": "P0",
+      "workItemId": "HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND",
+      "role": "dev-be",
+      "reason": "Trạng thái cuối bus: qa->pm FAIL_TO_PM chưa pm->dev-be DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-08-10 13:10"
+    },
+    {
+      "priority": "P1",
+      "workItemId": "HRM-MVP-GD1-PAY-05-CLUSTER-SA-01",
+      "role": "qa",
+      "reason": "Trạng thái cuối bus: sa->pm PASS_TO_PM chưa pm->qa DISPATCHED",
+      "source": "bus-handoff",
+      "busAt": "2026-08-10 05:28"
+    }
+  ],
+  "followupSuppressedCount": 20,
+  "policy": "U59 — interrupt/quota/suppressed-followup → pm:recover:pipeline exit 2 → Task same turn"
+}

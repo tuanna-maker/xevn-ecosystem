@@ -1,4 +1,13 @@
-﻿import { useState, useEffect } from 'react';
+﻿/**
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Chốt Pass/Fail bắt buộc · neo recruitment_candidate_id/application_id · list filter YCTD ·
+ *       toast HRM-REC-EVAL family · salary_recommendation optional · gợi ý APP-02 riêng (không auto stage)
+ * Why: UC-BP-REC-06 Diễn biến #2 · O2/O5/O6/O7 · DENY pool-only as FR-06 DONE · Nest /rec dual
+ * must_keep: criteria template picker · radar · history tab · U65 · honesty false · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06-cluster-fe-01.md
+ */
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +58,12 @@ import {
   replaceEvaluationCriteriaTemplates,
 } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
+import {
+  REC_EVAL_SUCCESS_TOAST_VI,
+  REC_EVAL_SUGGEST_STAGE_HINT_VI,
+  resolveLaneACandidateIdForMailEval,
+  validateRecEvalCommit,
+} from '@/lib/recCandidateMailEval';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -90,6 +105,12 @@ interface Candidate {
   full_name: string;
   email: string;
   position?: string | null;
+  /** Lane A spine id when pool-enriched / YCTD-bound (FR-06 neo). */
+  recruitment_candidate_id?: string | null;
+  application_id?: string | null;
+  list_lane?: 'pool' | 'spine' | string | null;
+  requisition_id?: string | null;
+  recruitment_request_id?: string | null;
 }
 
 interface CandidateEvaluationDialogProps {
@@ -98,15 +119,24 @@ interface CandidateEvaluationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved?: () => void;
+  /** After Pass/Fail 2xx — parent may open APP-02 transition (separate Network). */
+  onSuggestStageTransition?: () => void;
 }
 
 const scoreOptions = [1, 2, 3, 4, 5];
 
+/** History badge labels (may include legacy pending). */
 const getResultConfig = (r: (key: string) => string): Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> => ({
   pending: { label: r('results.pending'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted', icon: AlertCircle },
   pass: { label: r('results.pass'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
   fail: { label: r('results.fail'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
   hold: { label: r('results.hold'), color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', icon: AlertCircle },
+});
+
+/** FR-06 chốt — chỉ Pass|Fail (O5 · silent pending ≠ DONE). */
+const getCommitResultConfig = (r: (key: string) => string): Record<'pass' | 'fail', { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> => ({
+  pass: { label: r('results.pass'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
+  fail: { label: r('results.fail'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
 });
 
 // Default criteria when no templates exist
@@ -129,6 +159,7 @@ export function CandidateEvaluationDialog({
   open,
   onOpenChange,
   onSaved,
+  onSuggestStageTransition,
 }: CandidateEvaluationDialogProps) {
   const { t } = useTranslation();
   const r = (key: string) => t(`rc.${key}`);
@@ -139,11 +170,14 @@ export function CandidateEvaluationDialog({
   const [existingEvaluations, setExistingEvaluations] = useState<CandidateEvaluation[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [result, setResult] = useState<string>('pending');
+  /** FR-06 chốt — empty until user picks Pass|Fail (không default pending DONE). */
+  const [result, setResult] = useState<string>('');
   const [overallFeedback, setOverallFeedback] = useState('');
   const [recommendation, setRecommendation] = useState('');
+  const [salaryRecommendation, setSalaryRecommendation] = useState('');
   const [evaluatorName, setEvaluatorName] = useState('');
   const [activeTab, setActiveTab] = useState('evaluate');
+  const [lastCommitOk, setLastCommitOk] = useState(false);
   
   // New criterion form
   const [newCriterionCategory, setNewCriterionCategory] = useState('');
@@ -152,6 +186,17 @@ export function CandidateEvaluationDialog({
   const [newCriterionRequired, setNewCriterionRequired] = useState(3);
 
   const resultConfig = getResultConfig(r);
+  const commitResultConfig = getCommitResultConfig(r);
+  const laneAId = candidate
+    ? resolveLaneACandidateIdForMailEval({
+        id: candidate.id,
+        recruitment_candidate_id: candidate.recruitment_candidate_id,
+        list_lane: candidate.list_lane,
+        requisition_id: candidate.requisition_id,
+        recruitment_request_id: candidate.recruitment_request_id,
+        application_id: candidate.application_id,
+      })
+    : null;
 
   // Fetch templates and existing evaluations
   useEffect(() => {
@@ -165,9 +210,20 @@ export function CandidateEvaluationDialog({
     
     setLoading(true);
     try {
+      const evalQuery = laneAId
+        ? {
+            company_id: currentCompanyId,
+            recruitment_candidate_id: laneAId,
+            application_id: candidate.application_id ?? undefined,
+          }
+        : {
+            company_id: currentCompanyId,
+            candidate_id: candidate.id,
+            include_legacy: true,
+          };
       const [templatesRes, evaluationsRes] = await Promise.all([
         listEvaluationCriteriaTemplates(currentCompanyId),
-        listCandidateEvaluations({ company_id: currentCompanyId, candidate_id: candidate.id }),
+        listCandidateEvaluations(evalQuery),
       ]);
       const templatesData = (templatesRes.data ?? []) as EvaluationCriteriaTemplate[];
       const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
@@ -178,7 +234,7 @@ export function CandidateEvaluationDialog({
         result: String(row.result ?? 'pending'),
         overall_feedback: row.overall_feedback ? String(row.overall_feedback) : null,
         recommendation: row.recommendation ? String(row.recommendation) : null,
-        created_at: String(row.created_at ?? ''),
+        created_at: String(row.created_at ?? row.evaluated_at ?? ''),
       }));
 
       setTemplates(templatesData);
@@ -201,10 +257,12 @@ export function CandidateEvaluationDialog({
         })));
       }
 
-      // Reset form
-      setResult('pending');
+      // Reset form — chốt FR-06 yêu cầu user chọn Pass|Fail
+      setResult('');
       setOverallFeedback('');
       setRecommendation('');
+      setSalaryRecommendation('');
+      setLastCommitOk(false);
       setEvaluatorName(user?.email || '');
     } catch (error) {
       console.error('Error fetching evaluation data:', error);
@@ -309,17 +367,35 @@ export function CandidateEvaluationDialog({
       return;
     }
 
+    const gate = validateRecEvalCommit({
+      laneAId,
+      applicationId: candidate.application_id,
+      result,
+    });
+    if (!gate.ok) {
+      toast({
+        title: 'Chưa chốt được đánh giá',
+        description: gate.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const salaryRaw = salaryRecommendation.replace(/\./g, '').replace(/,/g, '').trim();
+    const salaryNum =
+      salaryRaw.length > 0 && Number.isFinite(Number(salaryRaw)) ? Number(salaryRaw) : undefined;
+
     setSaving(true);
     try {
-      await createCandidateEvaluation({
+      const payload: Record<string, unknown> = {
         company_id: currentCompanyId,
-        candidate_id: candidate.id,
         interview_id: interviewId ?? null,
         evaluator_name: evaluatorName || user?.email || null,
         evaluator_email: user?.email ?? null,
         total_score: totalScore,
         weighted_score: weightedScore,
         result,
+        commit: true,
         overall_feedback: overallFeedback,
         recommendation,
         scores: criteria.map((c) => ({
@@ -328,11 +404,28 @@ export function CandidateEvaluationDialog({
           actual_score: c.actualScore,
           required_score: c.requiredScore,
           weight: c.weight,
+          criterion_id: c.criterion_id,
         })),
-      });
+      };
+      if (laneAId) {
+        payload.recruitment_candidate_id = laneAId;
+      }
+      if (candidate.application_id?.trim()) {
+        payload.application_id = candidate.application_id.trim();
+      }
+      // Legacy pool display only when no YCTD neo — DENY claim as FR-06 DONE
+      if (!laneAId && !candidate.application_id?.trim()) {
+        payload.candidate_id = candidate.id;
+      }
+      if (typeof salaryNum === 'number') {
+        payload.salary_recommendation = salaryNum;
+      }
+
+      await createCandidateEvaluation(payload);
+      setLastCommitOk(true);
       toast({
         title: t('common.success'),
-        description: r('evalSaveSuccess'),
+        description: REC_EVAL_SUCCESS_TOAST_VI,
       });
 
       onSaved?.();
@@ -342,7 +435,7 @@ export function CandidateEvaluationDialog({
       console.error('Error saving evaluation:', error);
       toast({
         title: t('common.error'),
-        description: r('evalSaveError'),
+        description: toErrorMessage(error, r('evalSaveError')),
         variant: 'destructive',
       });
     } finally {
@@ -534,13 +627,13 @@ export function CandidateEvaluationDialog({
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-medium">{r('evalResult')}</label>
-                          <Select value={result} onValueChange={setResult}>
-                            <SelectTrigger>
-                              <SelectValue />
+                          <label className="text-sm font-medium">{r('evalResult')} (Pass/Fail)</label>
+                          <Select value={result || undefined} onValueChange={setResult}>
+                            <SelectTrigger data-testid="rec-eval-result">
+                              <SelectValue placeholder="Chọn Đạt hoặc Không đạt" />
                             </SelectTrigger>
                             <SelectContent>
-                              {Object.entries(resultConfig).map(([key, config]) => (
+                              {Object.entries(commitResultConfig).map(([key, config]) => (
                                 <SelectItem key={key} value={key}>
                                   <div className="flex items-center gap-2">
                                     <config.icon className="w-4 h-4" />
@@ -550,6 +643,15 @@ export function CandidateEvaluationDialog({
                               ))}
                             </SelectContent>
                           </Select>
+                          {!laneAId ? (
+                            <p className="text-xs text-destructive" data-testid="rec-eval-neo-hint">
+                              FR-06 yêu cầu neo UV–YCTD. Gắn YCTD trước khi chốt (pool thuần ≠ SoT).
+                            </p>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">
+                              Neo Lane A · commit Pass/Fail · stage chỉ qua APP-02 riêng.
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -572,6 +674,17 @@ export function CandidateEvaluationDialog({
                           rows={2}
                         />
                       </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Đề xuất lương (tuỳ chọn)</label>
+                        <Input
+                          data-testid="rec-eval-salary"
+                          value={salaryRecommendation}
+                          onChange={(e) => setSalaryRecommendation(e.target.value)}
+                          placeholder="VD: 15000000"
+                          inputMode="numeric"
+                        />
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -589,26 +702,48 @@ export function CandidateEvaluationDialog({
                     </CardContent>
                   </Card>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => onOpenChange(false)}
-                    >
-                      {r('evalClose')}
-                    </Button>
-                    <Button
-                      className="flex-1"
-                      onClick={handleSaveEvaluation}
-                      disabled={saving || scoredCriteria.length === 0}
-                    >
-                      {saving ? (
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <Save className="w-4 h-4 mr-2" />
-                      )}
-                      {r('evalSave')}
-                    </Button>
+                  {lastCommitOk && onSuggestStageTransition ? (
+                    <p className="text-xs text-muted-foreground" data-testid="rec-eval-stage-hint">
+                      {REC_EVAL_SUGGEST_STAGE_HINT_VI}
+                    </p>
+                  ) : null}
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => onOpenChange(false)}
+                      >
+                        {r('evalClose')}
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        data-testid="rec-eval-commit"
+                        onClick={handleSaveEvaluation}
+                        disabled={saving || scoredCriteria.length === 0 || !result}
+                      >
+                        {saving ? (
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4 mr-2" />
+                        )}
+                        Chốt Pass/Fail
+                      </Button>
+                    </div>
+                    {lastCommitOk && onSuggestStageTransition ? (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        data-testid="rec-eval-suggest-stage"
+                        onClick={() => {
+                          onOpenChange(false);
+                          onSuggestStageTransition();
+                        }}
+                      >
+                        Đổi trạng thái (APP-02)
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
               </div>

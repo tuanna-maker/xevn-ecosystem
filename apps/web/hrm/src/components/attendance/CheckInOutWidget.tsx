@@ -1,3 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen: HRM → Chấm công → Clock-In → Thủ công (S11) + Confirm (S12)
+ * UC: UC-HRM-23 · HRM-AT-01 manual check-in/out
+ * SRS: inventory W3-ATT-A S11–S12 · ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10
+ * Purpose: Widget chấm công thủ công + dialog xác nhận; chrome Precision Motion.
+ * WorkItem: PO-HRM-UI-BRAND-W3-ATT-A
+ * Coded: 2026-08-05
+ * Callers: Attendance.tsx clock-in-panel-manual
+ * Callees: useAttendanceRecords.checkIn/checkOut · useEmployees
+ * must_keep: checkIn/checkOut API wire; dialog confirm flow; Face/QR not claimed LIVE; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-A
+ * change_mode: UPGRADE
+ * What: Remaster card/dialog → text-xevn-text / textSecondary; primary CTA; DialogContent xevn-dialog-surface
+ * Why: ADR §8 pale ban · §10 ops-dense modal · inventory S11–S12
+ * must_keep: mutate handlers; no Nest/seed; no Attendance CLOSED invent; no Face/QR invent
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-ATT-DIALOG-EXT
+ * change_mode: ADD
+ * What: Confirm dialog title ≥20 + compact select/line/reason; legacy clock-in-manual-confirm-dialog kept
+ * Why: ADR §16 LOCK · FE-DIALOG-01 shell extend · stall#2 remaining clock modals
+ * must_keep: checkIn/checkOut wire; legacy testids; Face HOLD; U65 no seed
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-att-dialog-ext.md
+ */
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,11 +51,9 @@ import {
   LogOut,
   Clock,
   MapPin,
-  Smartphone,
   CheckCircle2,
   AlertCircle,
   Timer,
-  Calendar,
   User,
   Building2,
 } from 'lucide-react';
@@ -147,20 +170,22 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
     return <Badge variant={status.variant}>{label}</Badge>;
   };
 
+  void isLoadingEmployees;
+
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full rounded-card border-xevn-border" data-testid="clock-in-manual-widget">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Clock className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-xevn-text">
+              <Clock className="h-5 w-5 text-xevn-primary" />
               {t('checkinout.title')}
             </CardTitle>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-xevn-primary tabular-nums">
                 {format(currentTime, 'HH:mm:ss')}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-sm text-xevn-textSecondary">
                 {format(currentTime, 'EEEE, dd/MM/yyyy', { locale: vi })}
               </div>
             </div>
@@ -169,7 +194,7 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
         <CardContent className="space-y-4">
           {/* Employee Selection */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">{t('checkinout.selectEmployee')}</Label>
+            <Label className="text-[15px] font-medium text-xevn-text">{t('checkinout.selectEmployee')}</Label>
             <Select value={selectedEmployeeId} onValueChange={setSelectedEmployeeId}>
               <SelectTrigger>
                 <SelectValue placeholder={t('checkinout.selectEmployeePlaceholder')} />
@@ -178,11 +203,11 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
                 {employees.map((emp) => (
                   <SelectItem key={emp.id} value={emp.id}>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{emp.employee_code}</span>
-                      <span>-</span>
-                      <span>{emp.full_name}</span>
+                      <span className="font-medium text-xevn-text">{emp.employee_code}</span>
+                      <span className="text-xevn-textSecondary">-</span>
+                      <span className="text-xevn-text">{emp.full_name}</span>
                       {emp.department && (
-                        <span className="text-muted-foreground">({emp.department})</span>
+                        <span className="text-xevn-textSecondary">({emp.department})</span>
                       )}
                     </div>
                   </SelectItem>
@@ -193,16 +218,16 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
 
           {/* Selected Employee Info */}
           {selectedEmployee && (
-            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-4 p-4 bg-xevn-background rounded-card border border-xevn-border">
               <Avatar className="h-14 w-14">
                 <AvatarImage src={selectedEmployee.avatar_url || ''} />
-                <AvatarFallback className="text-lg bg-primary/10 text-primary">
+                <AvatarFallback className="text-lg bg-xevn-primary/10 text-xevn-primary">
                   {selectedEmployee.full_name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <div className="font-semibold text-lg">{selectedEmployee.full_name}</div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                <div className="font-semibold text-lg text-xevn-text">{selectedEmployee.full_name}</div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[15px] text-xevn-textSecondary">
                   <span className="flex items-center gap-1">
                     <User className="h-3.5 w-3.5" />
                     {selectedEmployee.employee_code}
@@ -225,37 +250,37 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
 
           {/* Today's Status */}
           {selectedEmployee && currentRecord && (
-            <div className="p-4 border rounded-lg bg-card space-y-3">
+            <div className="p-4 border border-xevn-border rounded-card bg-xevn-surface space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-muted-foreground">{t('checkinout.todayStatus')}</span>
+                <span className="text-[15px] font-medium text-xevn-textSecondary">{t('checkinout.todayStatus')}</span>
                 {getStatusBadge()}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <LogIn className="h-4 w-4 text-green-500" />
+                  <div className="flex items-center gap-2 text-[15px] text-xevn-textSecondary">
+                    <LogIn className="h-4 w-4 text-xevn-success" />
                     Check-in
                   </div>
-                  <div className="font-semibold text-lg">
+                  <div className="font-semibold text-lg text-xevn-text tabular-nums">
                     {currentRecord.check_in_time || '--:--'}
                   </div>
                   {currentRecord.check_in_location && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 text-sm text-xevn-textSecondary">
                       <MapPin className="h-3 w-3" />
                       {currentRecord.check_in_location}
                     </div>
                   )}
                 </div>
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <LogOut className="h-4 w-4 text-orange-500" />
+                  <div className="flex items-center gap-2 text-[15px] text-xevn-textSecondary">
+                    <LogOut className="h-4 w-4 text-xevn-warning" />
                     Check-out
                   </div>
-                  <div className="font-semibold text-lg">
+                  <div className="font-semibold text-lg text-xevn-text tabular-nums">
                     {currentRecord.check_out_time || '--:--'}
                   </div>
                   {currentRecord.check_out_location && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 text-sm text-xevn-textSecondary">
                       <MapPin className="h-3 w-3" />
                       {currentRecord.check_out_location}
                     </div>
@@ -263,15 +288,15 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
                 </div>
               </div>
               {currentRecord.actual_hours && (
-                <div className="flex items-center justify-between pt-2 border-t">
-                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                <div className="flex items-center justify-between pt-2 border-t border-xevn-border">
+                  <span className="text-[15px] text-xevn-textSecondary flex items-center gap-1">
                     <Timer className="h-4 w-4" />
                     {t('checkinout.totalWorkHours')}
                   </span>
-                  <span className="font-semibold">
+                  <span className="font-semibold text-xevn-text">
                     {currentRecord.actual_hours}h
                     {currentRecord.overtime_hours && currentRecord.overtime_hours > 0 && (
-                      <span className="text-primary ml-2">(+{currentRecord.overtime_hours}h OT)</span>
+                      <span className="text-xevn-primary ml-2">(+{currentRecord.overtime_hours}h OT)</span>
                     )}
                   </span>
                 </div>
@@ -282,10 +307,11 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
           {/* Action Buttons */}
           <div className="flex gap-3">
             <Button
-              className="flex-1 h-14 text-lg"
+              className="flex-1 h-14 text-lg bg-xevn-primary hover:bg-xevn-primaryPressed"
               variant={canCheckIn ? 'default' : 'outline'}
               disabled={!canCheckIn || isProcessing}
               onClick={() => handleOpenDialog('checkin')}
+              data-testid="clock-in-manual-checkin"
             >
               <LogIn className="mr-2 h-5 w-5" />
               Check-in
@@ -295,6 +321,7 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
               variant={canCheckOut ? 'destructive' : 'outline'}
               disabled={!canCheckOut || isProcessing}
               onClick={() => handleOpenDialog('checkout')}
+              data-testid="clock-in-manual-checkout"
             >
               <LogOut className="mr-2 h-5 w-5" />
               Check-out
@@ -303,33 +330,33 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
 
           {/* Status Messages */}
           {selectedEmployee && !currentRecord && (
-            <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-blue-700 dark:text-blue-300">
+            <div className="flex items-center gap-2 p-3 rounded-card border border-xevn-border bg-xevn-primary/5 text-xevn-primary">
               <AlertCircle className="h-5 w-5" />
-              <span className="text-sm">{t('checkinout.notCheckedIn')}</span>
+              <span className="text-[15px]">{t('checkinout.notCheckedIn')}</span>
             </div>
           )}
           {currentRecord?.check_in_time && currentRecord?.check_out_time && (
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg text-green-700 dark:text-green-300">
+            <div className="flex items-center gap-2 p-3 rounded-card border border-xevn-border bg-xevn-success/10 text-xevn-success">
               <CheckCircle2 className="h-5 w-5" />
-              <span className="text-sm">{t('checkinout.completedToday')}</span>
+              <span className="text-[15px]">{t('checkinout.completedToday')}</span>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Confirmation Dialog */}
+      {/* Confirmation Dialog — S12 · W4 shared Dialog chrome + compact fields */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent data-testid="clock-in-manual-confirm-dialog">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
               {dialogType === 'checkin' ? (
                 <>
-                  <LogIn className="h-5 w-5 text-green-500" />
+                  <LogIn className="h-5 w-5 text-xevn-success" />
                   {t('checkinout.confirmCheckin')}
                 </>
               ) : (
                 <>
-                  <LogOut className="h-5 w-5 text-orange-500" />
+                  <LogOut className="h-5 w-5 text-xevn-warning" />
                   {t('checkinout.confirmCheckout')}
                 </>
               )}
@@ -338,30 +365,30 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
 
           <div className="space-y-4">
             {selectedEmployee && (
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-3 p-3 bg-xevn-background rounded-card border border-xevn-border">
                 <Avatar>
-                  <AvatarFallback>{selectedEmployee.full_name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-xevn-primary/10 text-xevn-primary">{selectedEmployee.full_name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="font-medium">{selectedEmployee.full_name}</div>
-                  <div className="text-sm text-muted-foreground">{selectedEmployee.employee_code}</div>
+                  <div className="font-medium text-xevn-text">{selectedEmployee.full_name}</div>
+                  <div className="text-[15px] text-xevn-textSecondary">{selectedEmployee.employee_code}</div>
                 </div>
               </div>
             )}
 
-            <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
-              <Clock className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-2 p-3 bg-xevn-primary/10 rounded-card">
+              <Clock className="h-5 w-5 text-xevn-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">{t('checkinout.time')}</div>
-                <div className="font-semibold text-lg">{format(currentTime, 'HH:mm:ss - dd/MM/yyyy')}</div>
+                <div className="text-sm text-xevn-textSecondary">{t('checkinout.time')}</div>
+                <div className="font-semibold text-lg text-xevn-text tabular-nums">{format(currentTime, 'HH:mm:ss - dd/MM/yyyy')}</div>
               </div>
             </div>
 
             {dialogType === 'checkin' && (
               <div className="space-y-2">
-                <Label>{t('checkinout.attendanceType')}</Label>
+                <Label className="text-[15px] font-medium text-xevn-text">{t('checkinout.attendanceType')}</Label>
                 <Select value={attendanceType} onValueChange={setAttendanceType}>
-                  <SelectTrigger>
+                  <SelectTrigger className="xevn-field-select-md">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -374,25 +401,26 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
             )}
 
             <div className="space-y-2">
-              <Label>{t('checkinout.location')} ({t('checkinout.optional')})</Label>
+              <Label className="text-[15px] font-medium text-xevn-text">{t('checkinout.location')} ({t('checkinout.optional')})</Label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-xevn-textMuted" />
                 <Input
                   placeholder={t('checkinout.locationPlaceholder')}
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="pl-9"
+                  className="xevn-field-line pl-9 text-[15px] text-xevn-text"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>{t('checkinout.notes')} ({t('checkinout.optional')})</Label>
+              <Label className="text-[15px] font-medium text-xevn-text">{t('checkinout.notes')} ({t('checkinout.optional')})</Label>
               <Textarea
                 placeholder={t('checkinout.notesPlaceholder')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
+                className="xevn-field-reason text-[15px] text-xevn-text"
               />
             </div>
           </div>
@@ -405,6 +433,8 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
               onClick={handleConfirm}
               disabled={isProcessing}
               variant={dialogType === 'checkin' ? 'default' : 'destructive'}
+              className={dialogType === 'checkin' ? 'bg-xevn-primary hover:bg-xevn-primaryPressed' : undefined}
+              data-testid="clock-in-manual-confirm-submit"
             >
               {isProcessing ? t('checkinout.processing') : dialogType === 'checkin' ? t('checkinout.confirmCheckin') : t('checkinout.confirmCheckout')}
             </Button>

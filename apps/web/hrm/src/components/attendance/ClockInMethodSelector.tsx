@@ -18,6 +18,18 @@
  * What: ADD selector task-based thay 4 submenu kỹ thuật
  * Why: Sponsor C1 — collapse checkinout/qr/face/gps
  * must_keep: Giữ 4 method id khớp widget hiện có
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-01-FE-LEAVE-ATTENDANCE-MOUNT
+ * change_mode: FIX
+ * What: Restore from git 43c479a — transitive eager import of Attendance.tsx
+ * Why: After LeaveOverviewRecentPanel, Vite next Failed to resolve ClockInMethodSelector
+ * must_keep: LeaveTab create/list; IA method ids; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-A
+ * change_mode: UPGRADE
+ * What: Selector chrome → Precision Motion primary (replace orange accent)
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10 · inventory S10
+ * must_keep: method ids + testids; Face/QR honesty elsewhere; no API
  */
 import { Clock, MapPin, QrCode, UserCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -61,22 +73,22 @@ export function ClockInMethodSelector({ value, onChange }: Props) {
             data-testid={`clock-in-method-${option.id}`}
             onClick={() => onChange(option.id)}
             className={cn(
-              'flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-colors touch-target',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2',
+              'flex flex-col items-start gap-2 rounded-card border p-4 text-left transition-colors touch-target',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xevn-primary focus-visible:ring-offset-2',
               selected
-                ? 'border-orange-500 bg-orange-50 text-orange-900 shadow-sm dark:bg-orange-950/40 dark:text-orange-100'
-                : 'border-border bg-card text-foreground hover:border-orange-300 hover:bg-muted/40',
+                ? 'border-xevn-primary bg-xevn-primary/5 text-xevn-text shadow-sm'
+                : 'border-xevn-border bg-xevn-surface text-xevn-text hover:border-xevn-primary/40 hover:bg-xevn-background',
             )}
           >
             <span
               className={cn(
                 'flex h-9 w-9 items-center justify-center rounded-lg',
-                selected ? 'bg-orange-500 text-white' : 'bg-muted text-muted-foreground',
+                selected ? 'bg-xevn-primary text-white' : 'bg-xevn-background text-xevn-textSecondary',
               )}
             >
               <Icon className="h-4 w-4" aria-hidden />
             </span>
-            <span className="text-sm font-semibold">
+            <span className="text-[15px] font-semibold text-xevn-text">
               {t(option.labelKey, option.labelFallback)}
             </span>
           </button>

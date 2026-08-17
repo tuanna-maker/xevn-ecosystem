@@ -1,3 +1,54 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → BH / tài chính (E17)
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-B
+ * Purpose:    Precision Motion remaster — sharp ops chrome.
+ * must_keep:  SoftDel; no Nest/seed; no OCR/QR invent; stub honesty
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; purple AI chrome → xevn primary/accent
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-B
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no Nest/seed; no OCR/QR invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-01
+ * change_mode: ADD
+ * What: Wire InsuranceTimelineActionsPanel (close|stop|suspend|change_rate|resume); periods[]; status expand
+ * Why: AC-SI-TL-01..05 · F-CORE-SI-03 · EMP-SPEC-01 §D.5 · DB-01 action map
+ * must_keep: No FE payroll formulas; display-ready only; U65; CRUD insurance preserve
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-03
+ * change_mode: FIX
+ * What: hdsd-insurance-enrollments-root; row enrollment_id; always mount timeline panel when rows exist
+ * Why: R-EMP-SI-FE-ACTION-UI — QA R2 timelineRoot=false when enrollments exist but tab/list unbound
+ * must_keep: SoftDel CRUD; D2 WH / D6 HTP / FE-02 QSĐ; no invent amounts; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-UAT-EMP-SOFT-OBS-FE-01
+ * change_mode: FIX
+ * What: Card start/end dates via formatInsurancePeriodDateVi (dd/MM/yyyy)
+ * Why: OBS-SI-DATE-ISO — SI card raw ISO leak
+ * must_keep: timeline panel D5 company_id; SoftDel; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-FE-01
+ * change_mode: FIX
+ * What: enrollment type CatalogSearchPicker binds Nest F-SI-CAT-EFF; empty CTA Settings Loại BH
+ * Why: AC-PLT-SI-INS-ENR · VAL-SI-CNS-02/04 — cấm hardcode social|health|… SoT khi EFF live
+ * must_keep: timeline F-CORE-SI-03 · SoftDel · enrollment ONE SoT · U65 · printable/personnel false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Edit enrollment amount delta → actions change_rate via hook (not silent PATCH contrib)
+ * Why: API-01 SI PATCH fail-closed · AC-CORE-02-07 · O1 employee-insurances*
+ * must_keep: timeline panel · SoftDel · Nest /core DENY · U65 · honesty false · CORE-01≠C&B DONE
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-10-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: statusLabelVi bind · honesty footer catalog/CRUD/LIVE≠DONE · BH≠CORE-07 · printable false
+ * Why: API-01 CONFIRMED RETAIN · UC-BP-CORE-10 · R-CORE-10-DISP FE-derive · O6–O10
+ * must_keep: timeline F-CORE-SI-03 · SoftDel · Nest /core DENY · CORE-09/07 seals · soft≠CORE-06 DONE · U65
+ */
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,17 +62,28 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { formatInsurancePeriodDateVi } from '@/lib/insuranceTimelineActions';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, MoreHorizontal, Pencil, Trash2, Shield, Heart, Umbrella, Gift, Building, Calendar, DollarSign, PackageOpen } from 'lucide-react';
 import { useEmployeeInsurance, InsuranceItem, BenefitItem, InsuranceFormData, BenefitFormData } from '@/hooks/useEmployeeInsurance';
+import { useSiInsuranceTypesEffective } from '@/hooks/useSiInsuranceTypesEffective';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { isCatalogPickerValueAllowed } from '@/lib/catalogSearchPicker';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
+import { InsuranceTimelineActionsPanel } from '@/components/employee/InsuranceTimelineActionsPanel';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
+import {
+  core10HonestyBannerText,
+  resolveInsuranceStatusLabelVi,
+} from '@/lib/empCoreSiRing';
 
 const insuranceTypeIcons: Record<string, React.ReactNode> = {
   social: <Shield className="h-5 w-5" />,
   health: <Heart className="h-5 w-5" />,
   unemployment: <Umbrella className="h-5 w-5" />,
   accident: <Shield className="h-5 w-5" />,
-  life: <Heart className="h-5 w-5" />
+  life: <Heart className="h-5 w-5" />,
 };
 
 interface EmployeeInsuranceProps {
@@ -42,13 +104,9 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
     createBenefit,
     updateBenefit,
     deleteBenefit,
+    refetch,
+    fetchError,
   } = useEmployeeInsurance(employeeId);
-
-  const getInsuranceTypeLabel = (type: string) => t(`ei.insTypes.${type}`, type);
-  const getInsuranceStatusLabel = (status: string) => t(`ei.insStatuses.${status}`, status);
-  const getBenefitCategoryLabel = (cat: string) => t(`ei.benCategories.${cat}`, cat);
-  const getBenefitFrequencyLabel = (freq: string) => t(`ei.benFrequencies.${freq === 'one-time' ? 'oneTime' : freq}`, freq);
-  const getBenefitStatusLabel = (status: string) => t(`ei.benStatuses.${status}`, status);
 
   const [insuranceDialogOpen, setInsuranceDialogOpen] = useState(false);
   const [benefitDialogOpen, setBenefitDialogOpen] = useState(false);
@@ -56,7 +114,7 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
   const [editingBenefit, setEditingBenefit] = useState<BenefitItem | null>(null);
 
   const [insuranceForm, setInsuranceForm] = useState<InsuranceFormData>({
-    type: 'social',
+    type: '',
     provider: '',
     policy_number: '',
     start_date: '',
@@ -64,7 +122,7 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
     contribution: 0,
     employer_contribution: 0,
     status: 'active',
-    notes: ''
+    notes: '',
   });
 
   const [benefitForm, setBenefitForm] = useState<BenefitFormData>({
@@ -76,8 +134,31 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
     start_date: '',
     end_date: '',
     status: 'active',
-    description: ''
+    description: '',
   });
+
+  const {
+    insuranceTypeOptions,
+    isLoading: insuranceTypesLoading,
+    insuranceTypeDisplayLabel,
+  } = useSiInsuranceTypesEffective({
+    enabled: true,
+    historyKey: editingInsurance?.type ?? null,
+  });
+  const siTypeSettingsCta = hrmPathWithEmbedSearch('/settings?tab=si-insurance-types');
+
+  const getInsuranceTypeLabel = (type: string) => {
+    const fromEff = insuranceTypeDisplayLabel(type);
+    if (fromEff && fromEff !== '—') return fromEff;
+    return t(`ei.insTypes.${type}`, type);
+  };
+  /** R-CORE-10-DISP / O3 — prefer FE-derive statusLabelVi; BH Hoạt động ≠ CORE-07 activate. */
+  const getInsuranceStatusLabel = (insurance: InsuranceItem) =>
+    resolveInsuranceStatusLabelVi(insurance.status, insurance.statusLabelVi);
+  const getBenefitCategoryLabel = (cat: string) => t(`ei.benCategories.${cat}`, cat);
+  const getBenefitFrequencyLabel = (freq: string) =>
+    t(`ei.benFrequencies.${freq === 'one-time' ? 'oneTime' : freq}`, freq);
+  const getBenefitStatusLabel = (status: string) => t(`ei.benStatuses.${status}`, status);
 
   const handleOpenInsuranceDialog = (insurance?: InsuranceItem) => {
     if (insurance) {
@@ -91,11 +172,21 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
         contribution: insurance.contribution,
         employer_contribution: insurance.employer_contribution,
         status: insurance.status,
-        notes: insurance.notes || ''
+        notes: insurance.notes || '',
       });
     } else {
       setEditingInsurance(null);
-      setInsuranceForm({ type: 'social', provider: '', policy_number: '', start_date: '', end_date: '', contribution: 0, employer_contribution: 0, status: 'active', notes: '' });
+      setInsuranceForm({
+        type: '',
+        provider: '',
+        policy_number: '',
+        start_date: '',
+        end_date: '',
+        contribution: 0,
+        employer_contribution: 0,
+        status: 'active',
+        notes: '',
+      });
     }
     setInsuranceDialogOpen(true);
   };
@@ -112,6 +203,11 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
   };
 
   const handleSaveInsurance = async () => {
+    if (
+      !isCatalogPickerValueAllowed(insuranceTypeOptions, insuranceForm.type, { allowEmpty: false })
+    ) {
+      return;
+    }
     if (editingInsurance) {
       await updateInsurance(editingInsurance.id, insuranceForm);
     } else {
@@ -162,24 +258,28 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
     );
   }
 
-  const insTypes = ['social', 'health', 'unemployment', 'accident', 'life'] as const;
-  const insStatuses = ['active', 'pending', 'expired'] as const;
+  const insStatuses = ['active', 'pending', 'expired', 'suspended', 'stopped', 'closed'] as const;
   const benCategories = ['allowance', 'bonus', 'leave', 'health', 'education', 'other'] as const;
   const benFrequencies = ['monthly', 'quarterly', 'yearly', 'one-time'] as const;
   const benStatuses = ['active', 'inactive'] as const;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid={HDSD_MUTATE_TEST_IDS.insuranceEnrollmentsRoot}>
+      {fetchError ? (
+        <p className="text-sm text-destructive" role="alert" data-testid="hdsd-insurance-fetch-error">
+          {fetchError}
+        </p>
+      ) : null}
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
-                <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="p-2 rounded-lg bg-xevn-primary/10 dark:bg-xevn-primary/20">
+                <Shield className="h-5 w-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('ei.employeeContrib')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('ei.employeeContrib')}</p>
                 <p className="text-xl font-bold">{formatCurrency(totalInsuranceContribution)}</p>
               </div>
             </div>
@@ -188,11 +288,11 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900">
-                <Building className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <div className="p-2 rounded-lg bg-xevn-success/15 dark:bg-xevn-success/25">
+                <Building className="h-5 w-5 text-xevn-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('ei.employerContrib')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('ei.employerContrib')}</p>
                 <p className="text-xl font-bold">{formatCurrency(totalEmployerContribution)}</p>
               </div>
             </div>
@@ -201,11 +301,11 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">
-                <Gift className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <div className="p-2 rounded-lg bg-xevn-accent/15 dark:bg-xevn-accent/25">
+                <Gift className="h-5 w-5 text-xevn-primary dark:text-xevn-accent" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('ei.monthlyBenefits')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('ei.monthlyBenefits')}</p>
                 <p className="text-xl font-bold">{formatCurrency(totalMonthlyBenefits)}</p>
               </div>
             </div>
@@ -214,11 +314,11 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900">
-                <DollarSign className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+              <div className="p-2 rounded-lg bg-xevn-warning/15 dark:bg-xevn-warning/25">
+                <DollarSign className="h-5 w-5 text-xevn-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('ei.totalBenefits')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('ei.totalBenefits')}</p>
                 <p className="text-xl font-bold">{t('ei.benefitCount', { count: benefits.filter(b => b.status === 'active').length })}</p>
               </div>
             </div>
@@ -240,7 +340,7 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
         </CardHeader>
         <CardContent>
           {insurances.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-8 text-xevn-textSecondary">
               <PackageOpen className="h-12 w-12 mb-2" />
               <p>{t('ei.noInsurance')}</p>
               <Button variant="outline" size="sm" className="mt-2" onClick={() => handleOpenInsuranceDialog()}>
@@ -251,25 +351,30 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
           ) : (
             <div className="space-y-4">
               {insurances.map((insurance) => (
-                <div key={insurance.id} className="flex items-start justify-between p-4 border rounded-lg">
+                <div
+                  key={insurance.enrollment_id}
+                  className="flex items-start justify-between p-4 border rounded-lg"
+                  data-testid={`hdsd-insurance-enrollment-row-${insurance.enrollment_id}`}
+                  data-enrollment-id={insurance.enrollment_id}
+                >
                   <div className="flex items-start gap-4">
                     <div className={`p-2 rounded-lg ${
-                      insurance.type === 'social' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' :
+                      insurance.type === 'social' ? 'bg-xevn-primary/10 dark:bg-xevn-primary/20 text-xevn-primary' :
                       insurance.type === 'health' ? 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400' :
-                      insurance.type === 'unemployment' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400' :
+                      insurance.type === 'unemployment' ? 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300' :
                       insurance.type === 'accident' ? 'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400' :
-                      'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400'
+                      'bg-xevn-accent/15 dark:bg-xevn-accent/25 text-xevn-primary dark:text-xevn-accent'
                     }`}>
-                      {insuranceTypeIcons[insurance.type]}
+                      {insuranceTypeIcons[insurance.type] ?? <Shield className="h-5 w-5" />}
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">{getInsuranceTypeLabel(insurance.type)}</h4>
                         <Badge variant={insurance.status === 'active' ? 'default' : insurance.status === 'pending' ? 'secondary' : 'destructive'}>
-                          {getInsuranceStatusLabel(insurance.status)}
+                          {getInsuranceStatusLabel(insurance)}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{insurance.provider}</p>
+                      <p className="text-sm text-xevn-textSecondary">{insurance.provider}</p>
                       {insurance.policy_number && (
                         <p className="text-sm">{t('ei.cardNumber')}: <span className="font-medium">{insurance.policy_number}</span></p>
                       )}
@@ -278,14 +383,19 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
                         <span>{t('ei.companyPayLabel')}: <span className="font-medium text-green-600">{formatCurrency(insurance.employer_contribution)}</span></span>
                       </div>
                       {(insurance.start_date || insurance.end_date) && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-xevn-textSecondary">
                           <Calendar className="h-3 w-3 inline mr-1" />
-                          {insurance.start_date || '--'} - {insurance.end_date || '--'}
+                          {formatInsurancePeriodDateVi(insurance.start_date)} -{' '}
+                          {formatInsurancePeriodDateVi(insurance.end_date)}
                         </p>
                       )}
                       {insurance.notes && (
-                        <p className="text-sm text-muted-foreground italic">{insurance.notes}</p>
+                        <p className="text-sm text-xevn-textSecondary italic">{insurance.notes}</p>
                       )}
+                      <InsuranceTimelineActionsPanel
+                        insurance={insurance}
+                        onActionComplete={() => refetch()}
+                      />
                     </div>
                   </div>
                   <DropdownMenu>
@@ -305,6 +415,12 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
               ))}
             </div>
           )}
+          <p
+            className="mt-3 text-[11px] leading-snug text-xevn-textSecondary"
+            data-testid="si-core10-honesty"
+          >
+            {core10HonestyBannerText()}
+          </p>
         </CardContent>
       </Card>
 
@@ -322,7 +438,7 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
         </CardHeader>
         <CardContent>
           {benefits.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-8 text-xevn-textSecondary">
               <PackageOpen className="h-12 w-12 mb-2" />
               <p>{t('ei.noBenefits')}</p>
               <Button variant="outline" size="sm" className="mt-2" onClick={() => handleOpenBenefitDialog()}>
@@ -349,7 +465,7 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
                       {benefit.unit === 'VNĐ' || benefit.unit === 'VNĐ/năm' ? formatCurrency(benefit.value) : `${benefit.value} ${benefit.unit}`}
                     </p>
                     {benefit.description && (
-                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                      <p className="text-sm text-xevn-textSecondary">{benefit.description}</p>
                     )}
                   </div>
                   <DropdownMenu>
@@ -382,14 +498,24 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('ei.insuranceType')}</Label>
-                <Select value={insuranceForm.type} onValueChange={(v) => setInsuranceForm({ ...insuranceForm, type: v as InsuranceFormData['type'] })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {insTypes.map(type => (
-                      <SelectItem key={type} value={type}>{getInsuranceTypeLabel(type)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CatalogSearchPicker
+                  options={insuranceTypeOptions}
+                  value={insuranceForm.type}
+                  onValueChange={(v) => setInsuranceForm({ ...insuranceForm, type: v })}
+                  loading={insuranceTypesLoading}
+                  placeholder="Chọn loại BH…"
+                  emptyHint={
+                    <a
+                      href={siTypeSettingsCta}
+                      className="text-primary underline text-xs font-medium"
+                      data-testid="hdsd-enrollment-open-si-insurance-types"
+                    >
+                      Mở Cài đặt → Loại BH / SI type (tạo mã mới)
+                    </a>
+                  }
+                  aria-label={t('ei.insuranceType')}
+                  data-testid="hdsd-enrollment-insurance-type-picker"
+                />
               </div>
               <div className="space-y-2">
                 <Label>{t('ei.status')}</Label>
@@ -446,7 +572,17 @@ export const EmployeeInsurance = ({ employeeId: propEmployeeId }: EmployeeInsura
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setInsuranceDialogOpen(false)}>{t('ei.cancel')}</Button>
-            <Button onClick={handleSaveInsurance}>{t('ei.save')}</Button>
+            <Button
+              onClick={handleSaveInsurance}
+              disabled={
+                insuranceTypeOptions.length === 0 ||
+                !isCatalogPickerValueAllowed(insuranceTypeOptions, insuranceForm.type, {
+                  allowEmpty: false,
+                })
+              }
+            >
+              {t('ei.save')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

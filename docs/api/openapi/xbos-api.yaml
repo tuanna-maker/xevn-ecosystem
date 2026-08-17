@@ -378,6 +378,43 @@ components:
           minItems: 1
           items: { type: string }
         actor: { type: string }
+    CloneCatalogBody:
+      type: object
+      required: [tenantId, companyId, destTenantId, destCompanyId]
+      description: |
+        XBOS-DM-09 single-key clone. Source = tenantId+companyId; dest = destTenantId+destCompanyId.
+        onConflict default reject (409 overlapping codes); overwrite = publish upsert.
+      properties:
+        tenantId: { type: string }
+        companyId: { type: string }
+        destTenantId: { type: string }
+        destCompanyId: { type: string }
+        onConflict:
+          type: string
+          enum: [reject, overwrite]
+          default: reject
+        actor: { type: string }
+    CloneCatalogBundleBody:
+      type: object
+      required: [sourceTenantId, sourceCompanyId, destTenantId, destCompanyId, domains]
+      description: |
+        XBOS-DM-LOG-09 / DM-09 bundle clone. domains filter on config_catalogs.domain.
+        LOG-09 callers pass domains=['logistics'].
+      properties:
+        sourceTenantId: { type: string }
+        sourceCompanyId: { type: string }
+        destTenantId: { type: string }
+        destCompanyId: { type: string }
+        domains:
+          type: array
+          minItems: 1
+          items: { type: string }
+        keyPrefix: { type: string }
+        onConflict:
+          type: string
+          enum: [fail, skip, overwrite]
+          default: fail
+        actor: { type: string }
     SelectMembershipRequest:
       type: object
       required: [tenantId]
@@ -1116,6 +1153,65 @@ paths:
           description: XBOS-AUTH-001
         '404':
           description: XBOS-CFG-001 source catalog missing
+  /config-sync/catalog/{catalogKey}/clone:
+    post:
+      tags: [M01-Catalog]
+      operationId: configSyncCloneCatalog
+      summary: XBOS-DM-09 — Sao chép một bộ danh mục (partition → partition)
+      description: |
+        Copies one catalog_key snapshot from source (tenantId, companyId) to dest
+        (destTenantId, destCompanyId). Reuses publishCatalog semantics.
+        Default onConflict=reject → 409 XBOS-CFG-409 when dest has overlapping item codes.
+        Distinct from apply-to-members (DM-HRM-07 fan-out) and catalogs/clone-bundle (LOG-09).
+        JWT member CEO → 403 XBOS-AUTH-003. Group CEO JWT main→holding source via legal read scope.
+      parameters:
+        - $ref: '#/components/parameters/CatalogKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneCatalogBody'
+      responses:
+        '200':
+          description: XBOS-CFG-206 clone summary (source + dest version/checksum)
+        '400':
+          description: XBOS-VAL-013 self-copy · XBOS-VAL-005 empty source
+        '401':
+          description: XBOS-AUTH-001
+        '403':
+          description: XBOS-AUTH-003 member not allowed
+        '404':
+          description: XBOS-CFG-001 source catalog missing
+        '409':
+          description: XBOS-CFG-409 overlapping dest item codes
+  /config-sync/catalogs/clone-bundle:
+    post:
+      tags: [M01-Catalog]
+      operationId: configSyncCloneCatalogBundle
+      summary: XBOS-DM-LOG-09 / XBOS-DM-09 — clone catalog bundle by domain filter
+      description: |
+        Copies all catalogs matching domains(+optional keyPrefix) from source company
+        to dest. Default onConflict=fail → XBOS-CFG-009 when dest keys collide (no half-copy).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloneCatalogBundleBody'
+      responses:
+        '200':
+          description: XBOS-CFG-205 bundle clone summary
+        '400':
+          description: XBOS-VAL-013 self-copy · XBOS-VAL-001 domains
+        '401':
+          description: XBOS-AUTH-001
+        '403':
+          description: XBOS-AUTH-003 member not allowed
+        '404':
+          description: XBOS-CFG-008 no matching source catalogs
+        '409':
+          description: XBOS-CFG-009 dest catalog_key conflict
   /catalog-governance/extension-requests:
     get:
       tags: [M01-Catalog]

@@ -5,11 +5,19 @@ import { isHrmApiDataMode } from '@/lib/hrmDataMode';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { listPayrollPayslips, type HrmPayslipRow } from '@/integrations/hrmApi';
 
-export function buildPayrollPayslipsQuery(companyId: string, periodId?: string) {
-  return { company_id: companyId, period_id: periodId };
+export function buildPayrollPayslipsQuery(
+  companyId: string,
+  periodId?: string,
+  payrollGroupId?: string,
+) {
+  return {
+    company_id: companyId,
+    period_id: periodId,
+    payroll_group_id: payrollGroupId,
+  };
 }
 
-export function usePayrollPayslips(periodId?: string) {
+export function usePayrollPayslips(periodId?: string, payrollGroupId?: string) {
   const { currentCompanyId } = useAuth();
   const [payslips, setPayslips] = useState<HrmPayslipRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +42,7 @@ export function usePayrollPayslips(periodId?: string) {
     setFetchError(null);
     try {
       const response = await listPayrollPayslips(
-        buildPayrollPayslipsQuery(coerceHrmListCompanyId(currentCompanyId), periodId),
+        buildPayrollPayslipsQuery(coerceHrmListCompanyId(currentCompanyId), periodId, payrollGroupId),
       );
       setPayslips(response.data ?? []);
     } catch (error: unknown) {
@@ -44,7 +52,7 @@ export function usePayrollPayslips(periodId?: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [currentCompanyId, periodId, useApi]);
+  }, [currentCompanyId, periodId, payrollGroupId, useApi]);
 
   useEffect(() => {
     void fetchPayslips();

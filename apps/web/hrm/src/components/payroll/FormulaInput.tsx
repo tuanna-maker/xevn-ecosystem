@@ -1,3 +1,11 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion P18 suggestion chips — kill purple/emerald AI → primary/success DNA
+ * Why: ADR §16 · FE-PAY P0 Form GĐ1 · B4 cấm purple AI
+ * must_keep: Excel formula validate/autocomplete only; no payroll formula invent; GĐ2 drag-drop OUT
+ */
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -261,11 +269,11 @@ export const FormulaInput = ({
         {value && (
           <div className="absolute top-2 right-2">
             {validation.isValid && validation.warnings.length === 0 ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <CheckCircle2 className="w-4 h-4 text-success" />
             ) : validation.errors.length > 0 ? (
               <AlertCircle className="w-4 h-4 text-destructive" />
             ) : (
-              <Info className="w-4 h-4 text-amber-500" />
+              <Info className="w-4 h-4 text-warning" />
             )}
           </div>
         )}
@@ -290,15 +298,15 @@ export const FormulaInput = ({
               <div className="flex items-center gap-2">
                 <span className={cn(
                   "px-1.5 py-0.5 rounded text-xs font-medium",
-                  suggestion.type === 'function' 
-                    ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" 
-                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  suggestion.type === 'function'
+                    ? "bg-xevn-primary/10 text-xevn-primary"
+                    : "bg-success/10 text-success"
                 )}>
                   {suggestion.type === 'function' ? t('formulaInput.function') : t('formulaInput.component')}
                 </span>
-                <span className="font-mono font-medium">{suggestion.code}</span>
+                <span className="font-mono font-medium text-xevn-text">{suggestion.code}</span>
               </div>
-              <span className="text-xs text-muted-foreground truncate ml-2 max-w-[200px]">
+              <span className="text-xs text-xevn-textSecondary truncate ml-2 max-w-[200px]">
                 {suggestion.name}
               </span>
             </div>
@@ -316,7 +324,7 @@ export const FormulaInput = ({
             </p>
           ))}
           {validation.warnings.map((warning, index) => (
-            <p key={`warning-${index}`} className="text-xs text-amber-600 dark:text-amber-500 flex items-center gap-1">
+            <p key={`warning-${index}`} className="text-xs text-warning flex items-center gap-1">
               <Info className="w-3 h-3 shrink-0" />
               {warning}
             </p>

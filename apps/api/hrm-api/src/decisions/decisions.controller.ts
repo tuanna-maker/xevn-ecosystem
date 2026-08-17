@@ -6,8 +6,10 @@ import {
   Headers,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -19,18 +21,135 @@ import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { DecisionsService } from './decisions.service';
 import { CreateDecisionDto } from './dto/create-decision.dto';
+import {
+  GetHrDecisionTypeQueryDto,
+  ListEffectiveHrDecisionTypesQueryDto,
+  ListHrDecisionTypesQueryDto,
+  PatchHrDecisionTypeDto,
+  UpsertHrDecisionTypeDto,
+} from './dto/hr-decision-type.dto';
 import { ListDecisionsQueryDto } from './dto/list-decisions.query.dto';
 import { UpdateDecisionDto } from './dto/update-decision.dto';
+import { HrDecisionTypeService } from './hr-decision-type.service';
 
 @Controller('decisions')
 export class DecisionsController {
-  constructor(private readonly service: DecisionsService) {}
+  constructor(
+    private readonly service: DecisionsService,
+    private readonly decisionTypeService: HrDecisionTypeService,
+  ) {}
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
       throw new ApiException('HRM-AUTH-001', 'Unauthorized decisions access', HttpStatus.UNAUTHORIZED);
     }
   }
+
+  // --- F-DEC-CAT-* (must be registered before :decisionId) ---
+
+  @Get('decision-types/effective')
+  listEffectiveDecisionTypes(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query() query: ListEffectiveHrDecisionTypesQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    return this.decisionTypeService
+      .listEffective(query, authorization, { tenantId })
+      .then((data) => ok(data, 'HRM-DEC-TYP-200', 'Effective decision types listed'));
+  }
+
+  @Get('decision-types')
+  listDecisionTypes(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query() query: ListHrDecisionTypesQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    return this.decisionTypeService
+      .listDecisionTypes(query, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-DEC-TYP-200', 'Decision types listed'));
+  }
+
+  @Post('decision-types')
+  createDecisionType(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: UpsertHrDecisionTypeDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
+    return this.decisionTypeService
+      .upsertDecisionType(body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-DEC-TYP-201', 'Decision type created'));
+  }
+
+  @Put('decision-types')
+  upsertDecisionType(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: UpsertHrDecisionTypeDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
+    return this.decisionTypeService
+      .upsertDecisionType(body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-DEC-TYP-200', 'Decision type upserted'));
+  }
+
+  @Get('decision-types/:decisionTypeId')
+  getDecisionTypeById(
+    @Param('decisionTypeId', new ParseUUIDPipe()) decisionTypeId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query() query: GetHrDecisionTypeQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    return this.decisionTypeService
+      .getDecisionTypeById(decisionTypeId, query.company_id, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-DEC-TYP-200', 'Decision type loaded'));
+  }
+
+  @Patch('decision-types/:decisionTypeId')
+  patchDecisionType(
+    @Param('decisionTypeId', new ParseUUIDPipe()) decisionTypeId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Body() body: PatchHrDecisionTypeDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.decisionTypeService
+      .patchDecisionType(decisionTypeId, companyId, body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-DEC-TYP-200', 'Decision type updated'));
+  }
+
+  @Post('decision-types/:decisionTypeId/retire')
+  retireDecisionType(
+    @Param('decisionTypeId', new ParseUUIDPipe()) decisionTypeId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.decisionTypeService
+      .retireDecisionType(decisionTypeId, companyId, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-DEC-TYP-200', 'Decision type retired'));
+  }
+
+  // --- F-CORE-DEC-* TXN ---
 
   @Get()
   list(

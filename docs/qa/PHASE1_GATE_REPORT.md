@@ -1,6 +1,6 @@
 # Phase 1 gate report
 
-Generated: 2026-06-08T13:17:40.437Z
+Generated: 2026-08-10T15:17:35.494Z
 
 ## Matrix impl_status
 

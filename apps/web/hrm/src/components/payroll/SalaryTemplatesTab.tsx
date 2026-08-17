@@ -1,3 +1,18 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-B-01
+ * change_mode: UPGRADE
+ * What: Precision Motion P12 salary templates — title ≥20; dialog chrome; status badges DNA
+ * Why: ADR §16 · W3-PAY-B P12
+ * must_keep: useSalaryTemplates API; template component wiring
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-AMIS-PARITY-PAY-TPL-FE-01
+ * change_mode: ADD
+ * What: Banner pack≠mẫu — enroll salary-templates ≠ Settings pay-sheet-templates
+ * Why: QC must_keep pack≠mẫu · cấm merge pack UI as mẫu SoT
+ * must_keep: useSalaryTemplates API; enroll-only surface; no pay-sheet-templates merge
+ */
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -186,7 +201,7 @@ export const SalaryTemplatesTab = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Hoạt động</Badge>;
+        return <Badge className="bg-success/10 text-success">Hoạt động</Badge>;
       case 'inactive':
         return <Badge variant="secondary">Không hoạt động</Badge>;
       default:
@@ -199,14 +214,27 @@ export const SalaryTemplatesTab = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-6" data-testid="pay-salary-template-precision">
+      <h2 className="text-[20px] font-bold font-display text-xevn-text">
+        {t('payroll.template')}
+      </h2>
+      <p
+        className="text-sm text-xevn-textSecondary max-w-3xl"
+        data-testid="pay-salary-template-pack-alias-note"
+      >
+        Đây là <strong>gói thành phần enroll</strong> khi tuyển dụng / gán lương
+        (<span className="text-muted-foreground"> (/salary-templates)</span>
+        — không phải mẫu bảng lương kỳ. Mẫu cột kỳ lương nằm ở{' '}
+        <strong>Cài đặt → Mẫu bảng lương</strong>
+        <span className="text-muted-foreground"> (/pay-sheet-templates)</span>.
+      </p>
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-1 gap-4 w-full sm:w-auto">
           <div className="relative flex-1 sm:max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Tìm kiếm mẫu bảng lương..."
+              placeholder="Tìm gói thành phần enroll…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -333,9 +361,9 @@ export const SalaryTemplatesTab = () => {
 
       {/* Create/Edit Template Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-salary-template-dialog-precision">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">
               {selectedTemplate ? t('salaryTemplate.editTitle') : t('salaryTemplate.addTitle')}
             </DialogTitle>
           </DialogHeader>
@@ -410,9 +438,9 @@ export const SalaryTemplatesTab = () => {
 
       {/* Component Configuration Dialog */}
       <Dialog open={isComponentDialogOpen} onOpenChange={setIsComponentDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[920px] max-h-[80vh] overflow-y-auto" data-testid="pay-salary-template-components-dialog-precision">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">
               Cấu hình thành phần lương - {selectedTemplate?.name}
             </DialogTitle>
           </DialogHeader>
@@ -424,7 +452,16 @@ export const SalaryTemplatesTab = () => {
                   <SelectValue placeholder="Chọn thành phần để thêm..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableComponents.length === 0 ? (
+                  {isLoadingSalaryComponents ? (
+                    <div className="p-2 text-sm text-muted-foreground text-center">Đang tải Nest…</div>
+                  ) : allComponents.length === 0 ? (
+                    <div
+                      className="p-2 text-xs text-muted-foreground text-center max-w-[280px]"
+                      data-testid="hdsd-pay-salary-tpl-nest-empty"
+                    >
+                      Nest salary_components trống. Tạo TP admin trước — không seed (AC-PLT-PAY-01b).
+                    </div>
+                  ) : availableComponents.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground text-center">
                       Không còn thành phần nào để thêm
                     </div>

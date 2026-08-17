@@ -8,6 +8,11 @@
  * WorkItem: D-HDSD-MOB-PILOT-CLIENT-NET-01 · 2026-07-31
  * Change: normalizeHrmBaseUrl + QA logcat trace; release cleartext via network_security_config (pilot HTTP :3001).
  * must_keep: resolveHrmCompanyHeaderId / resolveHrmWriteHeaderId split; EXPO_PUBLIC ưu tiên.
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W4-MOB-A-MOB04-LOG-01 · 2026-08-05
+ * Change: QA logcat line on POST /attendance/records response (mirror push-tokens ok/code/http).
+ * must_keep: isQaDeepLinkLoginEnabled gate; pilot release without extra logs when QA flags off.
  */
 import { isQaDeepLinkLoginEnabled } from '../config/qaLogin';
 import { RELEASE_PILOT_HRM_API_BASE_URL } from '../config/pilotApiBase';
@@ -71,6 +76,35 @@ export function isHrmWriteMethod(method?: string): boolean {
   return m === 'POST' || m === 'PATCH' || m === 'PUT' || m === 'DELETE';
 }
 
+/** MOB-04 / C-MOB-04 — QA logcat proof for check-in POST (not GET history). */
+export function isAttendanceRecordsCheckInPost(path: string, method?: string): boolean {
+  if ((method ?? 'GET').toUpperCase() !== 'POST') return false;
+  const bare = path.split('?')[0]?.replace(/\/+$/, '') ?? '';
+  return bare === '/attendance/records';
+}
+
+/** Log line contract for qa-device grep (parity with pushRegistration logPush). */
+export function formatAttendanceRecordsPostLogLine(
+  res: HrmRequestResult<unknown>,
+  responseHttpStatus?: number,
+): string {
+  const http =
+    'httpStatus' in res && res.httpStatus != null
+      ? String(res.httpStatus)
+      : responseHttpStatus != null
+        ? String(responseHttpStatus)
+        : '';
+  return `attendance/records POST ok=${res.ok} code=${res.code ?? '(none)'} http=${http}`;
+}
+
+function logAttendanceRecordsPostResult(
+  res: HrmRequestResult<unknown>,
+  responseHttpStatus?: number,
+): void {
+  if (!isQaDeepLinkLoginEnabled()) return;
+  console.info(`[HRM-MOB] ${formatAttendanceRecordsPostLogLine(res, responseHttpStatus)}`);
+}
+
 export function getDefaultBaseUrl(): string {
   const fromEnv = process.env.EXPO_PUBLIC_HRM_API_BASE_URL;
   if (fromEnv && fromEnv.trim()) return normalizeHrmBaseUrl(fromEnv);
@@ -126,6 +160,7 @@ export async function hrmRequest<T>(
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const logMob04Post = isAttendanceRecordsCheckInPost(path, method);
 
   try {
     const res = await fetch(url, {
@@ -134,6 +169,7 @@ export async function hrmRequest<T>(
       signal: controller.signal,
     });
     clearTimeout(timer);
+    const responseHttpStatus = res.status;
 
     const text = await res.text();
     let body: unknown = null;
@@ -146,48 +182,58 @@ export async function hrmRequest<T>(
     const envelope = body as Partial<ApiEnvelopeSuccess<T>> & Partial<ApiEnvelopeError>;
 
     if (envelope && envelope.success === true) {
-      return {
+      const result: HrmRequestResult<T> = {
         ok: true,
         data: envelope.data as T,
         code: envelope.code ?? 'OK',
         requestId,
       };
+      if (logMob04Post) logAttendanceRecordsPostResult(result, responseHttpStatus);
+      return result;
     }
 
     if (envelope && envelope.success === false) {
-      return {
+      const result: HrmRequestResult<T> = {
         ok: false,
         code: envelope.code ?? 'HRM-ERR-UNKNOWN',
         message: envelope.message ?? 'Yêu cầu thất bại',
         requestId,
         httpStatus: res.status,
       };
+      if (logMob04Post) logAttendanceRecordsPostResult(result, responseHttpStatus);
+      return result;
     }
 
     if (!res.ok) {
-      return {
+      const result: HrmRequestResult<T> = {
         ok: false,
         code: 'HRM-ERR-UNKNOWN',
         message: typeof text === 'string' && text ? text.slice(0, 200) : `HTTP ${res.status}`,
         requestId,
         httpStatus: res.status,
       };
+      if (logMob04Post) logAttendanceRecordsPostResult(result, responseHttpStatus);
+      return result;
     }
 
-    return {
+    const result: HrmRequestResult<T> = {
       ok: true,
       data: (body ?? {}) as T,
       code: 'HRM-OK-HEALTH',
       requestId,
     };
+    if (logMob04Post) logAttendanceRecordsPostResult(result, responseHttpStatus);
+    return result;
   } catch (e) {
     clearTimeout(timer);
     const aborted = e instanceof Error && e.name === 'AbortError';
-    return {
+    const result: HrmRequestResult<T> = {
       ok: false,
       code: aborted ? 'HRM-MOB-ERR-TIMEOUT' : 'HRM-MOB-ERR-NETWORK',
       message: aborted ? 'Hết thời gian chờ máy chủ' : e instanceof Error ? e.message : 'Lỗi mạng',
       requestId,
     };
+    if (logMob04Post) logAttendanceRecordsPostResult(result);
+    return result;
   }
 }

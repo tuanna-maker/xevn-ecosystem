@@ -35,6 +35,8 @@ export type EmployeeSummaryResult = {
   active_count: number;
   inactive_count: number;
   archived_count: number;
+  /** VAL-D-06 — false unless include=compensation_summary (not public-ring SoT). */
+  compensation_summary_included: boolean;
   payroll: {
     total: number;
     employees_with_salary: number;

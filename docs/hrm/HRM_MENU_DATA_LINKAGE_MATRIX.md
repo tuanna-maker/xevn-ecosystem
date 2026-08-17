@@ -76,7 +76,7 @@ Khi pilot giả định **≥1000 nhân viên active** (`seed:hrm:1000-uat`), **
 | `decisions` | `…/decisions` | — | UC-HRM-27 | UC-HRM-27 CRUD | `GET/POST/PATCH/DELETE /decisions` (`HRM-DEC-200`/`201`) | `hr_decisions` (`employee_id` UUID optional → `employees.id`) | `decision_types` (DM §28) | **Live-empty OK** «Không có quyết định nào» khi `total:0` — **cấm** copy «chưa triển khai API». G-FID density: ≥1 QSĐ / pilot company **chưa** bắt buộc đến khi AC-DEC-DENSITY closed; **không** claim menu DONE chỉ vì empty+200 |
 | `tasks` | `…/tasks` | — | HRM-OP-02 | HRM-OP-01 | `GET /operations/tasks` | `hrm_tasks` — **không** FK bắt buộc; `service_requests.employee_id` optional | `operations_request_types` (DM §35) | ≥ **5** tasks / company |
 | `internal_services` | `…/internal_services` | — | HRM-SV-02 | HRM-SV- pack | `GET /operations/service-requests` | `service_requests.employee_id` (nullable) + denormalized name/code | DM §35 | ≥ **10** requests / company; ≥ **50%** có `employee_id` hợp lệ |
-| `processes` | `…/processes` | — | **XBOS-DM-HRM-14** (SoT) · SRS §13 processes | — | **Read-only XBOS workflow/policy ref** — `GET` catalog-sync / settings-catalogs keys §55–58 (or empty honest). **Cấm** HRM REST CRUD `company_processes`. **Cấm** fake Add/Edit/Delete toast | — | workflow codes §55–58 · nhóm §59 | **AC-PROC-01..04**: catalog present **hoặc** live-empty; UI **read-only**; deep-link XBOS admin optional |
+| `processes` | `…/processes` | — | **XBOS-DM-HRM-14** (SoT) · SRS §13.1 · **Enterprise FR-UC-BP-PROC-01** | — | **Read-only XBOS workflow/policy ref** — `GET` catalog-sync / settings-catalogs keys §55–58 (or empty honest). **Cấm** HRM REST CRUD `company_processes`. **Cấm** fake Add/Edit/Delete toast. **Cấm** hard-coded `[]` khi catalog đã pull | — | workflow codes §55–58 · nhóm §59 | **AC-PROC-01..06**: catalog present **hoặc** live-empty; UI **read-only**; **AC-PROC-05** deep-link CC đo được; **AC-PROC-06** bind ≠ hard-empty sau pull · HDSD CH08 |
 | `hrm_ai` | `…/hrm_ai` | — | — | — | Không transactional | — | — | Out of fidelity density scope |
 | `tools_equipment` | `…/tools_equipment` | — | — | — | Mock / backlog | — | — | Deferred |
 | `company` | `…/company` | — | HRM-SC-01 | **UC-HRM-CO-01** / **FR-HRM-CO-HC-01** · **FR-HRM-CO-IND-01** (SRS) · UC-HRM-03 admin CRUD tách · **AC-CO-EMP-*** · **AC-CO-IND-*** | XBOS `group-member-units` (**+** `business_lines`) **+** HRM headcount (`GET /employees/summary` / per-slug counts via bridge) | LE/tenant → `GROUP_MEMBER_SLUGS` (`company_slug_map` / `hrm-operating-unit-registry`) → `employees.company_id`; industry ← `business_lines` **không** `entity_type` | org tree DM §1–6 · BR-INT-05 · **BR-CO-HC-01** · **BR-CO-EMP-01..02** · **BR-CO-IND-01** · **BR-CO-LABEL-01** | ≥ 1 ĐVTV visible **và** card/cột NV = workforce truth (**AC-CO-EMP-01..06**) **và** «Ngành nghề» VI / «—» (**AC-CO-IND-01..04**) |
@@ -280,6 +280,8 @@ Quy ước mã nhánh: `H-{menu}` happy · `A-{menu}` alternate · `E-{menu}-*` 
 | **AC-PROC-02** (read-only) | `processes` | **Không** nút Thêm / Sửa / Xóa (hoặc disabled + copy «Quản trị trên XBOS»). View/detail read-only OK | Add/Edit/Delete mutation stub hoặc POST HRM |
 | **AC-PROC-03** (empty) | `processes` | `items.length===0` → «Chưa có quy trình/quy định» (hoặc tương đương); **không** «chưa triển khai API» | Mock fill để che empty |
 | **AC-PROC-04** (ownership) | `processes` | SoT = XBOS workflow definition + gán mã (XBOS-DM-HRM-14). HRM **không** sở hữu CRUD process/policy document store trên menu này | Wire HRM `company_processes` CRUD «cho đủ nút» |
+| **AC-PROC-05** (deep-link) | `processes` | Empty (hoặc help) có **nút/link** kích hoạt được tới Command Center / quản trị mã quy trình XBOS — không chỉ đoạn chữ tĩnh. **Test:** click/keyboard → surface CC WF/catalog admin (Enterprise FR-UC-BP-PROC-01) | Chỉ text; không navigate được |
+| **AC-PROC-06** (catalog bind) | `processes` | Khi XBOS đã publish mã §55–58 và HRM đã pull (`effectiveItems>0`) — list **≠** hard-coded empty; items từ snapshot; **empty chỉ khi** snapshot thật = 0 | `queryFn` luôn `[]` dù catalog có item |
 
 #### Company Management headcount (`company` / **UC-HRM-CO-01** · **FR-HRM-CO-HC-01**) — ADD `D-HRM-CO-EMP-COUNT-BA-01` + SRS lock `GOV-HRM-CO-EMP-SRS-01` (2026-07-27)
 
@@ -392,6 +394,7 @@ SELECT COUNT(DISTINCT c.employee_id)::float / NULLIF(
 | R-FID-01 | No `GET /contracts-insurance/insurance` list | Dev-BE | AC-FID-04 UI block |
 | R-FID-02 | `tools_equipment` no API; **decisions** REST live nhưng **AC-DEC-DENSITY / CRUD** chưa closed (empty hợp lệ) | PM / BA | UC-HRM-27 DONE gate |
 | R-FID-PROC-01 | `processes` UI fake Add/Edit/Delete vs matrix/SRS **read-only XBOS** (F-02) | Dev-FE (`P1-HRM-PROCESSES-FE-01`) | AC-PROC-01..04 · evidence `p1-hrm-processes-ba-01-20260717.md` |
+| R-FID-PROC-02 | `processes` hard-empty + thiếu deep-link CC (AC-PROC-05/06) | SA→Dev-FE `PO-HRM-E2E-LINK-PROC-BIND-01` | AC-PROC-05/06 · evidence `po-hrm-e2e-link-pay-cfg-docs-01.md` |
 | R-FID-03 | Current DB ~9% contract coverage vs 95% target | Dev-BE + DevOps | Before QC GO |
 
 ---

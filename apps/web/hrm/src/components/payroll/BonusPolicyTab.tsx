@@ -1,3 +1,11 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-B-01
+ * change_mode: UPGRADE
+ * What: Precision Motion P06 bonus policy — KPI xevn tokens; kill purple/emerald AI; dialogs title ≥20
+ * Why: ADR §16 · inventory W3-PAY-B P06 · B4 pale/purple ban
+ * must_keep: useBonusPolicies API wires; vi-VN money; no formula invent
+ */
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -330,57 +338,59 @@ export function BonusPolicyTab() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Stats Cards */}
+    <div className="p-6 space-y-6" data-testid="pay-bonus-policy-precision">
+      <h2 className="text-[20px] font-bold font-display text-xevn-text">
+        {t('payroll.bonusPolicy')}
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Gift className="w-5 h-5 text-blue-600" />
+              <div className="p-2 bg-xevn-primary/10 rounded-lg">
+                <Gift className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('bonus.totalPolicies')}</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.totalPolicies}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('bonus.totalPolicies')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.totalPolicies}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <div className="p-2 bg-success/10 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('bonus.active')}</p>
-                <p className="text-2xl font-bold text-emerald-600">{stats.activePolicies}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('bonus.active')}</p>
+                <p className="text-2xl font-bold text-success">{stats.activePolicies}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-500/10 rounded-lg">
-                <Users className="w-5 h-5 text-purple-600" />
+              <div className="p-2 bg-xevn-primary/10 rounded-lg">
+                <Users className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('bonus.totalParticipants')}</p>
-                <p className="text-2xl font-bold text-purple-600">{stats.totalParticipants}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('bonus.totalParticipants')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.totalParticipants}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <DollarSign className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <DollarSign className="w-5 h-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('bonus.totalPaid')}</p>
-                <p className="text-xl font-bold text-amber-600">{formatCurrency(stats.totalPaidAmount)}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('bonus.totalPaid')}</p>
+                <p className="text-lg font-bold text-xevn-text">{formatCurrency(stats.totalPaidAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -438,7 +448,7 @@ export function BonusPolicyTab() {
                 <SelectItem value="draft">{t('bonus.draft')}</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleAddPolicy} className="bg-emerald-500 hover:bg-emerald-600 text-white">
+            <Button onClick={handleAddPolicy}>
               <Plus className="w-4 h-4 mr-2" />
               {t('bonus.addPolicy')}
             </Button>
@@ -497,7 +507,7 @@ export function BonusPolicyTab() {
                         {policy.calculation_method === 'tier' && t('bonus.calcTier')}
                       </td>
                       <td className="p-3 text-sm text-center">{policy.participant_count}</td>
-                      <td className="p-3 text-sm font-medium text-amber-600">{formatCurrency(policy.total_paid_amount)}</td>
+                      <td className="p-3 text-sm font-medium text-warning">{formatCurrency(policy.total_paid_amount)}</td>
                       <td className="p-3 text-center">
                         <Switch
                           checked={policy.status === 'active'}
@@ -575,7 +585,7 @@ export function BonusPolicyTab() {
                 ))}
               </SelectContent>
             </Select>
-            <Button onClick={() => setShowAddParticipantDialog(true)} className="bg-emerald-500 hover:bg-emerald-600 text-white">
+            <Button onClick={() => setShowAddParticipantDialog(true)}>
               <Plus className="w-4 h-4 mr-2" />
               {t('bonus.addEmployee')}
             </Button>
@@ -633,14 +643,14 @@ export function BonusPolicyTab() {
                             <Badge variant="secondary">{policy?.name}</Badge>
                           </td>
                           <td className="p-3 text-sm">{participant.join_date}</td>
-                          <td className="p-3 text-sm text-right font-medium text-emerald-600">
+                          <td className="p-3 text-sm text-right font-medium text-success">
                             {participant.last_bonus_amount ? formatCurrency(participant.last_bonus_amount) : '-'}
                           </td>
                           <td className="p-3 text-center">
                             <Badge
                               variant={participant.status === 'active' ? 'default' : 'secondary'}
                               className={cn(
-                                participant.status === 'active' && 'bg-emerald-500',
+                                participant.status === 'active' && 'bg-success',
                                 participant.status === 'suspended' && 'bg-amber-500',
                                 participant.status === 'pending' && 'bg-blue-500'
                               )}
@@ -728,9 +738,14 @@ export function BonusPolicyTab() {
           setSelectedPolicy(null);
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          className="sm:max-w-[920px] max-h-[90vh] overflow-y-auto"
+          data-testid="pay-bonus-policy-dialog-precision"
+        >
           <DialogHeader>
-            <DialogTitle>{showEditPolicyDialog ? t('bonus.editPolicy') : t('bonus.addPolicy')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">
+              {showEditPolicyDialog ? t('bonus.editPolicy') : t('bonus.addPolicy')}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
@@ -897,7 +912,7 @@ export function BonusPolicyTab() {
             </Button>
             <Button 
               onClick={handleSavePolicy} 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className=""
               disabled={isCreating || isUpdating}
             >
               {(isCreating || isUpdating) && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -955,9 +970,9 @@ export function BonusPolicyTab() {
 
       {/* Add Participant Dialog */}
       <Dialog open={showAddParticipantDialog} onOpenChange={setShowAddParticipantDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-bonus-participant-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{t('bonus.addParticipantTitle')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{t('bonus.addParticipantTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -1021,7 +1036,7 @@ export function BonusPolicyTab() {
             </Button>
             <Button 
               onClick={handleAddParticipants}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className=""
               disabled={!addParticipantPolicyId || selectedEmployeesToAdd.length === 0}
             >
               {t('common.add')} {selectedEmployeesToAdd.length > 0 && `(${selectedEmployeesToAdd.length})`}

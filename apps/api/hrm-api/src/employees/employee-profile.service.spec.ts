@@ -77,6 +77,23 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
     it('updateAsset peeks row and allows holding company_id under group CEO main', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_assets') &&
+          sql.includes('company_id') &&
+          sql.includes('serial_number')
+        ) {
+          return {
+            rows: [
+              {
+                company_id: 'holding',
+                status: 'assigned',
+                serial_number: null,
+                handover_confirmed_at: null,
+              },
+            ],
+          };
+        }
         if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
           return { rows: [{ company_id: 'holding' }] };
         }
@@ -96,8 +113,11 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
         `Bearer ${token}`,
       );
       expect(row.asset_name).toBe('Laptop');
-      const peekCall = db.query.mock.calls.find(([sql]) =>
-        String(sql).includes('SELECT company_id FROM public.employee_assets'),
+      expect(row.statusLabelVi).toBeDefined();
+      const peekCall = db.query.mock.calls.find(
+        ([sql]) =>
+          String(sql).includes('FROM public.employee_assets') &&
+          String(sql).includes('serial_number'),
       );
       expect(peekCall?.[1]).toEqual([ASSET_ID, EMPLOYEE_ID]);
     });
@@ -105,8 +125,21 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
     it('updateAsset rejects corrupt asset row outside rollup scope (HRM-EMP-PROFILE-409)', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
-        if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
-          return { rows: [{ company_id: 'other-co' }] };
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_assets') &&
+          sql.includes('serial_number')
+        ) {
+          return {
+            rows: [
+              {
+                company_id: 'other-co',
+                status: 'assigned',
+                serial_number: null,
+                handover_confirmed_at: null,
+              },
+            ],
+          };
         }
         return { rows: [] };
       });
@@ -127,9 +160,25 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
       expect(updateCall).toBeUndefined();
     });
 
-    it('deleteAsset peeks row and allows holding company_id under group CEO main', async () => {
+    it('deleteAsset with BA waiver peeks and allows holding under group CEO main', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_assets') &&
+          sql.includes('serial_number')
+        ) {
+          return {
+            rows: [
+              {
+                company_id: 'holding',
+                status: 'assigned',
+                serial_number: null,
+                handover_confirmed_at: null,
+              },
+            ],
+          };
+        }
         if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
           return { rows: [{ company_id: 'holding' }] };
         }
@@ -139,7 +188,13 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
         return { rows: [] };
       });
 
-      const result = await profile.deleteAsset(ASSET_ID, EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`);
+      const result = await profile.deleteAsset(
+        ASSET_ID,
+        EMPLOYEE_ID,
+        { company_id: 'main' },
+        `Bearer ${token}`,
+        { baWaiver: true },
+      );
       expect(result.id).toBe(ASSET_ID);
       const deleteCall = db.query.mock.calls.find(([sql]) =>
         String(sql).includes('DELETE FROM public.employee_assets'),
@@ -150,14 +205,29 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
     it('deleteAsset rejects corrupt asset row outside rollup scope (HRM-EMP-PROFILE-409)', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
-        if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
-          return { rows: [{ company_id: 'other-co' }] };
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_assets') &&
+          sql.includes('serial_number')
+        ) {
+          return {
+            rows: [
+              {
+                company_id: 'other-co',
+                status: 'assigned',
+                serial_number: null,
+                handover_confirmed_at: null,
+              },
+            ],
+          };
         }
         return { rows: [] };
       });
 
       await expect(
-        profile.deleteAsset(ASSET_ID, EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`),
+        profile.deleteAsset(ASSET_ID, EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`, {
+          baWaiver: true,
+        }),
       ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-EMP-PROFILE-409' }));
 
       const deleteCall = db.query.mock.calls.find(([sql]) =>

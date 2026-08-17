@@ -90,12 +90,13 @@ import {
   enrichHrmCompaniesWithWorkforceCounts,
   formatHrmEmployeeCount,
   sumKnownEmployeeCounts,
+  type HrmCompanyRowWithWorkforce,
 } from '@/lib/hrmCompanyEmployeeCount';
 
 /**
  * @CODE-MEMORY
  * Screen:     HRM → Công ty / CompanyManagement
- * UC:         UC-HRM-ORG-COMPANY (settings company CRUD) · UC-HRM-03
+ * UC:         UC-HRM-CO-01 / FR-HRM-CO-IND-01 · FR-HRM-CO-HC-01 · UC-HRM-ORG-COMPANY · UC-HRM-03
  * BR:         BR-UX-DATE-02 · VAL-CO-FOUND-01..02 · AC-FID-CO-D01 · BR-INT-05
  * SRS:        docs/program/UX_VI_DATE_NUMBER_FORMAT_AC.md §3 · HRM_MENU_DATA_LINKAGE_MATRIX §2.2 `/company`
  * TechSpec:   company founded_date alias ↔ XBOS established_at DATE (ADR) · GET /employees/summary
@@ -130,32 +131,30 @@ import {
  * must_keep: CO-BIND legal enrich; không dùng LE UUID làm company_id count
  *
  * @CODE-MEMORY-CHANGE 2026-07-27
- * WorkItem: D-HRM-CO-INDUSTRY-FE-01
+ * WorkItem: D-HRM-CO-INDUSTRY-FE-01 (alias D-HRM-CO-01-INDUSTRY-FE-01)
  * change_mode: FIX
  * What: Cột/badge Ngành nghề dùng resolveIndustryDisplay — chặn raw holding/subsidiary;
  *       SoT industry từ tenantScopeApi (business_lines), không entity_type.
  * Why: UI hiện `subsidiary` trong cột ngành nghề
  * must_keep: CO-EMP-COUNT enrich; CO-BIND tax/founded; OU filter
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10
+ * WorkItem: D-HRM-CO-01-INDUSTRY-FE-01
+ * change_mode: FIX
+ * What: List/detail «Ngành nghề» = resolveIndustryDisplay; empty = «—» (AC-CO-IND-03)
+ * Why: Matrix UC-HRM-CO-01 planned closure — industry dictionary bind only
+ * must_keep: enrichHrmCompaniesWithWorkforceCounts · formatHrmEmployeeCount · card Tổng NV
+ * LastVerified: docs/qa/evidence/d-hrm-co-01-industry-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10
+ * WorkItem: D-HRM-CO-01-FE-HEADCOUNT-BIND-01
+ * change_mode: UPGRADE
+ * What: Card Tổng NV = summary.total (main); testid co-total-headcount / co-row-{slug}-count|industry
+ * Why: UI-CO-COMPANY-HEADCOUNT · AC-CO-EMP-01..02 · display-ready BE by_company
+ * must_keep: «—» on HRM fail; industry resolveIndustryDisplay; CO-BIND legal
  */
 
-interface Company {
-  id: string;
-  name: string;
-  code: string | null;
-  logo_url: string | null;
-  address: string | null;
-  phone: string | null;
-  email: string | null;
-  tax_code: string | null;
-  website: string | null;
-  industry: string | null;
-  employee_count: number | null;
-  founded_date: string | null;
-  description: string | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
+type Company = HrmCompanyRowWithWorkforce;
 
 const companyFormSchema = z.object({
   name: z.string().min(1, 'Required').max(200),
@@ -189,6 +188,7 @@ const industryKeys = [
 export function CompanyManagement() {
   const { t } = useTranslation();
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [rollupHeadcount, setRollupHeadcount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -226,11 +226,14 @@ export function CompanyManagement() {
       if (portalEmbed) {
         // CO-BIND legal profile first; workforce counts by operating slug (not LE UUID).
         const rows = await fetchGroupMemberUnitsForHrm();
-        const withCounts = await enrichHrmCompaniesWithWorkforceCounts(rows);
+        const { companies: withCounts, rollupTotal } =
+          await enrichHrmCompaniesWithWorkforceCounts(rows);
         setCompanies(withCounts);
+        setRollupHeadcount(rollupTotal);
         return;
       }
       setCompanies([]);
+      setRollupHeadcount(null);
     } catch (error) {
       console.error('Error fetching companies:', error);
       toast({
@@ -260,8 +263,11 @@ export function CompanyManagement() {
     total: companies.length,
     active: companies.filter((c) => c.status === 'active').length,
     inactive: companies.filter((c) => c.status === 'inactive').length,
-    /** null when all unknown — show «—», not silent 0 */
-    totalEmployees: sumKnownEmployeeCounts(companies),
+    /** AC-CO-EMP-01: API `total` on main summary; fallback sum known row counts only when rollup missing */
+    totalEmployees:
+      rollupHeadcount != null && !Number.isNaN(rollupHeadcount)
+        ? rollupHeadcount
+        : sumKnownEmployeeCounts(companies),
   };
 
   const handleAddCompany = () => {
@@ -434,7 +440,7 @@ export function CompanyManagement() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card data-testid="co-total-headcount">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
@@ -547,10 +553,25 @@ export function CompanyManagement() {
                         </code>
                       </TableCell>
                       <TableCell>
-                        {resolveIndustryDisplay(company.industry) || '-'}
+                        <span
+                          data-testid={
+                            company.workforce_operating_slug
+                              ? `co-row-${company.workforce_operating_slug}-industry`
+                              : undefined
+                          }
+                        >
+                          {resolveIndustryDisplay(company.industry) ?? '—'}
+                        </span>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1">
+                        <div
+                          className="flex items-center gap-1"
+                          data-testid={
+                            company.workforce_operating_slug
+                              ? `co-row-${company.workforce_operating_slug}-count`
+                              : undefined
+                          }
+                        >
                           <Users className="w-4 h-4 text-muted-foreground" />
                           {formatHrmEmployeeCount(company.employee_count)}
                         </div>

@@ -1,4 +1,5 @@
-﻿import { useState } from 'react';
+﻿import { toast } from 'sonner';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -56,7 +57,6 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import {
   createCandidateApplication,
   deleteCandidateApplication,
@@ -67,7 +67,11 @@ import {
 } from '@/integrations/hrmApi';
 import { HireEmployeeLinkDialog } from './HireEmployeeLinkDialog';
 import { toErrorMessage } from '@/lib/apiError';
-import { needsHireEmployeePicker } from '@/lib/recruitmentHireLink';
+import {
+  needsHireEmployeePicker,
+  resolveHireTargetStage,
+} from '@/lib/recruitmentHireLink';
+import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
 
 interface Candidate {
   id: string;
@@ -106,13 +110,14 @@ interface JobCandidatesDialogProps {
   jobTitle: string;
 }
 
+/** Precision Motion stage DNA — no AI purple (W4-REC-A · R04 job candidates) */
 const getStageOptions = (t: (k: string) => string) => [
-  { value: 'applied', label: t('jobCand.stage.applied'), color: 'bg-blue-100 text-blue-700', icon: Clock },
-  { value: 'screening', label: t('jobCand.stage.screening'), color: 'bg-amber-100 text-amber-700', icon: Users },
-  { value: 'interview', label: t('jobCand.stage.interview'), color: 'bg-purple-100 text-purple-700', icon: Calendar },
-  { value: 'offer', label: t('jobCand.stage.offer'), color: 'bg-cyan-100 text-cyan-700', icon: UserCheck },
-  { value: 'hired', label: t('jobCand.stage.hired'), color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
-  { value: 'rejected', label: t('jobCand.stage.rejected'), color: 'bg-rose-100 text-rose-700', icon: XCircle },
+  { value: 'applied', label: t('jobCand.stage.applied'), color: 'bg-primary/15 text-primary', icon: Clock },
+  { value: 'screening', label: t('jobCand.stage.screening'), color: 'bg-warning/15 text-warning', icon: Users },
+  { value: 'interview', label: t('jobCand.stage.interview'), color: 'bg-xevn-accent/15 text-xevn-accent', icon: Calendar },
+  { value: 'offer', label: t('jobCand.stage.offer'), color: 'bg-warning/15 text-warning', icon: UserCheck },
+  { value: 'hired', label: t('jobCand.stage.hired'), color: 'bg-success/15 text-success', icon: CheckCircle },
+  { value: 'rejected', label: t('jobCand.stage.rejected'), color: 'bg-destructive/15 text-destructive', icon: XCircle },
 ];
 
 export function JobCandidatesDialog({
@@ -124,7 +129,24 @@ export function JobCandidatesDialog({
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
-  const stageOptions = getStageOptions(t);
+  const starterStageOptions = getStageOptions(t);
+  const {
+    stageOptions: catalogStageOptions,
+    hiredOutcomeKey,
+    catalogCount,
+    stageDisplayLabel,
+  } = useRecPipelineStagesEffective({ enabled: open });
+  const stageOptions = useMemo(() => {
+    if (catalogCount > 0) {
+      return catalogStageOptions.map((o) => ({
+        value: o.value,
+        label: o.label,
+        color: starterStageOptions.find((s) => s.value === o.value)?.color || 'bg-primary/15 text-primary',
+        icon: starterStageOptions.find((s) => s.value === o.value)?.icon || Clock,
+      }));
+    }
+    return starterStageOptions;
+  }, [catalogCount, catalogStageOptions, starterStageOptions]);
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -132,6 +154,7 @@ export function JobCandidatesDialog({
   const [selectedApplication, setSelectedApplication] = useState<CandidateApplication | null>(null);
   const [candidateSearchQuery, setCandidateSearchQuery] = useState('');
   const [hirePendingApp, setHirePendingApp] = useState<CandidateApplication | null>(null);
+  const [hirePendingStage, setHirePendingStage] = useState<string | null>(null);
   const [hireSubmitting, setHireSubmitting] = useState(false);
 
   // Fetch applications for this job posting (+ soft employee_id from pool for hire bind)
@@ -237,8 +260,9 @@ export function JobCandidatesDialog({
   });
 
   const requestStageChange = (app: CandidateApplication, stage: string) => {
-    if (needsHireEmployeePicker(stage, app.candidates?.employee_id)) {
+    if (needsHireEmployeePicker(stage, app.candidates?.employee_id, hiredOutcomeKey)) {
       setHirePendingApp(app);
+      setHirePendingStage(stage);
       return;
     }
     updateStageMutation.mutate({
@@ -252,12 +276,14 @@ export function JobCandidatesDialog({
     if (!hirePendingApp) return;
     setHireSubmitting(true);
     try {
+      const targetStage = resolveHireTargetStage(hirePendingStage, hiredOutcomeKey);
       await updateStageMutation.mutateAsync({
         id: hirePendingApp.id,
-        stage: 'hired',
+        stage: targetStage,
         employeeId,
       });
       setHirePendingApp(null);
+      setHirePendingStage(null);
     } catch {
       // onError toast already shown
     } finally {
@@ -310,10 +336,13 @@ export function JobCandidatesDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-5xl max-h-[90vh]">
+        <DialogContent
+          className="max-h-[90vh] max-w-5xl"
+          data-testid="rec-job-candidates-dialog-precision"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary" />
+              <Users className="h-5 w-5 text-primary" />
               {t('jobCand.title')} - {jobTitle}
             </DialogTitle>
           </DialogHeader>
@@ -443,9 +472,17 @@ export function JobCandidatesDialog({
                           <Select
                             value={app.stage || 'applied'}
                             onValueChange={(value) => requestStageChange(app, value)}
+                            data-testid="hdsd-rec-application-stage-picker"
                           >
-                            <SelectTrigger className="w-[130px] h-8">
-                              <SelectValue />
+                            <SelectTrigger className="w-[160px] h-8">
+                              <SelectValue>
+                                {stageDisplayLabel(
+                                  app.stage,
+                                  starterStageOptions.find((s) => s.value === app.stage)?.label ||
+                                    app.stage ||
+                                    '—',
+                                )}
+                              </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                               {stageOptions.map(s => (
@@ -558,7 +595,10 @@ export function JobCandidatesDialog({
       <HireEmployeeLinkDialog
         open={!!hirePendingApp}
         onOpenChange={(open) => {
-          if (!open && !hireSubmitting) setHirePendingApp(null);
+          if (!open && !hireSubmitting) {
+            setHirePendingApp(null);
+            setHirePendingStage(null);
+          }
         }}
         candidateName={hirePendingApp?.candidates?.full_name || 'ứng viên'}
         initialEmployeeId={hirePendingApp?.candidates?.employee_id}

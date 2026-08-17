@@ -84,7 +84,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12 text-muted-foreground">
+      <div className="flex items-center justify-center py-12 text-[15px] text-xevn-textSecondary">
         {emptyMessage}
       </div>
     );

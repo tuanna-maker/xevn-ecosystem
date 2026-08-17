@@ -67,6 +67,7 @@
 
 | Date | Yêu cầu | Áp dụng |
 |------|---------|---------|
+| 2026-08-07 | **U88:** Sau QC GWC phải Task residual + SA/BA đoạn kế cùng phiên; cấm chờ nhắc «mở liên tục» | `pm-continuous-pipeline-after-qc.mdc` |
 | 2026-06-20 | **U65:** Zero seed mặc định; FE-only flow nghiệm thu | `sponsor-zero-seed-fe-only-lock.mdc` |
 | 2026-06-20 | **U64:** Cấm seed workflow fake inbox | `qa-fe-outside-browser-gate.mdc` §Cấm |
 | 2026-06-20 | **U61:** PM chỉ điều hành; SRS trước sửa; không đè 🟢 | `pm-srs-first-no-overwrite.mdc` |
@@ -127,15 +128,29 @@ Khi Claude Code (hoặc lead thứ 2) cùng phát triển: SoT ngang `docs/progr
 ## U74 — Peer division: góp ý → tổng hợp → sponsor chốt → mới làm (2026-07-28)
 **Roster:** CURSOR-PM = chủ trì · CLAUDE-PM = phó. Trước mọi chia lane / đổi WI / mở wave peer mới: (1) Cursor đề xuất trên `PEER_PM_COLLAB` → (2) Claude **bắt buộc** entry góp ý/phản biện/đề xuất đổi → (3) Cursor **tổng hợp** bảng đồng ý/lệch gửi sponsor → (4) sponsor chốt → (5) mới giao members. **Cấm** Cursor giao việc + kick execution trước bước 2–4. Ngoại lệ: hotfix P0 sponsor nói «làm ngay». Rule: `.cursor/rules/pm-peer-sponsor-chot-before-exec.mdc`.
 
-## U76 — Test browser bám HDSD (2026-08-01)
+## U78 — Test Log chuẩn quốc tế (2026-08-03)
 
-**Sponsor:** Thao tác test phải đúng menu/màn/chức năng theo **HDSD**; mọi màn/nút/function HDSD liệt kê trong menu đang test → QA phải cover (hoặc 🟡 product_gap). Cấm happy-path lệch HDSD rồi claim 🟢.
+**Sponsor:** Mọi lần test phải có **log test** chuẩn thế giới — không chỉ PASS miệng / screenshot đứng. Bám IEEE 829 Test Log + ISO/IEC/IEEE 29119-3 (execution log / result), kèm JSON máy.
 
 | | |
 |--|--|
-| Rule | `.cursor/rules/qa-hdsd-aligned-browser-test.mdc` |
-| Evidence | Bảng inventory menu×màn×nút trong mỗi evidence QA/E2E |
-| Liên quan | U63 · U65 · UF/J-* · client HDSD HTML/PDF |
+| OS SoT | `_vibe-team-os/31-WORLD-STANDARD-TEST-LOG.md` |
+| Template | `docs/qa/TEST_EXECUTION_LOG_TEMPLATE.md` · OS `templates/TEST_EXECUTION_LOG.md` |
+| Rule | `.cursor/rules/qa-world-standard-test-log.mdc` |
+| Artifact | `<WI>-test-log.md` + `<WI>-test-log.json` mỗi wave |
+| PM | `test_log_required: true` trên mọi Task QA |
+
+## U76 — Test browser bám HDSD (2026-08-01 → enrich 2026-08-03)
+
+**Sponsor:** Thao tác test phải đúng menu/màn/chức năng theo **HDSD**; mọi màn/nút/function HDSD liệt kê trong menu đang test → QA phải cover (hoặc 🟡 product_gap). Cấm happy-path lệch HDSD rồi claim 🟢.
+
+**Enrich (2026-08-03):** Trên đúng path HDSD, điền **case matrix** Fail nghiệp vụ sâu → Success HDSD → Logic BR. SRS vẽ fail trước rồi success/logic (`13` §3.4.2). FE/BE `if`/`switch` nghiệp vụ comment **UC + Diễn biến #**. OS: `_vibe-team-os/30-HDSD-ALIGNED-QA-AND-SRS-BRANCH-TRACE.md`. Mọi PM phải ghi nhớ khi dispatch.
+
+| | |
+|--|--|
+| Rule | `.cursor/rules/qa-hdsd-aligned-browser-test.mdc` · `.cursor/rules/qa-hdsd-business-case-srs-trace.mdc` |
+| Evidence | Inventory HDSD + bảng case_matrix A/B/C |
+| Liên quan | U63 · U65 · UF/J-* · client HDSD HTML/PDF · OS `30` |
 
 ## U75 — Claude panel vs Claude CLI + relay qua Cursor (2026-07-29)
 - **Claude panel** (VS Code conversation) = phó PM + cố vấn tư duy — planning/audit/coordination; **không** báo code DONE khi không edit được file (tool fail ≠ thiếu quyền).
@@ -143,12 +158,94 @@ Khi Claude Code (hoặc lead thứ 2) cùng phát triển: SoT ngang `docs/progr
 - Sponsor ↔ Claude: **chỉ qua Cursor-PM** (relay peer SoT + Telegram). Cursor thiếu quota subagent → **đẩy việc** cho Claude.
 - SoT: `docs/program/PEER_CLAUDE_RUNTIME_MODEL.md` · rule `.cursor/rules/pm-peer-claude-runtime.mdc`.
 
-## U76 — Test browser bám HDSD (2026-08-01)
+## U79 — PO E2E business spine (sponsor 2026-08-03)
+- Nghiệm thu phải theo **luồng nghiệp vụ** web+mobile (hire→pay, leave ladder, late approve), không chỉ slice kỹ thuật W1-B.
+- SoT: docs/program/PO_E2E_BUSINESS_SPINE_PROGRAM.md · báo cáo docs/qa/reports/PO_E2E_BIZ_SPINE_STATUS.md.
+- QA/QC bắt buộc U78 test-log + HDSD; cấm seed inbox; PM/PO sở hữu case matrix.
 
-**Sponsor:** Thao tác test phải đúng menu/màn/chức năng theo **HDSD**; mọi màn/nút/function HDSD liệt kê trong menu đang test → QA phải cover (hoặc 🟡 product_gap). Cấm happy-path lệch HDSD rồi claim 🟢.
+## U80 — Competitive HRM expand (sponsor 2026-08-03)
+- PO nghiên cứu MISA + HRM quốc tế + peers VN; SoT docs/program/PO_HRM_COMPETITIVE_CAPABILITY_MAP.md · vision PO_ENTERPRISE_HRM_PRODUCT_VISION.md.
+- Mở rộng backlog P1 có chủ; P2/Sau GĐ1 khóa SRS §3.7.3 — không pretend parity Workday/MISA full.
+- Nghiệm thu trước = E2E spine P0 (U79), không chỉ competitive wishlist.
+
+## U81 — Dual role PM + PO enterprise (sponsor 2026-08-03)
+- Composer = **PM điều phối** + **PO sản phẩm** (mindset enterprise services / HCM 30 năm).
+- **PO:** giá trị buyer, IN/OUT, competitive research, backlog CAND*/P1, acceptance nghiệp vụ — nghiên cứu **song song** khi Dev/QA chạy; không idle chờ team.
+- **PM:** bus, Task, residual, gate QA/QC — không tự sửa pps/** trừ sponsor «tự sửa».
+- Cấm: hỏi sponsor «làm phần nào» khi roadmap/spine còn mở; claim DONE từ GWC kỹ thuật hẹp.
+- SoT: PO_ENTERPRISE_HRM_PRODUCT_VISION.md §7 operating rhythm.
+
+## U82 — Spec-linked test suite (sponsor 2026-08-03)
+- Khi đã có SRS + TechSpec + API_CONTRACT (DB_DESIGN): **bắt buộc** có Test Case Catalog + Unit Test Plan + Test Report rollup — không chỉ U78 wave log.
+- SoT: docs/program/PO_SPEC_TEST_SUITE_PROGRAM.md · artifacts docs/qa/PO_SPEC_TEST_CASE_CATALOG.md · PO_SPEC_UNIT_TEST_PLAN.md · docs/qa/reports/PO_SPEC_TEST_REPORT.md.
+- OS: _vibe-team-os/13 unit test plan sau API_DESIGN; U78 vẫn bắt buộc trên browser evidence.
+
+## U83 — Ecosystem menu TC depth (sponsor 2026-08-03)
+- Test case **toàn hệ sinh thái** (XBOS/CC + HRM web + Mobile), không chỉ spine HRM / catalog 53 TC.
+- **1 menu = 1 pack = 1 agent** khi khối lớn; mỗi pack bắt buộc: screen inventory (kể popup/drawer/tab) · field dictionary đủ · function inventory đủ · TC matrix HP+FD+BD+AU · trace SRS/HDSD/API.
+- SoT: `docs/program/PO_ECOSYSTEM_TESTCASE_DEPTH_PROGRAM.md` · template `docs/qa/testcases/_TEMPLATE_MENU_TC_PACK.md` · roster `docs/qa/testcases/roster/ECOSYSTEM_MENU_ROSTER.md`.
+- Cấm: chỉ smoke load; bỏ popup; gộp nhiều menu lệch domain; claim UAT/Phase1 DONE vì viết TC xong.
+- U65 zero-seed khi chạy evidence; U76 HDSD path trong TC UI.
+
+## U84 — Enterprise WF + catalog×company matrix (sponsor 2026-08-03)
+- Phải có ma trận: **quy trình HRM enterprise (logistics)** × **công ty XeVN** × **danh mục XBOS→HRM (holding + apply member)**.
+- TC XBOS: tạo/khai WF trên designer + catalog publish/apply-to-members — không chỉ pack designer generic.
+- TC instance theo ô Primary trong `PO_ENTERPRISE_WF_CATALOG_MATRIX_PROGRAM.md` §5; CANDIDATE process = SPEC_GAP không bịa code.
+- SoT: `docs/program/PO_ENTERPRISE_WF_CATALOG_MATRIX_PROGRAM.md`.
+- Cấm: seed inbox; claim UAT DONE khi mới xong taxonomy.
+
+## U85 — TC vs Report vs Unit + dispatch training (sponsor 2026-08-03)
+- PM/PO phải phân biệt rõ: **Test Case** (thiết kế) · **Unit Test** (tự động BR) · **Test Report** (rollup) · **Test Log** (U78/OS 31 lần chạy) — không gộp / không overclaim.
+- Tư duy kiểm thử SP: L0→L2.5 J-* · HDSD · fail-deep→success→logic · multi-persona · multi-company — không chỉ catalog hoặc HTTP 200.
+- **Mọi Task subagent** phải diễn giải chi tiết bối cảnh + tầm nhìn + read_first + Done/non-goal (như training) — template OS `PM_DETAILED_DISPATCH.md`.
+- SoT OS: `_vibe-team-os/33-TESTCASE-VS-REPORT-VS-UNIT.md` (shared `projects/_vibe-team-os`) · project pointer `docs/program/PO_SPEC_TEST_SUITE_PROGRAM.md`.
+
+## U86 — Full UC TC folder + auto-fix nghiệp vụ/SOLID (sponsor 2026-08-04)
+- Toàn bộ UC Phase 1 → `docs/qa/professional/by-uc/<UC-ID>.md` (cây nghiệp vụ→chức năng→case); báo cáo tổng `MASTER_COVERAGE_REPORT.md`.
+- Team chạy đúng pipeline: design/QA phát GAP/FAIL → Dev fix hoặc rewrite hẹp (SOLID + convention + **đúng nghiệp vụ**) → QA U65/U78 → QC khi P0.
+- PM/PO khi chờ squad: chủ động research domain enterprise + training senior từng role (`PO_PM_SENIOR_TRAINING_PACK_20260804` · `ENTERPRISE_HRM_XBOS_DOMAIN_NOTES_20260804`) + nhật ký hội thoại.
+- Cấm: claim UAT/Phase1 DONE từ catalog; seed-as-UAT; PM idle sau subagent; hỏi Sponsor chọn việc khi roadmap đã khóa.
+- SoT: `docs/program/PO_FULL_ECOSYSTEM_UC_TC_PROGRAM.md` · journal `docs/journal/2026-08-04_PO_PM_CONVERSATION_JOURNAL.md`.
+
+## U87 — Menu Fidelity Depth + tăng seat theo cluster nút (sponsor 2026-08-04)
+- **UC×TC design + W4 LIKELY_IMPL ≠ đủ.** Phải inventory theo **menu thật**: màn → tab/submenu → nút/function → ý nghĩa nghiệp vụ → liên kết module → SRS/TechSpec/API có chưa → class dữ liệu REF/CFG/TXN/RPT → cấu hình tham chiếu thế nào → UC map hoặc UNMAPPED → runtime LIVE/PARTIAL/STUB/BROKEN.
+- **Tăng nhân sự seat:** 1 agent không ôm cả menu dày; **1 cluster nút = 1 seat** (BA-P + BA-D + SA + QA tối thiểu trên menu P0) → Synth → Dev fix P0.
+- Pilot bắt buộc: `command-center/hrm/attendance` — làm hết surface P0 (không chỉ vài UC AT).
+- Training: mọi member đọc §15 Menu Fidelity trước seat; quiz 5 câu trong evidence.
+- Cấm: claim “test hết” khi mới chạy subset UC; PASS chỉ load tab; invent SPEC_GAP.
+- SoT: `docs/program/PO_MENU_FIDELITY_DEPTH_PROGRAM.md`.
+
+
+## U77 — Business Change Compiler + promote `_vibe-team-os` (2026-08-05)
+
+**Sponsor:** Đồng ý lộ trình Excel/docs → Manifest JSON → Spec-first → squad → Compound/Memory; áp dụng pilot trên **xevn-ecosystem** trước, rồi **bắt buộc quay lại cập nhật** `projects/_vibe-team-os` để mọi PM/PO sau tự biết — folder OS = SoT tri thức đa team / hướng công ty Agent chuẩn thế giới.
 
 | | |
 |--|--|
-| Rule | `.cursor/rules/qa-hdsd-aligned-browser-test.mdc` |
-| Evidence | Bảng inventory menu×màn×nút trong mỗi evidence QA/E2E |
-| Liên quan | U63 · U65 · UF/J-* · client HDSD HTML/PDF |
+| Program | `docs/program/BUSINESS_CHANGE_COMPILER_PROGRAM.md` |
+| Phase A | Schema + checklist trong `xevn-ecosystem` — **cấm** `apps/**` |
+| Phase B | Promote doctrine/templates vào `_vibe-team-os` + MANIFEST/CHANGELOG/PM-START |
+| Cấm | Claim remaster DONE / product GO từ wave này; thay nguyên gói Superpowers đè Spec-first |
+
+## U88 — Continuous pipeline after QA/QC · SA/BA cuốn chiếu (sponsor 2026-08-07)
+
+**Sponsor:** *«Không thể để tôi nhắc liên tục — QC xong phải cuốn chiếu; đoạn sau SA/BA luôn.»*
+
+| | |
+|--|--|
+| Rule | `.cursor/rules/pm-continuous-pipeline-after-qc.mdc` (alwaysApply) |
+| Chain | Dev READY → QA → QC → residual FE/BE **và** ≥1 `sa`/`ba-*` vertical kế **cùng phiên** |
+| Idle | Idle-ok **một seat** ≠ idle **program**; honesty flags false → tiếp tục |
+| Cấm | Chờ nhắc «mở liên tục» / «còn việc không»; kết thúc chỉ SEALED/GWC seat |
+| Patched | `pm-post-delivery-verification.mdc` · `pm-continuous-dispatch.mdc` · `pm-auto-mode-orchestration.mdc` |
+| Board | `docs/program/PO_HRM_CONTINUOUS_W8_20260807.md` |
+
+
+## U89 — Single GD continuous UC fidelity (sponsor 2026-08-09)
+
+**Lock:** Phạm vi đã chốt với khách = **một giai đoạn duy nhất**. PM xếp **cuốn chiếu từng UC** theo WBS (REC→CORE→PLT→ATT→PAY) và **làm liên tục đến xong** — **cấm** tách «Giai đoạn 2 nội bộ», idle hỏi chọn phase, hoặc dừng sau một slice GWC.
+
+**SoT hàng:** `docs/program/PO_HRM_MVP_GD1_CONTINUOUS.md`  
+**OUT/GĐ2 khách** (REC-03, OCR, QR, đa nguồn ATT, kéo-thả lương…) **không** vào hàng GD1.  
+**Honesty / product_go:** không flip bundle; từng flag = wave riêng + QC.
+

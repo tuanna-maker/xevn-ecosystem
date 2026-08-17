@@ -8,7 +8,9 @@
 | **Đường vào** | Command Center → HRM → **Tuyển dụng** |
 | **Route embed** | `…/hrm/recruitment` |
 | **Đối tượng** | HRBP, Recruiter, Trưởng phòng tuyển dụng |
-| **Tham chiếu SRS** | UC-HRM-22 · HRM-RC-01 · FR-HRM-RC-* |
+| **Tham chiếu SRS** | UC-HRM-22 · HRM-RC-01 · FR-HRM-RC-* · FR-UC-BP-REC-05/05a/06a/07 |
+
+**DOC-DELTA danh mục giai đoạn:** hướng dẫn tách quản trị vs chọn giai đoạn nằm ở [`HDSD_XEVN_CH07b_HRM_DANH_MUC_GIAI_DOAN.md`](./HDSD_XEVN_CH07b_HRM_DANH_MUC_GIAI_DOAN.md) — **không** thay thế chương này; **không** khẳng định toàn module tuyển dụng đã nghiệm thu.
 
 ---
 
@@ -46,8 +48,8 @@ Thanh tab ngang trên cùng (11 mục chính; 3 mục có menu con). Nội dung 
 
 | Sub-tab | Nội dung |
 |---------|----------|
-| **Dashboard** | Funnel 6 giai đoạn, KPI, biểu đồ, hoạt động gần đây |
-| **Bảng Kanban** | Kéo-thả ứng viên giữa các cột giai đoạn |
+| **Dashboard** | Funnel minh họa theo giai đoạn (nhãn có thể còn «6 giai đoạn» mang tính ví dụ), KPI, biểu đồ, hoạt động gần đây |
+| **Bảng Kanban** | Kéo-thả ứng viên giữa các cột giai đoạn — khi danh mục giai đoạn còn phần tử hiệu lực, cột/mã lấy từ danh mục (xem CH07b); sáu cột khởi tạo chỉ là ví dụ khi danh mục trống |
 
 #### Bảng — Nút & thành phần (Dashboard)
 

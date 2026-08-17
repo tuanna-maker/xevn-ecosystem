@@ -19,6 +19,13 @@
  * change_mode: UPGRADE
  * What: resolveWeeklyDateRange — prefer current week clipped to sheet; align from/to with displayed days
  * Why: Month sheet fetched full period but grid only first 7 days → empty grid despite records 200
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-ATT-LEAVE-FUNNEL-FE-01
+ * change_mode: ADD
+ * What: recordToShift + mapAttendanceRecordsToTableRows bind status_label / leave_type_label when status=leave
+ * Why: F-ATT-LEAVE-FUNNEL-03 — AC-ATT-LV-SHEET-01 weekly/Bản ghi thấy phép từ GET records (no Option C leave join)
+ * must_keep: J-HRM-06b no extra poll; 06c sign; empty honesty; WAIVE_L2; attendance_uat_ready=false
  */
 
 import {
@@ -31,6 +38,10 @@ import {
 } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { formatDisplayDate } from '@/lib/formatDisplayDate';
+import {
+  isAttendanceLeaveStatus,
+  resolveAttendanceLeaveDisplayLabel,
+} from '@/lib/attendanceLeaveDisplay';
 import type { HrmAttendanceRecord } from '@/integrations/hrmApi';
 
 function isValidDate(value: Date): boolean {
@@ -79,6 +90,12 @@ export type AttendanceRecordTableRow = {
   unit: string;
   date: string;
   time: string;
+  status: string;
+  /** Display-ready from BE (F-ATT-LEAVE-FUNNEL-03). */
+  status_label: string | null;
+  leave_type_label: string | null;
+  /** Combined leave cell/badge label when status=leave. */
+  leave_display_label: string | null;
 };
 
 export type EmployeeLookup = {
@@ -224,11 +241,19 @@ function dayLabelFor(date: Date, t?: (key: string, fallback?: string) => string)
 }
 
 function recordToShift(record: HrmAttendanceRecord): WeeklyShiftCell {
-  if (record.status === 'leave') {
-    return { name: 'Nghỉ phép', type: 'leave' };
+  if (isAttendanceLeaveStatus(record.status)) {
+    return {
+      name: resolveAttendanceLeaveDisplayLabel(record),
+      type: 'leave',
+      status: 'leave',
+    };
   }
   if (record.status === 'absent') {
-    return { name: 'Vắng mặt', type: 'leave' };
+    return {
+      name: record.status_label?.trim() || 'Vắng mặt',
+      type: 'leave',
+      status: 'absent',
+    };
   }
 
   const time = buildTimeRange(record.check_in_at, record.check_out_at);
@@ -302,6 +327,10 @@ export function mapAttendanceRecordsToTableRows(
     const checkOut = toTimeLabel(record.check_out_at);
     const time = checkOut ? `${checkIn || '--:--'} - ${checkOut}` : checkIn || '--:--';
 
+    const leaveDisplay = isAttendanceLeaveStatus(record.status)
+      ? resolveAttendanceLeaveDisplayLabel(record)
+      : null;
+
     return {
       id: record.id,
       attendanceCode: String(index + 1),
@@ -311,6 +340,10 @@ export function mapAttendanceRecordsToTableRows(
       unit: resolveAttendanceUnitLabel(employee?.department, operatingUnitLabels) ?? '—',
       date: formatDisplayDate(record.attendance_date),
       time,
+      status: record.status,
+      status_label: record.status_label?.trim() || null,
+      leave_type_label: record.leave_type_label?.trim() || null,
+      leave_display_label: leaveDisplay,
     };
   });
 }

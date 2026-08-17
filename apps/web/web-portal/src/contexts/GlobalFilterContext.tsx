@@ -14,6 +14,12 @@ export type TenantOption = Company & {
   tenantKind: 'master' | 'member';
   roleCode: string;
   isMaster: boolean;
+  /** OS 28 — bind from auth BE; empty/— only when missing (no FE invent). */
+  membershipId?: string;
+  tenant_label?: string;
+  company_label?: string;
+  role_label?: string;
+  tenant_kind_label?: string;
 };
 
 export type TenantScopeStatus = 'loading' | 'ready' | 'error';
@@ -39,20 +45,28 @@ const GlobalFilterContext = createContext<GlobalFilterContextType | undefined>(u
 
 function mapTenantToOption(t: AccessibleTenant, index: number): TenantOption {
   const colors = ['#3b82f6', '#059669', '#D97706', '#7C3AED', '#E11D48', '#0891B2'];
+  const tenantLabel = (t.tenant_label ?? '').trim();
+  const kindLabel = (t.tenant_kind_label ?? '').trim();
   return {
     id: t.tenantId,
     tenantId: t.tenantId,
     companyId: t.companyId?.trim() || MEMBER_DEFAULT_COMPANY_ID,
     code: t.tenantId.toUpperCase(),
-    name: t.name,
+    name: tenantLabel || t.name,
     shortName: t.shortName,
-    industry: t.isMaster ? 'Tập đoàn (X-BOS)' : 'Công ty thành viên',
+    // OS 28: prefer BE tenant_kind_label; missing → «—» (no FE invent slug/kind map)
+    industry: kindLabel || '—',
     status: 'active',
     employeeCount: 0,
     color: colors[index % colors.length],
     tenantKind: t.tenantKind,
     roleCode: t.roleCode,
     isMaster: t.isMaster,
+    membershipId: t.membershipId,
+    tenant_label: t.tenant_label,
+    company_label: t.company_label,
+    role_label: t.role_label,
+    tenant_kind_label: t.tenant_kind_label,
   };
 }
 

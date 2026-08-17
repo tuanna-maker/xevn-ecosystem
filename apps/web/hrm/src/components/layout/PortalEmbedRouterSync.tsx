@@ -12,6 +12,10 @@ import { syncHrmLocationToPortalParent } from '@/lib/hrmPortalUrlSync';
  * `v7_startTransition: true` (D-FE-CONSOLE-A11Y-DIALOG-RR-01) cannot leave
  * Attendance painted after the URL moved.
  *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-G4-PROFILE-URL-FE-01
+ * What: syncHrmLocationToPortalParent also passes iframe search for workspace deep-link write
+ * Why: DEF-CTR-G4-PROFILE-URL-P2 — parent CC URL must show workspace=create&lock_subject_employee=1
+ *
  * @CODE-MEMORY-CHANGE 2026-07-19
  * work_item: CD-FB-09-SOFT-NAV
  * what: Unchanged bridge wiring; paired with AppLayout Outlet key + portal src fallback
@@ -37,8 +41,8 @@ export function PortalEmbedRouterSync() {
 
   useEffect(() => {
     if (!portalEmbed) return;
-    syncHrmLocationToPortalParent(location.pathname);
-  }, [location.pathname, portalEmbed]);
+    syncHrmLocationToPortalParent(location.pathname, '/hr', location.search);
+  }, [location.pathname, location.search, portalEmbed]);
 
   return null;
 }

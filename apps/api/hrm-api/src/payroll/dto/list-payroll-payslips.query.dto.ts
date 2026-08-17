@@ -32,6 +32,10 @@ export class ListPayrollPayslipsQueryDto {
   employee_id?: string;
 
   @IsOptional()
+  @IsUUID()
+  payroll_group_id?: string;
+
+  @IsOptional()
   @Transform(({ value, obj }) => {
     return pickScalar(value) ?? pickScalar(obj?.page);
   })

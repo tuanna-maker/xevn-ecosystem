@@ -218,6 +218,17 @@ if (System.getenv("GRADLE_SKIP_BUNDLE_TASK") == "1") {
     }
 }
 
+// HRM-NT-02 / FCM: apply only when a real google-services.json is present (never commit secrets).
+// Local: copy from android/app/google-services.json.example → google-services.json after filling Firebase values,
+// or set GOOGLE_SERVICES_JSON to an absolute path (build-apk.cjs syncs before Gradle).
+def googleServicesJson = file("google-services.json")
+if (googleServicesJson.exists()) {
+    apply plugin: "com.google.gms.google-services"
+    println "[hrm-mobile] google-services plugin applied (FCM enabled)"
+} else {
+    println "[hrm-mobile] google-services.json missing — FirebaseApp init skipped (qa-device JS fallback may register Expo-format token)"
+}
+
 
 
 

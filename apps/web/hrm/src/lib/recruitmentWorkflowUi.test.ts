@@ -24,7 +24,7 @@ describe('recruitmentWorkflowUi (XHRM-REC-WF-FE-01 / FE-CANVAS-01 / D-REC-13-S2)
     expect(isRecruitmentWorkflowLocked('inst-1', 'approved', 'plan')).toBe(false);
   });
 
-  it('allows Gửi duyệt QT after YCTD create (open, no instance)', () => {
+  it('allows Gửi duyệt QT after YCTD create (open/draft, no instance)', () => {
     expect(canSubmitRequisitionWorkflow(null, 'open')).toBe(true);
     expect(canSubmitRequisitionWorkflow('', 'open')).toBe(true);
     expect(canSubmitRequisitionWorkflow(undefined, 'draft')).toBe(true);
@@ -32,6 +32,12 @@ describe('recruitmentWorkflowUi (XHRM-REC-WF-FE-01 / FE-CANVAS-01 / D-REC-13-S2)
     expect(canSubmitRequisitionWorkflow('wi-1', 'open')).toBe(false);
     expect(canSubmitRequisitionWorkflow(null, 'closed')).toBe(false);
     expect(canSubmitRequisitionWorkflow(null, 'rejected')).toBe(false);
+    expect(canSubmitRequisitionWorkflow(null, 'open_for_hire')).toBe(false);
+  });
+
+  it('open_for_hire is terminal for requisition WF lock', () => {
+    expect(isRecruitmentWorkflowLocked('inst-1', 'open_for_hire', 'requisition')).toBe(false);
+    expect(isRecruitmentWorkflowLocked('inst-1', 'pending_approval', 'requisition')).toBe(true);
   });
 
   it('detects SPAWN-MISSING from BE spawnMissing flag or empty spawn id', () => {

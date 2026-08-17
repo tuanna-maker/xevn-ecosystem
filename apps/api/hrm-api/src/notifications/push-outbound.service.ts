@@ -126,6 +126,13 @@ export class PushOutboundService {
   }
 
   private pushCopy(envelope: HrmRealtimeEventEnvelope): { title: string; body: string } {
+    if (envelope.type === 'employee.activated') {
+      const r = envelope.request;
+      return {
+        title: 'Nhân viên đã kích hoạt',
+        body: `${r.employee_id} — hiệu lực ${r.effective_date}`,
+      };
+    }
     const n = envelope.request.employee_name;
     switch (envelope.type) {
       case 'attendance_update_request.created':
@@ -175,13 +182,17 @@ export class PushOutboundService {
     const chunkSize = 90;
     for (let i = 0; i < tokens.length; i += chunkSize) {
       const slice = tokens.slice(i, i + chunkSize);
+      const requestId =
+        envelope.type === 'employee.activated'
+          ? envelope.request.employee_id
+          : envelope.request.id;
       const messages = slice.map((to) => ({
         to,
         title,
         body,
         data: {
           type: envelope.type,
-          requestId: envelope.request.id,
+          requestId,
           companyId: envelope.request.company_id,
         },
         sound: 'default' as const,
@@ -208,9 +219,13 @@ export class PushOutboundService {
   private async sendFcmBatch(tokens: string[], envelope: HrmRealtimeEventEnvelope) {
     const messaging = getMessaging();
     const { title, body } = this.pushCopy(envelope);
+    const requestId =
+      envelope.type === 'employee.activated'
+        ? envelope.request.employee_id
+        : envelope.request.id;
     const data: Record<string, string> = {
       type: envelope.type,
-      requestId: envelope.request.id,
+      requestId,
       companyId: envelope.request.company_id,
       employeeId:
         'employee_id' in envelope.request && envelope.request.employee_id

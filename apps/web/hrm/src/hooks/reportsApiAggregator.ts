@@ -1,16 +1,13 @@
 import { differenceInMonths, format, parseISO } from 'date-fns';
-import type { HrmContractRecord, HrmEmployeeRecord, HrmLeaveRequest, HrmRecruitmentCandidate } from '@/integrations/hrmApi';
+import type { HrmContractRecord, HrmEmployeeRecord, HrmLeaveRequest } from '@/integrations/hrmApi';
+import {
+  mapRecruitmentReportFromDashboardDto,
+  type RecruitmentNestReportSubset,
+} from '@/lib/recruitmentDashboardNestBind';
+import type { HrmRecruitmentDashboardDto } from '@/integrations/hrmApi';
 
-export interface RecruitmentReport {
-  totalCandidates: number;
-  hiredCount: number;
-  rejectedCount: number;
-  pendingCount: number;
-  sourceStats: { source: string; count: number }[];
-  stageStats: { stage: string; count: number }[];
-  monthlyTrend: { month: string; applied: number; hired: number }[];
-  avgTimeToHire: number;
-}
+/** @deprecated name — now Nest dashboard subset (O8). DENY candidates-only formula. */
+export type RecruitmentReport = RecruitmentNestReportSubset;
 
 export interface ContractReport {
   totalContracts: number;
@@ -60,46 +57,23 @@ function employeeStartDate(emp: HrmEmployeeRecord): string | null {
   return emp.hired_at?.split('T')[0] ?? null;
 }
 
-export function buildRecruitmentReportFromApi(
-  candidates: HrmRecruitmentCandidate[],
-  year: number,
+/**
+ * O8 — map Nest dashboard DTO → Reports recruitment subset.
+ * DENY invent %/KH from candidates list (former buildRecruitmentReportFromApi).
+ */
+export function mapRecruitmentReportFromNestDashboard(
+  dto: HrmRecruitmentDashboardDto,
 ): RecruitmentReport {
-  const yearPrefix = `${year}-`;
-  const inYear = candidates.filter((c) => c.created_at.startsWith(yearPrefix));
-  const hiredCount = candidates.filter((c) => c.status === 'hired').length;
-  const rejectedCount = candidates.filter((c) => c.status === 'rejected').length;
-  const pendingCount = candidates.filter((c) => !['hired', 'rejected'].includes(c.status)).length;
+  return mapRecruitmentReportFromDashboardDto(dto);
+}
 
-  const sourceMap = new Map<string, number>();
-  candidates.forEach((c) => {
-    const s = c.source?.trim() || 'Khác';
-    sourceMap.set(s, (sourceMap.get(s) || 0) + 1);
-  });
-
-  const stageMap = new Map<string, number>();
-  candidates.forEach((c) => {
-    stageMap.set(c.status || 'new', (stageMap.get(c.status || 'new') || 0) + 1);
-  });
-
-  const monthlyTrend = Array.from({ length: 12 }, (_, m) => {
-    const ms = `${year}-${String(m + 1).padStart(2, '0')}`;
-    return {
-      month: `T${m + 1}`,
-      applied: inYear.filter((c) => c.created_at.startsWith(ms)).length,
-      hired: inYear.filter((c) => c.status === 'hired' && c.created_at.startsWith(ms)).length,
-    };
-  });
-
-  return {
-    totalCandidates: candidates.length,
-    hiredCount,
-    rejectedCount,
-    pendingCount,
-    sourceStats: Array.from(sourceMap.entries()).map(([source, count]) => ({ source, count })),
-    stageStats: Array.from(stageMap.entries()).map(([stage, count]) => ({ stage, count })),
-    monthlyTrend,
-    avgTimeToHire: 0,
-  };
+/**
+ * @deprecated DENY as SoT — throws to catch accidental calls. Use mapRecruitmentReportFromNestDashboard.
+ */
+export function buildRecruitmentReportFromApi(): never {
+  throw new Error(
+    'buildRecruitmentReportFromApi removed — use Nest GET /recruitment/dashboard (O8 / AC-REC-08-10)',
+  );
 }
 
 export function buildContractReportFromApi(

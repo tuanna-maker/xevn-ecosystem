@@ -13,6 +13,10 @@ vi.mock('./authSession', () => ({
   getStoredUser: () => ({ userId: 'ceo@xe.vn', displayName: 'CEO' }),
 }));
 
+vi.mock('./commandCenterScope', () => ({
+  resolveXbosStrictCompanyId: () => 'main',
+}));
+
 import { listWorkflowTasks } from './workflowEngineApi';
 import { __resetRequestCoalescerForTests } from './requestCoalescer';
 
@@ -40,6 +44,10 @@ describe('listWorkflowTasks mount coalescing (P1-CC-MOUNT-DUP-CALLS-FE)', () => 
     const p2 = listWorkflowTasks('xevn', 'pending');
 
     expect(xbosGetData).toHaveBeenCalledTimes(1);
+    expect(xbosGetData).toHaveBeenCalledWith(
+      expect.stringContaining('/workflow-engine/tasks'),
+      expect.objectContaining({ companyId: 'main', tenantId: 'xevn' }),
+    );
 
     d.resolve({ items: [{ id: 't1' }] });
     const [r1, r2] = await Promise.all([p1, p2]);

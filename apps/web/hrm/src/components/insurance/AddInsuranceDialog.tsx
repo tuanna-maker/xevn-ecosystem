@@ -10,6 +10,18 @@
  * What: Active policy picker + CTA «Tạo chính sách BH»; payload policy_id; block Lưu khi 0 active
  * Why: QA TC-049 HRM-INS-POL-404 khi UAT 0 policy — soft-resolve must_keep; FE explicit policy_id
  * must_keep: BE soft-resolve · insurance GET · SoftDel · TC-041 · U65 no seed · cấm orphan NULL
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-FE-01
+ * change_mode: FIX
+ * What: insurance_type picker binds Nest F-SI-CAT-EFF; empty CTA Settings Loại BH
+ * Why: AC-PLT-SI-INS-01 · VAL-SI-CNS-04 — REJECT MD sole type SoT; insurers MD retain
+ * must_keep: policy_id soft-resolve · SoftDel · U65 · printable/personnel false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-FE-01
+ * change_mode: FIX
+ * What: insurer_key picker binds Nest F-SI-CAT-INS-EFF; empty CTA Settings Nhà BH
+ * Why: AC-PLT-SI-INSURER-01 · VAL-SI-INR-CNS-01/02 — REJECT MD sole insurer SoT; SI type L1 RETAIN
+ * must_keep: type EFF picker · policy_id soft-resolve · SoftDel · U65 · printable/personnel false
  */
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,12 +56,9 @@ import {
   useDebouncedPickerKeyword,
   useEmployeePickerSearch,
 } from '@/hooks/useEmployeePicker';
-import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useSiInsuranceTypesEffective } from '@/hooks/useSiInsuranceTypesEffective';
+import { useSiInsurersEffective } from '@/hooks/useSiInsurersEffective';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
-import {
-  insurerOptionsFromCatalog,
-  insuranceTypeOptionsFromCatalog,
-} from '@/lib/catalogSearchPicker';
 import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import {
   Dialog,
@@ -130,10 +139,16 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     }
   };
 
-  const { catalogs, isLoading: catalogsLoading } = useSettingsCatalogsOverview();
-  const insurerOptions = useMemo(() => insurerOptionsFromCatalog(catalogs), [catalogs]);
-  const typeOptions = useMemo(() => insuranceTypeOptionsFromCatalog(catalogs), [catalogs]);
-  const settingsCta = hrmPathWithEmbedSearch('/settings');
+  const {
+    insurerOptions,
+    isLoading: insurersLoading,
+  } = useSiInsurersEffective({ enabled: open });
+  const {
+    insuranceTypeOptions: typeOptions,
+    isLoading: typesLoading,
+  } = useSiInsuranceTypesEffective({ enabled: open });
+  const siInsurerSettingsCta = hrmPathWithEmbedSearch('/settings?tab=si-insurers');
+  const siTypeSettingsCta = hrmPathWithEmbedSearch('/settings?tab=si-insurance-types');
 
   const policiesQuery = useQuery({
     queryKey: ['insurance-policies', currentCompanyId, 'picker'],
@@ -561,14 +576,19 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
                       options={insurerOptions}
                       value={field.value}
                       onValueChange={field.onChange}
-                      loading={catalogsLoading}
+                      loading={insurersLoading}
                       placeholder="Chọn nhà BH…"
                       emptyHint={
-                        <a href={settingsCta} className="text-primary underline text-xs font-medium">
-                          Mở Cài đặt — Nhà bảo hiểm
+                        <a
+                          href={siInsurerSettingsCta}
+                          className="text-primary underline text-xs font-medium"
+                          data-testid="hdsd-participant-open-si-insurers"
+                        >
+                          Mở Cài đặt → Nhà BH / Insurers (tạo mã mới)
                         </a>
                       }
                       aria-label="Nhà bảo hiểm"
+                      data-testid="hdsd-participant-insurer-picker"
                     />
                     <FormMessage />
                   </FormItem>
@@ -584,14 +604,19 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
                       options={typeOptions}
                       value={field.value}
                       onValueChange={field.onChange}
-                      loading={catalogsLoading}
+                      loading={typesLoading}
                       placeholder="Chọn loại BH…"
                       emptyHint={
-                        <a href={settingsCta} className="text-primary underline text-xs font-medium">
-                          Mở Cài đặt — Loại bảo hiểm
+                        <a
+                          href={siTypeSettingsCta}
+                          className="text-primary underline text-xs font-medium"
+                          data-testid="hdsd-participant-open-si-insurance-types"
+                        >
+                          Mở Cài đặt → Loại BH / SI type (tạo mã mới)
                         </a>
                       }
                       aria-label="Loại bảo hiểm"
+                      data-testid="hdsd-participant-insurance-type-picker"
                     />
                     <FormMessage />
                   </FormItem>

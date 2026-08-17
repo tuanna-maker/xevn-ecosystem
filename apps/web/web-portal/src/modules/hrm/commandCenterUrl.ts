@@ -22,6 +22,12 @@
  * What: Add optional wfTaskId to inbox/settings deep-link build + parse
  * Why: C-XHRM-REC-WF-CANVAS-05-01 / R-XHRM-REC-WF-DEEPLINK-TASKID
  * must_keep: J-REC-WF-02/03/06 GWC — do not reopen without FAIL
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W3-FE-LOG09
+ * change_mode: ADD
+ * What: SETTINGS_MENU_ALIASES sao_chep_bo_danh_muc_log / log_clone_bundle → log_catalog_clone_bundle
+ * Why: U76 HDSD deep-link for LOG-09 clone-bundle wizard
+ * must_keep: existing aliases; DM-09 hrm_catalog_clone separate; U65 no seed
  */
 import { matchPath } from 'react-router-dom';
 import { hrmPortalPath, HRM_PORTAL_BASE } from './paths';
@@ -89,6 +95,9 @@ export const SETTINGS_MENU_ALIASES: Record<string, string> = {
   raci: 'company_member_units',
   hrm_catalog: 'hrm_catalog_governance',
   catalog: 'hrm_catalog_governance',
+  /** U76 / HDSD — LOG-09 bundle clone (domains=logistics) */
+  sao_chep_bo_danh_muc_log: 'log_catalog_clone_bundle',
+  log_clone_bundle: 'log_catalog_clone_bundle',
 };
 
 export function normalizeSettingsMenuKey(raw: string | null | undefined): string | null {

@@ -27,6 +27,14 @@
  * Why: QA-HDSD-MUTATE-SOFTDEL-8088-SMOKE-03A FAIL — employeeCompanyDisplayName imports missing export
  * must_keep: SoftDel DataTable · TC-025 local · CatalogSearchPicker · ViMoney (parallel); no Employees.tsx rewrite
  * LastVerified: hrmMetadataCompany.test.ts (resolveHrmCompanySlugForDisplay suite)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-DEV-FE-B2-MD01-SUBMIT-ISJSON
+ * change_mode: FIX
+ * What: serializeMetadataJsonValue — plain text / JSON primitives → `{ value }` object; object/array JSON passthrough
+ * Why: Nest `@IsJSON()` rejects `'null'` on optional current_value and scalar `'"text"'` on requested_value (HRM-VAL-001)
+ * must_keep: resolveHrmMetadataCompanyUuid · leave slug helpers · Plane B′ display map
+ * LastVerified: hrmMetadataCompany.test.ts · hrmApi.submitEmployeeMetadataChangeRequest.test.ts
  */
 /** Mirrors `HRM_COMPANY_UUID_BY_SLUG` in hrm-api — metadata submit requires UUID company_id. */
 export const HRM_HOLDING_COMPANY_UUID = '10000000-0000-4000-8000-000000000001';
@@ -103,17 +111,30 @@ export function resolveHrmCompanySlugForDisplay(
   return lower;
 }
 
-/** Serialize metadata JSON field once for Nest `@IsJSON()` validators. */
+function isJsonObjectOrArray(parsed: unknown): parsed is Record<string, unknown> | unknown[] {
+  return parsed !== null && typeof parsed === 'object';
+}
+
+/** Serialize metadata JSON field once for Nest `@IsJSON()` validators (object/array only). */
 export function serializeMetadataJsonValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return 'null';
+  }
   if (typeof value === 'string') {
     const trimmed = value.trim();
     if (!trimmed) return 'null';
     try {
-      JSON.parse(trimmed);
-      return trimmed;
+      const parsed = JSON.parse(trimmed);
+      if (isJsonObjectOrArray(parsed)) {
+        return trimmed;
+      }
+      return JSON.stringify({ value: parsed });
     } catch {
-      return JSON.stringify(value);
+      return JSON.stringify({ value: trimmed });
     }
   }
-  return JSON.stringify(value ?? null);
+  if (isJsonObjectOrArray(value)) {
+    return JSON.stringify(value);
+  }
+  return JSON.stringify({ value });
 }

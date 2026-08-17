@@ -5,6 +5,7 @@ import {
   isContractsFetchFailureEmpty,
   loadContractsListProgressive,
   mapApiContract,
+  resolveContractPartyDisplayName,
 } from './useContracts';
 import { isListFetchFailureEmpty, isRateLimitApiError } from '@/lib/hrmListLoadFailure';
 
@@ -42,6 +43,68 @@ describe('P1-HRM-CON-PERF-01 — mapApiContract', () => {
     expect(mapped.employee_id).toBe('emp-1');
     expect(mapped.source).toBe('employee_contracts');
     expect(mapped.status).toBe('active');
+  });
+
+  it('PO-UC-TC-W4-FE-CI01 — prefers API contract_code over employee_code-HD fallback', () => {
+    const mapped = mapApiContract(
+      makeContractRow('c-api-code', { contract_code: 'HD-29LK5' }),
+    );
+    expect(mapped.contract_code).toBe('HD-29LK5');
+  });
+
+  it('PO-UC-TC-W4-FE-CI01 — blank API contract_code falls back to employee_code-HD', () => {
+    const mapped = mapApiContract(
+      makeContractRow('c-blank', { contract_code: '   ' }),
+    );
+    expect(mapped.contract_code).toBe('TCN-0954-HD');
+  });
+
+  it('XEVN-TPL-FE-EDIT-01 — passthrough pack/template for F5 edit restore', () => {
+    const mapped = mapApiContract(
+      makeContractRow('c-tpl-9', {
+        pack_code: 'GENERAL',
+        template_id: 'tpl-uuid-9',
+        template_code: 'XEVN_CUSTOM_XEVN9-IF9062',
+      }),
+    );
+    expect(mapped.pack_code).toBe('GENERAL');
+    expect(mapped.template_id).toBe('tpl-uuid-9');
+    expect(mapped.template_code).toBe('XEVN_CUSTOM_XEVN9-IF9062');
+  });
+
+  it('CORE-09 DISP-01 — preserves terminated + FE-derives statusLabelVi', () => {
+    const mapped = mapApiContract(
+      makeContractRow('c-term', { status: 'terminated' as const }),
+    );
+    expect(mapped.status).toBe('terminated');
+    expect(mapped.statusLabelVi).toBe('Chấm dứt');
+  });
+
+  it('CORE-09 DISP-01 — prefers BE statusLabelVi when present', () => {
+    const mapped = mapApiContract(
+      makeContractRow('c-be-label', {
+        status: 'active' as const,
+        statusLabelVi: 'Đang hiệu lực (BE)',
+      }),
+    );
+    expect(mapped.statusLabelVi).toBe('Đang hiệu lực (BE)');
+  });
+
+  it('D-PO-HRM-CTR-VIEW-SYNC-01 — candidate_label when employee_name absent', () => {
+    const row = makeContractRow('c-uv', {
+      employee_name: '',
+      subject_type: 'candidate',
+      candidate_label: 'Tran UV CORE07',
+      department: 'Phòng Tuyển dụng',
+      contract_abstract: 'Trích yếu thử',
+      signing_date: '2026-03-15',
+    });
+    expect(resolveContractPartyDisplayName(row)).toBe('Tran UV CORE07');
+    const mapped = mapApiContract(row);
+    expect(mapped.employee_name).toBe('Tran UV CORE07');
+    expect(mapped.department).toBe('Phòng Tuyển dụng');
+    expect(mapped.contract_abstract).toBe('Trích yếu thử');
+    expect(mapped.signing_date).toBe('2026-03-15');
   });
 });
 

@@ -1,9 +1,57 @@
-﻿import { useState } from 'react';
+﻿/**
+ * @CODE-MEMORY
+ * Screen:     /hr/recruitment — Lên lịch phỏng vấn (Candidates)
+ * UC:         UF-HRM-REC interview schedule
+ * BR:         FR-UC-BP-REC-06a one-active · scheduleRecruitmentInterview (Lane A)
+ * SRS:        docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md FR-UC-BP-REC-06a
+ * TechSpec:   docs/program/specs/PO-HRM-REC-IV-ONE-ACTIVE-SA-01.md §3.1
+ * Purpose:    Dialog lên lịch PV — Lane A mutate + 409 HRM-REC-IV-409-ACTIVE via toErrorMessage
+ * WorkItem:   PO-HRM-REC-IV-ONE-ACTIVE-FE-02
+ * Coded:      2026-08-06
+ * Callers:    CandidatesTab
+ * Callees:    scheduleRecruitmentInterview · resolveSpineRecruitmentCandidateId · react-i18next
+ * must_keep:  No mojibake hardcode; U65 no seed; Dialog center chrome; toErrorMessage 409 map
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-IV-ONE-ACTIVE-FE-02
+ * What: Wire scheduleRecruitmentInterview (Lane A) + resolve spine candidate by email; drop catalog-only create
+ * Why: QA FAIL — catalog path bypasses HRM-REC-IV-409-ACTIVE one-active gate
+ * must_keep: i18n recruitment.sid.*; dd/MM/yyyy display; toErrorMessage 409 map
+ * LastVerified: docs/qa/evidence/po-hrm-rec-iv-one-active-fe-02.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-IV-BROWSER-SCHEDULE-POST-P1
+ * What: Default interview_date (tomorrow) on open; sonner toast for 409; data-testid for QA harness
+ * Why: Browser POST blocked by zod dateRequired; radix toast invisible to sonner Playwright locator
+ * must_keep: Lane A scheduleRecruitmentInterview; toErrorMessage HRM-REC-IV-409-ACTIVE map
+ * LastVerified: docs/qa/evidence/po-hrm-rec-iv-browser-schedule-post-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-UAT-REC-SOFT-OBS-FE-01
+ * change_mode: FIX
+ * What: Expected HRM-REC-IV-409-ACTIVE → toast/inline only; no console.error storm (unexpected errors still log)
+ * Why: QC soft OBS R-REC-IV-409-CONSOLE — handled one-active 409 must not look like Uncaught
+ * must_keep: Lane A schedule; toErrorMessage 409 map; sonner toast testid; U65 zero-seed
+ * LastVerified: docs/qa/evidence/po-uat-rec-soft-obs-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-STAGE-CATALOG-CNS-FE-01
+ * change_mode: ADD
+ * What: Soft-gate submit when current stage allowsInterviewSchedule=false (VAL-REC-CNS-05)
+ * Why: BA-01 AC-PLT-REC-STAGE-06a — FE block + clear feedback; cấm reopen IV one-active seals
+ * must_keep: Lane A schedule · HRM-REC-IV-409-ACTIVE · U65 · recruitment_uat_ready=false
+ * LastVerified: docs/qa/evidence/po-hrm-dynamic-config-platform-rec-stage-catalog-cns-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06A-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Distinct toast codes PAST/DISALLOW/CANCEL/INVALID; 409 → onActiveConflict handoff (manage id)
+ * Why: BA O5/O7 · AC-REC-IV-06/07 · residual manage unlock — RETAIN create/409/badge
+ * must_keep: Lane A POST create · soft-gate ≠ 409 · U65 · honesty false · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06a-cluster-fe-01.md
+ */
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { CalendarIcon, Clock, MapPin, Video, Phone, Building2, User, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,25 +83,36 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useToast } from '@/hooks/use-toast';
-import { createInterviewCatalog } from '@/integrations/hrmApi';
-import { toErrorMessage } from '@/lib/apiError';
+import { toast } from 'sonner';
+import { resolveSpineRecruitmentCandidateId, scheduleRecruitmentInterview } from '@/integrations/hrmApi';
+import { ApiClientError, toErrorMessage } from '@/lib/apiError';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
+import {
+  isRecPipelineStageInterviewScheduleAllowed,
+  REC_PIPELINE_STAGE_IV_SOFT_GATE_VI,
+} from '@/lib/recPipelineStageCatalog';
+import { pickActiveInterviewIdFrom409Details } from './candidateActiveInterview';
 import { cn } from '@/lib/utils';
 
-const interviewSchema = z.object({
-  interview_date: z.date({ required_error: 'Vui lĂ²ng chá»n ngĂ y phá»ng váº¥n' }),
-  interview_time: z.string().min(1, 'Vui lĂ²ng chá»n giá» phá»ng váº¥n'),
-  duration_minutes: z.number().min(15, 'Thá»i lÆ°á»£ng tá»‘i thiá»ƒu 15 phĂºt').max(480, 'Thá»i lÆ°á»£ng tá»‘i Ä‘a 8 giá»'),
-  interview_type: z.enum(['onsite', 'online', 'phone']),
-  location: z.string().max(255, 'Äá»‹a Ä‘iá»ƒm khĂ´ng quĂ¡ 255 kĂ½ tá»±').optional(),
-  meeting_link: z.string().url('Link há»p khĂ´ng há»£p lá»‡').max(500, 'Link khĂ´ng quĂ¡ 500 kĂ½ tá»±').optional().or(z.literal('')),
-  interviewer_name: z.string().max(100, 'TĂªn khĂ´ng quĂ¡ 100 kĂ½ tá»±').optional(),
-  interviewer_email: z.string().email('Email khĂ´ng há»£p lá»‡').max(255, 'Email khĂ´ng quĂ¡ 255 kĂ½ tá»±').optional().or(z.literal('')),
-  notes: z.string().max(1000, 'Ghi chĂº khĂ´ng quĂ¡ 1000 kĂ½ tá»±').optional(),
-});
+const EXPECTED_SCHEDULE_CODES = new Set([
+  'HRM-REC-IV-409-ACTIVE',
+  'HRM-REC-IV-400-STAGE-DISALLOW',
+  'HRM-REC-IV-STAGE-DENY',
+  'HRM-REC-IV-400-PAST-DATETIME',
+]);
 
-type InterviewFormData = z.infer<typeof interviewSchema>;
+type InterviewFormData = {
+  interview_date: Date;
+  interview_time: string;
+  duration_minutes: number;
+  interview_type: 'onsite' | 'online' | 'phone';
+  location?: string;
+  meeting_link?: string;
+  interviewer_name?: string;
+  interviewer_email?: string;
+  notes?: string;
+};
 
 interface Candidate {
   id: string;
@@ -67,7 +126,11 @@ interface ScheduleInterviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   candidate: Candidate | null;
+  /** Current pool/application stage — VAL-REC-CNS-05 soft-gate. */
+  candidateStage?: string | null;
   onSuccess?: () => void;
+  /** AC-REC-IV-06 — hand off ACTIVE id from 409 details to manage dialog. */
+  onActiveConflict?: (payload: { interviewId: string; candidate: Candidate }) => void;
 }
 
 const timeSlots = [
@@ -76,46 +139,134 @@ const timeSlots = [
   '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
 ];
 
-const durationOptions = [
-  { value: 30, label: '30 phĂºt' },
-  { value: 45, label: '45 phĂºt' },
-  { value: 60, label: '1 giá»' },
-  { value: 90, label: '1.5 giá»' },
-  { value: 120, label: '2 giá»' },
-];
+function buildScheduledAtIso(interviewDate: Date, interviewTime: string): string {
+  const [hours, minutes] = interviewTime.split(':').map((part) => Number.parseInt(part, 10));
+  const scheduled = new Date(interviewDate);
+  scheduled.setHours(Number.isFinite(hours) ? hours : 9, Number.isFinite(minutes) ? minutes : 0, 0, 0);
+  return scheduled.toISOString();
+}
 
-export function ScheduleInterviewDialog({ 
-  open, 
-  onOpenChange, 
+/** Default schedule date: tomorrow at local midnight — unblocks submit when calendar popover fails in iframe QA. */
+function defaultInterviewDate(): Date {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function isPastCalendarDay(date: Date): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const candidate = new Date(date);
+  candidate.setHours(0, 0, 0, 0);
+  return candidate < today;
+}
+
+function buildDefaultFormValues(): InterviewFormData {
+  return {
+    interview_date: defaultInterviewDate(),
+    interview_time: '09:00',
+    duration_minutes: 60,
+    interview_type: 'onsite',
+    location: '',
+    meeting_link: '',
+    interviewer_name: '',
+    interviewer_email: '',
+    notes: '',
+  };
+}
+
+export function ScheduleInterviewDialog({
+  open,
+  onOpenChange,
   candidate,
-  onSuccess 
+  candidateStage,
+  onSuccess,
+  onActiveConflict,
 }: ScheduleInterviewDialogProps) {
-  const { toast } = useToast();
+  const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { items: pipelineStageItems, catalogCount } = useRecPipelineStagesEffective({
+    enabled: open,
+  });
+  const interviewScheduleAllowed = useMemo(
+    () =>
+      isRecPipelineStageInterviewScheduleAllowed(
+        pipelineStageItems,
+        candidateStage,
+        catalogCount,
+      ),
+    [pipelineStageItems, candidateStage, catalogCount],
+  );
+
+  const interviewSchema = useMemo(
+    () =>
+      z.object({
+        interview_date: z.date({
+          required_error: t('recruitment.sid.validation.dateRequired'),
+        }),
+        interview_time: z.string().min(1, t('recruitment.sid.validation.timeRequired')),
+        duration_minutes: z
+          .number()
+          .min(15, t('recruitment.sid.validation.durationMin'))
+          .max(480, t('recruitment.sid.validation.durationMax')),
+        interview_type: z.enum(['onsite', 'online', 'phone']),
+        location: z.string().max(255, t('recruitment.sid.validation.locationMax')).optional(),
+        meeting_link: z
+          .string()
+          .url(t('recruitment.sid.validation.linkInvalid'))
+          .max(500, t('recruitment.sid.validation.linkMax'))
+          .optional()
+          .or(z.literal('')),
+        interviewer_name: z.string().max(100, t('recruitment.sid.validation.nameMax')).optional(),
+        interviewer_email: z
+          .string()
+          .email(t('recruitment.sid.validation.emailInvalid'))
+          .max(255, t('recruitment.sid.validation.emailMax'))
+          .optional()
+          .or(z.literal('')),
+        notes: z.string().max(1000, t('recruitment.sid.validation.notesMax')).optional(),
+      }),
+    [t],
+  );
+
+  const durationOptions = useMemo(
+    () => [
+      { value: 30, label: t('recruitment.sid.minutes30') },
+      { value: 45, label: t('recruitment.sid.minutes45') },
+      { value: 60, label: t('recruitment.sid.hour1') },
+      { value: 90, label: t('recruitment.sid.hour1half') },
+      { value: 120, label: t('recruitment.sid.hour2') },
+    ],
+    [t],
+  );
 
   const form = useForm<InterviewFormData>({
     resolver: zodResolver(interviewSchema),
-    defaultValues: {
-      interview_time: '09:00',
-      duration_minutes: 60,
-      interview_type: 'onsite',
-      location: '',
-      meeting_link: '',
-      interviewer_name: '',
-      interviewer_email: '',
-      notes: '',
-    },
+    defaultValues: buildDefaultFormValues(),
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset(buildDefaultFormValues());
+    }
+  }, [open, form]);
 
   const interviewType = form.watch('interview_type');
 
   const handleSubmit = async (data: InterviewFormData) => {
     if (!candidate || !currentCompanyId) {
-      toast({
-        title: 'Lá»—i',
-        description: 'Thiáº¿u thĂ´ng tin á»©ng viĂªn hoáº·c cĂ´ng ty',
-        variant: 'destructive',
+      toast.error(t('recruitment.sid.error'), {
+        description: t('recruitment.sid.errorMissing'),
+      });
+      return;
+    }
+
+    if (!interviewScheduleAllowed) {
+      toast.error(t('recruitment.sid.error'), {
+        description: REC_PIPELINE_STAGE_IV_SOFT_GATE_VI,
+        'data-testid': 'schedule-interview-stage-deny-toast',
       });
       return;
     }
@@ -123,39 +274,49 @@ export function ScheduleInterviewDialog({
     setIsSubmitting(true);
 
     try {
-      await createInterviewCatalog({
+      const spineCandidateId = await resolveSpineRecruitmentCandidateId(currentCompanyId, candidate.email);
+      if (!spineCandidateId) {
+        toast.error(t('recruitment.sid.error'), {
+          description:
+            'Không tìm thấy ứng viên trên luồng lịch phỏng vấn chính. Vui lòng đồng bộ hồ sơ ứng viên trước khi lên lịch.',
+        });
+        return;
+      }
+
+      await scheduleRecruitmentInterview({
         company_id: currentCompanyId,
-        candidate_id: candidate.id,
-        candidate_name: candidate.fullName,
-        candidate_email: candidate.email,
-        candidate_phone: candidate.phone ?? null,
-        position: candidate.position ?? null,
-        interview_date: format(data.interview_date, 'yyyy-MM-dd'),
-        interview_time: data.interview_time,
-        duration_minutes: data.duration_minutes,
-        interview_type: data.interview_type,
-        location: data.location ?? null,
-        meeting_link: data.meeting_link || null,
-        interviewer_name: data.interviewer_name ?? null,
-        interviewer_email: data.interviewer_email || null,
-        notes: data.notes ?? null,
-        status: 'scheduled',
+        candidate_id: spineCandidateId,
+        scheduled_at: buildScheduledAtIso(data.interview_date, data.interview_time),
+        interviewer: (data.interviewer_name?.trim() || candidate.fullName).slice(0, 255),
       });
-      toast({
-        title: 'Đã lên lịch phỏng vấn',
-        description: `Lịch phỏng vấn cho ${candidate.fullName} đã được tạo thành công`,
+      toast.success(t('recruitment.sid.success'), {
+        description: t('recruitment.sid.successMsg', { name: candidate.fullName }),
       });
 
-      form.reset();
+      form.reset(buildDefaultFormValues());
       onOpenChange(false);
       onSuccess?.();
     } catch (error: unknown) {
-      console.error('Error scheduling interview:', error);
-      toast({
-        title: 'Lỗi',
-        description: toErrorMessage(error, 'Không thể lên lịch phỏng vấn'),
-        variant: 'destructive',
+      // Expected one-active / stage-deny / past: toast only — no console.error storm.
+      const code = error instanceof ApiClientError ? error.code : undefined;
+      if (!code || !EXPECTED_SCHEDULE_CODES.has(code)) {
+        console.error('Error scheduling interview:', error);
+      }
+      const friendly = toErrorMessage(error, t('recruitment.sid.error'));
+      toast.error(t('recruitment.sid.error'), {
+        description: friendly,
+        'data-testid': 'schedule-interview-error-toast',
       });
+      if (code === 'HRM-REC-IV-409-ACTIVE' && candidate && onActiveConflict) {
+        const conflictId =
+          error instanceof ApiClientError
+            ? pickActiveInterviewIdFrom409Details(error.details)
+            : null;
+        if (conflictId) {
+          onOpenChange(false);
+          onActiveConflict({ interviewId: conflictId, candidate });
+        }
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -165,15 +326,14 @@ export function ScheduleInterviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="schedule-interview-dialog">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-primary" />
-            LĂªn lá»‹ch phá»ng váº¥n
+            {t('recruitment.sid.title')}
           </DialogTitle>
         </DialogHeader>
 
-        {/* Candidate Info */}
         <div className="bg-muted/50 rounded-lg p-4 mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -181,35 +341,48 @@ export function ScheduleInterviewDialog({
             </div>
             <div>
               <p className="font-medium">{candidate.fullName}</p>
-              <p className="text-sm text-muted-foreground">{candidate.position || 'ChÆ°a cĂ³ vá»‹ trĂ­'}</p>
+              <p className="text-sm text-muted-foreground">
+                {candidate.position || t('recruitment.sid.noPosition')}
+              </p>
             </div>
           </div>
         </div>
 
+        {!interviewScheduleAllowed ? (
+          <div
+            className="mb-4 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-xevn-textPrimary"
+            data-testid="schedule-interview-stage-deny-banner"
+            role="alert"
+          >
+            {REC_PIPELINE_STAGE_IV_SOFT_GATE_VI}
+          </div>
+        ) : null}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            {/* Date & Time Row */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="interview_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>NgĂ y phá»ng váº¥n *</FormLabel>
+                    <FormLabel>{t('recruitment.sid.dateLabel')} *</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
+                            type="button"
                             variant="outline"
+                            data-testid="schedule-interview-date-trigger"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground',
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "dd/MM/yyyy", { locale: vi })
+                              format(field.value, 'dd/MM/yyyy', { locale: vi })
                             ) : (
-                              <span>Chá»n ngĂ y</span>
+                              <span>{t('recruitment.sid.selectDate')}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -220,8 +393,9 @@ export function ScheduleInterviewDialog({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) => date < new Date()}
+                          disabled={isPastCalendarDay}
                           initialFocus
+                          data-testid="schedule-interview-calendar"
                         />
                       </PopoverContent>
                     </Popover>
@@ -235,12 +409,12 @@ export function ScheduleInterviewDialog({
                 name="interview_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Giá» phá»ng váº¥n *</FormLabel>
+                    <FormLabel>{t('recruitment.sid.timeLabel')} *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <Clock className="w-4 h-4 mr-2 opacity-50" />
-                          <SelectValue placeholder="Chá»n giá»" />
+                          <SelectValue placeholder={t('recruitment.sid.selectTime')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -257,21 +431,20 @@ export function ScheduleInterviewDialog({
               />
             </div>
 
-            {/* Duration & Type Row */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="duration_minutes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thá»i lÆ°á»£ng</FormLabel>
-                    <Select 
-                      onValueChange={(val) => field.onChange(parseInt(val))} 
+                    <FormLabel>{t('recruitment.sid.durationLabel')}</FormLabel>
+                    <Select
+                      onValueChange={(val) => field.onChange(parseInt(val, 10))}
                       value={field.value.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Chá»n thá»i lÆ°á»£ng" />
+                          <SelectValue placeholder={t('recruitment.sid.selectDuration')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -292,7 +465,7 @@ export function ScheduleInterviewDialog({
                 name="interview_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>HĂ¬nh thá»©c</FormLabel>
+                    <FormLabel>{t('recruitment.sid.formatLabel')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -303,19 +476,19 @@ export function ScheduleInterviewDialog({
                         <SelectItem value="onsite">
                           <div className="flex items-center gap-2">
                             <Building2 className="w-4 h-4" />
-                            Trá»±c tiáº¿p
+                            {t('recruitment.sid.onsite')}
                           </div>
                         </SelectItem>
                         <SelectItem value="online">
                           <div className="flex items-center gap-2">
                             <Video className="w-4 h-4" />
-                            Online
+                            {t('recruitment.sid.online')}
                           </div>
                         </SelectItem>
                         <SelectItem value="phone">
                           <div className="flex items-center gap-2">
                             <Phone className="w-4 h-4" />
-                            Äiá»‡n thoáº¡i
+                            {t('recruitment.sid.phone')}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -326,20 +499,19 @@ export function ScheduleInterviewDialog({
               />
             </div>
 
-            {/* Location or Meeting Link based on type */}
             {interviewType === 'onsite' && (
               <FormField
                 control={form.control}
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Äá»‹a Ä‘iá»ƒm phá»ng váº¥n</FormLabel>
+                    <FormLabel>{t('recruitment.sid.locationLabel')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input 
-                          {...field} 
-                          placeholder="Nháº­p Ä‘á»‹a Ä‘iá»ƒm phá»ng váº¥n" 
+                        <Input
+                          {...field}
+                          placeholder={t('recruitment.sid.locationPlaceholder')}
                           className="pl-10"
                         />
                       </div>
@@ -356,13 +528,13 @@ export function ScheduleInterviewDialog({
                 name="meeting_link"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Link phĂ²ng há»p</FormLabel>
+                    <FormLabel>{t('recruitment.sid.meetingLinkLabel')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Video className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input 
-                          {...field} 
-                          placeholder="https://meet.google.com/..." 
+                        <Input
+                          {...field}
+                          placeholder={t('recruitment.sid.meetingLinkPlaceholder')}
                           className="pl-10"
                         />
                       </div>
@@ -373,16 +545,15 @@ export function ScheduleInterviewDialog({
               />
             )}
 
-            {/* Interviewer Info */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="interviewer_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>NgÆ°á»i phá»ng váº¥n</FormLabel>
+                    <FormLabel>{t('recruitment.sid.interviewerLabel')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="TĂªn ngÆ°á»i phá»ng váº¥n" />
+                      <Input {...field} placeholder={t('recruitment.sid.interviewerPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -394,9 +565,13 @@ export function ScheduleInterviewDialog({
                 name="interviewer_email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email ngÆ°á»i phá»ng váº¥n</FormLabel>
+                    <FormLabel>{t('recruitment.sid.interviewerEmailLabel')}</FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="email@company.com" />
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder={t('recruitment.sid.interviewerEmailPlaceholder')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -404,17 +579,16 @@ export function ScheduleInterviewDialog({
               />
             </div>
 
-            {/* Notes */}
             <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ghi chĂº</FormLabel>
+                  <FormLabel>{t('recruitment.sid.notesLabel')}</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      {...field} 
-                      placeholder="ThĂ´ng tin thĂªm vá» buá»•i phá»ng váº¥n..."
+                    <Textarea
+                      {...field}
+                      placeholder={t('recruitment.sid.notesPlaceholder')}
                       rows={3}
                     />
                   </FormControl>
@@ -423,19 +597,22 @@ export function ScheduleInterviewDialog({
               )}
             />
 
-            {/* Actions */}
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Há»§y
+                {t('recruitment.sid.cancelBtn')}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting || !interviewScheduleAllowed}
+                data-testid="schedule-interview-submit"
+              >
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                LĂªn lá»‹ch phá»ng váº¥n
+                {t('recruitment.sid.submitBtn')}
               </Button>
             </div>
           </form>

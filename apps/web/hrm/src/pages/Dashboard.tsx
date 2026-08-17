@@ -22,6 +22,12 @@
  * What: Dashboard load gọi attendance/overview + payroll/payslips (thay attendance/records)
  * Why: P-CC-HRM-DASH sponsor block · qa-hrm-embed-network-audit-20260730
  * SRS/BR: UC-HRM-20 · PILOT_BUSINESS_FLOW_MATRIX P-CC-HRM-DASH
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-B
+ * change_mode: UPGRADE
+ * What: PORT-09 Index/Dashboard — muted labels → xevn-textSecondary; ban purple/indigo quick-action gradients
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8 · inventory PORT-09 ops-dense home
+ * must_keep: EmptyState payroll; PortalOperationsSummary; attendance/overview + payslips wires; U65
  */
 import { useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -153,9 +159,9 @@ export default function Dashboard() {
   // Quick actions
   const getQuickActions = () => [
     { id: 1, title: t('dashboard.employeeManagement'), subtitle: t('dashboard.viewEmployeeProfile'), icon: Users, href: '/employees', gradient: 'from-emerald-400 to-green-500' },
-    { id: 2, title: t('dashboard.recruitment'), subtitle: t('dashboard.manageCandidate'), icon: UserPlus, href: '/recruitment', gradient: 'from-blue-400 to-indigo-500' },
+    { id: 2, title: t('dashboard.recruitment'), subtitle: t('dashboard.manageCandidate'), icon: UserPlus, href: '/recruitment', gradient: 'from-blue-500 to-blue-700' },
     { id: 3, title: t('dashboard.timeTracking'), subtitle: t('dashboard.trackWorkHours'), icon: Clock, href: '/attendance', gradient: 'from-amber-400 to-orange-500' },
-    { id: 4, title: t('dashboard.payrollCalculation'), subtitle: t('dashboard.viewPayroll'), icon: Wallet, href: '/payroll', gradient: 'from-purple-400 to-pink-500' },
+    { id: 4, title: t('dashboard.payrollCalculation'), subtitle: t('dashboard.viewPayroll'), icon: Wallet, href: '/payroll', gradient: 'from-[#1E40AF] to-blue-800' },
     { id: 5, title: t('dashboard.reports'), subtitle: t('dashboard.viewStats'), icon: FileText, href: '/reports', gradient: 'from-cyan-400 to-teal-500' },
   ];
 
@@ -344,7 +350,7 @@ export default function Dashboard() {
     if (!payrollSummaryReady || !hasPayrollAggregate) {
       return (
         <span
-          className="text-muted-foreground"
+          className="text-xevn-textSecondary"
           title={
             !payrollSummaryReady
               ? t('dashboard2.summaryUnavailable', 'Chưa tải được dữ liệu tổng hợp')
@@ -407,7 +413,7 @@ export default function Dashboard() {
       <div className="flex items-center gap-2 flex-wrap">
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <SelectTrigger className="w-[140px] md:w-[160px] bg-background">
-            <CalendarDays className="w-4 h-4 mr-2 text-muted-foreground" />
+            <CalendarDays className="w-4 h-4 mr-2 text-xevn-textMuted" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -434,9 +440,9 @@ export default function Dashboard() {
       </div>
 
       {/* Period Indicator */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-xevn-textSecondary">
         <Calendar className="w-4 h-4" />
-        <span>{t('dashboard.dataDisplay')}: <strong className="text-foreground">{currentPeriod?.label}</strong></span>
+        <span>{t('dashboard.dataDisplay')}: <strong className="text-xevn-text">{currentPeriod?.label}</strong></span>
         <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{currentPeriod?.shortLabel}</span>
       </div>
 
@@ -480,25 +486,25 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold mb-1">{t('dashboard.payrollSummary')}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{t('dashboard.thisMonth')}</p>
+                  <p className="text-sm text-xevn-textSecondary mb-4">{t('dashboard.thisMonth')}</p>
                   {payrollSummaryReady && !hasPayrollAggregate ? (
                     payrollEmptyNotice
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.totalSalary')}</p>
+                        <p className="text-xs text-xevn-textSecondary uppercase tracking-wide">{t('dashboard.totalSalary')}</p>
                         <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalPayroll, 'text-primary')}</p>
-                        <p className="text-xs text-muted-foreground">VNĐ</p>
+                        <p className="text-xs text-xevn-textSecondary">VNĐ</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.personalIncomeTax')}</p>
+                        <p className="text-xs text-xevn-textSecondary uppercase tracking-wide">{t('dashboard.personalIncomeTax')}</p>
                         <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalTax, 'text-amber-500')}</p>
-                        <p className="text-xs text-muted-foreground">VNĐ (~10%)</p>
+                        <p className="text-xs text-xevn-textSecondary">VNĐ (~10%)</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('dashboard.insurance')}</p>
+                        <p className="text-xs text-xevn-textSecondary uppercase tracking-wide">{t('dashboard.insurance')}</p>
                         <p className="text-2xl font-bold mt-1">{renderPayrollAmount(totalInsurance, 'text-blue-500')}</p>
-                        <p className="text-xs text-muted-foreground">VNĐ (~10.5%)</p>
+                        <p className="text-xs text-xevn-textSecondary">VNĐ (~10.5%)</p>
                       </div>
                     </div>
                   )}
@@ -513,7 +519,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold">{t('dashboard.salaryAnalysis')}</CardTitle>
-                <p className="text-xs text-muted-foreground">{t('dashboard.thisMonth')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('dashboard.thisMonth')}</p>
               </CardHeader>
               <CardContent>
                 {payrollSummaryReady && !hasPayrollAggregate ? (
@@ -539,7 +545,7 @@ export default function Dashboard() {
                       </ResponsiveContainer>
                     </div>
                     <div className="mt-3 pt-3 border-t flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{t('dashboard2.salaryRanges.above30')}:</span>
+                      <span className="text-sm text-xevn-textSecondary">{t('dashboard2.salaryRanges.above30')}:</span>
                       <span className="font-semibold text-emerald-600">{topSalaryCount} {t('dashboard2.employeeCount')}</span>
                     </div>
                   </>
@@ -551,7 +557,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold">{t('dashboard.incomeStructure')}</CardTitle>
-                <p className="text-xs text-muted-foreground">{t('dashboard.thisMonth')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('dashboard.thisMonth')}</p>
               </CardHeader>
               <CardContent>
                 {payrollSummaryReady && !hasPayrollAggregate ? (
@@ -577,7 +583,7 @@ export default function Dashboard() {
                       {incomeStructureData.map((item) => (
                         <div key={item.name} className="flex items-center gap-2 text-xs">
                           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                          <span className="text-muted-foreground">{item.name}:</span>
+                          <span className="text-xevn-textSecondary">{item.name}:</span>
                           <span className="font-medium">{item.value}%</span>
                         </div>
                       ))}
@@ -594,7 +600,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold">{t('dashboard2.avgIncome')}</CardTitle>
-                <p className="text-xs text-muted-foreground">{t('dashboard2.last6Months')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('dashboard2.last6Months')}</p>
               </CardHeader>
               <CardContent>
                 {payrollSummaryReady && !hasPayrollAggregate ? (
@@ -628,7 +634,7 @@ export default function Dashboard() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold">{t('dashboard2.avgIncomeByUnit')}</CardTitle>
-                <p className="text-xs text-muted-foreground">{t('dashboard.thisMonth')}</p>
+                <p className="text-xs text-xevn-textSecondary">{t('dashboard.thisMonth')}</p>
               </CardHeader>
               <CardContent>
                 <div className="h-[200px]">
@@ -678,7 +684,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <CardTitle className="text-base font-semibold">{t('dashboard2.comparison.periodComparison')}</CardTitle>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-xevn-textSecondary">
                       {comparisonData.periodLabel.current} {t('dashboard2.comparison.vs')} {comparisonData.periodLabel.previous}
                     </p>
                   </div>
@@ -691,7 +697,7 @@ export default function Dashboard() {
                 {/* Employees */}
                 <div className="p-4 bg-background rounded-xl border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-muted-foreground">{t('dashboard2.comparison.employees')}</span>
+                    <span className="text-xs text-xevn-textSecondary">{t('dashboard2.comparison.employees')}</span>
                     {(() => {
                       const change = calculateChange(comparisonData.current.employees, comparisonData.previous.employees);
                       return (
@@ -704,14 +710,14 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-end gap-2">
                     <span className="text-2xl font-bold">{comparisonData.current.employees}</span>
-                    <span className="text-sm text-muted-foreground mb-0.5">/ {comparisonData.previous.employees}</span>
+                    <span className="text-sm text-xevn-textSecondary mb-0.5">/ {comparisonData.previous.employees}</span>
                   </div>
                 </div>
 
                 {/* Salary */}
                 <div className="p-4 bg-background rounded-xl border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-muted-foreground">{t('dashboard2.comparison.totalSalary')}</span>
+                    <span className="text-xs text-xevn-textSecondary">{t('dashboard2.comparison.totalSalary')}</span>
                     {hasPayrollAggregate ? (() => {
                       const change = calculateChange(comparisonData.current.salary, comparisonData.previous.salary);
                       return (
@@ -726,10 +732,10 @@ export default function Dashboard() {
                     {hasPayrollAggregate ? (
                       <>
                         <span className="text-2xl font-bold">{formatCurrency(comparisonData.current.salary)}</span>
-                        <span className="text-sm text-muted-foreground mb-0.5">/ {formatCurrency(comparisonData.previous.salary)}</span>
+                        <span className="text-sm text-xevn-textSecondary mb-0.5">/ {formatCurrency(comparisonData.previous.salary)}</span>
                       </>
                     ) : (
-                      <span className="text-2xl font-bold text-muted-foreground" title={DASHBOARD_PAYROLL_CHART_EMPTY_VI}>—</span>
+                      <span className="text-2xl font-bold text-xevn-textSecondary" title={DASHBOARD_PAYROLL_CHART_EMPTY_VI}>—</span>
                     )}
                   </div>
                 </div>
@@ -737,7 +743,7 @@ export default function Dashboard() {
                 {/* Attendance */}
                 <div className="p-4 bg-background rounded-xl border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-muted-foreground">{t('dashboard2.comparison.attendanceRate')}</span>
+                    <span className="text-xs text-xevn-textSecondary">{t('dashboard2.comparison.attendanceRate')}</span>
                     {(() => {
                       const change = calculateChange(comparisonData.current.attendance, comparisonData.previous.attendance || 1);
                       return (
@@ -750,14 +756,14 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-end gap-2">
                     <span className="text-2xl font-bold">{comparisonData.current.attendance}%</span>
-                    <span className="text-sm text-muted-foreground mb-0.5">/ {comparisonData.previous.attendance}%</span>
+                    <span className="text-sm text-xevn-textSecondary mb-0.5">/ {comparisonData.previous.attendance}%</span>
                   </div>
                 </div>
 
                 {/* Leaves */}
                 <div className="p-4 bg-background rounded-xl border">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-muted-foreground">{t('dashboard2.comparison.leaveDays')}</span>
+                    <span className="text-xs text-xevn-textSecondary">{t('dashboard2.comparison.leaveDays')}</span>
                     {(() => {
                       const change = calculateChange(comparisonData.current.leaves, comparisonData.previous.leaves || 1);
                       return (
@@ -770,7 +776,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-end gap-2">
                     <span className="text-2xl font-bold">{comparisonData.current.leaves}</span>
-                    <span className="text-sm text-muted-foreground mb-0.5">/ {comparisonData.previous.leaves}</span>
+                    <span className="text-sm text-xevn-textSecondary mb-0.5">/ {comparisonData.previous.leaves}</span>
                   </div>
                 </div>
               </div>
@@ -812,19 +818,19 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{t('dashboard2.totalEmployees')}</span>
+                <span className="text-sm text-xevn-textSecondary">{t('dashboard2.totalEmployees')}</span>
                 <span className="text-xl font-bold">{totalEmployees}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{t('dashboard2.activeEmployees')}</span>
+                <span className="text-sm text-xevn-textSecondary">{t('dashboard2.activeEmployees')}</span>
                 <span className="text-lg font-semibold text-emerald-600">{activeEmployeesCount}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{t('dashboard2.newEmployees')}</span>
+                <span className="text-sm text-xevn-textSecondary">{t('dashboard2.newEmployees')}</span>
                 <span className="text-lg font-semibold text-blue-600">{newEmployeesCount}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{t('dashboard2.departmentCount')}</span>
+                <span className="text-sm text-xevn-textSecondary">{t('dashboard2.departmentCount')}</span>
                 <span className="text-lg font-semibold text-amber-600">{departmentCount}</span>
               </div>
             </CardContent>
@@ -843,7 +849,7 @@ export default function Dashboard() {
                 <p className="text-lg font-bold text-primary">
                   {new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(totalPayroll)} VNĐ
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-xevn-textSecondary mt-1">
                   {totalEmployees} {t('dashboard2.employeeCount')}
                   {dashboardPayslips.length > 0
                     ? ` · ${dashboardPayslips.length} phiếu lương`
@@ -890,7 +896,7 @@ export default function Dashboard() {
 
               {/* Newest Employees */}
               <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground uppercase">{t('dashboard2.newestEmployees')}</p>
+                <p className="text-xs font-medium text-xevn-textSecondary uppercase">{t('dashboard2.newestEmployees')}</p>
                 {newestEmployees.map((emp) => (
                   <div key={emp.id} className="flex items-center gap-3 p-2 hover:bg-muted/50 rounded-lg transition-colors">
                     <Avatar className="w-9 h-9">
@@ -900,7 +906,7 @@ export default function Dashboard() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{emp.full_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{emp.employee_code}</p>
+                      <p className="text-xs text-xevn-textSecondary truncate">{emp.employee_code}</p>
                     </div>
                   </div>
                 ))}

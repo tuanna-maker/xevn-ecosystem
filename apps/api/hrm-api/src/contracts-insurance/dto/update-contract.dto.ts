@@ -1,4 +1,13 @@
-import { IsDateString, IsNumber, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 
 export class UpdateContractDto {
   @IsOptional()
@@ -67,4 +76,132 @@ export class UpdateContractDto {
   @IsString()
   @MaxLength(128)
   signer_position_key?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  pack_code?: string;
+
+  @IsOptional()
+  @IsUUID()
+  template_id?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  template_code?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  term_type?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  work_location?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  work_location_scope?: string;
+
+  @IsOptional()
+  @IsString()
+  job_description_text?: string;
+
+  @IsOptional()
+  @IsNumber()
+  probation_days?: number;
+
+  @IsOptional()
+  @IsDateString()
+  probation_end?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  license_class?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  driver_license_class?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  driver_license_number?: string;
+
+  @IsOptional()
+  @IsDateString()
+  driver_license_issued_on?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  driver_license_issued_place?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  vehicle_plate?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  route_or_region?: string;
+
+  @IsOptional()
+  @IsDateString()
+  signed_at?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  contract_name?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  work_arrangement?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  salary_ratio_percent?: number | null;
+
+  @IsOptional()
+  @IsIn(['candidate', 'employee'])
+  subject_type?: 'candidate' | 'employee';
+
+  @IsOptional()
+  @IsUUID()
+  candidate_id?: string | null;
+
+  @IsOptional()
+  @IsUUID()
+  requisition_id?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  signing_date?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  work_form?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  contract_abstract?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  abstract?: string | null;
+
+  @IsOptional()
+  @IsBoolean()
+  registry_only?: boolean;
 }

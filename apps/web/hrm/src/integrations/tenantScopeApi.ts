@@ -6,7 +6,7 @@ import { safeRandomUuid } from '@/lib/safeRandomUuid';
 /**
  * @CODE-MEMORY
  * Screen:     HRM embed → Công ty (CompanyManagement) — danh sách + chi tiết tập đoàn/thành viên
- * UC:         UC-HRM-ORG-COMPANY · UF-XBOS-03 (hồ sơ pháp nhân)
+ * UC:         UC-HRM-CO-01 / FR-HRM-CO-IND-01 · UC-HRM-ORG-COMPANY · UF-XBOS-03 (hồ sơ pháp nhân)
  * BR:         BR-CO-BIND-01 (SoT XBOS legal, không hard-null)
  * SRS:        docs/qa/evidence/fid-p0-ba-data-01-20260722.md §2 · UX_VI_DATE_NUMBER_FORMAT_AC.md
  * TechSpec:   GET /tenant-scope/group-member-units (nav) + GET /org-foundation/legal-entities (hồ sơ)
@@ -37,12 +37,21 @@ import { safeRandomUuid } from '@/lib/safeRandomUuid';
  * must_keep: CO-BIND tax/founded/MST; GROUP_HOLDING_ROOT_ID; không mutate JWT companyId
  *
  * @CODE-MEMORY-CHANGE 2026-07-27
- * WorkItem: D-HRM-CO-INDUSTRY-FE-01
+ * WorkItem: D-HRM-CO-INDUSTRY-FE-01 (alias D-HRM-CO-01-INDUSTRY-FE-01)
  * change_mode: FIX
  * What: Ngành nghề = business_lines / companyForm.industry (VI hoặc catalog key→industries.*);
  *       cấm map entity_type (holding/subsidiary) vào industry.
  * Why: Cột «Ngành nghề» hiện raw `subsidiary` — SoT sai field (entity_type ≠ ngành)
  * must_keep: CO-EMP-COUNT enrich; CO-BIND tax/founded/MST; OU filter / GROUP_HOLDING_ROOT_ID
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10
+ * WorkItem: D-HRM-CO-01-INDUSTRY-FE-01
+ * change_mode: FIX (verify + matrix promote lane)
+ * What: resolveIndustryDisplay · extractIndustryFromLegalSources · INDUSTRY_CATALOG_VI;
+ *       mapGroupMemberUnitsToHrmCompanies + legal enrich — không entity_type.
+ * Why: UC-HRM-CO-01 planned · AC-CO-IND-01..04 · VAL-CO-IND-01
+ * must_keep: employee_count null trong mapper; enrichHrmCompaniesWithWorkforceCounts không đổi
+ * LastVerified: docs/qa/evidence/d-hrm-co-01-industry-fe-01.md
  */
 
 export const GROUP_HOLDING_ROOT_ID = 'xbos-group-holding-root';

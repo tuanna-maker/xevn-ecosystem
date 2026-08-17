@@ -1,3 +1,15 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-B-01
+ * change_mode: UPGRADE
+ * What: Precision Motion P07/P09 sales data — KPI xevn tokens; achievement badges DNA; dialogs title ≥20
+ * Why: ADR §16 · W3-PAY-B · B4 purple/emerald AI ban
+ * must_keep: sales records API/hooks; vi-VN money; no invent sync
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 (seat verify)
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-B-01
+ * What: Sync/import dialogs — sm:max-w-[920px] + precision testids + title ≥20 Montserrat
+ */
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -358,10 +370,10 @@ export function SalesDataTab() {
   };
 
   const getAchievementBadge = (rate: number) => {
-    if (rate >= 120) return <Badge className="bg-emerald-500 text-white">{s('excellent')}</Badge>;
-    if (rate >= 100) return <Badge className="bg-blue-500 text-white">{s('achieved')}</Badge>;
-    if (rate >= 80) return <Badge className="bg-amber-500 text-white">{s('nearTarget')}</Badge>;
-    return <Badge className="bg-red-500 text-white">{s('belowTarget')}</Badge>;
+    if (rate >= 120) return <Badge className="bg-success text-white">{s('excellent')}</Badge>;
+    if (rate >= 100) return <Badge className="bg-xevn-primary text-white">{s('achieved')}</Badge>;
+    if (rate >= 80) return <Badge className="bg-warning text-white">{s('nearTarget')}</Badge>;
+    return <Badge className="bg-destructive text-white">{s('belowTarget')}</Badge>;
   };
 
   const getSyncSourceLabel = (source: string) => {
@@ -371,32 +383,34 @@ export function SalesDataTab() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Stats Cards */}
+    <div className="p-6 space-y-6" data-testid="pay-sales-data-precision">
+      <h2 className="text-[20px] font-bold font-display text-xevn-text">
+        {t('payroll.dataSales')}
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="p-2 bg-xevn-primary/10 rounded-lg">
+                <Users className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{s('totalEmployees')}</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.totalEmployees}</p>
+                <p className="text-sm text-xevn-textSecondary">{s('totalEmployees')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.totalEmployees}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <DollarSign className="w-5 h-5 text-emerald-600" />
+              <div className="p-2 bg-success/10 rounded-lg">
+                <DollarSign className="w-5 h-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{s('totalSales')}</p>
-                <p className="text-xl font-bold text-emerald-600">
+                <p className="text-sm text-xevn-textSecondary">{s('totalSales')}</p>
+                <p className="text-xl font-bold text-success">
                   {formatCurrency(stats.totalSales)}
                 </p>
               </div>
@@ -404,15 +418,15 @@ export function SalesDataTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-500/10 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
+              <div className="p-2 bg-xevn-primary/10 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{s('totalCommission')}</p>
-                <p className="text-xl font-bold text-purple-600">
+                <p className="text-sm text-xevn-textSecondary">{s('totalCommission')}</p>
+                <p className="text-xl font-bold text-xevn-text">
                   {formatCurrency(stats.totalCommission)}
                 </p>
               </div>
@@ -420,15 +434,15 @@ export function SalesDataTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <Calendar className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <Calendar className="w-5 h-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{s('avgAchievement')}</p>
-                <p className="text-2xl font-bold text-amber-600">
+                <p className="text-sm text-xevn-textSecondary">{s('avgAchievement')}</p>
+                <p className="text-2xl font-bold text-warning">
                   {stats.avgAchievement.toFixed(1)}%
                 </p>
               </div>
@@ -598,10 +612,10 @@ export function SalesDataTab() {
                             {getAchievementBadge(record.achievement_rate)}
                           </div>
                         </td>
-                        <td className="p-3 text-sm text-right font-medium text-emerald-600">
+                        <td className="p-3 text-sm text-right font-medium text-success">
                           {formatCurrency(record.commission_amount)}
                         </td>
-                        <td className="p-3 text-sm text-right font-medium text-purple-600">
+                        <td className="p-3 text-sm text-right font-medium text-xevn-primary">
                           {formatCurrency(record.bonus_amount)}
                         </td>
                         <td className="p-3 text-center">
@@ -678,9 +692,9 @@ export function SalesDataTab() {
 
       {/* Sync API Dialog */}
       <Dialog open={showSyncDialog} onOpenChange={setShowSyncDialog}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-sales-sync-dialog-precision">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold font-display">
               <Link className="w-5 h-5" />
               {s('syncTitle')}
             </DialogTitle>
@@ -729,9 +743,9 @@ export function SalesDataTab() {
 
       {/* Import Dialog */}
       <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-sales-import-dialog-precision">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold font-display">
               <Upload className="w-5 h-5" />
               {s('importTitle')}
             </DialogTitle>
@@ -777,9 +791,9 @@ export function SalesDataTab() {
 
       {/* Add Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[920px] max-h-[90vh] overflow-y-auto" data-testid="pay-sales-add-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{s('addTitle')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{s('addTitle')}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             {/* Employee Selection */}
@@ -917,9 +931,9 @@ export function SalesDataTab() {
 
       {/* Edit Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[920px] max-h-[90vh] overflow-y-auto" data-testid="pay-sales-edit-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{s('editTitle')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{s('editTitle')}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
@@ -1040,9 +1054,9 @@ export function SalesDataTab() {
 
       {/* Detail Dialog */}
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-sales-detail-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{s('detailTitle')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{s('detailTitle')}</DialogTitle>
           </DialogHeader>
           {selectedRecord && (
             <div className="space-y-4 py-4">
@@ -1076,7 +1090,7 @@ export function SalesDataTab() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{s('lbl.actualSales')}</p>
-                  <p className="font-medium text-emerald-600">{formatCurrency(selectedRecord.actual_sales)}</p>
+                  <p className="font-medium text-success">{formatCurrency(selectedRecord.actual_sales)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{s('detail.achieveRate')}</p>
@@ -1091,11 +1105,11 @@ export function SalesDataTab() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{s('lbl.commissionAmount')}</p>
-                  <p className="font-medium text-emerald-600">{formatCurrency(selectedRecord.commission_amount)}</p>
+                  <p className="font-medium text-success">{formatCurrency(selectedRecord.commission_amount)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{s('lbl.bonusAmount')}</p>
-                  <p className="font-medium text-purple-600">{formatCurrency(selectedRecord.bonus_amount)}</p>
+                  <p className="font-medium text-xevn-primary">{formatCurrency(selectedRecord.bonus_amount)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">{s('lbl.orderCount')}</p>

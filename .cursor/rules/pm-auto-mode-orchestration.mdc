@@ -22,6 +22,8 @@ Trong **cùng phiên**, PM phải làm đủ **3 việc** trước khi im lặng
 2. **Chốt trạng thái** — cập nhật `PHASE1_MASTER_TODO.md`, `TEAM_LIVE_STATUS.md`, `PHASE1_SPRINT_RUNNER.json` (không để snapshot cũ).
 3. **Dispatch tiếp** — ít nhất **một** Task role kế (QA khác, Dev, TM, QC) **hoặc** ghi `PM -> ALL` với `next_dispatch` cụ thể + lý do nếu bị block thật sự.
 
+**Sau QC GWC/GO (U88):** thêm bắt buộc — residual FE/BE **và** ≥1 Task `sa` / `ba-process` / `ba-data` cho vertical/AC kế (`pm-continuous-pipeline-after-qc.mdc`). **Cấm** kết thúc chỉ SEALED/IDLE-OK seat khi program honesty flags còn false.
+
 **Cấm:** dừng sau QA-BATCH / QA-01 mà chưa dispatch S1 đóng / S2 mở / product-completeness lane.
 
 **Cấm câu kết:** "PM sẽ cho QA…" / "sẽ xử lý D-01" **không kèm** Task/Shell trong cùng turn — coi là vi phạm; KB: `docs/program/knowledge/PM_ORCHESTRATION_KB.md`.

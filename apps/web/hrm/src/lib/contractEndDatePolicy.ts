@@ -16,6 +16,13 @@ import { addMonths, addYears } from 'date-fns';
  * must_keep:  Codes indefinite/permanent/HDLD_KTH + nhãn «không thời hạn»; khớp BE normalize đ→d
  * SOLID:      Pure policy — hooks/UI chỉ gọi helper
  * LastVerified: contractEndDatePolicy.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-02-EMP-FE-PROFILE-01
+ * change_mode: ADD (restore transitive)
+ * What: Khôi phục contractEndDatePolicy từ stash 43c479a — EmployeeContracts resolve
+ * must_keep: indefinite codes khớp BE · Employees list · FE-LIBS-01 · Fleet
+ * LastVerified: docs/qa/evidence/w1b-02-emp-fe-profile-01.md
  */
 
 /** Strip diacritics for VN label match (không thời hạn / không xác định…). */

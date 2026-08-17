@@ -33,6 +33,12 @@
  * what: OU filter bar carries compact role VI (+ member static ĐVTV·role) — not annotation strip
  * why: BM-AC-02-01 clarity on HRM embed after strip removal
  * must_keep: no Ngữ cảnh/JWT/AC chrome; TopHeader membership; OU ≠ JWT mutate; soft-nav Outlet key
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-PORT-A
+ * change_mode: UPGRADE
+ * what: Shell canvas `bg-xevn-background` + sharp text; cite ADR-20260805 §9 (PORT-08)
+ * why: Dual-surface — HRM inside iframe light ops; portal owns outer TopHeader
+ * must_keep: embed Outlet key; OU filter; HrmApiSyncBanner honesty; no invent Face web
  */
 import { Outlet, useLocation } from 'react-router-dom';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
@@ -42,17 +48,28 @@ import { TrialExpiredGuard } from './TrialExpiredGuard';
 import { MobileBottomNav } from './MobileBottomNav';
 import { HrmOperatingUnitFilter } from '@/components/hrm/HrmOperatingUnitFilter';
 import { HrmApiSyncBanner } from '@/components/layout/HrmApiSyncBanner';
+import { cn } from '@/lib/utils';
+
+function isHrmSettingsPath(pathname: string): boolean {
+  return pathname === '/settings' || pathname.startsWith('/settings/');
+}
 
 export function AppLayout() {
   const location = useLocation();
   const portalEmbed = getHrmPortalMode(location.search);
+  const settingsDense = isHrmSettingsPath(location.pathname);
 
   if (portalEmbed) {
     return (
-      <div className="flex h-dvh w-full flex-col overflow-hidden bg-background">
+      <div className="flex h-dvh w-full flex-col overflow-hidden bg-xevn-background text-xevn-text">
         <TrialExpiredGuard>
           <HrmOperatingUnitFilter />
-          <main className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-4 py-4 md:px-6 md:py-5">
+          <main
+            className={cn(
+              'flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto',
+              settingsDense ? 'px-2 py-2 md:px-3 md:py-2.5' : 'px-4 py-4 md:px-6 md:py-5',
+            )}
+          >
             {/* CD-FB-09-SOFT-NAV: remount page tree when soft-nav path commits */}
             <Outlet key={location.pathname} />
           </main>
@@ -62,7 +79,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex h-dvh w-full flex-col overflow-hidden bg-background">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-xevn-background text-xevn-text">
       <AppSidebar />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col md:ml-64">
         <AppHeader />

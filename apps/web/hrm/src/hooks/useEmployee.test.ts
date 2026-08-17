@@ -106,6 +106,17 @@ describe('mapHrmEmployeeRecord', () => {
       custom_fields: { avatar_url: 'https://cdn.example/c.jpg' },
     }).avatar_url).toBe('https://cdn.example/c.jpg');
   });
+
+  it('R-SPINE-MGR-HIER-01-FE — passes manager_id + display-ready manager_label', () => {
+    const mapped = mapHrmEmployeeRecord({
+      ...sampleRow,
+      manager_id: '22222222-2222-4222-8222-222222222222',
+      manager_label: 'HLD-0001 — Nguyen Van Manager',
+    });
+    expect(mapped.manager_id).toBe('22222222-2222-4222-8222-222222222222');
+    expect(mapped.manager_label).toBe('HLD-0001 — Nguyen Van Manager');
+    expect(mapHrmEmployeeRecord(sampleRow).manager_id).toBeNull();
+  });
 });
 
 describe('mergeEmployeeAvatarWriteFields', () => {

@@ -1,12 +1,12 @@
 /**
  * @CODE-MEMORY
  * Screen:     EmployeeProfile → Contracts → tabs Đãi ngộ / Lịch sử
- * UC:         UC-HRM-CI-08..11 · UC-HRM-INT-03
- * BR:         BR-CD-F5-01..07
- * SRS:        docs/program/deltas/CUSTOMER_DEMO_HRM_DELTA_20260620.md §5
- * TechSpec:   docs/api/openapi/hrm-api.yaml /contracts-insurance/compensation-*
+ * UC:         UC-BP-CORE-02 · UC-HRM-CI-08..11 · UC-HRM-INT-03
+ * BR:         BR-CD-F5-01..07 · BR-BP-SEC-02 · AC-CORE-CB-01/02
+ * SRS:        SRS_HRM_ENTERPRISE.md FR-UC-BP-CORE-02 · docs/program/deltas/CUSTOMER_DEMO_HRM_DELTA_20260620.md §5
+ * TechSpec:   docs/program/specs/PO-HRM-MVP-GD1-CORE-02-CLUSTER-API-01.md F-CORE-EMP-02
  * Purpose:    Load active/list/history compensation packages; create + revise
- *             (versioned) — never PATCH lines in place.
+ *             (versioned) — never PATCH lines in place; bank/MST on C&B SoT only.
  * WorkItem:   CD-FB-08-CONTRACT
  * Coded:      2026-07-19
  *
@@ -28,6 +28,27 @@
  * must_keep:  Scope company_id + JWT same as contracts; revise not overwrite
  * SOLID:      Hook owns server state; panel owns form UX
  * LastVerified: useEmployeeCompensation.test.ts · compensationLines.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-02-EMP-FE-PROFILE-01
+ * change_mode: ADD (restore transitive)
+ * What: Khôi phục useEmployeeCompensation từ stash 43c479a (callee của Compensation panels)
+ * must_keep: company_id scope · revise not overwrite · U65 · no EMP BE rewrite
+ * LastVerified: docs/qa/evidence/w1b-02-emp-fe-profile-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-FE-CB-01
+ * change_mode: ADD
+ * What: Lines from panel already include component_code (SRC-02); passthrough unchanged
+ * Why: R-EMP-SH-FE-CB-CLICK — create/revise POST body must keep component_code
+ * must_keep: revise not overwrite · company_id scope · payroll_e2e_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Passthrough bank_account / bank_name / bank_branch / tax_id on create+revise;
+ *       toast AuthZ-403 / OVERLAP / VAL via toErrorMessage; physical packages* only.
+ * Why: UC-BP-CORE-02 O1/O6 · API-01 F-CORE-EMP-02 bank/MST · AC-CORE-CB-02 public still clean
+ * must_keep: DENY Nest /core SoT · same-form public+salary · FE invent payslip · CORE-01≠C&B DONE · U65 · honesty false
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-core-02-cluster-fe-01.md
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -40,6 +61,7 @@ import {
   listCompensationHistory,
   listCompensationPackages,
   reviseCompensationPackage,
+  type HrmCompensationBankTaxInput,
   type HrmCompensationHistoryRecord,
   type HrmCompensationLineInput,
   type HrmCompensationPackageRecord,
@@ -130,7 +152,7 @@ export function useEmployeeCompensation(employeeId: string | undefined) {
       change_reason?: string;
       contract_id?: string;
       link_to_contract?: boolean;
-    }): Promise<boolean> => {
+    } & HrmCompensationBankTaxInput): Promise<boolean> => {
       if (!employeeId || !currentCompanyId || !useApi) return false;
       try {
         await createCompensationPackage({
@@ -141,6 +163,10 @@ export function useEmployeeCompensation(employeeId: string | undefined) {
           contract_id: input.contract_id,
           link_to_contract: input.link_to_contract ?? Boolean(input.contract_id),
           lines: input.lines,
+          bank_account: input.bank_account,
+          bank_name: input.bank_name,
+          bank_branch: input.bank_branch,
+          tax_id: input.tax_id,
         });
         toast.success('Đã tạo gói đãi ngộ');
         await refetch();
@@ -159,13 +185,17 @@ export function useEmployeeCompensation(employeeId: string | undefined) {
       effective_from: string;
       lines: HrmCompensationLineInput[];
       change_reason?: string;
-    }): Promise<boolean> => {
+    } & HrmCompensationBankTaxInput): Promise<boolean> => {
       if (!currentCompanyId || !useApi) return false;
       try {
         await reviseCompensationPackage(input.packageId, currentCompanyId, {
           effective_from: input.effective_from,
           change_reason: input.change_reason,
           lines: input.lines,
+          bank_account: input.bank_account,
+          bank_name: input.bank_name,
+          bank_branch: input.bank_branch,
+          tax_id: input.tax_id,
         });
         toast.success('Đã tạo phiên bản đãi ngộ mới (tăng lương)');
         await refetch();

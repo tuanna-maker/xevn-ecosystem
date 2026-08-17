@@ -47,6 +47,34 @@
  * SRS:  FR-HRM-MD-01 #6/#7 · UC-HRM-26
  * TechSpec: DB_DESIGN_HRM_W2_SLICE §C · API_DESIGN_HRM_W2_SLICE C1/C2
  * must_keep: OP GWC · CO-HC · home UUID pass-through · slug map happy path
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: D-U84-REC-REQ-TMDV-JD-CATALOG-ASSERT-01
+ * change_mode: FIX
+ * What: resolveHrmSettingsCatalogCompanyId — Group CEO + member OU slug (trsport/…) → holding
+ *       catalog partition (parity FE U39 settings picker main→holding).
+ * Why:  QA U78-U84-PRIMARY-REC-REQ-TMDV — picker shows DRIVER_LEAD (holding) but JD assert
+ *       used persist company_id=trsport → HRM-REC-JD-POS.
+ * must_keep: main→holding for group rollup; member-tenant main unchanged; holding SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: U78-U84-ATT-ADJ-TMDV-SCOPE-PARITY-01
+ * change_mode: FIX
+ * What: expandHrmTextCompanyIds — always add Plane B′ UUID (+ inverse slug) for every
+ *       operating slug/UUID already in scope (Group CEO OU=trsport list vs UUID rows).
+ * Why:  QA R1 — GET update-requests?company_id=trsport → 0 while row company_id=trsport UUID.
+ * must_keep: JWT claim slug+uuid expansion; holding↔main map; no LE UUID invent
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-BE-AU-MEMBER-MAIN-SCOPE-01
+ * change_mode: FIX
+ * What: Lock ADR §5 — member JWT (tenant≠xevn, companyId=main) list scope stays
+ *       companyIds=['main'] + memberTenantId; NEVER GROUP_MEMBER_SLUGS / holding rollup.
+ *       Cross-tenant xevn/main and company_id=holding remain SCOPE_CONTEXT_MISMATCH (409).
+ * Why:  QA R-W4-B1-AU-MEMBER-MAIN-200 misread own-bucket 200 as holding leak; TC expect
+ *       403/409 for own main conflicts ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §5 + RBAC ladder.
+ * SRS:  ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §5 · ADR-HRM-RBAC-SCOPE-LADDER § member main
+ * must_keep: Group CEO main→five-slug rollup; member own main 200; holding/xevn 409
  */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
@@ -277,6 +305,7 @@ export function normalizeHomeSummaryCompanyId(
 /**
  * Attendance update-requests may persist `company_id` as slug or derived UUID TEXT.
  * Include JWT slug + company_uuid so dev-portal/mobile and pilot slug probes stay aligned.
+ * Also expand Plane B′ registry slug↔UUID for every id already in scope (Group CEO OU narrow).
  */
 export function expandHrmTextCompanyIds(
   scope: HrmListScope,
@@ -284,6 +313,25 @@ export function expandHrmTextCompanyIds(
   requestedCompanyId?: string,
 ): string[] {
   const out = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()).filter(Boolean));
+  // Xử lý: slug list filter phải thấy row UUID (Plane B′) — CEO OU=trsport vs persist UUID.
+  for (const id of [...out]) {
+    if (id === HRM_PILOT_OPERATING_COMPANY_ID) {
+      out.add('holding');
+      out.add(HRM_COMPANY_UUID_BY_SLUG.holding);
+      continue;
+    }
+    const mapped = HRM_COMPANY_UUID_BY_SLUG[id as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    if (mapped) {
+      out.add(mapped.toLowerCase());
+      continue;
+    }
+    if (UUID_RE.test(id)) {
+      const asSlug = resolveHrmCompanySlugForId(id);
+      if (asSlug && asSlug !== id) {
+        out.add(asSlug);
+      }
+    }
+  }
   const payload = readJwtPayload(authorization);
   if (!payload) {
     return [...out];
@@ -352,6 +400,52 @@ export function resolveHrmListScope(
     companyIds: [requestedCompanyId],
     masterTenantPartition: false,
   };
+}
+
+/**
+ * Payroll periods TEXT `company_id` — group CEO list/get must see `holding` rows and legacy `main` orphans.
+ * Create path maps main→holding via resolveHrmPersistCompanyIdText; reads still match pre-fix rows.
+ */
+export function expandPayrollPeriodCompanyIds(scope: HrmListScope): string[] {
+  const ids = [...scope.companyIds];
+  if (scope.masterTenantPartition && !ids.includes(HRM_PILOT_OPERATING_COMPANY_ID)) {
+    ids.push(HRM_PILOT_OPERATING_COMPANY_ID);
+  }
+  return ids;
+}
+
+/**
+ * Payroll eligibility closed-sheet probe — period operating unit only (BR-BP-TS-02).
+ * Unlike group list rollup, must NOT match a closed sheet from another member slug (e.g. trsport)
+ * when the payroll period is holding/main. Includes main↔holding parity + pilot UUID aliases.
+ */
+export function expandPayrollAttendanceSheetCompanyIds(periodCompanyId: string): string[] {
+  const normalized = periodCompanyId.trim().toLowerCase();
+  if (!normalized) {
+    return [];
+  }
+  const out = new Set<string>([normalized]);
+  if (normalized === HRM_PILOT_OPERATING_COMPANY_ID) {
+    out.add('holding');
+    out.add(HRM_COMPANY_UUID_BY_SLUG.holding);
+  } else if (normalized === 'holding') {
+    out.add(HRM_PILOT_OPERATING_COMPANY_ID);
+    out.add(HRM_COMPANY_UUID_BY_SLUG.holding);
+  }
+  const mapped = HRM_COMPANY_UUID_BY_SLUG[normalized as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+  if (mapped) {
+    out.add(mapped.toLowerCase());
+  }
+  if (UUID_RE.test(normalized)) {
+    const asSlug = resolveHrmCompanySlugForId(normalized);
+    if (asSlug && asSlug !== normalized) {
+      out.add(asSlug);
+      if (asSlug === 'holding') {
+        out.add(HRM_PILOT_OPERATING_COMPANY_ID);
+      }
+    }
+  }
+  return [...out];
 }
 
 /** Append `company_id` predicate; supports single slug or group rollup IN list. */
@@ -543,6 +637,10 @@ export function pushWorkforceEmployeeScopeFilter(
  * Group employee-import catalogs are stored under `holding` while portal JWT uses `main`.
  * Maps overview/sync scope for group CEO rollup on master tenant.
  * Also maps pilot legal UUID → slug (parity leave create assert vs Settings GET).
+ *
+ * Group CEO + member OU filter (`trsport`, …): still holding catalog SoT — FE U39
+ * `resolveHrmSpreadsheetScope` anchors settings picker to `main`→holding even when
+ * operational rows persist under the member slug (JD / leave / employees).
  */
 export function resolveHrmSettingsCatalogCompanyId(
   authorization: string | undefined,
@@ -550,13 +648,28 @@ export function resolveHrmSettingsCatalogCompanyId(
   companyId: string,
 ): string {
   const normalized = resolveHrmCompanySlugForId(companyId);
-  const scope = resolveHrmListScope(authorization, normalized, { tenantId });
+  const tenant = tenantId.trim().toLowerCase();
+  const scope = resolveHrmListScope(authorization, normalized, { tenantId: tenant });
   if (
-    tenantId.trim().toLowerCase() === MASTER_TENANT_ID &&
+    tenant === MASTER_TENANT_ID &&
     normalized === HRM_PILOT_OPERATING_COMPANY_ID &&
     scope.masterTenantPartition
   ) {
     return 'holding';
+  }
+  // Group CEO OU narrow (companyId=trsport) — catalog SoT remains holding (picker parity).
+  if (tenant === MASTER_TENANT_ID) {
+    const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+    if (jwtPayload) {
+      const claimCompany = readClaim(jwtPayload, 'companyId', 'company_id', 'cid') ?? '';
+      const roleCode = readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '';
+      if (
+        isGroupCeoMasterOperatingBucket(jwtPayload, tenant, claimCompany, roleCode) &&
+        (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(normalized)
+      ) {
+        return 'holding';
+      }
+    }
   }
   return normalized;
 }
@@ -568,6 +681,9 @@ function readResourceTenantId(resource: { custom_fields?: Record<string, unknown
 
 function buildAllowedCompanyKeys(scope: HrmListScope): { slugs: Set<string>; uuids: Set<string> } {
   const slugs = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()));
+  if (scope.masterTenantPartition) {
+    slugs.add(HRM_PILOT_OPERATING_COMPANY_ID);
+  }
   if (scope.memberTenantId) {
     const uuids = new Set<string>();
     for (const id of scope.companyIds) {

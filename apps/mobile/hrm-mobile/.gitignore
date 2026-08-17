@@ -3,3 +3,5 @@ node_modules/
 dist/
 *.log
 .DS_Store
+# Real Firebase Android config — never commit (use google-services.json.example + local/EAS secret)
+android/app/google-services.json

@@ -1,3 +1,11 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion P08 — primary CTA + title ≥20; kill emerald AI; dialog brand chrome
+ * Why: ADR §16 · FE-PAY P0 · chrome-only (no Attendance CLOSED invent)
+ * must_keep: attendance data API wires; ViDateField; no Face LIVE; no salary formula invent
+ */
 import { useState, useMemo } from 'react';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useTranslation } from 'react-i18next';
@@ -373,11 +381,11 @@ export function PayrollAttendanceTab() {
 
   // Main list view
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4 p-6" data-testid="pay-attendance-data-precision">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{t('payroll.dataAttendance')}</h2>
+        <h2 className="text-[20px] font-bold font-display text-xevn-text">{t('payroll.dataAttendance')}</h2>
         <Button
-          className="gap-2 bg-emerald-500 hover:bg-emerald-600 text-white"
+          className="gap-2 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
           onClick={() => setShowAddDialog(true)}
         >
           <Plus className="w-4 h-4" />
@@ -445,7 +453,7 @@ export function PayrollAttendanceTab() {
                     <td className="p-4 text-muted-foreground">{sheet.positions || t('common.all')}</td>
                     <td className="p-4 text-muted-foreground">{formatPeriod(sheet)}</td>
                     <td className="p-4">
-                      <span className="text-rose-500">
+                      <span className="text-destructive">
                         {getAttendanceTypeLabel(sheet.attendance_type)}
                       </span>
                     </td>
@@ -515,9 +523,9 @@ export function PayrollAttendanceTab() {
 
       {/* Add Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-attendance-create-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{p('createTitle')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{p('createTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">

@@ -1,5 +1,11 @@
 /**
  * Structured console logging for API calls (dev-friendly, no secrets).
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W3-FE-DM09
+ * change_mode: ADD
+ * What: formatHttpError appends body.code (vd. XBOS-CFG-409) vào message user-facing
+ * Why: Clone catalog FD/AU cần thấy mã nghiệp vụ trên toast lỗi
+ * must_keep: no secrets in logs; existing HTTP 500/401/403 fallbacks
  */
 
 export type ApiLogLevel = 'info' | 'warn' | 'error';
@@ -71,7 +77,10 @@ export function formatHttpError(
   fallback: string,
 ): string {
   const msg = body?.message?.trim();
-  if (msg) return `${fallback}: ${msg} (HTTP ${res.status})`;
+  const code = body?.code?.trim();
+  const codePart = code ? ` · ${code}` : '';
+  if (msg) return `${fallback}: ${msg}${codePart} (HTTP ${res.status})`;
+  if (code) return `${fallback}${codePart} (HTTP ${res.status})`;
   if (res.status === 500) {
     return `${fallback}: Lỗi máy chủ (HTTP 500). Kiểm tra xbos-api đang chạy cổng 28002 và DATABASE_URL_XBOS.`;
   }

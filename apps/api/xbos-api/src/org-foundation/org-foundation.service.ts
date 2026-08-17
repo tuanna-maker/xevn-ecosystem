@@ -30,6 +30,14 @@ import { XbosDbService } from '../db/xbos-db.service';
  * must_keep: Giữ nguyên contract hiện có của `holding`, `entity_type`, `payload` và không trộn với headcount `employee_count`. Không đổi semantics `entity_type`; chỉ dùng field đó cho phân loại pháp nhân.
  * SOLID: Tách responsibility đọc dữ liệu pháp nhân vào service XBOS để FE nhận contract rõ ràng, giảm logic suy diễn ở lớp trình bày.
  * LastVerified: `docs/qa/evidence/be-hrm-co-industry-01-20260727.md`
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-DEV-BE-DEPT-VAL-01
+ * UC: UC-CC-P0-03 · TC-CC-P0-03-DEPT-ADD-FD-001
+ * SRS/by-uc: `docs/qa/professional/by-uc/UC-CC-P0-03.md` · FN-DEPT-ADD FD empty mã/tên → 4xx
+ * Purpose: Reject mã/tên phòng ban rỗng (sau trim) bằng `XBOS-VAL-014` HTTP 400 — không chấp nhận POST/PUT tạo org-unit trống; HP với mã hợp lệ vẫn `XBOS-ORG-201`.
+ * must_keep: AU member 409 holding; happy CRUD dept; RACI/AUTH paths; scope partition legalEntityId.
+ * Impact: Nếu bỏ check VAL-014, FE/API lại nhận 201 với mã/tên trống (R-W4E1-DEPT-EMPTY-201).
+ * LastVerified: `docs/qa/evidence/po-uc-tc-w4-dev-be-dept-val-01.md`
  */
 export type LegalEntityPartition = { tenantId: string; companyId: string };
 
@@ -533,8 +541,25 @@ export class OrgFoundationService {
   }
 
   async upsertOrgUnit(tenantId: string, companyId: string, unitId: string | null, body: OrgUnitInput) {
-    if (!body.code?.trim() || !body.name?.trim() || !body.orgType?.trim()) {
-      throw new ApiException('XBOS-ORG-400', 'code, name, orgType are required', HttpStatus.BAD_REQUEST);
+    // UC-CC-P0-03 FD — mã/tên phòng ban bắt buộc (trim); mã lỗi ổn định XBOS-VAL-014
+    const code = typeof body.code === 'string' ? body.code.trim() : '';
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const orgType = typeof body.orgType === 'string' ? body.orgType.trim() : '';
+    if (!code || !name) {
+      throw new ApiException(
+        'XBOS-VAL-014',
+        'Mã và tên phòng ban là bắt buộc',
+        HttpStatus.BAD_REQUEST,
+        { fields: { code: Boolean(code), name: Boolean(name) } },
+      );
+    }
+    if (!orgType) {
+      throw new ApiException(
+        'XBOS-VAL-014',
+        'Loại đơn vị tổ chức (orgType) là bắt buộc',
+        HttpStatus.BAD_REQUEST,
+        { fields: { orgType: false } },
+      );
     }
     const persistScope = await this.resolveOrgUnitPersistScope(tenantId, companyId, body.legalEntityId);
     let persistTenantId = persistScope.tenantId;
@@ -560,9 +585,9 @@ export class OrgFoundationService {
           unitId,
           persistTenantId,
           persistCompanyId,
-          body.code.trim(),
-          body.name.trim(),
-          body.orgType.trim(),
+          code,
+          name,
+          orgType,
           body.parentId ?? null,
           body.legalEntityId ?? null,
           body.sortOrder ?? null,
@@ -580,9 +605,9 @@ export class OrgFoundationService {
       [
         persistTenantId,
         persistCompanyId,
-        body.code.trim(),
-        body.name.trim(),
-        body.orgType.trim(),
+        code,
+        name,
+        orgType,
         body.parentId ?? null,
         body.legalEntityId ?? null,
         body.sortOrder ?? 0,

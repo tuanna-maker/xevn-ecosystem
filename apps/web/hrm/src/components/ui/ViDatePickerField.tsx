@@ -16,6 +16,13 @@
  * must_keep:  Payload API = YYYY-MM-DD padded (ADR — không gửi dd/MM); header-only sheets; không nới BE
  * SOLID:      Wrapper ghép text SoT + picker; không nhân bản parse
  * LastVerified: src/components/ui/__tests__/viDatePickerField.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-02-EMP-FE-PROFILE-01
+ * change_mode: ADD (restore transitive)
+ * What: Khôi phục ViDatePickerField kèm ViDateField (stash 43c479a)
+ * must_keep: ISO YYYY-MM-DD · Employees list · FE-LIBS-01 · Fleet
+ * LastVerified: docs/qa/evidence/w1b-02-emp-fe-profile-01.md
  */
 
 import { format, isValid, parseISO } from 'date-fns';

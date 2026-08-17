@@ -47,6 +47,22 @@
  * SA: docs/qa/evidence/sa-erp-e1b-design-review-01-20260728.md
  * must_keep: 4 bucket cũ; forceMount form; U65 no seed; cấm work_shifts dual-write; cấm E1-A FREE_TEXT rewrite
  * LastVerified: docs/qa/evidence/d-fe-erp-e1b-md-panel-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: BUILD-GAP-MD-PANEL-01
+ * change_mode: FIX
+ * What: Khôi phục file panel từ git 43c479a — import Settings.tsx resolve lại; mdBucketRegistry 14 bucket giữ nguyên trên disk.
+ * Why: QA BUILD_GAP-MD-PANEL-01 — Vite 500 tab «Danh mục nghiệp vụ» UF-HRM-10
+ * must_keep: E1-B buckets; forceMount form; U65 no seed; Leave/AUTH/EMP/CAT/Contracts/Payroll paths untouched
+ * LastVerified: docs/qa/evidence/build-gap-md-panel-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-SETTINGS-ATT-LVT-SOT-FE-01
+ * change_mode: FIX
+ * What: leaveTypes bucket — hide extension upsert/Ngưng when overview tenantWriter.groupRefReadOnly; CTA tab Loại phép ATT
+ * Why: HRM-SC-01 dual SoT — cấm dual master UX (409 HRM-SC-LEAVE-REF-ONLY)
+ * SRS: FR-HRM-SC-LEAVE-01 · API_DESIGN_HRM_SETTINGS_CATALOG.md
+ * must_keep: other buckets md-code-* U65; PUT att leave-types admin tab; effective picker SoT
+ * LastVerified: docs/qa/evidence/po-hrm-settings-att-lvt-sot-fe-01.md
  */
 
 import { useMemo, useState } from 'react';
@@ -90,6 +106,12 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
+import {
+  isLeaveTypesGroupRefReadOnly,
+  LEAVE_TYPES_REF_READONLY_MD_COPY,
+  SETTINGS_ATT_LEAVE_TYPES_PATH,
+} from '@/lib/hrmSettingsLeaveTypeSot';
 
 function CatalogItemsTable({
   items,
@@ -97,12 +119,14 @@ function CatalogItemsTable({
   onPick,
   onDeactivate,
   deactivatingCode,
+  extensionMutateDisabled = false,
 }: {
   items: HrmSettingsCatalogItem[];
   emptyLabel: string;
   onPick: (row: HrmSettingsCatalogItem) => void;
   onDeactivate: (row: HrmSettingsCatalogItem) => void;
   deactivatingCode: string | null;
+  extensionMutateDisabled?: boolean;
 }) {
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground py-4">{emptyLabel}</p>;
@@ -135,7 +159,7 @@ function CatalogItemsTable({
             </TableCell>
             <TableCell>{resolveSettingsCatalogItemStatusDisplay(row.status)}</TableCell>
             <TableCell>
-              {row.status === 'active' ? (
+              {row.status === 'active' && !extensionMutateDisabled ? (
                 <Button
                   type="button"
                   variant="ghost"
@@ -149,6 +173,8 @@ function CatalogItemsTable({
                 >
                   Ngưng
                 </Button>
+              ) : row.status === 'active' && extensionMutateDisabled ? (
+                <span className="text-xs text-muted-foreground">Chỉ đọc REF</span>
               ) : (
                 <span className="text-xs text-muted-foreground">—</span>
               )}
@@ -184,6 +210,11 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
     () => resolveCatalogWriteKey(catalogs, meta.keys, meta.writeKey),
     [catalogs, meta.keys, meta.writeKey],
   );
+
+  const leaveTypesRefReadOnly =
+    bucket === 'leaveTypes' && isLeaveTypesGroupRefReadOnly(catalog ?? undefined);
+
+  const attLeaveTypesSettingsHref = hrmPathWithEmbedSearch(SETTINGS_ATT_LEAVE_TYPES_PATH);
 
   const filteredItems = useMemo(() => {
     const opts = toCatalogPickerOptions(items, { includeInactive: true });
@@ -257,10 +288,13 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
         items={filteredItems}
         emptyLabel={
           items.length === 0
-            ? 'Chưa có mục — đồng bộ XBOS hoặc thêm mục bên dưới.'
+            ? leaveTypesRefReadOnly
+              ? 'Chưa có mục REF — đồng bộ XBOS hoặc cấu hình loại phép tại tab Loại phép ATT.'
+              : 'Chưa có mục — đồng bộ XBOS hoặc thêm mục bên dưới.'
             : 'Không có mục khớp bộ lọc.'
         }
         deactivatingCode={deactivatingCode}
+        extensionMutateDisabled={leaveTypesRefReadOnly}
         onPick={(row) => {
           setCode(row.code);
           setLabel(row.label);
@@ -294,62 +328,79 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
 
       {listBlock}
 
-      <div
-        className="rounded-card border border-xevn-border p-4 space-y-3 bg-surface/80"
-        data-testid={`md-upsert-form-${bucket}`}
-      >
-        <p className="text-sm font-medium">Thêm / cập nhật mục (extension HRM)</p>
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-          <div className="sm:col-span-4 space-y-1.5">
-            <Label htmlFor={`md-code-${bucket}`}>Mã *</Label>
-            <Input
-              id={`md-code-${bucket}`}
-              data-testid={`md-code-${bucket}`}
-              className="rounded-input font-mono text-sm"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder={meta.codePlaceholder}
-              disabled={upsertMutation.isPending}
-            />
-          </div>
-          <div className="sm:col-span-5 space-y-1.5">
-            <Label htmlFor={`md-label-${bucket}`}>Tên hiển thị *</Label>
-            <Input
-              id={`md-label-${bucket}`}
-              data-testid={`md-label-${bucket}`}
-              className="rounded-input"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder={meta.labelPlaceholder}
-              disabled={upsertMutation.isPending}
-            />
-          </div>
-          <div className="sm:col-span-3 flex items-end">
-            <Button
-              type="button"
-              className="w-full"
-              data-testid={`md-save-${bucket}`}
-              disabled={
-                upsertMutation.isPending || !code.trim() || !label.trim()
-              }
-              onClick={() =>
-                upsertMutation.mutate({
-                  code: code.trim(),
-                  label: label.trim(),
-                  status: 'active',
-                })
-              }
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Lưu
-            </Button>
-          </div>
+      {leaveTypesRefReadOnly ? (
+        <div
+          className="rounded-card border border-amber-200 bg-amber-50/80 p-4 space-y-3"
+          data-testid="md-leave-types-ref-readonly-banner"
+        >
+          <p className="text-sm text-foreground">{LEAVE_TYPES_REF_READONLY_MD_COPY}</p>
+          <p className="text-xs text-muted-foreground">
+            Picker nghỉ phép dùng{' '}
+            <span className="font-mono">GET …/attendance/leave-types/effective</span> — không thêm
+            extension trên leave_types.
+          </p>
+          <Button asChild variant="default" size="sm" data-testid="md-leave-types-open-att-tab">
+            <Link to={attLeaveTypesSettingsHref}>Mở tab Loại phép ATT</Link>
+          </Button>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Sau Lưu danh sách cập nhật; F5 vẫn còn (U65). Chọn dòng để sửa nhãn; Ngưng = soft-stop (không xóa
-          cứng). Form nghiệp vụ chỉ chọn qua picker — không gõ free-text SoT.
-        </p>
-      </div>
+      ) : (
+        <div
+          className="rounded-card border border-xevn-border p-4 space-y-3 bg-surface/80"
+          data-testid={`md-upsert-form-${bucket}`}
+        >
+          <p className="text-sm font-medium">Thêm / cập nhật mục (extension HRM)</p>
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+            <div className="sm:col-span-4 space-y-1.5">
+              <Label htmlFor={`md-code-${bucket}`}>Mã *</Label>
+              <Input
+                id={`md-code-${bucket}`}
+                data-testid={`md-code-${bucket}`}
+                className="rounded-input font-mono text-sm"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder={meta.codePlaceholder}
+                disabled={upsertMutation.isPending}
+              />
+            </div>
+            <div className="sm:col-span-5 space-y-1.5">
+              <Label htmlFor={`md-label-${bucket}`}>Tên hiển thị *</Label>
+              <Input
+                id={`md-label-${bucket}`}
+                data-testid={`md-label-${bucket}`}
+                className="rounded-input"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder={meta.labelPlaceholder}
+                disabled={upsertMutation.isPending}
+              />
+            </div>
+            <div className="sm:col-span-3 flex items-end">
+              <Button
+                type="button"
+                className="w-full"
+                data-testid={`md-save-${bucket}`}
+                disabled={
+                  upsertMutation.isPending || !code.trim() || !label.trim()
+                }
+                onClick={() =>
+                  upsertMutation.mutate({
+                    code: code.trim(),
+                    label: label.trim(),
+                    status: 'active',
+                  })
+                }
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Lưu
+              </Button>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Sau Lưu danh sách cập nhật; F5 vẫn còn (U65). Chọn dòng để sửa nhãn; Ngưng = soft-stop (không xóa
+            cứng). Form nghiệp vụ chỉ chọn qua picker — không gõ free-text SoT.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

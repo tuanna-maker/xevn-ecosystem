@@ -21,6 +21,8 @@ alwaysApply: true
 > **Sponsor 2026-07-21:** Console-clean ≠ business PASS. Ví dụ bảng chấm công Công chuẩn — empty + auto-reload = **FAIL** dù 0 `Uncaught`.
 >
 > **Sponsor 2026-08-01 (U76):** Browser test **bám HDSD** — đúng menu/màn/nút/function; inventory HDSD trong evidence. Rule: `qa-hdsd-aligned-browser-test.mdc`.
+>
+> **Sponsor 2026-08-06 (recruitment UX process):** Narrow QC GWC trên 1 slice ≠ module «chạy được». Trên surface đang test: **FAIL ngay** nếu (1) storm `@hello-pangea/dnd` / `Unable to find drag handle` khi UF có kéo-thả; (2) **mojibake** tiếng Việt (UTF-8 lệch) trên label/dialog; (3) **duplicate shell header** (hai thanh brand/chrome); (4) `Uncaught ReferenceError` trên path click. GWC slice không được nói/im lặng như UAT-ready toàn module. Evidence process: `docs/qa/evidence/po-hrm-rec-ux-qc-process-01.md`.
 
 PM dispatch **QA** và **QC** **bắt buộc** ghi rõ: URL, account, **UF-ID**, **J-***, **hdsd_align** + inventory (U76), và **AC post-mutation FE** (xem mẫu dưới).
 

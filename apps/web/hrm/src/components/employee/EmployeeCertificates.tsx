@@ -1,3 +1,21 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Chứng chỉ (E22)
+ * UC:         E22
+ * Purpose:    Certificates chrome Precision Motion (CV cluster).
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-C
+ * Coded:      2026-08-05
+ * Callers:    EmployeeProfile activeTab=certificates
+ * must_keep: SoftDel; navigate employees/:id; stub honesty; no OCR/QR invent
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; blue/purple AI chrome → xevn DNA; KPI ops-dense
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C
+ * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
+ */
+
 import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -253,10 +271,10 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            <Loader2 className="w-6 h-6 animate-spin text-xevn-textSecondary" />
           </div>
         ) : !certificates?.length ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-center py-8 text-xevn-textSecondary">
             <FileCheck className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>{t('certificates.empty')}</p>
             <p className="text-sm">{t('certificates.emptyHint')}</p>
@@ -277,8 +295,8 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
                     {cert.status === 'active' ? t('certificates.status.active') : t('certificates.status.expired')}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">{cert.issuing_org}</p>
-                <div className="space-y-1 text-xs text-muted-foreground">
+                <p className="text-sm text-xevn-textSecondary mb-2">{cert.issuing_org}</p>
+                <div className="space-y-1 text-xs text-xevn-textSecondary">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
                     <span>{t('certificates.issueDate')}: {formatDate(cert.issue_date)}</span>
@@ -463,7 +481,7 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
                   {t('certificates.selectFile')}
                 </Button>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-xevn-textSecondary">
                 {t('certificates.fileHint')}
               </p>
             </div>

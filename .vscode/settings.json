@@ -12,5 +12,7 @@
   "markdown-preview-enhanced.plantumlJarPath": "C:\\Users\\ADMIN\\Downloads\\plantuml-1.2026.2.jar",
   "markdown-preview-enhanced.previewColorScheme": "systemColorScheme",
   "markdown-preview-enhanced.previewMode": "Previews Only",
-  "task.allowAutomaticTasks": "on"
+  "task.allowAutomaticTasks": "on",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

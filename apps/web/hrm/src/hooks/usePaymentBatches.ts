@@ -1,4 +1,12 @@
-﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+﻿/**
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIRE-FE-01
+ * change_mode: ADD
+ * What: wireFromPeriod → wirePaymentBatchFromPeriod; invalidate payment-batches; honesty toast
+ * Why: R-PAY-WIRE-FE — Chi trả tab must hit L1 POST wire (not empty create-only)
+ * must_keep: processPayment / processAllPayments · soft-delete · payroll_e2e_ready=false · U65
+ */
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { toErrorMessage } from '@/lib/apiError';
@@ -11,6 +19,8 @@ import {
   processPaymentBatch,
   processPaymentBatchRecord,
   updatePaymentBatch,
+  wirePaymentBatchFromPeriod,
+  type HrmWirePaymentBatchResult,
 } from '@/integrations/hrmApi';
 
 export interface PaymentBatch {
@@ -177,6 +187,47 @@ export const usePaymentBatches = () => {
     onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi chi trả toàn bộ')),
   });
 
+  /**
+   * AMIS Step7 — wire batch+records from processed period payslips (R-PAY-WIRE-FE).
+   * Does not invent payment amounts — BE copies net from processed payslips.
+   */
+  const wireFromPeriodMutation = useMutation({
+    mutationFn: async ({
+      periodId,
+      name,
+      paymentMethod,
+      bankName,
+      requireEssConfirm,
+    }: {
+      periodId: string;
+      name?: string;
+      paymentMethod?: string;
+      bankName?: string;
+      requireEssConfirm?: boolean;
+    }): Promise<HrmWirePaymentBatchResult> => {
+      if (!currentCompanyId) throw new Error('No company selected');
+      return wirePaymentBatchFromPeriod(periodId, currentCompanyId, {
+        name,
+        payment_method: paymentMethod,
+        bank_name: bankName,
+        require_ess_confirm: requireEssConfirm,
+      });
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['payment-batches', currentCompanyId] });
+      const added = Number(result.records_added ?? 0);
+      const skipped = Number(result.records_skipped ?? 0);
+      if (added > 0) {
+        toast.success(`Đã tạo lô chi trả · thêm ${added} dòng`);
+      } else if (skipped > 0) {
+        toast.success(`Lô chi trả đã có · bỏ qua ${skipped} dòng (idempotent)`);
+      } else {
+        toast.success('Đã tạo / cập nhật lô chi trả');
+      }
+    },
+    onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi chi trả từ kỳ lương')),
+  });
+
   const addRecordMutation = useMutation({
     mutationFn: async ({
       batchId,
@@ -231,7 +282,9 @@ export const usePaymentBatches = () => {
     deleteBatch: deleteBatchMutation.mutateAsync,
     processPayment: processPaymentMutation.mutateAsync,
     processAllPayments: processAllPaymentsMutation.mutateAsync,
+    wireFromPeriod: wireFromPeriodMutation.mutateAsync,
     addRecord: addRecordMutation.mutateAsync,
     isCreating: createBatchMutation.isPending,
+    isWiring: wireFromPeriodMutation.isPending,
   };
 };

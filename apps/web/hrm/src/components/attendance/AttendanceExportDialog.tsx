@@ -1,3 +1,31 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Chấm công → Bản ghi/Báo cáo → Xuất (S29, S63)
+ * UC:         UC-HRM-ATT-EXPORT
+ * Purpose:    Client XLSX export dialog chrome (ACCEPTED_AS_IS export path)
+ * WorkItem:   PO-HRM-UI-BRAND-W3-ATT-E
+ * Coded:      2026-08-05
+ * must_keep:  client XLSX wire; no Nest invent; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-E
+ * change_mode: UPGRADE
+ * What: Remaster export dialog → Precision Motion; DialogTitle ≥20; primary export CTA
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10 · inventory W3-ATT-E S29/S63
+ * must_keep: client XLSX; year/month selects; no Attendance CLOSED
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-E stall#3
+ * change_mode: FIX
+ * What: Deduplicate DialogContent data-testid → att-export-dialog-precision only
+ * Why: PM RE-DISPATCH stall#3 evidence MISS close — invalid double data-testid
+ * must_keep: client XLSX export; DialogTitle ≥20; primary CTA
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-ATT-DIALOG-EXT
+ * change_mode: ADD
+ * What: Compact year/month selects (xevn-field-select-sm) on shared Dialog chrome
+ * Why: ADR §16 LOCK · FE-DIALOG-01 field utils · inventory S29/S63
+ * must_keep: client XLSX wire; DialogTitle ≥20; primary CTA; U65 no seed
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-att-dialog-ext.md
+ */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -286,23 +314,23 @@ export function AttendanceExportDialog({ children }: AttendanceExportDialogProps
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" data-testid="att-export-dialog-precision">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileSpreadsheet className="h-5 w-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
+            <FileSpreadsheet className="h-5 w-5 text-xevn-primary" />
             {t('attendanceExport.title')}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-[15px] text-xevn-textSecondary">
             {t('attendanceExport.description')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>{t('attendanceExport.year')}</Label>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-12">
+            <div className="space-y-2 sm:col-span-4">
+              <Label className="text-xevn-text">{t('attendanceExport.year')}</Label>
               <Select value={selectedYear} onValueChange={setSelectedYear}>
-                <SelectTrigger>
+                <SelectTrigger className="xevn-field-select-sm text-xevn-text">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -314,10 +342,10 @@ export function AttendanceExportDialog({ children }: AttendanceExportDialogProps
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>{t('attendanceExport.month')}</Label>
+            <div className="space-y-2 sm:col-span-4">
+              <Label className="text-xevn-text">{t('attendanceExport.month')}</Label>
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger>
+                <SelectTrigger className="xevn-field-select-sm text-xevn-text">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -331,21 +359,26 @@ export function AttendanceExportDialog({ children }: AttendanceExportDialogProps
             </div>
           </div>
 
-          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-            <h4 className="font-medium text-sm">{t('attendanceExport.reportContent')}:</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• <strong>{t('attendanceExport.sheets.summary')}:</strong> {t('attendanceExport.summaryDesc')}</li>
-              <li>• <strong>{t('attendanceExport.sheets.detail')}:</strong> {t('attendanceExport.detailDesc')}</li>
-              <li>• <strong>{t('attendanceExport.sheets.daily')}:</strong> {t('attendanceExport.dailyDesc')}</li>
+          <div className="rounded-card border border-xevn-border bg-xevn-background p-4 space-y-2">
+            <h4 className="font-semibold text-sm text-xevn-text">{t('attendanceExport.reportContent')}:</h4>
+            <ul className="text-sm text-xevn-textSecondary space-y-1">
+              <li>• <strong className="text-xevn-text">{t('attendanceExport.sheets.summary')}:</strong> {t('attendanceExport.summaryDesc')}</li>
+              <li>• <strong className="text-xevn-text">{t('attendanceExport.sheets.detail')}:</strong> {t('attendanceExport.detailDesc')}</li>
+              <li>• <strong className="text-xevn-text">{t('attendanceExport.sheets.daily')}:</strong> {t('attendanceExport.dailyDesc')}</li>
             </ul>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={() => setOpen(false)} className="border-xevn-border">
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleExport} disabled={isExporting}>
+          <Button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+            data-testid="att-export-excel"
+          >
             {isExporting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

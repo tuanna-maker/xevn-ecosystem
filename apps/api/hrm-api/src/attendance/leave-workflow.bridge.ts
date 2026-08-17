@@ -41,8 +41,15 @@
  * What: UPDATE … RETURNING workflow_instance_id; parse data.instanceId from XBOS ok() envelope
  * Why: POST 201 must include workflow_instance_id synchronously — QA-HDSD-W4-INT-03-R3
  * must_keep: terminal callback · BIND-01 scope headers · CD-FB-07 TEXT slug
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-ATT-LEAVE-FUNNEL-BE-01
+ * change_mode: ADD
+ * What: Terminal completed → materialize leave attendance markers (Option A);
+ *       terminal rejected after pending only (no markers) — reverse via cancel path.
+ * must_keep: G-DB-03 · CD-FB-07 · WAIVE_L2 · no AGG
  */
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { CatalogSyncService, resolveXbosApiBaseUrl } from '../catalog-sync/catalog-sync.service';
 import {
   HRM_COMPANY_UUID_BY_SLUG,
@@ -53,6 +60,7 @@ import {
 import { HrmDbService } from '../db/hrm-db.service';
 import { AttendanceEventFanoutService } from '../notifications/attendance-event-fanout.service';
 import type { LeaveRequestRealtimePayload } from '../realtime/hrm-realtime.service';
+import { LeaveAttendanceFunnelService } from './leave-attendance-funnel.service';
 
 const GROUP_HOLDING_COMPANY_ID = 'holding';
 const GROUP_OPERATING_MAIN = 'main';
@@ -106,6 +114,7 @@ export class LeaveWorkflowBridge {
     private readonly catalogSync: CatalogSyncService,
     private readonly db: HrmDbService,
     private readonly fanout: AttendanceEventFanoutService,
+    @Optional() private readonly leaveAttendanceFunnel?: LeaveAttendanceFunnelService,
   ) {}
 
   private xbosBaseUrl(): string {
@@ -310,6 +319,16 @@ export class LeaveWorkflowBridge {
         throw new Error('HRM-LEAVE-404');
       }
       await this.fanout.onLeaveRequestDecided('approved', this.toPayload(row));
+      if (this.leaveAttendanceFunnel) {
+        await this.leaveAttendanceFunnel.materializeApprovedLeave({
+          id: row.id,
+          company_id: row.company_id,
+          employee_id: row.employee_id,
+          leave_type: row.leave_type,
+          start_date: row.start_date,
+          end_date: row.end_date,
+        });
+      }
       return { applied: true, status: 'approved' };
     }
 

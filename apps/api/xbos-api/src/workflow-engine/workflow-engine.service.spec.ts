@@ -277,6 +277,126 @@ describe('WorkflowEngineService (UC-XBOS-13 / W3-5)', () => {
     }
   });
 
+  it('PO-UC-TC-W4-BE-WF-SELF-FD-01: BR-WF-04 rejects self-approve (actor === submitter)', async () => {
+    const taskId = 'b4e08de5-0000-4000-8000-0000000000aa';
+    const instanceId = '59b385f8-0000-4000-8000-0000000000aa';
+    const selfTask = {
+      id: taskId,
+      instance_id: instanceId,
+      step_key: 'leave_approval',
+      hat_key: 'direct_manager',
+      assignee_user_id: 'ceo@xe.vn',
+      payload: {},
+      tenant_id: 'xevn',
+      company_id: 'holding',
+      business_type: 'hrm_leave',
+      business_id: 'leave-self-1',
+      // SELF-FD-02: live JOIN exposes i.context AS instance_context
+      instance_context: {
+        submitter: {
+          userId: 'ceo@xe.vn',
+          employeeId: 'emp-ceo-1',
+          companyId: 'holding',
+        },
+      },
+      status: 'pending',
+    };
+
+    query.mockResolvedValueOnce({ rows: [selfTask] });
+    await expect(service.completeStepTask(taskId, { userId: 'ceo@xe.vn' })).rejects.toMatchObject({
+      code: 'XBOS-WF-422',
+      getStatus: expect.any(Function),
+    });
+
+    // Case-insensitive userId match (actor CEO@xe.vn vs submitter ceo@xe.vn)
+    query.mockResolvedValueOnce({ rows: [selfTask] });
+    try {
+      await service.completeStepTask(taskId, { userId: 'CEO@xe.vn' });
+      throw new Error('expected BR-WF-04 reject');
+    } catch (err) {
+      const ex = err as ApiException;
+      expect(ex.code).toBe('XBOS-WF-422');
+      expect(ex.getStatus()).toBe(422);
+      const body = ex.getResponse() as { message?: string };
+      expect(String(body.message ?? '')).toContain('BR-WF-04');
+    }
+
+    // Fallback: bare context still rejects (unit/legacy mock shape)
+    query.mockResolvedValueOnce({
+      rows: [
+        {
+          ...selfTask,
+          instance_context: undefined,
+          context: selfTask.instance_context,
+        },
+      ],
+    });
+    await expect(service.completeStepTask(taskId, { userId: 'ceo@xe.vn' })).rejects.toMatchObject({
+      code: 'XBOS-WF-422',
+    });
+
+    const selectSql = String(query.mock.calls[0]?.[0] ?? '');
+    expect(selectSql).toContain('i.context AS instance_context');
+
+    const updateComplete = query.mock.calls.find(
+      (c) => typeof c[0] === 'string' && String(c[0]).includes("SET status = 'completed'"),
+    );
+    expect(updateComplete).toBeUndefined();
+  });
+
+  it('PO-UC-TC-W4-BE-WF-SELF-FD-01: non-self approver still completes (XBOS-WF-200 path)', async () => {
+    const taskId = 'c4e08de5-0000-4000-8000-0000000000bb';
+    const instanceId = '69b385f8-0000-4000-8000-0000000000bb';
+    const task = {
+      id: taskId,
+      instance_id: instanceId,
+      step_key: 'approval_l1',
+      hat_key: 'direct_manager',
+      assignee_user_id: 'manager.a@xe.vn',
+      payload: {},
+      tenant_id: 'xevn',
+      company_id: 'holding',
+      business_type: 'general',
+      business_id: 'biz-other-1',
+      instance_context: {
+        submitter: {
+          userId: 'nv0003@xe.vn',
+          employeeId: 'emp-nv-3',
+          companyId: 'holding',
+        },
+      },
+      status: 'pending',
+    };
+
+    query
+      .mockResolvedValueOnce({ rows: [task] })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [{ ...task, status: 'completed' }] })
+      .mockResolvedValueOnce({ rows: [] }) // same-hat skip
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: instanceId,
+            definition_id: 'def-1',
+            context: task.instance_context,
+            business_type: 'general',
+            business_id: 'biz-other-1',
+            tenant_id: 'xevn',
+            company_id: 'holding',
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        rows: [{ id: taskId, status: 'completed', step_key: 'approval_l1', hat_key: 'direct_manager' }],
+      })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [] });
+
+    const result = await service.completeStepTask(taskId, { userId: 'manager.a@xe.vn' });
+    expect(result.instanceCompleted).toBe(true);
+    expect(result.task).toMatchObject({ status: 'completed' });
+  });
+
   it('XHRM-REC-WF-BE-COMPLETE-INSTANCE-01: reject terminal still remaps id → instance_id (J-06 must_keep)', async () => {
     const taskId = '59656e16-0000-4000-8000-000000000001';
     const instanceId = '284db120-0000-4000-8000-000000000001';
@@ -548,6 +668,79 @@ describe('WorkflowEngineService (UC-XBOS-13 / W3-5)', () => {
     } finally {
       if (prevResolver === undefined) delete process.env.WORKFLOW_DYNAMIC_RESOLVER_ENABLED;
       else process.env.WORKFLOW_DYNAMIC_RESOLVER_ENABLED = prevResolver;
+    }
+  });
+
+  it('PO-E2E-SPINE-01-BE-INBOX-01: listStepTasks enriches workflow_name with YCTD stamp for ceo inbox', async () => {
+    query.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 'f01d0f12-ab70-4967-90c3-4fa8746312d9',
+          instance_id: '5590cbb1-80ff-4c1b-af72-4a78ce3a3782',
+          assignee_user_id: 'ceo@xe.vn',
+          step_key: 'requisition_approval',
+          business_type: 'hrm_requisition',
+          business_id: '34a421e7-33df-4c8b-b96c-559082b78086',
+          company_id: 'holding',
+          workflow_name: 'Phê duyệt yêu cầu tuyển dụng HRM',
+          context: {
+            subjectTitle: 'YCTD HireToPay SP2SDD8FM8',
+            memberCompanyId: 'holding',
+          },
+        },
+      ],
+    });
+
+    const rows = await service.listStepTasks({
+      assigneeUserId: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      status: 'pending',
+    });
+
+    expect(rows).toHaveLength(1);
+    expect(String(rows[0].workflow_name)).toContain('SP2SDD8FM8');
+    expect(rows[0].subject_title).toBe('YCTD HireToPay SP2SDD8FM8');
+    expect(rows[0].display_title).toEqual(rows[0].workflow_name);
+  });
+
+  it('PO-E2E-SPINE-01-BE-INBOX-01: listStepTasks soft-backfills subjectTitle from HRM when context bare', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: { title: 'YCTD HireToPay SP2SDD8FM8' } }),
+    });
+    const prevFetch = global.fetch;
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    try {
+      query
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              id: 'task-legacy',
+              instance_id: '5590cbb1-80ff-4c1b-af72-4a78ce3a3782',
+              assignee_user_id: 'ceo@xe.vn',
+              step_key: 'requisition_approval',
+              business_type: 'hrm_requisition',
+              business_id: '34a421e7-33df-4c8b-b96c-559082b78086',
+              company_id: 'holding',
+              workflow_name: 'Phê duyệt yêu cầu tuyển dụng HRM',
+              context: { memberCompanyId: 'holding' },
+            },
+          ],
+        })
+        .mockResolvedValueOnce({ rows: [] }); // persist context backfill
+
+      const rows = await service.listStepTasks({
+        assigneeUserId: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        status: 'pending',
+      });
+
+      expect(fetchMock).toHaveBeenCalled();
+      expect(String(rows[0].workflow_name)).toContain('SP2SDD8FM8');
+      expect(rows[0].subject_title).toBe('YCTD HireToPay SP2SDD8FM8');
+    } finally {
+      global.fetch = prevFetch;
     }
   });
 });

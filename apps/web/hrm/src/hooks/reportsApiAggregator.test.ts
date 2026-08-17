@@ -6,7 +6,9 @@ import {
   buildTurnoverReportFromApi,
   mapOperationsSummaryReport,
   mapPayrollReconciliation,
+  mapRecruitmentReportFromNestDashboard,
 } from './reportsApiAggregator';
+import type { HrmRecruitmentDashboardDto } from '@/integrations/hrmApi';
 
 describe('reportsApiAggregator (portal API mode)', () => {
   it('maps operations summary (HRM-OP-04)', () => {
@@ -25,38 +27,40 @@ describe('reportsApiAggregator (portal API mode)', () => {
     });
   });
 
-  it('builds recruitment report from Nest candidates', () => {
-    const report = buildRecruitmentReportFromApi(
-      [
-        {
-          id: '1',
-          company_id: 'main',
-          requisition_id: 'r1',
-          full_name: 'A',
-          email: 'a@xe.vn',
-          source: 'web',
-          status: 'hired',
-          created_at: '2026-03-01T00:00:00Z',
-          updated_at: '2026-03-01T00:00:00Z',
-        },
-        {
-          id: '2',
-          company_id: 'main',
-          requisition_id: 'r1',
-          full_name: 'B',
-          email: 'b@xe.vn',
-          source: 'referral',
-          status: 'rejected',
-          created_at: '2026-04-01T00:00:00Z',
-          updated_at: '2026-04-01T00:00:00Z',
-        },
-      ],
-      2026,
-    );
-    expect(report.totalCandidates).toBe(2);
-    expect(report.hiredCount).toBe(1);
-    expect(report.rejectedCount).toBe(1);
-    expect(report.sourceStats.length).toBeGreaterThan(0);
+  it('maps recruitment report from Nest dashboard DTO (O8)', () => {
+    const dto: HrmRecruitmentDashboardDto = {
+      period: { year: 2026, from: null, to: null },
+      planned_need: 10,
+      filled_count: 3,
+      in_pipeline_count: 4,
+      open_yctd_count: 2,
+      gap_count: 7,
+      completion_pct: 30,
+      enough_people_status: 'in_progress',
+      enough_people_eta: '2026-08',
+      enough_people_eta_label: 'Dự kiến đủ người: 08/2026',
+      funnel: { cv: 1, screening: 1, interview: 1, offer: 1, onboard: 3 },
+      funnel_labels: {
+        cv: 'Hồ sơ / CV',
+        screening: 'Sàng lọc',
+        interview: 'Phỏng vấn',
+        offer: 'Offer',
+        onboard: 'Onboard / Đã tuyển',
+      },
+      by_month: [],
+      by_org_unit: [],
+      by_yctd: [],
+      empty_guide: null,
+    };
+    const report = mapRecruitmentReportFromNestDashboard(dto);
+    expect(report.planned_need).toBe(10);
+    expect(report.filled_count).toBe(3);
+    expect(report.completion_pct).toBe(30);
+    expect(report.funnel.onboard).toBe(3);
+  });
+
+  it('DENY legacy buildRecruitmentReportFromApi (throws)', () => {
+    expect(() => buildRecruitmentReportFromApi()).toThrow(/Nest GET/);
   });
 
   it('builds contract and leave aggregates', () => {

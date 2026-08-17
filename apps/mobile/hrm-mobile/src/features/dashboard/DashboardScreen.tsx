@@ -73,6 +73,7 @@ import type { JourneyFeedParams, MainTabParamList } from '../../navigation/types
 import {
   navigateToContracts,
   navigateToCreateLeaveRequest,
+  navigateToCreateUpdateRequest,
   navigateToJourney,
   navigateToLeaveRequestDetail,
   navigateToLeaveRequestsList,
@@ -1380,6 +1381,8 @@ export function DashboardScreen() {
 
   const goCreateLeave = () => navigateToCreateLeaveRequest(nav);
 
+  const goCreateUpdateRequest = () => navigateToCreateUpdateRequest(nav);
+
   const goLeaveList = () => navigateToLeaveRequestsList(nav);
 
   const goLeaveDetail = (id: string, employeeId?: string) =>
@@ -2103,6 +2106,7 @@ export function DashboardScreen() {
               stats={essSnap.attendanceStats}
               loading={loading}
               error={essSnap.attendanceError || undefined}
+              onLatePress={goCreateUpdateRequest}
             />
           ) : null;
         case 'ess_stat_cards':
@@ -2121,6 +2125,7 @@ export function DashboardScreen() {
       essSnap.attendanceError,
       essSnap.attendanceStats,
       essSnap.statCards,
+      goCreateUpdateRequest,
       handleStatCardPress,
       handleQuickAccessTile,
       viewportHeight,

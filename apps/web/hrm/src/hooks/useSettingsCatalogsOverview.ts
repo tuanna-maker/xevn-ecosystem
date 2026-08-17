@@ -18,7 +18,7 @@
  *
  * Callees:
  *   - getSettingsCatalogsOverview → GET /api/hrm/settings-catalogs
- *   - resolveHrmSpreadsheetScope
+ *   - resolveHrmSettingsCatalogScope (member OU partition; Group CEO → spreadsheet main)
  *
  * FE-Actions:
  *   | User action              | Handler     | Lib / API                      |
@@ -32,6 +32,12 @@
  * must_keep: F5 contract ACs; UF-HRM-10 mutate path; U65 no seed
  * SOLID:     Single RQ key owner; consumers only pass enabled/scope opts
  * LastVerified: apps/web/hrm/src/hooks/p1-hrm-perf-fe-03.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-FE-AT12-L1-CREATE-CATALOG-01
+ * change_mode: FIX
+ * What: scope via resolveHrmSettingsCatalogScope (trsport JWT → x-company-id=trsport)
+ * Why: spreadsheet main forced empty leave_types picker vs create assert OU partition
+ * must_keep: shared SETTINGS_CATALOGS_QUERY_KEY; Group CEO main→holding; U65 no seed
  */
 import { useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -41,7 +47,7 @@ import {
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
-import { resolveHrmSpreadsheetScope } from '@/lib/hrmSpreadsheetScope';
+import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 
 /** Stable RQ root — all FE settings-catalog overview consumers must use this. */
 export const SETTINGS_CATALOGS_QUERY_KEY = 'hrm-settings-catalogs';
@@ -60,8 +66,8 @@ export function useSettingsCatalogsOverview(opts?: {
 
   const scope = useMemo(() => {
     if (opts?.scope !== undefined) return opts.scope;
-    if (!currentCompanyId) return null;
-    return resolveHrmSpreadsheetScope(currentCompanyId);
+    // Member JWT may resolve OU catalog partition even when AuthContext company is still unset.
+    return resolveHrmSettingsCatalogScope(currentCompanyId);
   }, [opts?.scope, currentCompanyId]);
 
   const enabled = opts?.enabled !== false && !!scope;

@@ -19,8 +19,57 @@
  * WorkItem: BE-HRM-CODE-MEMORY-SRS-STEP-01
  * change_mode: ADD
  * What: CODE-MEMORY map Diễn biến AT-01 (không đổi logic)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: U78-U84-ATT-ADJ-TMDV-SCOPE-PARITY-01
+ * change_mode: FIX
+ * What: listUpdateRequests — normalizePayrollListCompanyId trước resolveHrmListScope
+ *       (parity leave/listRecords); guardAttendanceMutate cùng ladder slug↔UUID.
+ * Why:  QA R1 CO-TMDV — CEO F5 companyId=trsport empty (row UUID); mgr Duyệt 409 scope.
+ * must_keep: FE ISO create path; leave approve; expandHrmTextCompanyIds Plane B′; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-MFD-M1-ATT-P0-CFG-BE-01
+ * change_mode: ADD
+ * What: Geofence assert slug-scoped work_sites; gps_enabled gate via AttendanceConfigService;
+ *       removed ensureDefaultWorkSite pilot insert (U65).
+ * Why: ADR-HRM-ATTENDANCE-CFG-PERSIST D3
+ * must_keep: HRM-ATT-GEO-001 · update-requests U78
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-ATT-LEAVE-FUNNEL-BE-01
+ * change_mode: ADD
+ * What: ensureSchema ADD leave_request_id + leave_type_key + partial IX;
+ *       GET list/get mapRecord display-ready leave fields (OS 28 — no FE leave join).
+ * Why: F-ATT-LEAVE-FUNNEL-03 · DB-01 §3 · AC-ATT-LV-SHEET-01
+ * must_keep: J-HRM-06b storm · empty honesty · no AGG line · Option C forbidden
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-ATT-LEAVE-FUNNEL-BE-02
+ * change_mode: FIX
+ * What: normalizeAttendanceDateForApi → toLeaveDayKey (pg Date ≠ String.slice "Sat Dec 26")
+ * Why: R-ATT-LEAVE-FUNNEL-DATE-EXPAND · AC dates ≠ 1970 / display yyyy-MM-dd
+ * must_keep: empty honesty · J-HRM-06b · attendance_uat_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08
+ * WorkItem: PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-WORKSITE-CATALOG-BE-01
+ * change_mode: UPGRADE
+ * What: CNS-05 — check_in_method=gps ∧ gps_enabled ∧ active>0 ∧ omit lat/lon → HRM-ATT-GEO-REQ;
+ *       manual omit coords soft-skip RETAIN; GEO-001 invent OOS RETAIN; empty skip ADR D3;
+ *       SITE-UNKNOWN HOLD (no work_site_id assert).
+ * Why: BA VAL-ATT-WS-CNS-05 · AC-PLT-ATT-WORKSITE-01* · SA Option B
+ * must_keep: HRM-ATT-GEO-001 · no ensureDefaultWorkSite · leave funnel · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08
+ * WorkItem: PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATALOG-BE-01
+ * change_mode: ADD
+ * What: DROP chk_attendance_status closed ceiling; create/update status ∈ F-ATT-CAT-CODE-EFF
+ *       → HRM-ATT-CODE-KEY when EFF>0; empty soft skip; status_label/symbol from catalog
+ *       (bootstrap hardcode only EFF=0); typed flags physical only — FORBIDDEN aggregate rewrite.
+ * Why: BA VAL-ATT-CODE-CNS-01..10 · SA Option B · DATA ADD att_attendance_code
+ * must_keep: att_leave_type / work_sites / work_shifts · sheet/sign · L-ATT-CODE-07 · U65
  */
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
@@ -43,7 +92,12 @@ import { ListAttendanceRecordsQueryDto } from './dto/list-attendance-records.que
 import { ListAttendanceUpdateRequestsQueryDto } from './dto/list-attendance-update-requests.query.dto';
 import { UpdateAttendanceUpdateRequestDto } from './dto/update-attendance-update-request.dto';
 import { UpdateAttendanceStatusDto } from './dto/update-attendance-status.dto';
-
+import { AttendanceConfigService } from './attendance-config.service';
+import {
+  AttAttendanceCodeService,
+  type AttAttendanceCodeDisplayHints,
+} from './att-attendance-code.service';
+import { toLeaveDayKey } from './leave-attendance-funnel.service';
 type AttendanceRecordRow = {
   id: string;
   company_id: string;
@@ -51,11 +105,34 @@ type AttendanceRecordRow = {
   attendance_date: string;
   check_in_at: string | null;
   check_out_at: string | null;
-  status: 'pending' | 'present' | 'absent' | 'leave';
+  status: string;
   note: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  leave_request_id?: string | null;
+  leave_type_key?: string | null;
+};
+
+const ATTENDANCE_STATUS_LABELS_VI: Record<string, string> = {
+  pending: 'Chờ xử lý',
+  present: 'Có mặt',
+  absent: 'Vắng',
+  leave: 'Nghỉ phép',
+};
+
+const ATTENDANCE_LEAVE_TYPE_LABELS_VI: Record<string, string> = {
+  annual: 'Phép năm',
+  sick: 'Nghỉ ốm',
+  maternity: 'Thai sản',
+  unpaid: 'Không lương',
+  compensatory: 'Nghỉ bù',
+  annual_leave: 'Phép năm',
+  sick_leave: 'Nghỉ ốm',
+  lvt_01: 'Phép năm',
+  lvt_02: 'Ốm',
+  lvt_03: 'Thai sản',
+  lvt_04: 'Không lương',
 };
 
 type AttendanceUpdateRequestRow = {
@@ -88,6 +165,8 @@ export class AttendanceService {
   constructor(
     private readonly db: HrmDbService,
     private readonly attendanceFanout: AttendanceEventFanoutService,
+    private readonly attendanceConfig: AttendanceConfigService,
+    @Optional() private readonly attAttendanceCode?: AttAttendanceCodeService,
   ) {}
   private resolvePage(value: number | string | undefined, fallback: number): number {
     const parsed = Number(value ?? fallback);
@@ -136,11 +215,12 @@ export class AttendanceService {
   }
 
   /** BR-ATT-DATE-01 — omit invalid stored dates from API (FE shows em dash). */
-  private normalizeAttendanceDateForApi(date: string | null | undefined): string | null {
-    if (!date) return null;
-    const iso = String(date).slice(0, 10);
+  private normalizeAttendanceDateForApi(date: string | Date | null | undefined): string | null {
+    if (date == null || date === '') return null;
+    const iso = toLeaveDayKey(date);
+    if (!iso) return null;
     if (iso === '1970-01-01' || iso.startsWith('0000') || iso === '0001-01-01') return null;
-    const parsed = new Date(iso);
+    const parsed = new Date(`${iso}T00:00:00.000Z`);
     if (!Number.isFinite(parsed.getTime()) || parsed.getUTCFullYear() < 2000) return null;
     return iso;
   }
@@ -152,7 +232,9 @@ export class AttendanceService {
     tenantId: string | undefined,
     codes: { notFound: string; mismatch: string },
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    // Parity leave AT-12/13 — UUID/slug query → same ladder as list before assert.
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
     assertResourceInHrmScope(resource, scope, {
       notFoundCode: codes.notFound,
       mismatchCode: codes.mismatch,
@@ -188,9 +270,13 @@ export class AttendanceService {
         note TEXT NULL,
         created_by TEXT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        CONSTRAINT chk_attendance_status CHECK (status IN ('pending', 'present', 'absent', 'leave'))
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+    // PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATALOG-BE-01 — DROP closed status ceiling (L-ATT-CODE-04).
+    await this.db.query(`
+      ALTER TABLE public.attendance_records
+      DROP CONSTRAINT IF EXISTS chk_attendance_status;
     `);
     await this.db.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS uq_attendance_company_employee_date
@@ -250,35 +336,21 @@ export class AttendanceService {
       ALTER TABLE public.attendance_update_requests
       ALTER COLUMN company_id TYPE TEXT USING company_id::text;
     `);
+    // PO-HRM-ATT-LEAVE-FUNNEL-BE-01 — soft FK Option A (DB-01 §3); no CASCADE; no AGG line.
     await this.db.query(`
-      CREATE TABLE IF NOT EXISTS public.attendance_work_sites (
-        id UUID PRIMARY KEY,
-        company_id UUID NOT NULL,
-        name TEXT NOT NULL,
-        latitude DOUBLE PRECISION NOT NULL,
-        longitude DOUBLE PRECISION NOT NULL,
-        radius_meters INTEGER NOT NULL DEFAULT 200,
-        active BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
+      ALTER TABLE public.attendance_records
+      ADD COLUMN IF NOT EXISTS leave_request_id UUID NULL;
     `);
-    await this.ensureDefaultWorkSite();
-  }
-
-  private async ensureDefaultWorkSite() {
-    const exists = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.attendance_work_sites LIMIT 1;`,
-    );
-    if (Number(exists.rows[0]?.total ?? 0) > 0) return;
-    const holdingUuid = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
-    await this.db.query(
-      `
-        INSERT INTO public.attendance_work_sites (id, company_id, name, latitude, longitude, radius_meters)
-        VALUES ($1, $2::uuid, 'XeVN HQ Pilot', 21.0285, 105.8542, 500)
-        ON CONFLICT DO NOTHING;
-      `,
-      [randomUUID(), holdingUuid],
-    );
+    await this.db.query(`
+      ALTER TABLE public.attendance_records
+      ADD COLUMN IF NOT EXISTS leave_type_key TEXT NULL;
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_attendance_records_leave_request_id
+      ON public.attendance_records (leave_request_id)
+      WHERE leave_request_id IS NOT NULL;
+    `);
+    await this.attendanceConfig.ensureWorkSitesSchema();
   }
 
   private haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -292,7 +364,18 @@ export class AttendanceService {
     return 2 * R * Math.asin(Math.sqrt(a));
   }
 
-  private async assertWithinWorkSite(companyId: string, latitude: number, longitude: number) {
+  private async assertWithinWorkSite(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    latitude: number,
+    longitude: number,
+    tenantId?: string,
+  ) {
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const filters: string[] = ['active = TRUE'];
+    const values: unknown[] = [];
+    pushCompanyIdTextColumnFilter(filters, values, companyKeys);
     const sites = await this.db.query<{
       name: string;
       latitude: number;
@@ -302,9 +385,9 @@ export class AttendanceService {
       `
         SELECT name, latitude, longitude, radius_meters
         FROM public.attendance_work_sites
-        WHERE company_id::text = $1::text AND active = TRUE;
+        WHERE ${filters.join(' AND ')};
       `,
-      [companyId],
+      values,
     );
     if (!sites.rows.length) return;
     const ok = sites.rows.some(
@@ -320,7 +403,23 @@ export class AttendanceService {
     }
   }
 
-  private mapRecord(row: AttendanceRecordRow) {
+  private mapRecord(
+    row: AttendanceRecordRow,
+    codeHints?: Map<string, AttAttendanceCodeDisplayHints>,
+  ) {
+    const leaveTypeKey = row.leave_type_key?.trim() || null;
+    const leaveTypeLabel = leaveTypeKey
+      ? ATTENDANCE_LEAVE_TYPE_LABELS_VI[leaveTypeKey.toLowerCase()] ?? leaveTypeKey
+      : null;
+    const statusKey = String(row.status ?? '')
+      .trim()
+      .replace(/-/g, '_')
+      .toLowerCase();
+    const catalogHints = codeHints?.get(statusKey);
+    // OS 28 — catalog symbol/status_label when EFF known; hardcode bootstrap only when EFF=0 map empty.
+    const statusLabel =
+      catalogHints?.statusLabel ?? ATTENDANCE_STATUS_LABELS_VI[statusKey] ?? row.status;
+    const symbol = catalogHints?.symbol ?? null;
     return {
       id: row.id,
       company_id: row.company_id,
@@ -329,11 +428,59 @@ export class AttendanceService {
       check_in_at: row.check_in_at,
       check_out_at: row.check_out_at,
       status: row.status,
+      status_label: statusLabel,
+      symbol,
       note: row.note,
+      leave_request_id: row.leave_request_id ?? null,
+      leave_type_key: leaveTypeKey,
+      leave_type: leaveTypeKey,
+      leave_type_label: row.status === 'leave' ? leaveTypeLabel ?? 'Nghỉ phép' : leaveTypeLabel,
       created_by: row.created_by,
       created_at: row.created_at,
       updated_at: row.updated_at,
     };
+  }
+
+  private async resolveCodeDisplayLookup(
+    companyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ): Promise<Map<string, AttAttendanceCodeDisplayHints> | undefined> {
+    if (!this.attAttendanceCode) {
+      return undefined;
+    }
+    try {
+      return await this.attAttendanceCode.buildCodeDisplayLookup(
+        companyId,
+        authorization,
+        tenantId,
+      );
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * F-ATT-CODE-CNS-01 — assert status ∈ EFF when count>0; returns canonical code for persist.
+   * Empty EFF → soft skip (U65).
+   */
+  private async assertAttendanceDayCode(input: {
+    companyId: string;
+    status: string;
+    authorization?: string;
+    tenantId?: string;
+  }): Promise<string> {
+    const raw = String(input.status ?? '').trim() || 'pending';
+    if (!this.attAttendanceCode) {
+      return raw.replace(/-/g, '_').toLowerCase();
+    }
+    const hit = await this.attAttendanceCode.assertCodeInEffectiveCatalog({
+      companyId: input.companyId,
+      code: raw,
+      authorization: input.authorization,
+      tenantId: input.tenantId,
+    });
+    return hit?.code ?? raw.replace(/-/g, '_').toLowerCase();
   }
 
   private toAttendanceUpdateRequestRealtimePayload(row: AttendanceUpdateRequestRow) {
@@ -392,12 +539,50 @@ export class AttendanceService {
     await this.ensureSchema();
     const companyId = resolveHrmOperationsPersistCompanyId(authorization, payload.company_id, { tenantId });
     this.assertValidAttendanceDate(payload.attendance_date);
-    if (payload.latitude != null && payload.longitude != null) {
-      await this.assertWithinWorkSite(companyId, payload.latitude, payload.longitude);
+    const hasFiniteCoords =
+      payload.latitude != null &&
+      payload.longitude != null &&
+      Number.isFinite(Number(payload.latitude)) &&
+      Number.isFinite(Number(payload.longitude));
+    const gpsOn = await this.attendanceConfig.isGpsGeofenceEnabled(
+      authorization,
+      payload.company_id,
+      tenantId,
+    );
+    const checkInMethod = payload.check_in_method?.trim().toLowerCase() ?? '';
+    // CNS-05: GPS method fail-closed when enforce on + active sites — FORBIDDEN silent 201.
+    // Manual / omit method without coords = soft-skip (BR-PLT-ATT-WS-08) — not GEO PASS evidence.
+    if (gpsOn && checkInMethod === 'gps' && !hasFiniteCoords) {
+      const activeCount = await this.attendanceConfig.countActiveWorkSites(
+        payload.company_id,
+        authorization,
+        tenantId,
+      );
+      if (activeCount > 0) {
+        throw new ApiException(
+          'HRM-ATT-GEO-REQ',
+          'GPS check-in requires latitude and longitude when geofence is enforced',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+    if (hasFiniteCoords && gpsOn) {
+      await this.assertWithinWorkSite(
+        authorization,
+        payload.company_id,
+        Number(payload.latitude),
+        Number(payload.longitude),
+        tenantId,
+      );
     }
     // Thất bại nhánh giờ: Diễn biến #4 — ra trước vào.
     this.assertCheckInOutOrder(payload.check_in_at, payload.check_out_at);
-    const status = payload.status ?? 'pending';
+    const status = await this.assertAttendanceDayCode({
+      companyId: payload.company_id,
+      status: payload.status ?? 'pending',
+      authorization,
+      tenantId,
+    });
     try {
       const res = await this.db.query<AttendanceRecordRow>(
         `
@@ -406,7 +591,8 @@ export class AttendanceService {
           ) VALUES ($1, $2::uuid, $3::uuid, $4::date, $5, $6, $7, $8, $9)
           RETURNING
             id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
-            status, note, created_by, created_at, updated_at;
+            status, note, created_by, created_at, updated_at,
+            leave_request_id::text AS leave_request_id, leave_type_key;
         `,
         [
           randomUUID(),
@@ -430,8 +616,12 @@ export class AttendanceService {
         [randomUUID(), created.id, 'hrm-api', JSON.stringify({ status: created.status })],
       );
       // Thành công: Diễn biến #7 — khóa bản ghi ngày công.
-      return this.mapRecord(created);
+      const hints = await this.resolveCodeDisplayLookup(payload.company_id, authorization, tenantId);
+      return this.mapRecord(created, hints);
     } catch (error) {
+      if (error instanceof ApiException) {
+        throw error;
+      }
       const message = error instanceof Error ? error.message : 'Cannot create attendance record';
       throw new ApiException('HRM-ATT-001', message, HttpStatus.BAD_REQUEST);
     }
@@ -483,7 +673,8 @@ export class AttendanceService {
       `
         SELECT
           id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
-          status, note, created_by, created_at, updated_at
+          status, note, created_by, created_at, updated_at,
+          leave_request_id::text AS leave_request_id, leave_type_key
         FROM public.attendance_records
         WHERE ${whereClause}
         ORDER BY attendance_date DESC, created_at DESC
@@ -492,11 +683,16 @@ export class AttendanceService {
       [...values, pageSize, offset],
     );
 
+    const hints = await this.resolveCodeDisplayLookup(
+      query.company_id,
+      authorization,
+      scopeContext?.tenantId,
+    );
     return {
       total: Number(countRes.rows[0]?.total ?? 0),
       page,
       page_size: pageSize,
-      data: dataRes.rows.map((row) => this.mapRecord(row)),
+      data: dataRes.rows.map((row) => this.mapRecord(row, hints)),
     };
   }
 
@@ -516,7 +712,8 @@ export class AttendanceService {
       `
         SELECT
           id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
-          status, note, created_by, created_at, updated_at
+          status, note, created_by, created_at, updated_at,
+          leave_request_id::text AS leave_request_id, leave_type_key
         FROM public.attendance_records
         WHERE ${filters.join(' AND ')}
         LIMIT 1;
@@ -526,7 +723,12 @@ export class AttendanceService {
     if (!res.rows[0]) {
       throw new ApiException('HRM-ATT-404', 'Attendance record not found', HttpStatus.NOT_FOUND);
     }
-    return this.mapRecord(res.rows[0]);
+    const hints = await this.resolveCodeDisplayLookup(
+      query.company_id,
+      authorization,
+      scopeContext?.tenantId,
+    );
+    return this.mapRecord(res.rows[0], hints);
   }
 
   async updateStatus(
@@ -542,6 +744,12 @@ export class AttendanceService {
       notFound: 'HRM-ATT-404',
       mismatch: 'HRM-ATT-409',
     });
+    const status = await this.assertAttendanceDayCode({
+      companyId: requestedCompanyId,
+      status: payload.status,
+      authorization,
+      tenantId,
+    });
     const res = await this.db.query<AttendanceRecordRow>(
       `
         UPDATE public.attendance_records
@@ -549,9 +757,10 @@ export class AttendanceService {
         WHERE id = $3::uuid
         RETURNING
           id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
-          status, note, created_by, created_at, updated_at;
+          status, note, created_by, created_at, updated_at,
+          leave_request_id::text AS leave_request_id, leave_type_key;
       `,
-      [payload.status, payload.note?.trim() ?? null, recordId],
+      [status, payload.note?.trim() ?? null, recordId],
     );
     const updated = res.rows[0];
     if (!updated) {
@@ -566,10 +775,11 @@ export class AttendanceService {
         randomUUID(),
         updated.id,
         payload.updated_by?.trim() ?? 'hrm-api',
-        JSON.stringify({ status: payload.status, note: payload.note ?? null }),
+        JSON.stringify({ status, note: payload.note ?? null }),
       ],
     );
-    return this.mapRecord(updated);
+    const hints = await this.resolveCodeDisplayLookup(requestedCompanyId, authorization, tenantId);
+    return this.mapRecord(updated, hints);
   }
 
   async createUpdateRequest(
@@ -625,13 +835,15 @@ export class AttendanceService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
     const clauses: string[] = [];
     const values: unknown[] = [];
     if (scope.masterTenantPartition || scope.memberTenantId) {
       pushWorkforceEmployeeScopeFilter(clauses, values, scope, 'aur.employee_id');
     } else {
-      const companyIds = expandHrmTextCompanyIds(scope, authorization, query.company_id);
+      // UUID column — expand slug↔Plane B′ so CEO OU=trsport sees persist UUID rows.
+      const companyIds = expandHrmTextCompanyIds(scope, authorization, scopeCompanyId);
       pushCompanyIdTextColumnFilter(clauses, values, companyIds);
       const companyFilterIdx = clauses.length - 1;
       clauses[companyFilterIdx] = clauses[companyFilterIdx].replace(/^company_id::text/, 'aur.company_id::text');

@@ -5,26 +5,34 @@
  * BR:         radius.modal · borderWidth.thin · colors.border · shadow.soft
  * SRS:        docs/program/XEVN_BRAND_FULL_FE_REMASTER_PROGRAM.md § L2m
  * TechSpec:   apps/mobile/hrm-mobile/src/theme/THEME_USAGE.md § L2 ActionSheet
- * Purpose:    Sheet chọn check-in / tạo nghỉ / duyệt; DNA modal giống ConfirmActionModal.
+ * Purpose:    Sheet chọn check-in / tạo nghỉ / đơn công / duyệt; DNA modal giống ConfirmActionModal.
  * WorkItem:   MOB-XEVN-BRAND-PRIMITIVES-L2-01
  * Coded:      2026-07-22
  * @CODE-MEMORY-CHANGE 2026-07-28 D-UX-R3-WCAG-MOBILE-01
  * What: WCAG 2.4.12 — margin bottom qua resolveFabActionSheetMarginBottom (tab + home indicator).
  * must_keep: sheet trên tab bar; row/cancel ≥44; radius.modal
+ * @CODE-MEMORY-CHANGE 2026-08-03 R-SPINE-AT-NAV-01
+ * change_mode: ADD
+ * What: navigate create_update_request → CreateUpdateRequest (AT-01 HDSD)
+ * Why: Employee thiếu entry tạo đơn công / đi muộn từ FAB
+ * must_keep: create_leave → CreateLeaveRequest; fab-action-create-leave
  *
  * Callers: RootNavigator / tab FAB host · ClockIn method selector sample
  * Callees: fabPrimaryActions · profileStackNav · layoutInsets · theme/tokens
  *
  * FE-Actions:
- *   | Thao tác   | Handler              | Nav                         |
- *   |------------|----------------------|-----------------------------|
- *   | Chọn row   | onSelect(id)         | check_in / leave / approvals|
- *   | Đóng       | onClose              | Modal dismiss               |
+ *   | Thao tác   | Handler              | Nav                                      |
+ *   |------------|----------------------|------------------------------------------|
+ *   | Chọn row   | onSelect(id)         | check_in / leave / đơn công / approvals  |
+ *   | Đóng       | onClose              | Modal dismiss                            |
  *
  * Impact:     Hardcode borderRadius/card → lệch modal DNA; thiếu safe margin → CTA che home indicator.
  * must_keep:  radius.modal; borderWidth.thin; colors.border; resolveFabActionSheetMarginBottom
  * SOLID:      Navigation map tách trong navigateForAction
- * LastVerified: docs/qa/evidence/d-ux-r3-wcag-mobile-01-20260728.md
+ * LastVerified: docs/qa/evidence/r-spine-at-nav-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-MOB-A
+ * What: BrandDialogChrome header MOB-05 · primary border sheet
  */
 
 import { Ionicons } from '@expo/vector-icons';
@@ -43,10 +51,12 @@ import {
 import { CHECK_IN_FAB_NAV_TARGET } from '../../navigation/checkInFab';
 import {
   navigateToCreateLeaveRequest,
+  navigateToCreateUpdateRequest,
   navigateToManagerApprovals,
 } from '../../navigation/profileStackNav';
 import type { MainTabParamList } from '../../navigation/types';
 import { resolveFabActionSheetMarginBottom } from '../../theme/layoutInsets';
+import { BrandDialogChrome } from '../brand/BrandDialogChrome';
 import { borderWidth, colors, layout, radius, shadow, spacing, typography } from '../../theme/tokens';
 
 type TabNav = BottomTabNavigationProp<MainTabParamList>;
@@ -66,6 +76,9 @@ function navigateForAction(navigation: TabNav, id: FabPrimaryActionId): void {
       break;
     case 'create_leave':
       navigateToCreateLeaveRequest(navigation);
+      break;
+    case 'create_update_request':
+      navigateToCreateUpdateRequest(navigation);
       break;
     case 'manager_approvals':
       navigateToManagerApprovals(navigation);
@@ -98,7 +111,7 @@ export function FabPrimaryActionSheet({ visible, actions, onClose }: FabPrimaryA
           onPress={(e) => e.stopPropagation()}
         >
           <View style={styles.handle} accessibilityElementsHidden />
-          <Text style={styles.title}>{FAB_ACTION_SHEET_TITLE}</Text>
+          <BrandDialogChrome title={FAB_ACTION_SHEET_TITLE} subtitle="Thao tác nhanh" />
           <View style={styles.list}>
             {actions.map((action) => (
               <Pressable
@@ -154,10 +167,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.modal,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: 0,
     gap: spacing.sm,
     borderWidth: borderWidth.thin,
-    borderColor: colors.border,
+    borderColor: colors.primary,
+    overflow: 'hidden',
     ...shadow.soft,
   },
   handle: {
@@ -178,6 +192,7 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: spacing.xs,
+    paddingHorizontal: spacing.md,
   },
   row: {
     flexDirection: 'row',
@@ -233,6 +248,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: layout.primaryButtonHeight,
     marginTop: spacing.xs,
+    marginHorizontal: spacing.md,
     borderRadius: radius.md,
     backgroundColor: colors.iosGroupedBackground,
   },

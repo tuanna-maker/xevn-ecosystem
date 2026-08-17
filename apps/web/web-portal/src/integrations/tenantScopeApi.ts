@@ -68,6 +68,10 @@ export function mapGroupMemberUnitsToCompanies(data: GroupMemberUnitsPayload): C
   return list;
 }
 
+/**
+ * Membership scope row — raw JWT keys + optional OS 28 display-ready labels from auth BE.
+ * FE binds *_label; never invent slug→label maps locally (W1-B-04-AUTH-FE).
+ */
 export type AccessibleTenant = {
   tenantId: string;
   name: string;
@@ -76,6 +80,12 @@ export type AccessibleTenant = {
   roleCode: string;
   companyId: string;
   isMaster: boolean;
+  /** xbos_user_tenant_membership.id — from login/me/select-membership + JWT claim */
+  membershipId?: string;
+  tenant_label?: string;
+  company_label?: string;
+  role_label?: string;
+  tenant_kind_label?: string;
 };
 
 type AccessibleEnvelope = {

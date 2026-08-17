@@ -1,4 +1,5 @@
-const DEFAULT_UI_DENSITY = 0.9;
+/** Default 1.0 = 16px rem (ADR §7 prefer body 16; was 0.9 ≈14.4px). */
+const DEFAULT_UI_DENSITY = 1;
 const MIN_UI_DENSITY = 0.75;
 const MAX_UI_DENSITY = 1;
 

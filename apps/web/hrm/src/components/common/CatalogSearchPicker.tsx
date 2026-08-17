@@ -15,6 +15,18 @@
  * SOLID:      Presentational — options from parent
  * LastVerified: catalogSearchPicker.test.ts
  *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-MVP-GD1-PAY-02-CLUSTER-FE-BROWSER-01
+ * change_mode: UPGRADE
+ * What: cmdk item pointerdown select · catalog-picker-search testid · onSelect always binds opt.value
+ * Why: Playwright J-HRM-PAY-02-02 CatalogSearchPicker vs fill harness
+ * must_keep: value = option.value; không free-text SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 D-PO-HRM-CTR-PICKER-INLINE-PORTAL-01
+ * change_mode: UPGRADE
+ * What: searchPlacement inline — list + catalog-picker-option-* dưới ô tìm (không chỉ Popover); combobox testid
+ * Why: DEF-CTR-PICKER-INLINE-PORTAL-P1 — parent-portal CC Playwright không click option trong popover
+ * must_keep: persist value=option.value; popover mode không đổi hành vi
+ *
  * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-FE-DEPS-02
  * change_mode: ADD
  * What: Reconstruct component (+ data-testid forward) after Vite 500 on :8088
@@ -59,7 +71,23 @@ export type CatalogSearchPickerProps = {
   'aria-label'?: string;
   /** HDSD / QA harness (forwarded to trigger). */
   'data-testid'?: string;
+  /** Inline search stays under picker root (CC parent-portal QA + HDSD). */
+  searchPlacement?: 'popover' | 'inline';
 };
+
+const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function displayCodeForOption(opt: CatalogPickerOption): string | null {
+  const code = (opt.code ?? '').trim();
+  if (!code || code === opt.value.trim()) return null;
+  if (UUID_LIKE.test(code) || UUID_LIKE.test(opt.value)) return null;
+  return code;
+}
+
+function cmdkItemValue(opt: CatalogPickerOption): string {
+  const label = opt.label.trim();
+  return label.length > 0 ? `${label} ${opt.value}` : opt.value;
+}
 
 export function CatalogSearchPicker({
   options,
@@ -77,6 +105,7 @@ export function CatalogSearchPicker({
   id,
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
+  searchPlacement = 'popover',
 }: CatalogSearchPickerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -135,6 +164,107 @@ export function CatalogSearchPicker({
     );
   }
 
+  const comboboxTestId =
+    dataTestId != null && dataTestId.length > 0 ? `${dataTestId}-combobox` : 'catalog-picker-combobox';
+  const searchTestId =
+    dataTestId != null && dataTestId.length > 0 ? `${dataTestId}-search` : 'catalog-picker-search';
+
+  const pickOption = (opt: CatalogPickerOption) => {
+    onValueChange(opt.value);
+    setOpen(false);
+    if (searchPlacement !== 'inline') setQuery('');
+  };
+
+  const renderOptionItems = () =>
+    filtered.map((opt) => (
+      <CommandItem
+        key={opt.value}
+        value={cmdkItemValue(opt)}
+        data-testid={`catalog-picker-option-${opt.value}`}
+        data-value={opt.value}
+        className="cursor-pointer"
+        onSelect={() => pickOption(opt)}
+        onPointerDown={(e) => {
+          e.preventDefault();
+          pickOption(opt);
+        }}
+      >
+        <Check
+          className={cn('mr-2 h-4 w-4', selected?.value === opt.value ? 'opacity-100' : 'opacity-0')}
+        />
+        {displayCodeForOption(opt) ? (
+          <span className="font-mono text-xs text-muted-foreground mr-2">{displayCodeForOption(opt)}</span>
+        ) : null}
+        <span className="truncate">{opt.label}</span>
+      </CommandItem>
+    ));
+
+  const comboboxTrigger = (
+    <Button
+      id={id}
+      type="button"
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      aria-label={ariaLabel ?? placeholder}
+      disabled={disabled}
+      data-testid={searchPlacement === 'inline' ? comboboxTestId : dataTestId}
+      className={cn(
+        'h-10 w-full justify-between rounded-input border-xevn-border font-normal',
+        !selected && 'text-muted-foreground',
+        triggerClassName,
+        searchPlacement !== 'inline' && className,
+      )}
+      onClick={searchPlacement === 'inline' ? () => setOpen((v) => !v) : undefined}
+    >
+      <span className="truncate text-left">
+        {selected ? (
+          <>
+            {displayCodeForOption(selected) ? (
+              <span className="font-mono text-xs text-muted-foreground mr-1.5">
+                {displayCodeForOption(selected)}
+              </span>
+            ) : null}
+            {selected.label}
+          </>
+        ) : (
+          placeholder
+        )}
+      </span>
+      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+    </Button>
+  );
+
+  const showInlineList = open || query.trim().length > 0;
+
+  if (searchPlacement === 'inline') {
+    return (
+      <div className={cn('space-y-1', className)} data-testid={dataTestId}>
+        {comboboxTrigger}
+        <Command shouldFilter={false} className="rounded-input border border-xevn-border bg-background">
+          <CommandInput
+            placeholder={searchPlaceholder}
+            value={query}
+            onValueChange={(next) => {
+              setQuery(next);
+              setOpen(true);
+            }}
+            onFocus={() => setOpen(true)}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+            data-testid={searchTestId}
+          />
+          {showInlineList ? (
+            <CommandList className="max-h-[240px] border-t border-xevn-border">
+              <CommandEmpty>{emptyText}</CommandEmpty>
+              <CommandGroup>{renderOptionItems()}</CommandGroup>
+            </CommandList>
+          ) : null}
+        </Command>
+      </div>
+    );
+  }
+
   return (
     <Popover
       open={open}
@@ -143,71 +273,18 @@ export function CatalogSearchPicker({
         if (!next) setQuery('');
       }}
     >
-      <PopoverTrigger asChild>
-        <Button
-          id={id}
-          type="button"
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          aria-label={ariaLabel ?? placeholder}
-          disabled={disabled}
-          data-testid={dataTestId}
-          className={cn(
-            'h-10 w-full justify-between rounded-input border-xevn-border font-normal',
-            !selected && 'text-muted-foreground',
-            triggerClassName,
-            className,
-          )}
-        >
-          <span className="truncate text-left">
-            {selected ? (
-              <>
-                <span className="font-mono text-xs text-muted-foreground mr-1.5">
-                  {selected.code ?? selected.value}
-                </span>
-                {selected.label}
-              </>
-            ) : (
-              placeholder
-            )}
-          </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{comboboxTrigger}</PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder={searchPlaceholder}
             value={query}
             onValueChange={setQuery}
+            data-testid={searchTestId}
           />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {filtered.map((opt) => (
-                <CommandItem
-                  key={opt.value}
-                  value={opt.value}
-                  onSelect={() => {
-                    onValueChange(opt.value);
-                    setOpen(false);
-                    setQuery('');
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      selected?.value === opt.value ? 'opacity-100' : 'opacity-0',
-                    )}
-                  />
-                  <span className="font-mono text-xs text-muted-foreground mr-2">
-                    {opt.code ?? opt.value}
-                  </span>
-                  <span className="truncate">{opt.label}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            <CommandGroup>{renderOptionItems()}</CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>

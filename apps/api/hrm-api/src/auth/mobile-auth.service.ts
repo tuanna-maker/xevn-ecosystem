@@ -64,6 +64,25 @@
  * Why:  QA-HRM-MOB-UUID-PLANE-01 EC-1 FAIL — live JWT hash ∉ map → HRM-PLANE-409
  * SRS:  ADR-PLANE-A-BRIDGE §4.3.3
  * must_keep: assertHrmMappedCompanyUuidOrThrow LE reject; CO-HC/OP/MD
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-03-AUTH-BE
+ * change_mode: UPGRADE
+ * What: Membership display-ready — company_label / tenant_label / role_label /
+ *       job_title_label; company_display không còn fallback slug thô.
+ * Why:  API_CONTRACT §8.4–8.5 · OS 28 · FR-UC-M01 — FE/mobile không invent nhãn.
+ * must_keep: Plane B′ company_uuid; U65; no lockout DDL; HRM-AUTH-203/201 codes
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: R-SPINE-MGR-HIER-01-PERSONA-LOCK
+ * change_mode: FIX
+ * What: BR-MOB-MGR-REPORTS-01 — `mobile_persona=emp` vẫn strip manager từ title,
+ *       nhưng nếu countDirectReports>0 thì luôn withManagerRole (JWT + is_manager).
+ * Why:  QA J-MOB-05 — HLD-0001 có ≥3 reports + pending leave nhưng personaLocksEmployee
+ *       chặn promotion → ManagerApprovals không mount (tile→Thông báo).
+ * SRS:  FR-UC-H03 L1 = direct_manager · J-MOB-05 · MOBILE_PERSONA_UX_MATRIX §2.1 (hierarchy supersedes seed emp)
+ * must_keep: emp + 0 reports → employee only; leave manager_employee_id filter;
+ *            manager_id assignment; AT-01 GWC; U65 no seed; không invent leave ladder
  */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
@@ -78,6 +97,12 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import type { MobileLoginDto } from './dto/mobile-login.dto';
 import type { MobileRefreshDto } from './dto/mobile-refresh.dto';
+import {
+  mobileCompanyLabelVi,
+  mobileJobTitleLabelVi,
+  mobileRoleLabelVi,
+  mobileTenantLabelVi,
+} from './mobile-membership-display';
 import {
   ensureUatMobileEmployeeRow,
   matchesUatMobilePassword,
@@ -96,6 +121,7 @@ type EmployeeAuthRow = {
   custom_fields: Record<string, string> | null;
 };
 
+/** OS 28 — display-ready membership for ScopeScreen (labels from BE). */
 export type MobileMembership = {
   tenant_id: string;
   company_id: string;
@@ -104,6 +130,10 @@ export type MobileMembership = {
   employee_code: string;
   employee_name: string;
   company_display: string;
+  company_label: string;
+  tenant_label: string;
+  role_label: string;
+  job_title_label: string;
   is_primary: boolean;
 };
 
@@ -342,12 +372,17 @@ export class MobileAuthService {
     return res.rows[0]?.count ?? 0;
   }
 
+  /**
+   * BR-MOB-MGR-REPORTS-01 (R-SPINE-MGR-HIER-01-PERSONA-LOCK):
+   * `mobile_persona=emp` strips title-based manager/hr_manager (seed EMP lane),
+   * but hierarchy wins — directReports>0 always grants `manager` for L1 approvals
+   * (FR-UC-H03 / J-MOB-05). Emp + 0 reports stays employee-only.
+   */
   async resolveRolesForEmployee(row: EmployeeAuthRow): Promise<string[]> {
     let roles = this.deriveRoles(row.job_title_key);
     roles = this.applyMobilePersonaRoleOverride(roles, row.custom_fields);
-    const persona = row.custom_fields?.mobile_persona?.trim().toLowerCase();
-    const personaLocksEmployee = persona === 'emp' || persona === 'employee';
-    if (!personaLocksEmployee && !this.isManagerRoles(roles)) {
+    // Xử lý: seed emp chỉ khóa title; có cấp dưới (manager_id) → mở quyền duyệt L1.
+    if (!this.isManagerRoles(roles)) {
       const directReports = await this.countDirectReports(row.id);
       if (directReports > 0) {
         roles = this.withManagerRole(roles);
@@ -402,9 +437,11 @@ export class MobileAuthService {
     );
   }
 
-  rowToMembership(row: EmployeeAuthRow): MobileMembership {
+  rowToMembership(row: EmployeeAuthRow, rolesHint?: string[]): MobileMembership {
     const custom = row.custom_fields ?? {};
     const tenantId = this.resolveTenantId(row);
+    const companyLabel = mobileCompanyLabelVi(row.company_id, custom.company_display);
+    const roles = rolesHint ?? this.deriveRoles(row.job_title_key);
     return {
       tenant_id: tenantId,
       company_id: row.company_id,
@@ -412,7 +449,12 @@ export class MobileAuthService {
       employee_id: row.id,
       employee_code: row.employee_code,
       employee_name: row.full_name,
-      company_display: custom.company_display?.trim() || row.company_id,
+      // Xử lý: company_display = label VI — không trả slug thô khi thiếu custom.
+      company_display: companyLabel,
+      company_label: companyLabel,
+      tenant_label: mobileTenantLabelVi(tenantId),
+      role_label: mobileRoleLabelVi(roles),
+      job_title_label: mobileJobTitleLabelVi(row.job_title_key),
       is_primary: custom.is_primary_membership === 'true' || custom.is_primary === 'true',
     };
   }
@@ -448,9 +490,14 @@ export class MobileAuthService {
   }
 
   private async buildLoginResponse(email: string, row: EmployeeAuthRow, allRows: EmployeeAuthRow[]) {
-    const memberships = allRows.map((r) => this.rowToMembership(r));
-    const active = this.rowToMembership(row);
     const roles = await this.resolveRolesForEmployee(row);
+    const memberships = await Promise.all(
+      allRows.map(async (r) => {
+        const memberRoles = r.id === row.id ? roles : await this.resolveRolesForEmployee(r);
+        return this.rowToMembership(r, memberRoles);
+      }),
+    );
+    const active = memberships.find((m) => m.employee_id === row.id) ?? this.rowToMembership(row, roles);
     const tokens = this.issueTokens({
       tenantId: active.tenant_id,
       companyId: active.company_id,
@@ -468,6 +515,7 @@ export class MobileAuthService {
         full_name: row.full_name,
         employee_code: row.employee_code,
         job_title_key: row.job_title_key,
+        job_title_label: mobileJobTitleLabelVi(row.job_title_key),
       },
       roles,
       is_manager: this.isManagerRoles(roles),

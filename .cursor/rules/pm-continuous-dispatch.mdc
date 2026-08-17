@@ -40,3 +40,9 @@ pnpm run pm:idle:check
 3. `Task` với entry/exit criteria từ `reason` + fidelity wave
 
 Charter: `docs/program/PM_AUTONOMOUS_CHARTER.md` · U38: `TEAM_USER_REQUIREMENTS.md`
+
+## U88 — sau QC phải cuốn chiếu SA/BA
+
+Khi vừa seal QC GWC/GO: **không** coi exit 0 / «seat idle-ok» là xong lượt.
+Cùng phiên: residual execution (nếu có) **+** ≥1 Task `sa`/`ba-*` cho đoạn kế — xem `pm-continuous-pipeline-after-qc.mdc`.
+Cấm chờ sponsor nhắc «mở liên tục».

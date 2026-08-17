@@ -11,6 +11,7 @@ import {
   assertContractEndDateForCreate,
   contractTypeRequiresEndDate,
   isOpenEndedContractType,
+  resolveContractStartDateForCreate,
 } from './contract-end-date-policy';
 
 describe('contract-end-date-policy (G-CI-01)', () => {
@@ -64,5 +65,25 @@ describe('contract-end-date-policy (G-CI-01)', () => {
     } catch (err) {
       expect(err).toMatchObject<ApiException>({ code: 'HRM-CON-001' });
     }
+  });
+
+  it('resolveContractStartDateForCreate — prefers start_date, then effective_from, else defaultToday', () => {
+    expect(
+      resolveContractStartDateForCreate({
+        startDate: '2026-04-15',
+        effectiveFrom: '2026-05-01',
+      }),
+    ).toBe('2026-04-15');
+    expect(
+      resolveContractStartDateForCreate({
+        effectiveFrom: '2026-05-01',
+        defaultToday: () => '2026-08-11',
+      }),
+    ).toBe('2026-05-01');
+    expect(
+      resolveContractStartDateForCreate({
+        defaultToday: () => '2026-08-11',
+      }),
+    ).toBe('2026-08-11');
   });
 });

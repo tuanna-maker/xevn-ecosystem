@@ -1,3 +1,21 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     /hr/attendance → Quản lý đơn → Đề nghị cập nhật công
+ * UC:         UC-HRM-09 · FN-REQ-UPD-CRUD · HIM §5.5 · TC-HIM-ATT-TMDV-AP-001
+ * Purpose:    List/create/approve/reject đề nghị cập nhật công qua hrmApi Nest.
+ * WorkItem:   U78-U84-ATT-ADJ-TMDV-AP-COMPANY-HEADER-01
+ * Coded:      2026-08-04
+ * Callers:    AttendanceUpdateRequestTab
+ * Callees:    list/create/approve/reject/deleteAttendanceUpdateRequest
+ * must_keep:  create company_id + ISO time wire; leave approve riêng
+ * LastVerified: hrmSpreadsheetScope.test.ts (mutate scope) · useAttendanceUpdateRequests.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 U78-U84-ATT-ADJ-TMDV-AP-COMPANY-HEADER-01
+ * change_mode: FIX
+ * What: approve/reject/delete/update truyền currentCompanyId → x-company-id (mutate scope)
+ * Why: QA R1 mgr FE Duyệt 409 SCOPE_CONTEXT_MISMATCH; L1 WITH x-company-id=trsport → 201
+ * must_keep: create body company_id; ISO compose create; U65 no seed
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
@@ -61,8 +79,9 @@ export function useAttendanceUpdateRequests() {
   };
 
   const updateRequest = async (id: string, data: Partial<AttendanceUpdateRequest>): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const updated = await updateAttendanceUpdateRequest(id, data);
+      const updated = await updateAttendanceUpdateRequest(id, data, currentCompanyId);
       setRequests(prev => prev.map(r => r.id === id ? updated : r)); return true;
     } catch (error: unknown) {
       console.error('Error updating attendance update request:', error);
@@ -71,8 +90,9 @@ export function useAttendanceUpdateRequests() {
   };
 
   const approveRequest = async (id: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const updated = await approveAttendanceUpdateRequest(id);
+      const updated = await approveAttendanceUpdateRequest(id, undefined, currentCompanyId);
       setRequests(prev => prev.map(r => r.id === id ? updated : r));
       toast({ title: t('messages.success'), description: h('approveSuccess') });
       return true;
@@ -84,8 +104,13 @@ export function useAttendanceUpdateRequests() {
   };
 
   const rejectRequest = async (id: string, reason?: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      const updated = await rejectAttendanceUpdateRequest(id, { rejected_reason: reason });
+      const updated = await rejectAttendanceUpdateRequest(
+        id,
+        { rejected_reason: reason },
+        currentCompanyId,
+      );
       setRequests(prev => prev.map(r => r.id === id ? updated : r));
       toast({ title: t('messages.success'), description: h('rejectSuccess') });
       return true;
@@ -97,8 +122,9 @@ export function useAttendanceUpdateRequests() {
   };
 
   const deleteRequest = async (id: string): Promise<boolean> => {
+    if (!currentCompanyId) return false;
     try {
-      await deleteAttendanceUpdateRequest(id);
+      await deleteAttendanceUpdateRequest(id, currentCompanyId);
       setRequests(prev => prev.filter(r => r.id !== id));
       toast({ title: t('messages.success'), description: h('deleteSuccess') }); return true;
     } catch (error: unknown) {

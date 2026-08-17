@@ -11,16 +11,18 @@
  * Coded:      2026-07-22
  *
  * Callers:
- *   - config-sync.controller → publishCatalog / applyCatalogToMembers
+ *   - config-sync.controller → publishCatalog / applyCatalogToMembers / cloneCatalog
  *   - catalog-governance.controller → publishCatalogVersion (delegate)
  *
  * Callees:
  *   - publishCatalog → config_catalogs + config_catalog_items + catalog_audit_logs
  *   - applyCatalogToMembers → getCatalogForTarget(source) → publishCatalog(each target)
+ *   - cloneCatalog → load source → conflict check → publishCatalog(dest)
  *
  * BE-Chain:
  *   POST …/publish → upsert one scope
  *   POST …/apply-to-members → copy items to N member scopes (allow-list keys)
+ *   POST …/clone → copy one catalog partition → one dest (DM-09; default reject overlap)
  *
  * Impact:     Fan-out sai key/scope → member HRM sync nhầm hoặc đè catalog ngoài TD
  * must_keep:  Single-company publish path · Leave/Catalog WF bridges · U65 no seed
@@ -47,6 +49,52 @@
  * API:  docs/xbos/API_DESIGN_XBOS_APPLY_TO_MEMBERS_EXPAND.md §1
  * must_keep: publishCatalog reuse · no new tables/URLs · U65 no seed · P2 HOLD
  * LastVerified: config-sync.service.spec.ts · d-be-xbos-ctrl-g1-allowlist-01-20260729.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-03-TC-CAT
+ * change_mode: UPGRADE
+ * What: Response items ADD status_label + status_tone (OS 28 display-ready);
+ *   checksum vẫn canonical code/label/status/unit — không đổi SoT publish.
+ * SRS: docs/brand-new-documents-20270801/SRS_NEW.md · FR-UC-B04 #3–4
+ * API: API_CONTRACT_NEW.md §2.1–2.2 · OS 28
+ * must_keep: XBOS publisher SoT; no hard-delete platform; checksum algorithm unchanged
+ * LastVerified: config-sync.service.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-03-TC-CAT-XBOS-LABEL-01
+ * change_mode: FIX
+ * What: Tách ConfigCatalog (items SoT) vs ConfigCatalogView (status_label/tone);
+ *   bootstrap/apply giữ ConfigCatalogItem[]; GET/publish/list trả View.
+ *   Root cause R-CAT-XBOS-STATUS-LABEL: tsc fail → dist stale thiếu withCatalogItemDisplay.
+ * Why: Live GET thiếu status_label dù source có mapper — emit dist bị chặn TS2322.
+ * SRS: FR-UC-B04 #3–4 · OS 28
+ * must_keep: checksum canonical unchanged; XBOS publisher SoT; AUTH/EMP untouched
+ * LastVerified: live GET /config-sync/catalog/job_titles · w1b-03-be-cat-status-label.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W3-BE-LOG09
+ * change_mode: ADD
+ * What: Thêm cloneCatalogBundle — sao chép bộ danh mục CT→CT theo filter domain
+ *   (+ keyPrefix tùy chọn); onConflict fail|skip|overwrite; tái dùng publishCatalog.
+ * Why: Đóng GAP XBOS-DM-LOG-09 (STT 106); shared endpoint phục vụ LOG + DM-09 twin
+ *   (không nhân bản god module logistic-api). TECHSPEC_M03 §2 ghi bootstrap script —
+ *   P1 bổ sung API contract UI-stable thay seed-only.
+ * SRS: docs/logistics/BANG_TONG_HOP_USECASE_LOGISTIC.md STT local 9 · PHASE1 matrix 106
+ * TechSpec: docs/logistics/TECHSPEC_M03_DM_LOG_P1.md §2 · TECHSPEC_HE §8.1 pattern
+ * Choice: shared clone + domains=['logistics'] cho LOG-09 (không endpoint LOG riêng)
+ * must_keep: publishCatalog · apply-to-members allow-list · catalog-governance WF/inbox · HRM extension
+ * LastVerified: config-sync.service.spec.ts (clone bundle HP+FD)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W3-BE-DM09
+ * change_mode: ADD
+ * What: Thêm cloneCatalog (single catalog_key) — XBOS-DM-09 STT 85;
+ *   onConflict reject|overwrite; XBOS-CFG-409 khi dest trùng mã; XBOS-VAL-013 self-copy.
+ * Why: by-uc GAP — apply-to-members = DM-HRM-07 fan-out, không đủ FD «dest trùng mã».
+ * SRS: BANG_TONG_HOP STT 85 · by-uc XBOS-DM-09 · TECHSPEC_HE §7.1/§8.1
+ * API: POST …/catalog/:catalogKey/clone · XBOS-CFG-205
+ * must_keep: publish · apply-to-members · cloneCatalogBundle · catalog-governance · U65 no seed
+ * LastVerified: config-sync.service.spec.ts · po-uc-tc-w3-be-dm09.md
  */
 import { Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
@@ -122,6 +170,15 @@ export type ApplyCatalogToMembersPayload = {
   actor?: string;
 };
 
+export type CloneCatalogPayload = {
+  tenantId: string;
+  companyId: string;
+  destTenantId: string;
+  destCompanyId: string;
+  onConflict?: 'reject' | 'overwrite';
+  actor?: string;
+};
+
 export interface ConfigCatalogItem {
   code: string;
   label: string;
@@ -129,6 +186,27 @@ export interface ConfigCatalogItem {
   status: 'active' | 'draft';
 }
 
+/** OS 28 — FE-bindable item labels on publish/get/list (not stored; not in checksum). */
+export type ConfigCatalogItemDisplay = ConfigCatalogItem & {
+  status_label: string;
+  status_tone: 'success' | 'warning' | 'neutral';
+};
+
+export function toConfigCatalogItemDisplay(item: ConfigCatalogItem): ConfigCatalogItemDisplay {
+  const status = item.status === 'draft' ? 'draft' : 'active';
+  return {
+    ...item,
+    status,
+    status_label: status === 'active' ? 'Đang dùng' : 'Nháp',
+    status_tone: status === 'active' ? 'success' : 'warning',
+  };
+}
+
+export function withCatalogItemDisplay(items: ConfigCatalogItem[]): ConfigCatalogItemDisplay[] {
+  return items.map(toConfigCatalogItemDisplay);
+}
+
+/** Domain / persist shape — items without display fields (checksum SoT). */
 export interface ConfigCatalog {
   contractVersion: 'xbos-config-v1';
   checksumAlgorithm: 'sha256:items-canonical-v1';
@@ -144,6 +222,27 @@ export interface ConfigCatalog {
   items: ConfigCatalogItem[];
 }
 
+/** API response view — OS 28 display-ready (not persisted; not in checksum). */
+export type ConfigCatalogView = Omit<ConfigCatalog, 'items'> & {
+  items: ConfigCatalogItemDisplay[];
+};
+
+/** Strip display fields before re-publish / checksum (must_keep SoT). */
+export function toConfigCatalogItems(items: ConfigCatalogItem[]): ConfigCatalogItem[] {
+  return items.map((item) => {
+    const status = item.status === 'draft' ? 'draft' : 'active';
+    const next: ConfigCatalogItem = {
+      code: item.code,
+      label: item.label,
+      status,
+    };
+    if (item.unit && item.unit.trim()) {
+      next.unit = item.unit.trim();
+    }
+    return next;
+  });
+}
+
 export interface PublishCatalogPayload {
   tenantId: string;
   companyId: string;
@@ -153,6 +252,32 @@ export interface PublishCatalogPayload {
   items: ConfigCatalogItem[];
   actor?: string;
 }
+
+export type CloneCatalogConflictPolicy = 'fail' | 'skip' | 'overwrite';
+
+export type CloneCatalogBundlePayload = {
+  sourceTenantId: string;
+  sourceCompanyId: string;
+  destTenantId: string;
+  destCompanyId: string;
+  domains: string[];
+  keyPrefix?: string;
+  onConflict?: CloneCatalogConflictPolicy;
+  actor?: string;
+};
+
+export type CloneCatalogBundleResult = {
+  source: { tenantId: string; companyId: string };
+  dest: { tenantId: string; companyId: string };
+  domains: string[];
+  keyPrefix: string | null;
+  onConflict: CloneCatalogConflictPolicy;
+  matchedCount: number;
+  copied: Array<{ catalogKey: string; version: number; checksum: string; domain: string }>;
+  skipped: Array<{ catalogKey: string; reason: string }>;
+  copiedCount: number;
+  skippedCount: number;
+};
 
 @Injectable()
 export class ConfigSyncService {
@@ -558,7 +683,12 @@ export class ConfigSyncService {
     };
   }
 
-  async getCatalogForTarget(catalogKey: string, target: AssignmentTarget, tenantId: string, companyId: string) {
+  async getCatalogForTarget(
+    catalogKey: string,
+    target: AssignmentTarget,
+    tenantId: string,
+    companyId: string,
+  ): Promise<ConfigCatalogView> {
     await this.ensureSchema();
     const normalizedCatalogKey = this.normalizeCatalogKey(catalogKey);
     const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
@@ -619,8 +749,8 @@ export class ConfigSyncService {
       version: found.version,
       checksum: found.checksum,
       updatedAt: found.updated_at,
-      items: itemsRes.rows,
-    } as ConfigCatalog;
+      items: withCatalogItemDisplay(itemsRes.rows),
+    };
   }
 
   async listCatalogsForTarget(target: AssignmentTarget, tenantId: string, companyId: string) {
@@ -680,7 +810,7 @@ export class ConfigSyncService {
     `,
       [JSON.stringify([target]), normalizedTenantId, normalizedCompanyId],
     );
-    const catalogs: ConfigCatalog[] = [];
+    const catalogs: ConfigCatalogView[] = [];
     for (const row of catalogRows.rows) {
       const computedChecksum = this.deterministicChecksum(row.items);
       if (row.checksum !== computedChecksum) {
@@ -702,7 +832,7 @@ export class ConfigSyncService {
         version: row.version,
         checksum: row.checksum,
         updatedAt: row.updated_at,
-        items: row.items,
+        items: withCatalogItemDisplay(row.items),
       });
     }
     return { total: catalogs.length, target, tenantId: normalizedTenantId, companyId: normalizedCompanyId, data: catalogs };
@@ -786,7 +916,7 @@ export class ConfigSyncService {
       assignedTo: validated.assignedTo,
       version: nextVersion,
       checksum,
-      items: validated.items,
+      items: withCatalogItemDisplay(validated.items),
     };
     await this.db.query(
       `
@@ -812,6 +942,148 @@ export class ConfigSyncService {
     });
 
     return this.getCatalogForTarget(normalizedCatalogKey, 'xbos', validated.tenantId, validated.companyId);
+  }
+
+  /**
+   * XBOS-DM-09 — Sao chép bộ danh mục: one source partition → one dest partition.
+   * Distinct from apply-to-members (DM-HRM-07 multi-target allow-list fan-out).
+   * Default onConflict=reject → XBOS-CFG-409 when dest already has overlapping item codes.
+   */
+  async cloneCatalog(catalogKey: string, payload: CloneCatalogPayload) {
+    await this.ensureSchema();
+    const normalizedCatalogKey = this.normalizeCatalogKey(catalogKey);
+    const sourceTenantId = this.normalizeScopeId(payload.tenantId, 'tenantId');
+    const sourceCompanyId = this.normalizeScopeId(payload.companyId, 'companyId');
+    const destTenantId = this.normalizeScopeId(payload.destTenantId, 'tenantId');
+    const destCompanyId = this.normalizeScopeId(payload.destCompanyId, 'companyId');
+    const onConflict = payload.onConflict === 'overwrite' ? 'overwrite' : 'reject';
+
+    if (sourceTenantId === destTenantId && sourceCompanyId === destCompanyId) {
+      throw new ApiException(
+        'XBOS-VAL-013',
+        'Clone destination must differ from source scope',
+        HttpStatus.BAD_REQUEST,
+        { sourceTenantId, sourceCompanyId, destTenantId, destCompanyId },
+      );
+    }
+
+    const { source, writeKey } = await this.loadApplySourceCatalog(
+      [normalizedCatalogKey],
+      sourceTenantId,
+      sourceCompanyId,
+    );
+    const items = toConfigCatalogItems(source.items);
+    if (items.length === 0) {
+      throw new ApiException(
+        'XBOS-VAL-005',
+        'Catalog must include at least one item',
+        HttpStatus.BAD_REQUEST,
+        { catalogKey: writeKey, sourceTenantId, sourceCompanyId },
+      );
+    }
+
+    if (onConflict === 'reject') {
+      const overlap = await this.findDestOverlappingCodes(
+        writeKey,
+        destTenantId,
+        destCompanyId,
+        items.map((item) => item.code),
+      );
+      if (overlap.length > 0) {
+        throw new ApiException(
+          'XBOS-CFG-409',
+          `Clone blocked: destination already has overlapping item codes (${overlap.slice(0, 5).join(', ')})`,
+          HttpStatus.CONFLICT,
+          {
+            catalogKey: writeKey,
+            destTenantId,
+            destCompanyId,
+            overlappingCodes: overlap,
+          },
+        );
+      }
+    }
+
+    const actor = payload.actor?.trim() || 'system';
+    const published = await this.publishCatalog(writeKey, {
+      tenantId: destTenantId,
+      companyId: destCompanyId,
+      name: source.name,
+      domain: source.domain,
+      assignedTo: source.assignedTo,
+      items,
+      actor,
+    });
+
+    const summary = {
+      catalogKey: writeKey,
+      onConflict,
+      source: {
+        tenantId: source.tenantId,
+        companyId: source.companyId,
+        version: source.version,
+        checksum: source.checksum,
+        itemCount: items.length,
+      },
+      dest: {
+        tenantId: published.tenantId,
+        companyId: published.companyId,
+        version: published.version,
+        checksum: published.checksum,
+        itemCount: published.items.length,
+      },
+    };
+
+    await this.db.query(
+      `
+      INSERT INTO public.catalog_audit_logs (catalog_key, action, actor, after_payload)
+      VALUES ($1, 'clone', $2, $3::jsonb)
+    `,
+      [writeKey, actor, JSON.stringify(summary)],
+    );
+
+    await this.platformAudit.emit({
+      actor,
+      tenantId: sourceTenantId,
+      companyId: sourceCompanyId,
+      action: 'config_catalog.clone',
+      entityType: 'config_catalog',
+      entityId: writeKey,
+      payload: {
+        destTenantId,
+        destCompanyId,
+        onConflict,
+        itemCount: items.length,
+        destVersion: published.version,
+      },
+    });
+
+    return summary;
+  }
+
+  /** Dest item codes that intersect the source clone set (DM-09 FD conflict). */
+  private async findDestOverlappingCodes(
+    catalogKey: string,
+    destTenantId: string,
+    destCompanyId: string,
+    sourceCodes: string[],
+  ): Promise<string[]> {
+    if (sourceCodes.length === 0) {
+      return [];
+    }
+    const rows = await this.db.query<{ code: string }>(
+      `
+      SELECT code
+      FROM public.config_catalog_items
+      WHERE catalog_key = $1
+        AND tenant_id = $2
+        AND company_id = $3
+        AND code = ANY($4::text[])
+      ORDER BY code
+    `,
+      [catalogKey, destTenantId, destCompanyId, sourceCodes],
+    );
+    return rows.rows.map((row) => row.code);
   }
 
   /**
@@ -869,7 +1141,7 @@ export class ConfigSyncService {
         name: source.name,
         domain: source.domain,
         assignedTo: source.assignedTo,
-        items: source.items,
+        items: toConfigCatalogItems(source.items),
         actor,
       });
       applied.push({
@@ -921,6 +1193,271 @@ export class ConfigSyncService {
     return summary;
   }
 
+  /**
+   * XBOS-DM-LOG-09 / XBOS-DM-09 — copy catalog bundle from source partition to dest.
+   * Filters by domains (+ optional keyPrefix). Reuses publishCatalog (SOLID — no upsert fork).
+   * Default onConflict=fail rejects before any write when dest keys collide (no half-copy).
+   */
+  async cloneCatalogBundle(payload: CloneCatalogBundlePayload): Promise<CloneCatalogBundleResult> {
+    await this.ensureSchema();
+    const sourceTenantId = this.normalizeScopeId(payload.sourceTenantId, 'tenantId');
+    const sourceCompanyId = this.normalizeScopeId(payload.sourceCompanyId, 'companyId');
+    const destTenantId = this.normalizeScopeId(payload.destTenantId, 'tenantId');
+    const destCompanyId = this.normalizeScopeId(payload.destCompanyId, 'companyId');
+    if (sourceTenantId === destTenantId && sourceCompanyId === destCompanyId) {
+      throw new ApiException(
+        'XBOS-VAL-013',
+        'Clone bundle destination must differ from source scope',
+        HttpStatus.BAD_REQUEST,
+        { sourceTenantId, sourceCompanyId, destTenantId, destCompanyId },
+      );
+    }
+
+    const domains = this.normalizeCloneDomains(payload.domains);
+    const keyPrefix = payload.keyPrefix?.trim().toLowerCase() || null;
+    if (keyPrefix && !/^[a-z0-9_]{1,32}$/.test(keyPrefix)) {
+      throw new ApiException(
+        'XBOS-VAL-001',
+        'keyPrefix format is invalid',
+        HttpStatus.BAD_REQUEST,
+        { keyPrefix },
+      );
+    }
+    const onConflict: CloneCatalogConflictPolicy = payload.onConflict ?? 'fail';
+    if (onConflict !== 'fail' && onConflict !== 'skip' && onConflict !== 'overwrite') {
+      throw new ApiException(
+        'XBOS-VAL-001',
+        'onConflict must be fail, skip, or overwrite',
+        HttpStatus.BAD_REQUEST,
+        { onConflict },
+      );
+    }
+
+    const sources = await this.loadCloneSourceCatalogs(
+      sourceTenantId,
+      sourceCompanyId,
+      domains,
+      keyPrefix,
+    );
+    if (sources.length === 0) {
+      throw new ApiException(
+        'XBOS-CFG-008',
+        'No catalogs match clone domain filter on source company',
+        HttpStatus.NOT_FOUND,
+        { sourceTenantId, sourceCompanyId, domains, keyPrefix },
+      );
+    }
+
+    const destExisting = await this.loadDestExistingCatalogKeys(
+      destTenantId,
+      destCompanyId,
+      sources.map((row) => row.catalog_key),
+    );
+    const conflictKeys = sources
+      .map((row) => row.catalog_key)
+      .filter((key) => destExisting.has(key));
+
+    if (onConflict === 'fail' && conflictKeys.length > 0) {
+      throw new ApiException(
+        'XBOS-CFG-009',
+        'Clone bundle blocked: destination already has conflicting catalog keys',
+        HttpStatus.CONFLICT,
+        {
+          conflictKeys,
+          onConflict,
+          hint: 'Use onConflict=skip|overwrite or clear dest keys first',
+        },
+      );
+    }
+
+    const actor = payload.actor?.trim() || 'system';
+    const copied: CloneCatalogBundleResult['copied'] = [];
+    const skipped: CloneCatalogBundleResult['skipped'] = [];
+
+    for (const source of sources) {
+      if (destExisting.has(source.catalog_key) && onConflict === 'skip') {
+        skipped.push({ catalogKey: source.catalog_key, reason: 'dest_exists' });
+        continue;
+      }
+      const published = await this.publishCatalog(source.catalog_key, {
+        tenantId: destTenantId,
+        companyId: destCompanyId,
+        name: source.name,
+        domain: source.domain,
+        assignedTo: source.assigned_systems,
+        items: toConfigCatalogItems(source.items),
+        actor,
+      });
+      copied.push({
+        catalogKey: published.key,
+        version: published.version,
+        checksum: published.checksum,
+        domain: published.domain,
+      });
+    }
+
+    const summary: CloneCatalogBundleResult = {
+      source: { tenantId: sourceTenantId, companyId: sourceCompanyId },
+      dest: { tenantId: destTenantId, companyId: destCompanyId },
+      domains,
+      keyPrefix,
+      onConflict,
+      matchedCount: sources.length,
+      copied,
+      skipped,
+      copiedCount: copied.length,
+      skippedCount: skipped.length,
+    };
+
+    await this.db.query(
+      `
+      INSERT INTO public.catalog_audit_logs (catalog_key, action, actor, after_payload)
+      VALUES ($1, 'clone_bundle', $2, $3::jsonb)
+    `,
+      [
+        `clone:${domains.join('+')}`,
+        actor,
+        JSON.stringify(summary),
+      ],
+    );
+
+    await this.platformAudit.emit({
+      actor,
+      tenantId: sourceTenantId,
+      companyId: sourceCompanyId,
+      action: 'config_catalog.clone_bundle',
+      entityType: 'config_catalog_bundle',
+      entityId: `${sourceTenantId}/${sourceCompanyId}->${destTenantId}/${destCompanyId}`,
+      payload: {
+        domains,
+        keyPrefix,
+        onConflict,
+        matchedCount: sources.length,
+        copiedCount: copied.length,
+        skippedCount: skipped.length,
+      },
+    });
+
+    return summary;
+  }
+
+  private normalizeCloneDomains(domains: string[]): string[] {
+    if (!Array.isArray(domains) || domains.length === 0) {
+      throw new ApiException(
+        'XBOS-VAL-001',
+        'domains[] is required for catalog bundle clone',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const out: string[] = [];
+    const seen = new Set<string>();
+    for (const raw of domains) {
+      const domain = String(raw ?? '').trim().toLowerCase();
+      if (!domain || domain.length > 64) {
+        throw new ApiException(
+          'XBOS-VAL-001',
+          'Each domain must be a non-empty slug ≤64 chars',
+          HttpStatus.BAD_REQUEST,
+          { domain: raw },
+        );
+      }
+      if (!seen.has(domain)) {
+        seen.add(domain);
+        out.push(domain);
+      }
+    }
+    return out;
+  }
+
+  /**
+   * Load source catalogs + items for clone without checksum gate (XBOS-CFG-004 on list
+   * must not block onboarding copy; publish recomputes checksum on dest).
+   */
+  private async loadCloneSourceCatalogs(
+    tenantId: string,
+    companyId: string,
+    domains: string[],
+    keyPrefix: string | null,
+  ): Promise<
+    Array<{
+      catalog_key: string;
+      name: string;
+      domain: string;
+      assigned_systems: AssignmentTarget[];
+      items: ConfigCatalogItem[];
+    }>
+  > {
+    const params: unknown[] = [tenantId, companyId, domains];
+    let prefixClause = '';
+    if (keyPrefix) {
+      params.push(`${keyPrefix}%`);
+      prefixClause = `AND c.catalog_key LIKE $${params.length}`;
+    }
+    const catalogRows = await this.db.query<{
+      catalog_key: string;
+      name: string;
+      domain: string;
+      assigned_systems: AssignmentTarget[];
+      items: ConfigCatalogItem[];
+    }>(
+      `
+      SELECT
+        c.catalog_key,
+        c.name,
+        c.domain,
+        c.assigned_systems,
+        COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'code', i.code,
+              'label', i.label,
+              'unit', i.unit,
+              'status', i.status
+            )
+            ORDER BY i.code
+          ) FILTER (WHERE i.id IS NOT NULL),
+          '[]'::jsonb
+        ) AS items
+      FROM public.config_catalogs c
+      LEFT JOIN public.config_catalog_items i
+        ON i.catalog_key = c.catalog_key
+       AND i.tenant_id = c.tenant_id
+       AND i.company_id = c.company_id
+      WHERE c.tenant_id = $1
+        AND c.company_id = $2
+        AND lower(c.domain) = ANY($3::text[])
+        ${prefixClause}
+      GROUP BY c.catalog_key, c.name, c.domain, c.assigned_systems
+      ORDER BY c.catalog_key
+    `,
+      params,
+    );
+    return catalogRows.rows.map((row) => ({
+      ...row,
+      assigned_systems: Array.isArray(row.assigned_systems) ? row.assigned_systems : [],
+      items: Array.isArray(row.items) ? row.items : [],
+    }));
+  }
+
+  private async loadDestExistingCatalogKeys(
+    tenantId: string,
+    companyId: string,
+    catalogKeys: string[],
+  ): Promise<Set<string>> {
+    if (catalogKeys.length === 0) {
+      return new Set();
+    }
+    const found = await this.db.query<{ catalog_key: string }>(
+      `
+      SELECT catalog_key
+      FROM public.config_catalogs
+      WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = ANY($3::text[])
+    `,
+      [tenantId, companyId, catalogKeys],
+    );
+    return new Set(found.rows.map((row) => row.catalog_key));
+  }
+
   /** Prefer path storage key first when it is an alias sibling (e.g. hr_decision_types). */
   private resolveApplySourceStorageTryList(
     canonical: ApplyToMembersCatalogKey,
@@ -946,7 +1483,7 @@ export class ConfigSyncService {
     storageTryList: string[],
     sourceTenantId: string,
     sourceCompanyId: string,
-  ): Promise<{ source: ConfigCatalog; writeKey: string }> {
+  ): Promise<{ source: ConfigCatalogView; writeKey: string }> {
     let lastMissing: ApiException | undefined;
     for (const storageKey of storageTryList) {
       try {

@@ -24,6 +24,13 @@
  * What: Re-export formatMetadataWorkflowLabel từ lib (UI humanize workflow_code)
  * Why: QC C-HRM-MENU-SWEEP-01 — cấm hiện xbos.employee_metadata.* trên UI
  * must_keep: formatMetadataDisplayValue + approve/reject contract
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-DEV-FE-B2-MD01-SUBMIT-ISJSON
+ * change_mode: FIX
+ * What: formatMetadataDisplayValue unwraps single-key `{ value }` from FE plain-text submit wrapper
+ * Why: Cột «Giá trị đề nghị» hiển thị «Chuyên viên QA» thay vì raw JSON sau 201
+ * must_keep: decide/submit scope · không seed
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -54,6 +61,16 @@ export function formatMetadataDisplayValue(value: unknown): string {
       }
     }
     return value;
+  }
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    const record = value as Record<string, unknown>;
+    const keys = Object.keys(record);
+    if (keys.length === 1 && keys[0] === 'value') {
+      const inner = record.value;
+      if (typeof inner === 'string' || typeof inner === 'number' || typeof inner === 'boolean') {
+        return String(inner);
+      }
+    }
   }
   try {
     return JSON.stringify(value);

@@ -75,7 +75,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
     const py = iconOnly ? 'py-2' : 'py-3';
     const px = iconOnly ? 'px-0 justify-center' : 'px-2.5';
     return `flex w-full min-w-0 items-center gap-2 rounded-lg ${px} ${py} text-left transition active:scale-95 ${
-      isActive ? 'bg-xevn-primary/10' : 'hover:bg-slate-100'
+      isActive ? 'bg-xevn-primary/10' : 'hover:bg-xevn-background'
     }`;
   };
 
@@ -90,7 +90,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
       {({ isActive }) => (
         <>
           <item.Icon
-            className={`h-5 w-5 shrink-0 ${isActive ? 'text-xevn-primary' : 'text-slate-500'}`}
+            className={`h-5 w-5 shrink-0 ${isActive ? 'text-xevn-primary' : 'text-xevn-textMuted'}`}
             strokeWidth={RAIL_STROKE}
           />
           {!opts?.iconOnly ? (

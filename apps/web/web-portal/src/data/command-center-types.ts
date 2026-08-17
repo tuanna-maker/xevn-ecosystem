@@ -31,6 +31,11 @@ export interface UnifiedTask {
   moduleCode: string;
   title: string;
   subtitle?: string;
+  /**
+   * BE workflow `business_type` (e.g. hrm_leave) — used for HDSD leave Duyệt label
+   * (R-SPINE-WEB-APPROVE-UX-01). Optional on synthetic deep-link stubs.
+   */
+  businessType?: string;
   assigneeUserId: string;
   assigneeName: string;
   /** workflow-engine step hat_key — required for multi-hat approve on same instance (BR-XBOS-MULTI-HAT-01). */

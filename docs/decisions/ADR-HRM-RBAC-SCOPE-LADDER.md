@@ -329,4 +329,21 @@ XBOS `resolveTenantOnlyContext`: catalog/alert endpoints — `companyId` optiona
 
 ---
 
+## 13. ATT sheet scope parity (UC-BP-ATT-11 · TR-CM-16)
+
+**work_item_id:** `PO-HRM-BP-ATT-SIGN-SA-01` · **Evidence:** `docs/qa/evidence/po-hrm-bp-att-sign-sa-01.md`
+
+| Rule | Requirement |
+|------|-------------|
+| **List ↔ get-by-id** | `GET /attendance-sheets/{id}` must use **same** `resolveHrmListScope` + `assertResourceInHrmScope` as `PATCH/DELETE …/{sheetId}` and same company keys as `GET /attendance-sheets` list |
+| **Signatures** | `GET/POST …/{id}/signatures` resolve `{id}` **before** reading `att_timesheet_sign_step` — never infer scope from sign rows alone |
+| **Close / reopen** | `POST …/{id}/close` · `POST …/{id}/reopen` — same header resolver; BR-BP-TS-02 evaluator runs **after** scope PASS |
+| **Transport** | Controller `resolveScopeContext(authorization, { tenantId, companyId })` on every ATT-11 route (409 before service) |
+| **Group rollup** | Sheet catalog **AS-IS** uses `resolveHrmListScope(authorization, companyId)` only (no `normalizePayrollListCompanyId` on AT-14 list/mutate). Sign/close/get-by-id **must match catalog** until an explicit AT-14 uplift bundles payroll-normalize on sheets. |
+| **Tests** | `SP-ATT-SIGN-01..04` in `attendance-sheet-scope-parity.spec.ts` — Manifest `scope_parity_ack: true` only when green |
+
+**HTTP paths:** See `docs/architecture/ADR-HRM-ATT-SHEET-HTTP-PATH-20260805.md` — scope rules independent of `att` vs `attendance` segment.
+
+---
+
 *End of ADR — no git commit per dispatch instruction.*

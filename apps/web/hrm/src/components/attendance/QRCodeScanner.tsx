@@ -1,8 +1,29 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Chấm công → Clock-In → QR scanner (S13–S14)
+ * UC:         UC-HRM-ATT-CLOCK-QR
+ * Purpose:    QR clock channel — camera scan + confirm check-in/out dialog
+ * WorkItem:   PO-HRM-UI-BRAND-W3-ATT-E
+ * Coded:      2026-08-05
+ * must_keep:  checkIn/checkOut API wire; PROP-03e EmployeeQRCard SKIP; Face honesty; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-E
+ * change_mode: UPGRADE
+ * What: Remaster QR clock chrome → Precision Motion; DialogTitle ≥20; primary CTA; ban orange checkout icon
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10 · inventory W3-ATT-E S13–S14
+ * must_keep: mutate checkIn/checkOut signatures; no invent EmployeeQRCard; no Face LIVE; no Attendance CLOSED
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-E (RE-DISPATCH stall)
+ * change_mode: FIX
+ * What: Finish remaster body + evidence close after stall n=1 evidence MISS (preserve scan wires)
+ * Why: PM RE-DISPATCH — prior seat evidence MISS; chrome-only remaster
+ * must_keep: checkIn/checkOut + Html5Qrcode start/stop + audio beep; PROP-03e SKIP; no Attendance CLOSED
+ */
+
 import { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -250,18 +271,18 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
 
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full rounded-card border-xevn-border bg-xevn-surface" data-testid="att-qr-clock-precision">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <QrCode className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
+              <QrCode className="h-5 w-5 text-xevn-primary" />
               {t('qrScanner.title')}
             </CardTitle>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-xevn-primary tabular-nums">
                 {format(currentTime, 'HH:mm:ss')}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-xevn-textSecondary">
                 {format(currentTime, 'EEEE, dd/MM/yyyy', { locale: getDateLocale() })}
               </div>
             </div>
@@ -269,16 +290,16 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Scanner Area */}
-          <div className="relative rounded-lg overflow-hidden bg-black/5 dark:bg-white/5">
+          <div className="relative rounded-card overflow-hidden bg-xevn-background border border-xevn-border">
             <div
               id={scannerContainerId}
               className={`w-full aspect-square max-h-[400px] ${!isScanning ? 'hidden' : ''}`}
             />
             
             {!isScanning && (
-              <div className="w-full aspect-square max-h-[400px] flex flex-col items-center justify-center bg-muted/30 border-2 border-dashed border-muted-foreground/30 rounded-lg">
-                <QrCode className="h-24 w-24 text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground text-center px-4">
+              <div className="w-full aspect-square max-h-[400px] flex flex-col items-center justify-center bg-xevn-background border-2 border-dashed border-xevn-border rounded-card">
+                <QrCode className="h-24 w-24 text-xevn-textMuted mb-4" />
+                <p className="text-[15px] text-xevn-textSecondary text-center px-4">
                   {t('qrScanner.clickToStart')}
                 </p>
               </div>
@@ -287,14 +308,14 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
 
           {/* Status Messages */}
           {scanStatus === 'error' && errorMessage && (
-            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-destructive">
+            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-card text-destructive">
               <XCircle className="h-5 w-5 shrink-0" />
               <span className="text-sm">{errorMessage}</span>
             </div>
           )}
 
           {scanStatus === 'success' && scannedEmployee && (
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg text-green-700 dark:text-green-300">
+            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/30 rounded-card text-green-700 dark:text-green-300">
               <CheckCircle2 className="h-5 w-5 shrink-0" />
               <span className="text-sm">
                 {t('qrScanner.recognized')}: <strong>{scannedEmployee.full_name}</strong> ({scannedEmployee.employee_code})
@@ -305,7 +326,7 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
           {/* Control Buttons */}
           <div className="flex gap-3">
             {!isScanning ? (
-              <Button onClick={startScanner} className="flex-1 h-12">
+              <Button onClick={startScanner} className="flex-1 h-12 bg-xevn-primary hover:bg-xevn-primaryPressed text-white" data-testid="att-qr-start-scan">
                 <Camera className="mr-2 h-5 w-5" />
                 {t('qrScanner.startScan')}
               </Button>
@@ -318,12 +339,12 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
           </div>
 
           {/* Instructions */}
-          <div className="p-4 bg-muted/30 rounded-lg">
-            <h4 className="font-medium mb-2 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-primary" />
+          <div className="p-4 bg-xevn-background rounded-card border border-xevn-border">
+            <h4 className="font-semibold text-[15px] text-xevn-text mb-2 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-xevn-primary" />
               {t('qrScanner.instructions')}
             </h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
+            <ul className="text-sm text-xevn-textSecondary space-y-1">
               <li>• {t('qrScanner.instruction1')}</li>
               <li>• {t('qrScanner.instruction2')}</li>
               <li>• {t('qrScanner.instruction3')}</li>
@@ -334,10 +355,10 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
 
       {/* Confirmation Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" data-testid="att-qr-confirm-dialog">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
+              <QrCode className="h-5 w-5 text-xevn-primary" />
               {t('qrScanner.confirmAttendance')}
             </DialogTitle>
           </DialogHeader>
@@ -345,16 +366,16 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
           <div className="space-y-4">
             {/* Employee Info */}
             {scannedEmployee && (
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-4 p-4 bg-xevn-background rounded-card border border-xevn-border">
                 <Avatar className="h-14 w-14">
                   <AvatarImage src={scannedEmployee.avatar_url || ''} />
-                  <AvatarFallback className="text-lg bg-primary/10 text-primary">
+                  <AvatarFallback className="text-lg bg-xevn-primary/10 text-xevn-primary">
                     {scannedEmployee.full_name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="font-semibold text-lg">{scannedEmployee.full_name}</div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <div className="font-semibold text-[15px] text-xevn-text">{scannedEmployee.full_name}</div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-xevn-textSecondary">
                     <span className="flex items-center gap-1">
                       <User className="h-3.5 w-3.5" />
                       {scannedEmployee.employee_code}
@@ -371,11 +392,11 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
             )}
 
             {/* Current Time */}
-            <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
-              <Clock className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-2 p-3 bg-xevn-primary/10 rounded-card">
+              <Clock className="h-5 w-5 text-xevn-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">{t('faceIdScanner.time')}</div>
-                <div className="font-semibold text-lg">
+                <div className="text-sm text-xevn-textSecondary">{t('faceIdScanner.time')}</div>
+                <div className="font-semibold text-[15px] text-xevn-text tabular-nums">
                   {format(currentTime, 'HH:mm:ss - dd/MM/yyyy')}
                 </div>
               </div>
@@ -383,16 +404,16 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
 
             {/* Today's Status */}
             {currentRecord && (
-              <div className="p-3 border rounded-lg space-y-2">
+              <div className="p-3 border rounded-card space-y-2">
                 <div className="text-sm font-medium">{t('faceIdScanner.todayStatus')}</div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4 text-green-500" />
+                    <LogIn className="h-4 w-4 text-xevn-success" />
                     <span>{t('faceIdScanner.checkIn')}:</span>
                     <strong>{currentRecord.check_in_time || '--:--'}</strong>
                   </div>
                   <div className="flex items-center gap-2">
-                    <LogOut className="h-4 w-4 text-orange-500" />
+                    <LogOut className="h-4 w-4 text-xevn-warning" />
                     <span>{t('faceIdScanner.checkOut')}:</span>
                     <strong>{currentRecord.check_out_time || '--:--'}</strong>
                   </div>
@@ -402,7 +423,7 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
 
             {/* Already Completed */}
             {isCompleted && (
-              <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg text-green-700 dark:text-green-300">
+              <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/30 rounded-card text-green-700 dark:text-green-300">
                 <CheckCircle2 className="h-5 w-5" />
                 <span className="text-sm">{t('faceIdScanner.completedToday')}</span>
               </div>
@@ -411,7 +432,7 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
             {/* Attendance Type (for check-in) */}
             {canCheckIn && (
               <div className="space-y-2">
-                <Label>{t('faceIdScanner.attendanceType')}</Label>
+                <Label className="text-xevn-text">{t('faceIdScanner.attendanceType')}</Label>
                 <Select value={attendanceType} onValueChange={setAttendanceType}>
                   <SelectTrigger>
                     <SelectValue />
@@ -429,9 +450,9 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
             {(canCheckIn || canCheckOut) && (
               <>
                 <div className="space-y-2">
-                  <Label>{t('faceIdScanner.location')}</Label>
+                  <Label className="text-xevn-text">{t('faceIdScanner.location')}</Label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-xevn-textMuted" />
                     <Input
                       placeholder={t('faceIdScanner.locationPlaceholder')}
                       value={location}
@@ -442,7 +463,7 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{t('faceIdScanner.notes')}</Label>
+                  <Label className="text-xevn-text">{t('faceIdScanner.notes')}</Label>
                   <Textarea
                     placeholder={t('faceIdScanner.notesPlaceholder')}
                     value={notes}
@@ -455,14 +476,15 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
           </div>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setDialogOpen(false)} className="sm:flex-1">
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="sm:flex-1 border-xevn-border">
               {t('common.cancel')}
             </Button>
             {canCheckIn && (
               <Button
                 onClick={() => handleConfirmAttendance('checkin')}
                 disabled={isProcessing}
-                className="sm:flex-1"
+                className="sm:flex-1 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+                data-testid="att-qr-confirm-checkin"
               >
                 <LogIn className="mr-2 h-4 w-4" />
                 {isProcessing ? t('common.processing') : t('faceIdScanner.checkIn')}
@@ -474,6 +496,7 @@ export function QRCodeScanner({ onScanSuccess }: QRCodeScannerProps) {
                 disabled={isProcessing}
                 variant="destructive"
                 className="sm:flex-1"
+                data-testid="att-qr-confirm-checkout"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 {isProcessing ? t('common.processing') : t('faceIdScanner.checkOut')}

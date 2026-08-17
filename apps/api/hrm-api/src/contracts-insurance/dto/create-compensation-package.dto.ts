@@ -1,3 +1,18 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     DTO — POST/revise compensation-packages
+ * UC:         UC-BP-CORE-02 · F-CORE-EMP-02
+ * WorkItem:   PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01
+ * Coded:      2026-08-09
+ * Purpose:    Create/Revise package lines + bank/MST header ADD (DATA §4)
+ * must_keep:  base line required · allowance_code · Nest /core DENY · public CF bank SoT DENY
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01
+ * change_mode: UPGRADE
+ * What: ADD bank_account · bank_name · bank_branch? · tax_id on create+revise DTOs
+ * Why: DATA-01 §4 · API-01 F.1 · AC-CORE-02-06 · O6
+ * must_keep: revise omit = copy-forward (service) · history snapshot bank/MST
+ */
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
@@ -32,6 +47,12 @@ export class CompensationLineDto {
   @IsString()
   @MaxLength(64)
   allowance_code?: string;
+
+  /** Soft bind salary_components.code — BR-AMIS-PAY-SRC-02 per-component fixed PC. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  component_code?: string;
 
   @IsOptional()
   @IsBoolean()
@@ -82,6 +103,27 @@ export class CreateCompensationPackageDto {
   @IsBoolean()
   link_to_contract?: boolean;
 
+  /** C&B bank/MST — persist on package header only (DENY public EMP SoT). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  bank_account?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  bank_name?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  bank_branch?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  tax_id?: string | null;
+
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
@@ -106,6 +148,27 @@ export class ReviseCompensationPackageDto {
   @IsString()
   @MaxLength(512)
   change_reason?: string;
+
+  /** Omit = copy-forward prior header (DATA §4.2). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  bank_account?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  bank_name?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  bank_branch?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  tax_id?: string | null;
 
   @IsArray()
   @ArrayMinSize(1)

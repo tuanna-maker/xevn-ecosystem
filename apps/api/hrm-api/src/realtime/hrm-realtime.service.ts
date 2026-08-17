@@ -51,6 +51,13 @@ export type ServiceRequestRealtimePayload = {
   rejected_reason: string | null;
 };
 
+/** R-CORE-07-ATT-12 — readable activate signal (OUT invent ATT enroll DONE). */
+export type EmployeeActivatedRealtimePayload = {
+  employee_id: string;
+  company_id: string;
+  effective_date: string;
+};
+
 export type HrmRealtimeEventEnvelope =
   | {
       type:
@@ -69,14 +76,29 @@ export type HrmRealtimeEventEnvelope =
       type: 'service_request.created' | 'service_request.approved' | 'service_request.rejected';
       at: string;
       request: ServiceRequestRealtimePayload;
+    }
+  | {
+      type: 'employee.activated';
+      at: string;
+      request: EmployeeActivatedRealtimePayload;
     };
+
+type EmployeeActivatedHandler = (
+  payload: EmployeeActivatedRealtimePayload,
+) => void | Promise<void>;
 
 @Injectable()
 export class HrmRealtimeService {
   private server: Server | null = null;
+  private readonly employeeActivatedHandlers: EmployeeActivatedHandler[] = [];
 
   attachServer(server: Server) {
     this.server = server;
+  }
+
+  /** R-ATT-12-CONSUMER — attendance lane subscribes without grant logic on employees.service. */
+  registerEmployeeActivatedHandler(handler: EmployeeActivatedHandler): void {
+    this.employeeActivatedHandlers.push(handler);
   }
 
   /**
@@ -89,9 +111,13 @@ export class HrmRealtimeService {
     if (
       type === 'attendance_update_request.created' ||
       type === 'leave_request.created' ||
-      type === 'service_request.created'
+      type === 'service_request.created' ||
+      type === 'employee.activated'
     ) {
       this.server.to(`company:${request.company_id}`).emit('hrm:event', envelope);
+      if (type === 'employee.activated') {
+        this.server.to(`employee:${request.employee_id}`).emit('hrm:event', envelope);
+      }
       return;
     }
     this.server.to(`company:${request.company_id}`).emit('hrm:event', envelope);
@@ -100,5 +126,21 @@ export class HrmRealtimeService {
         ? request.employee_id
         : null;
     if (emp) this.server.to(`employee:${emp}`).emit('hrm:event', envelope);
+  }
+
+  /**
+   * R-CORE-07-ATT-12 — emit readable employee.activated (wire-only · OUT invent ATT enroll).
+   */
+  publishEmployeeActivated(payload: EmployeeActivatedRealtimePayload) {
+    this.publishAttendanceEvent({
+      type: 'employee.activated',
+      at: new Date().toISOString(),
+      request: payload,
+    });
+    for (const handler of this.employeeActivatedHandlers) {
+      void Promise.resolve(handler(payload)).catch(() => {
+        // Consumer logs errors — CORE activate must not fail on enroll side effects.
+      });
+    }
   }
 }

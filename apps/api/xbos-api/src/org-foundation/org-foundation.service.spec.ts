@@ -106,6 +106,76 @@ describe('OrgFoundationService — legal entity upsert (UC-CC-03)', () => {
   });
 });
 
+describe('OrgFoundationService — org-unit code/name VAL (UC-CC-P0-03 / PO-UC-TC-W4-DEV-BE-DEPT-VAL-01)', () => {
+  it('rejects empty code with XBOS-VAL-014 (HTTP 400)', async () => {
+    const db = { query: jest.fn() } as unknown as XbosDbService;
+    const service = new OrgFoundationService(db);
+
+    try {
+      await service.upsertOrgUnit('xevn', 'holding', null, {
+        code: '   ',
+        name: 'Phòng Nhân sự',
+        orgType: 'department',
+      });
+      throw new Error('expected XBOS-VAL-014');
+    } catch (err) {
+      expect(err).toMatchObject({ code: 'XBOS-VAL-014' });
+      expect((err as ApiException).getStatus()).toBe(400);
+    }
+    expect(db.query).not.toHaveBeenCalled();
+  });
+
+  it('rejects empty name with XBOS-VAL-014 (HTTP 400)', async () => {
+    const db = { query: jest.fn() } as unknown as XbosDbService;
+    const service = new OrgFoundationService(db);
+
+    try {
+      await service.upsertOrgUnit('xevn', 'holding', null, {
+        code: 'HCNS',
+        name: '',
+        orgType: 'department',
+      });
+      throw new Error('expected XBOS-VAL-014');
+    } catch (err) {
+      expect(err).toMatchObject({ code: 'XBOS-VAL-014' });
+      expect((err as ApiException).getStatus()).toBe(400);
+    }
+    expect(db.query).not.toHaveBeenCalled();
+  });
+
+  it('accepts valid code/name and returns inserted row (XBOS-ORG-201 path)', async () => {
+    const inserted = {
+      id: 'ou-valid-1',
+      code: 'HCNS',
+      name: 'Phòng Nhân sự',
+      org_type: 'department',
+    };
+    const db = {
+      query: jest.fn(async (sql: string) => {
+        const text = String(sql);
+        if (text.includes('INSERT INTO public.xbos_org_unit')) {
+          return { rows: [inserted] };
+        }
+        return { rows: [] };
+      }),
+    } as unknown as XbosDbService;
+    const service = new OrgFoundationService(db);
+
+    const row = await service.upsertOrgUnit('xevn', 'holding', null, {
+      code: ' HCNS ',
+      name: ' Phòng Nhân sự ',
+      orgType: 'department',
+    });
+
+    expect(row).toEqual(inserted);
+    const insertCall = (db.query as jest.Mock).mock.calls.find((c) =>
+      String(c[0]).includes('INSERT INTO public.xbos_org_unit'),
+    );
+    expect(insertCall?.[1]?.[2]).toBe('HCNS');
+    expect(insertCall?.[1]?.[3]).toBe('Phòng Nhân sự');
+  });
+});
+
 describe('OrgFoundationService — group member units industry contract (UC-HRM-CO-01)', () => {
   it('includes business_lines in members payload so FE does not infer industry from entity_type', async () => {
     const db = {

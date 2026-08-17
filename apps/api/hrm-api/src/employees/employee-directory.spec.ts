@@ -42,7 +42,7 @@ describe('employee-directory helpers', () => {
     expect(resolveDirectorySearchTerm('keyword', undefined)).toBe('keyword');
   });
 
-  it('mapDirectoryListItem strips PII fields', () => {
+  it('mapDirectoryListItem strips PII fields and exposes display-ready labels', () => {
     const item = mapDirectoryListItem(baseRow);
     expect(item).toEqual({
       id: baseRow.id,
@@ -50,13 +50,27 @@ describe('employee-directory helpers', () => {
       full_name: 'Nguyễn Văn UAT',
       job_title_key: 'STAFF',
       job_title: 'STAFF',
+      job_title_label: 'STAFF',
       department: 'Vận hành',
       avatar_url: baseRow.avatar_url,
       status: 'active',
+      status_label: 'Đang làm việc',
     });
     expect(item).not.toHaveProperty('email');
     expect(item).not.toHaveProperty('custom_fields');
     expect(item).not.toHaveProperty('date_of_birth');
+  });
+
+  it('mapDirectoryListItem never leaks snake job_title_key as job_title_label', () => {
+    const item = mapDirectoryListItem({
+      ...baseRow,
+      job_title_key: 'LEGAL_SPECIALIST',
+      custom_fields: { department: 'Pháp chế' },
+    });
+    expect(item.job_title_label).toBeNull();
+    expect(item.job_title_key).toBe('LEGAL_SPECIALIST');
+    expect(item.department).toBe('Pháp chế');
+    expect(item.status_label).toBe('Đang làm việc');
   });
 
   it('mapDirectoryListItem includes attendance_today when requested', () => {

@@ -1,3 +1,25 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     ProfileStack → CreateUpdateRequest (Đơn công)
+ * UC:         AT-01 · đi muộn / điều chỉnh chấm công
+ * BR:         ESS create path · U65 FE-only
+ * SRS:        PO_E2E spine AT-01
+ * TechSpec:   POST /attendance/update-requests
+ * Purpose:    Form tạo đơn công — meta NV từ membership/GET employees.
+ * WorkItem:   R-SPINE-AT-NAV-01 (nav entry; form sẵn có)
+ * Coded:      2026-05 (baseline)
+ * Callers:    FAB create_update_request · Settings «Đơn công» · hub Đi muộn · UpdateRequests header
+ * Callees:    hydrateEmployeeMetaForRequest · auth.requestHrm
+ * must_keep:  POST body company_id + employee_id + update_type + reason
+ * LastVerified: docs/qa/evidence/r-spine-at-nav-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 R-SPINE-AT-NAV-01
+ * change_mode: ADD
+ * What: Document HDSD callers (FAB / Settings / hub) — không đổi contract submit
+ * Why: AT-01 blocked on missing nav; form already existed
+ * must_keep: leave create FAB path; AUTH không reopen
+ */
+
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { AppScreenLayout } from '../../components/ui/AppScreenLayout';

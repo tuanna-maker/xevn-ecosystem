@@ -575,6 +575,7 @@
       "workHistory": "ប្រវត្តិការងារ",
       "degrees": "សញ្ញាបត្រ",
       "certificates": "វិញ្ញាបនបត្រ",
+      "documents": "Documents",
       "skills": "ជំនាញ",
       "family": "ព័ត៌មានគ្រួសារ"
     },
@@ -588,6 +589,7 @@
       "workHistory": "ប្រវត្តិការងារ",
       "degrees": "កម្រិតអប់រំ",
       "certificates": "វិញ្ញាបនបត្រវិជ្ជាជីវៈ",
+      "documents": "Employee document checklist",
       "skills": "ជំនាញវិជ្ជាជីវៈ និងជំនាញទន់",
       "family": "ព័ត៌មានសមាជិកគ្រួសារ"
     },

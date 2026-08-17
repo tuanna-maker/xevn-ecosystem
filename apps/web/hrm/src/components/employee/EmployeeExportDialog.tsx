@@ -1,3 +1,17 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Employees → Xuất Excel/CSV (E09)
+ * UC:         TC-HRM-HDSD export spreadsheet
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-B
+ * Purpose:    Client-side column filter export — ops-dense dialog chrome.
+ * must_keep:  XLSX client export path; SoftDel archive separate; no Nest/seed; no OCR
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Title/section sharp xevn text; sticky CTA footer; count secondary→text tokens
+ * Why: ADR pale ban + ops-dense modal · inventory W3-EMP-B E09
+ */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';
@@ -189,7 +203,7 @@ export function EmployeeExportDialog({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-             <FileSpreadsheet className="w-5 h-5" />
+             <FileSpreadsheet className="w-5 h-5 text-xevn-primary" />
              {t('empExport.title')}
            </DialogTitle>
         </DialogHeader>
@@ -197,10 +211,10 @@ export function EmployeeExportDialog({
         <div className="space-y-6 py-4">
           {/* Filters */}
           <div className="space-y-3">
-             <h4 className="font-medium">{t('empExport.filters')}</h4>
+             <h4 className="font-medium text-xevn-text">{t('empExport.filters')}</h4>
              <div className="grid grid-cols-2 gap-4">
                <div className="space-y-2">
-                 <Label>{t('empExport.col.department')}</Label>
+                 <Label className="text-xevn-text">{t('empExport.col.department')}</Label>
                 <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
                   <SelectTrigger>
                      <SelectValue placeholder={t('empExport.allDepartments')} />
@@ -216,7 +230,7 @@ export function EmployeeExportDialog({
                 </Select>
               </div>
                <div className="space-y-2">
-                 <Label>{t('empExport.col.status')}</Label>
+                 <Label className="text-xevn-text">{t('empExport.col.status')}</Label>
                  <Select value={statusFilter} onValueChange={setStatusFilter}>
                    <SelectTrigger>
                      <SelectValue placeholder={t('empExport.allStatuses')} />
@@ -230,8 +244,8 @@ export function EmployeeExportDialog({
                 </Select>
               </div>
             </div>
-             <p className="text-sm text-muted-foreground">
-               {t('empExport.exportCount')}: <span className="font-medium text-foreground">{filteredCount}</span>
+             <p className="text-sm text-xevn-textSecondary">
+               {t('empExport.exportCount')}: <span className="font-medium text-xevn-text">{filteredCount}</span>
              </p>
           </div>
 
@@ -240,7 +254,7 @@ export function EmployeeExportDialog({
           {/* Column selection */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-               <h4 className="font-medium">{t('empExport.selectColumns')} ({selectedColumnsCount}/{columns.length})</h4>
+               <h4 className="font-medium text-xevn-text">{t('empExport.selectColumns')} ({selectedColumnsCount}/{columns.length})</h4>
                <div className="flex gap-2">
                  <Button variant="ghost" size="sm" onClick={selectAllColumns}>
                    {t('common.selectAll')}
@@ -250,7 +264,7 @@ export function EmployeeExportDialog({
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3 max-h-[200px] overflow-y-auto p-1">
+            <div className="grid grid-cols-3 gap-3 max-h-[200px] overflow-y-auto rounded-input border border-xevn-border bg-xevn-surface p-2">
               {columns.map((col) => (
                 <div
                   key={col.key}
@@ -263,7 +277,7 @@ export function EmployeeExportDialog({
                   />
                   <Label
                     htmlFor={`col-${col.key}`}
-                    className="text-sm font-normal cursor-pointer"
+                    className="text-sm font-normal cursor-pointer text-xevn-text"
                   >
                     {col.label}
                   </Label>
@@ -276,7 +290,7 @@ export function EmployeeExportDialog({
 
           {/* File format */}
           <div className="space-y-3">
-            <h4 className="font-medium">{t('empExport.fileFormat')}</h4>
+            <h4 className="font-medium text-xevn-text">{t('empExport.fileFormat')}</h4>
             <RadioGroup
               value={fileFormat}
               onValueChange={(value) => setFileFormat(value as 'xlsx' | 'csv')}
@@ -284,13 +298,13 @@ export function EmployeeExportDialog({
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="xlsx" id="format-xlsx" />
-                <Label htmlFor="format-xlsx" className="font-normal cursor-pointer">
+                <Label htmlFor="format-xlsx" className="font-normal cursor-pointer text-xevn-text">
                   Excel (.xlsx)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="csv" id="format-csv" />
-                <Label htmlFor="format-csv" className="font-normal cursor-pointer">
+                <Label htmlFor="format-csv" className="font-normal cursor-pointer text-xevn-text">
                   CSV (.csv)
                 </Label>
               </div>
@@ -298,7 +312,7 @@ export function EmployeeExportDialog({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="xevn-dialog-footer-sticky -mx-6 -mb-6 flex justify-end gap-2 px-6 py-4">
              <Button variant="outline" onClick={() => onOpenChange(false)}>
                {t('common.cancel')}
              </Button>

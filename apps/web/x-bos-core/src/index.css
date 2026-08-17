@@ -2,9 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Đồng bộ mật độ chữ với web-portal (~87.5%) */
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-UI-P0-LOGO-FONT-TITLE-01
+ * change_mode: FIX
+ * What: html font-size 87.5% → 100% (lockstep HRM/portal enterprise 16px root)
+ * Why: Sponsor — font toàn hệ to hơn; root scale was ops-compressed
+ * must_keep: no invent palette; dual-surface tokens elsewhere
+ */
+
+/* Lockstep portal/HRM — 100% = 16px (ADR §7 prefer body 16) */
 html {
-  font-size: 87.5%;
+  font-size: 100%;
 }
 
 @layer components {

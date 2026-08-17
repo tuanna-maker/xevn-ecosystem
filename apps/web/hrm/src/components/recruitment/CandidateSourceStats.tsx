@@ -40,8 +40,8 @@ interface CandidateSourceStatsProps {
 const getSourceConfig = (t: (key: string) => string): Record<string, { label: string; icon: React.ElementType; color: string; bgColor: string }> => ({
   'LinkedIn': { label: 'LinkedIn', icon: Linkedin, color: '#0A66C2', bgColor: 'bg-[#0A66C2]/10' },
   'Website': { label: 'Website', icon: Globe, color: '#10B981', bgColor: 'bg-emerald-100' },
-  'Giới thiệu': { label: t('recruitment.sourceReferral'), icon: Users, color: '#8B5CF6', bgColor: 'bg-purple-100' },
-  'Referral': { label: t('recruitment.sourceReferral'), icon: Users, color: '#8B5CF6', bgColor: 'bg-purple-100' },
+  'Giới thiệu': { label: t('recruitment.sourceReferral'), icon: Users, color: '#06B6D4', bgColor: 'bg-xevn-accent/15' },
+  'Referral': { label: t('recruitment.sourceReferral'), icon: Users, color: '#06B6D4', bgColor: 'bg-xevn-accent/15' },
   'Email': { label: 'Email', icon: Mail, color: '#F59E0B', bgColor: 'bg-amber-100' },
   'TopCV': { label: 'TopCV', icon: Briefcase, color: '#EF4444', bgColor: 'bg-red-100' },
   'VietnamWorks': { label: 'VietnamWorks', icon: Briefcase, color: '#3B82F6', bgColor: 'bg-blue-100' },
@@ -137,12 +137,12 @@ export function CandidateSourceStats({ selectedSource, onSourceFilter }: Candida
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="rounded-lg bg-primary/10 p-2">
+                <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.totalCandidates')}</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.totalCandidates')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.total}</p>
               </div>
             </div>
           </CardContent>
@@ -151,11 +151,11 @@ export function CandidateSourceStats({ selectedSource, onSourceFilter }: Candida
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                <Share2 className="w-5 h-5 text-purple-600" />
+              <div className="rounded-lg bg-primary/10 p-2">
+                <Share2 className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.sourcesCount')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.sourcesCount')}</p>
                 <p className="text-2xl font-bold">{stats.sourceStats.length}</p>
               </div>
             </div>
@@ -165,12 +165,12 @@ export function CandidateSourceStats({ selectedSource, onSourceFilter }: Candida
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
+              <div className="rounded-lg bg-success/15 p-2">
+                <TrendingUp className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('recruitment.bestSource')}</p>
-                <p className="text-lg font-bold truncate">{stats.topSource?.label || '-'}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('recruitment.bestSource')}</p>
+                <p className="truncate text-lg font-bold text-xevn-text">{stats.topSource?.label || '-'}</p>
               </div>
             </div>
           </CardContent>
@@ -248,7 +248,7 @@ export function CandidateSourceStats({ selectedSource, onSourceFilter }: Candida
                   <Tooltip />
                   <Legend />
                   <Bar dataKey={t('recruitment.candidateUnit')} fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey={t('recruitment.interview')} fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey={t('recruitment.interview')} fill="#06B6D4" radius={[4, 4, 0, 0]} />
                   <Bar dataKey={t('recruitment.hired')} fill="#10B981" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

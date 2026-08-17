@@ -2,6 +2,7 @@ import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { AttendanceService } from '../attendance/attendance.service';
+import { AttendanceConfigService } from '../attendance/attendance-config.service';
 import { AttendanceEventFanoutService } from '../notifications/attendance-event-fanout.service';
 import { RecruitmentService } from './recruitment.service';
 
@@ -102,7 +103,12 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
         onModuleDestroy: jest.fn(),
       } as unknown as jest.Mocked<HrmDbService>;
       db.query.mockResolvedValue({ rows: [] } as never);
-      service = new AttendanceService(db, { fanoutCheckIn: jest.fn() } as unknown as AttendanceEventFanoutService);
+      service = new AttendanceService(
+        db,
+        { fanoutCheckIn: jest.fn() } as unknown as AttendanceEventFanoutService,
+        // ensureSchema() delegates work-site DDL to AttendanceConfigService — DI-only stub.
+        { ensureWorkSitesSchema: jest.fn() } as unknown as AttendanceConfigService,
+      );
     });
 
     it('finds record via workforce scope when group CEO requests company_id=main (J-HRM-06)', async () => {

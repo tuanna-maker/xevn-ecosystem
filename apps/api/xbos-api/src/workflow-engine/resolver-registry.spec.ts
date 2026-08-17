@@ -262,3 +262,56 @@ describe('ResolverRegistry — AC-CD-F4-02..04', () => {
     expect(tasks.every((t) => t.parallelPolicy === 'all')).toBe(true);
   });
 });
+
+describe('BR-WF-04 anti self-approve (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
+  it('direct_manager resolver skips submitter userId (depth guard)', async () => {
+    // Manager email equals submitter → self-approve guard escalates via managerEmployeeId chain.
+    const data = createInMemoryResolverDataSource({
+      managers: {
+        'emp-nv-001': 'nv001@xe.vn',
+        'emp-mgr-002': 'manager.a@xe.vn',
+      },
+      managerEmployeeIds: {
+        'emp-nv-001': 'emp-mgr-002',
+      },
+      activeUsers: new Set(['nv001@xe.vn', 'manager.a@xe.vn']),
+    });
+    const registry = new ResolverRegistry(data);
+    const tasks = await registry.resolveStepTasks(
+      {
+        stepKey: 'manager_approval',
+        resolver_type: 'direct_manager',
+        resolver_config: { fallback_role_code: 'hrbp' },
+      },
+      baseCtx,
+    );
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].assigneeUserId).toBe('manager.a@xe.vn');
+    expect(tasks[0].assigneeUserId).not.toBe(baseCtx.submitter.userId);
+  });
+
+  it('fixed_user equal to submitter escalates off self when manager chain exists', async () => {
+    const data = createInMemoryResolverDataSource({
+      managers: {
+        'emp-mgr-002': 'manager.a@xe.vn',
+      },
+      managerEmployeeIds: {
+        'emp-nv-001': 'emp-mgr-002',
+      },
+      activeUsers: new Set(['nv001@xe.vn', 'manager.a@xe.vn']),
+    });
+    const registry = new ResolverRegistry(data);
+    const tasks = await registry.resolveStepTasks(
+      {
+        stepKey: 'manager_approval',
+        resolver_type: 'fixed_user',
+        resolver_config: { user_id: 'nv001@xe.vn', hat_key: 'self_hat' },
+      },
+      baseCtx,
+    );
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].assigneeUserId).toBe('manager.a@xe.vn');
+    expect(tasks.map((t) => t.assigneeUserId)).not.toContain('nv001@xe.vn');
+  });
+});
+

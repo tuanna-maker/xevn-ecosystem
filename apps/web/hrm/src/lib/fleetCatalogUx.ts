@@ -16,6 +16,12 @@
  * must_keep:  FL-01 list-only · U65 · no invent create · soft U72 maps untouched · HOLD_DEPLOY
  * SOLID:      Pure UX helpers tách khỏi page/hook
  * LastVerified: lib/fleetCatalogUx.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-02-EMP-FE-FLEET-01
+ * change_mode: ADD (restore)
+ * What: Restore fleetCatalogUx (+ test) with Fleet page so Vite App.tsx import resolves
+ * Why: Missing module blocked HRM SPA boot /hr/employees (D-HRM-FLEET-IMPORT-01)
+ * must_keep: no raw keys · honest empty · FL-01 list-only · U65
  */
 import type { HrmSettingsCatalogOverviewRow } from '@/integrations/hrmApi';
 

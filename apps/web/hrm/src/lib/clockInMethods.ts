@@ -11,6 +11,12 @@
  * Coded:      2026-07-28
  * must_keep:  Không đổi contract API; chỉ map IA/navigation
  * SOLID:      Pure helper tách khỏi Attendance god-file để test được
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-01-FE-LEAVE-ATTENDANCE-MOUNT
+ * change_mode: FIX
+ * What: Restore from git 43c479a with ClockInMethodSelector (Attendance mount chain)
+ * Why: Vite resolve chain after LeaveOverviewRecentPanel restore
+ * must_keep: Pure helpers; LeaveTab path untouched; U65 no seed
  */
 
 export type ClockInMethod = 'manual' | 'qrcode' | 'faceid' | 'gps';

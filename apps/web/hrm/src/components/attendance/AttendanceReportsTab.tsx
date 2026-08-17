@@ -1,11 +1,24 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM → Chấm công → Báo cáo (S62–S63)
+ * UC:         UC-HRM-ATT-REPORTS
+ * Purpose:    Attendance reports KPI + charts + export dialog chrome
+ * WorkItem:   PO-HRM-UI-BRAND-W3-ATT-E
+ * Coded:      2026-08-05
+ * must_keep:  useAttendanceReports wire; AttendanceExportDialog client XLSX; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-E
+ * change_mode: UPGRADE
+ * What: Remaster reports tab → Precision Motion ops-dense; ban blue/orange chrome; DNA amber late only
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10 · inventory W3-ATT-E S62–S63
+ * must_keep: report hooks; export dialog; no Nest/seed; no Attendance CLOSED; no Face/QR invent
+ */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Users,
   Clock,
-  Calendar,
   TrendingUp,
-  TrendingDown,
   AlertTriangle,
   FileDown,
   BarChart3,
@@ -54,13 +67,14 @@ import {
 import { useAttendanceReports } from '@/hooks/useAttendanceReports';
 import { AttendanceExportDialog } from './AttendanceExportDialog';
 
+/** Precision Motion chart palette — no purple/pink AI series */
 const COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(142, 76%, 36%)',
+  '#1E40AF',
+  '#059669',
+  '#B45309',
+  '#DC2626',
+  '#4B5563',
+  '#0F766E',
 ];
 
 export function AttendanceReportsTab() {
@@ -101,7 +115,7 @@ export function AttendanceReportsTab() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6" data-testid="att-reports-precision">
         <div className="flex items-center justify-between">
           <Skeleton className="h-8 w-48" />
           <div className="flex gap-2">
@@ -124,13 +138,13 @@ export function AttendanceReportsTab() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with filters */}
+    <div className="space-y-6" data-testid="att-reports-precision">
+      {/* Header with filters — S62 */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold">{t('attendance.reports.title')}</h2>
+        <h2 className="text-[20px] font-bold text-xevn-text">{t('attendance.reports.title')}</h2>
         <div className="flex items-center gap-2">
           <Select value={selectedMonth.toString()} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-[120px] text-xevn-text">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -142,7 +156,7 @@ export function AttendanceReportsTab() {
             </SelectContent>
           </Select>
           <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
-            <SelectTrigger className="w-[100px]">
+            <SelectTrigger className="w-[100px] text-xevn-text">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -154,41 +168,41 @@ export function AttendanceReportsTab() {
             </SelectContent>
           </Select>
           <AttendanceExportDialog>
-            <Button variant="outline">
-              <FileDown className="w-4 h-4 mr-2" />
+            <Button variant="outline" className="border-xevn-border text-xevn-text">
+              <FileDown className="w-4 h-4 mr-2 text-xevn-primary" />
               {t('attendance.reports.exportReport')}
             </Button>
           </AttendanceExportDialog>
         </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards — ops-dense */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Users className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-card bg-xevn-primary/10 flex items-center justify-center">
+                <Users className="w-6 h-6 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('attendance.reports.totalEmployees')}</p>
-                <p className="text-2xl font-bold">{summary?.totalEmployees || 0}</p>
-                <p className="text-xs text-muted-foreground">{summary?.totalWorkDays || 0} {t('attendance.reports.workDays')}</p>
+                <p className="text-sm text-xevn-textSecondary">{t('attendance.reports.totalEmployees')}</p>
+                <p className="text-2xl font-bold text-xevn-text tabular-nums text-xevn-text tabular-nums">{summary?.totalEmployees || 0}</p>
+                <p className="text-xs text-xevn-textSecondary">{summary?.totalWorkDays || 0} {t('attendance.reports.workDays')}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <UserCheck className="w-6 h-6 text-green-500" />
+              <div className="w-12 h-12 rounded-card bg-green-50 flex items-center justify-center">
+                <UserCheck className="w-6 h-6 text-green-700" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('attendance.reports.attendanceRate')}</p>
-                <p className="text-2xl font-bold">{summary?.attendanceRate || 0}%</p>
-                <p className="text-xs text-green-500 flex items-center gap-1">
+                <p className="text-sm text-xevn-textSecondary">{t('attendance.reports.attendanceRate')}</p>
+                <p className="text-2xl font-bold text-xevn-text tabular-nums text-xevn-text tabular-nums">{summary?.attendanceRate || 0}%</p>
+                <p className="text-xs text-green-700 flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
                   {summary?.presentCount || 0} {t('attendance.reports.times')}
                 </p>
@@ -197,16 +211,16 @@ export function AttendanceReportsTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-amber-500" />
+              <div className="w-12 h-12 rounded-card bg-amber-50 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-amber-800" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('attendance.reports.lateRate')}</p>
-                <p className="text-2xl font-bold">{summary?.lateRate || 0}%</p>
-                <p className="text-xs text-amber-500 flex items-center gap-1">
+                <p className="text-sm text-xevn-textSecondary">{t('attendance.reports.lateRate')}</p>
+                <p className="text-2xl font-bold text-xevn-text tabular-nums text-xevn-text tabular-nums">{summary?.lateRate || 0}%</p>
+                <p className="text-xs text-amber-800 flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />
                   {summary?.lateCount || 0} {t('attendance.reports.times')}
                 </p>
@@ -215,16 +229,16 @@ export function AttendanceReportsTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Timer className="w-6 h-6 text-blue-500" />
+              <div className="w-12 h-12 rounded-card bg-xevn-primary/10 flex items-center justify-center">
+                <Timer className="w-6 h-6 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{t('attendance.reports.totalOT')}</p>
-                <p className="text-2xl font-bold">{summary?.overtimeHours || 0}h</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-xevn-textSecondary">{t('attendance.reports.totalOT')}</p>
+                <p className="text-2xl font-bold text-xevn-text tabular-nums text-xevn-text tabular-nums">{summary?.overtimeHours || 0}h</p>
+                <p className="text-xs text-xevn-textSecondary">
                   {summary?.earlyLeaveCount || 0} {t('attendance.reports.earlyLeaveCount')}
                 </p>
               </div>
@@ -236,45 +250,46 @@ export function AttendanceReportsTab() {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Attendance Chart */}
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CalendarDays className="w-5 h-5" />
+            <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+              <CalendarDays className="w-5 h-5 text-xevn-primary" />
               {t('attendance.reports.dailyChart')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={dailyStats}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="dayLabel" 
-                  tick={{ fontSize: 10 }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis
+                  dataKey="dayLabel"
+                  tick={{ fontSize: 10, fill: '#4B5563' }}
                   interval={2}
                 />
-                <YAxis />
+                <YAxis tick={{ fill: '#4B5563' }} />
                 <Tooltip
                   contentStyle={{
                     borderRadius: '8px',
-                    border: '1px solid hsl(var(--border))',
-                    background: 'hsl(var(--background))',
+                    border: '1px solid #E5E7EB',
+                    background: '#FFFFFF',
+                    color: '#111827',
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="presentCount"
                   name={t('attendance.reports.present')}
-                  stroke="hsl(var(--primary))"
-                  fill="hsl(var(--primary))"
-                  fillOpacity={0.3}
+                  stroke="#1E40AF"
+                  fill="#1E40AF"
+                  fillOpacity={0.25}
                 />
                 <Area
                   type="monotone"
                   dataKey="lateCount"
                   name={t('attendance.reports.lateLabel')}
-                  stroke="hsl(38, 92%, 50%)"
-                  fill="hsl(38, 92%, 50%)"
-                  fillOpacity={0.3}
+                  stroke="#D97706"
+                  fill="#D97706"
+                  fillOpacity={0.2}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -282,25 +297,26 @@ export function AttendanceReportsTab() {
         </Card>
 
         {/* Monthly Trend Chart */}
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
+            <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-xevn-primary" />
               {t('attendance.reports.monthlyTrend')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={monthlyTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="monthLabel" />
-                <YAxis domain={[0, 100]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis dataKey="monthLabel" tick={{ fill: '#4B5563' }} />
+                <YAxis domain={[0, 100]} tick={{ fill: '#4B5563' }} />
                 <Tooltip
                   formatter={(value: number) => [`${value}%`]}
                   contentStyle={{
                     borderRadius: '8px',
-                    border: '1px solid hsl(var(--border))',
-                    background: 'hsl(var(--background))',
+                    border: '1px solid #E5E7EB',
+                    background: '#FFFFFF',
+                    color: '#111827',
                   }}
                 />
                 <Legend />
@@ -308,17 +324,17 @@ export function AttendanceReportsTab() {
                   type="monotone"
                   dataKey="attendanceRate"
                   name={t('attendance.reports.attendanceRateLabel')}
-                  stroke="hsl(var(--primary))"
+                  stroke="#1E40AF"
                   strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--primary))' }}
+                  dot={{ fill: '#1E40AF' }}
                 />
                 <Line
                   type="monotone"
                   dataKey="lateRate"
                   name={t('attendance.reports.lateRateLabel')}
-                  stroke="hsl(38, 92%, 50%)"
+                  stroke="#D97706"
                   strokeWidth={2}
-                  dot={{ fill: 'hsl(38, 92%, 50%)' }}
+                  dot={{ fill: '#D97706' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -329,10 +345,10 @@ export function AttendanceReportsTab() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Department Stats */}
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
+            <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-xevn-primary" />
               {t('attendance.reports.byDepartment')}
             </CardTitle>
           </CardHeader>
@@ -340,31 +356,32 @@ export function AttendanceReportsTab() {
             {departmentStats.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={departmentStats} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" domain={[0, 100]} />
-                  <YAxis 
-                    type="category" 
-                    dataKey="department" 
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
+                  <XAxis type="number" domain={[0, 100]} tick={{ fill: '#4B5563' }} />
+                  <YAxis
+                    type="category"
+                    dataKey="department"
                     width={100}
-                    tick={{ fontSize: 11 }}
+                    tick={{ fontSize: 11, fill: '#4B5563' }}
                   />
                   <Tooltip
                     formatter={(value: number) => [`${value}%`, t('attendance.reports.attendanceRateLabel')]}
                     contentStyle={{
                       borderRadius: '8px',
-                      border: '1px solid hsl(var(--border))',
-                      background: 'hsl(var(--background))',
+                      border: '1px solid #E5E7EB',
+                      background: '#FFFFFF',
+                      color: '#111827',
                     }}
                   />
-                  <Bar 
-                    dataKey="attendanceRate" 
-                    fill="hsl(var(--primary))" 
-                    radius={[0, 4, 4, 0]} 
+                  <Bar
+                    dataKey="attendanceRate"
+                    fill="#1E40AF"
+                    radius={[0, 4, 4, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              <div className="h-[300px] flex items-center justify-center text-[15px] text-xevn-textSecondary">
                 {t('attendance.reports.noData')}
               </div>
             )}
@@ -372,10 +389,10 @@ export function AttendanceReportsTab() {
         </Card>
 
         {/* Leave Types Pie Chart */}
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <PieChartIcon className="w-5 h-5" />
+            <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+              <PieChartIcon className="w-5 h-5 text-xevn-primary" />
               {t('attendance.reports.leaveTypes')}
             </CardTitle>
           </CardHeader>
@@ -401,14 +418,15 @@ export function AttendanceReportsTab() {
                     formatter={(value: number) => [`${value} ${t('attendance.reports.days')}`]}
                     contentStyle={{
                       borderRadius: '8px',
-                      border: '1px solid hsl(var(--border))',
-                      background: 'hsl(var(--background))',
+                      border: '1px solid #E5E7EB',
+                      background: '#FFFFFF',
+                      color: '#111827',
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              <div className="h-[300px] flex items-center justify-center text-[15px] text-xevn-textSecondary">
                 {t('attendance.reports.noLeaveData')}
               </div>
             )}
@@ -419,10 +437,10 @@ export function AttendanceReportsTab() {
       {/* Tables Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Late Employees */}
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <UserX className="w-5 h-5 text-amber-500" />
+            <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+              <UserX className="w-5 h-5 text-amber-800" />
               {t('attendance.reports.top10Late')}
             </CardTitle>
           </CardHeader>
@@ -430,29 +448,29 @@ export function AttendanceReportsTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('attendance.reports.employee')}</TableHead>
-                  <TableHead className="text-right">{t('attendance.reports.count')}</TableHead>
-                  <TableHead className="text-right">{t('attendance.reports.totalMinutes')}</TableHead>
+                  <TableHead className="text-xevn-textSecondary font-semibold">{t('attendance.reports.employee')}</TableHead>
+                  <TableHead className="text-right text-xevn-textSecondary font-semibold">{t('attendance.reports.count')}</TableHead>
+                  <TableHead className="text-right text-xevn-textSecondary font-semibold">{t('attendance.reports.totalMinutes')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {topLateEmployees.filter(e => e.totalLateMinutes > 0).map((emp, index) => (
+                {topLateEmployees.filter(e => e.totalLateMinutes > 0).map((emp) => (
                   <TableRow key={emp.employeeId}>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{emp.employeeName}</p>
-                        <p className="text-xs text-muted-foreground">{emp.department || '-'}</p>
+                        <p className="font-medium text-xevn-text">{emp.employeeName}</p>
+                        <p className="text-xs text-xevn-textSecondary">{emp.department || '-'}</p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">{emp.lateDays}</TableCell>
-                    <TableCell className="text-right text-amber-600 font-medium">
+                    <TableCell className="text-right text-xevn-text">{emp.lateDays}</TableCell>
+                    <TableCell className="text-right text-amber-800 font-medium">
                       {emp.totalLateMinutes}
                     </TableCell>
                   </TableRow>
                 ))}
                 {topLateEmployees.filter(e => e.totalLateMinutes > 0).length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                    <TableCell colSpan={3} className="text-center text-xevn-textSecondary">
                       {t('attendance.reports.noData')}
                     </TableCell>
                   </TableRow>
@@ -463,10 +481,10 @@ export function AttendanceReportsTab() {
         </Card>
 
         {/* Top Overtime Employees */}
-        <Card>
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Timer className="w-5 h-5 text-blue-500" />
+            <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+              <Timer className="w-5 h-5 text-xevn-primary" />
               {t('attendance.reports.top10OT')}
             </CardTitle>
           </CardHeader>
@@ -474,28 +492,28 @@ export function AttendanceReportsTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('attendance.reports.employee')}</TableHead>
-                  <TableHead className="text-right">{t('attendance.reports.department')}</TableHead>
-                  <TableHead className="text-right">{t('attendance.reports.totalOTHours')}</TableHead>
+                  <TableHead className="text-xevn-textSecondary font-semibold">{t('attendance.reports.employee')}</TableHead>
+                  <TableHead className="text-right text-xevn-textSecondary font-semibold">{t('attendance.reports.department')}</TableHead>
+                  <TableHead className="text-right text-xevn-textSecondary font-semibold">{t('attendance.reports.totalOTHours')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {topOvertimeEmployees.filter(e => e.totalOvertimeHours > 0).map((emp) => (
                   <TableRow key={emp.employeeId}>
                     <TableCell>
-                      <p className="font-medium">{emp.employeeName}</p>
+                      <p className="font-medium text-xevn-text">{emp.employeeName}</p>
                     </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
+                    <TableCell className="text-right text-xevn-textSecondary">
                       {emp.department || '-'}
                     </TableCell>
-                    <TableCell className="text-right text-blue-600 font-medium">
+                    <TableCell className="text-right text-xevn-primary font-medium">
                       {emp.totalOvertimeHours}h
                     </TableCell>
                   </TableRow>
                 ))}
                 {topOvertimeEmployees.filter(e => e.totalOvertimeHours > 0).length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                    <TableCell colSpan={3} className="text-center text-xevn-textSecondary">
                       {t('attendance.reports.noData')}
                     </TableCell>
                   </TableRow>
@@ -507,10 +525,10 @@ export function AttendanceReportsTab() {
       </div>
 
       {/* Employee Detail Table */}
-      <Card>
+      <Card className="rounded-card border-xevn-border bg-xevn-surface">
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Users className="w-5 h-5" />
+          <CardTitle className="text-base font-semibold text-xevn-text flex items-center gap-2">
+            <Users className="w-5 h-5 text-xevn-primary" />
             {t('attendance.reports.employeeDetail')}
           </CardTitle>
         </CardHeader>
@@ -519,34 +537,34 @@ export function AttendanceReportsTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t('attendance.reports.employeeCode')}</TableHead>
-                  <TableHead>{t('attendance.reports.fullName')}</TableHead>
-                  <TableHead>{t('attendance.reports.department')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.workDaysLabel')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.presentLabel')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.leaveLabel')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.absentLabel')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.lateLabel2')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.otLabel')}</TableHead>
-                  <TableHead className="text-center">{t('attendance.reports.rateLabel')}</TableHead>
+                  <TableHead className="text-xevn-textSecondary font-semibold">{t('attendance.reports.employeeCode')}</TableHead>
+                  <TableHead className="text-xevn-textSecondary font-semibold">{t('attendance.reports.fullName')}</TableHead>
+                  <TableHead className="text-xevn-textSecondary font-semibold">{t('attendance.reports.department')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.workDaysLabel')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.presentLabel')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.leaveLabel')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.absentLabel')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.lateLabel2')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.otLabel')}</TableHead>
+                  <TableHead className="text-center text-xevn-textSecondary font-semibold">{t('attendance.reports.rateLabel')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {employeeStats.slice(0, 20).map((emp) => (
                   <TableRow key={emp.employeeId}>
-                    <TableCell className="font-mono text-xs">{emp.employeeCode}</TableCell>
-                    <TableCell className="font-medium">{emp.employeeName}</TableCell>
-                    <TableCell className="text-muted-foreground">{emp.department || '-'}</TableCell>
-                    <TableCell className="text-center">{emp.workDays}</TableCell>
-                    <TableCell className="text-center text-green-600">{emp.presentDays}</TableCell>
-                    <TableCell className="text-center text-blue-600">{emp.leaveDays}</TableCell>
-                    <TableCell className="text-center text-red-600">{emp.absentDays}</TableCell>
-                    <TableCell className="text-center text-amber-600">{emp.lateDays}</TableCell>
-                    <TableCell className="text-center">{emp.totalOvertimeHours}h</TableCell>
+                    <TableCell className="font-mono text-xs text-xevn-text">{emp.employeeCode}</TableCell>
+                    <TableCell className="font-medium text-xevn-text">{emp.employeeName}</TableCell>
+                    <TableCell className="text-xevn-textSecondary">{emp.department || '-'}</TableCell>
+                    <TableCell className="text-center text-xevn-text">{emp.workDays}</TableCell>
+                    <TableCell className="text-center text-green-700">{emp.presentDays}</TableCell>
+                    <TableCell className="text-center text-xevn-primary">{emp.leaveDays}</TableCell>
+                    <TableCell className="text-center text-red-700">{emp.absentDays}</TableCell>
+                    <TableCell className="text-center text-amber-800">{emp.lateDays}</TableCell>
+                    <TableCell className="text-center text-xevn-text">{emp.totalOvertimeHours}h</TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center gap-2">
                         <Progress value={emp.attendanceRate} className="w-16 h-2" />
-                        <span className="text-xs font-medium">{emp.attendanceRate}%</span>
+                        <span className="text-xs font-medium text-xevn-text">{emp.attendanceRate}%</span>
                       </div>
                     </TableCell>
                   </TableRow>

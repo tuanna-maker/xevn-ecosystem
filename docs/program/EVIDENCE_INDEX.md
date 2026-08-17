@@ -38,6 +38,8 @@
 | P1-PHASE1-QA-PROGRAM-GATE-03 | docs/qa/evidence/p1-phase1-qa-program-gate-03-20260605.md | **PASS** strict gate nip.io · C-RBACQC-03 addressed | 2026-06-05 |
 | P1-PHASE1-QC-PROGRAM-GATE-03 | docs/qa/evidence/p1-phase1-qc-program-gate-03-20260605.md | **GWC** · **C-RBACQC-03 CLOSED** · NOT PROD | 2026-06-05 |
 | P1-PHASE1-BA-JOURNEY-SYNC-06 | docs/program/PROGRAM_JOURNEY_MAP.md · SERVICE_READINESS §6 | **C-RBACQC-05 CLOSED** · journey SoT sync | 2026-06-05 |
+| BA-MINDMAP-GAP-DELTA-01 | docs/program/specs/BA-MINDMAP-GAP-DELTA-01.md | PASS governance · 27 gaps + P0-MAP | 2026-08-10 |
+| DOC-ENT-HRM-MMAP-BRD-01 | docs/qa/evidence/doc-ent-hrm-mmap-brd-01.md | PASS_TO_PM · BRD §10 v3.1 | 2026-08-10 |
 
 ## Evidence layout (không liệt kê hàng nghìn file)
 

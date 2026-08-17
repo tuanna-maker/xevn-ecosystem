@@ -27,6 +27,13 @@
  * must_keep:   AC-ATT-SHEET không đụng · U65 zero-seed · empty «Không có quyết định nào»
  * SOLID:       Tách pure helpers khỏi page để vitest density không mount React.
  * LastVerified: apps/web/hrm/src/lib/decisionListUi.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 BUILD-GAP-DECISION-LIST-UI-01
+ * change_mode: ADD (restore)
+ * What: Khôi phục module decisionListUi.ts + decisionListUi.test.ts từ git 43c479a (Vite resolve @/lib/decisionListUi).
+ * Why: Build gap sau performanceFormSchema — Decisions.tsx import thiếu file trên disk.
+ * must_keep: MD panel · performanceFormSchema · Contracts/Payroll · Leave · Decisions page logic không rewrite.
+ * WorkItem: BUILD-GAP-DECISION-LIST-UI-01
  */
 
 /** SoT VI empty copy — AC-DEC-02 / BR-DEC-03 */

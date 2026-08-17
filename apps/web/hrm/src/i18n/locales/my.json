@@ -575,6 +575,7 @@
       "workHistory": "အလုပ်သမိုင်း",
       "degrees": "ဘွဲ့များ",
       "certificates": "လက်မှတ်များ",
+      "documents": "Documents",
       "skills": "ကျွမ်းကျင်မှုများ",
       "family": "မိသားစုအချက်အလက်"
     },
@@ -588,6 +589,7 @@
       "workHistory": "အလုပ်သမိုင်း",
       "degrees": "ပညာအဆင့်",
       "certificates": "ပရော်ဖက်ရှင်နယ်လက်မှတ်များ",
+      "documents": "Employee document checklist",
       "skills": "ပရော်ဖက်ရှင်နယ်ကျွမ်းကျင်မှုနှင့်ဆက်ဆံရေးကျွမ်းကျင်မှု",
       "family": "မိသားစုဝင်အချက်အလက်"
     },

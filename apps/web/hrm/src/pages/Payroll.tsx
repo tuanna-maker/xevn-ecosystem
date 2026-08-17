@@ -42,6 +42,57 @@
  *       giữ mảng rỗng — không mock NV; tax settlement HIDE giữ nguyên
  * Why: QA-ERP-E2-01 — comment nuốt declaration → ReferenceError white-screen /hr/payroll
  * must_keep: E1 pickers; AC-E2-NOMOCK-01 empty array; AC-E2-P3-02 tax HIDE; SalaryComponentsTab
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: PO-E2E-SPINE-01-FE-VITE-PAY-CON-01
+ * change_mode: FIX
+ * What: Unblock Vite mount — restore taxSettlementFloatingUi + usePayrollDomainUi + payrollDomainUi + salaryComponentFormSchema chain (stash 43c479a)
+ * Why: QA W5 HP-06 — CC Tiền lương blank · Payroll.tsx Vite 500
+ * must_keep: EmbedApiEmptyState / overview empty path; Leave/LV-03/04 · AUTH/EMP/CAT · HP-03/04
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion chrome P01 overview + top tabs — kill rainbow AI tab/step/chart colors →
+ *       bg-xevn-primary / brand surface; title ≥20; vi-VN money formatCurrency kept
+ * Why: ADR §16 LOCK · inventory FE-PAY P0 spine · B4 cấm purple/pink AI palette
+ * must_keep: SalaryComponentsTab Zod; taxSettlementFloatingUi C1; formatCurrency vi-VN;
+ *            no salary formula/API invent; Face HOLD; Attendance not CLOSED; remaster DONE false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-B-01
+ * change_mode: UPGRADE
+ * What: P05/P09 stub panels · P12 calc-template route · P14 reports tab · tax settlement honesty testid
+ * Why: ADR §16 · W3-PAY-B chrome-only; preserve tax HIDE invent (AC-E2-P3-02)
+ * must_keep: SalaryComponentsTab; taxSettlementFloatingUi C1; PAY-A P0 tabs unchanged logic
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-PAYROLL-FORMULA-RUN-GAP-FE-01
+ * change_mode: ADD
+ * What: Top tab «Công thức lương» → PayFormulaAuthorPanel (GĐ1 form, no DnD); wire Nest formulas*
+ * Why: QC-01 GWC residual R-PAY-FE-FORM · API §4 AUTHOR/PUBLISH/LIST · honesty payroll_e2e_ready=false
+ * must_keep: SalaryComponentsTab; taxSettlementFloatingUi C1; cấm FE evaluator / salary_components.formula SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-PAYROLL-FORMULA-RUN-GAP-FE-EVAL-01
+ * change_mode: ADD
+ * What: Panel emit expression_json form=gd1_eval_v1 (staged subset) — preview Nest 200/412; no FE engine
+ * Why: QC-EVAL optional residual R-PAY-FE-OPAQUE→EVAL
+ * must_keep: payroll_e2e_ready=false · dual-control · immutable · cấm DnD / FE net calc
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-AMIS-PARITY-PAY-ESS-FE-01
+ * change_mode: ADD
+ * What: Top tab Phiếu của tôi → EssPayslipsPanel (GET/POST me/payslips* confirm)
+ * Why: Close FE residual after L1 ESS GWC Step6
+ * must_keep: own-only 403 · CEO 403 · F5 after confirm · payroll_e2e_ready=false · L1 SEAL · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10
+ * WorkItem: PO-HRM-MVP-GD1-PAY-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: PAY-02 cluster — PayFormulaAuthorPanel COMP-01 block + preview lines table; must_keep PAY01QC1
+ * Why: API-01 §9 FE-01 · BA J-HRM-PAY-02-* · ≠ PAY-02 DONE · payroll_e2e_ready=false
+ * must_keep: SalaryComponentsTab N+1 admin; cấm DnD · cấm FE net SoT
  */
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -62,6 +113,8 @@ import {
   Wallet,
   CreditCard,
   DollarSign,
+  FunctionSquare,
+  UserRound,
   ChevronDown,
   Users,
   TrendingUp,
@@ -137,14 +190,19 @@ import { SalesDataTab } from '@/components/payroll/SalesDataTab';
 import { AdvanceRequestsTab } from '@/components/payroll/AdvanceRequestsTab';
 import { PayrollBatchesTab } from '@/components/payroll/PayrollBatchesTab';
 import { PayrollPayslipsApiTab } from '@/components/payroll/PayrollPayslipsApiTab';
+import { PayrollGroupsCatalogTab } from '@/components/payroll/PayrollGroupsCatalogTab';
 import { usePayrollPayslips } from '@/hooks/usePayrollPayslips';
 import { PaymentBatchesTab } from '@/components/payroll/PaymentBatchesTab';
 import { SalaryComponentsTab } from '@/components/payroll/SalaryComponentsTab';
+import { PayFormulaAuthorPanel } from '@/components/payroll/PayFormulaAuthorPanel';
+import { EssPayslipsPanel } from '@/components/payroll/EssPayslipsPanel';
 import { PayrollAttendanceTab } from '@/components/payroll/PayrollAttendanceTab';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 import { TaxPolicyTab } from '@/components/payroll/TaxPolicyTab';
 import { InsurancePolicyTab } from '@/components/payroll/InsurancePolicyTab';
+import { SalaryTemplatesTab } from '@/components/payroll/SalaryTemplatesTab';
 import { usePayrollDomainUi } from '@/hooks/usePayrollDomainUi';
+import { resolveCalcListTabComponent } from '@/components/payroll/payrollDomainUi';
 import {
   PieChart,
   Pie,
@@ -166,50 +224,64 @@ const formatCurrency = (value: number) =>
 
 // Top navigation tabs - will use translations in component
 const getTopTabs = (t: any) => [
-  { id: 'overview', label: t('payroll.overview'), icon: LayoutGrid, color: 'bg-blue-500' },
-  { id: 'components', label: t('payroll.components'), icon: ClipboardList, color: 'bg-orange-500' },
-  { id: 'policy', label: t('payroll.policy'), icon: FileText, color: 'bg-green-500', hasDropdown: true },
-  { id: 'data', label: t('payroll.data'), icon: FileSpreadsheet, color: 'bg-purple-500', hasDropdown: true },
-  { id: 'calculate', label: t('payroll.calculate'), icon: Calculator, color: 'bg-cyan-500', hasDropdown: true },
-  { id: 'payment', label: t('payroll.payment'), icon: CreditCard, color: 'bg-rose-500' },
-  { id: 'reports', label: t('payroll.reports'), icon: BarChart3, color: 'bg-amber-500' },
+  { id: 'overview', label: t('payroll.overview'), icon: LayoutGrid, color: 'bg-xevn-primary' },
+  { id: 'components', label: t('payroll.components'), icon: ClipboardList, color: 'bg-xevn-primary', testId: 'payroll-tab-components' },
+  {
+    id: 'formulas',
+    label: 'Công thức lương',
+    icon: FunctionSquare,
+    color: 'bg-xevn-primary',
+    testId: 'payroll-tab-formulas',
+  },
+  { id: 'policy', label: t('payroll.policy'), icon: FileText, color: 'bg-xevn-primary', hasDropdown: true },
+  { id: 'data', label: t('payroll.data'), icon: FileSpreadsheet, color: 'bg-xevn-primary', hasDropdown: true },
+  { id: 'calculate', label: t('payroll.calculate'), icon: Calculator, color: 'bg-xevn-primary', hasDropdown: true },
+  { id: 'payment', label: t('payroll.payment'), icon: CreditCard, color: 'bg-xevn-primary' },
+  {
+    id: 'ess',
+    label: t('payroll.essTab', 'Phiếu của tôi'),
+    icon: UserRound,
+    color: 'bg-xevn-primary',
+    testId: 'hdsd-pay-ess-tab',
+  },
+  { id: 'reports', label: t('payroll.reports'), icon: BarChart3, color: 'bg-xevn-primary' },
 ];
 
-// Step cards for overview - will use translations
+// Step cards for overview — Precision Motion brand chrome (no AI rainbow)
 const getStepCards = (t: any) => [
   { 
     id: 1, 
     title: t('payroll.stepCards.step1'),
     subtitle: t('payroll.stepCards.watchVideo'),
-    gradient: 'from-emerald-400 to-teal-500',
+    tone: 'bg-xevn-primary',
     icon: ClipboardList,
   },
   { 
     id: 2, 
     title: t('payroll.stepCards.step2'),
     subtitle: t('payroll.stepCards.watchVideo'),
-    gradient: 'from-amber-400 to-orange-500',
+    tone: 'bg-xevn-primary',
     icon: FileSpreadsheet,
   },
   { 
     id: 3, 
     title: t('payroll.stepCards.step3'),
     subtitle: t('payroll.stepCards.watchVideo'),
-    gradient: 'from-yellow-300 to-amber-400',
+    tone: 'bg-xevn-primary',
     icon: FileText,
   },
   { 
     id: 4, 
     title: t('payroll.stepCards.step4'),
     subtitle: t('payroll.stepCards.watchVideo'),
-    gradient: 'from-pink-400 to-rose-500',
+    tone: 'bg-xevn-primary',
     icon: Calculator,
   },
   { 
     id: 5, 
     title: t('payroll.stepCards.step5'),
     subtitle: t('payroll.stepCards.watchVideo'),
-    gradient: 'from-purple-400 to-violet-500',
+    tone: 'bg-xevn-primary',
     icon: Wallet,
   },
 ];
@@ -224,17 +296,18 @@ const getSalaryDistributionData = (t: any) => [
 
 // Income structure data - will use translations
 const getIncomeStructureData = (t: any) => [
-  { name: t('payroll.incomeStructure.baseSalary'), value: 54.6, color: '#f59e0b' },
-  { name: t('payroll.incomeStructure.salesBonus'), value: 28.6, color: '#10b981' },
-  { name: t('payroll.incomeStructure.kpiBonus'), value: 14.3, color: '#8b5cf6' },
-  { name: t('payroll.incomeStructure.excellentBonus'), value: 1.8, color: '#3b82f6' },
-  { name: t('payroll.incomeStructure.occasionBonus'), value: 0.7, color: '#ec4899' },
+  { name: t('payroll.incomeStructure.baseSalary'), value: 54.6, color: '#1E40AF' },
+  { name: t('payroll.incomeStructure.salesBonus'), value: 28.6, color: '#059669' },
+  { name: t('payroll.incomeStructure.kpiBonus'), value: 14.3, color: '#D97706' },
+  { name: t('payroll.incomeStructure.excellentBonus'), value: 1.8, color: '#2563EB' },
+  { name: t('payroll.incomeStructure.occasionBonus'), value: 0.7, color: '#4B5563' },
 ];
 
 // Policy dropdown items - will use translations
 const getPolicyMenuItems = (t: any) => [
   { id: 'tax', label: t('payroll.taxPolicy.title') },
   { id: 'insurance', label: t('payroll.insurancePolicy.title') },
+  { id: 'payroll-groups', label: 'Phân nhóm bảng lương' },
   { id: 'allowance', label: t('payroll.allowancePolicy') },
   { id: 'bonus', label: t('payroll.bonusPolicy') },
   { id: 'sales', label: t('payroll.salesSummary') },
@@ -797,11 +870,12 @@ export default function Payroll() {
       <button
         key={tab.id}
         onClick={() => !tab.hasDropdown && setActiveTab(tab.id)}
+        data-testid={'testId' in tab && tab.testId ? String(tab.testId) : `payroll-tab-${tab.id}`}
         className={cn(
           'flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap transition-all group touch-target',
           isActive
-            ? 'bg-primary/10 text-foreground'
-            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            ? 'bg-xevn-primary/10 text-xevn-text'
+            : 'text-xevn-textSecondary hover:bg-xevn-primary/5 hover:text-xevn-text'
         )}
       >
         <div className={cn(
@@ -831,9 +905,9 @@ export default function Payroll() {
               <DropdownMenuItem 
                 key={item.id}
                 className={cn(
-                  tab.id === 'policy' && activePolicySubTab === item.id && 'text-emerald-600 font-medium',
-                  tab.id === 'data' && activeDataSubTab === item.id && 'text-emerald-600 font-medium',
-                  tab.id === 'calculate' && activeCalcSubTab === item.id && 'text-emerald-600 font-medium'
+                  tab.id === 'policy' && activePolicySubTab === item.id && 'text-xevn-primary font-medium',
+                  tab.id === 'data' && activeDataSubTab === item.id && 'text-xevn-primary font-medium',
+                  tab.id === 'calculate' && activeCalcSubTab === item.id && 'text-xevn-primary font-medium'
                 )}
                 onClick={() => {
                   setActiveTab(tab.id);
@@ -862,23 +936,23 @@ export default function Payroll() {
   // Render overview content
   const renderOverview = () => {
     return (
-      <div className="space-y-6 p-3 md:p-6">
-        {/* Welcome Banner */}
-         <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-2xl p-4 md:p-6">
+      <div className="space-y-6 p-3 md:p-6" data-testid="pay-overview-precision">
+        {/* Welcome Banner — Precision Motion */}
+         <div className="rounded-card border border-xevn-border bg-xevn-primary/5 p-4 md:p-6">
            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
              <div>
-               <h2 className="text-lg md:text-xl font-semibold">{t('payroll.overviewWelcome.greeting')}</h2>
-               <p className="text-muted-foreground text-sm">
+               <h2 className="text-[20px] font-bold font-display text-xevn-text">{t('payroll.overviewWelcome.greeting')}</h2>
+               <p className="text-xevn-textSecondary text-sm">
                  {t('payroll.overviewWelcome.description')}
                </p>
              </div>
-             <Button variant="outline" className="gap-2 shrink-0 w-fit" size="sm">
+             <Button variant="outline" className="gap-2 shrink-0 w-fit border-xevn-border text-xevn-primary hover:bg-xevn-primary/5" size="sm">
                <Play className="w-4 h-4" />
                {t('payroll.overviewWelcome.beginnerGuide')}
              </Button>
            </div>
 
-          {/* Step Cards ? hide onboarding wizard when live payslips exist (D-HRM-PAY-EMPTY-01) */}
+          {/* Step Cards — hide onboarding wizard when live payslips exist (D-HRM-PAY-EMPTY-01) */}
           {livePayslips.length === 0 ? (
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
             {stepCards.map((step) => {
@@ -887,8 +961,8 @@ export default function Payroll() {
                  <Card 
                    key={step.id} 
                    className={cn(
-                     'overflow-hidden cursor-pointer transition-transform hover:scale-105 min-w-[140px] sm:min-w-0 flex-1',
-                     `bg-gradient-to-br ${step.gradient}`
+                     'overflow-hidden cursor-pointer transition-transform hover:scale-[1.02] min-w-[140px] sm:min-w-0 flex-1 border-0 shadow-soft',
+                     step.tone
                    )}
                  >
                   <CardContent className="p-4 text-white">
@@ -897,8 +971,8 @@ export default function Payroll() {
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm leading-tight">{step.id}. {step.title}</p>
-                        <p className="text-xs opacity-80 mt-1">{step.subtitle}</p>
+                        <p className="font-semibold text-sm leading-tight font-display">{step.id}. {step.title}</p>
+                        <p className="text-xs text-white/90 mt-1">{step.subtitle}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -907,17 +981,17 @@ export default function Payroll() {
             })}
           </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              {livePayslips.length} {t('payroll.payslipCount', 'phi?u l??ng')} ?{' '}
+            <p className="text-sm text-xevn-textSecondary">
+              {livePayslips.length} {t('payroll.payslipCount', 'phiếu lương')} —{' '}
               <button
                 type="button"
-                className="text-primary underline-offset-2 hover:underline"
+                className="text-xevn-primary underline-offset-2 hover:underline font-medium"
                 onClick={() => {
                   setActiveTab('calculate');
                   setActiveCalcSubTab('calc-list');
                 }}
               >
-                {t('payroll.viewPayrollList', 'Xem danh s�ch')}
+                {t('payroll.viewPayrollList', 'Xem danh sách')}
               </button>
             </p>
           )}
@@ -927,37 +1001,37 @@ export default function Payroll() {
          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
           {/* Salary Summary Card */}
           <div className="md:col-span-5">
-            <Card>
+            <Card className="rounded-card border border-xevn-border">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-xl bg-xevn-primary flex items-center justify-center">
                     <Coins className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold">{t('payroll.salarySummary.title')}</h3>
-                    <p className="text-sm text-muted-foreground">{t('payroll.salarySummary.officeThisMonth')}</p>
+                    <h3 className="text-[20px] font-bold font-display text-xevn-text">{t('payroll.salarySummary.title')}</h3>
+                    <p className="text-sm text-xevn-textSecondary">{t('payroll.salarySummary.officeThisMonth')}</p>
                     
                     <div className="grid grid-cols-3 gap-6 mt-4">
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase">{t('payroll.salarySummary.totalSalary')}</p>
-                        <p className="text-2xl font-bold text-primary">
+                        <p className="text-xs text-xevn-textSecondary uppercase">{t('payroll.salarySummary.totalSalary')}</p>
+                        <p className="text-2xl font-bold text-xevn-primary">
                           {(totalNet / 1000000).toFixed(0)}
                         </p>
-                        <p className="text-xs text-muted-foreground">{t('payroll.salarySummary.millionVnd')}</p>
+                        <p className="text-xs text-xevn-textSecondary">{t('payroll.salarySummary.millionVnd')}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase">{t('payroll.salarySummary.personalTax')}</p>
-                        <p className="text-2xl font-bold text-amber-500">
+                        <p className="text-xs text-xevn-textSecondary uppercase">{t('payroll.salarySummary.personalTax')}</p>
+                        <p className="text-2xl font-bold text-warning">
                           {(totalTax / 1000000).toFixed(0)}
                         </p>
-                        <p className="text-xs text-muted-foreground">{t('payroll.salarySummary.millionVnd')}</p>
+                        <p className="text-xs text-xevn-textSecondary">{t('payroll.salarySummary.millionVnd')}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase">{t('payroll.salarySummary.insurance')}</p>
-                        <p className="text-2xl font-bold text-rose-500">
+                        <p className="text-xs text-xevn-textSecondary uppercase">{t('payroll.salarySummary.insurance')}</p>
+                        <p className="text-2xl font-bold text-xevn-text">
                           {(totalInsurance / 1000000).toFixed(0)}
                         </p>
-                        <p className="text-xs text-muted-foreground">{t('payroll.salarySummary.millionVnd')}</p>
+                        <p className="text-xs text-xevn-textSecondary">{t('payroll.salarySummary.millionVnd')}</p>
                       </div>
                     </div>
                   </div>
@@ -990,8 +1064,8 @@ export default function Payroll() {
                     <CheckCircle2 className="w-5 h-5 text-success" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('payroll.quickStats.paid')}</p>
-                    <p className="text-xl font-bold">{paidCount} / {filteredRecords.length}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('payroll.quickStats.paid')}</p>
+                    <p className="text-xl font-bold text-xevn-text">{paidCount} / {filteredRecords.length}</p>
                   </div>
                 </div>
               </CardContent>
@@ -1003,8 +1077,8 @@ export default function Payroll() {
                     <Clock className="w-5 h-5 text-warning" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('payroll.quickStats.pendingApproval')}</p>
-                    <p className="text-xl font-bold">{filteredRecords.length - paidCount}</p>
+                    <p className="text-xs text-xevn-textSecondary">{t('payroll.quickStats.pendingApproval')}</p>
+                    <p className="text-xl font-bold text-xevn-text">{filteredRecords.length - paidCount}</p>
                   </div>
                 </div>
               </CardContent>
@@ -1020,10 +1094,10 @@ export default function Payroll() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base">{t('payroll.salaryAnalysis.title')}</CardTitle>
-                    <p className="text-xs text-muted-foreground">{t('payroll.salaryAnalysis.subtitle')}</p>
+                    <CardTitle className="text-[20px] font-bold font-display text-xevn-text">{t('payroll.salaryAnalysis.title')}</CardTitle>
+                    <p className="text-xs text-xevn-textSecondary">{t('payroll.salaryAnalysis.subtitle')}</p>
                   </div>
-                  <span className="text-xs text-muted-foreground">{t('payroll.salaryAnalysis.salaryLevel')}</span>
+                  <span className="text-xs text-xevn-textSecondary">{t('payroll.salaryAnalysis.salaryLevel')}</span>
                 </div>
               </CardHeader>
               <CardContent>
@@ -1047,8 +1121,8 @@ export default function Payroll() {
             <Card>
               <CardHeader>
                 <div>
-                  <CardTitle className="text-base">{t('payroll.incomeStructure.title')}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{t('payroll.salaryAnalysis.subtitle')}</p>
+                  <CardTitle className="text-[20px] font-bold font-display text-xevn-text">{t('payroll.incomeStructure.title')}</CardTitle>
+                  <p className="text-xs text-xevn-textSecondary">{t('payroll.salaryAnalysis.subtitle')}</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -1257,9 +1331,12 @@ export default function Payroll() {
         return <SalesDataTab />;
       default:
         return (
-          <div className="p-6">
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">
+          <div className="p-6 xevn-safe-inline" data-testid="pay-data-stub-precision">
+            <Card className="rounded-card border border-xevn-border bg-xevn-surface p-8 text-center space-y-3">
+              <h2 className="text-[20px] font-bold font-display text-xevn-text">
+                {dataMenuItems.find(m => m.id === activeDataSubTab)?.label}
+              </h2>
+              <p className="text-sm text-xevn-textSecondary max-w-lg mx-auto">
                 {t('payroll.common.featureInDev', { name: dataMenuItems.find(m => m.id === activeDataSubTab)?.label })}
               </p>
             </Card>
@@ -2618,15 +2695,23 @@ export default function Payroll() {
         return <TaxPolicyTab />;
       case 'insurance':
         return <InsurancePolicyTab />;
+      case 'payroll-groups':
+        return <PayrollGroupsCatalogTab />;
       case 'bonus':
         return <BonusPolicyTab />;
       case 'sales':
         return <SalesDataTab />;
       default:
         return (
-          <div className="p-6">
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">
+          <div
+            className="p-6 xevn-safe-inline"
+            data-testid={activePolicySubTab === 'allowance' ? 'pay-allowance-stub-precision' : 'pay-policy-stub-precision'}
+          >
+            <Card className="rounded-card border border-xevn-border bg-xevn-surface p-8 text-center space-y-3">
+              <h2 className="text-[20px] font-bold font-display text-xevn-text">
+                {policyMenuItems.find(m => m.id === activePolicySubTab)?.label}
+              </h2>
+              <p className="text-sm text-xevn-textSecondary max-w-lg mx-auto">
                 {t('payroll.common.featureInDev', { name: policyMenuItems.find(m => m.id === activePolicySubTab)?.label })}
               </p>
             </Card>
@@ -2639,18 +2724,27 @@ export default function Payroll() {
   const renderCalcContent = () => {
     switch (activeCalcSubTab) {
       case 'calc-list':
-        return livePayslips.length > 0 ? <PayrollPayslipsApiTab /> : <PayrollBatchesTab />;
+        // AC-PAY-HIRE-04: batch/enroll surface must stay reachable when global payslip count >= 1
+        return resolveCalcListTabComponent(livePayslips.length) === 'payslips-api' ? (
+          <PayrollPayslipsApiTab />
+        ) : (
+          <PayrollBatchesTab />
+        );
       case 'calc-advance':
         return <AdvanceRequestsTab />;
+      case 'calc-template':
+        return <SalaryTemplatesTab />;
       case 'calc-tax-settlement':
         // E2 AC-E2-P3-02 / SA Q1 ? no tax-settlement BE ? HIDE invent mutate UI
         return (
-          <div className="p-6">
-            <Card className="p-8 text-center space-y-2">
-              <h2 className="text-lg font-semibold">{t('payroll.taxSettlement.title')}</h2>
-              <p className="text-muted-foreground text-sm max-w-lg mx-auto">
-                Quy?t to�n thu? ch?a c� API ? kh�ng t?o d? li?u gi? tr�n m�n h�nh n�y.
-                Khi c� endpoint, s? m? l?i form theo API_DESIGN (kh�ng invent).
+          <div className="p-6 xevn-safe-inline" data-testid="pay-tax-settlement-honesty-precision">
+            <Card className="rounded-card border border-xevn-border bg-xevn-surface p-8 text-center space-y-3">
+              <h2 className="text-[20px] font-bold font-display text-xevn-text">
+                {t('payroll.taxSettlement.title')}
+              </h2>
+              <p className="text-xevn-textSecondary text-sm max-w-lg mx-auto">
+                Quyết toán thuế chưa có API — không tạo dữ liệu giả trên màn hình này.
+                Khi có endpoint, sẽ mở lại form theo API_DESIGN (không invent).
               </p>
             </Card>
           </div>
@@ -2675,14 +2769,24 @@ export default function Payroll() {
         return renderOverview();
       case 'payment':
         return <PaymentBatchesTab />;
+      case 'ess':
+        return <EssPayslipsPanel />;
       case 'data':
         return renderDataContent();
       case 'components':
         return <SalaryComponentsTab />;
+      case 'formulas':
+        return <PayFormulaAuthorPanel />;
       case 'calculate':
         return renderCalcContent();
       case 'policy':
         return renderPolicyContent();
+      case 'reports':
+        return (
+          <div data-testid="pay-reports-precision" className="xevn-safe-inline">
+            <PayrollPayslipsApiTab />
+          </div>
+        );
       default:
         return renderOverview();
     }
@@ -2985,7 +3089,7 @@ export default function Payroll() {
                {t('payroll.common.cancel')}
             </Button>
             <Button 
-              className="bg-emerald-500 hover:bg-emerald-600"
+              className="bg-xevn-primary hover:bg-xevn-primary/90 text-white"
               onClick={() => closeAddPayment()}
             >
                {t('payroll.agree')}
@@ -3024,7 +3128,7 @@ export default function Payroll() {
                  {t('payroll.summaryForm.payrollTable')} <span className="text-destructive">*</span>
               </Label>
               <div className="col-span-9">
-                <Button variant="link" className="text-emerald-600 p-0 h-auto gap-1">
+                <Button variant="link" className="text-xevn-primary p-0 h-auto gap-1">
                   <Plus className="w-4 h-4" />
                   {t('payroll.summaryForm.addPayrollTable')}
                 </Button>
@@ -3103,7 +3207,7 @@ export default function Payroll() {
                {t('payroll.common.cancel')}
             </Button>
             <Button 
-              className="bg-emerald-500 hover:bg-emerald-600"
+              className="bg-xevn-primary hover:bg-xevn-primary/90 text-white"
               onClick={() => setShowAddPayrollSummaryDialog(false)}
             >
                {t('payroll.agree')}
@@ -3320,7 +3424,7 @@ export default function Payroll() {
                {t('payroll.common.cancel')}
              </Button>
             <Button 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className="bg-xevn-primary hover:bg-xevn-primary/90 text-white"
               onClick={() => {
                 // Handle create advance logic here
                 closeAddAdvance();
@@ -3483,7 +3587,7 @@ export default function Payroll() {
                {t('payroll.common.cancel')}
             </Button>
             <Button 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className="bg-xevn-primary hover:bg-xevn-primary/90 text-white"
               onClick={() => {
                 // Handle update advance logic here
                 closeEditAdvance();
@@ -3733,7 +3837,7 @@ export default function Payroll() {
                {t('payroll.common.cancel')}
             </Button>
             <Button 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className="bg-xevn-primary hover:bg-xevn-primary/90 text-white"
               onClick={saveEditedSalaryComponent}
               disabled={!editSalaryComponentForm.code.trim() || !editSalaryComponentForm.name.trim()}
             >
@@ -3870,14 +3974,14 @@ export default function Payroll() {
                       key={component.id} 
                       className={cn(
                         "border-b hover:bg-muted/30 cursor-pointer transition-colors",
-                        selectedSystemComponents.includes(component.id) && "bg-emerald-50 dark:bg-emerald-950/20"
+                        selectedSystemComponents.includes(component.id) && "bg-xevn-primary/5"
                       )}
                       onClick={() => toggleSystemComponentSelection(component.id)}
                     >
                       <td className="p-3">
                         <input 
                           type="checkbox" 
-                          className="rounded border-gray-300 text-emerald-500 focus:ring-emerald-500"
+                          className="rounded border-xevn-border text-xevn-primary focus:ring-xevn-primary"
                           checked={selectedSystemComponents.includes(component.id)}
                           onChange={() => toggleSystemComponentSelection(component.id)}
                           onClick={(e) => e.stopPropagation()}
@@ -3974,7 +4078,7 @@ export default function Payroll() {
                {t('payroll.common.cancel')}
             </Button>
             <Button 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              className="bg-xevn-primary hover:bg-xevn-primary/90 text-white"
               onClick={confirmAddSystemComponents}
               disabled={selectedSystemComponents.length === 0}
             >

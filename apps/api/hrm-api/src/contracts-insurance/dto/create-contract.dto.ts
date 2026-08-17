@@ -28,8 +28,28 @@
  * @CODE-MEMORY-CHANGE 2026-08-01 D-HDSD-MUTATE-BE-01
  * position_key @IsOptional — service resolves employee.job_title_key or job_titles catalog
  * Why: Contracts.tsx / HDSD create POST omits position_key (UF-HRM-05 TC-HDSD-06-02-01)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-G4-CREATE-START-DATE-FIX-01
+ * start_date @IsOptional — service defaults to today (Asia/Ho_Chi_Minh) for wizard Step1→2 draft
+ * effective_from alias (SA-01 field map) — same persist column as start_date
  */
-import { IsDateString, IsNumber, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDateString,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
+
+function emptyDateToUndefined(value: unknown): unknown {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string' && !value.trim()) return undefined;
+  return value;
+}
 
 export class CreateContractDto {
   @IsString()
@@ -54,8 +74,17 @@ export class CreateContractDto {
   @MaxLength(40)
   contract_type!: string;
 
+  /** Optional at DTO — wizard Step1→2 defaults today in service (FR-HRM-CI-01 #4). */
+  @IsOptional()
+  @Transform(({ value }) => emptyDateToUndefined(value))
   @IsDateString()
-  start_date!: string;
+  start_date?: string;
+
+  /** SA-01 alias → `start_date` (effective_from). */
+  @IsOptional()
+  @Transform(({ value }) => emptyDateToUndefined(value))
+  @IsDateString()
+  effective_from?: string;
 
   /** Optional at DTO; required when contract_type is not open-ended (service G-CI-01). */
   @IsOptional()
@@ -110,4 +139,144 @@ export class CreateContractDto {
   @IsString()
   @MaxLength(128)
   signer_position_key?: string;
+
+  /** Print overlay — ADD nullable (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  pack_code?: string;
+
+  @IsOptional()
+  @IsUUID()
+  template_id?: string;
+
+  /** Optional denorm — UF-HRM-02 nullable (AC-CTR-XEVN-08). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  template_code?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  term_type?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  work_location?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  work_location_scope?: string;
+
+  @IsOptional()
+  @IsString()
+  job_description_text?: string;
+
+  @IsOptional()
+  @IsNumber()
+  probation_days?: number;
+
+  @IsOptional()
+  @IsDateString()
+  probation_end?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  license_class?: string;
+
+  /** Alias → persist license_class only. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  driver_license_class?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  driver_license_number?: string;
+
+  @IsOptional()
+  @IsDateString()
+  driver_license_issued_on?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(256)
+  driver_license_issued_place?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  vehicle_plate?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  route_or_region?: string;
+
+  @IsOptional()
+  @IsUUID()
+  compensation_package_id?: string;
+
+  @IsOptional()
+  @IsDateString()
+  signed_at?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  contract_name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  work_arrangement?: string;
+
+  @IsOptional()
+  @IsNumber()
+  salary_ratio_percent?: number;
+
+  /** PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01 — candidate | employee (G-CTR-SUBJ-01). */
+  @IsOptional()
+  @IsIn(['candidate', 'employee'])
+  subject_type?: 'candidate' | 'employee';
+
+  @IsOptional()
+  @IsUUID()
+  candidate_id?: string;
+
+  @IsOptional()
+  @IsUUID()
+  requisition_id?: string;
+
+  /** Alias → `signed_at` (wizard GĐ1). */
+  @IsOptional()
+  @IsDateString()
+  signing_date?: string;
+
+  /** Alias → `work_arrangement`. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  work_form?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  contract_abstract?: string;
+
+  /** Alias → `contract_abstract` (trích yếu). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  abstract?: string;
+
+  /** AC-CTR-XEVN-08 — «Chỉ lưu sổ» may waive signed_at GĐ1 rules. */
+  @IsOptional()
+  @IsBoolean()
+  registry_only?: boolean;
 }

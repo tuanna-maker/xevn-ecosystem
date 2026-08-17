@@ -1,3 +1,30 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Employees → Nhập Excel (E08)
+ * UC:         TC-HRM-HDSD import spreadsheet
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-A
+ * Purpose:    Server preview/commit Excel import dialog — ops-dense chrome.
+ * must_keep:  preview→commit path; spreadsheetScope required; no OCR invent; U65 no seed
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-A
+ * change_mode: UPGRADE
+ * What: Sharp text on template/upload/preview/progress; instructions on xevn surface (no blue glass)
+ * Why: ADR pale ban + dual-surface light ops canvas · inventory W3-EMP-A E08
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-F
+ * change_mode: UPGRADE
+ * What: DialogTitle ≥20 bold (S65 ATT settings import nested modal)
+ * Why: ADR §10 ops-dense modal · inventory W3-ATT-F S65
+ * must_keep: preview→commit path; spreadsheetScope; EMP-A sharp chrome
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-ATT-DIALOG-EXT
+ * change_mode: ADD
+ * What: Wire ATT settings import Dialog → shared chrome testid att-import-dialog-precision
+ * Why: ADR §16 LOCK · FE-DIALOG-01 shell · inventory S65 import
+ * must_keep: preview→commit path; spreadsheetScope; no Nest invent; U65 no seed
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-att-dialog-ext.md
+ */
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -237,10 +264,13 @@ export function EmployeeImportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh]">
+      <DialogContent
+        className="max-w-5xl max-h-[90vh]"
+        data-testid="att-import-dialog-precision"
+      >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5" />
+          <DialogTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
+            <FileSpreadsheet className="w-5 h-5 text-xevn-primary" />
             {d('title')}
           </DialogTitle>
         </DialogHeader>
@@ -253,8 +283,8 @@ export function EmployeeImportDialog({
                   <Download className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium mb-1">{d('downloadTemplate')}</h4>
-                  <p className="text-sm text-muted-foreground mb-3">{d('downloadTemplateDesc')}</p>
+                  <h4 className="mb-1 font-medium text-xevn-text">{d('downloadTemplate')}</h4>
+                  <p className="mb-3 text-sm text-xevn-textSecondary">{d('downloadTemplateDesc')}</p>
                   <Button variant="outline" size="sm" onClick={downloadTemplate}>
                     <Download className="w-4 h-4 mr-2" />
                     {d('downloadTemplateBtn')}
@@ -281,8 +311,8 @@ export function EmployeeImportDialog({
                   <Upload className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium">{d('dragDrop')}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{d('supportedFormatsServer')}</p>
+                  <p className="font-medium text-xevn-text">{d('dragDrop')}</p>
+                  <p className="mt-1 text-sm text-xevn-textSecondary">{d('supportedFormatsServer')}</p>
                   {!spreadsheetScope ? (
                     <p className="text-sm text-destructive mt-2">{d('scopeMissing')}</p>
                   ) : null}
@@ -290,9 +320,9 @@ export function EmployeeImportDialog({
               </div>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4">
-              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">{d('instructions')}</h4>
-              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+            <div className="rounded-lg border border-xevn-border bg-xevn-background p-4">
+              <h4 className="mb-2 font-medium text-xevn-text">{d('instructions')}</h4>
+              <ul className="space-y-1 text-sm text-xevn-textSecondary">
                 <li>• {d('instructionServer1')}</li>
                 <li>• {d('instructionServer2')}</li>
                 <li>• {d('instructionServer3')}</li>
@@ -311,12 +341,12 @@ export function EmployeeImportDialog({
             ) : null}
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground">
-                  File: <span className="font-medium text-foreground">{file?.name}</span>
+                <p className="text-sm text-xevn-textSecondary">
+                  File: <span className="font-medium text-xevn-text">{file?.name}</span>
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="mt-1 text-sm text-xevn-textSecondary">
                   {d('totalRows')}:{' '}
-                  <span className="font-medium text-foreground">{previewPayload.rowCount}</span>
+                  <span className="font-medium text-xevn-text">{previewPayload.rowCount}</span>
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -399,8 +429,8 @@ export function EmployeeImportDialog({
           <div className="py-8 space-y-6">
             <div className="text-center">
               <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" />
-              <p className="mt-4 font-medium">{d('importing')}</p>
-              <p className="text-sm text-muted-foreground mt-1">{d('doNotClose')}</p>
+              <p className="mt-4 font-medium text-xevn-text">{d('importing')}</p>
+              <p className="mt-1 text-sm text-xevn-textSecondary">{d('doNotClose')}</p>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -418,7 +448,7 @@ export function EmployeeImportDialog({
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="mt-4 text-lg font-medium">{d('importComplete')}</h3>
+              <h3 className="mt-4 text-lg font-medium text-xevn-text">{d('importComplete')}</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">

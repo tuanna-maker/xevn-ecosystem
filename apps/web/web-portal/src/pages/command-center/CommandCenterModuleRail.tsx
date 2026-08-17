@@ -1,3 +1,10 @@
+/**
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-A · 2026-08-05
+ * change_mode: UPGRADE
+ * What: Rail idle/hover + collapse control → xevn tokens (ADR-20260805 §8 · PORT-03)
+ * must_keep: module routing / disabled reasons; no Nest
+ */
 import React, { type Dispatch, type SetStateAction } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
@@ -88,7 +95,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
                     ? 'cursor-not-allowed border-dashed border-xevn-border text-xevn-textMuted'
                     : isActive
                       ? 'border-xevn-primary bg-xevn-primary/10 text-xevn-primary shadow-sm'
-                      : 'border-transparent text-xevn-textSecondary hover:border-xevn-border hover:bg-slate-50'
+                      : 'border-transparent text-xevn-textSecondary hover:border-xevn-border hover:bg-xevn-background'
                 }`}
                 title={m.disabled ? m.disabledReason : m.label}
               >
@@ -153,7 +160,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
                 e.stopPropagation();
                 onPortalRailToggle();
               }}
-              className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+              className="flex w-full items-center justify-center gap-1 rounded-md py-1.5 text-[0.75rem] font-medium text-xevn-textSecondary transition hover:bg-xevn-background hover:text-xevn-text"
               title={portalRailExpanded ? 'Thu gọn thanh phân hệ' : 'Mở thanh phân hệ'}
               aria-pressed={portalRailExpanded}
             >

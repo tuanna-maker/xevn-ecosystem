@@ -62,14 +62,106 @@
  * What: resolveContractCreatePositionKey at submit with department snapshot; pass-through empKey when catalog miss
  * Why: QA R7 — form-ready 🟢 but no POST (position resolver returned null before API)
  * must_keep: FE-09 form-ready gate; FE-07 date prefill; TC-HDSD-08-02-01 leave 🟢
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: PO-E2E-SPINE-01-FE-VITE-PAY-CON-01
+ * change_mode: FIX
+ * What: Unblock Vite mount — restore EmptyState + contractCreatePayload chain (stash 43c479a)
+ * Why: QA W5 HP-05 HĐ — /hr/contracts whitescreen · Contracts.tsx Vite 500
+ * must_keep: EmptyState list/empty; HP-05 emp soft-link; Leave/LV-03/04 · AUTH/EMP/CAT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-FE-CI01-IFRAME-01
+ * change_mode: FIX
+ * What: Create CTA — type=button + dismiss-guard onOpenChange; iframe open latch testid;
+ *       keep Dialog parent-portal (TECHSPEC §4.1). HDSD dialog nodes live on parent document.
+ * Why: QA R-W4E4-CI01-IFRAME-DIALOG — frame-scoped query missed parent-portaled dialog
+ *      (screenshot 03a already showed «Thêm hợp đồng mới» open on CC)
+ * must_keep: /hr create path; Leave L2; DEPT VAL; U65 no seed; parent portal Dialog
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-CTR-CREATE-REDESIGN-FE-03
+ * What: Create DialogContent parent portal ~90vw×90vh — omit portalScope iframe (SA Option A)
+ * Why: BA-02 Q1-A · AC-CTR-UX-06/07 DnD same-document on CC URL
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-CONTRACT-LEGAL-PRINT-FE-01
+ * change_mode: ADD
+ * What: ContractPrintSpinePanel in create/edit dialog — pack/template + clause DnD + preview/PDF honesty
+ * Why: FR-UC-BP-CORE-09b/c · UNICOM DnD lock · must_keep UF-HRM-02 registry CRUD
+ * Spec: PO-HRM-CONTRACT-LEGAL-PRINT-SPEC-01 §D · DATA-01 §5.8–5.12
+ * must_keep: UF-HRM-02 list CRUD; F5 salary off body; contracts_printable_ready=false; U65 no seed
+ * solid_convention_ack: FE binds BE display-ready preview/clauses — no FE invent body
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-CONTRACT-LEGAL-PRINT-FE-03
+ * change_mode: ADD
+ * What: Form field «Nơi làm việc» (`work_location`) create/edit + POST/PATCH — Đ.21.c
+ * Why: QA-01-R2 R-CTR-PRINT-CAN-ISSUE — can_issue=false missing work_location
+ * must_keep: UF-HRM-02 CRUD; Settings CL/TPL; FE-02 preview body no company_id; honesty false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-E2E-LINK-EMP-FE-J03-01
+ * change_mode: FIX
+ * What: Eye row control — sr-only «Chi tiết» + hdsd-contracts-view-btn; view DialogContent
+ *       testid; iframe latch hdsd-contracts-view-dialog-open (parent portal parity with create)
+ * Why: R-J03-DIALOG — harness dialog=false (icon-only Eye + portaled dialog invisible in iframe)
+ * Spec: PROGRAM_JOURNEY_MAP J-HRM-03 · QC GWC CONDITION
+ * must_keep: UF-HRM-02 CRUD create/edit; print-spine; D1/D5 EMP sealed; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-CONTRACT-LEGAL-PRINT-XEVN-TPL-FE-01
+ * change_mode: EXPAND
+ * What: Persist template_code from open-catalog picker on create/update HĐ
+ * Why: DYNAMIC LOCK AC-11 — any active template_code from API (not hardcode 8)
+ * must_keep: UF-HRM-02 · print-spine · Q-CTR · printable=false · U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-CONTRACT-LEGAL-PRINT-XEVN-TPL-FE-EDIT-01
+ * change_mode: FIX
+ * What: handleOpenEdit khôi phục printTemplateId/Code + pack từ contract row (không hard-clear)
+ * Why: QC GWC R-CTR-XEVN-TPL-FE-EDIT-RESTORE — create bind #9 → F5 → Sửa hiện «— Chưa chọn —»
+ * Spec: AC-CTR-XEVN-11 · DYNAMIC LOCK · docs/qa/evidence/po-hrm-contract-legal-print-xevn-tpl-qc-02.md
+ * must_keep: UF-HRM-02 · print-spine · Q-CTR CLOSED · open catalog · printable=false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-09-CLUSTER-FE-01
+ * change_mode: ADD · preserve_default
+ * What: Honesty banner 09a–d≠DONE · printable false · CORE-07 GATE/ACT RETAIN ·
+ *       registry without template note (AC-CTR-XEVN-08) · statusLabelVi badge bind
+ * Why: UC-BP-CORE-09 parent residual · J-HRM-CORE-09-01..06 · Nest /core DENY
+ * must_keep: UF-HRM-02 · peers 09a–d · CORE-07/06 seals · Word OUT · U65 zero-seed
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-core-09-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 D-PO-HRM-CTR-VIEW-SYNC-01
+ * change_mode: FIX
+ * What: View dialog GET-by-id + parent-portal shell ~90vw; candidate_label · signing_date · trích yếu
+ * Why: Stale list row snapshot in view — display-ready parity with list API (OS 28)
+ * must_keep: UF-HRM-02 create wizard shell; J-HRM-03 view testids; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-SETTINGS-FIDELITY-FE-03
+ * change_mode: FIX
+ * What: activeFormFields via buildActiveContractFormFields — department spine when partial hrm_contract_form_fields
+ * Why: SETFID02 UF-CTR-DEPT-CATALOG-PICKER — hasContractField('department') false hid ctr-create-department-picker
+ * must_keep: departmentOptionsFromCatalog; UF-HRM-10 consumer matrix; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-WAVE-G3
+ * change_mode: FIX · ADD
+ * What: ContractWorkspaceDialog (create|edit|view); deep-link parseContractWorkspaceSearch;
+ *       NV-first subject_type employee; thay inline view dialog; edit/view deep-link contractId
+ * Why: BA G1/G3 · ADR workspace unified · J-HRM-03 view clause+PDF · REC «Tạo HĐ» CTA
+ * must_keep: UF-HRM-02 · HDSD testids · clause body Settings only · contracts_printable_ready=false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-G4-EDIT-DEEPLINK-FE-01
+ * change_mode: FIX
+ * What: resolveContractWorkspaceSearch (parent portal merge) · edit deep-link opens shell immediately
+ * Why: DEF-CTR-G4-EDIT-DEEPLINK-P1 — CC URL ?workspace=edit not on iframe src; Step1 not mounted
+ * must_keep: G3 workspace shell · view/create deep-links unchanged
  */
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { useDepartments } from '@/hooks/useDepartments';
-import { useContracts, type Contract } from '@/hooks/useContracts';
+import { useContracts, type Contract, mapApiContract } from '@/hooks/useContracts';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { hrmStorageUploadStub, hrmStorageRemoveStub } from '@/lib/hrmStorageUploadStub';
@@ -78,12 +170,20 @@ import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
 import { EmptyState } from '@/components/hrm/EmptyState';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { ContractWorkspaceDialog } from '@/components/contracts/ContractWorkspaceDialog';
+import type { ContractWorkspaceMode, ContractWorkspacePrefill } from '@/lib/contractWorkspaceDeepLink';
+import { resolveContractWorkspaceSearch } from '@/lib/contractWorkspaceDeepLink';
+import { resolveContractStatusLabelVi } from '@/lib/contractCore09Ring';
 import {
   contractTypeOptionsFromCatalog,
+  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
   resolveContractTypeCatalogLabel,
+  resolveContractTypeEditValue,
 } from '@/lib/catalogSearchPicker';
+import { resolveEmpDeptEditValue } from '@/lib/empDeptCatalog';
 import { resolveContractCreatePositionKey } from '@/lib/contractCreatePayload';
+import { restorePrintSpineFromContract } from '@/lib/contractPrintEditRestore';
 import {
   HRM_LIST_LOAD_FAILED_SHORT,
   isListFetchFailureEmpty,
@@ -168,8 +268,10 @@ import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import {
   listEmployees,
+  getEmployeeContractById,
   type HrmSettingsCatalogOverviewRow,
 } from '@/integrations/hrmApi';
+import { toErrorMessage } from '@/lib/apiError';
 import { EM_DASH, resolveContractStatusDisplay, resolveContractTypeDisplayLabel } from '@/lib/labelMaps';
 
 interface FormData {
@@ -184,6 +286,8 @@ interface FormData {
   notes: string;
   file_url: string;
   employee_id?: string;
+  /** Đ.21.c — Nơi làm việc (LEGAL-PRINT can_issue). */
+  work_location: string;
 }
 
 const initialFormData: FormData = {
@@ -197,6 +301,7 @@ const initialFormData: FormData = {
   status: 'pending',
   notes: '',
   file_url: '',
+  work_location: '',
 };
 
 const FILTER_TYPE_ICONS = [FileText, FileSignature, Clock, GraduationCap, UserCheck] as const;
@@ -208,28 +313,11 @@ const FILTER_TYPE_COLORS = [
   { color: 'bg-purple-500', textColor: 'text-purple-600' },
 ] as const;
 
-type ContractFormFieldKey =
-  | 'contract_code'
-  | 'employee_name'
-  | 'department'
-  | 'contract_type'
-  | 'effective_date'
-  | 'expiry_date'
-  | 'status'
-  | 'notes'
-  | 'file_url';
-
-const DEFAULT_CONTRACT_FORM_FIELDS: ContractFormFieldKey[] = [
-  'contract_code',
-  'employee_name',
-  'department',
-  'contract_type',
-  'effective_date',
-  'expiry_date',
-  'status',
-  'notes',
-  'file_url',
-];
+import {
+  buildActiveContractFormFields,
+  type ContractFormFieldKey,
+  isContractCreateWizardFormReady,
+} from '@/components/contracts/contractFormFieldResolver';
 
 function findCatalog(catalogs: HrmSettingsCatalogOverviewRow[], keys: string[]) {
   return catalogs.find((c) => keys.includes(c.catalogKey.toLowerCase()));
@@ -239,9 +327,14 @@ const getStatusOptions = (t: any) => [
   { value: 'pending', label: t('contracts.statuses.pending') },
   { value: 'active', label: t('contracts.statuses.active') },
   { value: 'expired', label: t('contracts.statuses.expired') },
+  { value: 'terminated', label: t('contracts.statuses.terminated') },
 ];
 
-const getStatusBadge = (status: string, t: any) => {
+const getStatusBadge = (
+  status: string,
+  t: any,
+  statusLabelVi?: string | null,
+) => {
   const config: Record<string, { labelKey: string; className: string }> = {
     active: { labelKey: 'contracts.statuses.active', className: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0' },
     pending: { labelKey: 'contracts.statuses.pending', className: 'bg-amber-100 text-amber-700 hover:bg-amber-100 border-0' },
@@ -249,8 +342,15 @@ const getStatusBadge = (status: string, t: any) => {
     terminated: { labelKey: 'contracts.statuses.terminated', className: 'bg-gray-100 text-gray-700 hover:bg-gray-100 border-0' },
   };
   const hit = config[status];
-  // U72 fail-closed: unknown status → «—», never raw slug
-  const label = hit ? t(hit.labelKey) : resolveContractStatusDisplay(status);
+  // R-CORE-09-DISP-01 — prefer BE/FE-derive statusLabelVi; U72 fail-closed → «—»
+  const derived = resolveContractStatusLabelVi(status, statusLabelVi);
+  const i18nLabel = hit ? t(hit.labelKey) : null;
+  const label =
+    (statusLabelVi && String(statusLabelVi).trim()) ||
+    (derived && derived !== '—' ? derived : null) ||
+    i18nLabel ||
+    resolveContractStatusDisplay(status) ||
+    EM_DASH;
   const className = hit?.className ?? 'bg-gray-100 text-gray-700 hover:bg-gray-100 border-0';
   return <Badge className={className}>{label || EM_DASH}</Badge>;
 };
@@ -273,27 +373,36 @@ export default function Contracts() {
   const [filterExpiryDateFrom, setFilterExpiryDateFrom] = useState<Date | undefined>();
   const [filterExpiryDateTo, setFilterExpiryDateTo] = useState<Date | undefined>();
   
-  // Dialog states
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  // Dialog states — unified workspace (create|edit|view)
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [workspaceMode, setWorkspaceMode] = useState<ContractWorkspaceMode>('create');
+  const [workspacePrefill, setWorkspacePrefill] = useState<ContractWorkspacePrefill | undefined>();
+  const [viewingContractId, setViewingContractId] = useState<string | null>(null);
+  /** Ignore Radix outside-dismiss for a short window after CTA open (CC iframe → parent portal). */
+  const dialogOpenGuardUntilRef = useRef(0);
+  /** Pending edit deep-link fetch when shell opened before companyId or list row ready. */
+  const editDeepLinkContractIdRef = useRef<string | null>(null);
+  const editDeepLinkFetchStartedRef = useRef<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
-  const [viewingContract, setViewingContract] = useState<Contract | null>(null);
   const [deletingContract, setDeletingContract] = useState<Contract | null>(null);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  
+  /** LEGAL-PRINT — pack/template overlay (registry CRUD must_keep). */
+  const [printPackCode, setPrintPackCode] = useState('GENERAL');
+  const [printTemplateId, setPrintTemplateId] = useState('');
+  const [printTemplateCode, setPrintTemplateCode] = useState('');
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // P1-HRM-CON-PERF-01: defer departments/catalogs/employee picker until create/edit dialog
-  const needsFormLookups = dialogOpen;
-  const needsEmployeePicker = dialogOpen && !editingContract;
-  const { departments } = useDepartments({ enabled: needsFormLookups });
+  // P1-HRM-CON-PERF-01: defer catalogs/employee picker until create/edit dialog
+  const needsFormLookups = workspaceOpen && workspaceMode !== 'view';
+  const needsEmployeePicker = needsFormLookups && !editingContract;
 
   const { data: employeesList = [] } = useQuery({
     queryKey: ['contracts-employees-picker', currentCompanyId],
@@ -311,6 +420,27 @@ export default function Contracts() {
     staleTime: 60_000,
   });
 
+  const location = useLocation();
+
+  const handleWorkspaceOpenChange = (open: boolean) => {
+    if (!open && Date.now() < dialogOpenGuardUntilRef.current) {
+      return;
+    }
+    setWorkspaceOpen(open);
+    if (!open) {
+      setViewingContractId(null);
+      setWorkspacePrefill(undefined);
+      setEditingContract(null);
+      editDeepLinkContractIdRef.current = null;
+      editDeepLinkFetchStartedRef.current = null;
+      setFormData(initialFormData);
+      setSelectedFile(null);
+      setPrintPackCode('GENERAL');
+      setPrintTemplateId('');
+      setPrintTemplateCode('');
+    }
+  };
+
   const {
     catalogs,
     isLoading: catalogsLoading,
@@ -320,19 +450,11 @@ export default function Contracts() {
   });
   const formFieldsCatalog = findCatalog(catalogs, ['hrm_contract_form_fields', 'contract_form_fields']);
   const contractStatusesCatalog = findCatalog(catalogs, ['contract_statuses', 'hrm_contract_statuses']);
-  const departmentCatalog = findCatalog(catalogs, ['departments', 'department_catalog', 'org_departments']);
 
-  const activeFormFields = useMemo(() => {
-    const configured = new Set<ContractFormFieldKey>();
-    for (const item of formFieldsCatalog?.effectiveItems ?? []) {
-      if (item.status === 'active' && DEFAULT_CONTRACT_FORM_FIELDS.includes(item.code as ContractFormFieldKey)) {
-        configured.add(item.code as ContractFormFieldKey);
-      }
-    }
-    configured.add('contract_code');
-    configured.add('employee_name');
-    return configured.size > 0 ? configured : new Set(DEFAULT_CONTRACT_FORM_FIELDS);
-  }, [formFieldsCatalog]);
+  const activeFormFields = useMemo(
+    () => buildActiveContractFormFields(formFieldsCatalog),
+    [formFieldsCatalog],
+  );
   const hasContractField = (field: ContractFormFieldKey) => activeFormFields.has(field);
 
   /** Persist code — AC-E2-CI-PARITY-01; empty catalog → [] (no HARDCODE SoT). */
@@ -381,14 +503,10 @@ export default function Contracts() {
     return STATUS_OPTIONS;
   }, [contractStatusesCatalog, STATUS_OPTIONS]);
 
-  const departmentOptions = useMemo(() => {
-    const fromCatalog = (departmentCatalog?.effectiveItems ?? [])
-      .filter((item) => item.status === 'active')
-      .map((item) => item.label.trim())
-      .filter((v) => v.length > 0);
-    const fromProps = departments.map((d) => d.name);
-    return [...new Set([...fromCatalog, ...fromProps])];
-  }, [departmentCatalog, departments]);
+  const departmentPickerOptions = useMemo(
+    () => departmentOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
 
   const handleEmployeeSelect = (employeeId: string) => {
     const emp = employeesList.find((e) => e.id === employeeId);
@@ -406,32 +524,38 @@ export default function Contracts() {
     }
   };
 
-  /** D-HDSD-MUTATE-FE-02 — employee picker loads after dialog open; prefill first NV when list arrives. */
-  useEffect(() => {
-    if (!dialogOpen || editingContract || formData.employee_id) return;
-    const firstEmp = employeesList[0];
-    if (!firstEmp) return;
-    setFormData((prev) => ({
-      ...prev,
-      employee_id: firstEmp.id,
-      employee_name: firstEmp.full_name,
-      employee_avatar: (firstEmp as { avatar_url?: string }).avatar_url || '',
-      department:
-        (firstEmp.custom_fields as { department?: string } | undefined)?.department ||
-        firstEmp.job_title_key ||
-        prev.department,
-    }));
-  }, [dialogOpen, editingContract, employeesList, formData.employee_id]);
+  /** BA-02 Q6 — mặc định ứng viên; không auto-prefill NV đầu danh sách khi mở tạo mới. */
 
   /** D-HDSD-MUTATE-FE-04 — contract_types catalog may load after dialog open; prefill first type. */
   useEffect(() => {
-    if (!dialogOpen || editingContract || !activeFormFields.has('contract_type')) return;
+    if (!workspaceOpen || editingContract || !activeFormFields.has('contract_type')) return;
     if (formData.contract_type.trim()) return;
     const firstType = contractTypePickerOptions[0]?.value;
     if (!firstType) return;
     setFormData((prev) => ({ ...prev, contract_type: firstType }));
   }, [
-    dialogOpen,
+    workspaceOpen,
+    editingContract,
+    contractTypePickerOptions,
+    formData.contract_type,
+    activeFormFields,
+  ]);
+
+  /** PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-FE-03 — Sửa: label → catalog code when EFF loads. */
+  useEffect(() => {
+    if (!workspaceOpen || !editingContract || !activeFormFields.has('contract_type')) return;
+    const catalogBound = contractTypePickerOptions.length > 0;
+    const resolved = resolveContractTypeEditValue(
+      contractTypePickerOptions,
+      formData.contract_type || editingContract.contract_type,
+      catalogBound,
+    );
+    if (!resolved || resolved === formData.contract_type) return;
+    setFormData((prev) =>
+      prev.contract_type === resolved ? prev : { ...prev, contract_type: resolved },
+    );
+  }, [
+    workspaceOpen,
     editingContract,
     contractTypePickerOptions,
     formData.contract_type,
@@ -440,7 +564,7 @@ export default function Contracts() {
 
   /** D-HDSD-MUTATE-FE-07 — always prefill dates on open; do not wait for contract_type catalog. */
   useEffect(() => {
-    if (!dialogOpen || editingContract) return;
+    if (!workspaceOpen || editingContract) return;
 
     setFormData((prev) => {
       const pickerValues = contractTypePickerOptions.map((o) => o.value);
@@ -462,46 +586,16 @@ export default function Contracts() {
         expiry_date,
       };
     });
-  }, [dialogOpen, editingContract, formData.contract_type, contractTypePickerOptions]);
+  }, [workspaceOpen, editingContract, formData.contract_type, contractTypePickerOptions]);
 
-  const isCreateFormReady = useMemo(() => {
-    if (editingContract) return true;
-    if (!formData.employee_id || !formData.contract_code.trim() || !formData.employee_name.trim()) {
-      return false;
-    }
-    if (hasContractField('contract_type')) {
-      const type = formData.contract_type.trim();
-      if (
-        type.length === 0 ||
-        contractTypePickerOptions.length === 0 ||
-        !contractTypePickerOptions.some((o) => o.value === type)
-      ) {
-        return false;
-      }
-    }
-    const typeForDates = resolveContractTypeForDatePolicy(
-      formData.contract_type,
-      contractTypePickerOptions.map((o) => o.value),
-    );
-    const datesGate = validateContractDatesForSubmit({
-      contractType: typeForDates,
-      effectiveDate: formData.effective_date,
-      expiryDate: formData.expiry_date,
-    });
-    if (!datesGate.ok) return false;
-    // position_key resolved at submit — cấm chặn hdsd-contracts-form-ready khi catalog chưa load (FE-09)
-    return true;
-  }, [
-    editingContract,
-    formData.contract_type,
-    formData.contract_code,
-    formData.employee_id,
-    formData.employee_name,
-    formData.effective_date,
-    formData.expiry_date,
-    contractTypePickerOptions,
-    hasContractField,
-  ]);
+  const isCreateFormReady = useMemo(
+    () =>
+      isContractCreateWizardFormReady({
+        editing: Boolean(editingContract),
+        catalogsLoading,
+      }),
+    [editingContract, catalogsLoading],
+  );
 
   const {
     contracts,
@@ -518,9 +612,15 @@ export default function Contracts() {
 
   const loadFailedEmpty = isListFetchFailureEmpty(fetchError, contracts.length);
 
-  const handleOpenCreate = () => {
+  const handleOpenCreate = (prefill?: ContractWorkspacePrefill) => {
+    setWorkspaceMode('create');
+    setWorkspacePrefill(prefill);
     setEditingContract(null);
+    setViewingContractId(null);
     setSelectedFile(null);
+    setPrintPackCode('GENERAL');
+    setPrintTemplateId('');
+    setPrintTemplateCode(prefill?.template_code?.trim() ?? '');
     const stamp = `HD-${Date.now().toString(36).slice(-5).toUpperCase()}`;
     const defaultContractType = contractTypePickerOptions[0]?.value ?? '';
     const pickerValues = contractTypePickerOptions.map((o) => o.value);
@@ -530,55 +630,80 @@ export default function Contracts() {
       contractType: defaultContractType,
       pickerOptionValues: pickerValues,
     });
-    const firstEmp = employeesList[0];
-    if (firstEmp) {
+    const baseForm = {
+      ...initialFormData,
+      contract_code: stamp,
+      contract_type: defaultContractType,
+      effective_date: effectiveDate,
+      expiry_date: expiryDate,
+    };
+    const empId = prefill?.employee_id?.trim();
+    if (empId) {
+      const emp = employeesList.find((e) => e.id === empId);
       setFormData({
-        ...initialFormData,
-        contract_code: stamp,
-        contract_type: defaultContractType,
-        effective_date: effectiveDate,
-        expiry_date: expiryDate,
-        employee_id: firstEmp.id,
-        employee_name: firstEmp.full_name,
-        employee_avatar: (firstEmp as { avatar_url?: string }).avatar_url || '',
+        ...baseForm,
+        employee_id: empId,
+        employee_name: emp?.full_name ?? '',
+        employee_avatar: (emp as { avatar_url?: string } | undefined)?.avatar_url || '',
         department:
-          (firstEmp.custom_fields as { department?: string } | undefined)?.department ||
-          firstEmp.job_title_key ||
+          (emp?.custom_fields as { department?: string } | undefined)?.department ||
+          emp?.job_title_key ||
           '',
       });
     } else {
-      setFormData({
-        ...initialFormData,
-        contract_code: stamp,
-        contract_type: defaultContractType,
-        effective_date: effectiveDate,
-        expiry_date: expiryDate,
-      });
+      setFormData(baseForm);
     }
-    setDialogOpen(true);
+    dialogOpenGuardUntilRef.current = Date.now() + 400;
+    setWorkspaceOpen(true);
   };
 
   const handleOpenEdit = (contract: Contract) => {
+    setWorkspaceMode('edit');
+    setWorkspacePrefill(undefined);
     setEditingContract(contract);
+    setViewingContractId(null);
+    // AC-CTR-XEVN-11 / R-CTR-XEVN-TPL-FE-EDIT-RESTORE — restore bind after F5 (cấm hard-clear)
+    const printRestore = restorePrintSpineFromContract(contract);
+    setPrintPackCode(printRestore.packCode);
+    setPrintTemplateId(printRestore.templateId);
+    setPrintTemplateCode(printRestore.templateCode);
     setFormData({
       contract_code: contract.contract_code,
       employee_name: contract.employee_name,
       employee_avatar: contract.employee_avatar || '',
-      department: contract.department || '',
-      contract_type: contract.contract_type,
+      department: resolveEmpDeptEditValue(
+        departmentPickerOptions,
+        contract.department_key ?? contract.department,
+        departmentPickerOptions.length > 0,
+      ),
+      contract_type: resolveContractTypeEditValue(
+        contractTypePickerOptions,
+        contract.contract_type,
+        contractTypePickerOptions.length > 0,
+      ),
       effective_date: contract.effective_date ? new Date(contract.effective_date) : undefined,
       expiry_date: contract.expiry_date ? new Date(contract.expiry_date) : undefined,
       status: contract.status,
       notes: contract.notes || '',
       file_url: contract.file_url || '',
+      employee_id: contract.employee_id,
+      work_location: contract.work_location || '',
+      pack_code: printRestore.packCode,
+      template_id: printRestore.templateId || undefined,
+      template_code: printRestore.templateCode || undefined,
     });
     setSelectedFile(null);
-    setDialogOpen(true);
+    dialogOpenGuardUntilRef.current = Date.now() + 400;
+    setWorkspaceOpen(true);
   };
 
   const handleOpenView = (contract: Contract) => {
-    setViewingContract(contract);
-    setViewDialogOpen(true);
+    setWorkspaceMode('view');
+    setWorkspacePrefill(undefined);
+    setEditingContract(null);
+    setViewingContractId(contract.id);
+    dialogOpenGuardUntilRef.current = Date.now() + 400;
+    setWorkspaceOpen(true);
   };
 
   const handleOpenDelete = (contract: Contract) => {
@@ -587,11 +712,86 @@ export default function Contracts() {
   };
 
   const handleCloseDialog = () => {
-    setDialogOpen(false);
+    setWorkspaceOpen(false);
     setEditingContract(null);
+    setViewingContractId(null);
+    setWorkspacePrefill(undefined);
     setFormData(initialFormData);
     setSelectedFile(null);
+    setPrintPackCode('');
+    setPrintTemplateId('');
+    setPrintTemplateCode('');
   };
+
+  useEffect(() => {
+    const parsed = resolveContractWorkspaceSearch(location.search);
+    if (!parsed.mode) return;
+
+    if (parsed.mode === 'view' && parsed.contractId) {
+      if (workspaceOpen && workspaceMode === 'view' && viewingContractId === parsed.contractId) {
+        return;
+      }
+      setWorkspaceMode('view');
+      setViewingContractId(parsed.contractId);
+      setWorkspacePrefill(parsed.prefill);
+      setEditingContract(null);
+      editDeepLinkContractIdRef.current = null;
+      dialogOpenGuardUntilRef.current = Date.now() + 400;
+      setWorkspaceOpen(true);
+      return;
+    }
+
+    if (parsed.mode === 'edit' && parsed.contractId) {
+      const contractId = parsed.contractId;
+      const fromList = contracts.find((c) => c.id === contractId);
+      if (fromList) {
+        editDeepLinkContractIdRef.current = null;
+        handleOpenEdit(fromList);
+        return;
+      }
+      if (!workspaceOpen || workspaceMode !== 'edit') {
+        setWorkspaceMode('edit');
+        setWorkspacePrefill(parsed.prefill);
+        setViewingContractId(null);
+        setEditingContract(null);
+        dialogOpenGuardUntilRef.current = Date.now() + 400;
+        setWorkspaceOpen(true);
+      }
+      if (editingContract?.id === contractId) {
+        editDeepLinkContractIdRef.current = null;
+        return;
+      }
+      if (!currentCompanyId) {
+        editDeepLinkContractIdRef.current = contractId;
+        return;
+      }
+      if (editDeepLinkFetchStartedRef.current === contractId) {
+        return;
+      }
+      editDeepLinkContractIdRef.current = contractId;
+      editDeepLinkFetchStartedRef.current = contractId;
+      void (async () => {
+        try {
+          const row = await getEmployeeContractById(contractId, currentCompanyId);
+          handleOpenEdit(mapApiContract(row));
+          editDeepLinkContractIdRef.current = null;
+          editDeepLinkFetchStartedRef.current = null;
+        } catch {
+          editDeepLinkContractIdRef.current = null;
+          editDeepLinkFetchStartedRef.current = null;
+          toast.error('Không mở được workspace sửa hợp đồng.');
+          setWorkspaceOpen(false);
+        }
+      })();
+      return;
+    }
+
+    if (parsed.mode === 'create' && !workspaceOpen) {
+      editDeepLinkContractIdRef.current = null;
+      handleOpenCreate(parsed.prefill);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deep-link on search + contracts list hydrate
+  }, [location.search, currentCompanyId, contracts, workspaceOpen, workspaceMode, viewingContractId, editingContract]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -669,8 +869,13 @@ export default function Contracts() {
       }
 
       const pickerValues = contractTypePickerOptions.map((o) => o.value);
-      const resolvedType = resolveContractTypeForDatePolicy(
+      const contractTypeCode = resolveContractTypeEditValue(
+        contractTypePickerOptions,
         formData.contract_type,
+        contractTypePickerOptions.length > 0,
+      );
+      const resolvedType = resolveContractTypeForDatePolicy(
+        contractTypeCode || formData.contract_type,
         pickerValues,
       );
       const { effective_date, expiry_date } = ensureContractCreateDates({
@@ -694,11 +899,14 @@ export default function Contracts() {
       const dataWithFile = {
         ...formData,
         file_url: fileUrl,
-        contract_type: formData.contract_type.trim() || resolvedType,
+        contract_type: contractTypeCode.trim() || resolvedType,
         effective_date,
         expiry_date,
         position_key: posResolved.position_key,
         position: posResolved.position,
+        pack_code: printPackCode,
+        template_id: printTemplateId || undefined,
+        template_code: printTemplateCode || undefined,
       };
 
       if (editingContract) {
@@ -906,19 +1114,29 @@ export default function Contracts() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 border-b bg-card">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-1 min-w-0">
+          <div className="flex items-center gap-2">
           <PermissionGate module="contracts" action="create">
             <Button
+              type="button"
               size="sm"
               className="gap-2"
               data-testid={HDSD_MUTATE_TEST_IDS.contractsCreateBtn}
               aria-label="Thêm hợp đồng"
-              onClick={handleOpenCreate}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleOpenCreate();
+              }}
             >
               <Plus className="w-4 h-4" />
               <span>{t('contracts.addContract', 'Thêm hợp đồng')}</span>
             </Button>
           </PermissionGate>
+          </div>
+          <p className="text-[11px] text-muted-foreground max-w-xl" data-testid="ctr-create-list-hint">
+            AC-CTR-XEVN-08: có thể lưu sổ đăng ký không bắt buộc chọn mẫu in.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative flex-1 sm:flex-none">
@@ -1327,23 +1545,36 @@ export default function Contracts() {
                       ? format(new Date(contract.expiry_date), 'dd/MM/yyyy')
                       : '-'}
                   </TableCell>
-                  <TableCell>{getStatusBadge(contract.status, t)}</TableCell>
+                  <TableCell>
+                    {getStatusBadge(contract.status, t, contract.statusLabelVi)}
+                  </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center gap-1">
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => handleOpenView(contract)}
+                        data-testid={HDSD_MUTATE_TEST_IDS.contractsViewBtn}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleOpenView(contract);
+                        }}
                         aria-label={t('contracts.viewTitle')}
+                        title={t('contracts.viewTitle')}
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4" aria-hidden />
+                        {/* Accessible text for U65 harness hasText /Chi tiết|Xem/ (icon-only missed). */}
+                        <span className="sr-only">{t('contracts.viewTitle')}</span>
                       </Button>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
                         onClick={() => handleOpenEdit(contract)}
+                        aria-label={t('contracts.editTitle')}
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
@@ -1434,416 +1665,60 @@ export default function Contracts() {
         </div>
       </div>
 
-      {/* Create/Edit Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent
-          className="max-w-2xl max-h-[90vh] overflow-y-auto"
-          data-testid={HDSD_MUTATE_TEST_IDS.contractsFormDialog}
-        >
-          <DialogHeader>
-            <DialogTitle>
-              {editingContract ? t('contracts.editTitle') : t('contracts.createTitle')}
-            </DialogTitle>
-            <DialogDescription>
-              {editingContract ? t('contracts.editDesc') : t('contracts.createDesc')}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            {isCreateFormReady ? (
-              <span
-                data-testid={HDSD_MUTATE_TEST_IDS.contractsFormReady}
-                className="sr-only"
-                aria-hidden
-              >
-                Form ready
-              </span>
-            ) : null}
-            {/* Employee Selection */}
-            {!editingContract && employeesList.length > 0 && (
-              <div className="space-y-2">
-                <Label>{t('contracts.selectEmployee')}</Label>
-                <Select
-                  value={formData.employee_id ?? ''}
-                  onValueChange={handleEmployeeSelect}
-                >
-                  <SelectTrigger data-testid={HDSD_MUTATE_TEST_IDS.contractsFormEmployee}>
-                    <SelectValue placeholder={t('contracts.selectEmployeePlaceholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {employeesList.map((emp) => (
-                      <SelectItem key={emp.id} value={emp.id}>
-                        {emp.full_name} - {emp.employee_code}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              {hasContractField('contract_code') && (
-              <div className="space-y-2">
-                <Label htmlFor="contract_code">{t('contracts.contractCode')} <span className="text-destructive">*</span></Label>
-                <Input
-                  id="contract_code"
-                  placeholder={t('contracts.codePlaceholder')}
-                  value={formData.contract_code}
-                  onChange={(e) => setFormData({ ...formData, contract_code: e.target.value })}
-                />
-              </div>
-              )}
-              {hasContractField('employee_name') && (
-              <div className="space-y-2">
-                <Label htmlFor="employee_name">{t('contracts.employeeName')} <span className="text-destructive">*</span></Label>
-                <Input
-                  id="employee_name"
-                  placeholder={t('contracts.employeePlaceholder')}
-                  value={formData.employee_name}
-                  onChange={(e) => setFormData({ ...formData, employee_name: e.target.value })}
-                />
-              </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {hasContractField('department') && (
-              <div className="space-y-2">
-                <Label htmlFor="department">{t('contracts.department')}</Label>
-                <Select
-                  value={formData.department}
-                  onValueChange={(value) => setFormData({ ...formData, department: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('contracts.departmentPlaceholder')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {departmentOptions.map((deptName) => (
-                      <SelectItem key={deptName} value={deptName}>{deptName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              )}
-              {hasContractField('contract_type') && (
-              <div className="space-y-2">
-                <Label htmlFor="contract_type">{t('contracts.contractType')}</Label>
-                <CatalogSearchPicker
-                  options={contractTypePickerOptions}
-                  value={formData.contract_type}
-                  onValueChange={(value) => setFormData({ ...formData, contract_type: value })}
-                  placeholder={t('contracts.selectType')}
-                  loading={catalogsLoading}
-                  errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
-                  data-testid={HDSD_MUTATE_TEST_IDS.contractsFormContractType}
-                  emptyHint={
-                    <a href="/settings" className="text-primary underline text-xs font-medium">
-                      Mở Cài đặt → Danh mục nghiệp vụ (contract_types)
-                    </a>
-                  }
-                />
-              </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {hasContractField('effective_date') && (
-              <div className="space-y-2">
-                <Label>{t('contracts.effectiveDate')}</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !formData.effective_date && 'text-muted-foreground'
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.effective_date ? (
-                        format(formData.effective_date, 'dd/MM/yyyy')
-                      ) : (
-                        <span>{t('contracts.selectDate')}</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.effective_date}
-                      onSelect={(date) => setFormData({ ...formData, effective_date: date })}
-                      locale={vi}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              )}
-              {hasContractField('expiry_date') && (
-              <div className="space-y-2">
-                <Label>{t('contracts.expiryDate')}</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        'w-full justify-start text-left font-normal',
-                        !formData.expiry_date && 'text-muted-foreground'
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.expiry_date ? (
-                        format(formData.expiry_date, 'dd/MM/yyyy')
-                      ) : (
-                        <span>{t('contracts.selectDate')}</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={formData.expiry_date}
-                      onSelect={(date) => setFormData({ ...formData, expiry_date: date })}
-                      locale={vi}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              )}
-            </div>
-
-            {hasContractField('status') && (
-            <div className="space-y-2">
-              <Label htmlFor="status">{t('contracts.statusLabel')}</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('contracts.selectStatus')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusOptions.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      {status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            )}
-
-            {hasContractField('notes') && (
-            <div className="space-y-2">
-              <Label htmlFor="notes">{t('contracts.notes')}</Label>
-              <Textarea
-                id="notes"
-                placeholder={t('contracts.notesPlaceholder')}
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows={3}
-              />
-            </div>
-            )}
-
-            {/* File Upload Section */}
-            {hasContractField('file_url') && (
-            <div className="space-y-2">
-              <Label>{t('contracts.fileLabel')}</Label>
-              
-              {/* Show existing file */}
-              {formData.file_url && !selectedFile && (
-                <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                  <File className="w-5 h-5 text-primary" />
-                  <span className="flex-1 text-sm truncate">{t('contracts.fileUploaded')}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => window.open(formData.file_url, '_blank')}
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => setFormData({ ...formData, file_url: '' })}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-
-              {/* Show selected file */}
-              {selectedFile && (
-                <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                  <File className="w-5 h-5 text-primary" />
-                  <span className="flex-1 text-sm truncate">{selectedFile.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive"
-                    onClick={() => setSelectedFile(null)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-
-              {/* File input */}
-              {!selectedFile && !formData.file_url && (
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.webp"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg hover:border-primary/50 transition-colors cursor-pointer">
-                    <FileUp className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      {t('contracts.dragDrop')}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Upload button to change file when already has one */}
-              {(formData.file_url || selectedFile) && (
-                <div className="relative inline-block">
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.webp"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <Button type="button" variant="outline" size="sm" className="gap-2">
-                    <FileUp className="w-4 h-4" />
-                    {t('contracts.changeFile')}
-                  </Button>
-                </div>
-              )}
-            </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCloseDialog}>
-              {t('contracts.cancel')}
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting || isUploading}
-              data-testid={HDSD_MUTATE_TEST_IDS.contractsFormSubmit}
-              aria-label="Lưu"
-            >
-              {isUploading
-                ? t('contracts.uploading')
-                : isSubmitting
-                  ? t('contracts.saving')
-                  : editingContract
-                    ? t('contracts.updateBtn')
-                    : 'Lưu'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* View Dialog */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{t('contracts.viewTitle')}</DialogTitle>
-          </DialogHeader>
-          {viewingContract && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.contractCode')}</Label>
-                  <p className="font-medium">{viewingContract.contract_code}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.employeeName')}</Label>
-                  <p className="font-medium">{viewingContract.employee_name}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.department')}</Label>
-                  <p className="font-medium">{viewingContract.department || '-'}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.contractType')}</Label>
-                  <p className="font-medium">{displayContractType(viewingContract.contract_type)}</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.effectiveDate')}</Label>
-                  <p className="font-medium">
-                    {viewingContract.effective_date
-                      ? format(new Date(viewingContract.effective_date), 'dd/MM/yyyy')
-                      : '-'}
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.expiryDate')}</Label>
-                  <p className="font-medium">
-                    {viewingContract.expiry_date
-                      ? format(new Date(viewingContract.expiry_date), 'dd/MM/yyyy')
-                      : '-'}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">{t('contracts.statusLabel')}</Label>
-                <div className="mt-1">{getStatusBadge(viewingContract.status, t)}</div>
-              </div>
-              {viewingContract.notes && (
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.notes')}</Label>
-                  <p className="font-medium">{viewingContract.notes}</p>
-                </div>
-              )}
-              {viewingContract.file_url && (
-                <div>
-                  <Label className="text-muted-foreground">{t('contracts.fileLabel')}</Label>
-                  <div className="mt-2 flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => window.open(viewingContract.file_url!, '_blank')}
-                    >
-                      <Eye className="w-4 h-4" />
-                      {t('contracts.viewFile')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      asChild
-                    >
-                      <a href={viewingContract.file_url} download>
-                        <Download className="w-4 h-4" />
-                        {t('contracts.download')}
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {currentCompanyId ? (
+        <ContractWorkspaceDialog
+          open={workspaceOpen}
+          onOpenChange={handleWorkspaceOpenChange}
+          mode={workspaceMode}
+          companyId={currentCompanyId}
+          companyIdsForScope={[currentCompanyId, 'main']}
+          editingContract={editingContract}
+          prefill={workspacePrefill}
+          form={{
+            contract_code: formData.contract_code,
+            employee_name: formData.employee_name,
+            employee_id: formData.employee_id,
+            department: formData.department,
+            contract_type: formData.contract_type,
+            effective_date: formData.effective_date,
+            expiry_date: formData.expiry_date,
+            status: formData.status,
+            notes: formData.notes,
+            work_location: formData.work_location,
+          }}
+          onFormChange={(patch) => setFormData((prev) => ({ ...prev, ...patch }))}
+          contractTypeOptions={contractTypePickerOptions}
+          positionOptions={positionPickerOptions}
+          departmentOptions={departmentPickerOptions}
+          statusOptions={statusOptions}
+          employeesList={employeesList}
+          onEmployeeSelect={handleEmployeeSelect}
+          hasContractField={hasContractField}
+          catalogsLoading={catalogsLoading}
+          catalogsError={catalogsError}
+          isCreateFormReady={isCreateFormReady}
+          packCode={printPackCode}
+          templateId={printTemplateId}
+          templateCode={printTemplateCode}
+          onPackCodeChange={setPrintPackCode}
+          onTemplateIdChange={setPrintTemplateId}
+          onTemplateCodeChange={setPrintTemplateCode}
+          onClose={handleCloseDialog}
+          onSaved={() => {
+            void refetch();
+            handleCloseDialog();
+          }}
+          isSubmitting={isSubmitting}
+          setIsSubmitting={setIsSubmitting}
+          viewContractId={viewingContractId}
+          displayContractType={displayContractType}
+          renderStatusBadge={(contract) =>
+            getStatusBadge(contract.status, t, contract.statusLabelVi)
+          }
+          onEditFromView={(contract) => handleOpenEdit(contract)}
+          dialogOpenGuardUntilRef={dialogOpenGuardUntilRef}
+        />
+      ) : null}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

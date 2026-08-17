@@ -14,6 +14,12 @@
  * must_keep:  no «Ngữ cảnh» / JWT companyId / AC-CD-F3 hint strings; OU filter ≠ JWT mutate
  * SOLID:      Label resolution only — Select/OU state stays in filter context
  * LastVerified: embedWorkingContext.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-02-EMP-FE-LIBS-01
+ * change_mode: ADD (restore)
+ * What: Restore embedWorkingContext (+ test) from stash 43c479a so HrmOperatingUnitFilter resolves
+ * Why: Missing module → Vite 500 → #root empty on /hr/employees (D-HRM-LIB-MISSING-01)
+ * must_keep: no annotation strip · OU ≠ JWT mutate · human VI labels · Employees untouched
  */
 import { formatRoleCodeVi } from '@/lib/scopeRoleLabels';
 import { HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';

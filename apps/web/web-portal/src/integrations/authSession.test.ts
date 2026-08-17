@@ -2,14 +2,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   clearAuthSession,
   getStoredAccessToken,
+  getStoredMembershipId,
   getValidAccessToken,
   handleUnauthorizedResponse,
   isStoredSessionExpired,
+  MEMBERSHIP_LABEL_FALLBACK,
+  membershipRoleDisplay,
+  normalizePortalMembership,
+  parseJwtMembershipId,
   persistAuthSession,
   peekLoginRedirect,
   stashLoginRedirect,
   type LoginResult,
 } from './authSession';
+
+function jwtWithClaims(claims: Record<string, unknown>): string {
+  const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
+  const payload = btoa(JSON.stringify(claims)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return `${header}.${payload}.sig`;
+}
 
 const baseLogin: LoginResult = {
   accessToken: 'test-jwt',
@@ -153,28 +164,104 @@ describe('selectPortalMembership (UC-HRM-SCOPE-04)', () => {
 
   it('returns new JWT payload on success', async () => {
     const mockFetch = vi.mocked(fetch);
+    const accessToken = jwtWithClaims({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xe-du-lich',
+      membershipId: '22222222-2222-4222-8222-222222222222',
+    });
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: async () => ({
         success: true,
         data: {
-          accessToken: 'jwt-member',
+          accessToken,
           expiresInSec: 86400,
-          membership: { tenantId: 'xe-du-lich', companyId: 'main', roleCode: 'ceo' },
+          membership: {
+            tenantId: 'xe-du-lich',
+            companyId: 'main',
+            roleCode: 'ceo',
+            membershipId: '22222222-2222-4222-8222-222222222222',
+            tenant_label: 'Xe Du Lịch',
+            company_label: 'Công ty chính',
+            role_label: 'CEO',
+            tenant_kind_label: 'Công ty thành viên',
+          },
           memberships: [],
           defaultTenantId: 'xe-du-lich',
           defaultCompanyId: 'main',
+          defaultMembershipId: '22222222-2222-4222-8222-222222222222',
         },
       }),
     } as Response);
 
     const { selectPortalMembership } = await import('./authSession');
     const result = await selectPortalMembership('old-jwt', 'xe-du-lich');
-    expect(result.accessToken).toBe('jwt-member');
+    expect(result.accessToken).toBe(accessToken);
+    expect(result.defaultMembershipId).toBe('22222222-2222-4222-8222-222222222222');
+    expect(result.membership.role_label).toBe('CEO');
+    expect(result.membership.tenant_label).toBe('Xe Du Lịch');
     expect(mockFetch).toHaveBeenCalledWith(
       '/api/xbos/auth/select-membership',
       expect.objectContaining({ method: 'POST' }),
+    );
+  });
+});
+
+describe('W1-B-04 display-ready membership + membershipId JWT', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    clearAuthSession();
+  });
+
+  it('normalizePortalMembership binds BE labels and falls back to — (no invent)', () => {
+    const row = normalizePortalMembership({
+      tenantId: 'xevn',
+      name: 'XeVN Group',
+      shortName: 'XeVN',
+      tenantKind: 'master',
+      roleCode: 'group_ceo',
+      companyId: 'main',
+      isMaster: true,
+      membershipId: '11111111-1111-4111-8111-111111111111',
+      tenant_label: 'XeVN Group',
+      company_label: 'Công ty chính',
+      role_label: 'CEO Tập đoàn',
+      tenant_kind_label: 'Tập đoàn',
+    });
+    expect(row.role_label).toBe('CEO Tập đoàn');
+    expect(row.company_label).toBe('Công ty chính');
+    expect(membershipRoleDisplay(row)).toBe('CEO Tập đoàn');
+
+    const bare = normalizePortalMembership({
+      tenantId: 'xe-du-lich',
+      roleCode: 'subsidiary_ceo',
+      companyId: 'main',
+    });
+    expect(bare.role_label).toBe(MEMBERSHIP_LABEL_FALLBACK);
+    expect(bare.company_label).toBe(MEMBERSHIP_LABEL_FALLBACK);
+    expect(membershipRoleDisplay(bare)).toBe(MEMBERSHIP_LABEL_FALLBACK);
+  });
+
+  it('persistAuthSession stores membershipId from JWT after select-membership path', () => {
+    const accessToken = jwtWithClaims({
+      membershipId: '33333333-3333-4333-8333-333333333333',
+      tenantId: 'xevn',
+    });
+    persistAuthSession({
+      ...baseLogin,
+      accessToken,
+      expiresInSec: 3600,
+      defaultMembershipId: '33333333-3333-4333-8333-333333333333',
+    });
+    expect(getStoredMembershipId()).toBe('33333333-3333-4333-8333-333333333333');
+    expect(parseJwtMembershipId(accessToken)).toBe('33333333-3333-4333-8333-333333333333');
+    expect(localStorage.getItem('xevn.portal.membershipId')).toBe(
+      '33333333-3333-4333-8333-333333333333',
     );
   });
 });

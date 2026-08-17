@@ -1,5 +1,9 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-BE-01
+ * ADD for / bind_check / preview — UV bind-target STATUS gate (F-REC-UV-YCTD-02).
+ */
 import { Transform } from 'class-transformer';
-import { IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 function pickScalar(value: unknown): string | undefined {
   if (Array.isArray(value)) {
@@ -15,4 +19,20 @@ export class GetJobRequisitionQueryDto {
   @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
   @MaxLength(64)
   company_id!: string;
+
+  /** for=uv → assert receivable or HRM-REC-UV-YCTD-STATUS. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  for?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(16)
+  bind_check?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  preview?: string;
 }

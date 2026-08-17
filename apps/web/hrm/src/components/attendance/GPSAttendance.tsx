@@ -1,3 +1,58 @@
+/**
+ * @CODE-MEMORY
+ * Screen: HRM Chấm công → Clock-In → GPS (`clock-in-panel-gps`)
+ * UC: HRM-AT-01 · BR: geofence 200m / HRM-ATT-GEO-001 khi ngoài site
+ * SRS: SRS_VN GPS/geofence · matrix fidelity #10 · by-uc/HRM-AT-01.md
+ * TechSpec: POST /attendance/records + CreateAttendanceRecordDto.latitude/longitude
+ * Purpose: Lấy GPS browser → check-in/out; bắt buộc gửi lat/lon số trên POST (không chỉ string location).
+ * WorkItem: PO-MFD-M2-ATT-CLOCK-GPS-LATLON-01
+ * Coded: 2026-08-04
+ * Callers: Attendance.tsx lazy GPSAttendance (clock-in method gps)
+ * Callees: useAttendanceRecords.checkIn/checkOut → createAttendanceRecord
+ * must_keep: Face GĐ2-HOLD không đụng; manual CheckInOutWidget riêng; U65 no seed
+ * Impact: Chỉ gửi check_in_location string → BE bỏ qua assertWithinWorkSite (silent 201)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-MFD-M2-ATT-CLOCK-GPS-LATLON-01
+ * change_mode: FIX
+ * What: checkIn nhận latitude+longitude từ gpsLocation; dialog chỉ đóng khi success
+ * Why: QA CLOCK-01 GEO silent bypass — UI 10,10 nhưng body omit lat/lon
+ * must_keep: formatLocationString vẫn hiển thị; checkout path không claim GEO (status PATCH)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-A
+ * change_mode: UPGRADE
+ * What: GPS clock chrome → Precision Motion sharp text / primary (S20–S21)
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10
+ * must_keep: latitude+longitude on checkIn POST; ATT-03d work-sites wires elsewhere; Face hold untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-ATT-DIALOG-EXT
+ * change_mode: ADD
+ * What: Confirm dialog title ≥20 + compact select/reason + primary CTA; ban muted/orange chrome
+ * Why: ADR §16 LOCK · FE-DIALOG-01 shell extend · stall#2 remaining clock modals
+ * must_keep: lat/lon POST; legacy clock-in-gps-confirm-dialog; Face HOLD; U65 no seed
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-w4-att-dialog-ext.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-08 PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-WORKSITE-CATALOG-FE-01
+ * change_mode: ADD
+ * What: checkIn POST gửi check_in_method: 'gps' cùng latitude/longitude
+ * Why: R-PLT-ATT-WS-FE-CNS-05 / VAL-ATT-WS-CNS-05 — BE HRM-ATT-GEO-REQ khi omit coords + method=gps
+ * must_keep: lat/lon GPS; Face HOLD; manual omit method; soft empty CTA Nest worksites; no ensureDefault; U65; ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-ATT-03D-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Empty active work-sites → punch skip banner + CTA Settings GPS; RETAIN lat/lon +
+ *       method=gps for GEO-001/GEO-REQ; Nest /core 0 · ≠ PLT WS alone = ATT-03d DONE.
+ * Why: UC-BP-ATT-03d Diễn biến #3–#6 · F-ATT-PUNCH-01 · J-HRM-ATT-03D-03..06 · U65
+ * Spec: docs/program/specs/PO-HRM-MVP-GD1-ATT-03D-CLUSTER-API-01.md · ADR D3
+ * must_keep: ATTWSQA2-MSJCG47P ≠ ATT-03d DONE · DENY ensureDefaultWorkSite · Face HOLD · printable false
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-att-03d-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-ATT-03D-CLUSTER-FE-02
+ * change_mode: FIX
+ * What: EFF>0 bind picker ký hiệu công Nest; POST status từ catalog — cấm sole hardcode present
+ * Why: R-ATT-03D-CNS-STATUS-CODE · HRM-ATT-CODE-KEY khi EFF>0 và present ∉ effective
+ * must_keep: lat/lon + method=gps · GEO-001/GEO-REQ · empty CTA · Nest /core 0 · ≠ ATT-03d DONE · U65
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-att-03d-cluster-fe-02.md
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,6 +94,17 @@ import {
 } from 'lucide-react';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useAttendanceRecords, type AttendanceRecord } from '@/hooks/useAttendanceRecords';
+import { useAuth } from '@/contexts/AuthContext';
+import { listAttendanceWorkSites } from '@/integrations/hrmApi';
+import {
+  att03dEmptyPunchSkipMessage,
+  isAtt03dActiveEmpty,
+} from '@/lib/attWorkSite03dRing';
+import {
+  resolveCheckInRecordStatus,
+  resolveDefaultCheckInStatusFromCatalog,
+  useAttAttendanceCodesEffective,
+} from '@/hooks/useAttAttendanceCodesEffective';
 import { format } from 'date-fns';
 import { vi, enUS, zhCN } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -62,6 +128,13 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
   const { t, i18n } = useTranslation();
   const { employees } = useEmployees();
   const { checkIn, checkOut, fetchTodayRecord } = useAttendanceRecords();
+  const { currentCompanyId } = useAuth();
+  const {
+    nestOptions: attCodeOptions,
+    effectiveCount: attCodeEffectiveCount,
+  } = useAttAttendanceCodesEffective();
+  const attCodeCatalogBound = attCodeEffectiveCount > 0;
+  const [activeSiteCount, setActiveSiteCount] = useState<number | null>(null);
 
   const getDateLocale = () => {
     switch (i18n.language) {
@@ -84,7 +157,28 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [attendanceType, setAttendanceType] = useState('normal');
+  const [checkInStatusCode, setCheckInStatusCode] = useState('');
   const [notes, setNotes] = useState('');
+
+  // Active work-sites count — empty → skip geofence + CTA (AC-ATT-03D-EMPTY · no ensureDefault)
+  useEffect(() => {
+    if (!currentCompanyId) {
+      setActiveSiteCount(null);
+      return;
+    }
+    let cancelled = false;
+    void listAttendanceWorkSites(currentCompanyId)
+      .then((res) => {
+        if (cancelled) return;
+        setActiveSiteCount((res.data ?? []).length);
+      })
+      .catch(() => {
+        if (!cancelled) setActiveSiteCount(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentCompanyId]);
 
   // Update current time every second
   useEffect(() => {
@@ -195,6 +289,12 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
       return;
     }
     setDialogOpen(true);
+    if (attCodeCatalogBound) {
+      const suggested = resolveDefaultCheckInStatusFromCatalog(attCodeOptions);
+      setCheckInStatusCode(suggested ?? '');
+    } else {
+      setCheckInStatusCode('');
+    }
   };
 
   const formatLocationString = () => {
@@ -216,6 +316,24 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
       let result: AttendanceRecord | null = null;
 
       if (action === 'checkin') {
+        const resolvedStatus = attCodeCatalogBound
+          ? resolveCheckInRecordStatus({
+              catalogBound: true,
+              nestOptions: attCodeOptions,
+              explicitStatus: checkInStatusCode,
+            })
+          : resolveCheckInRecordStatus({
+              catalogBound: false,
+              nestOptions: attCodeOptions,
+              explicitStatus: checkInStatusCode || undefined,
+            });
+        if (attCodeCatalogBound && !resolvedStatus) {
+          toast.error(t('gpsAttendance.selectAttendanceCode'));
+          return;
+        }
+        // Geofence honesty: numeric lat/lon must reach Nest CreateAttendanceRecordDto
+        // (string check_in_location alone does not trigger HRM-ATT-GEO-001).
+        // CNS-05: check_in_method=gps so BE can emit HRM-ATT-GEO-REQ when coords omitted.
         result = await checkIn({
           employee_id: selectedEmployee.id,
           employee_code: selectedEmployee.employee_code,
@@ -225,6 +343,10 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
           check_in_device: 'GPS Attendance',
           attendance_type: attendanceType,
           notes: notes || undefined,
+          latitude: gpsLocation.latitude,
+          longitude: gpsLocation.longitude,
+          check_in_method: 'gps',
+          ...(resolvedStatus ? { status: resolvedStatus } : {}),
         });
 
         if (result) {
@@ -249,10 +371,10 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
       if (result) {
         onAttendanceSuccess?.(result);
         setCurrentRecord(result);
+        setDialogOpen(false);
+        setNotes('');
       }
-
-      setDialogOpen(false);
-      setNotes('');
+      // GEO-001 / other API fail: hook already toasts; keep dialog open for retry
     } catch (error) {
       console.error('Error processing attendance:', error);
       toast.error(t('gpsAttendance.processError'));
@@ -279,31 +401,40 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
 
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full rounded-card border-xevn-border" data-testid="clock-in-gps-widget">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <MapPin className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-xevn-text">
+              <MapPin className="h-5 w-5 text-xevn-primary" />
               {t('gpsAttendance.title')}
             </CardTitle>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-xevn-primary tabular-nums">
                 {format(currentTime, 'HH:mm:ss')}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-sm text-xevn-textSecondary">
                 {format(currentTime, 'EEEE, dd/MM/yyyy', { locale: getDateLocale() })}
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {isAtt03dActiveEmpty(activeSiteCount) ? (
+            <div
+              className="rounded-card border border-dashed border-xevn-border bg-xevn-background p-3 text-[15px] text-xevn-textSecondary"
+              data-testid="att-03d-punch-empty-cta"
+              role="status"
+            >
+              {att03dEmptyPunchSkipMessage()}
+            </div>
+          ) : null}
           {/* GPS Location Display */}
-          <div className="relative rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border">
+          <div className="relative rounded-card overflow-hidden bg-xevn-background border border-xevn-border">
             <div className="p-6">
               {isLoadingLocation ? (
                 <div className="flex flex-col items-center justify-center py-8">
-                  <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-                  <p className="text-muted-foreground">{t('gpsAttendance.loadingLocation')}</p>
+                  <Loader2 className="h-12 w-12 text-xevn-primary animate-spin mb-4" />
+                  <p className="text-[15px] text-xevn-textSecondary">{t('gpsAttendance.loadingLocation')}</p>
                 </div>
               ) : locationError ? (
                 <div className="flex flex-col items-center justify-center py-8">
@@ -317,32 +448,32 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
               ) : gpsLocation ? (
                 <div className="space-y-4">
                   {/* Map Visualization */}
-                  <div className="relative bg-gradient-to-br from-green-100 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/30 rounded-lg p-8 flex items-center justify-center">
-                    <div className="absolute inset-0 overflow-hidden rounded-lg">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.05)_100%)]" />
+                  <div className="relative bg-xevn-primary/5 rounded-card p-8 flex items-center justify-center border border-xevn-border">
+                    <div className="absolute inset-0 overflow-hidden rounded-card">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(17,24,39,0.04)_100%)]" />
                       {/* Grid lines */}
                       <div className="absolute inset-0 opacity-20">
                         {[...Array(10)].map((_, i) => (
                           <div
                             key={`h-${i}`}
-                            className="absolute left-0 right-0 border-t border-gray-400"
+                            className="absolute left-0 right-0 border-t border-xevn-border"
                             style={{ top: `${i * 10}%` }}
                           />
                         ))}
                         {[...Array(10)].map((_, i) => (
                           <div
                             key={`v-${i}`}
-                            className="absolute top-0 bottom-0 border-l border-gray-400"
+                            className="absolute top-0 bottom-0 border-l border-xevn-border"
                             style={{ left: `${i * 10}%` }}
                           />
                         ))}
                       </div>
                     </div>
                     <div className="relative">
-                      <div className="w-20 h-20 rounded-full bg-primary/20 animate-ping absolute inset-0" />
-                      <div className="w-20 h-20 rounded-full bg-primary/30 flex items-center justify-center relative">
-                        <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                          <Navigation className="h-6 w-6 text-primary-foreground" />
+                      <div className="w-20 h-20 rounded-full bg-xevn-primary/20 animate-ping absolute inset-0" />
+                      <div className="w-20 h-20 rounded-full bg-xevn-primary/30 flex items-center justify-center relative">
+                        <div className="w-12 h-12 rounded-full bg-xevn-primary flex items-center justify-center shadow-soft">
+                          <Navigation className="h-6 w-6 text-white" />
                         </div>
                       </div>
                     </div>
@@ -351,7 +482,7 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
                   {/* Coordinates Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-background rounded-lg p-4 border">
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
+                      <div className="flex items-center gap-2 text-xevn-textSecondary text-sm mb-1">
                         <Globe className="h-4 w-4" />
                         {t('gpsAttendance.latitude')}
                       </div>
@@ -360,7 +491,7 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
                       </div>
                     </div>
                     <div className="bg-background rounded-lg p-4 border">
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
+                      <div className="flex items-center gap-2 text-xevn-textSecondary text-sm mb-1">
                         <Globe className="h-4 w-4" />
                         {t('gpsAttendance.longitude')}
                       </div>
@@ -373,20 +504,20 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
                   {/* Additional Info */}
                   <div className="grid grid-cols-3 gap-3 text-sm">
                     <div className="bg-background rounded-lg p-3 border text-center">
-                      <Crosshair className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-                      <div className="text-muted-foreground text-xs">{t('gpsAttendance.accuracy')}</div>
+                      <Crosshair className="h-4 w-4 mx-auto mb-1 text-xevn-textSecondary" />
+                      <div className="text-xevn-textSecondary text-xs">{t('gpsAttendance.accuracy')}</div>
                       <div className="font-semibold">{gpsLocation.accuracy.toFixed(0)}m</div>
                     </div>
                     <div className="bg-background rounded-lg p-3 border text-center">
-                      <Signal className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-                      <div className="text-muted-foreground text-xs">{t('gpsAttendance.altitude')}</div>
+                      <Signal className="h-4 w-4 mx-auto mb-1 text-xevn-textSecondary" />
+                      <div className="text-xevn-textSecondary text-xs">{t('gpsAttendance.altitude')}</div>
                       <div className="font-semibold">
                         {gpsLocation.altitude ? `${gpsLocation.altitude.toFixed(0)}m` : 'N/A'}
                       </div>
                     </div>
                     <div className="bg-background rounded-lg p-3 border text-center">
-                      <Compass className="h-4 w-4 mx-auto mb-1 text-muted-foreground" />
-                      <div className="text-muted-foreground text-xs">{t('gpsAttendance.heading')}</div>
+                      <Compass className="h-4 w-4 mx-auto mb-1 text-xevn-textSecondary" />
+                      <div className="text-xevn-textSecondary text-xs">{t('gpsAttendance.heading')}</div>
                       <div className="font-semibold">
                         {gpsLocation.heading ? `${gpsLocation.heading.toFixed(0)}°` : 'N/A'}
                       </div>
@@ -395,15 +526,15 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
 
                   {/* Accuracy Badge */}
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{t('gpsAttendance.signalQuality')}:</span>
+                    <span className="text-sm text-xevn-textSecondary">{t('gpsAttendance.signalQuality')}:</span>
                     {getAccuracyBadge(gpsLocation.accuracy)}
                   </div>
 
                   {/* Address */}
                   {isLoadingAddress ? (
                     <div className="flex items-center gap-2 p-3 bg-background rounded-lg border">
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">{t('gpsAttendance.searchingAddress')}</span>
+                      <Loader2 className="h-4 w-4 animate-spin text-xevn-textSecondary" />
+                      <span className="text-sm text-xevn-textSecondary">{t('gpsAttendance.searchingAddress')}</span>
                     </div>
                   ) : address ? (
                     <div className="p-3 bg-background rounded-lg border">
@@ -436,7 +567,7 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
                   <SelectItem key={employee.id} value={employee.id}>
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{employee.full_name}</span>
-                      <span className="text-muted-foreground">({employee.employee_code})</span>
+                      <span className="text-xevn-textSecondary">({employee.employee_code})</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -446,16 +577,16 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
 
           {/* Selected Employee Card */}
           {selectedEmployee && (
-            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-4 p-4 bg-xevn-background rounded-card border border-xevn-border">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={selectedEmployee.avatar_url || ''} />
-                <AvatarFallback className="bg-primary/10 text-primary">
+                <AvatarFallback className="bg-xevn-primary/10 text-xevn-primary">
                   {selectedEmployee.full_name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <div className="font-semibold">{selectedEmployee.full_name}</div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                <div className="font-semibold text-xevn-text">{selectedEmployee.full_name}</div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-xevn-textSecondary">
                   <span className="flex items-center gap-1">
                     <User className="h-3.5 w-3.5" />
                     {selectedEmployee.employee_code}
@@ -500,7 +631,8 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
             <Button
               onClick={handleOpenDialog}
               disabled={!selectedEmployee || !gpsLocation || isCompleted}
-              className="flex-1 h-12"
+              className="flex-1 h-12 bg-xevn-primary hover:bg-xevn-primaryPressed"
+              data-testid="clock-in-gps-open-confirm"
             >
               <MapPin className="mr-2 h-5 w-5" />
               {t('gpsAttendance.title')}
@@ -509,12 +641,12 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
         </CardContent>
       </Card>
 
-      {/* Confirmation Dialog */}
+      {/* Confirmation Dialog — W4 shared Dialog chrome + compact fields */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md" data-testid="clock-in-gps-confirm-dialog">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 text-[20px] font-bold text-xevn-text">
+              <MapPin className="h-5 w-5 text-xevn-primary" />
               {t('gpsAttendance.confirmAttendance')}
             </DialogTitle>
           </DialogHeader>
@@ -522,16 +654,16 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
           <div className="space-y-4">
             {/* Employee Info */}
             {selectedEmployee && (
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-4 p-4 rounded-card border border-xevn-border bg-xevn-background">
                 <Avatar className="h-14 w-14">
                   <AvatarImage src={selectedEmployee.avatar_url || ''} />
-                  <AvatarFallback className="text-lg bg-primary/10 text-primary">
+                  <AvatarFallback className="text-lg bg-xevn-primary/10 text-xevn-primary">
                     {selectedEmployee.full_name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="font-semibold text-lg">{selectedEmployee.full_name}</div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <div className="font-semibold text-[15px] text-xevn-text">{selectedEmployee.full_name}</div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-xevn-textSecondary">
                     <span className="flex items-center gap-1">
                       <User className="h-3.5 w-3.5" />
                       {selectedEmployee.employee_code}
@@ -548,11 +680,11 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
             )}
 
             {/* Current Time */}
-            <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg">
-              <Clock className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-2 p-3 bg-xevn-primary/10 rounded-card">
+              <Clock className="h-5 w-5 text-xevn-primary" />
               <div>
-                <div className="text-sm text-muted-foreground">{t('faceIdScanner.time')}</div>
-                <div className="font-semibold text-lg">
+                <div className="text-sm text-xevn-textSecondary">{t('faceIdScanner.time')}</div>
+                <div className="font-semibold text-lg text-xevn-text tabular-nums">
                   {format(currentTime, 'HH:mm:ss - dd/MM/yyyy')}
                 </div>
               </div>
@@ -560,17 +692,17 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
 
             {/* GPS Location */}
             {gpsLocation && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
-                <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+              <div className="p-3 bg-xevn-primary/5 rounded-card border border-xevn-border">
+                <div className="flex items-center gap-2 text-xevn-primary">
                   <MapPin className="h-4 w-4" />
-                  <span className="font-medium text-sm">{t('gpsAttendance.gpsLocation')}</span>
+                  <span className="font-medium text-[15px]">{t('gpsAttendance.gpsLocation')}</span>
                 </div>
-                <div className="mt-2 text-sm">
-                  <div className="font-mono">
+                <div className="mt-2 text-[15px] text-xevn-text">
+                  <div className="font-mono tabular-nums">
                     {gpsLocation.latitude.toFixed(6)}, {gpsLocation.longitude.toFixed(6)}
                   </div>
                   {address && (
-                    <div className="mt-1 text-muted-foreground text-xs line-clamp-2">
+                    <div className="mt-1 text-xevn-textSecondary text-xs line-clamp-2">
                       {address}
                     </div>
                   )}
@@ -580,16 +712,16 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
 
             {/* Today's Status */}
             {currentRecord && (
-              <div className="p-3 border rounded-lg space-y-2">
-                <div className="text-sm font-medium">{t('faceIdScanner.todayStatus')}</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="p-3 rounded-card border border-xevn-border space-y-2">
+                <div className="text-sm font-medium text-xevn-text">{t('faceIdScanner.todayStatus')}</div>
+                <div className="grid grid-cols-2 gap-2 text-sm text-xevn-text">
                   <div className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4 text-green-500" />
+                    <LogIn className="h-4 w-4 text-xevn-success" />
                     <span>{t('faceIdScanner.checkIn')}:</span>
                     <strong>{currentRecord.check_in_time || '--:--'}</strong>
                   </div>
                   <div className="flex items-center gap-2">
-                    <LogOut className="h-4 w-4 text-orange-500" />
+                    <LogOut className="h-4 w-4 text-xevn-warning" />
                     <span>{t('faceIdScanner.checkOut')}:</span>
                     <strong>{currentRecord.check_out_time || '--:--'}</strong>
                   </div>
@@ -597,12 +729,34 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
               </div>
             )}
 
+            {/* Attendance status code (EFF>0 — Nest catalog) */}
+            {canCheckIn && attCodeCatalogBound && (
+              <div className="space-y-2">
+                <Label className="text-xevn-text">{t('attPage.attendanceCode')}</Label>
+                <Select value={checkInStatusCode} onValueChange={setCheckInStatusCode}>
+                  <SelectTrigger
+                    className="xevn-field-select-md"
+                    data-testid="clock-in-gps-attendance-code"
+                  >
+                    <SelectValue placeholder={t('gpsAttendance.selectAttendanceCode')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {attCodeOptions.map((opt) => (
+                      <SelectItem key={opt.code} value={opt.code}>
+                        {opt.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             {/* Attendance Type (for check-in) */}
             {canCheckIn && (
               <div className="space-y-2">
-                <Label>{t('faceIdScanner.attendanceType')}</Label>
+                <Label className="text-xevn-text">{t('faceIdScanner.attendanceType')}</Label>
                 <Select value={attendanceType} onValueChange={setAttendanceType}>
-                  <SelectTrigger>
+                  <SelectTrigger className="xevn-field-select-md">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -617,26 +771,28 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
             {/* Notes */}
             {(canCheckIn || canCheckOut) && (
               <div className="space-y-2">
-                <Label>{t('faceIdScanner.notes')}</Label>
+                <Label className="text-xevn-text">{t('faceIdScanner.notes')}</Label>
                 <Textarea
                   placeholder={t('faceIdScanner.notesPlaceholder')}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
+                  className="xevn-field-reason text-xevn-text"
                 />
               </div>
             )}
           </div>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setDialogOpen(false)} className="sm:flex-1">
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="sm:flex-1 border-xevn-border">
               {t('common.cancel')}
             </Button>
             {canCheckIn && (
               <Button
                 onClick={() => handleConfirmAttendance('checkin')}
-                disabled={isProcessing}
-                className="sm:flex-1"
+                disabled={isProcessing || (attCodeCatalogBound && !checkInStatusCode)}
+                className="sm:flex-1 bg-xevn-primary hover:bg-xevn-primaryPressed text-white"
+                data-testid="clock-in-gps-confirm-checkin"
               >
                 <LogIn className="mr-2 h-4 w-4" />
                 {isProcessing ? t('common.processing') : t('gpsAttendance.checkIn')}
@@ -646,8 +802,9 @@ export function GPSAttendance({ onAttendanceSuccess }: GPSAttendanceProps) {
               <Button
                 onClick={() => handleConfirmAttendance('checkout')}
                 disabled={isProcessing}
-                variant="secondary"
+                variant="destructive"
                 className="sm:flex-1"
+                data-testid="clock-in-gps-confirm-checkout"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 {isProcessing ? t('common.processing') : t('gpsAttendance.checkOut')}

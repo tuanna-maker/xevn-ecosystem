@@ -10,6 +10,8 @@ export type EmployeeRow = {
   hired_at: string | null;
   archived_at: string | null;
   avatar_url: string | null;
+  /** Soft reverse hire link (REC-07) — display-ready on public DTO; no hard FK. */
+  candidate_id?: string | null;
   custom_fields: Record<string, string> | null;
   created_at: string;
   updated_at: string;

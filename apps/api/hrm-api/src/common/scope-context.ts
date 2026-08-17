@@ -107,6 +107,40 @@ function isGroupCeoHoldingJwtMainRequest(
   );
 }
 
+/**
+ * Portal spreadsheet scope often forces `x-company-id=main` for any xevn portal session
+ * (FE resolveHrmSpreadsheetScope). Member/manager JWT still carries operating slug
+ * (`trsport`, …). Treat header main/holding as the JWT claim — narrow, never widen.
+ * Do NOT rewrite when claim is holding/main (W2A group-CEO holding↔main must stay).
+ * U78-U84-ATT-ADJ-TMDV-SCOPE-PARITY-01 — mgr approve without SCOPE_CONTEXT_MISMATCH.
+ */
+function normalizeMemberPortalMainHeader(
+  claimCompanyId: string | undefined,
+  roleCode: string | undefined,
+  requestedCompanyId: string | undefined,
+): string | undefined {
+  if (!claimCompanyId || !requestedCompanyId) {
+    return requestedCompanyId;
+  }
+  const claim = claimCompanyId.trim().toLowerCase();
+  const requested = requestedCompanyId.trim().toLowerCase();
+  const role = (roleCode ?? '').trim().toLowerCase();
+  if (role === 'group_ceo' || role.startsWith('group_')) {
+    return requestedCompanyId;
+  }
+  // Only subsidiary OUs (not holding) — preserves D-HRM-W2A holding JWT + main semantics.
+  const isSubsidiaryOu =
+    (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(claim) &&
+    claim !== 'holding';
+  if (
+    isSubsidiaryOu &&
+    (requested === HRM_PILOT_OPERATING_COMPANY_ID || requested === 'holding')
+  ) {
+    return claimCompanyId.trim();
+  }
+  return requestedCompanyId;
+}
+
 /** Mobile JWT: companyId slug + company_uuid; attendance APIs key rows by UUID. */
 function companyScopeMatches(
   claimCompanyId: string | undefined,
@@ -156,6 +190,20 @@ function companyScopeMatches(
   const claimUuid = claimCompanyUuid?.trim();
   if (claimUuid && isUuid(claimUuid) && isUuid(requested)) {
     return normalizeUuid(claimUuid) === normalizeUuid(requested);
+  }
+  // Plane B′ registry: slug claim ↔ mapped UUID request (attendance_update_requests persist UUID).
+  if (isUuid(requested)) {
+    const mapped =
+      HRM_COMPANY_UUID_BY_SLUG[claim.toLowerCase() as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    if (mapped && normalizeUuid(mapped) === normalizeUuid(requested)) {
+      return true;
+    }
+  } else if (claimUuid && isUuid(claimUuid)) {
+    const mapped =
+      HRM_COMPANY_UUID_BY_SLUG[requested.toLowerCase() as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    if (mapped && normalizeUuid(mapped) === normalizeUuid(claimUuid)) {
+      return true;
+    }
   }
   return false;
 }
@@ -231,7 +279,15 @@ export function resolveScopeContext(
     ? readClaim(jwtPayload, 'roleCode', 'role_code', 'role')
     : undefined;
 
-  const normalizedRequest = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
+  const portalNormalized = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
+  const normalizedRequest = {
+    tenantId: portalNormalized.tenantId,
+    companyId: normalizeMemberPortalMainHeader(
+      claimCompanyId,
+      roleCode,
+      portalNormalized.companyId,
+    ),
+  };
 
   const tenantId = assertScopeId(claimTenantId ?? normalizedRequest.tenantId, 'tenantId');
   let companyId = assertScopeId(claimCompanyId ?? normalizedRequest.companyId, 'companyId');
@@ -269,6 +325,18 @@ export function resolveScopeContext(
       request: normalizedRequest.companyId,
       ...(claimCompanyUuid ? { tokenCompanyUuid: claimCompanyUuid } : {}),
     });
+  }
+
+  // Member portal main→claim: return operating slug so mutate guards match JWT (not header main).
+  if (
+    normalizedRequest.companyId &&
+    claimCompanyId &&
+    normalizedRequest.companyId.trim().toLowerCase() === claimCompanyId.trim().toLowerCase() &&
+    requested.companyId &&
+    (requested.companyId.trim().toLowerCase() === HRM_PILOT_OPERATING_COMPANY_ID ||
+      requested.companyId.trim().toLowerCase() === 'holding')
+  ) {
+    companyId = claimCompanyId.trim();
   }
 
   return { tenantId, companyId };

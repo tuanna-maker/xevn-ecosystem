@@ -1,25 +1,97 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A
+ * change_mode: UPGRADE
+ * What: Precision Motion title ≥20 · sharp secondary copy (R02 YCTD spine)
+ * Why: ADR §16 · inventory W3-REC-A R02
+ * must_keep: Submit WF / JD template picker / list↔detail scope · U65 · no Nest invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-UI-P0-LOGO-FONT-TITLE-01
+ * change_mode: FIX
+ * What: Create YCTD form — `title` FormField first (before JD library picker)
+ * Why: Sponsor — popup thêm mới: trường Tiêu đề đứng đầu form
+ * must_keep: JD template required · applyTemplate snapshot · Submit WF · U65
+ * LastVerified: docs/qa/evidence/po-hrm-ui-p0-logo-font-title-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-JD-YCTD-REF-FE-01
+ * change_mode: ADD
+ * What: YCTD picker bindable=true only; preview title/short; STATUS/REQUIRED surface;
+ *       list/detail jd_code·jd_title after 2xx+F5
+ * Why: SRS FR-UC-BP-REC-02 Diễn biến 1a–1d · API-01 F-YCTD-JD-01..05 · J-HRM-JD-YCTD-01
+ * must_keep: soft FK job_template_id · HDSD labels · empty CTA · no JobPostingsTab SoT · U65
+ * LastVerified: docs/qa/evidence/po-hrm-jd-yctd-ref-fe-01.md
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-FE-01
+ * change_mode: ADD
+ * What: YCTD employment_type picker binds EMP effective catalog (F-EMP-CAT-EFF-02)
+ * Why: AC-PLT-EMP-04/05 · R-PLT-EMP-FE — cấm EMPLOYMENT_TYPE_OPTIONS closed Select SoT
+ * must_keep: JD template required · Submit WF · soft FK · U65 · recruitment_uat_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Form forks in_plan/out_of_plan · hire_reason/replace · out_reason · O2 CELL-QTY toast ·
+ *       O4 classify banner · transitions approve/reject · pipeline-flags when receivable ·
+ *       list/detail F5 mode/JD/flags · proposals redirect CTA only (O5)
+ * Why: UC-BP-REC-02/02b · API-01 F-REC-YCTD-01..04 · BA Diễn biến §3.4/§4.4 · U65
+ * must_keep: UF-HRM-12 · J-HRM-JD-YCTD-01 soft FK · REC-01 Định biên · REC-03 OUT · honesty false
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-02-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-02-BOD-CHAIN-FE-01
+ * change_mode: UPGRADE
+ * What: Detail approval-chain SHORT/LONG + next approver + BOD step CTAs; reject reason +
+ *       replace_employee visible; cell CatalogSearchPicker from REC-01 approved cells (deep-link keep)
+ * Why: QC remain AC-02d / 02b-05 / ALT-01/02 · R-REC-02-CELL-PICKER · U65 FE-after-2xx+F5
+ * must_keep: L1 tokens · O4 banner · O5 redirect · UF-HRM-12 · JD soft FK · REC-01 SoT · honesty false
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-02-bod-chain-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: focusRequisitionId prop — open YCTD detail from Nest dashboard drill (J-HRM-05)
+ * Why: UC-BP-REC-08 AC-REC-08-06 · DENY Campaign
+ * must_keep: openDetail GET-by-id · Wave-2 forms · honesty false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-04-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Quét kho CV dialog · complete|skip · posted gate UX · F5 internal_scan_* badge
+ * Why: UC-BP-REC-04 · API-01 F-REC-CV-SCAN-01..03 · BR-BP-CV-01 · BA Diễn biến §3.4 · U65
+ * must_keep: /recruitment/* only · UV-YCTD attach · REC-03 OUT · W2 flags · honesty false · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-04-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-YCTD-CREATE-BLOCKER-01
+ * change_mode: FIX
+ * What: Lưu nháp validateYctdCreateForm draft_save; applyTemplate seeds out_of_plan_reason; WF complete gate
+ * Why: U65 POST blocked — FE zod required out_of_plan_reason while BE draft optional (Y-S7)
+ * must_keep: DEPTCONREG1 dept picker · complete on Gửi duyệt QT · U65
+ */
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, Plus, RefreshCw, Pencil } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
   createJobRequisition,
+  getJobDescriptionTemplateYctdPreview,
   getJobRequisition,
+  listEmployees,
   listJobDescriptionTemplates,
+  listRecruitmentPlans,
+  patchJobRequisitionPipelineFlags,
   submitJobRequisitionWorkflow,
+  transitionJobRequisition,
   updateJobRequisition,
   type HrmJobDescriptionTemplate,
   type HrmJobRequisition,
+  type HrmJobRequisitionHeadcountMode,
+  type HrmJobRequisitionHireReason,
+  type HrmYctdJdPreview,
 } from '@/integrations/hrmApi';
-import { toErrorMessage } from '@/lib/apiError';
+import { ApiClientError, toErrorMessage } from '@/lib/apiError';
 import {
-  EMPLOYMENT_TYPE_OPTIONS,
   isRequisitionJobTemplateSelected,
   REQUISITION_EMPTY_JD_LIBRARY_HINT_VI,
+  REQUISITION_JD_STATUS_BLOCKED_VI,
   REQUISITION_JD_TEMPLATE_REQUIRED_VI,
   REQUISITION_LOCAL_STATUSES,
   REQUISITION_OPEN_JD_LIBRARY_CTA_VI,
@@ -31,7 +103,47 @@ import {
   resolveRequisitionDepartmentDefault,
   resolveEffectiveJobTemplates,
   unwrapJobDescriptionTemplateRows,
+  filterBindableJobTemplates,
+  composeLocalYctdPreview,
+  resolveRequisitionJdDisplay,
 } from '@/lib/jobRequisitionUi';
+import {
+  canMutateYctdPipelineFlags,
+  collectApprovedNeedHireCellOptions,
+  ensureHeadcountCellOptionPresent,
+  isYctdClassificationRequired,
+  normalizeYctdHeadcountMode,
+  normalizeYctdHireReason,
+  parseYctdCreatePresetFromSearch,
+  resolvePipelineFlags,
+  resolveYctdApprovalChainView,
+  resolveYctdCellLabel,
+  resolveYctdReplaceEmployeeDisplay,
+  validateYctdCreateForm,
+  YCTD_BOD_BLOCKED_CV_VI,
+  YCTD_CELL_PICKER_EMPTY_VI,
+  YCTD_CELL_PICKER_LABEL_VI,
+  YCTD_CELL_QTY_HINT_VI,
+  YCTD_CLASSIFY_BANNER_VI,
+  YCTD_HIRE_REASON_LABEL_VI,
+  YCTD_LONG_MATRIX_HINT_VI,
+  YCTD_MODE_LABEL_VI,
+  YCTD_NOT_RECEIVABLE_HINT_VI,
+  YCTD_REJECT_REASON_REQUIRED_VI,
+  yctdModeBadgeLabel,
+  type YctdApprovedCellPickerOption,
+} from '@/lib/jobRequisitionYctdWave2';
+import {
+  canSetYctdPostedFromScan,
+  cvScanAuditBadgeLabel,
+  formatCvScanAtVi,
+  resolveCvScanAuditState,
+  YCTD_CV_SCAN_HINT_VI,
+  YCTD_CV_SCAN_POSTED_BLOCKED_VI,
+  YCTD_CV_SCAN_TITLE_VI,
+} from '@/lib/jobRequisitionCvScan';
+import { InternalCvScanDialog } from '@/components/recruitment/InternalCvScanDialog';
+import { parseMonthsData } from '@/lib/recruitmentPlanHeadcount';
 import { resolveRequisitionMutateCompanyId } from '@/lib/jobRequisitionScope';
 import {
   canSubmitRequisitionWorkflow,
@@ -41,8 +153,14 @@ import {
 } from '@/lib/recruitmentWorkflowUi';
 import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useEmpEmploymentTypesEffective } from '@/hooks/useEmpEmploymentTypesEffective';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
-import { jobTitleOptionsFromCatalog } from '@/lib/catalogSearchPicker';
+import {
+  jobGradeOptionsFromCatalog,
+  jobTitleOptionsFromCatalog,
+  resolveJobGradeLabel,
+} from '@/lib/catalogSearchPicker';
+import { resolveEmpEmploymentTypeLabel } from '@/lib/empEmploymentTypeCatalog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -92,31 +210,53 @@ import {
   resolveWorkflowInstanceDisplay,
 } from '@/lib/labelMaps';
 
-const createSchema = z.object({
-  title: z.string().min(1, 'Nhập tiêu đề yêu cầu').max(200),
-  department: z.string().min(1, 'Nhập phòng ban').max(50),
-  employment_type: z.string().min(1, 'Chọn loại hình'),
-  /** FR-HRM-RC-01 — số lượng cần tuyển ≥ 1 (integer). */
-  headcount: z.coerce
-    .number({ invalid_type_error: 'Nhập số lượng cần tuyển' })
-    .int('Số lượng phải là số nguyên')
-    .min(1, 'Số lượng phải lớn hơn 0'),
-  /** BM-AC-05-02 / sponsor JD-only — bắt buộc chọn template từ thư viện. */
-  job_template_id: z
-    .string()
-    .min(1, REQUISITION_JD_TEMPLATE_REQUIRED_VI)
-    .refine((id) => isRequisitionJobTemplateSelected(id), {
-      message: REQUISITION_JD_TEMPLATE_REQUIRED_VI,
+const createSchema = z
+  .object({
+    title: z.string().min(1, 'Nhập tiêu đề yêu cầu').max(200),
+    department: z.string().min(1, 'Nhập phòng ban').max(50),
+    employment_type: z.string().min(1, 'Chọn loại hình'),
+    /** FR-HRM-RC-01 — số lượng cần tuyển ≥ 1 (integer). */
+    headcount: z.coerce
+      .number({ invalid_type_error: 'Nhập số lượng cần tuyển' })
+      .int('Số lượng phải là số nguyên')
+      .min(1, 'Số lượng phải lớn hơn 0'),
+    /** BM-AC-05-02 / sponsor JD-only — bắt buộc chọn template từ thư viện. */
+    job_template_id: z
+      .string()
+      .min(1, REQUISITION_JD_TEMPLATE_REQUIRED_VI)
+      .refine((id) => isRequisitionJobTemplateSelected(id), {
+        message: REQUISITION_JD_TEMPLATE_REQUIRED_VI,
+      }),
+    /** Snapshot từ JD (BR-CD-F6-02); được chỉnh bản chép sau khi chọn template. */
+    job_description: z.string().max(5000).optional(),
+    requirements: z.string().max(5000).optional(),
+    headcount_mode: z.enum(['in_plan', 'out_of_plan'], {
+      required_error: 'Chọn trong hoặc ngoài định biên',
     }),
-  /** Snapshot từ JD (BR-CD-F6-02); được chỉnh bản chép sau khi chọn template. */
-  job_description: z.string().max(5000).optional(),
-  requirements: z.string().max(5000).optional(),
-});
+    headcount_cell_id: z.string().max(120).optional(),
+    hire_reason: z.enum(['new', 'replace'], {
+      required_error: 'Chọn lý do tuyển',
+    }),
+    replace_employee_id: z.string().max(80).optional(),
+    out_of_plan_reason: z.string().max(2000).optional(),
+    /** Optional — catalog `job_grades` code when EFF>0 (AC-SET-CONSUMER-JG-REC-01). */
+    job_grade_key: z.string().max(64).optional().or(z.literal('')),
+  })
+  .superRefine((values, ctx) => {
+    const gate = validateYctdCreateForm(values, 'draft_save');
+    if (!gate.ok) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: gate.message,
+        path: [gate.field],
+      });
+    }
+  });
 
 type CreateFormValues = z.infer<typeof createSchema>;
 
 function statusBadgeVariant(status: HrmJobRequisition['status']) {
-  if (status === 'open' || status === 'approved') return 'default';
+  if (status === 'open' || status === 'approved' || status === 'open_for_hire') return 'default';
   if (status === 'on_hold' || status === 'pending_approval') return 'secondary';
   if (status === 'rejected') return 'destructive';
   return 'outline';
@@ -230,6 +370,20 @@ function canSubmitRequisitionRow(row: HrmJobRequisition): boolean {
  *       canSubmitRequisitionWorkflow; data-testid for harness (J-REC-WF-02/03 · UF-HRM-12)
  * Why: QC R-REC-13-S2-SUBMIT-INBOX — create+F5 OK nhưng submit CTA không visible / not clicked
  * must_keep: UF-HRM-12 create+F5; headcount/JD; WF LOCK; U65 no seed inbox
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A
+ * change_mode: UPGRADE
+ * What: Precision Motion title ≥20 Montserrat; error/WF-lock honesty → warning DNA; sharp secondary
+ * Why: ADR §16 · inventory R02 · B4 cấm amber AI banners
+ * must_keep: G-RC-01 headcount · JD picker · WF submit · U65 · no Nest invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 D-FE-HRM-REC-JOB-GRADE-CONSUMER-01
+ * change_mode: ADD
+ * What: Ngạch/bậc CatalogSearchPicker + jobGradeOptionsFromCatalog; POST/PATCH job_grade_key;
+ *       list/detail resolveJobGradeLabel (AC-SET-CONSUMER-JG-REC-01)
+ * Why: BR-SET-CONSUMER-JG-SOT-01 · FR-HRM-SC-GRADE-01 · VAL-JG-REC-FE-01
+ * must_keep: RECCHQC1 · YCTD WF chain · settings_catalog_e2e_ready=false · U65 no seed
  */
 export type JobRequisitionsTabProps = {
   /** Navigate parent Recruitment tab to «Thư viện JD» when library empty. */
@@ -240,6 +394,18 @@ export type JobRequisitionsTabProps = {
   refetchJobTemplates?: () => Promise<HrmJobDescriptionTemplate[]>;
   /** Sync page-level hook after create-dialog direct prefetch (D-HDSD-MUTATE-FE-15). */
   hydrateJobTemplates?: (rows: readonly HrmJobDescriptionTemplate[]) => void;
+  /** O5 / deep-link — preset create fork (in_plan cell or out_of_plan). */
+  createPreset?: {
+    headcount_mode?: HrmJobRequisitionHeadcountMode;
+    headcount_cell_id?: string;
+    headcount?: number;
+    open?: boolean;
+  };
+  /** Clear parent preset after dialog consumes it. */
+  onCreatePresetConsumed?: () => void;
+  /** UC-BP-REC-08 drill → open YCTD detail (J-HRM-05). */
+  focusRequisitionId?: string | null;
+  onFocusRequisitionConsumed?: () => void;
 };
 
 export function JobRequisitionsTab({
@@ -248,9 +414,14 @@ export function JobRequisitionsTab({
   jobTemplatesLoading: jobTemplatesLoadingProp = false,
   refetchJobTemplates: refetchJobTemplatesProp,
   hydrateJobTemplates: hydrateJobTemplatesProp,
+  createPreset,
+  onCreatePresetConsumed,
+  focusRequisitionId,
+  onFocusRequisitionConsumed,
 }: JobRequisitionsTabProps = {}) {
   const { currentCompanyId } = useAuth();
   const { listCompanyId, operatingUnitLabelMap } = useHrmOperatingUnitFilter();
+  const location = useLocation();
   const effectiveCompanyId = listCompanyId || currentCompanyId;
   const { requisitions, isLoading, fetchError, refetch, useApiMode } = useJobRequisitions();
   /** D-HDSD-MUTATE-FE-14 — single page-level source (shared with jd-library tab). */
@@ -273,13 +444,20 @@ export function JobRequisitionsTab({
   /** D-HDSD-MUTATE-FE-11 — at most one empty-library refetch per create-dialog open. */
   const createDialogRefetchAttemptedRef = useRef(false);
 
+  /** F-YCTD-JD-01 — picker chỉ Hiệu lực (bindable); Nháp/Ngừng không vào options. */
   const effectiveTemplates = useMemo(() => {
     const merged = resolveEffectiveJobTemplates(templates, dialogHydratedTemplates);
-    if (merged.length > 0) return merged;
-    if (openSyncTemplatesRef.current.length > 0) return openSyncTemplatesRef.current;
-    return merged;
+    const raw =
+      merged.length > 0
+        ? merged
+        : openSyncTemplatesRef.current.length > 0
+          ? openSyncTemplatesRef.current
+          : merged;
+    return filterBindableJobTemplates(raw);
   }, [templates, dialogHydratedTemplates]);
   const effectiveTemplatesLoading = templatesLoading && effectiveTemplates.length === 0;
+  const [jdPreview, setJdPreview] = useState<HrmYctdJdPreview | null>(null);
+  const [jdPreviewLoading, setJdPreviewLoading] = useState(false);
   const {
     catalogs,
     isLoading: catalogsLoading,
@@ -288,12 +466,35 @@ export function JobRequisitionsTab({
   const [editRow, setEditRow] = useState<HrmJobRequisition | null>(null);
   const [editStatus, setEditStatus] = useState<HrmJobRequisition['status']>('open');
   const [editHeadcount, setEditHeadcount] = useState(1);
+  const [editMode, setEditMode] = useState<HrmJobRequisitionHeadcountMode | ''>('');
+  const [editCellId, setEditCellId] = useState('');
+  const [editHireReason, setEditHireReason] = useState<HrmJobRequisitionHireReason | ''>('');
+  const [editReplaceEmployeeId, setEditReplaceEmployeeId] = useState('');
+  const [editOutReason, setEditOutReason] = useState('');
+  const [editJobGradeKey, setEditJobGradeKey] = useState('');
   const [detailRow, setDetailRow] = useState<HrmJobRequisition | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [spawnMissingBanner, setSpawnMissingBanner] = useState(false);
   /** SoT S2 — after YCTD create, surface immediate «Gửi duyệt QT» (J-REC-WF-02). */
   const [postCreateSubmitRow, setPostCreateSubmitRow] = useState<HrmJobRequisition | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [employeeOptions, setEmployeeOptions] = useState<
+    Array<{ value: string; label: string; code?: string }>
+  >([]);
+  const [pipelinePosted, setPipelinePosted] = useState(false);
+  const [pipelineCvIntake, setPipelineCvIntake] = useState(false);
+  const [cvScanOpen, setCvScanOpen] = useState(false);
+  const [approvedCellOptions, setApprovedCellOptions] = useState<YctdApprovedCellPickerOption[]>(
+    [],
+  );
+  const [approvedCellsLoading, setApprovedCellsLoading] = useState(false);
+  const [approvedCellsError, setApprovedCellsError] = useState<string | null>(null);
+
+  const searchPreset = useMemo(
+    () => parseYctdCreatePresetFromSearch(location.search),
+    [location.search],
+  );
 
   const createForm = useForm<CreateFormValues>({
     resolver: zodResolver(createSchema),
@@ -305,10 +506,28 @@ export function JobRequisitionsTab({
       job_template_id: '',
       job_description: '',
       requirements: '',
+      headcount_mode: 'out_of_plan',
+      headcount_cell_id: '',
+      hire_reason: 'new',
+      replace_employee_id: '',
+      out_of_plan_reason: '',
+      job_grade_key: '',
     },
   });
 
   const selectedTemplateId = createForm.watch('job_template_id');
+  const watchedEmploymentType = createForm.watch('employment_type');
+  const watchedHeadcountMode = createForm.watch('headcount_mode');
+  const watchedHireReason = createForm.watch('hire_reason');
+  const {
+    employmentTypeOptions,
+    employmentTypeDisplayLabel,
+    isLoading: employmentTypesLoading,
+    isError: employmentTypesError,
+  } = useEmpEmploymentTypesEffective({
+    enabled: createOpen || Boolean(detailRow) || Boolean(editRow),
+    currentValue: watchedEmploymentType,
+  });
   const jdSnapshotUnlocked = isRequisitionJobTemplateSelected(selectedTemplateId);
   const libraryEmpty = !effectiveTemplatesLoading && effectiveTemplates.length === 0;
 
@@ -329,6 +548,11 @@ export function JobRequisitionsTab({
 
   const jobTitleOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+
+  const jobGradeOptions = useMemo(
+    () => jobGradeOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
 
@@ -365,6 +589,7 @@ export function JobRequisitionsTab({
         createForm.setValue('job_template_id', '', { shouldValidate: true });
         createForm.setValue('job_description', '');
         createForm.setValue('requirements', '');
+        setJdPreview(null);
         return;
       }
       const tpl = effectiveTemplates.find((t) => t.id === templateId);
@@ -394,45 +619,85 @@ export function JobRequisitionsTab({
       }
       createForm.setValue('job_description', tpl.job_description ?? '');
       createForm.setValue('requirements', tpl.requirements ?? '');
+      setJdPreview(composeLocalYctdPreview(tpl));
+      if (
+        createForm.getValues('headcount_mode') === 'out_of_plan' &&
+        !createForm.getValues('out_of_plan_reason')?.trim()
+      ) {
+        createForm.setValue('out_of_plan_reason', 'Phát sinh nhu cầu tuyển dụng', {
+          shouldValidate: true,
+        });
+      }
     },
     [effectiveTemplates, departmentOptions, ouLabels, jobTitleOptions, createForm],
   );
 
   const handleOpenCreate = useCallback(() => {
     void (async () => {
-      let activeTemplates = resolveEffectiveJobTemplates(templates, dialogHydratedTemplates);
+      setJdPreview(null);
+      let activeTemplates = filterBindableJobTemplates(
+        resolveEffectiveJobTemplates(templates, dialogHydratedTemplates),
+      );
       if (activeTemplates.length === 0 && openSyncTemplatesRef.current.length > 0) {
-        activeTemplates = openSyncTemplatesRef.current;
+        activeTemplates = filterBindableJobTemplates(openSyncTemplatesRef.current);
       }
 
-      if (
-        activeTemplates.length === 0 &&
-        !createDialogRefetchAttemptedRef.current &&
-        effectiveCompanyId
-      ) {
+      if (!createDialogRefetchAttemptedRef.current && effectiveCompanyId) {
         createDialogRefetchAttemptedRef.current = true;
-        let fetched = await refetchTemplates();
-        if (fetched.length === 0) {
-          /** FE-15 — direct GET when shared refetch still empty (unwrap envelope + sync parent). */
-          try {
-            const direct = await listJobDescriptionTemplates({
-              company_id: effectiveCompanyId,
-            });
-            fetched = [...unwrapJobDescriptionTemplateRows<HrmJobDescriptionTemplate>(direct)];
-          } catch {
-            /* parent refetch error already surfaced on page hook */
+        /** F-YCTD-JD-01 — bindable list for picker; do not replace Thư viện full list. */
+        try {
+          const bindableRes = await listJobDescriptionTemplates({
+            company_id: effectiveCompanyId,
+            bindable: true,
+          });
+          const bindableRows = filterBindableJobTemplates(
+            unwrapJobDescriptionTemplateRows<HrmJobDescriptionTemplate>(bindableRes),
+          );
+          /** 200 [] = empty Hiệu lực (SRS 1b) — trust BE over parent full-library cache. */
+          activeTemplates = [...bindableRows];
+          openSyncTemplatesRef.current = [...bindableRows];
+          setDialogHydratedTemplates([...bindableRows]);
+        } catch {
+          if (activeTemplates.length === 0) {
+            let fetched = await refetchTemplates();
+            if (fetched.length === 0) {
+              try {
+                const direct = await listJobDescriptionTemplates({
+                  company_id: effectiveCompanyId,
+                  bindable: true,
+                });
+                fetched = [
+                  ...unwrapJobDescriptionTemplateRows<HrmJobDescriptionTemplate>(direct),
+                ];
+              } catch {
+                /* parent refetch error already surfaced on page hook */
+              }
+            }
+            const bindable = filterBindableJobTemplates(fetched);
+            if (bindable.length > 0) {
+              activeTemplates = [...bindable];
+              openSyncTemplatesRef.current = [...bindable];
+              setDialogHydratedTemplates([...bindable]);
+              /** Only hydrate parent when fallback used full-library rows (not bindable-only wipe). */
+              if (fetched.length === bindable.length) {
+                hydrateJobTemplatesProp?.([...fetched]);
+              }
+            }
           }
-        }
-        if (fetched.length > 0) {
-          activeTemplates = fetched;
-          openSyncTemplatesRef.current = fetched;
-          setDialogHydratedTemplates(fetched);
-          hydrateJobTemplatesProp?.(fetched);
         }
       } else if (activeTemplates.length > 0) {
         openSyncTemplatesRef.current = [...activeTemplates];
         setDialogHydratedTemplates([...activeTemplates]);
       }
+
+      const presetMode =
+        createPreset?.headcount_mode ??
+        searchPreset.headcount_mode ??
+        ('out_of_plan' as HrmJobRequisitionHeadcountMode);
+      const presetCell =
+        createPreset?.headcount_cell_id ?? searchPreset.headcount_cell_id ?? '';
+      const presetHc =
+        createPreset?.headcount ?? searchPreset.headcount ?? undefined;
 
       const defaults = buildRequisitionCreateFormDefaults({
         templates: activeTemplates,
@@ -441,19 +706,36 @@ export function JobRequisitionsTab({
         jobTitleOptions,
       });
       if (defaults) {
-        createForm.reset(defaults);
+        createForm.reset({
+          ...defaults,
+          headcount: presetHc ?? defaults.headcount,
+          headcount_mode: presetMode,
+          headcount_cell_id: presetCell,
+          hire_reason: 'new',
+          replace_employee_id: '',
+          out_of_plan_reason: '',
+        });
+        const tpl = activeTemplates.find((t) => t.id === defaults.job_template_id);
+        if (tpl) setJdPreview(composeLocalYctdPreview(tpl));
       } else {
         createForm.reset({
           title: '',
           department: '',
           employment_type: 'full_time',
-          headcount: 1,
+          headcount: presetHc ?? 1,
           job_template_id: '',
           job_description: '',
           requirements: '',
+          headcount_mode: presetMode,
+          headcount_cell_id: presetCell,
+          hire_reason: 'new',
+          replace_employee_id: '',
+          out_of_plan_reason: '',
         });
+        setJdPreview(null);
       }
       setCreateOpen(true);
+      onCreatePresetConsumed?.();
     })();
   }, [
     templates,
@@ -465,6 +747,9 @@ export function JobRequisitionsTab({
     createForm,
     refetchTemplates,
     hydrateJobTemplatesProp,
+    createPreset,
+    searchPreset,
+    onCreatePresetConsumed,
   ]);
 
   /** D-HDSD-MUTATE-FE-12 — re-sync defaults when templates hydrate after async open refetch. */
@@ -478,7 +763,16 @@ export function JobRequisitionsTab({
         jobTitleOptions,
       });
       if (defaults) {
-        createForm.reset(defaults);
+        const prev = createForm.getValues();
+        createForm.reset({
+          ...defaults,
+          headcount_mode: prev.headcount_mode || 'out_of_plan',
+          headcount_cell_id: prev.headcount_cell_id || '',
+          hire_reason: prev.hire_reason || 'new',
+          replace_employee_id: prev.replace_employee_id || '',
+          out_of_plan_reason: prev.out_of_plan_reason || '',
+          headcount: prev.headcount || defaults.headcount,
+        });
       }
     }
   }, [
@@ -526,6 +820,8 @@ export function JobRequisitionsTab({
       createDialogRefetchAttemptedRef.current = false;
       openSyncTemplatesRef.current = [];
       setDialogHydratedTemplates([]);
+      setJdPreview(null);
+      setJdPreviewLoading(false);
     }
   }, [createOpen]);
 
@@ -540,6 +836,61 @@ export function JobRequisitionsTab({
       applyTemplate(currentId);
     }
   }, [createOpen, effectiveTemplatesLoading, effectiveTemplates, createForm, applyTemplate]);
+
+  /** F-YCTD-JD-02 — preview title/short; STATUS clears selection (Diễn biến 1d). */
+  useEffect(() => {
+    if (!createOpen || !effectiveCompanyId) return;
+    if (!isRequisitionJobTemplateSelected(selectedTemplateId)) {
+      setJdPreview(null);
+      setJdPreviewLoading(false);
+      return;
+    }
+    const templateId = selectedTemplateId.trim();
+    const localTpl = effectiveTemplates.find((t) => t.id === templateId);
+    let cancelled = false;
+    setJdPreviewLoading(true);
+    void (async () => {
+      try {
+        const preview = await getJobDescriptionTemplateYctdPreview(templateId, effectiveCompanyId);
+        if (cancelled) return;
+        setJdPreview(preview);
+        if (preview.short_description && !createForm.getValues('job_description')?.trim()) {
+          createForm.setValue('job_description', preview.short_description, { shouldValidate: false });
+        }
+        if (preview.requirements_preview && !createForm.getValues('requirements')?.trim()) {
+          createForm.setValue('requirements', preview.requirements_preview, { shouldValidate: false });
+        }
+        createForm.clearErrors('job_template_id');
+      } catch (error: unknown) {
+        if (cancelled) return;
+        const code = error instanceof ApiClientError ? error.code : undefined;
+        if (code === 'HRM-JD-YCTD-STATUS' || code === 'HRM-JD-YCTD-NOT-FOUND') {
+          setJdPreview(null);
+          createForm.setValue('job_template_id', '', { shouldValidate: true });
+          createForm.setError('job_template_id', {
+            message:
+              code === 'HRM-JD-YCTD-STATUS'
+                ? REQUISITION_JD_STATUS_BLOCKED_VI
+                : toErrorMessage(error, REQUISITION_JD_STATUS_BLOCKED_VI),
+          });
+          toast({
+            title: 'Không gắn được JD',
+            description: toErrorMessage(error, REQUISITION_JD_STATUS_BLOCKED_VI),
+            variant: 'destructive',
+          });
+          return;
+        }
+        if (localTpl) {
+          setJdPreview(composeLocalYctdPreview(localTpl));
+        }
+      } finally {
+        if (!cancelled) setJdPreviewLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [createOpen, selectedTemplateId, effectiveCompanyId, effectiveTemplates, createForm]);
 
   const watchedCreate = createForm.watch([
     'title',
@@ -571,6 +922,123 @@ export function JobRequisitionsTab({
     onOpenJdLibrary?.();
   };
 
+  /** Deep-link / parent preset — open create once when preset.open stamped. */
+  const presetOpenConsumedRef = useRef(false);
+  useEffect(() => {
+    if (!createPreset?.open || presetOpenConsumedRef.current) return;
+    presetOpenConsumedRef.current = true;
+    handleOpenCreate();
+  }, [createPreset?.open, createPreset?.headcount_cell_id, createPreset?.headcount_mode, handleOpenCreate]);
+
+  useEffect(() => {
+    if (!createPreset?.open) {
+      presetOpenConsumedRef.current = false;
+    }
+  }, [createPreset?.open]);
+
+  /** Replace picker — load employees when hire_reason=replace (create/edit/detail). */
+  useEffect(() => {
+    const needReplace =
+      (createOpen && watchedHireReason === 'replace') ||
+      (editRow != null && editHireReason === 'replace') ||
+      (detailRow != null &&
+        normalizeYctdHireReason(detailRow.hire_reason) === 'replace');
+    if (!needReplace || !effectiveCompanyId) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await listEmployees({
+          company_id: effectiveCompanyId,
+          page: 1,
+          page_size: 200,
+        });
+        if (cancelled) return;
+        const rows = Array.isArray(res?.data) ? res.data : [];
+        setEmployeeOptions(
+          rows.map((e) => ({
+            value: e.id,
+            label: [e.full_name, e.employee_code].filter(Boolean).join(' · ') || e.id,
+            code: e.employee_code ?? undefined,
+          })),
+        );
+      } catch {
+        if (!cancelled) setEmployeeOptions([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [createOpen, watchedHireReason, editRow, editHireReason, detailRow, effectiveCompanyId]);
+
+  /** CELL-PICKER — load approved Định biên cells (REC-01 SoT) when in_plan form/detail needs picker. */
+  useEffect(() => {
+    const needCells =
+      (createOpen && watchedHeadcountMode === 'in_plan') ||
+      (editRow != null && editMode === 'in_plan') ||
+      (detailRow != null && Boolean(detailRow.headcount_cell_id));
+    if (!needCells || !effectiveCompanyId) return;
+    let cancelled = false;
+    setApprovedCellsLoading(true);
+    setApprovedCellsError(null);
+    void (async () => {
+      try {
+        const res = await listRecruitmentPlans(effectiveCompanyId);
+        if (cancelled) return;
+        const rows = Array.isArray(res?.data) ? res.data : [];
+        const opts = collectApprovedNeedHireCellOptions(rows, parseMonthsData);
+        setApprovedCellOptions(opts);
+      } catch (error: unknown) {
+        if (!cancelled) {
+          setApprovedCellOptions([]);
+          setApprovedCellsError(toErrorMessage(error, 'Không tải được ô định biên đã duyệt.'));
+        }
+      } finally {
+        if (!cancelled) setApprovedCellsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    createOpen,
+    watchedHeadcountMode,
+    editRow,
+    editMode,
+    detailRow,
+    effectiveCompanyId,
+  ]);
+
+  const watchedCellId = createForm.watch('headcount_cell_id');
+  const cellPickerOptions = useMemo(() => {
+    const presetCell =
+      createPreset?.headcount_cell_id ?? searchPreset.headcount_cell_id ?? watchedCellId ?? '';
+    return ensureHeadcountCellOptionPresent(approvedCellOptions, presetCell);
+  }, [
+    approvedCellOptions,
+    createPreset?.headcount_cell_id,
+    searchPreset.headcount_cell_id,
+    watchedCellId,
+  ]);
+
+  const editCellPickerOptions = useMemo(
+    () => ensureHeadcountCellOptionPresent(approvedCellOptions, editCellId),
+    [approvedCellOptions, editCellId],
+  );
+
+  const detailCellPickerOptions = useMemo(
+    () =>
+      ensureHeadcountCellOptionPresent(
+        approvedCellOptions,
+        detailRow?.headcount_cell_id,
+      ),
+    [approvedCellOptions, detailRow?.headcount_cell_id],
+  );
+
+  const detailApprovalChain = useMemo(
+    () => (detailRow ? resolveYctdApprovalChainView(detailRow) : null),
+    [detailRow],
+  );
+
   const onCreate = async (values: CreateFormValues) => {
     if (!effectiveCompanyId) {
       toast({ title: 'Lỗi', description: 'Chưa xác định phạm vi công ty.', variant: 'destructive' });
@@ -586,6 +1054,7 @@ export function JobRequisitionsTab({
       return;
     }
     const jobTemplateId = values.job_template_id.trim();
+    const mode = values.headcount_mode;
     setSubmitting(true);
     try {
       const created = await createJobRequisition({
@@ -597,10 +1066,24 @@ export function JobRequisitionsTab({
         job_description: values.job_description?.trim() || undefined,
         requirements: values.requirements?.trim() || undefined,
         job_template_id: jobTemplateId,
+        headcount_mode: mode,
+        headcount_cell_id:
+          mode === 'in_plan' ? values.headcount_cell_id?.trim() || undefined : undefined,
+        hire_reason: values.hire_reason,
+        replace_employee_id:
+          values.hire_reason === 'replace'
+            ? values.replace_employee_id?.trim() || undefined
+            : undefined,
+        out_of_plan_reason:
+          mode === 'out_of_plan' ? values.out_of_plan_reason?.trim() || undefined : undefined,
+        job_grade_key: values.job_grade_key?.trim() || undefined,
       });
       toast({
-        title: 'Đã tạo yêu cầu tuyển dụng',
-        description: 'Đã chép mô tả công việc từ thư viện JD vào yêu cầu này (bản snapshot). Bấm «Gửi duyệt QT» để tạo task Inbox.',
+        title: 'Đã lưu nháp yêu cầu tuyển dụng',
+        description:
+          mode === 'out_of_plan'
+            ? 'Ngoài ĐB — bấm «Gửi duyệt QT» (ma trận dài + BOD). Chưa mở nhận hồ sơ.'
+            : 'Trong ĐB — bấm «Gửi duyệt QT». Chưa mở nhận hồ sơ đến khi duyệt xong.',
       });
       setCreateOpen(false);
       createForm.reset({
@@ -611,6 +1094,12 @@ export function JobRequisitionsTab({
         job_template_id: '',
         job_description: '',
         requirements: '',
+        headcount_mode: 'out_of_plan',
+        headcount_cell_id: '',
+        hire_reason: 'new',
+        replace_employee_id: '',
+        out_of_plan_reason: '',
+        job_grade_key: '',
       });
       if (canSubmitRequisitionWorkflow(created.workflow_instance_id, created.status)) {
         setPostCreateSubmitRow(created);
@@ -619,6 +1108,36 @@ export function JobRequisitionsTab({
       }
       await refetch();
     } catch (error: unknown) {
+      const code = error instanceof ApiClientError ? error.code : undefined;
+      if (code === 'HRM-JD-YCTD-REQUIRED') {
+        createForm.setError('job_template_id', {
+          message: toErrorMessage(error, REQUISITION_JD_TEMPLATE_REQUIRED_VI),
+        });
+      } else if (code === 'HRM-JD-YCTD-STATUS' || code === 'HRM-JD-YCTD-NOT-FOUND') {
+        createForm.setError('job_template_id', {
+          message: toErrorMessage(error, REQUISITION_JD_STATUS_BLOCKED_VI),
+        });
+      } else if (code === 'HRM-YCTD-CELL-QTY') {
+        createForm.setError('headcount', {
+          message: toErrorMessage(error, YCTD_CELL_QTY_HINT_VI),
+        });
+        toast({
+          title: 'Vượt số lượng ô định biên',
+          description: toErrorMessage(error, YCTD_CELL_QTY_HINT_VI),
+          variant: 'destructive',
+        });
+        return;
+      } else if (code === 'HRM-YCTD-OUT-REASON') {
+        createForm.setError('out_of_plan_reason', {
+          message: toErrorMessage(error),
+        });
+      } else if (code === 'HRM-YCTD-HIRE-REASON') {
+        createForm.setError('hire_reason', { message: toErrorMessage(error) });
+      } else if (code === 'HRM-YCTD-MODE-REQUIRED') {
+        createForm.setError('headcount_mode', { message: toErrorMessage(error) });
+      } else if (code?.startsWith('HRM-YCTD-CELL')) {
+        createForm.setError('headcount_cell_id', { message: toErrorMessage(error) });
+      }
       toast({
         title: 'Không tạo được yêu cầu',
         description: toErrorMessage(error, 'Kiểm tra kết nối và quyền truy cập.'),
@@ -648,6 +1167,20 @@ export function JobRequisitionsTab({
       });
       return;
     }
+    const classifyNeeded = isYctdClassificationRequired(editRow);
+    if (classifyNeeded || editMode) {
+      const gate = validateYctdCreateForm({
+        headcount_mode: editMode || editRow.headcount_mode,
+        headcount_cell_id: editCellId || editRow.headcount_cell_id,
+        hire_reason: editHireReason || editRow.hire_reason || 'new',
+        replace_employee_id: editReplaceEmployeeId || editRow.replace_employee_id,
+        out_of_plan_reason: editOutReason || editRow.out_of_plan_reason,
+      });
+      if (!gate.ok) {
+        toast({ title: 'Thiếu phân loại / trường bắt buộc', description: gate.message, variant: 'destructive' });
+        return;
+      }
+    }
     const mutateCompanyId = resolveRequisitionMutateCompanyId(
       editRow.company_id,
       effectiveCompanyId,
@@ -659,17 +1192,45 @@ export function JobRequisitionsTab({
     }
     setSubmitting(true);
     try {
-      await updateJobRequisition(editRow.id, mutateCompanyId, {
-        status: editStatus,
+      const mode = normalizeYctdHeadcountMode(editMode || editRow.headcount_mode);
+      const updated = await updateJobRequisition(editRow.id, mutateCompanyId, {
+        ...(REQUISITION_LOCAL_STATUSES.includes(
+          editStatus as (typeof REQUISITION_LOCAL_STATUSES)[number],
+        )
+          ? { status: editStatus }
+          : {}),
         headcount,
+        ...(mode
+          ? {
+              headcount_mode: mode,
+              headcount_cell_id: mode === 'in_plan' ? editCellId.trim() || null : null,
+              out_of_plan_reason: mode === 'out_of_plan' ? editOutReason.trim() || null : null,
+            }
+          : {}),
+        ...(editHireReason
+          ? {
+              hire_reason: editHireReason,
+              replace_employee_id:
+                editHireReason === 'replace' ? editReplaceEmployeeId.trim() || null : null,
+            }
+          : {}),
+        job_grade_key: editJobGradeKey.trim() || null,
       });
-      toast({ title: 'Đã cập nhật yêu cầu', description: 'Trạng thái và số lượng đã lưu — tải lại trang để xác nhận.' });
+      toast({
+        title: 'Đã cập nhật yêu cầu',
+        description: 'Trạng thái / phân loại / số lượng đã lưu — F5 để xác nhận.',
+      });
       setEditRow(null);
       await refetch();
+      if (detailRow?.id === updated.id) setDetailRow(updated);
     } catch (error: unknown) {
+      const code = error instanceof ApiClientError ? error.code : undefined;
       toast({
         title: 'Không cập nhật được',
-        description: toErrorMessage(error, 'Kiểm tra phạm vi công ty và quyền truy cập.'),
+        description:
+          code === 'HRM-YCTD-CELL-QTY'
+            ? toErrorMessage(error, YCTD_CELL_QTY_HINT_VI)
+            : toErrorMessage(error, 'Kiểm tra phạm vi công ty và quyền truy cập.'),
         variant: 'destructive',
       });
     } finally {
@@ -677,7 +1238,142 @@ export function JobRequisitionsTab({
     }
   };
 
+  const onTransition = async (row: HrmJobRequisition, action: 'approve' | 'reject') => {
+    const mutateCompanyId = resolveRequisitionMutateCompanyId(
+      row.company_id,
+      effectiveCompanyId,
+      currentCompanyId,
+    );
+    if (!mutateCompanyId) {
+      toast({ title: 'Lỗi', description: 'Chưa xác định phạm vi công ty.', variant: 'destructive' });
+      return;
+    }
+    if (action === 'reject' && !rejectReason.trim()) {
+      toast({
+        title: 'Thiếu lý do từ chối',
+        description: YCTD_REJECT_REASON_REQUIRED_VI,
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (isYctdClassificationRequired(row)) {
+      toast({
+        title: 'Cần phân loại trước',
+        description: YCTD_CLASSIFY_BANNER_VI,
+        variant: 'destructive',
+      });
+      return;
+    }
+    const chain = resolveYctdApprovalChainView(row);
+    setSubmitting(true);
+    try {
+      const result = await transitionJobRequisition(row.id, mutateCompanyId, {
+        action,
+        rejected_reason: action === 'reject' ? rejectReason.trim() : undefined,
+        bod_complete:
+          action === 'approve' && chain.approveSendsBodComplete ? true : undefined,
+      });
+      toast({
+        title: action === 'approve' ? 'Đã duyệt YCTD' : 'Đã từ chối YCTD',
+        description:
+          action === 'approve'
+            ? result.status === 'open_for_hire'
+              ? 'Trạng thái: Mở nhận hồ sơ. F5 để xác nhận.'
+              : result.status === 'approved'
+                ? 'TP/HR đã duyệt — còn chờ BOD. Vẫn chặn nhận hồ sơ. F5 để xác nhận.'
+                : `Trạng thái: ${REQUISITION_STATUS_LABEL_VI[result.status] ?? result.status}.`
+            : `Đã từ chối. Lý do: ${result.rejected_reason?.trim() || rejectReason.trim()}. F5 còn lý do.`,
+      });
+      setRejectReason('');
+      await refetch();
+      if (detailRow?.id === row.id) setDetailRow(result);
+    } catch (error: unknown) {
+      toast({
+        title: 'Không chuyển trạng thái được',
+        description: toErrorMessage(error, 'Kiểm tra quyền duyệt và trạng thái hiện tại.'),
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const onPatchPipelineFlags = async (row: HrmJobRequisition) => {
+    if (!canMutateYctdPipelineFlags(row)) {
+      toast({
+        title: 'Chưa mở nhận hồ sơ',
+        description: isYctdClassificationRequired(row)
+          ? YCTD_CLASSIFY_BANNER_VI
+          : YCTD_NOT_RECEIVABLE_HINT_VI,
+        variant: 'destructive',
+      });
+      return;
+    }
+    const currentFlags = resolvePipelineFlags(row);
+    if (pipelinePosted && !canSetYctdPostedFromScan(currentFlags)) {
+      toast({
+        title: 'Chặn đăng tin',
+        description: YCTD_CV_SCAN_POSTED_BLOCKED_VI,
+        variant: 'destructive',
+      });
+      setPipelinePosted(false);
+      return;
+    }
+    const mutateCompanyId = resolveRequisitionMutateCompanyId(
+      row.company_id,
+      effectiveCompanyId,
+      currentCompanyId,
+    );
+    if (!mutateCompanyId) {
+      toast({ title: 'Lỗi', description: 'Chưa xác định phạm vi công ty.', variant: 'destructive' });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const result = await patchJobRequisitionPipelineFlags(row.id, mutateCompanyId, {
+        posted: pipelinePosted,
+        cv_intake_allowed: pipelineCvIntake,
+      });
+      toast({
+        title: 'Đã cập nhật cờ pipeline trên YCTD',
+        description: 'Không tạo Campaign. F5 để xác nhận cờ còn.',
+      });
+      await refetch();
+      if (detailRow?.id === row.id) setDetailRow(result);
+    } catch (error: unknown) {
+      toast({
+        title: 'Không cập nhật cờ pipeline',
+        description: toErrorMessage(error, YCTD_NOT_RECEIVABLE_HINT_VI),
+        variant: 'destructive',
+      });
+      if (pipelinePosted) setPipelinePosted(false);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const onSubmitWorkflow = async (row: HrmJobRequisition) => {
+    const wfGate = validateYctdCreateForm(
+      {
+        headcount_mode: row.headcount_mode,
+        headcount_cell_id: row.headcount_cell_id,
+        hire_reason: row.hire_reason,
+        replace_employee_id: row.replace_employee_id,
+        out_of_plan_reason: row.out_of_plan_reason,
+      },
+      'complete',
+    );
+    if (!wfGate.ok) {
+      toast({
+        title: 'Chưa đủ thông tin phân loại',
+        description: wfGate.message,
+        variant: 'destructive',
+      });
+      if (wfGate.field === 'out_of_plan_reason') {
+        openEdit(row);
+      }
+      return;
+    }
     const mutateCompanyId = resolveRequisitionMutateCompanyId(
       row.company_id,
       effectiveCompanyId,
@@ -739,8 +1435,18 @@ export function JobRequisitionsTab({
       return;
     }
     setEditRow(row);
-    setEditStatus(row.status === 'pending_approval' ? 'open' : row.status);
+    setEditStatus(
+      row.status === 'pending_approval' || row.status === 'open_for_hire' || row.status === 'draft'
+        ? 'open'
+        : row.status,
+    );
     setEditHeadcount(normalizeRequisitionHeadcount(row.headcount) ?? 1);
+    setEditMode(normalizeYctdHeadcountMode(row.headcount_mode) ?? '');
+    setEditCellId(row.headcount_cell_id?.trim() ?? '');
+    setEditHireReason(normalizeYctdHireReason(row.hire_reason) ?? 'new');
+    setEditReplaceEmployeeId(row.replace_employee_id?.trim() ?? '');
+    setEditOutReason(row.out_of_plan_reason?.trim() ?? '');
+    setEditJobGradeKey(row.job_grade_key?.trim() ?? '');
   };
 
   /** J-HRM-05 list → detail: GET by id (not list-row-only). */
@@ -759,6 +1465,10 @@ export function JobRequisitionsTab({
     try {
       const detail = await getJobRequisition(row.id, scopeId);
       setDetailRow(detail);
+      const flags = resolvePipelineFlags(detail);
+      setPipelinePosted(Boolean(flags.posted));
+      setPipelineCvIntake(Boolean(flags.cv_intake_allowed));
+      setRejectReason('');
     } catch (error: unknown) {
       toast({
         title: 'Không tải được chi tiết',
@@ -771,9 +1481,38 @@ export function JobRequisitionsTab({
     }
   };
 
+  /** REC-08 dashboard drill → existing YCTD detail path (DENY Campaign). */
+  useEffect(() => {
+    const id = focusRequisitionId?.trim();
+    if (!id || isLoading) return;
+    const row = requisitions.find((r) => r.id === id);
+    if (!row) {
+      if (!isLoading && requisitions.length >= 0) {
+        void getJobRequisition(id, effectiveCompanyId || currentCompanyId || '').then(
+          (detail) => {
+            void openDetail(detail);
+            onFocusRequisitionConsumed?.();
+          },
+          (error: unknown) => {
+            toast({
+              title: 'Không mở được YCTD',
+              description: toErrorMessage(error, 'Không tìm thấy yêu cầu tuyển từ dashboard.'),
+              variant: 'destructive',
+            });
+            onFocusRequisitionConsumed?.();
+          },
+        );
+      }
+      return;
+    }
+    void openDetail(row);
+    onFocusRequisitionConsumed?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open once per focus id
+  }, [focusRequisitionId, isLoading, requisitions]);
+
   if (!useApiMode) {
     return (
-      <Card className="p-6 text-sm text-muted-foreground">
+      <Card className="border-xevn-border bg-xevn-surface p-6 text-sm text-xevn-textSecondary">
         Chế độ kết nối chưa sẵn sàng — mở HRM từ Command Center để quản lý yêu cầu tuyển dụng.
       </Card>
     );
@@ -815,10 +1554,10 @@ export function JobRequisitionsTab({
           </PermissionGate>
         </Card>
       ) : null}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3" data-testid="rec-requisitions-tab-precision">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">Yêu cầu tuyển dụng</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="font-display text-[20px] font-bold tracking-tight text-xevn-text">Yêu cầu tuyển dụng</h2>
+          <p className="text-sm text-xevn-textSecondary">
             Tạo và cập nhật trạng thái yêu cầu tuyển dụng; sau Lưu bấm «Gửi duyệt QT» để vào Inbox.
           </p>
         </div>
@@ -843,8 +1582,17 @@ export function JobRequisitionsTab({
       </div>
 
       {fetchError ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning">
           {fetchError}
+        </div>
+      ) : null}
+
+      {requisitions.some((r) => isYctdClassificationRequired(r)) ? (
+        <div
+          className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
+          data-testid="yctd-classify-banner"
+        >
+          {YCTD_CLASSIFY_BANNER_VI}
         </div>
       ) : null}
 
@@ -856,9 +1604,12 @@ export function JobRequisitionsTab({
             <TableHeader>
               <TableRow>
                 <TableHead>Tiêu đề</TableHead>
+                <TableHead>JD gắn</TableHead>
+                <TableHead>Trong/Ngoài ĐB</TableHead>
                 <TableHead>Phòng/Ban</TableHead>
                 <TableHead className="text-center">Số lượng</TableHead>
                 <TableHead>Loại hình</TableHead>
+                <TableHead>Ngạch/bậc</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead className="text-right">Thao tác</TableHead>
               </TableRow>
@@ -866,7 +1617,7 @@ export function JobRequisitionsTab({
             <TableBody>
               {requisitions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={9} className="py-10 text-center text-sm text-muted-foreground">
                     Chưa có yêu cầu — bấm «Thêm yêu cầu» để tạo mới.
                   </TableCell>
                 </TableRow>
@@ -874,14 +1625,40 @@ export function JobRequisitionsTab({
                 requisitions.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell className="font-medium">{row.title}</TableCell>
+                    <TableCell
+                      className="max-w-[12rem] truncate text-sm text-xevn-textSecondary"
+                      data-testid={`yctd-jd-ref-${row.id}`}
+                      title={resolveRequisitionJdDisplay(row, templates)}
+                    >
+                      {resolveRequisitionJdDisplay(row, templates)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={isYctdClassificationRequired(row) ? 'destructive' : 'outline'}
+                        data-testid={`yctd-mode-${row.id}`}
+                      >
+                        {yctdModeBadgeLabel(row.headcount_mode, isYctdClassificationRequired(row))}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{row.department}</TableCell>
                     <TableCell className="text-center font-medium tabular-nums">
                       {normalizeRequisitionHeadcount(row.headcount) ?? '—'}
                     </TableCell>
-                    <TableCell>{resolveEmploymentTypeDisplay(row.employment_type)}</TableCell>
+                    <TableCell>
+                      {employmentTypeDisplayLabel(row.employment_type) !== '—'
+                        ? employmentTypeDisplayLabel(row.employment_type)
+                        : resolveEmploymentTypeDisplay(row.employment_type)}
+                    </TableCell>
+                    <TableCell
+                      className="max-w-[10rem] truncate text-sm"
+                      data-testid={`yctd-grade-label-${row.id}`}
+                      title={resolveJobGradeLabel(jobGradeOptions, row.job_grade_key)}
+                    >
+                      {resolveJobGradeLabel(jobGradeOptions, row.job_grade_key)}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={statusBadgeVariant(row.status)}>
-                        {REQUISITION_STATUS_LABEL_VI[row.status]}
+                        {REQUISITION_STATUS_LABEL_VI[row.status] ?? row.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -947,7 +1724,7 @@ export function JobRequisitionsTab({
           <DialogHeader>
             <DialogTitle>Tạo yêu cầu tuyển dụng</DialogTitle>
             <DialogDescription>
-              Bắt buộc chọn JD từ thư viện — hệ thống chép mô tả/yêu cầu vào yêu cầu này (snapshot, không liên kết live).
+              Chọn trong/ngoài định biên + JD Hiệu lực — lưu nháp rồi gửi duyệt (không mở nhận hồ sơ ngay).
             </DialogDescription>
           </DialogHeader>
           <Form {...createForm}>
@@ -961,6 +1738,169 @@ export function JobRequisitionsTab({
                   Form ready
                 </span>
               ) : null}
+              <FormField
+                control={createForm.control}
+                name="headcount_mode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Trong / ngoài định biên *</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(v) => {
+                        field.onChange(v as HrmJobRequisitionHeadcountMode);
+                        if (v === 'in_plan') {
+                          createForm.setValue('out_of_plan_reason', '');
+                        }
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger data-testid="yctd-headcount-mode">
+                          <SelectValue placeholder="Chọn nhánh" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="in_plan">{YCTD_MODE_LABEL_VI.in_plan}</SelectItem>
+                        <SelectItem value="out_of_plan">{YCTD_MODE_LABEL_VI.out_of_plan}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    {watchedHeadcountMode === 'out_of_plan' ? (
+                      <p className="text-xs text-warning" data-testid="yctd-long-matrix-hint">
+                        {YCTD_LONG_MATRIX_HINT_VI}
+                      </p>
+                    ) : null}
+                  </FormItem>
+                )}
+              />
+              {watchedHeadcountMode === 'in_plan' ? (
+                <FormField
+                  control={createForm.control}
+                  name="headcount_cell_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{YCTD_CELL_PICKER_LABEL_VI}</FormLabel>
+                      <FormControl>
+                        <CatalogSearchPicker
+                          options={cellPickerOptions}
+                          value={field.value || ''}
+                          onValueChange={(v) => {
+                            field.onChange(v);
+                            const hit = cellPickerOptions.find((o) => o.value === v);
+                            if (hit && hit.need_hire >= 1) {
+                              createForm.setValue('headcount', hit.need_hire);
+                            }
+                          }}
+                          placeholder="Chọn ô Cần tuyển đã duyệt"
+                          searchPlaceholder="Tìm phòng ban / chức danh / tháng…"
+                          loading={approvedCellsLoading}
+                          errorText={approvedCellsError ?? undefined}
+                          emptyHint={
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {YCTD_CELL_PICKER_EMPTY_VI}
+                            </p>
+                          }
+                          data-testid="yctd-headcount-cell-id"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      {field.value ? (
+                        <p className="text-[11px] text-muted-foreground font-mono" data-testid="yctd-cell-id-value">
+                          {field.value}
+                        </p>
+                      ) : null}
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={createForm.control}
+                  name="out_of_plan_reason"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lý do ngoài định biên *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          rows={2}
+                          placeholder="VD: Phát sinh dự án mới / vượt kế hoạch quý…"
+                          data-testid="yctd-out-of-plan-reason"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={createForm.control}
+                  name="hire_reason"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lý do tuyển *</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(v) => {
+                          field.onChange(v as HrmJobRequisitionHireReason);
+                          if (v === 'new') createForm.setValue('replace_employee_id', '');
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger data-testid="yctd-hire-reason">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="new">{YCTD_HIRE_REASON_LABEL_VI.new}</SelectItem>
+                          <SelectItem value="replace">{YCTD_HIRE_REASON_LABEL_VI.replace}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {watchedHireReason === 'replace' ? (
+                  <FormField
+                    control={createForm.control}
+                    name="replace_employee_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>NV thay thế *</FormLabel>
+                        <FormControl>
+                          <CatalogSearchPicker
+                            options={employeeOptions}
+                            value={field.value || ''}
+                            onValueChange={field.onChange}
+                            placeholder="Chọn nhân viên"
+                            data-testid="yctd-replace-employee"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : (
+                  <div />
+                )}
+              </div>
+              <FormField
+                control={createForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tiêu đề *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="VD: Tuyển chuyên viên kinh doanh"
+                        data-testid={HDSD_MUTATE_TEST_IDS.requisitionTitle}
+                        autoFocus
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={createForm.control}
                 name="job_template_id"
@@ -999,7 +1939,7 @@ export function JobRequisitionsTab({
                     </FormControl>
                     <FormMessage />
                     {libraryEmpty ? (
-                      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950">
+                      <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
                         <p className="mb-2">{REQUISITION_EMPTY_JD_LIBRARY_HINT_VI}</p>
                         {onOpenJdLibrary ? (
                           <Button type="button" size="sm" variant="secondary" onClick={goToJdLibrary}>
@@ -1010,23 +1950,30 @@ export function JobRequisitionsTab({
                         )}
                       </div>
                     ) : null}
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tiêu đề *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="VD: Tuyển chuyên viên kinh doanh"
-                        data-testid={HDSD_MUTATE_TEST_IDS.requisitionTitle}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
+                    {!libraryEmpty && (jdPreviewLoading || jdPreview) ? (
+                      <div
+                        className="rounded-lg border border-xevn-border bg-muted/40 px-3 py-2 text-xs"
+                        data-testid="yctd-jd-preview"
+                      >
+                        {jdPreviewLoading && !jdPreview ? (
+                          <p className="text-muted-foreground">Đang tải xem trước JD…</p>
+                        ) : jdPreview ? (
+                          <>
+                            <p className="font-medium text-sm text-xevn-text">
+                              {jdPreview.code ? `${jdPreview.code} · ` : ''}
+                              {jdPreview.title}
+                            </p>
+                            {jdPreview.short_description ? (
+                              <p className="mt-1 whitespace-pre-wrap text-xevn-textSecondary">
+                                {jdPreview.short_description}
+                              </p>
+                            ) : (
+                              <p className="mt-1 text-muted-foreground">Không có mô tả ngắn.</p>
+                            )}
+                          </>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </FormItem>
                 )}
               />
@@ -1096,20 +2043,58 @@ export function JobRequisitionsTab({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Loại hình *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger data-testid={HDSD_MUTATE_TEST_IDS.requisitionEmploymentType}>
-                          <SelectValue placeholder="Chọn loại hình" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {EMPLOYMENT_TYPE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <CatalogSearchPicker
+                        options={employmentTypeOptions}
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placeholder="Chọn loại hình"
+                        loading={employmentTypesLoading}
+                        errorText={
+                          employmentTypesError ? 'Không tải được catalog loại hình thuê.' : undefined
+                        }
+                        emptyHint={
+                          <a
+                            href="/settings"
+                            className="text-primary underline text-xs font-medium"
+                            data-testid="hdsd-emp-open-employment-types-yctd"
+                          >
+                            Mở Cài đặt → Loại hình thuê EMP
+                          </a>
+                        }
+                        data-testid={HDSD_MUTATE_TEST_IDS.requisitionEmploymentType}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={createForm.control}
+                name="job_grade_key"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ngạch/bậc</FormLabel>
+                    <FormControl>
+                      <CatalogSearchPicker
+                        options={jobGradeOptions}
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placeholder="Chọn ngạch bậc"
+                        loading={catalogsLoading}
+                        errorText={catalogsError ? 'Không tải được danh mục ngạch bậc' : undefined}
+                        emptyHint={
+                          <Link
+                            to="/settings"
+                            className="text-primary underline text-xs font-medium"
+                            data-testid="hdsd-rec-open-job-grades-yctd"
+                          >
+                            Mở Cài đặt → Danh mục nghiệp vụ / Ngạch bậc
+                          </Link>
+                        }
+                        data-testid={HDSD_MUTATE_TEST_IDS.requisitionJobGrade}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -1177,11 +2162,11 @@ export function JobRequisitionsTab({
       </Dialog>
 
       <Dialog open={editRow != null} onOpenChange={(open) => !open && setEditRow(null)}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Sửa yêu cầu tuyển dụng</DialogTitle>
             <DialogDescription>
-              Cập nhật trạng thái và số lượng — sau 2xx danh sách làm mới; F5 để xác minh.
+              Phân loại trong/ngoài ĐB (O4) + số lượng — cấm nhảy open_for_hire bằng PATCH.
             </DialogDescription>
           </DialogHeader>
           {editRow ? (
@@ -1189,6 +2174,118 @@ export function JobRequisitionsTab({
               <p className="text-sm text-muted-foreground">
                 <span className="font-medium text-foreground">{editRow.title}</span>
               </p>
+              {isYctdClassificationRequired(editRow) ? (
+                <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
+                  {YCTD_CLASSIFY_BANNER_VI}
+                </div>
+              ) : null}
+              <div className="space-y-2">
+                <FormLabel>Trong / ngoài định biên *</FormLabel>
+                <Select
+                  value={editMode || undefined}
+                  onValueChange={(v) => setEditMode(v as HrmJobRequisitionHeadcountMode)}
+                  disabled={requisitionLocked(editRow)}
+                >
+                  <SelectTrigger data-testid="yctd-edit-headcount-mode">
+                    <SelectValue placeholder="Chọn chế độ" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in_plan">{YCTD_MODE_LABEL_VI.in_plan}</SelectItem>
+                    <SelectItem value="out_of_plan">{YCTD_MODE_LABEL_VI.out_of_plan}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {editMode === 'in_plan' ? (
+                <div className="space-y-2">
+                  <FormLabel>{YCTD_CELL_PICKER_LABEL_VI}</FormLabel>
+                  <CatalogSearchPicker
+                    options={editCellPickerOptions}
+                    value={editCellId}
+                    onValueChange={(v) => {
+                      setEditCellId(v);
+                      const hit = editCellPickerOptions.find((o) => o.value === v);
+                      if (hit && hit.need_hire >= 1) setEditHeadcount(hit.need_hire);
+                    }}
+                    placeholder="Chọn ô Cần tuyển đã duyệt"
+                    searchPlaceholder="Tìm phòng ban / chức danh / tháng…"
+                    loading={approvedCellsLoading}
+                    errorText={approvedCellsError ?? undefined}
+                    disabled={requisitionLocked(editRow)}
+                    emptyHint={
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {YCTD_CELL_PICKER_EMPTY_VI}
+                      </p>
+                    }
+                    data-testid="yctd-edit-cell-id"
+                  />
+                  {editCellId ? (
+                    <p className="text-[11px] text-muted-foreground font-mono">{editCellId}</p>
+                  ) : null}
+                </div>
+              ) : null}
+              {editMode === 'out_of_plan' ? (
+                <div className="space-y-2">
+                  <FormLabel htmlFor="edit-out-reason">Lý do ngoài ĐB *</FormLabel>
+                  <Textarea
+                    id="edit-out-reason"
+                    rows={2}
+                    value={editOutReason}
+                    onChange={(e) => setEditOutReason(e.target.value)}
+                    disabled={requisitionLocked(editRow)}
+                    data-testid="yctd-edit-out-reason"
+                  />
+                </div>
+              ) : null}
+              <div className="space-y-2">
+                <FormLabel>Lý do tuyển</FormLabel>
+                <Select
+                  value={editHireReason || 'new'}
+                  onValueChange={(v) => setEditHireReason(v as HrmJobRequisitionHireReason)}
+                  disabled={requisitionLocked(editRow)}
+                >
+                  <SelectTrigger data-testid="yctd-edit-hire-reason">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">{YCTD_HIRE_REASON_LABEL_VI.new}</SelectItem>
+                    <SelectItem value="replace">{YCTD_HIRE_REASON_LABEL_VI.replace}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {editHireReason === 'replace' ? (
+                <div className="space-y-2">
+                  <FormLabel>NV thay thế *</FormLabel>
+                  <CatalogSearchPicker
+                    options={employeeOptions}
+                    value={editReplaceEmployeeId}
+                    onValueChange={setEditReplaceEmployeeId}
+                    placeholder="Chọn nhân viên"
+                    data-testid="yctd-edit-replace-employee"
+                  />
+                </div>
+              ) : null}
+              <div className="space-y-2">
+                <FormLabel>Ngạch/bậc</FormLabel>
+                <CatalogSearchPicker
+                  options={jobGradeOptions}
+                  value={editJobGradeKey}
+                  onValueChange={setEditJobGradeKey}
+                  placeholder="Chọn ngạch bậc"
+                  loading={catalogsLoading}
+                  errorText={catalogsError ? 'Không tải được danh mục ngạch bậc' : undefined}
+                  disabled={requisitionLocked(editRow)}
+                  emptyHint={
+                    <Link
+                      to="/settings"
+                      className="text-primary underline text-xs font-medium"
+                      data-testid="hdsd-rec-open-job-grades-yctd-edit"
+                    >
+                      Mở Cài đặt → Danh mục nghiệp vụ / Ngạch bậc
+                    </Link>
+                  }
+                  data-testid="yctd-edit-job-grade"
+                />
+              </div>
               <div className="space-y-2">
                 <FormLabel htmlFor="edit-requisition-headcount">Số lượng *</FormLabel>
                 <Input
@@ -1226,7 +2323,7 @@ export function JobRequisitionsTab({
                 </SelectContent>
               </Select>
               {requisitionLocked(editRow) ? (
-                <p className="text-xs text-amber-800 dark:text-amber-200">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
+                <p className="text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
               ) : null}
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setEditRow(null)}>
@@ -1246,20 +2343,87 @@ export function JobRequisitionsTab({
       </Dialog>
 
       <Dialog open={detailRow != null} onOpenChange={(open) => !open && setDetailRow(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Chi tiết yêu cầu tuyển dụng</DialogTitle>
-            <DialogDescription>Chi tiết yêu cầu tuyển dụng theo hồ sơ đã lưu.</DialogDescription>
+            <DialogDescription>Chi tiết YCTD — mode / JD / cờ pipeline (F5 còn).</DialogDescription>
           </DialogHeader>
           {detailLoading ? (
             <p className="py-6 text-center text-sm text-muted-foreground">Đang tải chi tiết…</p>
           ) : detailRow ? (
             <div className="space-y-3 text-sm">
+              {isYctdClassificationRequired(detailRow) ? (
+                <div
+                  className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning"
+                  data-testid="yctd-detail-classify-banner"
+                >
+                  {YCTD_CLASSIFY_BANNER_VI}
+                </div>
+              ) : null}
               <div>
                 <p className="text-xs text-muted-foreground">Tiêu đề</p>
                 <p className="font-medium">{detailRow.title}</p>
               </div>
+              <div data-testid="yctd-jd-ref-detail">
+                <p className="text-xs text-muted-foreground">JD gắn</p>
+                <p className="font-medium">
+                  {resolveRequisitionJdDisplay(detailRow, templates)}
+                </p>
+              </div>
               <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Trong/Ngoài ĐB</p>
+                  <Badge
+                    variant={isYctdClassificationRequired(detailRow) ? 'destructive' : 'outline'}
+                    data-testid="yctd-detail-mode"
+                  >
+                    {yctdModeBadgeLabel(
+                      detailRow.headcount_mode,
+                      isYctdClassificationRequired(detailRow),
+                    )}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Lý do tuyển</p>
+                  <p data-testid="yctd-detail-hire-reason">
+                    {detailRow.hire_reason
+                      ? YCTD_HIRE_REASON_LABEL_VI[
+                          normalizeYctdHireReason(detailRow.hire_reason) ?? 'new'
+                        ]
+                      : '—'}
+                  </p>
+                </div>
+                {detailRow.headcount_cell_id ? (
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">Ô định biên</p>
+                    <p className="text-sm" data-testid="yctd-detail-cell-label">
+                      {resolveYctdCellLabel(
+                        detailRow.headcount_cell_id,
+                        detailCellPickerOptions,
+                      )}
+                    </p>
+                    <p className="font-mono text-[11px] text-muted-foreground" data-testid="yctd-detail-cell-id">
+                      {detailRow.headcount_cell_id}
+                    </p>
+                  </div>
+                ) : null}
+                {normalizeYctdHireReason(detailRow.hire_reason) === 'replace' ? (
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">NV thay thế</p>
+                    <p data-testid="yctd-detail-replace-employee">
+                      {resolveYctdReplaceEmployeeDisplay(
+                        detailRow.replace_employee_id,
+                        employeeOptions,
+                      )}
+                    </p>
+                  </div>
+                ) : null}
+                {detailRow.out_of_plan_reason ? (
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">Lý do ngoài ĐB</p>
+                    <p data-testid="yctd-detail-out-reason">{detailRow.out_of_plan_reason}</p>
+                  </div>
+                ) : null}
                 <div>
                   <p className="text-xs text-muted-foreground">Phòng/Ban</p>
                   <p>{detailRow.department}</p>
@@ -1272,27 +2436,105 @@ export function JobRequisitionsTab({
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Loại hình</p>
-                  <p>{resolveEmploymentTypeDisplay(detailRow.employment_type)}</p>
+                  <p>
+                    {resolveEmpEmploymentTypeLabel(employmentTypeOptions, detailRow.employment_type) !==
+                    '—'
+                      ? resolveEmpEmploymentTypeLabel(
+                          employmentTypeOptions,
+                          detailRow.employment_type,
+                        )
+                      : resolveEmploymentTypeDisplay(detailRow.employment_type)}
+                  </p>
+                </div>
+                <div data-testid="yctd-detail-job-grade">
+                  <p className="text-xs text-muted-foreground">Ngạch/bậc</p>
+                  <p className="font-medium">
+                    {resolveJobGradeLabel(jobGradeOptions, detailRow.job_grade_key)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Trạng thái</p>
                   <Badge variant={statusBadgeVariant(detailRow.status)}>
-                    {REQUISITION_STATUS_LABEL_VI[detailRow.status]}
+                    {REQUISITION_STATUS_LABEL_VI[detailRow.status] ?? detailRow.status}
                   </Badge>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Đơn vị</p>
                   <p className="text-sm">{resolveHrmCompanyIdDisplay(detailRow.company_id, operatingUnitLabelMap)}</p>
                 </div>
+                {detailRow.approval_matrix_key || detailApprovalChain ? (
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">Ma trận duyệt</p>
+                    <p className="text-sm" data-testid="yctd-detail-matrix-label">
+                      {detailApprovalChain?.matrixLabelVi ?? '—'}
+                    </p>
+                    <p className="font-mono text-[11px] text-muted-foreground" data-testid="yctd-detail-matrix-key">
+                      {detailApprovalChain?.matrixKeyDisplay ||
+                        detailRow.approval_matrix_key ||
+                        '—'}
+                    </p>
+                  </div>
+                ) : null}
               </div>
+              {detailApprovalChain &&
+              (detailApprovalChain.chainSteps.length > 0 ||
+                detailApprovalChain.nextApproverHintVi) ? (
+                <div
+                  className="space-y-2 rounded-lg border border-xevn-border bg-muted/30 p-3"
+                  data-testid="yctd-approval-chain"
+                >
+                  <p className="text-xs font-medium text-xevn-text">Chuỗi duyệt (SHORT / LONG)</p>
+                  {detailApprovalChain.chainSteps.length > 0 ? (
+                    <ol className="flex flex-wrap gap-2" data-testid="yctd-approval-chain-steps">
+                      {detailApprovalChain.chainSteps.map((step) => (
+                        <li key={step.id}>
+                          <Badge
+                            variant={
+                              step.state === 'done'
+                                ? 'default'
+                                : step.state === 'current'
+                                  ? 'secondary'
+                                  : 'outline'
+                            }
+                            data-testid={`yctd-chain-step-${step.id}-${step.state}`}
+                          >
+                            {step.label}
+                            {step.state === 'current' ? ' · đang chờ' : ''}
+                            {step.state === 'pending' ? ' · tiếp theo' : ''}
+                          </Badge>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
+                  {detailApprovalChain.nextApproverHintVi ? (
+                    <p className="text-xs text-xevn-textSecondary" data-testid="yctd-approval-next-hint">
+                      {detailApprovalChain.nextApproverHintVi}
+                    </p>
+                  ) : null}
+                  {detailApprovalChain.bodStepPending && detailApprovalChain.blockedFromCv ? (
+                    <p className="text-xs font-medium text-warning" data-testid="yctd-bod-blocked-cv">
+                      {YCTD_BOD_BLOCKED_CV_VI}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
               {detailRow.workflow_instance_id ? (
                 <div>
                   <p className="text-xs text-muted-foreground">Quy trình</p>
                   <Badge variant="secondary">{resolveWorkflowInstanceDisplay(detailRow.workflow_instance_id)}</Badge>
                 </div>
               ) : null}
+              {detailRow.rejected_reason ? (
+                <div
+                  className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2"
+                  data-testid="yctd-detail-rejected-reason"
+                >
+                  <p className="text-xs text-muted-foreground">Lý do từ chối</p>
+                  <p className="text-sm font-medium text-destructive">{detailRow.rejected_reason}</p>
+                </div>
+              ) : null}
               {requisitionLocked(detailRow) ? (
-                <p className="text-xs text-amber-800 dark:text-amber-200">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
+                <p className="text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
               ) : null}
               {detailRow.job_description ? (
                 <div>
@@ -1306,6 +2548,166 @@ export function JobRequisitionsTab({
                   <p className="whitespace-pre-wrap text-sm">{detailRow.requirements}</p>
                 </div>
               ) : null}
+
+              {detailApprovalChain?.showTransitionActions ? (
+                <div className="space-y-2 rounded-lg border border-xevn-border p-3" data-testid="yctd-transitions">
+                  <p className="text-xs font-medium text-xevn-text">Duyệt / từ chối (transitions)</p>
+                  <Textarea
+                    rows={2}
+                    placeholder="Lý do từ chối (bắt buộc khi Từ chối)"
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    data-testid="yctd-reject-reason"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <PermissionGate module="recruitment" action="update">
+                      <Button
+                        type="button"
+                        size="sm"
+                        disabled={submitting}
+                        data-testid="yctd-transition-approve"
+                        onClick={() => void onTransition(detailRow, 'approve')}
+                      >
+                        {detailApprovalChain.approveButtonLabelVi}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        disabled={submitting}
+                        data-testid="yctd-transition-reject"
+                        onClick={() => void onTransition(detailRow, 'reject')}
+                      >
+                        Từ chối
+                      </Button>
+                    </PermissionGate>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="space-y-2 rounded-lg border border-xevn-border p-3" data-testid="yctd-internal-cv-scan">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-xevn-text">{YCTD_CV_SCAN_TITLE_VI}</p>
+                  {(() => {
+                    const scanFlags = resolvePipelineFlags(detailRow);
+                    const scanState = resolveCvScanAuditState(scanFlags);
+                    return (
+                      <Badge
+                        variant="outline"
+                        data-testid="yctd-cv-scan-status-badge"
+                        className={
+                          scanState === 'done'
+                            ? 'border-emerald-600 text-emerald-700'
+                            : scanState === 'skipped'
+                              ? 'border-amber-600 text-amber-700'
+                              : 'border-xevn-border text-xevn-text-secondary'
+                        }
+                      >
+                        {cvScanAuditBadgeLabel(scanState)}
+                      </Badge>
+                    );
+                  })()}
+                </div>
+                <p className="text-xs text-xevn-text-secondary">{YCTD_CV_SCAN_HINT_VI}</p>
+                {(() => {
+                  const scanFlags = resolvePipelineFlags(detailRow);
+                  if (scanFlags.internal_scan_at) {
+                    return (
+                      <p className="text-xs text-xevn-text-secondary" data-testid="yctd-cv-scan-detail-at">
+                        Lúc {formatCvScanAtVi(scanFlags.internal_scan_at)}
+                        {scanFlags.internal_scan_skipped && scanFlags.internal_scan_skip_reason
+                          ? ` · Lý do: ${scanFlags.internal_scan_skip_reason}`
+                          : ''}
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
+                {!canMutateYctdPipelineFlags(detailRow) ? (
+                  <p className="text-xs text-warning">
+                    {isYctdClassificationRequired(detailRow)
+                      ? YCTD_CLASSIFY_BANNER_VI
+                      : YCTD_NOT_RECEIVABLE_HINT_VI}
+                  </p>
+                ) : (
+                  <PermissionGate module="recruitment" action="update">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      disabled={submitting}
+                      data-testid="yctd-cv-scan-open"
+                      onClick={() => setCvScanOpen(true)}
+                    >
+                      Mở quét kho
+                    </Button>
+                  </PermissionGate>
+                )}
+              </div>
+
+              <div className="space-y-2 rounded-lg border border-xevn-border p-3" data-testid="yctd-pipeline-flags">
+                <p className="text-xs font-medium text-xevn-text">Cờ pipeline trên YCTD (không Campaign)</p>
+                {!canMutateYctdPipelineFlags(detailRow) ? (
+                  <p className="text-xs text-warning" data-testid="yctd-pipeline-blocked-hint">
+                    {isYctdClassificationRequired(detailRow)
+                      ? YCTD_CLASSIFY_BANNER_VI
+                      : detailApprovalChain?.bodStepPending
+                        ? YCTD_BOD_BLOCKED_CV_VI
+                        : YCTD_NOT_RECEIVABLE_HINT_VI}
+                  </p>
+                ) : (
+                  <>
+                    {!canSetYctdPostedFromScan(resolvePipelineFlags(detailRow)) ? (
+                      <p className="text-xs text-warning" data-testid="yctd-posted-scan-gate-hint">
+                        {YCTD_CV_SCAN_POSTED_BLOCKED_VI}
+                      </p>
+                    ) : null}
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={pipelinePosted}
+                        onChange={(e) => {
+                          const next = e.target.checked;
+                          if (next && !canSetYctdPostedFromScan(resolvePipelineFlags(detailRow))) {
+                            toast({
+                              title: 'Chặn đăng tin',
+                              description: YCTD_CV_SCAN_POSTED_BLOCKED_VI,
+                              variant: 'destructive',
+                            });
+                            setPipelinePosted(false);
+                            return;
+                          }
+                          setPipelinePosted(next);
+                        }}
+                        data-testid="yctd-flag-posted"
+                      />
+                      Đã đăng tin (kênh ngoài GĐ1 — không Campaign)
+                    </label>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={pipelineCvIntake}
+                        onChange={(e) => setPipelineCvIntake(e.target.checked)}
+                        data-testid="yctd-flag-cv-intake"
+                      />
+                      Cho nhận hồ sơ
+                    </label>
+                    <PermissionGate module="recruitment" action="update">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        disabled={submitting}
+                        data-testid="yctd-pipeline-flags-save"
+                        onClick={() => void onPatchPipelineFlags(detailRow)}
+                      >
+                        Lưu cờ pipeline
+                      </Button>
+                    </PermissionGate>
+                  </>
+                )}
+              </div>
+
               <DialogFooter className="gap-2 sm:justify-end">
                 <Button type="button" variant="outline" onClick={() => setDetailRow(null)}>
                   Đóng
@@ -1347,6 +2749,31 @@ export function JobRequisitionsTab({
           ) : null}
         </DialogContent>
       </Dialog>
+
+      <InternalCvScanDialog
+        open={cvScanOpen}
+        onOpenChange={setCvScanOpen}
+        requisition={detailRow}
+        companyId={
+          detailRow
+            ? resolveRequisitionMutateCompanyId(
+                detailRow.company_id,
+                effectiveCompanyId,
+                currentCompanyId,
+              ) ||
+              effectiveCompanyId ||
+              currentCompanyId ||
+              ''
+            : ''
+        }
+        onCompleted={(updated) => {
+          setDetailRow(updated);
+          const flags = resolvePipelineFlags(updated);
+          setPipelinePosted(Boolean(flags.posted));
+          setPipelineCvIntake(Boolean(flags.cv_intake_allowed));
+          void refetch();
+        }}
+      />
     </div>
   );
 }

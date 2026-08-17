@@ -1,3 +1,32 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     EmployeeProfile → tab Gia đình (E24) · welfare dependents
+ * UC:         UC-BP-CORE-01 · FR-UC-BP-CORE-01 Diễn biến #3–#4 · E24
+ * BR:         BR-CORE-DEP-WELFARE · BR-CORE-FAMILY-≠-SALARY · BR-CORE-DEP-ONE
+ * SRS:        SRS_HRM_ENTERPRISE.md FR-UC-BP-CORE-01 · AC-CORE-01-06/07
+ * TechSpec:   docs/program/specs/PO-HRM-MVP-GD1-CORE-01-CLUSTER-API-01.md F-CORE-DEP-01
+ * Purpose:    Người phụ thuộc → GET/POST/PATCH/soft-DELETE /api/hrm/employees/:id/dependents*;
+ *             hiển thị relation_label + DOB dd/MM/yyyy; toast DEP-*; không mở vòng C&B.
+ * WorkItem:   PO-HRM-MVP-GD1-CORE-01-CLUSTER-FE-01
+ * Coded:      2026-08-09
+ * Callers:    EmployeeProfile activeTab=family
+ * Callees:    hrmApi list/create/update/softDeleteEmployeeDependent · empCorePublicRing · ViDateField
+ * must_keep: SoftDel soft archive; Nest /employees path only; DENY Nest /core; family≠salary; U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-C
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; blue/purple AI chrome → xevn DNA; KPI ops-dense
+ * Why: ADR-20260805 §8–§10 · inventory W3-EMP-C
+ * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-01-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Bind dependents to Nest F-CORE-DEP-01; relation_code picker + relation_label display;
+ *       DOB via ViDateField (dd/MM/yyyy); emergency contact remains stub honesty (OUT this seat)
+ * Why: API-01 CONFIRMED · O5/O6 · J-HRM-CORE-01-03
+ * must_keep: SoftDel; /employees/:id/dependents* physical; CB-MAP; hire≠CORE DONE; U65; C-SLICE
+ */
+
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -31,25 +60,23 @@ import {
 import { Users, Phone, Plus, Pencil, Trash2, Loader2, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatDisplayDate } from '@/lib/formatDisplayDate';
+import { toErrorMessage } from '@/lib/apiError';
+import {
+  CORE_DEP_RELATION_OPTIONS,
+  resolveDependentRelationLabel,
+} from '@/lib/empCorePublicRing';
+import { ViDateField } from '@/components/ui/ViDateField';
+import {
+  createEmployeeDependent,
+  listEmployeeDependents,
+  softDeleteEmployeeDependent,
+  updateEmployeeDependent,
+  type HrmEmployeeDependentRecord,
+} from '@/integrations/hrmApi';
 
 interface EmployeeFamilyInfoProps {
   employeeId: string;
-}
-
-interface FamilyMember {
-  id: string;
-  employee_id: string;
-  company_id: string;
-  relationship: string;
-  full_name: string;
-  birth_year: string | null;
-  occupation: string | null;
-  phone: string | null;
-  address: string | null;
-  is_dependant: boolean;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
 }
 
 interface EmergencyContact {
@@ -65,14 +92,11 @@ interface EmergencyContact {
   updated_at: string;
 }
 
-interface FamilyFormData {
-  relationship: string;
+interface DependentFormData {
+  relation_code: string;
   full_name: string;
-  birth_year: string;
-  occupation: string;
-  phone: string;
-  address: string;
-  is_dependant: boolean;
+  date_of_birth: string;
+  is_tax_dependent: boolean;
 }
 
 interface EmergencyFormData {
@@ -83,18 +107,15 @@ interface EmergencyFormData {
 }
 
 const RELATIONSHIP_KEYS = [
-  'father', 'mother', 'wife', 'husband', 'son', 'daughter', 
-  'brother', 'sisterOlder', 'brotherYounger', 'sisterYounger', 'grandfather', 'grandmother', 'other'
+  'father', 'mother', 'wife', 'husband', 'son', 'daughter',
+  'brother', 'sisterOlder', 'brotherYounger', 'sisterYounger', 'grandfather', 'grandmother', 'other',
 ] as const;
 
-const initialFamilyForm: FamilyFormData = {
-  relationship: '',
+const initialDependentForm: DependentFormData = {
+  relation_code: '',
   full_name: '',
-  birth_year: '',
-  occupation: '',
-  phone: '',
-  address: '',
-  is_dependant: false,
+  date_of_birth: '',
+  is_tax_dependent: false,
 };
 
 const initialEmergencyForm: EmergencyFormData = {
@@ -104,124 +125,141 @@ const initialEmergencyForm: EmergencyFormData = {
   is_primary: false,
 };
 
+function unwrapDependentsList(raw: unknown): HrmEmployeeDependentRecord[] {
+  if (Array.isArray(raw)) return raw as HrmEmployeeDependentRecord[];
+  if (raw && typeof raw === 'object') {
+    const o = raw as { data?: unknown; items?: unknown };
+    if (Array.isArray(o.data)) return o.data as HrmEmployeeDependentRecord[];
+    if (Array.isArray(o.items)) return o.items as HrmEmployeeDependentRecord[];
+  }
+  return [];
+}
+
 export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
-  
-  const relationshipOptions = RELATIONSHIP_KEYS.map(key => ({
+
+  const relationshipOptions = RELATIONSHIP_KEYS.map((key) => ({
     value: t(`family.relationships.${key}`),
     label: t(`family.relationships.${key}`),
   }));
 
-  // Family member state
-  const [isFamilyDialogOpen, setIsFamilyDialogOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
-  const [familyFormData, setFamilyFormData] = useState<FamilyFormData>(initialFamilyForm);
-  const [isFamilySubmitting, setIsFamilySubmitting] = useState(false);
+  const [isDependentDialogOpen, setIsDependentDialogOpen] = useState(false);
+  const [editingDependent, setEditingDependent] = useState<HrmEmployeeDependentRecord | null>(null);
+  const [dependentForm, setDependentForm] = useState<DependentFormData>(initialDependentForm);
+  const [isDependentSubmitting, setIsDependentSubmitting] = useState(false);
 
-  // Emergency contact state
   const [isEmergencyDialogOpen, setIsEmergencyDialogOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<EmergencyContact | null>(null);
   const [emergencyFormData, setEmergencyFormData] = useState<EmergencyFormData>(initialEmergencyForm);
   const [isEmergencySubmitting, setIsEmergencySubmitting] = useState(false);
 
-  // Fetch family members
-  const { data: familyMembers, isLoading: isLoadingFamily } = useQuery({
-    queryKey: ['employee-family-members', employeeId],
+  const {
+    data: dependents = [],
+    isLoading: isLoadingDependents,
+  } = useQuery({
+    queryKey: ['employee-dependents', employeeId, currentCompanyId],
     queryFn: async () => {
-      return null as FamilyMember[];
+      if (!currentCompanyId) return [] as HrmEmployeeDependentRecord[];
+      const res = await listEmployeeDependents(employeeId, currentCompanyId);
+      return unwrapDependentsList(res);
     },
     enabled: !!employeeId && !!currentCompanyId,
   });
 
-  // Fetch emergency contacts
+  /** Emergency contacts — stub honesty (OUT CORE-01 seat; not F-CORE-DEP-01). */
   const { data: emergencyContacts, isLoading: isLoadingEmergency } = useQuery({
     queryKey: ['employee-emergency-contacts', employeeId],
-    queryFn: async () => {
-      return null as EmergencyContact[];
-    },
+    queryFn: async () => null as EmergencyContact[] | null,
     enabled: !!employeeId && !!currentCompanyId,
   });
 
-  // Family member handlers
-  const handleOpenFamilyDialog = (member?: FamilyMember) => {
-    if (member) {
-      setEditingMember(member);
-      setFamilyFormData({
-        relationship: member.relationship,
-        full_name: member.full_name,
-        birth_year: member.birth_year || '',
-        occupation: member.occupation || '',
-        phone: member.phone || '',
-        address: member.address || '',
-        is_dependant: member.is_dependant,
+  const handleOpenDependentDialog = (row?: HrmEmployeeDependentRecord) => {
+    if (row) {
+      setEditingDependent(row);
+      setDependentForm({
+        relation_code: row.relation_code || '',
+        full_name: row.full_name || '',
+        date_of_birth: (row.date_of_birth || '').slice(0, 10),
+        is_tax_dependent: Boolean(row.is_tax_dependent),
       });
     } else {
-      setEditingMember(null);
-      setFamilyFormData(initialFamilyForm);
+      setEditingDependent(null);
+      setDependentForm(initialDependentForm);
     }
-    setIsFamilyDialogOpen(true);
+    setIsDependentDialogOpen(true);
   };
 
-  const handleCloseFamilyDialog = () => {
-    setIsFamilyDialogOpen(false);
-    setEditingMember(null);
-    setFamilyFormData(initialFamilyForm);
+  const handleCloseDependentDialog = () => {
+    setIsDependentDialogOpen(false);
+    setEditingDependent(null);
+    setDependentForm(initialDependentForm);
   };
 
-  const handleSaveFamilyMember = async () => {
-    if (!familyFormData.relationship || !familyFormData.full_name) {
-      toast.error(t('commonEmployee.validation.required'));
+  const handleSaveDependent = async () => {
+    if (!dependentForm.relation_code || !dependentForm.full_name.trim() || !dependentForm.date_of_birth) {
+      toast.error(
+        toErrorMessage(
+          { code: 'HRM-CORE-DEP-VAL-400' },
+          'Thiếu họ tên, quan hệ hoặc ngày sinh người phụ thuộc.',
+        ),
+      );
       return;
     }
-
     if (!currentCompanyId) {
       toast.error(t('commonEmployee.validation.noCompany'));
       return;
     }
 
-    setIsFamilySubmitting(true);
-
+    setIsDependentSubmitting(true);
     try {
-      const memberData = {
-        employee_id: employeeId,
-        company_id: currentCompanyId,
-        relationship: familyFormData.relationship,
-        full_name: familyFormData.full_name.trim(),
-        birth_year: familyFormData.birth_year || null,
-        occupation: familyFormData.occupation.trim() || null,
-        phone: familyFormData.phone.trim() || null,
-        address: familyFormData.address.trim() || null,
-        is_dependant: familyFormData.is_dependant,
+      const payload = {
+        full_name: dependentForm.full_name.trim(),
+        relation_code: dependentForm.relation_code.trim().toLowerCase(),
+        date_of_birth: dependentForm.date_of_birth.slice(0, 10),
+        is_tax_dependent: dependentForm.is_tax_dependent,
       };
-
-      if (editingMember) {
-        toast.success(t('family.toast.updated'));
+      if (editingDependent) {
+        await updateEmployeeDependent(
+          employeeId,
+          editingDependent.id,
+          currentCompanyId,
+          payload,
+        );
+        toast.success(t('family.toast.updated', { defaultValue: 'Đã cập nhật người phụ thuộc' }));
+      } else {
+        await createEmployeeDependent(employeeId, currentCompanyId, payload);
+        toast.success(t('family.toast.created', { defaultValue: 'Đã thêm người phụ thuộc' }));
       }
-
-      queryClient.invalidateQueries({ queryKey: ['employee-family-members', employeeId] });
-      handleCloseFamilyDialog();
-    } catch (error: any) {
-      console.error('Error saving family member:', error);
-      toast.error(error.message || t('commonEmployee.error'));
+      await queryClient.invalidateQueries({
+        queryKey: ['employee-dependents', employeeId, currentCompanyId],
+      });
+      handleCloseDependentDialog();
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, t('commonEmployee.error', { defaultValue: 'Không thể lưu' })));
     } finally {
-      setIsFamilySubmitting(false);
+      setIsDependentSubmitting(false);
     }
   };
 
-  const handleDeleteFamilyMember = async (member: FamilyMember) => {
-    if (!confirm(t('family.confirmDelete'))) return;
-
+  const handleDeleteDependent = async (row: HrmEmployeeDependentRecord) => {
+    if (!confirm(t('family.confirmDelete', { defaultValue: 'Xóa mềm người phụ thuộc này?' }))) return;
+    if (!currentCompanyId) {
+      toast.error(t('commonEmployee.validation.noCompany'));
+      return;
+    }
     try {
-      toast.success(t('family.toast.deleted'));
-      queryClient.invalidateQueries({ queryKey: ['employee-family-members', employeeId] });
-    } catch (error: any) {
-      toast.error(error.message || t('commonEmployee.error'));
+      await softDeleteEmployeeDependent(employeeId, row.id, currentCompanyId);
+      toast.success(t('family.toast.deleted', { defaultValue: 'Đã xóa người phụ thuộc' }));
+      await queryClient.invalidateQueries({
+        queryKey: ['employee-dependents', employeeId, currentCompanyId],
+      });
+    } catch (error: unknown) {
+      toast.error(toErrorMessage(error, t('commonEmployee.error', { defaultValue: 'Không thể xóa' })));
     }
   };
 
-  // Emergency contact handlers
   const handleOpenEmergencyDialog = (contact?: EmergencyContact) => {
     if (contact) {
       setEditingContact(contact);
@@ -249,106 +287,94 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
       toast.error(t('commonEmployee.validation.required'));
       return;
     }
-
     if (!currentCompanyId) {
       toast.error(t('commonEmployee.validation.noCompany'));
       return;
     }
-
     setIsEmergencySubmitting(true);
-
     try {
-      if (emergencyFormData.is_primary) {
-      }
-
-      const contactData = {
-        employee_id: employeeId,
-        company_id: currentCompanyId,
-        name: emergencyFormData.name.trim(),
-        relationship: emergencyFormData.relationship,
-        phone: emergencyFormData.phone.trim(),
-        is_primary: emergencyFormData.is_primary,
-      };
-
-      if (editingContact) {
-        toast.success(t('emergency.toast.updated'));
-      }
-
-      queryClient.invalidateQueries({ queryKey: ['employee-emergency-contacts', employeeId] });
+      // Stub honesty — emergency Nest SoT OUT this CORE-01 seat.
+      toast.message(
+        t('emergency.toast.stub', {
+          defaultValue: 'Liên hệ khẩn cấp chưa gắn API Nest — dùng người phụ thuộc cho phúc lợi.',
+        }),
+      );
       handleCloseEmergencyDialog();
-    } catch (error: any) {
-      console.error('Error saving emergency contact:', error);
-      toast.error(error.message || t('commonEmployee.error'));
     } finally {
       setIsEmergencySubmitting(false);
     }
   };
 
-  const handleDeleteEmergencyContact = async (contact: EmergencyContact) => {
+  const handleDeleteEmergencyContact = async (_contact: EmergencyContact) => {
     if (!confirm(t('emergency.confirmDelete'))) return;
-
-    try {
-      toast.success(t('emergency.toast.deleted'));
-      queryClient.invalidateQueries({ queryKey: ['employee-emergency-contacts', employeeId] });
-    } catch (error: any) {
-      toast.error(error.message || t('commonEmployee.error'));
-    }
+    toast.message(
+      t('emergency.toast.stub', {
+        defaultValue: 'Liên hệ khẩn cấp chưa gắn API Nest.',
+      }),
+    );
   };
 
   return (
-    <div className="space-y-6">
-      {/* Family Members Table */}
+    <div className="space-y-6" data-testid="emp-core-dependents-panel">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base font-medium flex items-center gap-2">
             <Users className="w-4 h-4" />
-            {t('family.title')}
+            {t('family.title', { defaultValue: 'Người phụ thuộc' })}
           </CardTitle>
-          <Button size="sm" onClick={() => handleOpenFamilyDialog()}>
+          <Button
+            size="sm"
+            onClick={() => handleOpenDependentDialog()}
+            data-testid="emp-core-dependent-add"
+          >
             <Plus className="w-4 h-4 mr-1" />
-            {t('family.add')}
+            {t('family.add', { defaultValue: 'Thêm' })}
           </Button>
         </CardHeader>
         <CardContent>
-          {isLoadingFamily ? (
+          {isLoadingDependents ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <Loader2 className="w-6 h-6 animate-spin text-xevn-textSecondary" />
             </div>
-          ) : !familyMembers?.length ? (
-            <div className="text-center py-8 text-muted-foreground">
+          ) : !dependents.length ? (
+            <div className="text-center py-8 text-xevn-textSecondary">
               <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>{t('family.empty')}</p>
-              <p className="text-sm">{t('family.emptyHint')}</p>
+              <p>{t('family.empty', { defaultValue: 'Chưa có người phụ thuộc' })}</p>
+              <p className="text-sm">
+                {t('family.emptyHint', {
+                  defaultValue: 'Thêm họ tên, quan hệ và ngày sinh (dd/MM/yyyy) cho phúc lợi / quà 1/6.',
+                })}
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t('family.relationship')}</TableHead>
-                    <TableHead>{t('family.fullName')}</TableHead>
-                    <TableHead>{t('family.birthYear')}</TableHead>
-                    <TableHead>{t('family.occupation')}</TableHead>
-                    <TableHead>{t('family.phone')}</TableHead>
-                    <TableHead>{t('family.address')}</TableHead>
-                    <TableHead>{t('family.isDependant')}</TableHead>
+                    <TableHead>{t('family.relationship', { defaultValue: 'Quan hệ' })}</TableHead>
+                    <TableHead>{t('family.fullName', { defaultValue: 'Họ tên' })}</TableHead>
+                    <TableHead>{t('family.dateOfBirth', { defaultValue: 'Ngày sinh' })}</TableHead>
+                    <TableHead>{t('family.isDependant', { defaultValue: 'Phụ thuộc thuế' })}</TableHead>
                     <TableHead className="w-[100px]">{t('common.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {familyMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">{member.relationship}</TableCell>
-                      <TableCell>{member.full_name}</TableCell>
-                      <TableCell>{member.birth_year || '-'}</TableCell>
-                      <TableCell>{member.occupation || '-'}</TableCell>
-                      <TableCell>{member.phone || '-'}</TableCell>
-                      <TableCell className="max-w-[200px] truncate">{member.address || '-'}</TableCell>
+                  {dependents.map((row) => (
+                    <TableRow key={row.id} data-testid={`emp-core-dependent-row-${row.id}`}>
+                      <TableCell className="font-medium">
+                        {resolveDependentRelationLabel(row.relation_code, row.relation_label)}
+                      </TableCell>
+                      <TableCell>{row.full_name}</TableCell>
+                      <TableCell>{formatDisplayDate(row.date_of_birth)}</TableCell>
                       <TableCell>
-                        {member.is_dependant ? (
-                          <Badge variant="default" className="text-xs">{t('family.yes')}</Badge>
+                        {row.is_tax_dependent ? (
+                          <Badge variant="default" className="text-xs">
+                            {t('family.yes', { defaultValue: 'Có' })}
+                          </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-xs">{t('family.no')}</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {t('family.no', { defaultValue: 'Không' })}
+                          </Badge>
                         )}
                       </TableCell>
                       <TableCell>
@@ -357,7 +383,8 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7"
-                            onClick={() => handleOpenFamilyDialog(member)}
+                            onClick={() => handleOpenDependentDialog(row)}
+                            aria-label={t('common.edit')}
                           >
                             <Pencil className="w-3 h-3" />
                           </Button>
@@ -365,7 +392,8 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7 text-destructive hover:text-destructive"
-                            onClick={() => handleDeleteFamilyMember(member)}
+                            onClick={() => void handleDeleteDependent(row)}
+                            aria-label={t('common.delete')}
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
@@ -380,7 +408,6 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
         </CardContent>
       </Card>
 
-      {/* Emergency Contacts */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base font-medium flex items-center gap-2">
@@ -395,10 +422,10 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
         <CardContent>
           {isLoadingEmergency ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <Loader2 className="w-6 h-6 animate-spin text-xevn-textSecondary" />
             </div>
           ) : !emergencyContacts?.length ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-xevn-textSecondary">
               <Phone className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>{t('emergency.empty')}</p>
               <p className="text-sm">{t('emergency.emptyHint')}</p>
@@ -421,12 +448,9 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
                       )}
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">{contact.relationship}</p>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    <span>{contact.phone}</span>
-                  </div>
-                  <div className="flex gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <p className="text-xs text-xevn-textSecondary">{contact.relationship}</p>
+                  <p className="text-sm mt-1">{contact.phone}</p>
+                  <div className="mt-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       size="sm"
                       variant="outline"
@@ -440,7 +464,7 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
                       size="sm"
                       variant="outline"
                       className="h-7 text-xs text-destructive hover:text-destructive"
-                      onClick={() => handleDeleteEmergencyContact(contact)}
+                      onClick={() => void handleDeleteEmergencyContact(contact)}
                     >
                       <Trash2 className="w-3 h-3 mr-1" />
                       {t('common.delete')}
@@ -453,97 +477,101 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
         </CardContent>
       </Card>
 
-      {/* Family Member Dialog */}
-      <Dialog open={isFamilyDialogOpen} onOpenChange={(open) => !open && handleCloseFamilyDialog()}>
-        <DialogContent className="max-w-lg">
+      <Dialog
+        open={isDependentDialogOpen}
+        onOpenChange={(open) => !open && handleCloseDependentDialog()}
+      >
+        <DialogContent className="max-w-lg" data-testid="emp-core-dependent-dialog">
           <DialogHeader>
             <DialogTitle>
-              {editingMember ? t('family.edit') : t('family.addNew')}
+              {editingDependent
+                ? t('family.edit', { defaultValue: 'Sửa người phụ thuộc' })
+                : t('family.addNew', { defaultValue: 'Thêm người phụ thuộc' })}
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label>{t('family.relationship')} *</Label>
+                <Label>{t('family.relationship', { defaultValue: 'Quan hệ' })} *</Label>
                 <Select
-                  value={familyFormData.relationship}
-                  onValueChange={(value) => setFamilyFormData(prev => ({ ...prev, relationship: value }))}
+                  value={dependentForm.relation_code}
+                  onValueChange={(value) =>
+                    setDependentForm((prev) => ({ ...prev, relation_code: value }))
+                  }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="emp-core-dependent-relation">
                     <SelectValue placeholder={t('family.relationship')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {relationshipOptions.map(rel => (
-                      <SelectItem key={rel.value} value={rel.value}>{rel.label}</SelectItem>
+                    {CORE_DEP_RELATION_OPTIONS.map((rel) => (
+                      <SelectItem key={rel.code} value={rel.code}>
+                        {rel.labelVi}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label>{t('family.fullName')} *</Label>
+                <Label>{t('family.fullName', { defaultValue: 'Họ tên' })} *</Label>
                 <Input
-                  value={familyFormData.full_name}
-                  onChange={(e) => setFamilyFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>{t('family.birthYear')}</Label>
-                <Input
-                  value={familyFormData.birth_year}
-                  onChange={(e) => setFamilyFormData(prev => ({ ...prev, birth_year: e.target.value }))}
-                  placeholder="1990"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>{t('family.occupation')}</Label>
-                <Input
-                  value={familyFormData.occupation}
-                  onChange={(e) => setFamilyFormData(prev => ({ ...prev, occupation: e.target.value }))}
+                  value={dependentForm.full_name}
+                  onChange={(e) =>
+                    setDependentForm((prev) => ({ ...prev, full_name: e.target.value }))
+                  }
+                  data-testid="emp-core-dependent-name"
                 />
               </div>
             </div>
             <div className="grid gap-2">
-              <Label>{t('family.phone')}</Label>
-              <Input
-                value={familyFormData.phone}
-                onChange={(e) => setFamilyFormData(prev => ({ ...prev, phone: e.target.value }))}
+              <Label>{t('family.dateOfBirth', { defaultValue: 'Ngày sinh' })} *</Label>
+              <ViDateField
+                value={dependentForm.date_of_birth}
+                onValueChange={(iso) =>
+                  setDependentForm((prev) => ({ ...prev, date_of_birth: iso }))
+                }
+                data-testid="emp-core-dependent-dob"
               />
             </div>
-            <div className="grid gap-2">
-              <Label>{t('family.address')}</Label>
-              <Input
-                value={familyFormData.address}
-                onChange={(e) => setFamilyFormData(prev => ({ ...prev, address: e.target.value }))}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <Checkbox
-                id="isDependant"
-                checked={familyFormData.is_dependant}
-                onCheckedChange={(checked) => setFamilyFormData(prev => ({ ...prev, is_dependant: !!checked }))}
+                id="is_tax_dependent"
+                checked={dependentForm.is_tax_dependent}
+                onCheckedChange={(c) =>
+                  setDependentForm((prev) => ({ ...prev, is_tax_dependent: c === true }))
+                }
               />
-              <Label htmlFor="isDependant" className="font-normal">
-                {t('family.isDependant')}
+              <Label htmlFor="is_tax_dependent" className="font-normal">
+                {t('family.isDependant', {
+                  defaultValue: 'Đánh dấu phụ thuộc thuế (chi tiết GTCG = vòng C&B)',
+                })}
               </Label>
             </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleCloseFamilyDialog} disabled={isFamilySubmitting}>
-              {t('common.cancel')}
-            </Button>
-            <Button onClick={handleSaveFamilyMember} disabled={isFamilySubmitting}>
-              {isFamilySubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {editingMember ? t('common.edit') : t('common.add')}
-            </Button>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={handleCloseDependentDialog}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                type="button"
+                disabled={isDependentSubmitting}
+                onClick={() => void handleSaveDependent()}
+                data-testid="emp-core-dependent-save"
+              >
+                {isDependentSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  t('common.save', { defaultValue: 'Lưu' })
+                )}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Emergency Contact Dialog */}
-      <Dialog open={isEmergencyDialogOpen} onOpenChange={(open) => !open && handleCloseEmergencyDialog()}>
-        <DialogContent className="max-w-md">
+      <Dialog
+        open={isEmergencyDialogOpen}
+        onOpenChange={(open) => !open && handleCloseEmergencyDialog()}
+      >
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
               {editingContact ? t('emergency.edit') : t('emergency.addNew')}
@@ -554,51 +582,70 @@ export function EmployeeFamilyInfo({ employeeId }: EmployeeFamilyInfoProps) {
               <Label>{t('emergency.name')} *</Label>
               <Input
                 value={emergencyFormData.name}
-                onChange={(e) => setEmergencyFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setEmergencyFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
               />
             </div>
-            <div className="grid gap-2">
-              <Label>{t('emergency.relationship')} *</Label>
-              <Select
-                value={emergencyFormData.relationship}
-                onValueChange={(value) => setEmergencyFormData(prev => ({ ...prev, relationship: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('emergency.relationship')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {relationshipOptions.map(rel => (
-                    <SelectItem key={rel.value} value={rel.value}>{rel.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>{t('family.relationship')} *</Label>
+                <Select
+                  value={emergencyFormData.relationship}
+                  onValueChange={(value) =>
+                    setEmergencyFormData((prev) => ({ ...prev, relationship: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('family.relationship')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {relationshipOptions.map((rel) => (
+                      <SelectItem key={rel.value} value={rel.value}>
+                        {rel.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>{t('emergency.phone')} *</Label>
+                <Input
+                  value={emergencyFormData.phone}
+                  onChange={(e) =>
+                    setEmergencyFormData((prev) => ({ ...prev, phone: e.target.value }))
+                  }
+                />
+              </div>
             </div>
-            <div className="grid gap-2">
-              <Label>{t('emergency.phone')} *</Label>
-              <Input
-                value={emergencyFormData.phone}
-                onChange={(e) => setEmergencyFormData(prev => ({ ...prev, phone: e.target.value }))}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <Checkbox
-                id="isPrimary"
+                id="is_primary"
                 checked={emergencyFormData.is_primary}
-                onCheckedChange={(checked) => setEmergencyFormData(prev => ({ ...prev, is_primary: !!checked }))}
+                onCheckedChange={(c) =>
+                  setEmergencyFormData((prev) => ({ ...prev, is_primary: c === true }))
+                }
               />
-              <Label htmlFor="isPrimary" className="font-normal">
-                {t('emergency.isPrimary')}
+              <Label htmlFor="is_primary" className="font-normal">
+                {t('emergency.primary')}
               </Label>
             </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleCloseEmergencyDialog} disabled={isEmergencySubmitting}>
-              {t('common.cancel')}
-            </Button>
-            <Button onClick={handleSaveEmergencyContact} disabled={isEmergencySubmitting}>
-              {isEmergencySubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {editingContact ? t('common.edit') : t('common.add')}
-            </Button>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={handleCloseEmergencyDialog}>
+                {t('common.cancel')}
+              </Button>
+              <Button
+                type="button"
+                disabled={isEmergencySubmitting}
+                onClick={() => void handleSaveEmergencyContact()}
+              >
+                {isEmergencySubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  t('common.save')
+                )}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

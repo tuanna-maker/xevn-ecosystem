@@ -7,9 +7,13 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
 import { ListLeaveRequestsQueryDto } from './dto/list-leave-requests.query.dto';
 import {
+  HRM_LEAVE_VAL_ATT,
   HRM_LEAVE_VAL_BALANCE,
   HRM_LEAVE_VAL_OVERLAP,
   LeaveRequestsService,
+  catalogLeaveTypeIndicatesSick,
+  isSickLeaveLabel,
+  isSickLeaveTypeCode,
 } from './leave-requests.service';
 
 function findLeaveListSqlCall(calls: unknown[][]): [string, unknown[]] {
@@ -43,6 +47,7 @@ function createLeaveQueryMock(opts: {
     entitled_days: string;
     used_days: string;
     pending_days: string;
+    advanced_days?: string;
   } | null;
   employeeCustom?: Record<string, unknown> | null;
 }) {
@@ -589,6 +594,57 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
     expect(fanoutMock.onLeaveRequestCreated).not.toHaveBeenCalled();
   });
 
+  it('ATT-04b: createLeaveRequest rejects when advanced_days reduces available', async () => {
+    const queryMock = createLeaveQueryMock({
+      insertRow: { id: 'should-not-insert' },
+      balanceRow: {
+        entitled_days: '10',
+        used_days: '2',
+        pending_days: '1',
+        advanced_days: '4',
+      },
+    });
+    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      fanoutMock as never,
+      noopBridge() as never,
+    );
+    // available = 10 - 2 - 1 - 4 = 3; request 4 → reject
+    await expect(
+      svc.createLeaveRequest({
+        company_id: 'holding',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        employee_code: 'NV0001',
+        employee_name: 'Nguyen Van A',
+        leave_type: 'annual',
+        start_date: '2026-09-01',
+        end_date: '2026-09-04',
+        total_days: 4,
+      }),
+    ).rejects.toMatchObject<ApiException>({
+      code: HRM_LEAVE_VAL_BALANCE,
+    });
+    try {
+      await svc.createLeaveRequest({
+        company_id: 'holding',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        employee_code: 'NV0001',
+        employee_name: 'Nguyen Van A',
+        leave_type: 'annual',
+        start_date: '2026-09-01',
+        end_date: '2026-09-04',
+        total_days: 4,
+      });
+    } catch (e) {
+      expect(e).toBeInstanceOf(ApiException);
+      expect((e as ApiException).details).toMatchObject({
+        available_days: 3,
+        requested_days: 4,
+      });
+    }
+  });
+
   it('G-AT10-02: happy create still inserts when balance is sufficient', async () => {
     const insertRow = {
       id: 'lr-ok-bal',
@@ -640,6 +696,12 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
     });
     expect(row.id).toBe('lr-ok-bal');
     expect(fanoutMock.onLeaveRequestCreated).toHaveBeenCalled();
+    const pendingLock = queryMock.mock.calls.find(
+      (c) =>
+        String(c[0]).includes('UPDATE public.employee_leave_balances') &&
+        String(c[0]).includes('pending_days = pending_days +'),
+    );
+    expect(pendingLock).toBeDefined();
   });
 
   it('PCOMP-W7-BE-LEAVE-DOC: VAL-W7-LATT-02 rejects attachment_url outside /api/hrm/files/', async () => {
@@ -990,7 +1052,9 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
     const getEffectiveItemsForKey = jest
       .fn()
       .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([{ code: 'LVT_01', label: 'Phép năm', status: 'active', origin: 'xbos' }]);
+      .mockResolvedValue([
+        { code: 'LVT_01', label: 'Phép năm', status: 'active', origin: 'xbos' },
+      ]);
     const assertCode = jest.fn().mockResolvedValue({ code: 'LVT_01', status: 'active' });
     const pullCatalogFromXbos = jest.fn().mockResolvedValue({ key: 'leave_types' });
     const svc = new LeaveRequestsService(
@@ -1023,8 +1087,384 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
       'holding',
       expect.stringContaining('Bearer '),
     );
-    expect(getEffectiveItemsForKey).toHaveBeenCalledTimes(1);
+    // empty check (lazy pull) + re-check after pull path + sick-type classify (BR-LEAVE-ATT-01)
+    expect(getEffectiveItemsForKey.mock.calls.length).toBeGreaterThanOrEqual(2);
+    expect(pullCatalogFromXbos).toHaveBeenCalled();
     expect(assertCode).toHaveBeenCalled();
+  });
+});
+
+describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
+  it('create + list return status_label / leave_type_label / employee_display_name', async () => {
+    const insertRow = {
+      id: 'lr-display',
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      employee_code: 'NV0001',
+      employee_name: 'Nguyễn Văn A',
+      leave_type: 'annual',
+      start_date: '2026-11-01',
+      end_date: '2026-11-02',
+      reason: null,
+      status: 'pending',
+      requested_at: '2026-11-01T00:00:00.000Z',
+      reviewed_at: null,
+      reviewed_by: null,
+      department: 'Vận hành',
+      position: 'Tài xế',
+      total_days: '2',
+      handover_to: null,
+      handover_tasks: null,
+      approver_employee_id: null,
+      rejected_reason: null,
+      attachment_url: null,
+    };
+    const queryMock = createLeaveQueryMock({ insertRow });
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+      onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      fanoutMock as never,
+      noopBridge() as never,
+    );
+    const created = await svc.createLeaveRequest({
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      employee_code: 'NV0001',
+      employee_name: 'Nguyễn Văn A',
+      leave_type: 'annual',
+      start_date: '2026-11-01',
+      end_date: '2026-11-02',
+      total_days: 2,
+      department: 'Vận hành',
+      position: 'Tài xế',
+    });
+    expect(created.status_label).toBe('Chờ duyệt');
+    expect(created.leave_type_label).toBe('Phép năm');
+    expect(created.employee_display_name).toBe('Nguyễn Văn A');
+    expect(created.total_days_number).toBe(2);
+    expect(created.department).toBe('Vận hành');
+    expect(created.position).toBe('Tài xế');
+
+    queryMock.mockImplementation((sql: string) => {
+      const s = String(sql);
+      if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        return Promise.resolve({ rows: [] });
+      }
+      if (s.includes('SELECT lr.*')) {
+        return Promise.resolve({ rows: [insertRow] });
+      }
+      return Promise.resolve({ rows: [] });
+    });
+    const listed = await svc.listLeaveRequests({ company_id: 'holding' });
+    expect(listed.data[0]?.status_label).toBe('Chờ duyệt');
+    expect(listed.data[0]?.leave_type_label).toBe('Phép năm');
+    expect(listed.data[0]?.employee_display_name).toBe('Nguyễn Văn A');
+  });
+
+  it('approve settles pending→used and returns display-ready Đã duyệt', async () => {
+    const requestId = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+    const approvedRow = {
+      id: requestId,
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      employee_code: 'NV0001',
+      employee_name: 'Nguyễn Văn A',
+      leave_type: 'annual',
+      start_date: '2026-11-10',
+      end_date: '2026-11-11',
+      reason: null,
+      status: 'approved',
+      requested_at: '2026-11-01T00:00:00.000Z',
+      reviewed_at: '2026-11-02T00:00:00.000Z',
+      reviewed_by: 'QL',
+      department: 'Vận hành',
+      position: 'Tài xế',
+      total_days: '2',
+      handover_to: null,
+      handover_tasks: null,
+      approver_employee_id: null,
+      rejected_reason: null,
+      attachment_url: null,
+    };
+    const queryMock = jest.fn().mockImplementation((sql: string) => {
+      const s = String(sql);
+      if (s.includes('SELECT company_id::text')) {
+        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'pending' }] });
+      }
+      if (s.includes("SET status = 'approved'")) {
+        return Promise.resolve({ rows: [approvedRow] });
+      }
+      if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX')) {
+        return Promise.resolve({ rows: [] });
+      }
+      if (s.includes('UPDATE public.employee_leave_balances') && s.includes('used_days')) {
+        return Promise.resolve({ rows: [] });
+      }
+      return Promise.resolve({ rows: [] });
+    });
+    const fanoutMock = { onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined) };
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      fanoutMock as never,
+      noopBridge() as never,
+    );
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const row = await svc.approveLeaveRequest(
+      requestId,
+      { reviewer_name: 'QL' },
+      'main',
+      `Bearer ${token}`,
+      'xevn',
+    );
+    expect(row.status).toBe('approved');
+    expect(row.status_label).toBe('Đã duyệt');
+    expect(row.leave_type_label).toBe('Phép năm');
+    expect(row.employee_display_name).toBe('Nguyễn Văn A');
+    const settle = queryMock.mock.calls.find(
+      (c) =>
+        String(c[0]).includes('UPDATE public.employee_leave_balances') &&
+        String(c[0]).includes('used_days = used_days +'),
+    );
+    expect(settle).toBeDefined();
+  });
+
+  it('API_CONTRACT §4.2: sick ≥3 days without attachment_url → HRM-LEAVE-VAL-ATT', async () => {
+    const queryMock = jest.fn().mockResolvedValue({ rows: [] });
+    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    await expect(
+      svc.createLeaveRequest({
+        company_id: 'holding',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        employee_code: 'NV0001',
+        employee_name: 'Nguyen Van A',
+        leave_type: 'sick',
+        start_date: '2026-06-10',
+        end_date: '2026-06-12',
+        total_days: 3,
+      }),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+  });
+
+  it('PO-E2E-SPINE-02 LV-03: LVT_02 ≥3 days without attachment_url → HRM-LEAVE-VAL-ATT', async () => {
+    const queryMock = jest.fn().mockResolvedValue({ rows: [] });
+    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    await expect(
+      svc.createLeaveRequest({
+        company_id: 'holding',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        employee_code: 'UAT-0020',
+        employee_name: 'UAT NV 0020',
+        leave_type: 'LVT_02',
+        start_date: '2027-10-12',
+        end_date: '2027-10-16',
+        total_days: 5,
+        reason: 'QA LV-03 fail_deep',
+      }),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    const insertCalls = queryMock.mock.calls.filter((c) => String(c[0]).includes('INSERT INTO'));
+    expect(insertCalls).toHaveLength(0);
+  });
+
+  it('PO-E2E-SPINE-02 LV-03: LVT_02 <3 days without attachment_url OK (no VAL-ATT)', async () => {
+    const insertRow = {
+      id: 'lr-lvt02-short',
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      employee_code: 'UAT-0020',
+      employee_name: 'UAT NV 0020',
+      leave_type: 'LVT_02',
+      start_date: '2027-10-12',
+      end_date: '2027-10-13',
+      reason: 'short sick',
+      status: 'pending',
+      requested_at: '2027-10-01T00:00:00.000Z',
+      reviewed_at: null,
+      reviewed_by: null,
+      department: null,
+      position: null,
+      total_days: '2',
+      handover_to: null,
+      handover_tasks: null,
+      approver_employee_id: null,
+      rejected_reason: null,
+      attachment_url: null,
+    };
+    const queryMock = createLeaveQueryMock({ insertRow });
+    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      fanoutMock as never,
+      noopBridge() as never,
+    );
+    const row = await svc.createLeaveRequest({
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      employee_code: 'UAT-0020',
+      employee_name: 'UAT NV 0020',
+      leave_type: 'LVT_02',
+      start_date: '2027-10-12',
+      end_date: '2027-10-13',
+      total_days: 2,
+      reason: 'short sick',
+    });
+    expect(row.id).toBe('lr-lvt02-short');
+    expect(row.leave_type).toBe('LVT_02');
+    expect(row.leave_type_label).toBe('Ốm');
+  });
+
+  it('PO-E2E-SPINE-02 LV-03: catalog label Ốm / metadata is_sick → VAL-ATT when ≥3 no attach', async () => {
+    const queryMock = jest.fn().mockResolvedValue({ rows: [] });
+    const getEffectiveItemsForKey = jest.fn().mockResolvedValue([
+      { code: 'LVT_99', label: 'Ốm đặc biệt', status: 'active', metadata: { is_sick: true } },
+    ]);
+    const assertCode = jest.fn().mockResolvedValue({ code: 'LVT_99', status: 'active' });
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+      { getEffectiveItemsForKey, assertCodeInEffectiveCatalog: assertCode } as never,
+    );
+    await expect(
+      svc.createLeaveRequest(
+        {
+          company_id: 'holding',
+          employee_id: '11111111-1111-4111-8111-111111111111',
+          employee_code: 'NV0001',
+          employee_name: 'Nguyen Van A',
+          leave_type: 'LVT_99',
+          start_date: '2027-10-12',
+          end_date: '2027-10-16',
+          total_days: 5,
+        },
+        undefined,
+        { tenantId: 'xevn' },
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    expect(assertCode).toHaveBeenCalled();
+    expect(getEffectiveItemsForKey).toHaveBeenCalled();
+  });
+
+  it('W1-B-01 reject: returns display-ready Từ chối and releases pending balance', async () => {
+    const requestId = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+    const rejectedRow = {
+      id: requestId,
+      company_id: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+      employee_code: 'NV0001',
+      employee_name: 'Nguyễn Văn A',
+      leave_type: 'annual',
+      start_date: '2026-11-12',
+      end_date: '2026-11-13',
+      reason: null,
+      status: 'rejected',
+      requested_at: '2026-11-01T00:00:00.000Z',
+      reviewed_at: '2026-11-02T00:00:00.000Z',
+      reviewed_by: 'QL',
+      department: 'Vận hành',
+      position: 'Tài xế',
+      total_days: '2',
+      handover_to: null,
+      handover_tasks: null,
+      approver_employee_id: null,
+      rejected_reason: 'Lý do cá nhân',
+      attachment_url: null,
+    };
+    const queryMock = jest.fn().mockImplementation((sql: string) => {
+      const s = String(sql);
+      if (s.includes('SELECT company_id::text')) {
+        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'pending' }] });
+      }
+      if (s.includes("SET status = 'rejected'")) {
+        return Promise.resolve({ rows: [rejectedRow] });
+      }
+      if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX')) {
+        return Promise.resolve({ rows: [] });
+      }
+      return Promise.resolve({ rows: [] });
+    });
+    const fanoutMock = {
+      onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      fanoutMock as never,
+      noopBridge() as never,
+    );
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const row = await svc.rejectLeaveRequest(
+      requestId,
+      { reviewer_name: 'QL', rejected_reason: 'Lý do cá nhân' },
+      'main',
+      `Bearer ${token}`,
+      'xevn',
+    );
+    expect(row.status).toBe('rejected');
+    expect(row.status_label).toBe('Từ chối');
+    expect(row.leave_type_label).toBe('Phép năm');
+    expect(row.employee_display_name).toBe('Nguyễn Văn A');
+    expect(row.rejected_reason).toBe('Lý do cá nhân');
+    const release = queryMock.mock.calls.find(
+      (c) => String(c[0]).includes('UPDATE public.employee_leave_balances') &&
+            String(c[0]).includes('pending_days = GREATEST(0, pending_days -'),
+    );
+    expect(release).toBeDefined();
+    expect(fanoutMock.onLeaveRequestDecided).toHaveBeenCalledWith(
+      'rejected',
+      expect.objectContaining({ company_id: 'holding' }),
+    );
+  });
+});
+
+describe('PO-E2E-SPINE-02 sick leave type helpers', () => {
+  it('isSickLeaveTypeCode recognizes sick + LVT_02', () => {
+    expect(isSickLeaveTypeCode('sick')).toBe(true);
+    expect(isSickLeaveTypeCode('SICK_LEAVE')).toBe(true);
+    expect(isSickLeaveTypeCode('LVT_02')).toBe(true);
+    expect(isSickLeaveTypeCode('lvt_02')).toBe(true);
+    expect(isSickLeaveTypeCode('LVT_01')).toBe(false);
+    expect(isSickLeaveTypeCode('annual')).toBe(false);
+  });
+
+  it('isSickLeaveLabel / catalogLeaveTypeIndicatesSick for Ốm + metadata', () => {
+    expect(isSickLeaveLabel('Ốm')).toBe(true);
+    expect(isSickLeaveLabel('Nghỉ ốm')).toBe(true);
+    expect(isSickLeaveLabel('Phép năm')).toBe(false);
+    expect(
+      catalogLeaveTypeIndicatesSick({
+        status: 'active',
+        code: 'CUSTOM_OM',
+        label: 'Ốm',
+      }),
+    ).toBe(true);
+    expect(
+      catalogLeaveTypeIndicatesSick({
+        status: 'active',
+        code: 'X1',
+        label: 'Khác',
+        metadata: { is_sick: true },
+      }),
+    ).toBe(true);
+    expect(
+      catalogLeaveTypeIndicatesSick({
+        status: 'active',
+        code: 'LVT_01',
+        label: 'Phép năm',
+        metadata: { requires_l2: true },
+      }),
+    ).toBe(false);
   });
 });
 
@@ -1050,5 +1490,109 @@ describe('G-AT10-01 CreateLeaveRequestDto / ListLeaveRequestsQueryDto company_id
   it('list query accepts slug company_id', async () => {
     const dto = plainToInstance(ListLeaveRequestsQueryDto, { company_id: 'holding' });
     await expect(validate(dto)).resolves.toHaveLength(0);
+  });
+});
+
+describe('R-PLT-ATT-01 wire leave-requests → F-ATT-CAT-EFF-01', () => {
+  const employeeId = '11111111-1111-4111-8111-111111111111';
+
+  it('uses AttLeaveTypeService assert — prefers over settings-only path', async () => {
+    const insertRow = {
+      id: 'lr-eff',
+      company_id: 'holding',
+      employee_id: employeeId,
+      employee_code: 'NV0001',
+      employee_name: 'Nguyen Van A',
+      leave_type: 'hr_custom_09',
+      start_date: '2026-11-12',
+      end_date: '2026-11-12',
+      reason: null,
+      status: 'pending',
+      requested_at: '2026-11-12T00:00:00.000Z',
+      reviewed_at: null,
+      reviewed_by: null,
+      department: null,
+      position: null,
+      total_days: '1',
+      handover_to: null,
+      handover_tasks: null,
+      approver_employee_id: null,
+      rejected_reason: null,
+      attachment_url: null,
+    };
+    const queryMock = createLeaveQueryMock({ insertRow });
+    const assertLeaveTypeInEffectiveCatalog = jest.fn().mockResolvedValue({
+      leaveTypeKey: 'hr_custom_09',
+      source: 'att_native',
+    });
+    const assertCode = jest.fn();
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) } as never,
+      noopBridge() as never,
+      { assertCodeInEffectiveCatalog: assertCode } as never,
+      undefined,
+      undefined,
+      undefined,
+      { assertLeaveTypeInEffectiveCatalog } as never,
+    );
+    const row = await svc.createLeaveRequest(
+      {
+        company_id: 'holding',
+        employee_id: employeeId,
+        employee_code: 'NV0001',
+        employee_name: 'Nguyen Van A',
+        leave_type: 'hr_custom_09',
+        start_date: '2026-11-12',
+        end_date: '2026-11-12',
+        total_days: 1,
+      },
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(assertLeaveTypeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        companyId: 'holding',
+        leaveType: 'hr_custom_09',
+        tenantId: 'xevn',
+      }),
+    );
+    expect(assertCode).not.toHaveBeenCalled();
+    expect(row.leave_type).toBe('hr_custom_09');
+  });
+
+  it('propagates HRM-LEAVE-TYPE-UNKNOWN from effective catalog', async () => {
+    const queryMock = jest.fn().mockResolvedValue({ rows: [] });
+    const assertLeaveTypeInEffectiveCatalog = jest
+      .fn()
+      .mockRejectedValue(
+        new ApiException('HRM-LEAVE-TYPE-UNKNOWN', 'not in catalog', HttpStatus.BAD_REQUEST),
+      );
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      { assertLeaveTypeInEffectiveCatalog } as never,
+    );
+    await expect(
+      svc.createLeaveRequest(
+        {
+          company_id: 'holding',
+          employee_id: employeeId,
+          employee_code: 'NV0001',
+          employee_name: 'Nguyen Van A',
+          leave_type: 'ghost_type',
+          start_date: '2026-11-12',
+          end_date: '2026-11-12',
+          total_days: 1,
+        },
+        undefined,
+        { tenantId: 'xevn' },
+      ),
+    ).rejects.toMatchObject({ code: 'HRM-LEAVE-TYPE-UNKNOWN' });
   });
 });

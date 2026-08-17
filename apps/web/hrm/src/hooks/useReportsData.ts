@@ -1,18 +1,22 @@
 /**
  * @CODE-MEMORY
  * Screen:     /reports — Báo cáo tổng hợp
- * UC:         HRM-PR-06 · HRM-OP-04
- * BR:         BR-RPT-SCOPE-01
- * SRS:        docs/hrm/SRS.md · docs/hrm/HRM_MENU_DATA_LINKAGE_MATRIX.md (reports)
- * TechSpec:   OpenAPI reconciliation + operations summary + employees/summary
- * Purpose:    Load Reports tabs via Nest aggregates. Overview uses summary +
- *             reconciliation (no payslips dump). Turnover totalActive from
- *             employees/summary active_count (not page-1 length).
- * WorkItem:   P1-HRM-MENU-QA-REPORTS-FIX
+ * UC:         HRM-PR-06 · HRM-OP-04 · UC-BP-REC-08 (recruitment tab O8)
+ * BR:         BR-RPT-SCOPE-01 · BR-REC-08-REPORTS-ONE
+ * SRS:        docs/hrm/SRS.md · FR-UC-BP-REC-08
+ * TechSpec:   PO-HRM-MVP-GD1-REC-08-CLUSTER-API-01 §11
+ * Purpose:    Load Reports tabs via Nest aggregates. Recruitment = same dashboard DTO subset.
+ * WorkItem:   P1-HRM-MENU-QA-REPORTS-FIX · PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
  * Coded:      2026-07-17
  *
  * must_keep:  U65 no seed; company scope coerce; HRM-PR-06 recon wired
- * LastVerified: apps/web/hrm/src/hooks/reportsApiAggregator.test.ts
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-08-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Recruitment tab → GET /recruitment/dashboard?year= — DENY buildRecruitmentReportFromApi
+ * Why: BA O8 · AC-REC-08-10
+ * must_keep: other report tabs · turnover override · U65
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,11 +24,11 @@ import {
   getEmployeesSummary,
   getOperationsSummary,
   getPayrollReconciliationSummary,
+  getRecruitmentDashboard,
   listEmployeeContracts,
   listEmployees,
   listExpiringContracts,
   listLeaveRequests,
-  listRecruitmentCandidates,
   type HrmEmployeeSummary,
 } from '@/integrations/hrmApi';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
@@ -32,10 +36,10 @@ import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
 import {
   buildContractReportFromApi,
   buildLeaveReportFromApi,
-  buildRecruitmentReportFromApi,
   buildTurnoverReportFromApi,
   mapOperationsSummaryReport,
   mapPayrollReconciliation,
+  mapRecruitmentReportFromNestDashboard,
   type ContractReport,
   type LeaveReport,
   type OperationsSummaryReport,
@@ -91,12 +95,8 @@ export function useReportsData(year: number, activeTab: ReportsActiveTab = 'over
 
   const fetchTabPayload = useCallback(
     async (companyId: string, activeTotal: number) => {
-      const [recruitmentRes, expiringRes, contractRes, leaveRes, employeeRes] = await Promise.all([
-        listRecruitmentCandidates({
-          company_id: companyId,
-          page: 1,
-          page_size: HRM_API_MAX_PAGE_SIZE,
-        }),
+      const [dashRes, expiringRes, contractRes, leaveRes, employeeRes] = await Promise.all([
+        getRecruitmentDashboard({ company_id: companyId, year }),
         listExpiringContracts({ company_id: companyId, days: 30 }),
         listEmployeeContracts({ company_id: companyId, page_size: HRM_API_MAX_PAGE_SIZE }),
         listLeaveRequests({ company_id: companyId }),
@@ -108,7 +108,7 @@ export function useReportsData(year: number, activeTab: ReportsActiveTab = 'over
         }),
       ]);
 
-      setRecruitment(buildRecruitmentReportFromApi(recruitmentRes.data ?? [], year));
+      setRecruitment(mapRecruitmentReportFromNestDashboard(dashRes));
       setContracts(
         buildContractReportFromApi(contractRes.data ?? [], expiringRes.total ?? 0, year),
       );

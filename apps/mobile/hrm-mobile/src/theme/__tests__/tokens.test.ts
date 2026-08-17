@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   borderWidth,
+  brand,
   colors,
   layout,
   radius,
@@ -76,6 +77,12 @@ describe('design tokens — brand SoT / sharp contrast', () => {
   it('exports splash glow from primary brand', () => {
     expect(colors.splashGlow).toBe('rgba(30, 64, 175, 0.18)');
     expect(colors.brandShell).toBe('#000000');
+  });
+
+  it('W4-MOB-A — brand bar width 4px lock (ADR §15.4)', () => {
+    expect(brand.barWidth).toBe(4);
+    expect(tokens.brand.barWidth).toBe(4);
+    expect(colors.primary).toBe('#1E40AF');
   });
 });
 

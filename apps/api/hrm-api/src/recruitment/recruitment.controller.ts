@@ -46,42 +46,313 @@
  * Dual-route note: POST /candidates + requisition_id → Lane A HRM-REC-202;
  *   thiếu requisition_id → Lane B pool HRM-REC-CP-201
  * cấm wave: logic/DDL/DTO/FE · seed · G-DB-02 · Phase1/PROD
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-JD-DYNAMIC-BE-01
+ * ADD F-JD-DEF/LAY/GRP/PCK/RUL + GET job-templates/:id · extend create/update snapshot v2
+ * must_keep: YCTD soft FK · HRM-REC-JD-POS · FORBIDDEN job_postings dual-write · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-JD-YCTD-REF-BE-01
+ * ADD bindable/for=yctd on GET job-templates · preview=yctd STATUS gate · YCTD alias DTO wire.
+ * change_mode: ADD · must_keep ONE soft FK · F-REC-YCTD stubs · no campaign/job_postings SoT
+ * SRS: FR-UC-BP-REC-02/02b Diễn biến 1a–1d · API-01 F-YCTD-JD-01..05
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-BE-01
+ * ADD FR-05a: POST /candidates YCTD REQUIRED (no silent Lane B) · POST /candidates-pool explicit
+ * · GET applications + GET compare · receivable query wire.
+ * change_mode: ADD · must_keep ONE requisition_id · F-REC-APP-02/03 · FORBIDDEN job_postings SoT
+ * SRS: FR-UC-BP-REC-05a/06b · API-01 F-REC-UV-YCTD / F-REC-CMP
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01
+ * ADD F-REC-CAT-STG-01/02 · F-REC-CAT-EFF-01 routes under /recruitment/pipeline-stages*
+ * change_mode: ADD · must_keep JD DnD · IV one-active · hire→EMP · YCTD · U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-01-CLUSTER-BE-01
+ * ADD GET/PUT recruitment-plans/:id · POST spawn-requests · year query · status body options.
+ * change_mode: ADD · must_keep XBOS submit-workflow · UF-HRM-12 · DENY /rec/headcount-plans
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01
+ * ADD GET /dashboard + /dashboard/yctd (+ ?include=yctd) · METHOD-405 mutate deny ·
+ * RecruitmentDashboardService Option A · DENY Nest /rec dual · C&B omit · U19 resolveHrmListScope
+ * change_mode: ADD · must_keep REC-01/02 seals · TARGET-MONTH CLOSED · honesty false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01
+ * UPGRADE PATCH interviews/:id/status (no_show + cancel_reason) · ADD PATCH interviews/:id R-A
+ * Physical /recruitment/interviews* only · DENY Nest /rec dual · Lane B ≠ FR-06a SoT
+ * change_mode: ADD/UPGRADE · must_keep 409 ACTIVE · soft-gate · badge · W1–W3 · honesty false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-04-CLUSTER-BE-01
+ * ADD POST requisitions/:id/internal-scan · UPGRADE pipeline-flags scan keys + posted gate
+ * · candidates-pool scan query · mint HRM-REC-CV-SCAN-* · DENY Nest /rec dual · REC-03 · seed
+ * change_mode: UPGRADE · UC-BP-REC-04 · API-01 F-REC-CV-SCAN-01..03 · F-REC-YCTD-04
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01
+ * ADD POST candidates/:id/transitions · GET candidates/:id/stage-history (F-REC-APP-02 / TL)
+ * Physical /recruitment only · DENY Nest /rec dual · REC-03 · pool/posting ≠ FR-05 SoT · seed · honesty
+ * change_mode: ADD · UC-BP-REC-05 · API-01 CONFIRMED · DATA-01 · BA O1–O9
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01
+ * ADD POST/GET candidates/:id/mail · GET mail-outbox/:id · UPGRADE candidate-evaluations query neo
+ * · soft DELETE · Pass/Fail · ROUND-GATE; mint HRM-REC-MAIL-* / HRM-REC-EVAL-*; RETAIN APP-02.
+ * change_mode: ADD/UPGRADE · UC-BP-REC-06 · DENY Nest /rec · pool DONE · Campaign · seed · honesty
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01
+ * ADD POST applications/:id/accept-offer (+ optional candidates/:id/accept-offer thin alias)
+ * · mint HRM-REC-HIRE-200/201 · RETAIN APP-02 sole hired-outcome · DENY Nest /rec · PAY · seed
+ * change_mode: ADD · UC-BP-REC-07 · API-01 CONFIRMED · DATA-01 · BA O1–O12
  */
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, Res } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest, resolveAuthorizationHeader } from '../common/internal-auth';
 import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
+import { CompareCandidatesQueryDto } from './dto/compare-candidates.query.dto';
 import { CreateCandidateDto } from './dto/create-candidate.dto';
+import { CreateJdFieldDefDto } from './dto/create-jd-field-def.dto';
+import { CreateJdGroupDefDto } from './dto/create-jd-group-def.dto';
 import { CreateJobPostingDto } from './dto/create-job-posting.dto';
 import { CreateJobRequisitionDto } from './dto/create-job-requisition.dto';
 import { CreateJobTemplateDto } from './dto/create-job-template.dto';
+import { PatchRequisitionPipelineFlagsDto } from './dto/patch-requisition-pipeline-flags.dto';
+import { InternalScanDto } from './dto/internal-scan.dto';
+import { RequisitionTransitionDto } from './dto/requisition-transition.dto';
+import { ListApplicationsQueryDto } from './dto/list-applications.query.dto';
 import { ListCandidatesTableQueryDto } from './dto/list-candidates-table.query.dto';
 import { ListCandidatesQueryDto } from './dto/list-candidates.query.dto';
 import { ListJobPostingsQueryDto } from './dto/list-job-postings.query.dto';
 import { GetJobRequisitionQueryDto } from './dto/get-job-requisition.query.dto';
 import { ListJobRequisitionsQueryDto } from './dto/list-job-requisitions.query.dto';
+import { RecruitmentDashboardQueryDto } from './dto/recruitment-dashboard.query.dto';
+import {
+  GetRecPipelineStageQueryDto,
+  ListEffectiveRecPipelineStagesQueryDto,
+  ListRecPipelineStagesQueryDto,
+  PatchRecPipelineStageDto,
+  UpsertRecPipelineStageDto,
+} from './dto/rec-pipeline-stage.dto';
+import { PutJdDefaultPackDto } from './dto/put-jd-default-pack.dto';
+import { PutJdLayoutDto } from './dto/put-jd-layout.dto';
+import { PutJdPackRulesDto } from './dto/put-jd-pack-rules.dto';
+import { ResolveJdPackDto } from './dto/resolve-jd-pack.dto';
 import { ScheduleInterviewDto } from './dto/schedule-interview.dto';
+import { RescheduleInterviewDto } from './dto/reschedule-interview.dto';
+import {
+  CandidateStageTransitionDto,
+  ListCandidateStageHistoryQueryDto,
+} from './dto/candidate-stage-transition.dto';
+import {
+  EnqueueCandidateMailDto,
+  ListCandidateMailQueryDto,
+} from './dto/candidate-mail.dto';
+import { AcceptOfferDto } from './dto/accept-offer.dto';
+import { requireUvYctdRequisitionId } from './uv-yctd-bind';
 import { UpdateCandidatePoolDto } from './dto/update-candidate-pool.dto';
 import { UpdateInterviewStatusDto } from './dto/update-interview-status.dto';
+import { UpdateJdFieldDefDto } from './dto/update-jd-field-def.dto';
+import { UpdateJdGroupDefDto } from './dto/update-jd-group-def.dto';
 import { UpdateJobRequisitionDto } from './dto/update-job-requisition.dto';
 import { UpdateJobTemplateDto } from './dto/update-job-template.dto';
+import { JdDynamicService } from './jd-dynamic.service';
+import { RecPipelineStageService } from './rec-pipeline-stage.service';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
+import { RecruitmentDashboardService } from './recruitment-dashboard.service';
+import { HRM_REC_DASH_200 } from './recruitment-dashboard.constants';
 import { RecruitmentService } from './recruitment.service';
 import { resolveSubmitterUserIdFromAuth } from './resolve-submitter-user-id';
+import { HRM_REC_HIRE_200, HRM_REC_HIRE_201 } from './rec-hire.constants';
 
 @Controller('recruitment')
 export class RecruitmentController {
   constructor(
     private readonly recruitmentService: RecruitmentService,
     private readonly recruitmentCatalog: RecruitmentCatalogService,
+    private readonly jdDynamic: JdDynamicService,
+    private readonly recPipelineStages: RecPipelineStageService,
+    private readonly recruitmentDashboard: RecruitmentDashboardService,
   ) {}
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
       throw new ApiException('HRM-AUTH-001', 'Unauthorized recruitment access', HttpStatus.UNAUTHORIZED);
     }
+  }
+
+  /**
+   * F-REC-DASH-01 — Summary KH vs TT + funnel + enough-people (Option A).
+   * Physical: GET /api/hrm/recruitment/dashboard — paper /rec/dashboard = alias only (DENY dual Nest).
+   */
+  @Get('dashboard')
+  getRecruitmentDashboard(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: RecruitmentDashboardQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const companyId = query.company_id ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId });
+    return this.recruitmentDashboard
+      .getDashboard(
+        { ...query, company_id: companyId },
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, HRM_REC_DASH_200, 'Recruitment dashboard loaded'));
+  }
+
+  /**
+   * F-REC-DASH-02 — YCTD drill (same scope as summary — U19).
+   */
+  @Get('dashboard/yctd')
+  getRecruitmentDashboardYctd(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: RecruitmentDashboardQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const companyId = query.company_id ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId });
+    return this.recruitmentDashboard
+      .getDashboardYctd(
+        { ...query, company_id: companyId },
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, HRM_REC_DASH_200, 'Recruitment dashboard YCTD drill loaded'));
+  }
+
+  /** VAL-14 — GET only on dashboard routes. */
+  @Post('dashboard')
+  @Put('dashboard')
+  @Patch('dashboard')
+  @Delete('dashboard')
+  denyDashboardMutate() {
+    this.recruitmentDashboard.denyMutate();
+  }
+
+  @Post('dashboard/yctd')
+  @Put('dashboard/yctd')
+  @Patch('dashboard/yctd')
+  @Delete('dashboard/yctd')
+  denyDashboardYctdMutate() {
+    this.recruitmentDashboard.denyMutate();
+  }
+
+  /** F-REC-CAT-EFF-01 — effective stage catalog (+ hiredOutcomeKey). */
+  @Get('pipeline-stages/effective')
+  listEffectivePipelineStages(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query() query: ListEffectiveRecPipelineStagesQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    return this.recPipelineStages
+      .listEffective(query, authorization, { tenantId })
+      .then((data) => ok(data, 'HRM-REC-STG-200', 'Effective pipeline stages listed'));
+  }
+
+  /** F-REC-CAT-STG-01 list */
+  @Get('pipeline-stages')
+  listPipelineStages(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query() query: ListRecPipelineStagesQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    return this.recPipelineStages
+      .listStages(query, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stages listed'));
+  }
+
+  /** F-REC-CAT-STG-02 create */
+  @Post('pipeline-stages')
+  createPipelineStage(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: UpsertRecPipelineStageDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
+    return this.recPipelineStages
+      .upsertStage(body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-REC-STG-201', 'Pipeline stage created'));
+  }
+
+  /** F-REC-CAT-STG-02 upsert by (companyId, stageKey) */
+  @Put('pipeline-stages')
+  upsertPipelineStage(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: UpsertRecPipelineStageDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
+    return this.recPipelineStages
+      .upsertStage(body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stage upserted'));
+  }
+
+  /** F-REC-CAT-STG-01 get-by-id — scope_parity U19 */
+  @Get('pipeline-stages/:stageId')
+  getPipelineStageById(
+    @Param('stageId', new ParseUUIDPipe()) stageId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query() query: GetRecPipelineStageQueryDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    return this.recPipelineStages
+      .getStageById(stageId, query.company_id, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stage loaded'));
+  }
+
+  /** F-REC-CAT-STG-02 patch */
+  @Patch('pipeline-stages/:stageId')
+  patchPipelineStage(
+    @Param('stageId', new ParseUUIDPipe()) stageId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Body() body: PatchRecPipelineStageDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.recPipelineStages
+      .patchStage(stageId, companyId, body, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stage updated'));
+  }
+
+  /** F-REC-CAT-STG-02 soft-delete — FORBIDDEN hard DELETE */
+  @Post('pipeline-stages/:stageId/retire')
+  retirePipelineStage(
+    @Param('stageId', new ParseUUIDPipe()) stageId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.recPipelineStages
+      .retireStage(stageId, companyId, authorization, tenantId)
+      .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stage retired'));
   }
 
   /**
@@ -386,10 +657,18 @@ export class RecruitmentController {
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
     @Query('company_id') companyId: string,
     @Query('candidate_id') candidateId?: string,
+    @Query('recruitment_candidate_id') recruitmentCandidateId?: string,
+    @Query('application_id') applicationId?: string,
+    @Query('include_legacy') includeLegacy?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
-      .listCandidateEvaluations(companyId, authorization, candidateId)
+      .listCandidateEvaluations(companyId, authorization, {
+        candidateId,
+        recruitmentCandidateId,
+        applicationId,
+        includeLegacy: includeLegacy === 'true' || includeLegacy === '1',
+      })
       .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluations listed'));
   }
 
@@ -415,7 +694,7 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
       .deleteCandidateEvaluation(evaluationId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluation deleted'));
+      .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluation archived'));
   }
 
   @Get('evaluation-criteria-templates')
@@ -430,7 +709,10 @@ export class RecruitmentController {
       .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Evaluation criteria templates listed'));
   }
 
-  /** UC-HRM-RC-07 / F6 — reusable JD library. */
+  /**
+   * UC-HRM-RC-07 / F6 / UC-BP-REC-00 — reusable JD library.
+   * F-YCTD-JD-01 — bindable=true | for=yctd → status=active AND is_active (Diễn biến 1a/1b).
+   */
   @Get('job-templates')
   listJobTemplates(
     @Headers('authorization') authorization: string | undefined,
@@ -439,12 +721,46 @@ export class RecruitmentController {
     @Query('company_id') companyId: string,
     @Query('q') q?: string,
     @Query('active') active?: string,
+    @Query('status') status?: string,
+    @Query('bindable') bindable?: string,
+    @Query('for') forParam?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
-      .listJobDescriptionTemplates(companyId, authorization, { q, active })
+      .listJobDescriptionTemplates(companyId, authorization, {
+        q,
+        active,
+        status,
+        bindable,
+        for: forParam,
+      })
       .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description templates listed'));
+  }
+
+  /**
+   * F-JD-03 — GET by id · scope_parity with list.
+   * F-YCTD-JD-02 — preview=yctd → thin preview + STATUS gate (Diễn biến 1c/1d).
+   */
+  @Get('job-templates/:templateId')
+  getJobTemplate(
+    @Param('templateId', new ParseUUIDPipe()) templateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Query('preview') preview?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    if (preview?.trim().toLowerCase() === 'yctd') {
+      return this.recruitmentCatalog
+        .getYctdJdPreview(templateId, companyId, authorization)
+        .then((data) => ok(data, 'HRM-REC-JD-200', 'YCTD JD preview'));
+    }
+    return this.recruitmentCatalog
+      .getJobDescriptionTemplateById(templateId, companyId, authorization)
+      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template detail'));
   }
 
   @Post('job-templates')
@@ -460,6 +776,25 @@ export class RecruitmentController {
     return this.recruitmentCatalog
       .createJobDescriptionTemplate(body, authorization, { tenantId })
       .then((data) => ok(data, 'HRM-REC-JD-201', 'Job description template created'));
+  }
+
+  /**
+   * F-JD-04 publish — Nháp → Hiệu lực (API-01 §6.4.2 · mint HRM-REC-JD-PUB-*).
+   * Must be registered before generic :templateId PATCH consumers that collide — path is distinct.
+   */
+  @Post('job-templates/:templateId/publish')
+  publishJobTemplate(
+    @Param('templateId', new ParseUUIDPipe()) templateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.recruitmentCatalog
+      .publishJobDescriptionTemplate(templateId, companyId, authorization)
+      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template published'));
   }
 
   @Patch('job-templates/:templateId')
@@ -493,6 +828,287 @@ export class RecruitmentController {
       .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template deleted'));
   }
 
+  // ─── JD dynamic CFG (ARCH-02 + GROUP-ARCH) ──────────────────────────────
+
+  @Get('jd-field-defs')
+  listJdFieldDefs(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Query('active') active?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .listFieldDefs(companyId, authorization, active)
+      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definitions listed'));
+  }
+
+  @Get('jd-field-defs/:id')
+  getJdFieldDef(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .getFieldDefById(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definition detail'));
+  }
+
+  @Post('jd-field-defs')
+  createJdFieldDef(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: CreateJdFieldDefDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    return this.jdDynamic
+      .createFieldDef(body, authorization)
+      .then((data) => ok(data, 'HRM-JD-FIELD-201', 'JD field definition created'));
+  }
+
+  @Patch('jd-field-defs/:id')
+  updateJdFieldDef(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Body() body: UpdateJdFieldDefDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .updateFieldDef(id, companyId, body, authorization)
+      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definition updated'));
+  }
+
+  @Post('jd-field-defs/:id/archive')
+  archiveJdFieldDef(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .archiveFieldDef(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definition archived'));
+  }
+
+  @Get('jd-form-layouts')
+  listJdFormLayouts(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .listLayouts(companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-LAYOUT-200', 'JD form layouts listed'));
+  }
+
+  @Get('jd-form-layouts/default')
+  getJdDefaultLayout(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .getDefaultLayout(companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-LAYOUT-200', 'JD default layout'));
+  }
+
+  @Put('jd-form-layouts/default')
+  putJdDefaultLayout(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: PutJdLayoutDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    return this.jdDynamic
+      .putDefaultLayout(body, authorization)
+      .then((data) => ok(data, 'HRM-JD-LAYOUT-200', 'JD default layout published'));
+  }
+
+  @Get('jd-form-layouts/:id')
+  getJdFormLayout(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .getLayoutById(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-LAYOUT-200', 'JD form layout detail'));
+  }
+
+  @Get('jd-group-defs')
+  listJdGroupDefs(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Query('active') active?: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .listGroupDefs(companyId, authorization, active)
+      .then((data) => ok(data, 'HRM-JD-GRP-200', 'JD group definitions listed'));
+  }
+
+  @Get('jd-group-defs/:id')
+  getJdGroupDef(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .getGroupDefById(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-GRP-200', 'JD group definition detail'));
+  }
+
+  @Post('jd-group-defs')
+  createJdGroupDef(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: CreateJdGroupDefDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    return this.jdDynamic
+      .createGroupDef(body, authorization)
+      .then((data) => ok(data, 'HRM-JD-GRP-201', 'JD group definition created'));
+  }
+
+  @Patch('jd-group-defs/:id')
+  updateJdGroupDef(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Body() body: UpdateJdGroupDefDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .updateGroupDef(id, companyId, body, authorization)
+      .then((data) => ok(data, 'HRM-JD-GRP-200', 'JD group definition updated'));
+  }
+
+  @Get('jd-default-packs')
+  listJdDefaultPacks(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .listDefaultPacks(companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-PCK-200', 'JD default packs listed'));
+  }
+
+  @Get('jd-default-packs/:code')
+  getJdDefaultPack(
+    @Param('code') code: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .getDefaultPackByCode(code, companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-PCK-200', 'JD default pack detail'));
+  }
+
+  @Put('jd-default-packs/:code')
+  putJdDefaultPack(
+    @Param('code') code: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: PutJdDefaultPackDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    return this.jdDynamic
+      .putDefaultPack(code, body, authorization)
+      .then((data) => ok(data, 'HRM-JD-PCK-200', 'JD default pack upserted'));
+  }
+
+  @Get('jd-pack-rules')
+  listJdPackRules(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.jdDynamic
+      .listPackRules(companyId, authorization)
+      .then((data) => ok(data, 'HRM-JD-RUL-200', 'JD pack rules listed'));
+  }
+
+  @Put('jd-pack-rules')
+  putJdPackRules(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: PutJdPackRulesDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    return this.jdDynamic
+      .replacePackRules(body, authorization)
+      .then((data) => ok(data, 'HRM-JD-RUL-200', 'JD pack rules replaced'));
+  }
+
+  @Post('jd-pack-rules/resolve')
+  @HttpCode(HttpStatus.OK)
+  resolveJdPack(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: ResolveJdPackDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    return this.jdDynamic
+      .resolvePack(body, authorization)
+      .then((data) => ok(data, 'HRM-JD-RUL-200', 'JD pack resolved'));
+  }
+
   @Post('evaluation-criteria-templates/replace')
   replaceEvaluationCriteriaTemplates(
     @Headers('authorization') authorization: string | undefined,
@@ -512,12 +1128,28 @@ export class RecruitmentController {
     @Headers('x-tenant-id') tenantId: string | undefined,
     @Headers('x-company-id') headerCompanyId: string | undefined,
     @Query('company_id') companyId: string,
+    @Query('year') year?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
     return this.recruitmentCatalog
-      .listRecruitmentPlans(companyId, authorization)
+      .listRecruitmentPlans(companyId, authorization, { year })
       .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plans listed'));
+  }
+
+  @Get('recruitment-plans/:planId')
+  getRecruitmentPlanById(
+    @Param('planId', new ParseUUIDPipe()) planId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.recruitmentCatalog
+      .getRecruitmentPlanById(planId, companyId, authorization)
+      .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plan loaded'));
   }
 
   @Post('recruitment-plans')
@@ -530,6 +1162,24 @@ export class RecruitmentController {
     return this.recruitmentCatalog
       .createRecruitmentPlan(body, authorization)
       .then((data) => ok(data, 'HRM-REC-PLAN-201', 'Recruitment plan created'));
+  }
+
+  @Put('recruitment-plans/:planId')
+  upsertRecruitmentPlan(
+    @Param('planId', new ParseUUIDPipe()) planId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body() body: Record<string, unknown>,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: typeof body.company_id === 'string' ? body.company_id : undefined,
+    });
+    return this.recruitmentCatalog
+      .upsertRecruitmentPlan(planId, body, authorization)
+      .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plan upserted'));
   }
 
   @Delete('recruitment-plans/:planId')
@@ -552,13 +1202,33 @@ export class RecruitmentController {
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
     @Headers('x-tenant-id') tenantId: string | undefined,
     @Query('company_id') companyId: string,
-    @Body('status') status: string,
+    @Body() body: { status?: string; rejected_reason?: string; approved_by?: string; activation_mode?: string },
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
-      .updateRecruitmentPlanStatus(planId, companyId, status, authorization)
+      .updateRecruitmentPlanStatus(planId, companyId, String(body?.status ?? ''), authorization, {
+        rejected_reason: body?.rejected_reason,
+        approved_by: body?.approved_by,
+        activation_mode: body?.activation_mode,
+      })
       .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plan updated'));
+  }
+
+  @Post('recruitment-plans/:planId/spawn-requests')
+  spawnRecruitmentPlanRequests(
+    @Param('planId', new ParseUUIDPipe()) planId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Body() body: { dry_run?: boolean; cell_ids?: string[] },
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.recruitmentCatalog
+      .spawnRecruitmentPlanRequests(planId, companyId, authorization, body ?? {})
+      .then((data) => ok(data, 'HRM-HC-SPAWN-200', 'Headcount spawn requests processed'));
   }
 
   @Post('recruitment-plans/:planId/submit-workflow')
@@ -654,6 +1324,96 @@ export class RecruitmentController {
         },
       )
       .then((data) => ok(data, 'HRM-REC-WF-200', 'Job requisition submitted to workflow'));
+  }
+
+  /**
+   * F-REC-YCTD-03 — approve → open_for_hire (BOD gate out_of_plan) / reject + reason.
+   */
+  @Post('requisitions/:requisitionId/transitions')
+  transitionJobRequisition(
+    @Param('requisitionId', new ParseUUIDPipe()) requisitionId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetJobRequisitionQueryDto,
+    @Body() body: RequisitionTransitionDto,
+    @Headers('x-user-id') userId: string | undefined,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return this.recruitmentService
+      .transitionJobRequisition(
+        requisitionId,
+        body,
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authorization, userId) },
+      )
+      .then((data) => ok(data, 'HRM-REC-200', 'Job requisition transition applied'));
+  }
+
+  /**
+   * F-REC-YCTD-04 — pipeline flags on YCTD (REC-03 Campaign DENY).
+   * UPGRADE REC-04: internal_scan_* + posted gate HRM-REC-CV-SCAN-REQUIRED.
+   */
+  @Patch('requisitions/:requisitionId/pipeline-flags')
+  patchRequisitionPipelineFlags(
+    @Param('requisitionId', new ParseUUIDPipe()) requisitionId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetJobRequisitionQueryDto,
+    @Body() body: PatchRequisitionPipelineFlagsDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return this.recruitmentService
+      .patchRequisitionPipelineFlags(
+        requisitionId,
+        body,
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, 'HRM-REC-200', 'Job requisition pipeline flags updated'));
+  }
+
+  /**
+   * F-REC-CV-SCAN-02/03 — Quét kho complete|skip → stamp pipeline_flags_json only.
+   */
+  @Post('requisitions/:requisitionId/internal-scan')
+  postRequisitionInternalScan(
+    @Param('requisitionId', new ParseUUIDPipe()) requisitionId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: GetJobRequisitionQueryDto,
+    @Body() body: InternalScanDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return this.recruitmentService
+      .postRequisitionInternalScan(
+        requisitionId,
+        body,
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, 'HRM-REC-200', 'Internal CV scan recorded'));
   }
 
   @Patch('requisitions/:requisitionId')
@@ -762,10 +1522,10 @@ export class RecruitmentController {
   }
 
   /**
-   * @CODE-MEMORY method · POST /candidates dual-route (G-DB-04 §17.6.1)
-   * + body.requisition_id → Lane A RecruitmentService · HRM-REC-202 · recruitment_candidates (FR-RC-03 SoT)
-   * − requisition_id → Lane B RecruitmentCatalogService · HRM-REC-CP-201 · candidates pool (không FR-RC-03 primary)
-   * must_keep §17.6.4 — không giả một bảng cho cả hai nhánh · không FK cross-lane A↔B
+   * @CODE-MEMORY method · POST /candidates — FR-UC-BP-REC-05a / F-REC-UV-YCTD-03
+   * YCTD (requisition_id | recruitment_request_id) REQUIRED — no silent Lane B pool.
+   * Lane B pool create → POST /candidates-pool (explicit).
+   * must_keep §17.6.4 — spine = recruitment_candidates · FORBIDDEN job_postings SoT
    */
   @Post('candidates')
   createCandidate(
@@ -777,15 +1537,156 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    // Xử lý: dual-route — có requisition_id = spine FR-RC-03; không có = catalog pool.
-    if (body.requisition_id) {
-      return this.recruitmentService
-        .createCandidate(body, authorization)
-        .then((data) => ok(data, 'HRM-REC-202', 'Candidate created'));
-    }
+    // FR-05a #5 — thiếu YCTD → REQUIRED (không fallback pool HRM-REC-CP-201).
+    requireUvYctdRequisitionId(body);
+    return this.recruitmentService
+      .createCandidate(body, authorization)
+      .then((data) => ok(data, 'HRM-REC-202', 'Candidate created'));
+  }
+
+  /**
+   * @CODE-MEMORY method · POST /candidates-pool — Lane B explicit (G-DB-04)
+   * Không phải FR-05a Thêm UV SoT — pool/hire surface riêng.
+   */
+  @Post('candidates-pool')
+  createCandidatePoolExplicit(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Body() body: CreateCandidateDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
     return this.recruitmentCatalog
       .createCandidatePool(body, authorization)
       .then((data) => ok(data, 'HRM-REC-CP-201', 'Candidate pool row created'));
+  }
+
+  /**
+   * F-REC-CMP-01 — applications by YCTD (+ optional evals). Empty → 200 [].
+   * FORBIDDEN: job_posting_id filter SoT.
+   */
+  @Get('applications')
+  listApplicationsByYctd(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListApplicationsQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.recruitmentService
+      .listApplicationsByYctd(query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-REC-CMP-200', 'Applications listed by YCTD'));
+  }
+
+  /**
+   * @CODE-MEMORY method · F-REC-HIRE-01 POST …/applications/:id/accept-offer
+   * WorkItem: PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01
+   * SRS: FR-UC-BP-REC-07 Diễn biến #1–#2 · BR-BP-LC-01
+   * must_keep: physical /recruitment · APP-02 sole hired-outcome · DENY Nest /rec · PAY · seed
+   */
+  @Post('applications/:applicationId/accept-offer')
+  acceptOfferApplication(
+    @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Headers('x-user-id') userId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Body() body: AcceptOfferDto,
+    @Res({ passthrough: true }) res: Response,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .acceptOfferApplication(
+        applicationId,
+        body ?? {},
+        scopeCompany,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId) },
+      )
+      .then((data) => {
+        const created = data.mode === 'created';
+        res.status(created ? HttpStatus.CREATED : HttpStatus.OK);
+        return ok(
+          data,
+          created ? HRM_REC_HIRE_201 : HRM_REC_HIRE_200,
+          created ? 'Offer accepted — employee created' : 'Offer accepted — employee linked',
+        );
+      });
+  }
+
+  /**
+   * @CODE-MEMORY method · F-REC-HIRE-01-A POST …/candidates/:id/accept-offer (thin alias)
+   * WorkItem: PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01
+   * Primary FE remain applications/:id — same VAL/SoT.
+   */
+  @Post('candidates/:candidateId/accept-offer')
+  acceptOfferByCandidate(
+    @Param('candidateId', new ParseUUIDPipe()) candidateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Headers('x-user-id') userId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Body() body: AcceptOfferDto,
+    @Res({ passthrough: true }) res: Response,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .acceptOfferByCandidateId(
+        candidateId,
+        body ?? {},
+        scopeCompany,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId) },
+      )
+      .then((data) => {
+        const created = data.mode === 'created';
+        res.status(created ? HttpStatus.CREATED : HttpStatus.OK);
+        return ok(
+          data,
+          created ? HRM_REC_HIRE_201 : HRM_REC_HIRE_200,
+          created ? 'Offer accepted — employee created' : 'Offer accepted — employee linked',
+        );
+      });
+  }
+
+  /**
+   * F-REC-CMP-02 — compare matrix ≤ N · BE MAX-N + YCTD-MIX.
+   */
+  @Get('compare')
+  compareCandidatesByYctd(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: CompareCandidatesQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    return this.recruitmentService
+      .compareCandidatesByYctd(query, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-REC-CMP-200', 'Compare matrix'));
   }
 
   @Patch('candidates-pool/:candidateId')
@@ -859,6 +1760,153 @@ export class RecruitmentController {
   }
 
   /**
+   * @CODE-MEMORY method · F-REC-APP-02 POST …/candidates/:id/transitions
+   * WorkItem: PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01
+   * SRS: FR-UC-BP-REC-05 Diễn biến #1 · BR-BP-CV-02
+   * must_keep: physical /recruitment · atomic history · DENY Nest /rec · pool ≠ SoT
+   */
+  @Post('candidates/:candidateId/transitions')
+  transitionCandidateStage(
+    @Param('candidateId', new ParseUUIDPipe()) candidateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Headers('x-user-id') userId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Body() body: CandidateStageTransitionDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .transitionCandidateStage(
+        candidateId,
+        body,
+        scopeCompany,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId) },
+      )
+      .then((data) => ok(data, 'HRM-REC-200', 'Candidate stage transition applied'));
+  }
+
+  /**
+   * @CODE-MEMORY method · F-REC-APP-02-TL GET …/candidates/:id/stage-history
+   * WorkItem: PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01
+   * SRS: FR-UC-BP-REC-05 Diễn biến #2 · display-ready timeline
+   * must_keep: U19 scope_parity · empty [] 200 · DENY Nest /rec
+   */
+  @Get('candidates/:candidateId/stage-history')
+  listCandidateStageHistory(
+    @Param('candidateId', new ParseUUIDPipe()) candidateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListCandidateStageHistoryQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = query.company_id ?? headerCompanyId;
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .listCandidateStageHistory(
+        candidateId,
+        { ...query, company_id: scopeCompany },
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, 'HRM-REC-200', 'Candidate stage history listed'));
+  }
+
+  /**
+   * @CODE-MEMORY method · F-REC-MAIL-01 POST …/candidates/:id/mail
+   * WorkItem: PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01
+   * SRS: FR-UC-BP-REC-06 Diễn biến #1 · BR-BP-MAIL-01
+   * must_keep: physical /recruitment · MAIL-LOG · no stage mutate · DENY Nest /rec
+   */
+  @Post('candidates/:candidateId/mail')
+  enqueueCandidateMail(
+    @Param('candidateId', new ParseUUIDPipe()) candidateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Body() body: EnqueueCandidateMailDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .enqueueCandidateMail(
+        candidateId,
+        body,
+        scopeCompany,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, 'HRM-REC-MAIL-201', 'Recruitment mail enqueued'));
+  }
+
+  /**
+   * @CODE-MEMORY method · F-REC-MAIL-01-R GET …/candidates/:id/mail
+   * WorkItem: PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01
+   */
+  @Get('candidates/:candidateId/mail')
+  listCandidateMail(
+    @Param('candidateId', new ParseUUIDPipe()) candidateId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query() query: ListCandidateMailQueryDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = query.company_id ?? headerCompanyId;
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .listCandidateMail(
+        candidateId,
+        { ...query, company_id: scopeCompany },
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) => ok(data, 'HRM-REC-MAIL-200', 'Recruitment mail listed'));
+  }
+
+  /**
+   * @CODE-MEMORY method · optional GET …/mail-outbox/:outboxId
+   * WorkItem: PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01
+   */
+  @Get('mail-outbox/:outboxId')
+  getMailOutbox(
+    @Param('outboxId', new ParseUUIDPipe()) outboxId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .getMailOutboxById(outboxId, scopeCompany, authHeader, toHrmListScopeContext(tenantId))
+      .then((data) => ok(data, 'HRM-REC-MAIL-200', 'Mail outbox loaded'));
+  }
+
+  /**
    * @CODE-MEMORY method · Lane A POST interviews — FR-HRM-RC-05 SoT (recruitment_interviews)
    * candidate_id → recruitment_candidates only (F4) · không catalog interviews
    * must_keep §17.6.4
@@ -890,5 +1938,26 @@ export class RecruitmentController {
     return this.recruitmentService
       .updateInterviewStatus(interviewId, body, companyId ?? 'main', authorization)
       .then((data) => ok(data, 'HRM-REC-204', 'Interview updated'));
+  }
+
+  /**
+   * @CODE-MEMORY method · F-REC-IV-03 R-A — PATCH scheduled_at same ACTIVE id
+   * WorkItem: PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01
+   * must_keep: never POST create as reschedule · Lane A only
+   */
+  @Patch('interviews/:interviewId')
+  rescheduleInterview(
+    @Param('interviewId', new ParseUUIDPipe()) interviewId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') companyId: string | undefined,
+    @Body() body: RescheduleInterviewDto,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.recruitmentService
+      .rescheduleInterview(interviewId, body, companyId ?? 'main', authorization)
+      .then((data) => ok(data, 'HRM-REC-204', 'Interview rescheduled'));
   }
 }

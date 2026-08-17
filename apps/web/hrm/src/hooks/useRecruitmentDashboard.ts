@@ -1,24 +1,35 @@
-import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
-import { useDepartments } from '@/hooks/useDepartments';
-import { useKanbanCandidates } from '@/hooks/useKanbanCandidates';
-import {
-  aggregateCandidatesByAppliedMonth,
-  aggregateCandidatesByDepartment,
-  buildCandidateCompanySlugMap,
-  buildCandidateDepartmentMap,
-  buildRecruitmentCostSummary,
-  sumActiveJobPostingHeadcount,
-  type RecruitmentBarChartRow,
-  type RecruitmentCostSummary,
-  type RecruitmentLineChartRow,
-} from '@/lib/recruitmentDashboardAggregator';
-import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
-import { listCandidateApplications, listJobPostings } from '@/integrations/hrmApi';
+/**
+ * @CODE-MEMORY
+ * Screen:     /hr/recruitment — Dashboard Board (kanban only)
+ * UC:         UC-HRM-30 · UC-HRM-REC-WF-04 (board)
+ * BR:         UC-BP-REC-08 dashboard KPIs moved to Nest (see useRecruitmentNestDashboard)
+ * SRS:        SRS FR-UC-BP-REC-08 — DENY FE domain aggregate for KH/%/ETA
+ * TechSpec:   docs/program/specs/PO-HRM-MVP-GD1-REC-08-CLUSTER-API-01.md
+ * Purpose:    Board subtab only — kanban candidates. Dashboard metrics SoT = Nest GET.
+ * WorkItem:   PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * Coded:      2026-08-09
+ * Callers:    pages/Recruitment.tsx board subtab
+ * Callees:    useKanbanCandidates
+ * FEActions:  drag stage · hire picker (board)
+ * Impact:     Re-adding job-postings KH aggregate = FAIL AC-REC-08-09
+ * must_keep:  Board kanban · hire bind · honesty false
+ * SOLID:      Hook SRP — no dashboard formula
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-08-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: REMOVE FE aggregator domain SoT from this hook (Nest owns dashboard)
+ * Why: BA O1–O10 · Nest RecruitmentDashboardService owns formulas
+ * must_keep: useKanbanCandidates for Board tab
+ */
 
+import { useKanbanCandidates } from '@/hooks/useKanbanCandidates';
+
+/**
+ * Board-only data for Recruitment dashboard subtab «Board».
+ * Metrics / funnel / KH → useRecruitmentNestDashboard (Nest DTO bind).
+ */
 export function useRecruitmentDashboard(enabled: boolean) {
-  const { currentCompanyId } = useAuth();
   const {
     candidates,
     loading: candidatesLoading,
@@ -26,80 +37,6 @@ export function useRecruitmentDashboard(enabled: boolean) {
     updateCandidateStage,
     refetch,
   } = useKanbanCandidates();
-  const { departments, isLoading: departmentsLoading } = useDepartments({ enabled });
-
-  const { operatingUnitLabelMap } = useHrmOperatingUnitFilter();
-
-  const enrichmentQuery = useQuery({
-    queryKey: ['recruitment_dashboard_enrichment', currentCompanyId],
-    queryFn: async () => {
-      if (!currentCompanyId) {
-        return {
-          departmentByCandidateId: new Map<string, string>(),
-          companySlugByCandidateId: new Map<string, string>(),
-          targetHeadcount: 0,
-        };
-      }
-      const [applicationsRes, jobPostingsRes] = await Promise.all([
-        listCandidateApplications({ company_id: currentCompanyId }),
-        listJobPostings({ company_id: currentCompanyId }),
-      ]);
-      const jobPostings = jobPostingsRes.data ?? [];
-      return {
-        departmentByCandidateId: buildCandidateDepartmentMap(applicationsRes.data ?? [], jobPostings),
-        companySlugByCandidateId: buildCandidateCompanySlugMap(applicationsRes.data ?? [], jobPostings),
-        targetHeadcount: sumActiveJobPostingHeadcount(jobPostings),
-      };
-    },
-    enabled: enabled && !!currentCompanyId,
-  });
-
-  const operatingUnitLabels = operatingUnitLabelMap;
-
-  const catalogDepartmentNames = useMemo(
-    () => departments.map((dept) => dept.name).filter(Boolean),
-    [departments],
-  );
-
-  const dashboardCandidates = useMemo(
-    () =>
-      candidates.map((candidate) => ({
-        id: candidate.id,
-        appliedDate: candidate.appliedDate,
-        source: candidate.source,
-      })),
-    [candidates],
-  );
-
-  const departmentChartData: RecruitmentBarChartRow[] = useMemo(
-    () =>
-      aggregateCandidatesByDepartment(
-        dashboardCandidates,
-        enrichmentQuery.data?.departmentByCandidateId,
-        catalogDepartmentNames,
-        enrichmentQuery.data?.companySlugByCandidateId,
-        operatingUnitLabels,
-      ),
-    [
-      dashboardCandidates,
-      enrichmentQuery.data?.departmentByCandidateId,
-      enrichmentQuery.data?.companySlugByCandidateId,
-      catalogDepartmentNames,
-      operatingUnitLabels,
-    ],
-  );
-
-  const monthlyChartData: RecruitmentLineChartRow[] = useMemo(
-    () => aggregateCandidatesByAppliedMonth(dashboardCandidates),
-    [dashboardCandidates],
-  );
-
-  const costSummary: RecruitmentCostSummary = useMemo(
-    () => buildRecruitmentCostSummary(dashboardCandidates),
-    [dashboardCandidates],
-  );
-
-  const targetHeadcount = enrichmentQuery.data?.targetHeadcount ?? 0;
 
   return {
     candidates,
@@ -107,13 +44,6 @@ export function useRecruitmentDashboard(enabled: boolean) {
     stats,
     updateCandidateStage,
     refetch,
-    departmentChartData,
-    monthlyChartData,
-    costSummary,
-    targetHeadcount,
-    loading:
-      candidatesLoading ||
-      enrichmentQuery.isLoading ||
-      (enabled && departmentsLoading && catalogDepartmentNames.length === 0),
+    loading: candidatesLoading && enabled,
   };
 }

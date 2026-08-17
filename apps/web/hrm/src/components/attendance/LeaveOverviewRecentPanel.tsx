@@ -7,6 +7,19 @@
  * WorkItem:   D-HDSD-MUTATE-FE-04 · D-HDSD-MUTATE-FE-05
  * Coded:      2026-08-01
  * must_keep:  sanitizeLeaveNoteDisplay for seed: prefix only; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-01-FE-LEAVE-ATTENDANCE-MOUNT
+ * change_mode: FIX
+ * What: Restore module from git 43c479a — file missing → Vite Failed to resolve
+ *       from Attendance.tsx → #root whitescreen (J-HRM-06 / leave UF blocked).
+ * Why: QA W1-B-01-QA-LEAVE-LIVE FAIL R-LEAVE-FE-ATTENDANCE-MOUNT
+ * must_keep: LeaveTab create/list path untouched; AUTH/EMP CLOSED; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-ATT-A
+ * change_mode: UPGRADE
+ * What: Panel chrome → Precision Motion sharp text (S09)
+ * Why: ADR-XEVN-PRECISION-MOTION-TOKENS-20260805 §8–§10
+ * must_keep: leave list wire + sanitizeLeaveNoteDisplay; F5 testids; U65 no seed
  */
 import { useMemo } from 'react';
 import { format, isValid, parseISO } from 'date-fns';
@@ -44,23 +57,26 @@ export function LeaveOverviewRecentPanel() {
   );
 
   return (
-    <Card data-testid={HDSD_MUTATE_TEST_IDS.leaveOverviewRecent}>
+    <Card
+      className="rounded-card border-xevn-border"
+      data-testid={HDSD_MUTATE_TEST_IDS.leaveOverviewRecent}
+    >
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold">
+        <CardTitle className="text-base font-semibold text-xevn-text">
           {t('attendance.overview.recentLeaveRequests', 'Yêu cầu nghỉ gần đây')}
         </CardTitle>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-xevn-textSecondary">
           {t('attendance.overview.recentLeaveHint', 'Hiển thị trên Tổng quan — F5 vẫn thấy lý do đã gửi')}
         </p>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
+          <div className="flex items-center justify-center gap-2 py-8 text-[15px] text-xevn-textSecondary">
+            <Loader2 className="h-4 w-4 animate-spin text-xevn-primary" />
             {t('common.loading', 'Đang tải…')}
           </div>
         ) : recent.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">
+          <p className="py-8 text-center text-[15px] text-xevn-textSecondary">
             {t('attendance.overview.noData', 'Chưa có dữ liệu')}
           </p>
         ) : (
@@ -68,19 +84,22 @@ export function LeaveOverviewRecentPanel() {
             {recent.map((row) => {
               const reason = sanitizeLeaveNoteDisplay(row.reason);
               return (
-                <div key={row.id} className="rounded-lg border border-border/60 px-3 py-2">
+                <div
+                  key={row.id}
+                  className="rounded-card border border-xevn-border bg-xevn-surface px-3 py-2"
+                >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-medium truncate">{row.employee_name}</p>
-                    <Badge variant="outline" className="shrink-0 text-[10px]">
+                    <p className="text-[15px] font-medium text-xevn-text truncate">{row.employee_name}</p>
+                    <Badge variant="outline" className="shrink-0 text-xs text-xevn-textSecondary border-xevn-border">
                       {row.status}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-sm text-xevn-textSecondary mt-0.5">
                     {formatLeaveDate(row.start_date)} – {formatLeaveDate(row.end_date)}
                   </p>
                   {reason ? (
                     <p
-                      className="text-xs text-foreground mt-1 line-clamp-2"
+                      className="text-sm text-xevn-text mt-1 line-clamp-2"
                       data-testid={`${HDSD_MUTATE_TEST_IDS.leaveOverviewReasonPrefix}-${row.id}`}
                     >
                       {reason}

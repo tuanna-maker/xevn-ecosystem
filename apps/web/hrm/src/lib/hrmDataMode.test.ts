@@ -3,6 +3,7 @@ import {
   clampHrmPageSize,
   HRM_API_MAX_PAGE_SIZE,
   isHrmApiDataMode,
+  isHrmNestApiReachable,
   isPortalEmbedApiMode,
   isRemoteLocalhostSupabaseMisconfig,
   shouldSkipSupabaseDataFetches,
@@ -121,6 +122,44 @@ describe('isHrmApiDataMode', () => {
     vi.mocked(hasPortalSession).mockReturnValue(false);
     expect(isHrmApiDataMode()).toBe(true);
     expect(shouldSkipSupabaseDataFetches()).toBe(true);
+  });
+});
+
+describe('isHrmNestApiReachable', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    window.history.replaceState({}, '', '/');
+  });
+
+  it('returns true when VITE_HRM_API_ORIGIN is set even if API mode false', async () => {
+    vi.stubEnv('VITE_HRM_API_ORIGIN', 'http://127.0.0.1:28001');
+    vi.stubEnv('VITE_HRM_USE_API', 'false');
+    window.history.replaceState({}, '', '/employees');
+    const { getHrmPortalMode } = await import('@/lib/hrmPortalMode');
+    const { hasPortalSession } = await import('@/lib/portalAuthBridge');
+    vi.mocked(getHrmPortalMode).mockReturnValue(false);
+    vi.mocked(hasPortalSession).mockReturnValue(false);
+    expect(isHrmNestApiReachable()).toBe(true);
+  });
+
+  it('returns true on portal /hr proxy when origin empty', async () => {
+    vi.stubEnv('VITE_HRM_USE_API', 'false');
+    window.history.replaceState({}, '', '/hr/notifications?portal=1&companyId=trsport');
+    const { getHrmPortalMode } = await import('@/lib/hrmPortalMode');
+    const { hasPortalSession } = await import('@/lib/portalAuthBridge');
+    vi.mocked(getHrmPortalMode).mockReturnValue(false);
+    vi.mocked(hasPortalSession).mockReturnValue(false);
+    expect(isHrmNestApiReachable()).toBe(true);
+  });
+
+  it('returns false when no origin and API mode off without portal runtime', async () => {
+    vi.stubEnv('VITE_HRM_USE_API', 'false');
+    window.history.replaceState({}, '', '/employees');
+    const { getHrmPortalMode } = await import('@/lib/hrmPortalMode');
+    const { hasPortalSession } = await import('@/lib/portalAuthBridge');
+    vi.mocked(getHrmPortalMode).mockReturnValue(false);
+    vi.mocked(hasPortalSession).mockReturnValue(false);
+    expect(isHrmNestApiReachable()).toBe(false);
   });
 });
 

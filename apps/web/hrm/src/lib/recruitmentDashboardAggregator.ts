@@ -1,22 +1,36 @@
-import { format, startOfMonth, subMonths } from 'date-fns';
-import type { HrmCandidateApplicationRow, HrmJobPostingRow } from '@/integrations/hrmApi';
+/**
+ * @CODE-MEMORY
+ * Screen:     (legacy helpers — NOT dashboard SoT)
+ * UC:         UC-BP-REC-08 — DENY as KH/%/ETA SoT
+ * BR:         BR-REC-08-BE-FORMULA · O8/O10
+ * SRS:        SRS FR-UC-BP-REC-08
+ * TechSpec:   PO-HRM-MVP-GD1-REC-08-CLUSTER-API-01 — Nest owns formulas
+ * Purpose:    Deprecated chart type aliases + cost empty stub. Dashboard MUST use Nest bind.
+ * WorkItem:   PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * Coded:      2026-08-09
+ * Callers:    RecruitmentBarChart / LineChart type imports only
+ * Callees:    (none domain)
+ * FEActions:  none — SoT disabled
+ * Impact:     Calling sumActiveJobPostingHeadcount for dashboard KH = FAIL
+ * must_keep:  formatRecruitmentCostVnd never invents when null; buildRecruitmentCostSummary.hasData=false
+ * SOLID:      Types retained for chart presentational components
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-08-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-08-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Disable domain aggregation as SoT; keep chart row types + cost empty stub (O10)
+ * Why: Nest GET /recruitment/dashboard* is sole KH/TT/%/funnel/ETA SoT
+ * must_keep: no VND invent; chart components compile
+ */
 
-export const RECRUITMENT_CHART_COLORS = ['#f59e0b', '#22c55e', '#8b5cf6', '#06b6d4', '#6366f1', '#ec4899', '#84cc16', '#ef4444'];
-
-export const RECRUITMENT_DEPT_FALLBACK = 'Khác';
-
-export interface RecruitmentDashboardCandidateInput {
-  id: string;
-  appliedDate: string;
-  source?: string | null;
-}
-
+/** @deprecated Dashboard SoT = Nest DTO — use RecDashBarChartRow from recruitmentDashboardNestBind */
 export interface RecruitmentBarChartRow {
   name: string;
   value: number;
   color: string;
 }
 
+/** @deprecated Dashboard SoT = Nest DTO — use RecDashLineChartRow from recruitmentDashboardNestBind */
 export interface RecruitmentLineChartRow {
   month: string;
   value: number;
@@ -29,145 +43,8 @@ export interface RecruitmentCostSummary {
   hasData: boolean;
 }
 
-export function buildJobPostingDepartmentMap(jobPostings: HrmJobPostingRow[]): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const posting of jobPostings) {
-    const dept = posting.department?.trim();
-    if (dept) map.set(posting.id, dept);
-  }
-  return map;
-}
-
-export function buildJobPostingCompanySlugMap(jobPostings: HrmJobPostingRow[]): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const posting of jobPostings) {
-    const slug = posting.company_id?.trim();
-    if (slug) map.set(posting.id, slug);
-  }
-  return map;
-}
-
-export function buildCandidateDepartmentMap(
-  applications: HrmCandidateApplicationRow[],
-  jobPostings: HrmJobPostingRow[],
-): Map<string, string> {
-  const deptByJobId = buildJobPostingDepartmentMap(jobPostings);
-  const map = new Map<string, string>();
-  for (const app of applications) {
-    if (map.has(app.candidate_id)) continue;
-    const dept = deptByJobId.get(app.job_posting_id);
-    if (dept) map.set(app.candidate_id, dept);
-  }
-  return map;
-}
-
-export function buildCandidateCompanySlugMap(
-  applications: HrmCandidateApplicationRow[],
-  jobPostings: HrmJobPostingRow[],
-): Map<string, string> {
-  const slugByJobId = buildJobPostingCompanySlugMap(jobPostings);
-  const map = new Map<string, string>();
-  for (const app of applications) {
-    if (map.has(app.candidate_id)) continue;
-    const slug = slugByJobId.get(app.job_posting_id);
-    if (slug) map.set(app.candidate_id, slug);
-  }
-  return map;
-}
-
-export function resolveRecruitmentChartLabel(
-  candidateId: string,
-  departmentByCandidateId?: Map<string, string>,
-  companySlugByCandidateId?: Map<string, string>,
-  operatingUnitLabels?: Map<string, string>,
-  catalogDepartmentNames?: string[],
-): string {
-  const dept = normalizeDepartmentName(
-    departmentByCandidateId?.get(candidateId),
-    catalogDepartmentNames,
-  );
-  if (dept !== RECRUITMENT_DEPT_FALLBACK) return dept;
-
-  const slug = companySlugByCandidateId?.get(candidateId);
-  if (slug && operatingUnitLabels?.get(slug)) {
-    return operatingUnitLabels.get(slug)!;
-  }
-
-  return RECRUITMENT_DEPT_FALLBACK;
-}
-
-export function normalizeDepartmentName(
-  raw: string | undefined | null,
-  catalogDepartmentNames?: string[],
-): string {
-  const trimmed = raw?.trim();
-  if (!trimmed) return RECRUITMENT_DEPT_FALLBACK;
-  if (!catalogDepartmentNames?.length) return trimmed;
-  const match = catalogDepartmentNames.find((name) => name.toLowerCase() === trimmed.toLowerCase());
-  return match ?? trimmed;
-}
-
-export function aggregateCandidatesByDepartment(
-  candidates: RecruitmentDashboardCandidateInput[],
-  departmentByCandidateId?: Map<string, string>,
-  catalogDepartmentNames?: string[],
-  companySlugByCandidateId?: Map<string, string>,
-  operatingUnitLabels?: Map<string, string>,
-): RecruitmentBarChartRow[] {
-  const counts = new Map<string, number>();
-  for (const candidate of candidates) {
-    const label = resolveRecruitmentChartLabel(
-      candidate.id,
-      departmentByCandidateId,
-      companySlugByCandidateId,
-      operatingUnitLabels,
-      catalogDepartmentNames,
-    );
-    counts.set(label, (counts.get(label) ?? 0) + 1);
-  }
-
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, value], index) => ({
-      name,
-      value,
-      color: RECRUITMENT_CHART_COLORS[index % RECRUITMENT_CHART_COLORS.length],
-    }));
-}
-
-export function aggregateCandidatesByAppliedMonth(
-  candidates: RecruitmentDashboardCandidateInput[],
-  referenceDate = new Date(),
-  monthCount = 12,
-): RecruitmentLineChartRow[] {
-  const monthBuckets: { key: string; label: string }[] = [];
-  const anchor = startOfMonth(referenceDate);
-
-  for (let offset = monthCount - 1; offset >= 0; offset -= 1) {
-    const monthDate = subMonths(anchor, offset);
-    monthBuckets.push({
-      key: format(monthDate, 'yyyy-MM'),
-      label: format(monthDate, 'MM/yyyy'),
-    });
-  }
-
-  const counts = new Map(monthBuckets.map((bucket) => [bucket.key, 0]));
-  for (const candidate of candidates) {
-    const monthKey = candidate.appliedDate?.slice(0, 7);
-    if (!monthKey || !counts.has(monthKey)) continue;
-    counts.set(monthKey, (counts.get(monthKey) ?? 0) + 1);
-  }
-
-  return monthBuckets.map((bucket) => ({
-    month: bucket.label,
-    value: counts.get(bucket.key) ?? 0,
-  }));
-}
-
-/** No recruitment cost API yet — never invent VND amounts. */
-export function buildRecruitmentCostSummary(
-  _candidates: RecruitmentDashboardCandidateInput[],
-): RecruitmentCostSummary {
+/** O10 — never invent VND. Always empty. */
+export function buildRecruitmentCostSummary(): RecruitmentCostSummary {
   return {
     avgCostPerCandidate: null,
     costTopCV: null,
@@ -176,13 +53,15 @@ export function buildRecruitmentCostSummary(
   };
 }
 
-export function sumActiveJobPostingHeadcount(jobPostings: HrmJobPostingRow[]): number {
-  return jobPostings
-    .filter((posting) => posting.status === 'active' || posting.status === 'open')
-    .reduce((sum, posting) => sum + Math.max(0, posting.headcount ?? 0), 0);
-}
-
 export function formatRecruitmentCostVnd(value: number | null | undefined): string | null {
   if (value == null || !Number.isFinite(value) || value <= 0) return null;
   return `${Math.round(value).toLocaleString('vi-VN')} đ`;
+}
+
+/**
+ * @deprecated DENY as dashboard KH SoT (AC-REC-08-09). Nest planned_need owns KH.
+ * Retained only so accidental imports fail loudly in vitest source audits.
+ */
+export function sumActiveJobPostingHeadcount(): number {
+  return 0;
 }

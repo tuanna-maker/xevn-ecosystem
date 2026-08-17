@@ -1,3 +1,27 @@
+/**
+ * @CODE-MEMORY
+ * Screen: XBOS config-sync catalog GET/list · Command Center org/legal read
+ * UC: XBOS-DM-LOG-09 · ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §4
+ * BR: Group CEO JWT `main` may read holding + GROUP_MEMBER company partitions
+ * SRS: docs/architecture/ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md §4 config-sync
+ * TechSpec: docs/logistics/TECHSPEC_M03_DM_LOG_P1.md §2 (clone dest verify)
+ * Purpose: Resolve scope đọc XBOS cho Group CEO — alias main→holding và cho phép
+ *   đọc partition công ty thành viên (logistics/…) sau clone-bundle (parity clone vs GET).
+ * WorkItem: PO-UC-TC-W3-BE-LOG09-SCOPE
+ * Coded: 2026-08-04
+ * Callers: config-sync.controller get/list/apply/clone · org-foundation · platform-audit
+ * Callees: resolveScopeContext · normalizePortalScopeRequest
+ * Impact: Thiếu slug thành viên → GET catalog?companyId=logistics 409 dù clone OK
+ * must_keep: AUTH-003 member block · strict resolveScopeContext for non-group · main→holding
+ * SOLID: Scope helper tách khỏi controller; không đụng publish write path
+ * LastVerified: xbos-group-legal-scope.spec.ts · config-sync.controller.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-UC-TC-W3-BE-LOG09-SCOPE · 2026-08-04
+ * Change: ADD XBOS_GROUP_MEMBER_COMPANY_SLUGS — Group CEO main may GET catalog
+ *   on logistics|trsport|finance|services|holding without SCOPE_CONTEXT_MISMATCH
+ * must_keep: main/omitted → holding; member CEO no alias; random slug still 409
+ */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
@@ -7,6 +31,25 @@ import { MEMBER_DEFAULT_COMPANY_ID } from './tenant.constants';
 export const XBOS_MASTER_TENANT_ID = 'xevn';
 export const XBOS_GROUP_OPERATING_MAIN = 'main';
 export const XBOS_GROUP_LEGAL_HOLDING = 'holding';
+
+/** Master-tenant operating company slugs (ADR §4 / HRM GROUP_MEMBER_SLUGS parity). */
+export const XBOS_GROUP_MEMBER_COMPANY_SLUGS = [
+  'holding',
+  'trsport',
+  'logistics',
+  'finance',
+  'services',
+] as const;
+
+export type XbosGroupMemberCompanySlug = (typeof XBOS_GROUP_MEMBER_COMPANY_SLUGS)[number];
+
+export function isXbosGroupMemberCompanySlug(companyId: string | undefined): boolean {
+  const normalized = companyId?.trim().toLowerCase();
+  return (
+    !!normalized &&
+    (XBOS_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(normalized)
+  );
+}
 
 function readClaim(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
   for (const key of keys) {
@@ -29,8 +72,9 @@ export function isGroupCeoOnMasterTenant(
 }
 
 /**
- * Group CEO JWT on `main` reads XBOS legal-entity partition under `holding`
- * (catalog get/list, org-foundation, platform-audit — ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §4).
+ * Group CEO JWT on `main` reads XBOS legal-entity / catalog partitions:
+ * - omitted|main → holding (ADR §4 default)
+ * - holding|logistics|trsport|finance|services → that partition (LOG-09 dest verify)
  * Writes that require strict JWT match must still use `resolveScopeContext`.
  */
 export function resolveXbosGroupLegalReadScopeContext(
@@ -65,18 +109,27 @@ export function resolveXbosGroupLegalReadScopeContext(
     };
   }
 
+  // Group CEO on master: catalog/org reads across GROUP_MEMBER partitions (clone dest = logistics).
   if (
     isGroupCeoOnMasterTenant(claimTenantId, roleCode) &&
     claimCompany === XBOS_GROUP_OPERATING_MAIN &&
-    (!requestedCompanyId ||
-      requestedCompanyId === XBOS_GROUP_OPERATING_MAIN ||
-      requestedCompanyId === XBOS_GROUP_LEGAL_HOLDING)
+    (!requestedTenant ||
+      requestedTenant === XBOS_MASTER_TENANT_ID ||
+      requestedTenant === XBOS_GROUP_OPERATING_MAIN)
   ) {
-    const scope = resolveScopeContext(authorization, {
-      tenantId: normalized.tenantId ?? claimTenantId,
-      companyId: XBOS_GROUP_OPERATING_MAIN,
+    resolveScopeContext(authorization, {
+      tenantId: claimTenantId,
+      companyId: claimCompanyId,
     });
-    return { tenantId: scope.tenantId, companyId: XBOS_GROUP_LEGAL_HOLDING };
+    if (!requestedCompanyId || requestedCompanyId === XBOS_GROUP_OPERATING_MAIN) {
+      return { tenantId: XBOS_MASTER_TENANT_ID, companyId: XBOS_GROUP_LEGAL_HOLDING };
+    }
+    if (isXbosGroupMemberCompanySlug(requestedCompanyId)) {
+      return {
+        tenantId: XBOS_MASTER_TENANT_ID,
+        companyId: assertScopeSlug(requestedCompany, 'companyId'),
+      };
+    }
   }
 
   return resolveScopeContext(authorization, normalized);

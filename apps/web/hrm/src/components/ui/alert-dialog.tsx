@@ -26,6 +26,38 @@
  *       border-xevn-border); Description → text-xevn-textSecondary
  * Why: Finish L1 leftover — confirm CTAs match brand DNA
  * must_keep: buttonVariants(); portal a11y; Title+Description in consumers
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-FE-DIALOG-01
+ * change_mode: UPGRADE
+ * What: xevn-dialog-surface + glass header wordmark; title Montserrat ≥20
+ * Why: ADR §16 LOCKED fonts · S3=A · parity with Dialog; Q1 brand on confirms
+ * must_keep: portal a11y; Title+Description; no Nest/API; no remaster DONE
+ * LastVerified: docs/qa/evidence/po-hrm-ui-brand-fe-dialog-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-UI-DIALOG-CENTER-01
+ * change_mode: FIX
+ * What: AlertDialogContent same inset-0 m-auto h-fit max-h-[90vh] center as DialogContent
+ * Why: Parity — confirm modals must not sink to bottom in CC/HRM embed
+ * must_keep: portal a11y; Title+Description; glass header wordmark
+ * LastVerified: docs/qa/evidence/po-hrm-ui-dialog-center-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-UI-P0-LOGO-FONT-TITLE-01
+ * change_mode: FIX
+ * What: AlertDialogHeader wordmark `!bg-white` — pad SURFACE (was brand-shell #000 via CSS)
+ * Why: Sponsor — logo confirm popup nền đen; parity DialogHeader
+ * must_keep: dialog center R2; Title+Description; portal a11y; no invent gradient
+ * LastVerified: docs/qa/evidence/po-hrm-ui-p0-logo-font-title-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-UI-DIALOG-CENTER-01-R2
+ * change_mode: FIX
+ * What: Same CSS surface fix as Dialog — `fixed` class exempt from surface relative/overflow
+ * Why: DEF-DIALOG-CENTER-CSS-OVERRIDE parity for AlertDialog in CC embed
+ * must_keep: portal a11y; Title+Description; glass header wordmark
+ * LastVerified: docs/qa/evidence/po-hrm-ui-dialog-center-01-r2.md
  */
 
 import * as React from "react";
@@ -35,6 +67,10 @@ import { cn } from "@/lib/utils";
 import { getDialogPortalContainer, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
 import { attachPortalDialogA11yMirror } from "@/lib/hrmDialogPortalA11y";
 import { buttonVariants } from "@/components/ui/button";
+
+type AlertDialogHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
+  brandChrome?: boolean;
+};
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
@@ -96,7 +132,7 @@ const AlertDialogContent = React.forwardRef<
       <AlertDialogPrimitive.Content
         ref={assignContentRef}
         className={cn(
-          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-card border border-xevn-border bg-background p-6 shadow-overlay duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+          "xevn-dialog-surface fixed inset-0 z-50 m-auto grid h-fit max-h-[90vh] w-full max-w-lg gap-4 overflow-y-auto bg-background p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           useParentPortal && "z-[100000]",
           className,
         )}
@@ -107,9 +143,40 @@ const AlertDialogContent = React.forwardRef<
 });
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName;
 
-const AlertDialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-2 text-center sm:text-left", className)} {...props} />
-);
+const AlertDialogHeader = ({
+  className,
+  brandChrome = true,
+  children,
+  ...props
+}: AlertDialogHeaderProps) => {
+  if (!brandChrome) {
+    return (
+      <div className={cn("flex flex-col space-y-2 text-center sm:text-left", className)} {...props}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <div
+      className={cn(
+        "xevn-dialog-header-glass -mx-6 -mt-6 mb-0 flex items-center gap-3 px-5 py-3.5 text-left",
+        className,
+      )}
+      {...props}
+    >
+      <img
+        src="/xevn-logo.png"
+        alt=""
+        width={32}
+        height={32}
+        className="xevn-dialog-wordmark !bg-white"
+        data-testid="xevn-alert-dialog-wordmark"
+        aria-hidden="true"
+      />
+      <div className="flex min-w-0 flex-1 flex-col space-y-2 text-left">{children}</div>
+    </div>
+  );
+};
 AlertDialogHeader.displayName = "AlertDialogHeader";
 
 const AlertDialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -121,7 +188,14 @@ const AlertDialogTitle = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <AlertDialogPrimitive.Title ref={ref} className={cn("text-lg font-semibold", className)} {...props} />
+  <AlertDialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      "xevn-type-title font-display text-[20px] font-bold leading-none tracking-tight text-xevn-text",
+      className,
+    )}
+    {...props}
+  />
 ));
 AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName;
 

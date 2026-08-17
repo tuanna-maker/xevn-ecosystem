@@ -10,6 +10,12 @@
  * What: Create dialog default requested_by từ profile; label Số lượng đề xuất; data-testid submit
  * Why: DEF-E1A-HCP-SUBMIT-01 — Zod chặn submit (requested_by rỗng) → không có Network mutate
  * must_keep: position_key/department_key picker; U65; HOLD_DEPLOY; JobTemplates/EmployeeForm/Leave
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-02-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: O5 — deprecate dual persist; CTA redirect «Tạo YCTD ngoài ĐB» only
+ * Why: BA O5 HOLD proposals ≠ YCTD SoT · DENY dual-write
+ * must_keep: list read OK · JobRequisitions out_of_plan fork · U65 · honesty false
  */
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -107,6 +113,10 @@ import {
   updateHeadcountProposalStatus,
 } from '@/integrations/hrmApi';
 import { isAbortLikeError, toErrorMessage } from '@/lib/apiError';
+import {
+  YCTD_PROPOSALS_DEPRECATE_VI,
+  YCTD_PROPOSALS_REDIRECT_CTA_VI,
+} from '@/lib/jobRequisitionYctdWave2';
 
 interface HeadcountProposal {
   id: string;
@@ -172,7 +182,12 @@ function normalizeHeadcountProposalRows(
   return Array.isArray(rows) ? (rows as HeadcountProposal[]) : [];
 }
 
-export function HeadcountProposalTab() {
+export type HeadcountProposalTabProps = {
+  /** O5 — redirect to YCTD out_of_plan create (DENY dual persist). */
+  onCreateOutOfPlanYctd?: () => void;
+};
+
+export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposalTabProps = {}) {
   const { t, i18n } = useTranslation();
   const hpFallbacks: Record<string, Record<string, string>> = {
     vi: {
@@ -624,42 +639,21 @@ export function HeadcountProposalTab() {
   };
 
   const handleAddProposal = () => {
-    setEditingProposal(null);
-    form.reset({
-      title: '',
-      department_key: '',
-      position_key: '',
-      current_headcount: 0,
-      requested_headcount: 1,
-      proposal_type: 'new',
-      priority: 'medium',
-      justification: '',
-      requested_by: defaultRequestedBy,
-      notes: '',
+    /** O5 HOLD — DENY dual persist proposals as YCTD SoT. */
+    if (onCreateOutOfPlanYctd) {
+      onCreateOutOfPlanYctd();
+      return;
+    }
+    toast({
+      title: 'Đã ngừng tạo đề xuất tại đây',
+      description: YCTD_PROPOSALS_DEPRECATE_VI,
+      variant: 'destructive',
     });
-    setIsDialogOpen(true);
   };
 
-  const handleEditProposal = (proposal: HeadcountProposal) => {
-    setEditingProposal(proposal);
-    form.reset({
-      title: proposal.title,
-      department_key: proposal.department_key?.trim() || '',
-      position_key: proposal.position_key?.trim() || '',
-      current_headcount: proposal.current_headcount,
-      requested_headcount: proposal.requested_headcount,
-      proposal_type: proposal.proposal_type,
-      priority: proposal.priority,
-      justification: proposal.justification || '',
-      expected_start_date: proposal.expected_start_date ? new Date(proposal.expected_start_date) : undefined,
-      salary_budget_min: proposal.salary_budget_min || undefined,
-      salary_budget_max: proposal.salary_budget_max || undefined,
-      job_description: proposal.job_description || '',
-      requirements: proposal.requirements || '',
-      requested_by: proposal.requested_by,
-      notes: proposal.notes || '',
-    });
-    setIsDialogOpen(true);
+  const handleEditProposal = (_proposal: HeadcountProposal) => {
+    /** O5 — mutate redirects to YCTD out_of_plan (DENY dual persist). */
+    handleAddProposal();
   };
 
   const handleViewProposal = (proposal: HeadcountProposal) => {
@@ -722,78 +716,35 @@ export function HeadcountProposalTab() {
     }
   };
 
-  const onSubmit = async (values: ProposalFormValues) => {
-    if (!effectiveCompanyId) {
-      toast({
-        title: t('common.error'),
-        description: 'Chưa xác định phạm vi công ty để tạo đề xuất.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    // Content update API chưa có — chỉ create + status PATCH (approve/reject).
-    if (editingProposal) {
-      toast({
-        title: 'Chưa hỗ trợ sửa nội dung',
-        description: 'Dùng Duyệt / Từ chối để đổi trạng thái. Tạo đề xuất mới nếu cần thay nội dung.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    try {
-      const pos = buildPositionKeyFields(values.position_key, positionOptions);
-      const dept = buildDepartmentKeyFields(values.department_key, departmentOptions);
-      if (!pos || !dept) {
-        toast({
-          title: 'Thiếu danh mục',
-          description: 'Chọn vị trí và phòng ban từ danh mục (không nhập tự do).',
-          variant: 'destructive',
-        });
-        return;
-      }
-      const proposalData = {
-        company_id: effectiveCompanyId,
-        title: values.title,
-        department_key: dept.department_key,
-        department: dept.department,
-        position_key: pos.position_key,
-        position_name: pos.position,
-        current_headcount: values.current_headcount,
-        requested_headcount: values.requested_headcount,
-        proposal_type: values.proposal_type,
-        priority: values.priority,
-        justification: values.justification || null,
-        expected_start_date: values.expected_start_date ? format(values.expected_start_date, 'yyyy-MM-dd') : null,
-        salary_budget_min: values.salary_budget_min || null,
-        salary_budget_max: values.salary_budget_max || null,
-        job_description: values.job_description || null,
-        requirements: values.requirements || null,
-        requested_by: values.requested_by,
-        notes: values.notes || null,
-        status: 'pending',
-      };
-
-      await createHeadcountProposal(proposalData);
-      toast({
-        title: 'Thành công',
-        description: 'Đã tạo đề xuất ngoài định biên.',
-      });
-
-      await refetchProposals();
-      setIsDialogOpen(false);
-      form.reset();
-    } catch (error: unknown) {
-      console.error('Error saving proposal:', error);
-      toast({
-        title: 'Lỗi',
-        description: toErrorMessage(error, 'Không thể lưu đề xuất'),
-        variant: 'destructive',
-      });
-    }
+  const onSubmit = async (_values: ProposalFormValues) => {
+    /** O5 — DENY dual persist proposals + YCTD. */
+    toast({
+      title: 'Đã ngừng lưu đề xuất tại đây',
+      description: YCTD_PROPOSALS_DEPRECATE_VI,
+      variant: 'destructive',
+    });
+    setIsDialogOpen(false);
+    handleAddProposal();
   };
 
   return (
     <div className="space-y-6">
+      <div
+        className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
+        data-testid="yctd-proposals-deprecate-banner"
+      >
+        <p>{YCTD_PROPOSALS_DEPRECATE_VI}</p>
+        <Button
+          type="button"
+          size="sm"
+          className="mt-2"
+          variant="secondary"
+          data-testid="yctd-proposals-redirect-cta"
+          onClick={handleAddProposal}
+        >
+          {YCTD_PROPOSALS_REDIRECT_CTA_VI}
+        </Button>
+      </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
@@ -876,9 +827,14 @@ export function HeadcountProposalTab() {
                 <Download className="w-4 h-4" />
                 {hp('actions.exportExcel')}
               </Button>
-              <Button size="sm" className="gap-2" onClick={handleAddProposal}>
+              <Button
+                size="sm"
+                className="gap-2"
+                data-testid="yctd-proposals-redirect-cta-header"
+                onClick={handleAddProposal}
+              >
                 <Plus className="w-4 h-4" />
-                {hp('actions.createProposal')}
+                {YCTD_PROPOSALS_REDIRECT_CTA_VI}
               </Button>
             </div>
           </div>

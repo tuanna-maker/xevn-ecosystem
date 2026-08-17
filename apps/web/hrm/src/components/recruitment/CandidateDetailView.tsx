@@ -1,11 +1,11 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Check, User, Phone, Mail, Calendar, MapPin, Briefcase, Building2, 
   FileText, CreditCard, Video, Star, ArrowRightLeft, Megaphone, Tag, Edit,
-  Clock, Users, UserCheck, CheckCircle, XCircle, Loader2, Globe, Paperclip
+  Clock, Users, UserCheck, CheckCircle, XCircle, Loader2, Globe, Paperclip, History, UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { CandidateAvatarUpload } from './CandidateAvatarUpload';
 import { CandidateEvaluationRadarChart } from './CandidateEvaluationRadarChart';
 import { CandidateResumeFiles } from './CandidateResumeFiles';
+import { CandidateStageHistoryPanel } from './CandidateStageHistoryPanel';
 import { 
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from '@/components/ui/table';
@@ -29,10 +30,52 @@ import {
 } from '@/lib/recruitmentFunnel';
 import { resolveMaritalStatusDisplay } from '@/lib/labelMaps';
 import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
+import {
+  hasCandidateYctdLink,
+  resolveCandidatePositionLabel,
+  resolveCandidateYctdLabel,
+} from '@/lib/candidateUvYctdUi';
+import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
+import { ContractHireCreateCta } from '@/components/contracts/ContractHireCreateCta';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { recruitmentChannelOptionsFromCatalog } from '@/lib/catalogSearchPicker';
+import { resolveCandidateSourceDisplayLabel } from '@/lib/candidateRecruitmentChannelUi';
 
 /**
  * @CODE-MEMORY-CHANGE 2026-07-19 XHRM-REC-WF-FE-01
  * Roadmap chips bind API stage via F6 map (applied→new); show LOCKED hint when instance active.
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-FE-01
+ * change_mode: ADD
+ * What: Display YCTD link + position derived (display-ready) — AC-REC-UV-02 F5/detail
+ * must_keep: roadmap/hire · no job_postings SoT · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-05-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: Tab Timeline GET …/stage-history + CTA đổi trạng thái Lane A when YCTD-bound
+ * Why: AC-REC-05-03 Diễn biến #2 · BR-BP-CV-02 · F5 còn vết · DENY invent timeline SoT
+ * must_keep: roadmap chips · YCTD display · U65 · honesty false · C-SLICE · no /rec · no Campaign SoT
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-05-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: CTA Gửi thư (onOpenMail) khi YCTD-bound — parent owns CandidateMailDialog
+ * Why: FR-UC-BP-REC-06 Diễn biến #1 · O1 · DENY mail without YCTD neo
+ * must_keep: stage transition CTA · evaluate · U65 · C-SLICE
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-07-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: CTA Chấp nhận offer (onOpenAcceptOffer) — parent owns CandidateAcceptOfferDialog
+ * Why: FR-UC-BP-REC-07 Diễn biến #1 · O1/O3 · DENY mail=hire · picker-as-DONE
+ * must_keep: mail CTA · stage transition · U65 · C-SLICE · honesty false
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-07-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-REC-CHANNELS-CONSUMER-FE-01
+ * change_mode: ADD
+ * What: source display via resolveRecruitmentChannelLabel when catalog EFF>0
+ * Why: AC-SET-CONSUMER-CH-REC-03
+ * must_keep: YCTD · timeline · U65
  */
 
 interface Candidate {
@@ -42,6 +85,12 @@ interface Candidate {
   email: string;
   phone?: string | null;
   position?: string | null;
+  position_key?: string | null;
+  position_name?: string | null;
+  requisition_id?: string | null;
+  recruitment_request_id?: string | null;
+  yctd_title?: string | null;
+  yctd_code?: string | null;
   source?: string | null;
   stage?: string | null;
   rating?: number | null;
@@ -53,6 +102,9 @@ interface Candidate {
   notes?: string | null;
   avatar_url?: string | null;
   workflow_instance_id?: string | null;
+  employee_id?: string | null;
+  list_lane?: 'pool' | 'spine' | string | null;
+  recruitment_candidate_id?: string | null;
   height?: string | null;
   weight?: string | null;
   ethnicity?: string | null;
@@ -99,6 +151,14 @@ interface CandidateDetailViewProps {
   onBack: () => void;
   onEvaluate: () => void;
   onEdit?: () => void;
+  /** FR-05 — open Lane A transition dialog (parent owns mutate). */
+  onOpenStageTransition?: () => void;
+  /** FR-06 — open mail-by-template dialog (YCTD-bound; parent owns mutate). */
+  onOpenMail?: () => void;
+  /** FR-07 — open accept-offer dialog (offer-ready / idempotent; parent owns mutate). */
+  onOpenAcceptOffer?: () => void;
+  /** Bump after transition 2xx so timeline reloads. */
+  stageHistoryRefreshToken?: number;
 }
 
 // Map candidate stage to timeline index (F6 — applied/new alias → 0)
@@ -112,14 +172,15 @@ const stageToIndex: Record<string, number> = {
   rejected: 5,
 };
 
+/** Precision Motion stage DNA — no AI purple (W4-REC-A · R05 candidate detail) */
 const getStageConfig = (r: (key: string) => string) => ({
-  new: { label: RECRUITMENT_FUNNEL_LABEL_VI.new, color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
-  applied: { label: r('stages.applied'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: <Users className="w-4 h-4" /> },
-  screening: { label: r('stages.screening'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: <Clock className="w-4 h-4" /> },
-  interview: { label: r('stages.interview'), color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', icon: <UserCheck className="w-4 h-4" /> },
-  offer: { label: r('stages.offer'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: <CheckCircle className="w-4 h-4" /> },
-  hired: { label: r('stages.hired'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: <CheckCircle className="w-4 h-4" /> },
-  rejected: { label: r('stages.rejected'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: <XCircle className="w-4 h-4" /> },
+  new: { label: RECRUITMENT_FUNNEL_LABEL_VI.new, color: 'bg-primary/15 text-primary', icon: <Users className="w-4 h-4" /> },
+  applied: { label: r('stages.applied'), color: 'bg-primary/15 text-primary', icon: <Users className="w-4 h-4" /> },
+  screening: { label: r('stages.screening'), color: 'bg-warning/15 text-warning', icon: <Clock className="w-4 h-4" /> },
+  interview: { label: r('stages.interview'), color: 'bg-xevn-accent/15 text-xevn-accent', icon: <UserCheck className="w-4 h-4" /> },
+  offer: { label: r('stages.offer'), color: 'bg-warning/15 text-warning', icon: <CheckCircle className="w-4 h-4" /> },
+  hired: { label: r('stages.hired'), color: 'bg-success/15 text-success', icon: <CheckCircle className="w-4 h-4" /> },
+  rejected: { label: r('stages.rejected'), color: 'bg-destructive/15 text-destructive', icon: <XCircle className="w-4 h-4" /> },
 });
 
 const getInterviewStatusConfig = (r: (key: string) => string) => ({
@@ -137,11 +198,39 @@ interface EvaluationScoreRow {
   weight: number;
 }
 
-export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: CandidateDetailViewProps) {
+export function CandidateDetailView({
+  candidate,
+  onBack,
+  onEvaluate,
+  onEdit,
+  onOpenStageTransition,
+  onOpenMail,
+  onOpenAcceptOffer,
+  stageHistoryRefreshToken = 0,
+}: CandidateDetailViewProps) {
   const { t } = useTranslation();
   const r = (key: string) => t(`rc.${key}`);
   const { currentCompanyId } = useAuth();
   const { toast } = useToast();
+  const positionLabel = resolveCandidatePositionLabel(candidate);
+  const yctdLabel = resolveCandidateYctdLabel(candidate);
+  const showYctd = hasCandidateYctdLink(candidate);
+  const { catalogs } = useSettingsCatalogsOverview();
+  const channelCatalogOptions = useMemo(
+    () => recruitmentChannelOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const channelCatalogCount = channelCatalogOptions.length;
+  const sourceDisplayLabel = useMemo(
+    () =>
+      resolveCandidateSourceDisplayLabel(
+        channelCatalogOptions,
+        channelCatalogCount,
+        candidate.source,
+        (code) => code,
+      ),
+    [channelCatalogOptions, channelCatalogCount, candidate.source],
+  );
   
   const [activeTab, setActiveTab] = useState('details');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(candidate.avatar_url || null);
@@ -221,10 +310,19 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
       if (!currentCompanyId || activeTab !== 'scoring') return;
       setLoadingEvaluation(true);
       try {
-        const result = await listCandidateEvaluations({
-          company_id: currentCompanyId,
-          candidate_id: candidate.id,
-        });
+        const spineId = (candidate.recruitment_candidate_id ?? '').trim();
+        const result = await listCandidateEvaluations(
+          spineId
+            ? {
+                company_id: currentCompanyId,
+                recruitment_candidate_id: spineId,
+              }
+            : {
+                company_id: currentCompanyId,
+                candidate_id: candidate.id,
+                include_legacy: true,
+              },
+        );
         const rows = (result.data ?? []) as Array<{ scores?: EvaluationScoreRow[] }>;
         const latest = rows.find((row) => Array.isArray(row.scores) && row.scores.length > 0);
         setEvaluationScores(latest?.scores ?? []);
@@ -276,6 +374,9 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
     { id: 'details', label: r('tabs.details'), icon: FileText, color: 'bg-blue-500' },
     { id: 'candidate', label: r('tabs.candidate'), icon: User, color: 'bg-green-500' },
     { id: 'resume', label: r('tabs.resume'), icon: Paperclip, color: 'bg-teal-500' },
+    ...(showYctd
+      ? [{ id: 'stage-history', label: 'Lịch sử trạng thái', icon: History, color: 'bg-primary' }]
+      : []),
     { id: 'interview', label: r('tabs.interview'), icon: Video, color: 'bg-orange-500' },
     { id: 'scoring', label: r('tabs.scoring'), icon: Star, color: 'bg-yellow-500' },
     { id: 'campaign', label: r('tabs.campaign'), icon: Megaphone, color: 'bg-pink-500' },
@@ -291,15 +392,69 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
           </Button>
           <div>
             <h2 className="text-xl font-bold">{candidate.full_name}</h2>
-            <p className="text-sm text-muted-foreground">{candidate.position || r('noPosition')}</p>
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid={HDSD_MUTATE_TEST_IDS.candidateListPosition}
+            >
+              {positionLabel !== '—' ? positionLabel : r('noPosition')}
+            </p>
+            {showYctd ? (
+              <p
+                className="text-xs text-muted-foreground mt-0.5"
+                data-testid={HDSD_MUTATE_TEST_IDS.candidateListYctd}
+                data-requisition-id={
+                  candidate.requisition_id || candidate.recruitment_request_id || ''
+                }
+              >
+                YCTD: {yctdLabel}
+              </p>
+            ) : null}
           </div>
         </div>
-        {onEdit && (
-          <Button variant="outline" onClick={onEdit}>
-            <Edit className="w-4 h-4 mr-2" />
-            {r('editBtn')}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {onOpenMail ? (
+            <Button
+              type="button"
+              variant="outline"
+              data-testid="rec-mail-open-detail"
+              onClick={onOpenMail}
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Gửi thư
+            </Button>
+          ) : null}
+          {onOpenAcceptOffer ? (
+            <Button
+              type="button"
+              variant="default"
+              data-testid="rec-accept-offer-open-detail"
+              onClick={onOpenAcceptOffer}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Chấp nhận offer
+            </Button>
+          ) : null}
+          {candidate.employee_id?.trim() ? (
+            <ContractHireCreateCta employeeId={candidate.employee_id} />
+          ) : null}
+          {onOpenStageTransition ? (
+            <Button
+              type="button"
+              variant="secondary"
+              data-testid="rec-stage-transition-open-detail"
+              onClick={onOpenStageTransition}
+            >
+              <ArrowRightLeft className="w-4 h-4 mr-2" />
+              Đổi trạng thái
+            </Button>
+          ) : null}
+          {onEdit && (
+            <Button variant="outline" onClick={onEdit}>
+              <Edit className="w-4 h-4 mr-2" />
+              {r('editBtn')}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
@@ -317,6 +472,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
                   'shrink-0 gap-2',
                   activeTab === tab.id && 'bg-primary text-primary-foreground'
                 )}
+                data-testid={tab.id === 'stage-history' ? 'rec-stage-history-tab' : undefined}
               >
                 <div className={cn('w-5 h-5 rounded flex items-center justify-center text-white', tab.color)}>
                   <TabIcon className="w-3 h-3" />
@@ -327,6 +483,17 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
           })}
         </div>
       </div>
+
+      {activeTab === 'stage-history' && showYctd ? (
+        <Card>
+          <CardContent className="pt-6">
+            <CandidateStageHistoryPanel
+              candidate={candidate}
+              refreshToken={stageHistoryRefreshToken}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* Main Content - Details Tab */}
       {activeTab === 'details' && (
@@ -430,7 +597,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
                   </div>
                   <h3 className="text-lg font-bold">{candidate.full_name}</h3>
                   <p className="text-sm text-muted-foreground mb-2">
-                    {candidate.position || r('noPosition')}
+                    {positionLabel !== '—' ? positionLabel : r('noPosition')}
                   </p>
                   <Badge className={stageConfig[candidate.stage || 'applied']?.color}>
                     {stageConfig[candidate.stage || 'applied']?.label}
@@ -450,7 +617,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
               <CardContent className="space-y-4">
                 <ContactItem icon={Phone} label={r('phone')} value={candidate.phone || r('noData')} />
                 <ContactItem icon={Mail} label={r('email')} value={candidate.email} />
-                <ContactItem icon={Briefcase} label={r('position')} value={candidate.position || r('notDetermined')} />
+                <ContactItem icon={Briefcase} label={r('position')} value={positionLabel !== '—' ? positionLabel : r('notDetermined')} />
                 <ContactItem 
                   icon={Calendar} 
                   label={r('appliedDate')} 
@@ -459,7 +626,7 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
                     : r('notDetermined')
                   } 
                 />
-                <ContactItem icon={MapPin} label={r('source')} value={candidate.source || r('sourceOther')} />
+                <ContactItem icon={MapPin} label={r('source')} value={sourceDisplayLabel !== '—' ? sourceDisplayLabel : r('sourceOther')} />
               </CardContent>
             </Card>
 
@@ -487,8 +654,11 @@ export function CandidateDetailView({ candidate, onBack, onEvaluate, onEdit }: C
               <InfoItem icon={User} label={r('fullName')} value={candidate.full_name} />
               <InfoItem icon={Mail} label={r('email')} value={candidate.email} />
               <InfoItem icon={Phone} label={r('phone')} value={candidate.phone || r('noData')} />
-              <InfoItem icon={Briefcase} label={r('formPosition')} value={candidate.position || r('notDetermined')} />
-              <InfoItem icon={MapPin} label={r('source')} value={candidate.source || r('sourceOther')} />
+              <InfoItem icon={Briefcase} label={r('formPosition')} value={positionLabel !== '—' ? positionLabel : r('notDetermined')} />
+              {showYctd ? (
+                <InfoItem icon={Building2} label="YCTD" value={yctdLabel} />
+              ) : null}
+              <InfoItem icon={MapPin} label={r('source')} value={sourceDisplayLabel !== '—' ? sourceDisplayLabel : r('sourceOther')} />
             </CardContent>
           </Card>
 

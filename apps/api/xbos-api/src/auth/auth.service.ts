@@ -52,6 +52,17 @@
  * Change:     QC GWC residual re-dispatch — live dev-portal still expiresInSec=86400 / jwt_delta=86400;
  *             full probe EXIT=0 (L2 23/23 L2.5 7/7); jest auth+jwt-sign 10/10; no TTL math / deploy (HOLD_DEPLOY).
  * must_keep:  expiresInSec === jwt_delta === 86400; existing auth/scope; U65 zero-seed
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem:   W1-B-03-AUTH-BE
+ * Date:       2026-08-03
+ * change_mode: UPGRADE
+ * What:       login/me/select-membership trả membership display-ready (tenant_label,
+ *             company_label, role_label, tenant_kind_label, membershipId); JWT claim
+ *             membershipId per API_CONTRACT §8.2. Không thêm cột locked_until (R-M01-LOCKOUT-COL).
+ * Why:        OS 28 — FE không invent nhãn tenant/role từ raw key.
+ * SRS:        FR-UC-M01 · Diễn biến #1–5 · API_CONTRACT_NEW §8
+ * must_keep:  expiresInSec 86400; raw tenantId/roleCode/companyId; U65 zero-seed; no lockout DDL
  */
 
 import { createHash, timingSafeEqual } from 'node:crypto';
@@ -61,6 +72,10 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { XbosDbService } from '../db/xbos-db.service';
 import { TenantScopeService } from '../tenant-scope/tenant-scope.service';
 import { ensureAllPilotMemberships, ensurePilotMembershipForUser } from './pilot-membership.bootstrap';
+import {
+  toPortalMembershipDisplay,
+  type PortalMembershipDisplay,
+} from './membership-display';
 import {
   PILOT_PORTAL_DEV_PASSWORD,
   PILOT_PORTAL_USERS,
@@ -149,6 +164,48 @@ export class AuthService implements OnModuleInit {
     await ensureAllPilotMemberships(this.db);
   }
 
+  /**
+   * OS 28 / API_CONTRACT §8 — memberships with Vietnamese labels + membershipId.
+   * Active rows only; inactive → omitted (select → XBOS-AUTH-403).
+   */
+  private async listDisplayMemberships(userId: string): Promise<PortalMembershipDisplay[]> {
+    const accessible = await this.tenantScope.listAccessible(userId);
+    if (!accessible.length) return [];
+    const idRes = await this.db.query<{ id: string; tenant_id: string }>(
+      `SELECT id::text AS id, tenant_id
+       FROM public.xbos_user_tenant_membership
+       WHERE user_id = $1 AND status = 'active'`,
+      [userId],
+    );
+    const idByTenant = new Map(
+      idRes.rows.map((r) => [String(r.tenant_id).trim().toLowerCase(), String(r.id)]),
+    );
+    return accessible.map((m) => {
+      const key = m.tenantId.trim().toLowerCase();
+      const membershipId = idByTenant.get(key) ?? `${userId}:${key}`;
+      return toPortalMembershipDisplay(m, membershipId);
+    });
+  }
+
+  private signPortalAccessToken(
+    userId: string,
+    membership: PortalMembershipDisplay,
+    expiresInSec: number,
+  ): string {
+    return signServiceJwt(
+      {
+        sub: userId,
+        email: userId,
+        tenantId: membership.tenantId,
+        companyId: membership.companyId,
+        roleCode: membership.roleCode,
+        membershipId: membership.membershipId,
+        default_company_id: membership.companyId,
+      },
+      expiresInSec,
+    );
+  }
+
   async login(email: string, password: string) {
     const userId = email.trim().toLowerCase();
     const res = await this.db.query<PortalUserRow>(
@@ -166,23 +223,16 @@ export class AuthService implements OnModuleInit {
       throw new ApiException('XBOS-AUTH-401', 'Email hoặc mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
     }
 
+    // R-M01-LOCKOUT-COL: locked_until chưa có cột DB — NFR app-level residual; không invent DDL.
     await ensurePilotMembershipForUser(this.db, userId);
-    const memberships = await this.tenantScope.listAccessible(userId);
+    const memberships = await this.listDisplayMemberships(userId);
     if (!memberships.length) {
       throw new ApiException('XBOS-AUTH-403', 'Tài khoản chưa được gán tenant', HttpStatus.FORBIDDEN);
     }
-    const defaultMembership = memberships.find((m) => m.roleCode.includes('ceo')) ?? memberships[0];
+    const defaultMembership =
+      memberships.find((m) => m.roleCode.toLowerCase().includes('ceo')) ?? memberships[0];
     const expiresInSec = resolvePortalLoginJwtTtlSec();
-    const accessToken = signServiceJwt(
-      {
-        sub: userId,
-        email: userId,
-        tenantId: defaultMembership.tenantId,
-        companyId: defaultMembership.companyId,
-        roleCode: defaultMembership.roleCode,
-      },
-      expiresInSec,
-    );
+    const accessToken = this.signPortalAccessToken(userId, defaultMembership, expiresInSec);
 
     return {
       accessToken,
@@ -191,11 +241,12 @@ export class AuthService implements OnModuleInit {
       memberships,
       defaultTenantId: defaultMembership.tenantId,
       defaultCompanyId: defaultMembership.companyId,
+      defaultMembershipId: defaultMembership.membershipId,
     };
   }
 
   async me(userId: string) {
-    const memberships = await this.tenantScope.listAccessible(userId);
+    const memberships = await this.listDisplayMemberships(userId);
     const res = await this.db.query<{ display_name: string }>(
       `SELECT display_name FROM public.xbos_portal_user WHERE user_id = $1 LIMIT 1`,
       [userId],
@@ -206,29 +257,20 @@ export class AuthService implements OnModuleInit {
     };
   }
 
-  /** UC-HRM-SCOPE-04 — re-issue portal JWT for selected tenant membership (ADR §5.3). */
+  /** FR-UC-M01 / UC-HRM-SCOPE-04 — re-issue portal JWT for selected tenant membership. */
   async selectMembership(userId: string, tenantId: string) {
     const normalizedTenant = tenantId.trim().toLowerCase();
-    const memberships = await this.tenantScope.listAccessible(userId);
+    const memberships = await this.listDisplayMemberships(userId);
     const match = memberships.find((m) => m.tenantId.trim().toLowerCase() === normalizedTenant);
     if (!match) {
       throw new ApiException(
         'XBOS-AUTH-403',
-        'Membership không thuộc tài khoản hiện tại',
+        'Membership không thuộc tài khoản hiện tại hoặc đã ngưng hiệu lực',
         HttpStatus.FORBIDDEN,
       );
     }
     const expiresInSec = resolvePortalLoginJwtTtlSec();
-    const accessToken = signServiceJwt(
-      {
-        sub: userId,
-        email: userId,
-        tenantId: match.tenantId,
-        companyId: match.companyId,
-        roleCode: match.roleCode,
-      },
-      expiresInSec,
-    );
+    const accessToken = this.signPortalAccessToken(userId, match, expiresInSec);
     return {
       accessToken,
       expiresInSec,
@@ -236,6 +278,7 @@ export class AuthService implements OnModuleInit {
       memberships,
       defaultTenantId: match.tenantId,
       defaultCompanyId: match.companyId,
+      defaultMembershipId: match.membershipId,
     };
   }
 }

@@ -171,6 +171,7 @@ sequenceDiagram
 - If validation DTO thất bại -> `HRM-ERR-VALIDATION`.
 - Else khi tạo đơn -> fanout `leave_request.created` theo cùng pipeline UC-HRM-09.
 - Else khi duyệt/từ chối -> fanout `leave_request.approved|rejected`; body quyết định dùng `reviewer_name` (và tuỳ chọn `reviewer_employee_id`).
+- **Phase-1 approve honesty (DOC-DELTA):** Nghiệm thu duyệt đơn nghỉ = **một cấp quản lý trực tiếp** (WF `hrm_leave_approval` 1 bước). Thang L2 theo số ngày = **WAIVED_P1** — khung configurable Option A giữ backlog; **không** invent production `N`/`T_L1`; `attendance_uat_ready=false`.
 
 ### UC-HRM-11 — Vòng đời yêu cầu dịch vụ + thông báo
 
@@ -637,11 +638,23 @@ sequenceDiagram
 
 ### UC-HRM-24 — Embed: lương
 
-**Purpose:** Xem payslip / kỳ lương tóm tắt trên cockpit.
+**Purpose:** Xem payslip / kỳ lương tóm tắt trên cockpit; nối Hire-to-Pay bước lương (sau NV Hoạt động → kỳ / đợt → phiếu).
 
-**Activity:** `GET /api/hrm/payroll/payslips?company_id=`.
+**Activity:** `GET /api/hrm/payroll/payslips?company_id=` · periods process/enroll (sau TechSpec).
 
-**Business Logic:** Fallback mock chỉ dev; production: empty hoặc API.
+**Business Logic:** Fallback mock chỉ dev; production: empty hoặc API. Empty sau chạy đợt phải có lý do nghiệp vụ đo được — không im lặng.
+
+**Trace Enterprise:** `FR-UC-BP-PAY-06` · `FR-UC-BP-PAY-08` · `FR-UC-BP-PAY-01` (sheet chốt) · `FR-UC-BP-PAY-02` (dual SoT · AC-PAY-COMP-01) · AC-PAY-HIRE-01..05 (`SRS_HRM_ENTERPRISE` v0.16).
+
+| AC ID | Pass | Fail |
+|-------|------|------|
+| **AC-PAY-HIRE-01** | Hire → Active cùng `company_id` → sau enroll/process hợp lệ → payslip list chứa `employee_id` **hoặc** empty copy nêu lý do | Im lặng 0 phiếu dù đủ điều kiện |
+| **AC-PAY-HIRE-02** | Không toast success khi API không persist | Fake success |
+| **AC-PAY-HIRE-03** | Period không overlap; closed reject mutate | Mutate sau close / overlap trái chính sách |
+| **AC-PAY-HIRE-04** | Sau đưa NV / chạy đợt 2xx: FE list phiếu / dòng kỳ cập nhật ngay (có NV hoặc empty có lý do); không spinner vô hạn | Màn không đổi sau 2xx; lưới trống mãi |
+| **AC-PAY-HIRE-05** | F5 / mở lại menu Lương → cùng kỳ: phiếu còn; mở chi tiết đúng NV | Phiếu biến mất sau F5 |
+
+**Honesty:** `payroll_e2e_ready=false` cho đến QA browser U65 + J-HRM-07 / J-HRM-07b.
 
 ### UC-HRM-25 — Embed: hợp đồng và BHXH
 
@@ -714,7 +727,7 @@ sequenceDiagram
 | **BR-DEC-02** | Scope list = `resolveHrmListScope` (group CEO `main` = rollup; member = một `company_id`). Get-by-id cùng scope ladder (scope parity). |
 | **BR-DEC-03** | **A-DEC-EMPTY** là trạng thái nghiệp vụ hợp lệ khi DB không có QSĐ trong scope — **không** đồng nghĩa «API chưa triển khai». |
 | **BR-DEC-04** | Catalog loại QSĐ tham chiếu `decision_types` (DM §28) khi đã sync; thiếu catalog không được giả row mock. |
-| **BR-DEC-05** | `employee_id` optional UUID; khi có phải thuộc scope / tồn tại NV — không orphan hiển thị như «Test 123». |
+| **BR-DEC-05** | **DOC-DELTA `PO-HRM-E2E-LINK-EMP-DOCS-01` (2026-08-06):** Với `decision_type` ∈ nhóm **gắn người** (bổ nhiệm, thuyên chuyển, và loại cấu hình tenant tương đương) → `employee_id` **required** (UUID hồ sơ trong scope). Chỉ các loại **không gắn người** (nếu tenant cấu hình) được `employee_id` optional. Khi có `employee_id` phải thuộc scope / tồn tại NV — không orphan hiển thị như «Test 123». Đồng bộ Enterprise FR-UC-BP-CORE-01a / AC-DEC-WH-01. |
 | **BR-DEC-06** | **DONE / fidelity claim bị cấm** cho đến khi **AC-DEC-DENSITY** + ít nhất một nhánh mutate **H-DEC-CREATE** (browser U65) PASS có evidence. Load-empty PASS ≠ module DONE. |
 
 **Data Interaction & Validation:**
@@ -723,8 +736,8 @@ sequenceDiagram
 |----------------|--------|----------------------|
 | `company_id` | JWT + query/header | Required; mismatch → 409 |
 | `decision_type` | Form / query filter | Required on create; tabs filter list |
-| `title` / `employee_name` | Form | Required semantics trên UI create; BE `employee_name` required |
-| `employee_id` | Optional UUID | Khi set: UUID hợp lệ |
+| `title` / `employee_name` | Form | Required semantics trên UI create; `employee_name` = denorm hiển thị từ hồ sơ khi đã chọn `employee_id` |
+| `employee_id` | **Required** khi loại QSĐ gắn người; optional chỉ loại không gắn người | UUID hợp lệ + thuộc scope; create gắn người thiếu id → chặn (AC-DEC-EMP-01) |
 | `effective_date`, `signing_date`, … | Form | ISO date string khi có |
 | Envelope | BE | List: `HRM-DEC-200`; Create: `HRM-DEC-201` |
 | Empty UI | FE i18n `decisions.noData` | «Không có quyết định nào» khi `total:0` |
@@ -737,8 +750,9 @@ sequenceDiagram
 | **AC-DEC-02** (live-empty) | Khi `total:0`: UI «Không có quyết định nào»; **không** «chưa triển khai API» | Copy deferred/mock hoặc fake fill |
 | **AC-DEC-03** (list non-empty) | Khi `total≥1`: ≥1 row thật; tab counts khớp; click detail → GET by id 200 | Mock names / detail 404 scope |
 | **AC-DEC-04** (CRUD create) | FE: Lưu → POST **201** → FE sau 2xx + **F5** còn row | Chỉ API PASS không đổi UI; hoặc seed để có row |
+| **AC-DEC-EMP-01** (gắn người) | Loại bổ nhiệm/thuyên chuyển (và loại cấu hình gắn người): form **bắt buộc** chọn `employee_id` trong scope trước Lưu; sau hiệu lực có dòng lịch sử công tác (Enterprise CORE-01a) | Lưu chỉ `employee_name` chữ; hoặc hiệu lực không ghi WH |
 | **AC-DEC-DENSITY** (fidelity) | BRD density mục tiêu ghi rõ trong matrix §2.1 (tối thiểu: ≥1 QSĐ / pilot company **sau** luồng FE create **hoặc** sau seed fidelity **chỉ** khi sponsor explicit bootstrap) | Claim DONE khi `total:0` toàn group mà chưa có AC density closed |
-| **AC-DEC-DONE gate** | **UC-HRM-27 = DONE** chỉ khi AC-DEC-01..04 + AC-DEC-DENSITY PASS + QC/QA evidence | Claim DONE chỉ vì empty honesty / API tồn tại |
+| **AC-DEC-DONE gate** | **UC-HRM-27 = DONE** chỉ khi AC-DEC-01..04 + AC-DEC-EMP-01 (loại gắn người) + AC-DEC-DENSITY PASS + QC/QA evidence | Claim DONE chỉ vì empty honesty / API tồn tại |
 
 **Phụ thuộc:** Scope ladder ADR; catalog `decision_types`; OpenAPI/hrm-api decisions paths (BE). Evidence runtime: `docs/qa/evidence/p1-hrm-menu-decisions-20260717.md`.
 
@@ -754,18 +768,19 @@ sequenceDiagram
 
 | In scope (HRM) | Out of scope (HRM) |
 |----------------|-------------------|
-| Read list/detail từ catalog snapshot (settings-catalogs / catalog-sync) | CRUD process/policy trên HRM API |
+| Read list/detail từ catalog snapshot (settings-catalogs / catalog-sync) keys DM §55–58 | CRUD process/policy trên HRM API |
 | Empty state trung thực; View-only | Fake Add/Edit/Delete toast (`useProcesses` stub) |
-| Copy/help «Quản trị mã quy trình trên XBOS» + optional deep-link | Document-vault CRUD mới dưới menu này (thuộc BRD vault / XBOS văn bản nội bộ §70 nếu mở CR) |
+| **Deep-link kích hoạt được** «Quản trị mã quy trình trên Command Center» (route WF/catalog admin) khi empty hoặc luôn có CTA admin | Document-vault CRUD mới dưới menu này (thuộc BRD vault / XBOS văn bản nội bộ §70 nếu mở CR) |
+| Bind snapshot sau XBOS publish → HRM pull — **cấm** hard-coded `[]` che catalog đã sync | Claim «đã có quy trình» khi list luôn hard-empty |
 
 **Usecases:**
 
 | Path | Flow | Outcome |
 |------|------|---------|
-| Happy | Catalog §55–58 có item → bảng/list read-only; click row → view dialog (no edit) | AC-PROC-01/02 |
-| Alternate (empty) | Chưa sync / 0 item → «Chưa có quy trình/quy định» | AC-PROC-03 |
+| Happy | Catalog §55–58 có item (sau pull) → bảng/list read-only; click row → view dialog (no edit) | AC-PROC-01/02 · **AC-PROC-06** |
+| Alternate (empty) | Chưa sync / 0 item → «Chưa có quy trình/quy định» + **nút/link** deep-link CC | AC-PROC-03 · **AC-PROC-05** |
 | Exception | Catalog API 5xx → banner (BR-MOCK-02); **không** mock fill | AC-PROC-01 |
-| Exception (forbidden) | User bấm Thêm/Sửa/Xóa | **Không tồn tại** sau FE fix — BR-PROC-02 |
+| Exception (forbidden) | User bấm Thêm/Sửa/Xóa | **Không tồn tại** — BR-PROC-02 |
 
 ```mermaid
 sequenceDiagram
@@ -780,16 +795,34 @@ sequenceDiagram
     HRM-->>User: list read-only + View
   else rỗng
     Cat-->>HRM: []
-    HRM-->>User: empty honest
+    HRM-->>User: empty + deep-link Command Center
   end
   Note over User,XBOS: Tạo/sửa mã quy trình = XBOS-DM-HRM-14 (không qua HRM mutate)
 ```
 
-**Business rules:** BR-PROC-01..03 (matrix §6). **AC:** AC-PROC-01..04 (matrix §5).
+**Diễn biến (ADD bind + deep-link):**
 
-**Dev-FE mandate:** **REMOVE** fake Add/Edit/Delete — **không** wire HRM CRUD API. Evidence BA: `docs/qa/evidence/p1-hrm-processes-ba-01-20260717.md`.
+| # | Tương tác | Kết quả |
+|---|-----------|---------|
+| 1 | Mở Quy trình | GET snapshot keys DM §55–58 |
+| 2 | Có item | List read-only + View |
+| 3 | 0 item | Empty + **nút/link** «Quản trị mã quy trình trên Command Center» |
+| 4 | User tìm Thêm/Sửa/Xóa | Không có control; không toast success |
 
-**Status:** **Read-only XBOS ref** · fidelity density = catalog present (không G-FID transactional).
+**Business rules:** BR-PROC-01..03 (matrix §6). **AC:** AC-PROC-01..04 + **AC-PROC-05** (deep-link đo được) + **AC-PROC-06** (bind ≠ hard-empty sau pull) — matrix §5.
+
+**AC testable (Enterprise FR-UC-BP-PROC-01 · 2026-08-06):**
+
+| AC | Bước kiểm | Pass |
+|----|-----------|------|
+| **AC-PROC-05** | Empty (hoặc help) → xác nhận có control `a`/`button`/`role=link` nhãn quản trị CC → kích hoạt → URL/surface Command Center WF hoặc catalog admin | Navigate được; không chỉ text |
+| **AC-PROC-06** | Tiên quyết: XBOS publish mã §55–58 + HRM pull thành công có `effectiveItems>0` → mở `/processes` → `items.length ≥ 1` từ snapshot; empty **chỉ** khi snapshot thật = 0 | Fail nếu `queryFn` luôn `[]` khi catalog có item |
+
+**Enterprise SoT (khách):** `SRS_HRM_ENTERPRISE.md` **FR-UC-BP-PROC-01** v0.17. **HDSD:** `docs/client-delivery/hdsd/hrm/HDSD_XEVN_CH08_HRM_QUY_TRINH.md`.
+
+**Dev-FE mandate:** **REMOVE** fake Add/Edit/Delete — **không** wire HRM CRUD API. Bind GET catalog §55–58 **hoặc** empty+AC-PROC-05. Evidence BA: `docs/qa/evidence/p1-hrm-processes-ba-01-20260717.md` · pay-cfg docs: `docs/qa/evidence/po-hrm-e2e-link-pay-cfg-docs-01.md` · deeplink docs: `docs/qa/evidence/po-hrm-proc-deeplink-docs-01.md`.
+
+**Status:** **Read-only XBOS ref** · `processes_catalog_bound=false` đến khi AC-PROC-06 PASS · fidelity density = catalog present (không G-FID transactional).
 
 ## 14. Ứng dụng HRM native — bổ sung mock → API
 
@@ -950,7 +983,15 @@ Mọi field **chức danh / vị trí–JD tuyển dụng / loại nghỉ / lo�
 | **FR-HRM-SC-JT-01** | Mẫu JD / job templates (F6 UC-HRM-RC-07) | Tạo YCTD UC-HRM-22/30 |
 | **FR-HRM-SC-LEAVE-01** | Loại nghỉ + entitlement | UC-HRM-10 đơn nghỉ |
 | **FR-HRM-SC-DEC-01** | Loại quyết định | UC-HRM-27 |
-| **FR-HRM-SC-PAY-01** | Thành phần lương | UC-HRM-28 / payslip |
+| **FR-HRM-SC-PAY-01** | Thành phần lương (`salary_components`) | UC-HRM-28 / payslip / SalaryComponentsTab |
+
+> **ADD `PO-HRM-E2E-LINK-PAY-CFG-DOCS-01` — dual SoT lock (không wipe E2):**  
+> | Layer | storageKey / SoT | Quy tắc |  
+> |-------|------------------|---------|  
+> | Catalog tập đoàn/CT | `salary_components` (+ sync XBOS) | Mã chuẩn publish/pull |  
+> | Bản chất / loại | `pay_types` (FR-HRM-SC-PAY-TYPE-01) | Picker bắt buộc trên form instance |  
+> | Instance kỳ / mẫu | TX payroll components / template lines | Tham chiếu **code catalog** — cấm free-text mã mới làm SoT khi catalog có items (trừ extension đã duyệt) |  
+> **AC-PAY-COMP-01:** Khi `salary_components` effectiveItems > 0 → tạo TP bắt buộc chọn code từ catalog (hoặc extension); không Input mã tự do SoT. Enterprise mirror: `SRS_HRM_ENTERPRISE` FR-UC-BP-PAY-02 v0.13.
 
 ### 16.2a Settings Master Data expand ≥10 bucket (ADD `BA-ERP-E1B-SRS-01` · E1-B / E-SET-UI)
 
@@ -1005,6 +1046,8 @@ Mọi field **chức danh / vị trí–JD tuyển dụng / loại nghỉ / lo�
 | **Out (không E1-A)** | E1-B Settings expand · E2 Payroll `component_type`/mock · employment_type / channels first-class · XBOS policy expand |
 | **AC** | AC-E1A-PICKER/WIRE/F5/EMPTY/BE/U72/NOREG + per-screen AC-E1A-WH/DEC/JP/HC/CI/CAN/DEPT-* |
 | **Next U71** | `BA-ERP-E1A-DB-API-01` → SA TechSpec → Dev (sau lock) |
+
+> **DOC-DELTA EMP linkage (`PO-HRM-E2E-LINK-EMP-DOCS-01` · 2026-08-06) — A1 Work History mirror Enterprise:** Mọi create/update lịch sử công tác bắt buộc `position_key` (+ dept code khi bắt buộc) từ catalog picker; **cấm** free-text SoT. AC mirror Enterprise: **AC-WH-PICK-01..03** (khớp **AC-HRM-PICKER-01** / AC-E1A-WH). QSĐ gắn người → ghi WH: xem **BR-DEC-05** + Enterprise **FR-UC-BP-CORE-01a**. **Không** claim `hrm_personnel_uat_ready`.
 
 ### 16.5 E2 E-PAY-CLEAN + Contract type constraint (ADD `BA-ERP-E2-SRS-01` · 2026-07-28)
 
@@ -1063,6 +1106,60 @@ Mọi field **chức danh / vị trí–JD tuyển dụng / loại nghỉ / lo�
 | **AC** | AC-XBOS-CTRL-01..08 · HRM-01..04 · P1-01..03 |
 | **J-*** | **J-XBOS-CTRL-01** · **J-XBOS-CTRL-02** · **J-XBOS-CTRL-03** |
 | **Next U71** | `SA-ERP-XBOS-CTRL-SPEC-01` TechSpec + API_DESIGN F.1 + DB note → sponsor chốt → E-XBOS-CTRL-G1/G2 |
+
+### 16.8 O4 picker consumer → storageKey (ADD `PO-HRM-E2E-LINK-PAY-CFG-DOCS-01`)
+
+> **ADD-only** — DOC-DELTA ngắn cho QA **J-XBOS-CTRL-01..03** + spot PAY; **không** wipe §16.0–16.7 / E1–E3 / XBOS-CTRL.  
+> **Honesty:** `settings_catalog_e2e_ready=false` đến khi picker matrix consumer khớp key sau publish→pull có evidence browser U65.
+
+| Family | Canonical storageKey | Aliases (đọc) | Consumer surface (gợi ý) | Forbidden |
+|--------|---------------------|---------------|--------------------------|-----------|
+| Chức danh | `job_titles` | positions, employee_positions | Employees / YCTD / Work History | free-text vị trí SoT |
+| Loại nghỉ | `leave_types` | — | Leave form / ATT | invent code trên form |
+| Ca | `shifts` | — | Shifts / leave schedule | dual `work_shifts` HOLD (SA) |
+| Bản chất / loại TP | `pay_types` | component_types, pay_natures | SalaryComponentsTab `component_type` | invent nature khi catalog có items |
+| Thành phần (catalog) | `salary_components` | payroll_components | Settings + create TP (AC-PAY-COMP-01) | coi TX free-text mã là SoT tập đoàn |
+| Mẫu lương | `payroll_templates` | — | SalaryTemplatesTab | — |
+| Loại HĐ | `contract_types` | — | Contracts / EmployeeContracts | — |
+| Loại QSĐ | `hr_decision_types` | decision_types (dual-read) | Decisions | — |
+
+**AC (O4 spot):** Sau XBOS publish + HRM pull — consumer form EMP/ATT/PAY dùng đúng canonical key (hoặc alias registry); empty → CTA Settings; **cấm** hardcode family sai. Map QA: **J-XBOS-CTRL-01..02** · UF-HRM-10 · spot `pay_types` / `salary_components`.
+
+### 16.9 Thiết lập lương — pack P.CNTT (ADD `PO-HRM-PAY-CNTT-SRS-DELTA-01` · 2026-08-11)
+
+> **ADD-only** — sponsor confirm 2026-08-11; **không** REPLACE FR-UC-BP-PAY-01..09 / UC-HRM-24 enroll slice 🟢.  
+> **Body đầy đủ (12 FR · 7 mục · Diễn biến · AC FE sau 2xx + F5):** `docs/program/deltas/PO-HRM-PAY-CNTT-STP-SRS-DELTA-01.md`  
+> **Team mirror:** `docs/program/deltas/PO-HRM-PAY-CNTT-STP-SRS-DELTA-01_team.md`  
+> **Evidence:** `docs/qa/evidence/po-hrm-pay-cntt-srs-delta-01.md`  
+> **Honesty:** `payroll_e2e_ready=false` — Thiết lập metadata ≠ UAT lập bảng · U65 zero-seed.
+
+| UC (ADD) | FR | Mục đích ngắn |
+|----------|-----|----------------|
+| **UC-BP-PAY-STP-01** | FR-UC-BP-PAY-STP-01 | Policy pack **CHUNG** (QĐ 2A · 127A) |
+| **UC-BP-PAY-STP-02** | FR-UC-BP-PAY-STP-02 | Bind policy **RIÊNG** OU/BP |
+| **UC-BP-PAY-STP-03** | FR-UC-BP-PAY-STP-03 | Tham số KPI / PCCV / đơn giá |
+| **UC-BP-PAY-STP-04** | FR-UC-BP-PAY-STP-04 | Ngày công chuẩn theo OU |
+| **UC-BP-PAY-STP-05** | FR-UC-BP-PAY-STP-05 | Policy địa bàn / tuyến (LX · VP) |
+| **UC-BP-PAY-STP-06** | FR-UC-BP-PAY-STP-06 | Trợ lương & chi phí VP tỉnh |
+| **UC-BP-PAY-STP-07** | FR-UC-BP-PAY-STP-07 | Danh mục thành phần lương + starter CHUNG |
+| **UC-BP-PAY-STP-08** | FR-UC-BP-PAY-STP-08 | Sinh TP từ policy fragment |
+| **UC-BP-PAY-STP-09** | FR-UC-BP-PAY-STP-09 | Nhóm lương & gán NV (**UI Thiết lập** · giữ FR-UC-BP-PAY-09 runtime) |
+| **UC-BP-PAY-STP-10** | FR-UC-BP-PAY-STP-10 | Mẫu bảng lương đa OU |
+| **UC-BP-PAY-STP-11** | FR-UC-BP-PAY-STP-11 | Nhiều mẫu / một BP (6 tỉnh · LX đa tỉnh) |
+| **UC-BP-PAY-STP-12** | FR-UC-BP-PAY-STP-12 | Loại input pack (DLL · KPI · CPSC · DT…) |
+
+| BR (ADD) | Ghi chú |
+|----------|---------|
+| **BR-PAY-STP-01..08** | SoT delta §0 — tách CHUNG/RIÊNG · catalog · mẫu · pack · hot-swap |
+
+| AC (U65 — trích) | Pass |
+|------------------|------|
+| **AC-PAY-STP-01..05** | Lưu Thiết lập 2xx → FE list cập nhật → F5 còn |
+| **AC-PAY-STP-GLOBAL-01..03** | FE sau 2xx · scope OU/BP · cấm hardcode 6 mô hình Nest |
+| **AC-PAY-COMP-01** | (giữ) STP-07/10 bind cột catalog |
+
+**E2E spine:** STP-01→02→03..06→07→08→09→10→11→12 → (sau LIVE) FR-UC-BP-PAY-02 công thức · FR-UC-BP-PAY-06 chạy kỳ.  
+**Handoff kế:** SA API_DESIGN F-PAY-POLICY-PACK-* · ba-data column map · UI_SCREEN_SPEC Thiết lập cluster.
 
 ## 17. Hiển thị trường HRM — U72 (ADD `BA-U72-FIELD-DISPLAY-SRS-01`)
 

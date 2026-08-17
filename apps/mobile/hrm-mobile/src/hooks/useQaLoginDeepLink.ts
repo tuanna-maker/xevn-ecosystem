@@ -3,10 +3,14 @@ import { Linking } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { isQaDeepLinkLoginEnabled } from '../config/qaLogin';
 import { getDefaultBaseUrl } from '../integrations/hrmApiClient';
-import { parseQaLoginDeepLink, qaDeepLinkToSignInPayload } from '../integrations/qaLoginDeepLink';
+import {
+  parseQaLoginDeepLink,
+  parseQaLogoutDeepLink,
+  qaDeepLinkToSignInPayload,
+} from '../integrations/qaLoginDeepLink';
 
 export function useQaLoginDeepLink(): void {
-  const { hydrated, signedIn, signIn, employeeId, accessToken } = useAuth();
+  const { hydrated, signedIn, signIn, signOut, employeeId, accessToken } = useAuth();
   const busyRef = useRef(false);
 
   useEffect(() => {
@@ -14,6 +18,15 @@ export function useQaLoginDeepLink(): void {
 
     const handleUrl = async (url: string | null | undefined) => {
       if (!url || busyRef.current) return;
+      if (parseQaLogoutDeepLink(url)) {
+        busyRef.current = true;
+        try {
+          await signOut();
+        } finally {
+          busyRef.current = false;
+        }
+        return;
+      }
       const params = parseQaLoginDeepLink(url);
       if (!params) return;
 
@@ -38,5 +51,5 @@ export function useQaLoginDeepLink(): void {
       void handleUrl(url);
     });
     return () => sub.remove();
-  }, [hydrated, signedIn, signIn, employeeId, accessToken]);
+  }, [hydrated, signedIn, signIn, signOut, employeeId, accessToken]);
 }

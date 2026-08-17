@@ -26,6 +26,27 @@
  * Why: QA-UX-P0C-01 FAIL — live CTA giữ QA_P0C_ADV_STALE sau Hủy→reopen;
  *      Payroll.tsx reducer Advance Dialog orphan (không set(true) từ UI)
  * must_keep: Detail/approval/add-employee paths; C1 tax; D5 Zod; Clock-In
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion P11 KPI cards + create dialog titles ≥20
+ * Why: ADR §16 · FE-PAY P0
+ * must_keep: advanceRequestFormUi atomic open/close; createRequest API; vi-VN formatCurrency; no salary calc invent
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-B-01
+ * change_mode: UPGRADE
+ * What: P17 approval + delete dialogs — title ≥20 Montserrat + precision testids
+ * Why: ADR §16 · W3-PAY-B P17 modal cluster
+ * must_keep: advance approval API; no invent payslip mutate
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-FE-01
+ * change_mode: FIX
+ * What: Wire addEmployee → Nest POST …/employees (HRM-ADV-201); remove FE throw stub
+ * Why: QA-02 residual R-PAY-ADV-EMP-API-ABSENT CLOSED on BE; FE still threw «API thêm NV chưa có»
+ * must_keep: advanceRequestFormUi atomic open/close; U65 no seed; payroll_e2e_ready=false
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useDepartments } from '@/hooks/useDepartments';
@@ -304,7 +325,16 @@ export function AdvanceRequestsTab() {
       
       const updatedEmployees = await fetchRequestEmployees(selectedRequest.id);
       setRequestEmployees(updatedEmployees);
-      
+      setSelectedRequest((prev) =>
+        prev
+          ? {
+              ...prev,
+              employee_count: updatedEmployees.length,
+              total_amount: updatedEmployees.reduce((sum, row) => sum + (row.advance_amount || 0), 0),
+            }
+          : prev,
+      );
+
       setShowAddEmployeeDialog(false);
       setSelectedEmployeesToAdd([]);
       setAdvanceAmounts({});
@@ -510,9 +540,9 @@ export function AdvanceRequestsTab() {
 
         {/* Add Employee Dialog */}
         <Dialog open={showAddEmployeeDialog} onOpenChange={setShowAddEmployeeDialog}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="sm:max-w-[920px]" data-testid="pay-advance-add-emp-dialog-precision">
             <DialogHeader>
-              <DialogTitle>{a('addEmployeeToAdvance')}</DialogTitle>
+              <DialogTitle className="text-[20px] font-bold font-display">{a('addEmployeeToAdvance')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="relative">
@@ -590,9 +620,9 @@ export function AdvanceRequestsTab() {
 
         {/* Approval Dialog */}
         <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="sm:max-w-[920px]" data-testid="pay-advance-approval-dialog-precision">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-[20px] font-bold font-display">
                 {approvalAction === 'approve' ? a('approveAdvanceTitle') : a('rejectAdvanceTitle')}
               </DialogTitle>
             </DialogHeader>
@@ -627,56 +657,56 @@ export function AdvanceRequestsTab() {
   // List view
   return (
     <div className="p-6 space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
+      {/* Stats Cards — Precision Motion */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-testid="pay-advance-precision">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <DollarSign className="w-5 h-5 text-blue-600" />
+              <div className="p-2 bg-xevn-primary/10 rounded-lg">
+                <DollarSign className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{a('totalAdvance')}</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
+                <p className="text-sm text-xevn-textSecondary">{a('totalAdvance')}</p>
+                <p className="text-2xl font-bold text-xevn-text">{stats.total}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <Clock className="w-5 h-5 text-amber-600" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <Clock className="w-5 h-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{a('statusPending')}</p>
-                <p className="text-2xl font-bold text-amber-600">{stats.pending}</p>
+                <p className="text-sm text-xevn-textSecondary">{a('statusPending')}</p>
+                <p className="text-2xl font-bold text-warning">{stats.pending}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <div className="p-2 bg-success/10 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{a('statusApproved')}</p>
-                <p className="text-2xl font-bold text-emerald-600">{stats.approved}</p>
+                <p className="text-sm text-xevn-textSecondary">{a('statusApproved')}</p>
+                <p className="text-2xl font-bold text-success">{stats.approved}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-purple-200 dark:border-purple-800">
+        <Card className="rounded-card border border-xevn-border bg-xevn-surface">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-500/10 rounded-lg">
-                <DollarSign className="w-5 h-5 text-purple-600" />
+              <div className="p-2 bg-xevn-primary/10 rounded-lg">
+                <DollarSign className="w-5 h-5 text-xevn-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{a('totalAdvanceAmount')}</p>
-                <p className="text-lg font-bold text-purple-600">{formatCurrency(stats.totalAmount)}</p>
+                <p className="text-sm text-xevn-textSecondary">{a('totalAdvanceAmount')}</p>
+                <p className="text-lg font-bold text-xevn-text">{formatCurrency(stats.totalAmount)}</p>
               </div>
             </div>
           </CardContent>
@@ -823,9 +853,9 @@ export function AdvanceRequestsTab() {
 
       {/* Add Dialog — UX-06 atomic reset (D-UX-P0C-ADVANCE-LIVE-WIRE-01) */}
       <Dialog open={showAddDialog} onOpenChange={onAddOpenChange}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-advance-create-dialog-precision">
           <DialogHeader>
-            <DialogTitle>{a('createNewAdvance')}</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">{a('createNewAdvance')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -874,9 +904,9 @@ export function AdvanceRequestsTab() {
 
       {/* Delete Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="sm:max-w-[920px]" data-testid="pay-advance-delete-dialog-precision">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-destructive">
+            <DialogTitle className="flex items-center gap-2 text-destructive text-[20px] font-bold font-display">
               <AlertCircle className="w-5 h-5" />
               {a('confirmDelete')}
             </DialogTitle>

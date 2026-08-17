@@ -23,6 +23,14 @@ describe('hrmMetadataCompany', () => {
     expect(serializeMetadataJsonValue('{"code":"QA"}')).toBe('{"code":"QA"}');
     expect(serializeMetadataJsonValue(null)).toBe('null');
   });
+
+  it('wraps plain text and JSON primitives as object for @IsJSON', () => {
+    expect(serializeMetadataJsonValue('Chuyên viên QA')).toBe(
+      '{"value":"Chuyên viên QA"}',
+    );
+    expect(serializeMetadataJsonValue('"scalar-json"')).toBe('{"value":"scalar-json"}');
+    expect(serializeMetadataJsonValue(42)).toBe('{"value":42}');
+  });
 });
 
 describe('D-HRM-LEAVE-REQ-CREATE-FE-01 resolveHrmLeaveCreateCompanyId', () => {

@@ -1,3 +1,32 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     HRM embed — Radix dialog/floating portal → parent document
+ * UC:         UF-HRM dialogs in Command Center (?portal=1)
+ * BR:         Overlay must cover full browser viewport; HRM styles mirrored to parent
+ * SRS:        docs/hrm/SRS.md · dialog a11y / embed chrome
+ * TechSpec:   parent portal + stylesheet sync for Tailwind/shadcn in parent head
+ * Purpose:    Resolve parent body container; clone link/style into parent so portaled
+ *             Dialog/Select classes resolve outside iframe.
+ * WorkItem:   D-FE-CONSOLE-A11Y-DIALOG-RR-01
+ * Coded:      2026-07-20
+ * Callers:    dialog.tsx · alert-dialog.tsx · sheet · select · popover · dropdown
+ * Callees:    getHrmPortalMode
+ * must_keep:  idempotent stylesheet sync; same-origin only; floating z > overlay z
+ * SOLID:      Portal/DOM sync only — geometry/chrome live in CSS + DialogContent
+ * LastVerified: hrmDialogPortal.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-UI-DIALOG-CENTER-01-R2
+ * change_mode: FIX
+ * What: No portal-helper geometry change — DEF-DIALOG-CENTER-CSS-OVERRIDE fixed in
+ *       index.css (HRM + web-portal) `.xevn-dialog-surface:not(.fixed)`. Sync still
+ *       mirrors stylesheets; parent portal CSS must not force position:relative on
+ *       DialogContent that carries Tailwind `fixed`.
+ * Why: QA FAIL — class string had fixed but getComputedStyle(position)=relative
+ * must_keep: sync idempotent; a11y mirror callers; LOGO-02 untouched
+ * LastVerified: docs/qa/evidence/po-hrm-ui-dialog-center-01-r2.md
+ */
+
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 
 const PORTAL_STYLESHEET_HREF_ATTR = 'data-xevn-hrm-portal-href';
@@ -43,8 +72,8 @@ export function getDialogPortalContainer(): HTMLElement | null {
  * Container mặc định cho mọi Radix Portal (Select, Popover, Dropdown…):
  * cùng document với Dialog khi nhúng portal; nếu không thì `document.body` iframe.
  *
- * @param portalScope `'iframe'` — luôn gắn vào iframe body (top-level chrome như OU filter).
- *   `'parent'` / omit — parent body khi embed portal (Select trong Dialog/Sheet đã portal).
+ * @param portalScope `'iframe'` — top-level page chrome (filter ngoài Dialog). `'parent'` — trong Dialog embed.
+ *   Trong Dialog dùng `SettingsDialogSelectContent` (alias parent + z floating).
  */
 export function getRadixPortalContainer(
   portalScope?: 'iframe' | 'parent',

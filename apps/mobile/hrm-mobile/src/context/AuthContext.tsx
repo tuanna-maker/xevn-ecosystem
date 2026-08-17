@@ -1,3 +1,28 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     AuthContext — mobile JWT session + memberships
+ * UC:         FR-UC-M01 · UC-HRM-MOB-01/02
+ * BR:         BR-SCOPE-01 · OS 28 display-ready
+ * SRS:        docs/brand-new-documents-20270801/SRS_NEW.md v1.1 §3.2 · FR-UC-M01
+ * TechSpec:   docs/brand-new-documents-20270801/API_CONTRACT_NEW.md §8.4–8.5
+ * Purpose:    Persist login / select-membership / refresh; giữ memberships từ BE.
+ * WorkItem:   W1-B-04-AUTH-MOB
+ * Coded:      2026-08-03
+ * Callers:    LoginScreen · ScopeScreen · requestHrm
+ * Callees:    hrmRequest · SecureStore · companyWireScope
+ * Impact:     Mất *_label khi persist → Scope hiện slug thô
+ * must_keep:  login / select-membership / refresh flow; raw keys JWT không đổi
+ * SOLID:      Context = session; label bind ở features/auth/membershipDisplay
+ * LastVerified: docs/qa/evidence/w1b-04-auth-mob.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-04-AUTH-MOB
+ * change_mode: UPGRADE
+ * What: MobileMembership ADD company_label / tenant_label / role_label / job_title_label;
+ *       normalizeMemberships khi login/select/hydrate — không FE invent slug→label.
+ * Why: OS 28 · W1-B-03-AUTH-BE display-ready · slice DOC-ENT-P0-AUTH-M01
+ */
+
 import * as SecureStore from 'expo-secure-store';
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -45,11 +70,41 @@ export type MobileMembership = {
 
   employee_name: string;
 
+  /** BE display-ready company name (parity company_label after W1-B-03). */
   company_display: string;
+
+  /** OS 28 — bind UI; do not invent from company_id slug on FE. */
+  company_label?: string;
+
+  tenant_label?: string;
+
+  role_label?: string;
+
+  job_title_label?: string;
 
   is_primary: boolean;
 
 };
+
+/** Normalize membership from login/select/refresh/SecureStore — preserve BE labels. */
+export function normalizeMobileMembership(raw: MobileMembership): MobileMembership {
+  const companyLabel = (raw.company_label ?? '').trim();
+  const companyDisplay = (raw.company_display ?? '').trim();
+  // Xử lý: khi BE gửi company_label — đồng bộ company_display; không promote slug thô thành label.
+  return {
+    ...raw,
+    company_display: companyLabel || companyDisplay,
+    company_label: companyLabel || undefined,
+    tenant_label: (raw.tenant_label ?? '').trim() || undefined,
+    role_label: (raw.role_label ?? '').trim() || undefined,
+    job_title_label: (raw.job_title_label ?? '').trim() || undefined,
+  };
+}
+
+export function normalizeMobileMemberships(list: MobileMembership[] | undefined | null): MobileMembership[] {
+  if (!list?.length) return [];
+  return list.map((m) => normalizeMobileMembership(m));
+}
 
 
 
@@ -430,9 +485,13 @@ function scopeFromLogin(login: MobileLoginResult): {
 
 } {
 
-  const active = login.active_membership;
+  const active = login.active_membership
+    ? normalizeMobileMembership(login.active_membership)
+    : undefined;
 
-  const memberships = login.memberships ?? (active ? [active] : []);
+  const memberships = normalizeMobileMemberships(
+    login.memberships ?? (active ? [active] : []),
+  );
 
   return {
 
@@ -489,7 +548,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         roles: loaded.roles ?? [],
 
-        memberships: loaded.memberships ?? [],
+        memberships: normalizeMobileMemberships(loaded.memberships ?? []),
 
       };
 
@@ -549,7 +608,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       roles: payload.roles ?? parseJwtClaims(payload.accessToken)?.roles ?? [],
 
-      memberships: payload.memberships ?? [],
+      memberships: normalizeMobileMemberships(payload.memberships ?? []),
 
       tokenExpiresAt: payload.tokenExpiresAt || 0,
 

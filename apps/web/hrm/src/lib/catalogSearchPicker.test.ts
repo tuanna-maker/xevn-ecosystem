@@ -27,7 +27,10 @@ import {
   resolveCatalogPickerSelection,
   resolveCatalogWriteKey,
   resolveContractTypeCatalogLabel,
+  resolveContractTypeEditValue,
   resolveDepartmentLabel,
+  recruitmentChannelOptionsFromCatalog,
+  resolveRecruitmentChannelLabel,
   resolveInsurerLabel,
   resolveInsuranceTypeCatalogLabel,
   resolveJobTitleLabel,
@@ -35,6 +38,9 @@ import {
   resolveLeaveTypeLabel,
   resolvePayTypeLabel,
   resolvePositionDisplayLabel,
+  salaryComponentOptionsFromCatalog,
+  resolveSalaryComponentLabel,
+  buildSalaryComponentCatalogFields,
   toCatalogPickerOptions,
   toCompanyCatalogPickerOptions,
 } from './catalogSearchPicker';
@@ -331,6 +337,33 @@ describe('payTypeOptionsFromCatalog — AC-E2-PAY-NATURE-01', () => {
   });
 });
 
+describe('salaryComponentOptionsFromCatalog — AC-PAY-COMP-01', () => {
+  it('returns [] when catalogs empty (no free-text SoT)', () => {
+    expect(salaryComponentOptionsFromCatalog([])).toEqual([]);
+  });
+
+  it('merges salary_components aliases and maps value=code', () => {
+    const opts = salaryComponentOptionsFromCatalog([
+      {
+        catalogKey: 'salary_components',
+        effectiveItems: [{ code: 'LUONG_CB', label: 'Lương cơ bản', status: 'active' }],
+      },
+      {
+        catalogKey: 'payroll_components',
+        effectiveItems: [{ code: 'PC_AN', label: 'Phụ cấp ăn', status: 'active' }],
+      },
+    ]);
+    expect(opts.map((o) => o.value)).toEqual(['LUONG_CB', 'PC_AN']);
+    expect(resolveSalaryComponentLabel(opts, 'LUONG_CB')).toBe('Lương cơ bản');
+    expect(resolveSalaryComponentLabel(opts, 'invent')).toBe('—');
+    expect(buildSalaryComponentCatalogFields('PC_AN', opts)).toEqual({
+      code: 'PC_AN',
+      name: 'Phụ cấp ăn',
+    });
+    expect(buildSalaryComponentCatalogFields('tự gõ', opts)).toBeNull();
+  });
+});
+
 describe('contractTypeOptionsFromCatalog — AC-E2-CI-TYPE-01', () => {
   it('returns [] when empty (no HARDCODE fallback)', () => {
     expect(contractTypeOptionsFromCatalog([])).toEqual([]);
@@ -349,6 +382,26 @@ describe('contractTypeOptionsFromCatalog — AC-E2-CI-TYPE-01', () => {
     expect(opts).toHaveLength(2);
     expect(resolveContractTypeCatalogLabel(opts, 'indefinite')).toBe('Không thời hạn');
     expect(resolveContractTypeCatalogLabel(opts, 'unknown')).toBe('—');
+  });
+
+  it('resolveContractTypeEditValue — maps VI label to catalog code (QACONPAYST parity)', () => {
+    const opts = contractTypeOptionsFromCatalog([
+      {
+        catalogKey: 'contract_types',
+        effectiveItems: [
+          {
+            code: 'HDLD_XDHN_36',
+            label: 'Hợp đồng lao động xác định thời hạn 36 tháng',
+            status: 'active',
+          },
+          { code: 'indefinite', label: 'Không thời hạn', status: 'active' },
+        ],
+      },
+    ]);
+    expect(resolveContractTypeEditValue(opts, 'HDLD_XDHN_36', true)).toBe('HDLD_XDHN_36');
+    expect(resolveContractTypeEditValue(opts, 'Hợp đồng 3 năm', true)).toBe('HDLD_XDHN_36');
+    expect(resolveContractTypeEditValue(opts, 'invent label', true)).toBe('');
+    expect(resolveContractTypeEditValue(opts, 'legacy', false)).toBe('legacy');
   });
 });
 
@@ -388,5 +441,28 @@ describe('insurer / insurance_types / kpi_library — AC-INS / AC-PERF E3', () =
     expect(resolveKpiLibraryLabel(kpis, 'kpi_dt')).toBe('Doanh thu');
     expect(HRM_MASTER_DATA_CATALOG_KEYS.insurers).toContain('insurers');
     expect(HRM_MASTER_DATA_CATALOG_KEYS.kpiLibrary).toContain('kpi_library');
+  });
+});
+
+describe('recruitmentChannelOptionsFromCatalog — FR-HRM-SC-CH-01 / AC-SET-CONSUMER-CH-REC-01', () => {
+  it('returns [] when catalogs empty (honest empty)', () => {
+    expect(recruitmentChannelOptionsFromCatalog([])).toEqual([]);
+  });
+
+  it('merges recruitment_channels | candidate_sources | channels aliases', () => {
+    const opts = recruitmentChannelOptionsFromCatalog([
+      {
+        catalogKey: 'candidate_sources',
+        effectiveItems: [{ code: 'LINKEDIN', label: 'LinkedIn', status: 'active' }],
+      },
+      {
+        catalogKey: 'recruitment_channels',
+        effectiveItems: [{ code: 'WEB', label: 'Website công ty', status: 'active' }],
+      },
+    ]);
+    expect(opts.map((o) => o.value)).toEqual(['WEB', 'LINKEDIN']);
+    expect(resolveRecruitmentChannelLabel(opts, 'WEB')).toBe('Website công ty');
+    expect(resolveRecruitmentChannelLabel(opts, 'unknown')).toBe('—');
+    expect(HRM_MASTER_DATA_CATALOG_KEYS.recruitmentChannels).toContain('recruitment_channels');
   });
 });

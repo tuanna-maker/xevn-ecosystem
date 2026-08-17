@@ -1,4 +1,20 @@
-﻿import { useState, useEffect } from 'react';
+﻿/**
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W4-REC-A
+ * change_mode: UPGRADE
+ * What: Precision Motion chrome — titles ≥20; KPI border primary/DNA; reschedule chip warning (no AI purple)
+ * Why: ADR §16 · inventory R08 · B4 cấm AI palette
+ * must_keep: Interview mutate/export wires · calendar view · U65 · no Nest invent
+ * ADR: docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-INTERVIEW-SELECT-FE-01
+ * change_mode: FIX
+ * What: Rating SelectItem dùng sentinel `__none__` (cấm value="") — map → API rating null
+ * Why: Radix Uncaught «Select.Item must have a value prop that is not an empty string» (sponsor interview.log)
+ * must_keep: updateInterviewCatalog contract · create API · không BR one-active · không remaster compare
+ * BA_HOLD: one-active interview / list badge — seat này chỉ C-CONSOLE-CRASH
+ * LastVerified: docs/qa/evidence/po-hrm-rec-interview-select-fe-01.md
+ */
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
@@ -102,6 +118,11 @@ import {
   updateInterviewCatalog,
 } from '@/integrations/hrmApi';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  INTERVIEW_RATING_NONE_SENTINEL,
+  ratingApiValue,
+  ratingFormValue,
+} from './interviewRatingSelect';
 
 interface Interview {
   id: string;
@@ -144,12 +165,12 @@ interface Candidate {
 }
 
 const getStatusConfig = (t: any) => ({
-  scheduled: { label: t('recruitment.it.statuses.scheduled'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: Calendar },
-  confirmed: { label: t('recruitment.it.statuses.confirmed'), color: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400', icon: CheckCheck },
-  completed: { label: t('recruitment.it.statuses.completed'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
-  cancelled: { label: t('recruitment.it.statuses.cancelled'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
-  rescheduled: { label: t('recruitment.it.statuses.rescheduled'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: AlertCircle },
-  no_show: { label: t('recruitment.it.statuses.no_show'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted', icon: XCircle },
+  scheduled: { label: t('recruitment.it.statuses.scheduled'), color: 'bg-primary/10 text-primary', icon: Calendar },
+  confirmed: { label: t('recruitment.it.statuses.confirmed'), color: 'bg-xevn-accent/15 text-xevn-accent', icon: CheckCheck },
+  completed: { label: t('recruitment.it.statuses.completed'), color: 'bg-success/15 text-success', icon: CheckCircle },
+  cancelled: { label: t('recruitment.it.statuses.cancelled'), color: 'bg-destructive/15 text-destructive', icon: XCircle },
+  rescheduled: { label: t('recruitment.it.statuses.rescheduled'), color: 'bg-warning/15 text-warning', icon: AlertCircle },
+  no_show: { label: t('recruitment.it.statuses.no_show'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary', icon: XCircle },
 });
 
 const getTypeConfig = (t: any) => ({
@@ -160,9 +181,9 @@ const getTypeConfig = (t: any) => ({
 
 const getResultConfig = (t: any) => ({
   pending: { label: t('recruitment.it.results.pending'), color: 'bg-xevn-neutral/15 text-xevn-textSecondary dark:bg-slate-800/50 dark:text-xevn-textMuted', icon: CircleDot },
-  pass: { label: t('recruitment.it.results.pass'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
-  fail: { label: t('recruitment.it.results.fail'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: XCircle },
-  hold: { label: t('recruitment.it.results.hold'), color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', icon: AlertCircle },
+  pass: { label: t('recruitment.it.results.pass'), color: 'bg-success/15 text-success', icon: CheckCircle },
+  fail: { label: t('recruitment.it.results.fail'), color: 'bg-destructive/15 text-destructive', icon: XCircle },
+  hold: { label: t('recruitment.it.results.hold'), color: 'bg-warning/15 text-warning', icon: AlertCircle },
 });
 
 type UpdateInterviewFormValues = z.infer<ReturnType<typeof createUpdateSchema>>;
@@ -209,7 +230,7 @@ export function InterviewsTab() {
     resolver: zodResolver(createUpdateSchema(t)),
     defaultValues: {
       status: '',
-      rating: '',
+      rating: INTERVIEW_RATING_NONE_SENTINEL,
       feedback: '',
       result: 'pending',
       next_steps: '',
@@ -286,7 +307,7 @@ export function InterviewsTab() {
     setSelectedInterview(interview);
     form.reset({
       status: interview.status || 'scheduled',
-      rating: interview.rating?.toString() || '',
+      rating: ratingFormValue(interview.rating),
       feedback: interview.feedback || '',
       result: interview.result || 'pending',
       next_steps: interview.next_steps || '',
@@ -391,7 +412,7 @@ export function InterviewsTab() {
       if (!currentCompanyId) throw new Error('Missing company');
       await updateInterviewCatalog(selectedInterview.id, currentCompanyId, {
         status: data.status,
-        rating: data.rating ? parseInt(data.rating, 10) : null,
+        rating: ratingApiValue(data.rating),
         feedback: data.feedback,
         result: data.result || 'pending',
         next_steps: data.next_steps,
@@ -509,9 +530,9 @@ export function InterviewsTab() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="rec-interviews-tab-precision">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">{t('recruitment.it.title')}</h2>
+        <h2 className="font-display text-[20px] font-bold tracking-tight text-xevn-text">{t('recruitment.it.title')}</h2>
         <div className="flex items-center gap-2">
           <Button onClick={handleExportExcel} variant="outline" size="sm" disabled={filteredInterviews.length === 0}>
             <Download className="w-4 h-4 mr-2" />
@@ -524,30 +545,30 @@ export function InterviewsTab() {
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards — primary / DNA (no rainbow AI) */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="border-l-4 border-l-blue-500">
+        <Card className="border-xevn-border border-l-4 border-l-primary bg-xevn-surface">
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">{t('recruitment.it.totalInterviews')}</p>
-            <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
+            <p className="text-sm text-xevn-textSecondary">{t('recruitment.it.totalInterviews')}</p>
+            <p className="text-3xl font-bold text-primary">{stats.total}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-amber-500">
+        <Card className="border-xevn-border border-l-4 border-l-warning bg-xevn-surface">
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">{t('recruitment.it.scheduled')}</p>
-            <p className="text-3xl font-bold text-amber-600">{stats.scheduled}</p>
+            <p className="text-sm text-xevn-textSecondary">{t('recruitment.it.scheduled')}</p>
+            <p className="text-3xl font-bold text-warning">{stats.scheduled}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-green-500">
+        <Card className="border-xevn-border border-l-4 border-l-success bg-xevn-surface">
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">{t('recruitment.it.completed')}</p>
-            <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
+            <p className="text-sm text-xevn-textSecondary">{t('recruitment.it.completed')}</p>
+            <p className="text-3xl font-bold text-success">{stats.completed}</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-emerald-500">
+        <Card className="border-xevn-border border-l-4 border-l-xevn-accent bg-xevn-surface">
           <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground">{t('recruitment.it.passInterview')}</p>
-            <p className="text-3xl font-bold text-emerald-600">{stats.pass}</p>
+            <p className="text-sm text-xevn-textSecondary">{t('recruitment.it.passInterview')}</p>
+            <p className="text-3xl font-bold text-xevn-accent">{stats.pass}</p>
           </CardContent>
         </Card>
       </div>
@@ -571,7 +592,7 @@ export function InterviewsTab() {
         <div className="p-4 border-b">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[200px] max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textMuted" />
               <Input
                 placeholder={t('recruitment.it.searchPlaceholder')}
                 className="pl-10"
@@ -1032,7 +1053,9 @@ export function InterviewsTab() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">{t('recruitment.it.noRating')}</SelectItem>
+                            <SelectItem value={INTERVIEW_RATING_NONE_SENTINEL}>
+                              {t('recruitment.it.noRating')}
+                            </SelectItem>
                             {[1, 2, 3, 4, 5].map((rating) => (
                               <SelectItem key={rating} value={rating.toString()}>
                                 <div className="flex items-center gap-1">

@@ -42,7 +42,7 @@
 | Vai trò | Nội dung nên đọc |
 |---------|------------------|
 | Ban TGĐ / điều hành | Mục 2, 5 (luồng tổng), 6 (phạm vi đa công ty) |
-| Phòng Nhân sự | Mục 4.6–4.7, 5 (nhân viên, quản lý duyệt, phiếu lương) |
+| Phòng Nhân sự | Mục 4.6–4.7, 5 (mobile); **Danh sách nhân sự:** [`hdsd/hrm/HDSD_XEVN_CH06_HRM_NHAN_SU.md`](./hdsd/hrm/HDSD_XEVN_CH06_HRM_NHAN_SU.md); **Quy trình & quy định (chỉ đọc):** [`hdsd/hrm/HDSD_XEVN_CH08_HRM_QUY_TRINH.md`](./hdsd/hrm/HDSD_XEVN_CH08_HRM_QUY_TRINH.md) |
 | IT vận hành pilot | Toàn bộ; đặc biệt mục 3, 4, 7, Phụ lục A |
 
 ### 1.3 Phạm vi tài liệu
@@ -374,6 +374,8 @@ Sau đăng nhập: chọn **tenant** / công ty nếu hệ thống hỏi (ví d�
 | 2 | Xem danh sách / chi tiết | `GET` leave requests | FR-LEV-01 · FR-LEV-02 |
 | 3 | Trạng thái ban đầu thường là *Chờ duyệt* | Workflow phê duyệt phía server | MOD-LEV |
 
+**Phê duyệt giai đoạn 1:** Đơn nghỉ sau khi gửi chờ **quản lý trực tiếp** duyệt. Tài liệu hướng dẫn giai đoạn 1 **không** dùng bảng «Số ngày nghỉ → cấp duyệt»; thang duyệt thêm cấp theo số ngày (nếu có) thuộc giai đoạn sau.
+
 ### 5.3 Quản lý — duyệt nghỉ / điều chỉnh chấm công (Mobile)
 
 | Bước | Thao tác | Ghi chú | Tham chiếu SRS |
@@ -381,6 +383,8 @@ Sau đăng nhập: chọn **tenant** / công ty nếu hệ thống hỏi (ví d�
 | 1 | Đăng nhập tài khoản có vai **quản lý** (vd. `uat.nv0001@xe.vn` — CEO UAT) | Menu **Phê duyệt** chỉ hiện khi JWT có role manager | MOD-MGR · FR-MGR-01 |
 | 2 | Tab đơn nghỉ / điều chỉnh chấm công đang chờ | Lọc theo `manager_employee_id` | FR-MGR-02 · MOD-REQ |
 | 3 | **Duyệt** hoặc **Từ chối** kèm ghi chú | API quyết định (`decide`) cập nhật trạng thái + DB | MOD-MGR · MOD-REQ |
+
+**Giai đoạn 1 — người duyệt đơn nghỉ:** **Quản lý trực tiếp** (một cấp). Sau khi quản lý trực tiếp duyệt hoặc từ chối, đơn kết thúc trạng thái; **không** yêu cầu thêm bước Giám đốc theo số ngày trong giai đoạn 1. Không mô tả bảng ngày → cấp duyệt cho đến khi mở rộng giai đoạn sau.
 
 **Đối chiếu UAT tự động:** phase P6 — CEO duyệt đơn tạo ở P5 (**Kịch bản tích hợp UAT hệ thống**).
 
@@ -403,6 +407,7 @@ Sau đăng nhập: chọn **tenant** / công ty nếu hệ thống hỏi (ví d�
 | 1 | Đăng nhập `ceo@xe.vn` / mật khẩu `Xevn@2026` | XBOS cấp JWT + danh sách membership | BRD · Cổng Web |
 | 2 | Chọn tenant (nếu có) | Phạm vi tenant / công ty trên request tiếp theo | BRD · đa tenant |
 | 3 | Duyệt **Command Center**, module Nhân sự nhúng | Không thấy dữ liệu công ty khác | BRD · phạm vi công ty |
+| 4 | Mở **Danh sách nhân sự** — tạo / sửa / xóa mềm / nhập xuất theo checklist | Thao tác chi tiết: [`hdsd/hrm/HDSD_XEVN_CH06_HRM_NHAN_SU.md`](./hdsd/hrm/HDSD_XEVN_CH06_HRM_NHAN_SU.md) | UC-HRM-21 · UF-HRM-01/03 |
 
 ---
 

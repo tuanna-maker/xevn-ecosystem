@@ -1,4 +1,9 @@
 import type { EmployeeRow } from './employee-directory.types';
+import {
+  buildEmployeeDisplayReadyFields,
+  employeeStatusLabelVi,
+  resolveEmployeeJobTitleLabel,
+} from './employee-display';
 import { canFullEmployeeUpdate } from './employee-update-policy';
 
 export type DirectoryListItem = {
@@ -9,9 +14,13 @@ export type DirectoryListItem = {
   job_title_key: string | null;
   /** MP-01 mobile parity alias — same value as `job_title_key`. */
   job_title: string | null;
+  /** OS 28 — VI label; null when unknown (never raw snake key). */
+  job_title_label: string | null;
   department: string | null;
   avatar_url: string | null;
   status: string;
+  /** OS 28 — VI status label for FE bind. */
+  status_label: string;
   attendance_today?: {
     checked_in: boolean;
     check_in_at: string | null;
@@ -66,15 +75,18 @@ export function mapDirectoryListItem(
   attendance?: AttendanceTodayRow | null,
   includeAttendanceToday?: boolean,
 ): DirectoryListItem {
+  const display = buildEmployeeDisplayReadyFields(row);
   const item: DirectoryListItem = {
     id: row.id,
     employee_code: row.employee_code,
     full_name: row.full_name,
     job_title_key: row.job_title_key,
     job_title: row.job_title_key,
-    department: readDepartment(row.custom_fields),
+    job_title_label: display.job_title_label,
+    department: display.department,
     avatar_url: row.avatar_url ?? null,
     status: row.status,
+    status_label: display.status_label,
   };
   if (includeAttendanceToday) {
     item.attendance_today = {
@@ -85,6 +97,9 @@ export function mapDirectoryListItem(
   }
   return item;
 }
+
+/** Re-export for callers that only import directory helpers. */
+export { employeeStatusLabelVi, resolveEmployeeJobTitleLabel };
 
 export function mapDirectoryDetail(
   row: EmployeeRow,

@@ -16,6 +16,11 @@
  * What: Lazy Route /fleet → Fleet page (FL-01 list-only · G-FL-07 empty/catalog UX)
  * Why: Close G-FL-07 — honest empty + catalog-missing VI · keyword q · no invent create
  * must_keep: F3–F6 routes · staleTime 60s · U65 · HOLD_DEPLOY · soft U72 maps untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-UC-TC-W4-FE-NT01-INBOX-MARK-READ-01
+ * change_mode: ADD
+ * What: Route `/notifications` → InboxNotifications (HRM-NT-01 list + mark read)
+ * Why: Web embed inbox surface for QA U65 · parity mobile
  */
 import React, { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
@@ -65,6 +70,7 @@ const Processes = lazy(() => import("./pages/Processes"));
 const InternalServices = lazy(() => import("./pages/InternalServices"));
 const ToolsEquipment = lazy(() => import("./pages/ToolsEquipment"));
 const Fleet = lazy(() => import("./pages/Fleet"));
+const InboxNotifications = lazy(() => import("./pages/InboxNotifications"));
 const HRMChatWidget = lazy(() =>
   import("./components/ai/HRMChatWidget").then((module) => ({ default: module.HRMChatWidget })),
 );
@@ -176,6 +182,7 @@ const App = () => {
                   <Route path="/company" element={<PermissionRoute module="company">{withSuspense(<Company />)}</PermissionRoute>} />
                   <Route path="/reports" element={<PermissionRoute module="reports">{withSuspense(<Reports />)}</PermissionRoute>} />
                   <Route path="/settings" element={<PermissionRoute module="settings">{withSuspense(<Settings />)}</PermissionRoute>} />
+                  <Route path="/notifications" element={withSuspense(<InboxNotifications />)} />
                   <Route path="/settings-catalogs" element={<PermissionRoute module="settings">{withSuspense(<SettingsCatalogsPage />)}</PermissionRoute>} />
                   <Route path="/employee-metadata" element={<PermissionRoute module="settings">{withSuspense(<EmployeeMetadataPage />)}</PermissionRoute>} />
                   <Route path="/contracts" element={<PermissionRoute module="contracts">{withSuspense(<Contracts />)}</PermissionRoute>} />

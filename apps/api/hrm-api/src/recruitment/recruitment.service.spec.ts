@@ -40,7 +40,7 @@ describe('RecruitmentService', () => {
         email: 'candidate@xe.vn',
         source: 'linkedin',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-UV-YCTD-NOT-FOUND' });
   });
 
   it('throws deterministic error when interview does not exist for status update', async () => {
@@ -95,7 +95,7 @@ describe('RecruitmentService', () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
         return {
-          rows: [{ company_id: 'holding', status: 'open', workflow_instance_id: null }],
+          rows: [{ company_id: 'holding', status: 'open', workflow_instance_id: null, headcount: 1, headcount_mode: null }],
         } as never;
       }
       if (sql.includes('UPDATE public.job_requisitions')) {
@@ -128,7 +128,7 @@ describe('RecruitmentService', () => {
     expect(result.company_id).toBe('holding');
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('company_id = ANY'),
-      expect.arrayContaining(['on_hold', requisitionId, expect.any(Array)]),
+      expect.arrayContaining(['on_hold', requisitionId]),
     );
   });
 
@@ -197,8 +197,31 @@ describe('RecruitmentService', () => {
     });
     const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.job_requisitions WHERE') && sql.includes('LIMIT 1')) {
-        return { rows: [{ id: requisitionId, company_id: 'holding' }] } as never;
+      if (sql.includes('FROM public.job_requisitions') && sql.includes('LIMIT 1')) {
+        return {
+          rows: [
+            {
+              id: requisitionId,
+              company_id: 'holding',
+              title: 'YCTD',
+              department: 'Ops',
+              employment_type: 'full_time',
+              headcount: 1,
+              status: 'open',
+              headcount_mode: 'in_plan',
+              job_description: null,
+              requirements: null,
+              job_template_id: null,
+              position_code: 'DRIVER',
+              position_key: 'DRIVER',
+              position_name: 'Lái xe',
+              jd_code: null,
+              jd_title: null,
+              created_at: '2026-04-23T00:00:00.000Z',
+              updated_at: '2026-04-23T00:00:00.000Z',
+            },
+          ],
+        } as never;
       }
       if (sql.includes('INSERT INTO public.recruitment_candidates')) {
         return {
@@ -280,9 +303,10 @@ describe('RecruitmentService', () => {
               id: 'int-1',
               company_id: 'holding',
               candidate_id: candidateId,
-              scheduled_at: '2026-04-25T09:00:00.000Z',
+              scheduled_at: '2099-04-25T09:00:00.000Z',
               interviewer: 'HR Lead',
               status: 'scheduled',
+              cancel_reason: null,
               created_at: '2026-04-23T00:00:00.000Z',
               updated_at: '2026-04-23T00:00:00.000Z',
             },
@@ -296,7 +320,7 @@ describe('RecruitmentService', () => {
       {
         company_id: 'main',
         candidate_id: candidateId,
-        scheduled_at: '2026-04-25T09:00:00.000Z',
+        scheduled_at: '2099-04-25T09:00:00.000Z',
         interviewer: 'HR Lead',
       },
       `Bearer ${token}`,
@@ -307,5 +331,117 @@ describe('RecruitmentService', () => {
       expect.stringContaining('company_id = ANY'),
       expect.arrayContaining([candidateId, expect.any(Array)]),
     );
+  });
+
+  it('returns deterministic 409 when scheduling while active interview exists', async () => {
+    const candidateId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
+        return { rows: [{ id: candidateId, company_id: 'holding' }] } as never;
+      }
+      if (sql.includes('FROM public.recruitment_interviews') && sql.includes('AND status IN (\'scheduled\', \'confirmed\')')) {
+        return {
+          rows: [{ id: 'active-1', status: 'scheduled', scheduled_at: '2026-08-06T09:30:00.000Z' }],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    await expect(
+      service.scheduleInterview({
+        company_id: 'holding',
+        candidate_id: candidateId,
+        scheduled_at: '2099-08-07T09:30:00.000Z',
+        interviewer: 'HR Lead',
+      }),
+    ).rejects.toMatchObject<ApiException>({
+      code: 'HRM-REC-IV-409-ACTIVE',
+    });
+  });
+
+  it('allows create after cancelled state and keeps one-active filter strict', async () => {
+    const candidateId = '0e3f95b7-cf1b-469f-a0f8-4c91f3f35f80';
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
+        return { rows: [{ id: candidateId, company_id: 'holding' }] } as never;
+      }
+      if (sql.includes('FROM public.recruitment_interviews') && sql.includes('AND status IN (\'scheduled\', \'confirmed\')')) {
+        return { rows: [] } as never;
+      }
+      if (sql.includes('INSERT INTO public.recruitment_interviews')) {
+        return {
+          rows: [
+            {
+              id: 'int-cancel-followup',
+              company_id: 'holding',
+              candidate_id: candidateId,
+              scheduled_at: '2099-08-07T10:30:00.000Z',
+              interviewer: 'HR Lead',
+              status: 'scheduled',
+              cancel_reason: null,
+              created_at: '2026-08-06T00:00:00.000Z',
+              updated_at: '2026-08-06T00:00:00.000Z',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    const created = await service.scheduleInterview({
+      company_id: 'holding',
+      candidate_id: candidateId,
+      scheduled_at: '2099-08-07T10:30:00.000Z',
+      interviewer: 'HR Lead',
+    });
+
+    expect(created.id).toBe('int-cancel-followup');
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining("AND status IN ('scheduled', 'confirmed')"),
+      expect.arrayContaining(['holding', candidateId]),
+    );
+  });
+
+  it('returns candidate list with active interview projection display-ready for FE badge', async () => {
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('SELECT COUNT(*)') && sql.includes('recruitment_candidates')) {
+        return { rows: [{ total: '1' }] } as never;
+      }
+      if (sql.includes('LEFT JOIN LATERAL') && sql.includes('FROM public.recruitment_candidates')) {
+        return {
+          rows: [
+            {
+              id: 'c-iv-1',
+              company_id: 'holding',
+              requisition_id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+              full_name: 'Candidate One',
+              email: 'candidate@xe.vn',
+              source: 'linkedin',
+              status: 'interview',
+              created_at: '2026-08-06T00:00:00.000Z',
+              updated_at: '2026-08-06T00:00:00.000Z',
+              active_interview_id: 'iv-1',
+              active_interview_status: 'scheduled',
+              active_interview_at: '2026-08-06T09:30:00.000Z',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    const result = await service.listCandidates({ company_id: 'holding' });
+    expect(result.data[0]).toMatchObject({
+      id: 'c-iv-1',
+      active_interview_id: 'iv-1',
+      active_interview: {
+        has_active_interview: true,
+        active_interview_id: 'iv-1',
+        active_interview_status: 'scheduled',
+        active_interview_at: '2026-08-06T09:30:00.000Z',
+        active_interview_badge_label: 'Đã có lịch',
+      },
+    });
+    expect(result.data[0]?.active_interview.active_interview_display_time_vi_vn).toMatch(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
   });
 });

@@ -5,7 +5,14 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
+import { EmpDocumentChecklistService } from './emp-document-checklist.service';
+import { EmpDocumentTypeService } from './emp-document-type.service';
+import { EmpEmploymentStatusService } from './emp-employment-status.service';
+import { EmpEmploymentTypeService } from './emp-employment-type.service';
+import { EmpStatusReasonService } from './emp-status-reason.service';
+import { EmployeeDependentsService } from './employee-dependents.service';
 import { EmployeeProfileService } from './employee-profile.service';
+import { EmployeeRewardDisciplineService } from './employee-reward-discipline.service';
 import { buildSalaryRangesFromCounts } from './employee-summary';
 
 describe('P1-HRM-PERF-BE-01 employees summary', () => {
@@ -97,13 +104,14 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
       });
 
       const result = await service.getEmployeesSummary(
-        { company_id: 'main' },
+        { company_id: 'main', include: 'compensation_summary' },
         `Bearer ${token}`,
         { tenantId: 'xevn' },
       );
 
       expect(result.total).toBe(1107);
       expect(result.active_count).toBe(1050);
+      expect(result.compensation_summary_included).toBe(true);
       expect(result.payroll.total).toBe(18_500_000_000);
       expect(result.by_department[0]).toEqual({
         department: 'Vận hành',
@@ -208,6 +216,18 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
         providers: [
           { provide: EmployeesService, useValue: serviceMock },
           {
+            provide: EmployeeDependentsService,
+            useValue: {
+              listDependents: jest.fn(),
+              createDependent: jest.fn(),
+              getDependentById: jest.fn(),
+              updateDependent: jest.fn(),
+              softDeleteDependent: jest.fn(),
+            },
+          },
+          { provide: EmployeeRewardDisciplineService, useValue: {} },
+          { provide: EmpDocumentChecklistService, useValue: {} },
+          {
             provide: EmployeeProfileService,
             useValue: {
               listDegrees: jest.fn(),
@@ -215,6 +235,10 @@ describe('P1-HRM-PERF-BE-01 employees summary', () => {
               listAssets: jest.fn(),
             },
           },
+          { provide: EmpDocumentTypeService, useValue: {} },
+          { provide: EmpEmploymentTypeService, useValue: {} },
+          { provide: EmpEmploymentStatusService, useValue: {} },
+          { provide: EmpStatusReasonService, useValue: {} },
         ],
       }).compile();
 

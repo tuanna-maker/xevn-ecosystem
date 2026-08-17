@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-31T04:33:48.666Z",
+  "generatedAt": "2026-08-10T07:24:27.046Z",
   "healthy": false,
   "staleThresholdMin": 7,
-  "inFlightCount": 542,
-  "issuesCount": 540,
+  "inFlightCount": 2171,
+  "issuesCount": 2180,
   "recoveryRequired": [
     {
       "action": "spawn_fresh_task",
@@ -12,7 +12,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-6c5e3088-ef21-4ed7-a954-ee1ef5907a8f-130\nfc_7ee1f8ca-7196-9dbf-babe-a562b196cab8_0",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17116m) task_id call-6c5e3088-ef21-4ed7-a954-ee1ef5907a8f-130\nfc_7ee1f8ca-7196-9dbf-babe-a562b196cab8_0. Assume zombie — spawn NEW dev-mobile for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31687m) task_id call-6c5e3088-ef21-4ed7-a954-ee1ef5907a8f-130\nfc_7ee1f8ca-7196-9dbf-babe-a562b196cab8_0. Assume zombie — spawn NEW dev-mobile for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -21,7 +21,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-19dacd12-a3ca-430d-9f4a-1f6c8d03c2b6-132\nfc_4ff7c861-d7ef-977d-abd3-0668ed955a2a_0",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17106m) task_id call-19dacd12-a3ca-430d-9f4a-1f6c8d03c2b6-132\nfc_4ff7c861-d7ef-977d-abd3-0668ed955a2a_0. Assume zombie — spawn NEW qa for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31677m) task_id call-19dacd12-a3ca-430d-9f4a-1f6c8d03c2b6-132\nfc_4ff7c861-d7ef-977d-abd3-0668ed955a2a_0. Assume zombie — spawn NEW qa for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -30,7 +30,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-840ba111-6529-417f-a6d2-ce81d430abc3-141\nfc_4daaa9fb-dd11-9588-83cc-56ad7c94a656_0",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17034m) task_id call-840ba111-6529-417f-a6d2-ce81d430abc3-141\nfc_4daaa9fb-dd11-9588-83cc-56ad7c94a656_0. Assume zombie — spawn NEW qa-device for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31605m) task_id call-840ba111-6529-417f-a6d2-ce81d430abc3-141\nfc_4daaa9fb-dd11-9588-83cc-56ad7c94a656_0. Assume zombie — spawn NEW qa-device for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -39,7 +39,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-43afbac2-3ed6-4b65-9ea4-3960e4a43ebd-143\nfc_aae22b63-4346-9389-b0d1-ccb1d2020d67_0",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17034m) task_id call-43afbac2-3ed6-4b65-9ea4-3960e4a43ebd-143\nfc_aae22b63-4346-9389-b0d1-ccb1d2020d67_0. Assume zombie — spawn NEW dev-be for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31605m) task_id call-43afbac2-3ed6-4b65-9ea4-3960e4a43ebd-143\nfc_aae22b63-4346-9389-b0d1-ccb1d2020d67_0. Assume zombie — spawn NEW dev-be for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -48,7 +48,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-76094f6d-e0af-43fa-bf4a-176c938fdeb4-167\nfc_a1659d3f-21f1-9b6c-8ff4-9b1422fe942a_2",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17028m) task_id call-76094f6d-e0af-43fa-bf4a-176c938fdeb4-167\nfc_a1659d3f-21f1-9b6c-8ff4-9b1422fe942a_2. Assume zombie — spawn NEW dev-fe for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31598m) task_id call-76094f6d-e0af-43fa-bf4a-176c938fdeb4-167\nfc_a1659d3f-21f1-9b6c-8ff4-9b1422fe942a_2. Assume zombie — spawn NEW dev-fe for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -57,7 +57,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-a324ae90-fe98-4874-b2a9-527992dcba3f-201\nfc_0e4cbd06-ba6f-9f68-b266-65505f730b9e_1",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17018m) task_id call-a324ae90-fe98-4874-b2a9-527992dcba3f-201\nfc_0e4cbd06-ba6f-9f68-b266-65505f730b9e_1. Assume zombie — spawn NEW ba-process for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31589m) task_id call-a324ae90-fe98-4874-b2a9-527992dcba3f-201\nfc_0e4cbd06-ba6f-9f68-b266-65505f730b9e_1. Assume zombie — spawn NEW ba-process for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -66,7 +66,7 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-a324ae90-fe98-4874-b2a9-527992dcba3f-202\nfc_0e4cbd06-ba6f-9f68-b266-65505f730b9e_2",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17018m) task_id call-a324ae90-fe98-4874-b2a9-527992dcba3f-202\nfc_0e4cbd06-ba6f-9f68-b266-65505f730b9e_2. Assume zombie — spawn NEW sa for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31589m) task_id call-a324ae90-fe98-4874-b2a9-527992dcba3f-202\nfc_0e4cbd06-ba6f-9f68-b266-65505f730b9e_2. Assume zombie — spawn NEW sa for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     },
     {
       "action": "spawn_fresh_task",
@@ -75,25 +75,21 @@
       "workItemId": "PM-RECOVER-stale_in_flight",
       "taskId": "call-5b7433f7-5334-4a1c-aca7-4b74f81d98e3-212\nfc_280f6978-23ff-919d-81a4-943130fed603_0",
       "reason": "stale_in_flight",
-      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (17017m) task_id call-5b7433f7-5334-4a1c-aca7-4b74f81d98e3-212\nfc_280f6978-23ff-919d-81a4-943130fed603_0. Assume zombie — spawn NEW qc for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
+      "pm_dispatch_prompt": "RECOVERY: in-flight > threshold (31588m) task_id call-5b7433f7-5334-4a1c-aca7-4b74f81d98e3-212\nfc_280f6978-23ff-919d-81a4-943130fed603_0. Assume zombie — spawn NEW qc for PM-RECOVER-stale_in_flight. Do not resume same agent unless user confirms still running."
     }
   ],
   "scanSummary": {
     "healthy": false,
     "latestStop": {
       "hook": "subagentStop",
-      "at": "2026-07-30T15:05:26.470Z",
-      "subagent_type": "shell",
-      "task_id": "tool_1cd882ef-393f-4187-8f6c-feaf4f69099",
+      "at": "2026-08-10T05:42:33.850Z",
+      "subagent_type": "dev-fe",
+      "task_id": "tool_a3f8dfdc-b1f4-40ab-a00d-2c4f20ac17a",
       "status": "completed",
-      "title": "Restart stack run INT-03",
+      "title": "CTR DnD parent portal fix 02",
       "model": "composer-2.5-fast",
-      "member_completed_count_24h": 2,
-      "webhook": {
-        "skipped": true,
-        "reason": "dedupe_window"
-      },
-      "followup_suppressed": true
+      "member_completed_count_24h": 27,
+      "webhook": "skipped"
     },
     "riskyTranscripts": []
   },

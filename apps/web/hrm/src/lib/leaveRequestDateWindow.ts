@@ -9,6 +9,12 @@
  * Coded:       2026-08-01
  * must_keep:   U65 no seed; harness vẫn có thể gõ dd/MM/yyyy — FE prefill hỗ trợ QA
  * LastVerified: leaveRequestDateWindow.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-01-FE-LEAVE-ATTENDANCE-MOUNT
+ * change_mode: FIX
+ * What: Restore from git 43c479a — LeaveTab transitive (Attendance eager import)
+ * Why: Full mount chain after LeaveOverviewRecentPanel / ClockIn / debounce restore
+ * must_keep: LeaveTab create/list path; overlap prefill; U65 no seed
  */
 
 export type LeaveDateRange = {

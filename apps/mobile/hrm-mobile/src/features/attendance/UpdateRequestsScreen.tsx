@@ -149,9 +149,18 @@ export function UpdateRequestsScreen() {
         )}
         ListEmptyComponent={
           !err ? (
-            <View style={styles.emptyBox}>
+            <View style={styles.emptyBox} testID="update-requests-empty">
               <Text style={styles.emptyTitle}>Không có đơn</Text>
-              <Text style={styles.emptyHint}>Kéo xuống để làm mới hoặc tạo đơn mới.</Text>
+              <Text style={styles.emptyHint}>Kéo xuống để làm mới hoặc tạo đơn công mới.</Text>
+              <Pressable
+                testID="update-requests-empty-create"
+                accessibilityRole="button"
+                accessibilityLabel="Tạo đơn công"
+                onPress={() => nav.navigate('CreateUpdateRequest')}
+                style={styles.emptyCreateBtn}
+              >
+                <Text style={styles.headerActionText}>+ {vi.createRequest}</Text>
+              </Pressable>
             </View>
           ) : null
         }
@@ -194,6 +203,13 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  emptyCreateBtn: {
+    marginTop: spacing.md,
+    minHeight: 44,
+    paddingHorizontal: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   list: { padding: spacing.md, gap: spacing.sm, paddingBottom: spacing.xl },
   headerActions: {

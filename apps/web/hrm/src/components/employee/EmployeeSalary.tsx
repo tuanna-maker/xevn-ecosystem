@@ -1,16 +1,17 @@
 /**
  * @CODE-MEMORY
- * Screen:     EmployeeProfile → tab Lương (UF-HRM-06 payroll)
+ * Screen:     EmployeeProfile → tab Lương (UF-HRM-06 payroll) · inventory E12
  * UC:         UF-HRM-06
  * BR:         payslip period_label may be MM/yyyy — never Date-parse blindly
  * SRS:        docs/hrm/SRS.md · payroll / employee salary tab
  * TechSpec:   GET /api/hrm/payroll/payslips · HrmPayslipRow.period_label
  * Purpose:    Hiển thị phiếu lương API + phụ cấp local; format ngày an toàn.
- * WorkItem:   D-HRM-EMP-SALARY-INVALID-DATE-01
+ * WorkItem:   PO-HRM-UI-BRAND-W3-EMP-B
  * Coded:      2026-07-20
  * Callers:    Employee profile salary tab
  * Callees:    listPayrollPayslips · formatDisplayDate · formatPayrollPayDateCell
- * must_keep:  UF-HRM-06 payroll path; F5 compensation tab riêng không đụng
+ * must_keep:  UF-HRM-06 payroll path; F5 compensation tab riêng không đụng; PermissionGate view_salary
+ * ADR:        docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10
  * LastVerified: formatDisplayDate.test.ts · employeeSalaryDialogA11y.test.ts
  *
  * @CODE-MEMORY-CHANGE 2026-07-20
@@ -33,6 +34,13 @@
  * What: Drop hardcoded salaryGrade «API» badge; hide badge unless real grade label
  * Why: QA menu sweep — tech chrome badge on Lương tab
  * must_keep: UF-HRM-06 payslip path; Invalid time guards
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-05 PO-HRM-UI-BRAND-W3-EMP-B
+ * change_mode: UPGRADE
+ * What: Labels/empty → text-xevn-textSecondary; KPI cards ops-dense (no rose/amber/emerald AI gradients);
+ *       history/table blue → xevn-primary; DialogTitle inherits shared ≥20 floor
+ * Why: ADR-20260805 §8 pale ban · §9 dual-surface · §10 modal · inventory W3-EMP-B E12
+ * must_keep: UF-HRM-06 payslip path; dialog a11y; no Nest/seed; no OCR/QR invent
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -368,7 +376,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
     <div className="space-y-6 animate-fade-in">
       {payslipsLoading ? (
         <Card>
-          <CardContent className="py-8 text-center text-sm text-muted-foreground">
+          <CardContent className="py-8 text-center text-sm text-xevn-textSecondary">
             {t('common.loading', 'Đang tải…')}
           </CardContent>
         </Card>
@@ -382,14 +390,14 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
         />
       ) : (
         <>
-      {/* Summary Cards */}
+      {/* Summary Cards — ops-dense Precision Motion (no AI pastel gradients) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/30 border-rose-200 dark:border-rose-800">
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('salary.baseSalary')}</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{formatCurrency(salaryData.baseSalary)}</p>
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('salary.baseSalary')}</p>
+                <p className="text-2xl font-bold text-xevn-text mt-1">{formatCurrency(salaryData.baseSalary)}</p>
                 <div className="flex items-center gap-2 mt-2">
                   {salaryData.salaryGrade.trim() &&
                   salaryData.salaryGrade !== '—' &&
@@ -401,53 +409,53 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                   <Badge variant="outline" className="text-xs">{t('salary.coefficient')}: {salaryData.salaryCoefficient}</Badge>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-primary/10 flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-xevn-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200 dark:border-amber-800">
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('salary.totalAllowances')}</p>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{formatCurrency(totalAllowances)}</p>
-                <p className="text-xs text-muted-foreground mt-2">{t('salary.allowanceCount', { count: allowances.length })}</p>
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('salary.totalAllowances')}</p>
+                <p className="text-2xl font-bold text-xevn-text mt-1">{formatCurrency(totalAllowances)}</p>
+                <p className="text-xs text-xevn-textSecondary mt-2">{t('salary.allowanceCount', { count: allowances.length })}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-                <Gift className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-accent/15 flex items-center justify-center">
+                <Gift className="w-6 h-6 text-xevn-primary" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border-emerald-200 dark:border-emerald-800">
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('salary.totalIncome')}</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(totalIncome)}</p>
-                <p className="text-xs text-muted-foreground mt-2">{t('salary.beforeTax')}</p>
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('salary.totalIncome')}</p>
+                <p className="text-2xl font-bold text-xevn-text mt-1">{formatCurrency(totalIncome)}</p>
+                <p className="text-xs text-xevn-textSecondary mt-2">{t('salary.beforeTax')}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-success/15 flex items-center justify-center">
+                <Wallet className="w-6 h-6 text-xevn-success" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-800">
+        <Card className="rounded-card border-xevn-border bg-xevn-surface">
           <CardContent className="p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">{t('salary.netSalary')}</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{formatCurrency(salaryData.netSalary)}</p>
-                <p className="text-xs text-muted-foreground mt-2">{t('salary.afterTax')}</p>
+                <p className="text-sm text-xevn-textSecondary font-medium">{t('salary.netSalary')}</p>
+                <p className="text-2xl font-bold text-xevn-primary mt-1">{formatCurrency(salaryData.netSalary)}</p>
+                <p className="text-xs text-xevn-textSecondary mt-2">{t('salary.afterTax')}</p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="w-12 h-12 rounded-xl bg-xevn-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-xevn-primary" />
               </div>
             </div>
           </CardContent>
@@ -459,8 +467,8 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
         <div className="lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-4">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Gift className="w-5 h-5 text-amber-500" />
+              <CardTitle className="text-base font-semibold flex items-center gap-2 text-xevn-text">
+                <Gift className="w-5 h-5 text-xevn-primary" />
                 {t('salary.allowanceList')}
               </CardTitle>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -495,9 +503,9 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                 {allowances.map((allowance) => {
                   const TypeIcon = getTypeIcon(allowance.type);
                   return (
-                    <div key={allowance.id} className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-                      <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
-                        <TypeIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <div key={allowance.id} className="flex items-center gap-4 p-4 rounded-xl border border-xevn-border bg-xevn-background/60 hover:bg-xevn-background transition-colors">
+                      <div className="w-10 h-10 rounded-lg bg-xevn-accent/15 flex items-center justify-center">
+                        <TypeIcon className="w-5 h-5 text-xevn-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -506,13 +514,13 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                             {allowance.isFixed ? t('salary.fixed') : t('salary.variable')}
                           </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                        <p className="text-xs text-xevn-textSecondary mt-0.5">
                           {t('salary.effectiveFrom')}: {formatDisplayDate(allowance.effectiveDate)}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-amber-600 dark:text-amber-400">{formatCurrency(allowance.amount)}</p>
-                        <p className="text-xs text-muted-foreground">/{t('salary.perMonth')}</p>
+                        <p className="font-semibold text-xevn-text">{formatCurrency(allowance.amount)}</p>
+                        <p className="text-xs text-xevn-textSecondary">/{t('salary.perMonth')}</p>
                       </div>
                       <div className="flex items-center gap-1">
                         <TooltipProvider>
@@ -541,7 +549,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                 })}
 
                 {allowances.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="text-center py-8 text-xevn-textSecondary">
                     <Gift className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>{t('salary.noAllowances')}</p>
                     <p className="text-sm">{t('salary.noAllowancesHint')}</p>
@@ -557,7 +565,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
           <Card>
             <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-500" />
+                <Calendar className="w-5 h-5 text-xevn-primary" />
                 {t('salary.adjustmentHistory')}
               </CardTitle>
             </CardHeader>
@@ -569,12 +577,12 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                       <div className="absolute left-4 top-10 w-0.5 h-full bg-border" />
                     )}
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0 z-10">
-                        <DollarSign className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <div className="w-8 h-8 rounded-full bg-xevn-primary/10 flex items-center justify-center shrink-0 z-10">
+                        <DollarSign className="w-4 h-4 text-xevn-primary" />
                       </div>
                       <div className="flex-1 pb-4">
                         <div className="flex items-center justify-between">
-                          <p className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(history.baseSalary)}</p>
+                          <p className="font-semibold text-xevn-primary">{formatCurrency(history.baseSalary)}</p>
                           {index === 0 && (
                             <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 text-xs">
                               {t('salary.current')}
@@ -582,7 +590,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                           )}
                         </div>
                         <p className="text-sm font-medium mt-1">{history.reason}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-xevn-textSecondary mt-1">
                           {formatDisplayDate(history.effectiveDate)} • {history.approvedBy}
                         </p>
                       </div>
@@ -632,16 +640,16 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
           
           <div className="flex items-center justify-center gap-6 mt-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-sm bg-gradient-to-b from-blue-500 to-blue-700" />
-              <span className="text-sm text-muted-foreground">{t('salary.baseSalary')}</span>
+              <div className="w-3 h-3 rounded-sm bg-xevn-primary" />
+              <span className="text-sm text-xevn-textSecondary">{t('salary.baseSalary')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-sm bg-gradient-to-b from-amber-500 to-amber-600" />
-              <span className="text-sm text-muted-foreground">{t('salary.allowances')}</span>
+              <span className="text-sm text-xevn-textSecondary">{t('salary.allowances')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-sm bg-gradient-to-b from-emerald-500 to-emerald-600" />
-              <span className="text-sm text-muted-foreground">{t('salary.bonus')}</span>
+              <span className="text-sm text-xevn-textSecondary">{t('salary.bonus')}</span>
             </div>
           </div>
         </CardContent>
@@ -651,7 +659,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
       <Card>
         <CardHeader className="pb-4">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <FileText className="w-5 h-5 text-violet-500" />
+            <FileText className="w-5 h-5 text-xevn-primary" />
             {t('salary.monthlyPayrollHistory')}
           </CardTitle>
         </CardHeader>
@@ -678,7 +686,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                     <TableCell className="text-right text-amber-600 dark:text-amber-400">{formatCurrency(payroll.allowances)}</TableCell>
                     <TableCell className="text-right text-emerald-600 dark:text-emerald-400">{formatCurrency(payroll.bonus)}</TableCell>
                     <TableCell className="text-right text-rose-600 dark:text-rose-400">-{formatCurrency(payroll.deductions)}</TableCell>
-                    <TableCell className="text-right font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(payroll.netSalary)}</TableCell>
+                    <TableCell className="text-right font-semibold text-xevn-primary">{formatCurrency(payroll.netSalary)}</TableCell>
                     <TableCell className="text-center">
                       {payroll.status === 'paid' ? (
                         <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 gap-1">

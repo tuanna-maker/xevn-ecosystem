@@ -1,3 +1,11 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-05
+ * WorkItem: PO-HRM-UI-BRAND-W4-PAY-A
+ * change_mode: UPGRADE
+ * What: Precision Motion P04 insurance policy — dialog wide + title ≥20; ViMoneyInput vi-VN kept
+ * Why: ADR §16 · FE-PAY P0
+ * must_keep: useInsurancePolicyParticipants API; ViMoneyInput parse; no insurance rate invent
+ */
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, ChevronDown, ChevronLeft, ChevronRight, Pencil, Trash2, Settings, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
@@ -219,7 +227,9 @@ export function InsurancePolicyTab() {
         {/* Header */}
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Chính sách bảo hiểm</h1>
+            <h1 className="text-[20px] font-bold font-display text-xevn-text" data-testid="pay-insurance-policy-precision">
+              Chính sách bảo hiểm
+            </h1>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -537,9 +547,9 @@ export function InsurancePolicyTab() {
 
       {/* Add Participant Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-[920px] max-h-[80vh] overflow-hidden flex flex-col" data-testid="pay-insurance-add-dialog-precision">
           <DialogHeader>
-            <DialogTitle>Thêm người tham gia bảo hiểm</DialogTitle>
+            <DialogTitle className="text-[20px] font-bold font-display">Thêm người tham gia bảo hiểm</DialogTitle>
           </DialogHeader>
           
           <div className="flex gap-4 mb-4">

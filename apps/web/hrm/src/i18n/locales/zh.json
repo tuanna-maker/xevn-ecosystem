@@ -575,6 +575,7 @@
       "workHistory": "工作经历",
       "degrees": "学历",
       "certificates": "证书",
+      "documents": "证件清单",
       "skills": "技能",
       "family": "家庭信息"
     },
@@ -588,6 +589,7 @@
       "workHistory": "工作历史",
       "degrees": "教育程度",
       "certificates": "职业证书",
+      "documents": "员工证件清单（提交/确认）",
       "skills": "专业技能与软技能",
       "family": "家庭成员信息"
     },

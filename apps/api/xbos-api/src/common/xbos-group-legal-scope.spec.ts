@@ -40,6 +40,35 @@ describe('resolveXbosGroupLegalReadScopeContext (ADR C2)', () => {
     expect(scope).toEqual({ tenantId: 'xevn', companyId: XBOS_GROUP_LEGAL_HOLDING });
   });
 
+  it('PO-UC-TC-W3-BE-LOG09-SCOPE: group CEO JWT main may read logistics catalog partition (dest verify)', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveXbosGroupLegalReadScopeContext(`Bearer ${token}`, {
+      tenantId: 'xevn',
+      companyId: 'logistics',
+    });
+    expect(scope).toEqual({ tenantId: 'xevn', companyId: 'logistics' });
+  });
+
+  it('PO-UC-TC-W3-BE-LOG09-SCOPE: group CEO still 409 on unknown company slug', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: XBOS_GROUP_OPERATING_MAIN,
+      roleCode: 'group_ceo',
+    });
+    expect(() =>
+      resolveXbosGroupLegalReadScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: 'other-company',
+      }),
+    ).toThrow(expect.objectContaining<ApiException>({ code: 'SCOPE_CONTEXT_MISMATCH' }));
+  });
+
   it('maps group CEO JWT main with omitted companyId to holding', () => {
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',

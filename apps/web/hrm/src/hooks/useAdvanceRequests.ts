@@ -12,6 +12,8 @@ import {
 
   createAdvanceRequest,
 
+  createAdvanceRequestEmployee,
+
   listAdvanceRequestEmployees,
 
   listAdvanceRequests,
@@ -432,11 +434,35 @@ export const useAdvanceRequests = () => {
 
   const addEmployeeMutation = useMutation({
 
-    mutationFn: async (_payload: Record<string, unknown>) => {
-      throw new Error('API thêm NV vào bảng tạm ứng chưa có trên Nest');
+    mutationFn: async (payload: {
+      request_id: string;
+      company_id?: string;
+      employee_id?: string | null;
+      employee_code: string;
+      employee_name: string;
+      department?: string | null;
+      position?: string | null;
+      advance_amount: number | string;
+      note?: string | null;
+    }) => {
+      if (!currentCompanyId) throw new Error('No company selected');
+      const companyId = payload.company_id?.trim() || currentCompanyId;
+      const created = await createAdvanceRequestEmployee(payload.request_id, companyId, {
+        employee_id: payload.employee_id,
+        employee_code: payload.employee_code,
+        employee_name: payload.employee_name,
+        department: payload.department,
+        position: payload.position,
+        advance_amount: payload.advance_amount,
+        note: payload.note,
+      });
+      return mapAdvanceEmployee(created);
     },
 
-    onSuccess: () => toast.success('Đã thêm nhân viên'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['advance-requests', currentCompanyId] });
+      toast.success('Đã thêm nhân viên');
+    },
 
     onError: (error: unknown) => toast.error(toErrorMessage(error, 'Lỗi khi thêm nhân viên')),
 

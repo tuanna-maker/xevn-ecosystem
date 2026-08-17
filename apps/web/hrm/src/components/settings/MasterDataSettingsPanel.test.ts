@@ -5,6 +5,8 @@
  * What:       ≥10 buckets VI; DEC dual keys + writeKey; panel source wires forceMount/search/Ngưng
  * Why:        D-FE-ERP-E1B-MD-PANEL-01 — RTL full panel blocked by dual-react in vitest (residual)
  * WorkItem:   D-FE-ERP-E1B-MD-PANEL-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 BUILD-GAP-MD-PANEL-01 — restore panel.tsx from 43c479a; gate 36/36 with catalogSearchPicker + hrmSettingsCatalogItem
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -82,9 +84,17 @@ describe('D-FE-ERP-E1B-MD-PANEL-01 — panel source gate', () => {
     expect(panelSrc).not.toMatch(/upsertWorkShift|dualWrite.*work_shifts/i);
   });
 
-  it('keeps leaveTypes / departments upsert form testids for U65 create path', () => {
+  it('keeps departments upsert form testids for U65 create path', () => {
     expect(panelSrc).toContain('md-code-${bucket}');
     expect(panelSrc).toContain('md-upsert-form-${bucket}');
     expect(panelSrc).toContain('md-save-${bucket}');
+  });
+
+  it('gates leaveTypes REF read-only + ATT tab CTA (HRM-SC-01)', () => {
+    expect(panelSrc).toContain('isLeaveTypesGroupRefReadOnly');
+    expect(panelSrc).toContain('md-leave-types-ref-readonly-banner');
+    expect(panelSrc).toContain('md-leave-types-open-att-tab');
+    expect(panelSrc).toContain('SETTINGS_ATT_LEAVE_TYPES_PATH');
+    expect(panelSrc).toContain('PO-HRM-SETTINGS-ATT-LVT-SOT-FE-01');
   });
 });

@@ -3,6 +3,11 @@ import { createHmac } from 'node:crypto';
 import { PayrollController } from './payroll.controller';
 import { PayrollService } from './payroll.service';
 import { PayrollCatalogService } from './payroll-catalog.service';
+import { PayFormulaService } from './pay-formula.service';
+import { PaySheetTemplateService } from './pay-sheet-template.service';
+import { PayPeriodInputPackService } from './pay-period-input-pack.service';
+import { PayPayrollGroupService } from './pay-payroll-group.service';
+import { PayCnttSetupService } from './pay-cntt-setup.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
@@ -19,6 +24,7 @@ describe('PayrollController (HRM-PR-01..06)', () => {
 
   const catalogMock = {
     listSalaryComponents: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    getSalaryComponentById: jest.fn().mockResolvedValue({ id: 'sc-1' }),
     listSalaryComponentCategories: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     createSalaryComponent: jest.fn().mockResolvedValue({ id: 'sc-1' }),
     updateSalaryComponent: jest.fn().mockResolvedValue({ id: 'sc-1' }),
@@ -33,14 +39,77 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     addPaymentRecord: jest.fn().mockResolvedValue({ id: 'pr-1' }),
     processPaymentRecord: jest.fn().mockResolvedValue({ id: 'pr-1', status: 'paid' }),
     processAllPaymentsInBatch: jest.fn().mockResolvedValue({ batch: { id: 'pb-1' }, processed_records: 2 }),
+    wirePaymentBatchFromPeriod: jest.fn().mockResolvedValue({
+      period_id: 'period-1',
+      batch: { id: 'pb-1' },
+      records_added: 2,
+      records_skipped: 0,
+      payslip_count: 2,
+      payroll_e2e_ready: false,
+    }),
+  };
+
+  const formulaMock = {
+    listFormulas: jest.fn().mockResolvedValue({ items: [] }),
+    createFormula: jest.fn().mockResolvedValue({ id: 'f1', status: 'draft' }),
+    getFormulaById: jest.fn().mockResolvedValue({ id: 'f1' }),
+    updateFormula: jest.fn().mockResolvedValue({ id: 'f1' }),
+    createNewVersion: jest.fn().mockResolvedValue({ id: 'f2', version: 2 }),
+    submitPublish: jest.fn().mockResolvedValue({ id: 'f1', status: 'pending_publish' }),
+    publish: jest.fn().mockResolvedValue({ id: 'f1', status: 'active' }),
+    withdrawPublish: jest.fn().mockResolvedValue({ id: 'f1', status: 'draft' }),
+    retireFormula: jest.fn().mockResolvedValue({ id: 'f1', status: 'retired' }),
+    previewFormula: jest.fn().mockResolvedValue({ warnings: [] }),
+  };
+
+  const sheetTplMock = {
+    listTemplates: jest.fn().mockResolvedValue({ items: [] }),
+    createTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
+    getTemplateById: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
+    updateTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
+    getLines: jest.fn().mockResolvedValue({ templateId: 'tpl-1', lines: [] }),
+    replaceLines: jest.fn().mockResolvedValue({ templateId: 'tpl-1', lines: [] }),
+    archiveTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1', archivedAt: '2026-08-07' }),
+    archiveLine: jest.fn().mockResolvedValue({ id: 'line-1' }),
+    bindToPeriod: jest.fn().mockResolvedValue({
+      id: 'p1',
+      pay_sheet_template_id: 'tpl-1',
+      sheet_template_snapshot_json: { columns: [] },
+    }),
   };
 
   const serviceMock = {
     createPayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1' }),
+    updatePayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1' }),
     listPayrollPeriods: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'p1' }] }),
-    processPayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1', status: 'processing' }),
+    processPayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1', status: 'processed' }),
     closePayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1', status: 'closed' }),
+    getPayrollEligibility: jest.fn().mockResolvedValue({ period_id: 'p1', eligible_count: 1, ineligible_count: 0, items: [] }),
+    enrollPayrollPeriod: jest.fn().mockResolvedValue({ period_id: 'p1', employee_count: 1, enrolled: [] }),
     listPayslips: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ps-1' }] }),
+    getPayslipById: jest.fn().mockResolvedValue({
+      id: 'ps-1',
+      components: [{ component_code: 'BASE', amount: 1 }],
+      lines: [{ component_code: 'BASE', amount: 1 }],
+    }),
+    listPayslipLines: jest.fn().mockResolvedValue({
+      payslip_id: 'ps-1',
+      total: 1,
+      data: [{ component_code: 'BASE', amount: 1 }],
+    }),
+    listMyPayslips: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ps-1' }] }),
+    getMyPayslipById: jest.fn().mockResolvedValue({
+      id: 'ps-1',
+      ess_confirmed: false,
+      components: [{ component_code: 'BASE', amount: 1 }],
+      lines: [{ component_code: 'BASE', amount: 1 }],
+    }),
+    confirmMyPayslip: jest.fn().mockResolvedValue({
+      id: 'ps-1',
+      ess_confirmed: true,
+      components: [{ component_code: 'BASE', amount: 1 }],
+      lines: [{ component_code: 'BASE', amount: 1 }],
+    }),
     getPayrollReconciliationSummary: jest.fn().mockResolvedValue({ periods: 1, payslips: 2 }),
   };
 
@@ -52,6 +121,48 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       providers: [
         { provide: PayrollService, useValue: serviceMock },
         { provide: PayrollCatalogService, useValue: catalogMock },
+        { provide: PayFormulaService, useValue: formulaMock },
+        { provide: PaySheetTemplateService, useValue: sheetTplMock },
+        {
+          provide: PayPeriodInputPackService,
+          useValue: {
+            listTimesheetBinds: jest.fn().mockResolvedValue({ items: [] }),
+            getTimesheetBindById: jest.fn(),
+            createTimesheetBind: jest.fn(),
+            archiveTimesheetBind: jest.fn(),
+            listInputLines: jest.fn().mockResolvedValue({ items: [] }),
+            getInputLineById: jest.fn(),
+            createInputLine: jest.fn(),
+            patchInputLine: jest.fn(),
+            archiveInputLine: jest.fn(),
+          },
+        },
+        {
+          provide: PayPayrollGroupService,
+          useValue: {
+            listGroups: jest.fn().mockResolvedValue({ items: [] }),
+            getGroupById: jest.fn(),
+            createGroup: jest.fn(),
+            updateGroup: jest.fn(),
+            listGroupMembers: jest.fn().mockResolvedValue({ group_id: 'g1', period_id: 'p1', items: [] }),
+          },
+        },
+        {
+          provide: PayCnttSetupService,
+          useValue: {
+            listPolicyPacks: jest.fn().mockResolvedValue({ items: [] }),
+            createPolicyPack: jest.fn(),
+            getPolicyPackById: jest.fn(),
+            updatePolicyPack: jest.fn(),
+            archivePolicyPack: jest.fn(),
+            listInputProfiles: jest.fn().mockResolvedValue({ items: [] }),
+            createInputProfile: jest.fn(),
+            getInputProfileById: jest.fn(),
+            updateInputProfile: jest.fn(),
+            archiveInputProfile: jest.fn(),
+            resolveSetup: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -89,6 +200,40 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     expect(closeRes.code).toBe('HRM-PAY-203');
   });
 
+  it('lists payroll eligibility and enrolls payroll period with deterministic envelope codes', async () => {
+    const eligibilityRes = await controller.getPayrollEligibility(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      undefined,
+      'test-key',
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
+    const enrollRes = await controller.enrollPayrollPeriod(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      undefined,
+      'test-key',
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      {
+        mode: 'auto_eligible',
+      },
+    );
+    expect(eligibilityRes.code).toBe('HRM-PAY-200');
+    expect(enrollRes.code).toBe('HRM-PAY-ENROLL-200');
+    expect(serviceMock.getPayrollEligibility).toHaveBeenCalledWith(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      undefined,
+      undefined,
+    );
+    expect(serviceMock.enrollPayrollPeriod).toHaveBeenCalledWith(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      { mode: 'auto_eligible' },
+      undefined,
+    );
+  });
+
   it('HRM-PR-05 list payslips HRM-PR-06 reconciliation summary', async () => {
     const companyId = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
     const payslipsRes = await controller.listPayslips(undefined, 'test-key', 'xevn', undefined, {
@@ -105,6 +250,89 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     expect(reconRes.code).toBe('HRM-PAY-200');
     expect(serviceMock.listPayslips).toHaveBeenCalled();
     expect(serviceMock.getPayrollReconciliationSummary).toHaveBeenCalledWith(companyId, undefined);
+  });
+
+  it('F-PAY-PAYSLIP-01 get payslip by id and lines', async () => {
+    const companyId = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
+    const payslipId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+    const byId = await controller.getPayslipById(
+      payslipId,
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      { company_id: companyId },
+    );
+    const lines = await controller.listPayslipLines(
+      payslipId,
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      { company_id: companyId },
+    );
+    expect(byId.code).toBe('HRM-PAY-200');
+    expect(lines.code).toBe('HRM-PAY-200');
+    expect(serviceMock.getPayslipById).toHaveBeenCalledWith(
+      payslipId,
+      companyId,
+      undefined,
+      expect.anything(),
+      true,
+    );
+    expect(serviceMock.listPayslipLines).toHaveBeenCalledWith(
+      payslipId,
+      companyId,
+      undefined,
+      expect.anything(),
+    );
+  });
+
+  it('F-PAY-PAYSLIP-01 ESS me payslips list, get, confirm', async () => {
+    const payslipId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+    const token = `Bearer ${createInternalJwt({
+      sub: 'uat.nv0001@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'holding',
+      employee_id: '11111111-1111-4111-8111-111111111111',
+    })}`;
+
+    const listRes = await controller.listMyPayslips(token, undefined, 'xevn', 'holding', {}, {});
+    const getRes = await controller.getMyPayslipById(
+      payslipId,
+      token,
+      undefined,
+      'xevn',
+      'holding',
+      {},
+      {},
+    );
+    const confirmRes = await controller.confirmMyPayslip(
+      payslipId,
+      token,
+      undefined,
+      'xevn',
+      'holding',
+      {},
+      {},
+    );
+
+    expect(listRes.code).toBe('HRM-PAY-200');
+    expect(getRes.code).toBe('HRM-PAY-200');
+    expect(confirmRes.code).toBe('HRM-PAY-204-ESS');
+    expect(serviceMock.listMyPayslips).toHaveBeenCalled();
+    expect(serviceMock.getMyPayslipById).toHaveBeenCalledWith(
+      payslipId,
+      'holding',
+      expect.stringContaining('Bearer'),
+      expect.anything(),
+    );
+    expect(serviceMock.confirmMyPayslip).toHaveBeenCalledWith(
+      payslipId,
+      'holding',
+      expect.stringContaining('Bearer'),
+      expect.anything(),
+    );
   });
 
   it('accepts internal API key and forwards payroll calls', async () => {
@@ -125,11 +353,13 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     await controller.processPayrollPeriod('p1', undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037');
     await controller.closePayrollPeriod('p1', undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037');
 
-    expect(serviceMock.createPayrollPeriod).toHaveBeenCalledWith(body);
+    expect(serviceMock.createPayrollPeriod).toHaveBeenCalledWith(body, undefined, 'xevn');
     expect(serviceMock.listPayrollPeriods).toHaveBeenCalledWith(query, undefined);
     expect(serviceMock.processPayrollPeriod).toHaveBeenCalledWith(
       'p1',
       '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      undefined,
+      null,
       undefined,
     );
     expect(serviceMock.closePayrollPeriod).toHaveBeenCalledWith(
@@ -236,5 +466,21 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     expect(catalogMock.addPaymentRecord).toHaveBeenCalled();
     expect(catalogMock.processPaymentRecord).toHaveBeenCalled();
     expect(catalogMock.processAllPaymentsInBatch).toHaveBeenCalled();
+  });
+
+  it('wires payment batch from processed payslips (AMIS step7)', async () => {
+    const res = await controller.wirePaymentBatchFromPeriod(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      undefined,
+      'test-key',
+      'xevn',
+      { company_id: 'main' },
+    );
+    expect(res.code).toBe('HRM-PAY-WIRE-201');
+    expect(catalogMock.wirePaymentBatchFromPeriod).toHaveBeenCalledWith(
+      'f76f23f7-3683-4120-81b7-5126ee997b8e',
+      { company_id: 'main' },
+      undefined,
+    );
   });
 });

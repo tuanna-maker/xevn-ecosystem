@@ -132,6 +132,30 @@ describe('MobileAuthService', () => {
     expect(m.company_id).toBe('main');
     expect(m.company_uuid).toBe(HRM_COMPANY_UUID_BY_SLUG.holding);
     expect(m.company_display).toBe('Du lịch X.E');
+    expect(m.company_label).toBe('Du lịch X.E');
+    expect(m.tenant_label).toBe('Du lịch XeVN');
+    expect(m.job_title_label).toBe('CEO');
+  });
+
+  it('W1-B-03 / FR-UC-M01: membership display-ready — no raw slug when custom missing', () => {
+    const m = service.rowToMembership(
+      {
+        id: '1',
+        company_id: 'holding',
+        email: 'ceo@xe.vn',
+        full_name: 'CEO Tập đoàn',
+        employee_code: 'PORTAL-GCEO',
+        job_title_key: 'CEO',
+        custom_fields: { tenant_id: 'xevn' },
+      },
+      ['employee', 'manager', 'hr_manager'],
+    );
+    expect(m.company_display).toBe('Tập đoàn X.E (Holding)');
+    expect(m.company_label).toBe('Tập đoàn X.E (Holding)');
+    expect(m.tenant_label).toBe('Tập đoàn XeVN');
+    expect(m.role_label).toBe('Quản lý nhân sự');
+    expect(m.job_title_label).toBe('CEO');
+    expect(m.company_display).not.toBe('holding');
   });
 
   it('D-HRM-MOB-UUID-BPRIME-01: unknown company_id without map → HRM-AUTH-409', () => {
@@ -220,6 +244,48 @@ describe('MobileAuthService', () => {
     });
     expect(roles).toEqual(expect.arrayContaining(['employee', 'manager']));
     expect(db.query).toHaveBeenCalledWith(expect.stringContaining('manager_id'), ['mgr-uuid']);
+  });
+
+  it('R-SPINE-MGR-HIER-01-PERSONA-LOCK: emp lock WITHOUT reports stays employee', async () => {
+    const db = {
+      query: jest.fn().mockResolvedValue({ rows: [{ count: 0 }] }),
+    };
+    const svc = new MobileAuthService(db as never);
+    const roles = await svc.resolveRolesForEmployee({
+      id: '3796d949-4513-45c0-88fa-33030a062b17',
+      company_id: 'holding',
+      email: 'uat.nv0001@xe.vn',
+      full_name: 'UAT NV0001',
+      employee_code: 'HLD-0001',
+      job_title_key: 'STAFF',
+      custom_fields: { mobile_persona: 'emp', is_manager: 'false' },
+    });
+    expect(roles).toEqual(['employee']);
+    expect(svc.isManagerRoles(roles)).toBe(false);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('manager_id'), [
+      '3796d949-4513-45c0-88fa-33030a062b17',
+    ]);
+  });
+
+  it('R-SPINE-MGR-HIER-01-PERSONA-LOCK: emp lock WITH reports → is_manager / manager role', async () => {
+    const db = {
+      query: jest.fn().mockResolvedValue({ rows: [{ count: 3 }] }),
+    };
+    const svc = new MobileAuthService(db as never);
+    const roles = await svc.resolveRolesForEmployee({
+      id: '3796d949-4513-45c0-88fa-33030a062b17',
+      company_id: 'holding',
+      email: 'uat.nv0001@xe.vn',
+      full_name: 'UAT NV0001',
+      employee_code: 'HLD-0001',
+      job_title_key: 'STAFF',
+      custom_fields: { mobile_persona: 'emp', is_manager: 'false' },
+    });
+    expect(roles).toEqual(expect.arrayContaining(['employee', 'manager']));
+    expect(svc.isManagerRoles(roles)).toBe(true);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('manager_id'), [
+      '3796d949-4513-45c0-88fa-33030a062b17',
+    ]);
   });
 
   it('P1-G3-JMOB-05: resolveRolesForEmployee COO title yields manager without DB fallback', async () => {

@@ -12,6 +12,7 @@ import {
   resolveEmployeeDepartmentLabel,
   resolveEmployeePositionLabel,
 } from '@/lib/employeePickerLabel';
+import { stripCoreCbKeysFromRecord } from '@/lib/empCorePublicRing';
 
 /**
  * @CODE-MEMORY
@@ -30,6 +31,12 @@ import {
  * must_keep:  G-DB-01 hire bind · avatar custom_fields fallback · U65 · never || raw key
  * LastVerified: docs/qa/evidence/d-hrm-u72-label-fe-02-20260727.md
  *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-01-CLUSTER-FE-01
+ * change_mode: UPGRADE
+ * What: Strip C&B deny keys from mapped custom_fields (F5 defense); salary/bank/tax/SI remain null
+ * Why: UC-BP-CORE-01 AC-CORE-PUB-02 — FE không bind leak nếu BE legacy còn CF deny keys
+ * must_keep: U72 labels; manager_id; company_display_name; Nest /employees; U65
+ *
  * @CODE-MEMORY-CHANGE 2026-07-21 BM-FE-HIRE-TITLE-01
  *   department/position: đọc custom_fields + job_title_key thay vì department:null cứng.
  *
@@ -44,6 +51,12 @@ import {
  * Why: QA AC-FD-U02 — LEGAL_SPECIALIST leaked on profile header / Chức vụ
  * SRS/BR: SRS_FIELD_DISPLAY.md AC-FD-U02 · display-label-no-raw-key.mdc
  * must_keep: F-01..F-13; resolveIndustryDisplay; company_display_name; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 R-SPINE-MGR-HIER-01-FE
+ * change_mode: ADD
+ * What: Pass-through manager_id + manager_label (display-ready); cấm hardcode manager_id:null
+ * Why: Option B UC-H01 — FE sau PATCH/F5 phải hiện QL trực tiếp (FR-UC-H03 L1)
+ * must_keep: U72 never raw UUID as sole label; leave approve UX untouched
  */
 
 /** Top-level BE field when merged; interim fallback via custom_fields.avatar_url. */
@@ -77,6 +90,18 @@ export function mergeEmployeeAvatarWriteFields(
   };
 }
 
+function resolveManagerDisplayLabel(row: HrmEmployeeRecord): string | null {
+  const candidates = [
+    row.manager_label?.trim(),
+    row.manager_display_name?.trim(),
+    row.manager_name?.trim(),
+  ];
+  for (const c of candidates) {
+    if (c) return c;
+  }
+  return null;
+}
+
 export function mapHrmEmployeeRecord(row: HrmEmployeeRecord): Employee {
   return {
     id: row.id,
@@ -94,7 +119,8 @@ export function mapHrmEmployeeRecord(row: HrmEmployeeRecord): Employee {
     status: row.status,
     avatar_url: resolveEmployeeAvatarUrl(row),
     salary: null,
-    manager_id: null,
+    manager_id: row.manager_id?.trim() || null,
+    manager_label: resolveManagerDisplayLabel(row),
     gender: null,
     birth_date: null,
     id_number: null,
@@ -111,7 +137,7 @@ export function mapHrmEmployeeRecord(row: HrmEmployeeRecord): Employee {
     tax_code: null,
     social_insurance_number: null,
     health_insurance_number: null,
-    custom_fields: row.custom_fields ?? {},
+    custom_fields: stripCoreCbKeysFromRecord(row.custom_fields) ?? {},
     deleted_at: row.archived_at,
     deleted_by: null,
     delete_reason: null,

@@ -44,13 +44,66 @@
  * SRS: BA_ERP_E1B_SRS_01 · FR-HRM-SC-DEC-01 alias · AC-SC-DEC-ALIAS-*
  * DB/API: DB_DESIGN_HRM_SETTINGS_E1B §3.2 · API_DESIGN_HRM_SETTINGS_E1B §0–§2
  * must_keep: empty honesty; no invent L0; no work_shifts dual-write; POS/LEAVE paths
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-BE-SYNC-XBOSS-500
+ * change_mode: FIX
+ * What: syncAllFromXbos — parallel pull (concurrency 8), skip soft 404, upstream
+ *   unreachable → HRM-SYNC-001 502 (không bare 500); pull ≠ apply ≠ clone.
+ * SRS: UC-HRM-06 · XBOS-DM-HRM-10
+ * must_keep: main→holding via controller; Leave L2 untouched; ≠ apply-to-members/clone
+ * LastVerified: settings-catalogs.service.spec.ts (syncAllFromXbos)
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-BE-AT12-L1-CREATE-CATALOG-PULL
+ * change_mode: FIX
+ * What: Member syncAllFromXbos(trsport) inherits CatalogSync holding→OU store;
+ *   leave_types lands on member partition (pull ≠ apply ≠ clone).
+ * must_keep: main→holding via controller; Leave L2 untouched; U65 no seed
+ * LastVerified: catalog-sync-upstream.spec.ts AT12 pull
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-MFD-M2-ATT-SETTINGS-CATALOG-500-01
+ * change_mode: FIX
+ * What: getOverview skips corrupt/blank catalog_key rows (was TypeError → HRM-SYS-001 500);
+ *   explicit HRM-SET-001 on picker/invalid :catalogKey param only.
+ * must_keep: empty honesty; main→holding; pull≠apply≠clone; U65 no seed
+ * LastVerified: settings-catalogs.service.spec.ts overview corrupt-key
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01
+ * change_mode: ADD
+ * What: getOverview synthesizes allowance_deduction_types row (count+sample) from PC table; honest empty
+ * must_keep: U65 no fake starter · CATALOG_FAMILIES allowance_deduction
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-E2E-LINK-PAY-CFG-O4-SC-KEY-BE-01
+ * change_mode: ADD
+ * What: getOverview synthesizes empty salary_components row when XBOS/extension absent
+ *   so Settings Select can FE-append (AC-PAY-COMP-01 picker SoT); no starter dual-write
+ * must_keep: U65 no seed · payroll starters ≠ Settings picker · payroll_e2e_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07 PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01
+ * change_mode: ADD
+ * What: F-EMP-TOK-03 — same-TX register custom.emp.* on EMP field catalog extension-items
+ *   allow-list (basic|personal|work|finance + aliases); retire → soft-retire token; token fail → rollback
+ * SRS/SA: EXT-BA-01 AC-04 · EXT-SA Option B′ · F-PLT-TOK-02 origin=extension_field
+ * must_keep: DOC/ET emp_catalog SEAL · no value-PATCH register · U65 · ready=false · C-SLICE-≠-MODULE
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-SETTINGS-ATT-LVT-SOT-BE-01
+ * change_mode: ADD
+ * What: HRM-SC-01 dual SoT — forbid extension mutate on leave_types; overview tenantWriter paths
+ * must_keep: XBOS pull REF · F-ATT-CAT-LVT/EFF · U65 no seed
+ * LastVerified: hrm-settings-leave-type-sot.spec.ts
  */
 import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
-import { CatalogSyncService } from '../catalog-sync/catalog-sync.service';
+import {
+  CatalogSyncService,
+  mapXbosUpstreamException,
+} from '../catalog-sync/catalog-sync.service';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService } from '../db/hrm-db.service';
+import type { HrmDbQueryFn } from '../db/hrm-db.service';
 import type { CatalogExtensionItemDto } from './dto/append-extension-items.dto';
 import type { RequestCatalogFieldRemovalDto } from './dto/request-removal.dto';
 import { createHash } from 'node:crypto';
@@ -68,6 +121,7 @@ import {
   HRM_SC_POS_KEYS,
   catalogAliasTryList,
   isE1bMasterCatalogKey,
+  isValidCatalogKeyFormat,
   resolveCatalogFamily,
 } from './hrm-settings-master-keys';
 import {
@@ -79,6 +133,17 @@ import {
 import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
 import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
 import { assertResourceInHrmScope, resolveHrmListScope } from '../common/hrm-list-scope';
+import { HRM_PLT_CAT_CODE_INVALID } from '../merge-tokens/merge-token.constants';
+import {
+  isEmpExtensionFieldCatalogKey,
+  upsertEmpExtensionFieldMergeToken,
+} from '../merge-tokens/emp-merge-token-register';
+import {
+  assertLeaveTypesExtensionMutateForbidden,
+  isLeaveTypesGroupRefCatalogKey,
+  LEAVE_TYPES_TENANT_WRITER_META,
+  type LeaveTypesTenantWriterMeta,
+} from './hrm-settings-leave-type-sot';
 
 export type SettingsCatalogItem = {
   code: string;
@@ -107,6 +172,8 @@ export type SettingsCatalogOverviewRow = {
   /** E1-B family aliases (same logical catalog). */
   aliases?: string[];
   familyId?: string;
+  /** HRM-SC-01 dual SoT — Nest att_leave_type tenant writer (group leave_types = REF read). */
+  tenantWriter?: LeaveTypesTenantWriterMeta;
 };
 
 @Injectable()
@@ -118,11 +185,16 @@ export class SettingsCatalogsService {
   ) {}
 
   private normalizeCatalogKey(catalogKey: string): string {
-    const normalized = catalogKey.trim().toLowerCase();
-    if (!/^[a-z0-9_][a-z0-9_-]{1,62}$/.test(normalized)) {
+    if (!isValidCatalogKeyFormat(catalogKey)) {
       throw new ApiException('HRM-SET-001', 'Invalid catalog key format', HttpStatus.BAD_REQUEST);
     }
-    return normalized;
+    return catalogKey.trim().toLowerCase();
+  }
+
+  /** Overview merge only — never throw; corrupt L1 rows must not 500 the whole catalog GET. */
+  private tryNormalizeOverviewCatalogKey(catalogKey: string | null | undefined): string | null {
+    if (!isValidCatalogKeyFormat(catalogKey)) return null;
+    return catalogKey.trim().toLowerCase();
   }
 
   private async ensureExtensionSchema() {
@@ -525,7 +597,9 @@ export class SettingsCatalogsService {
       unit: string | null;
       status: string;
     }) => {
-      const list = extByKey.get(row.catalog_key) ?? [];
+      const storageKey = this.tryNormalizeOverviewCatalogKey(row.catalog_key);
+      if (!storageKey) return;
+      const list = extByKey.get(storageKey) ?? [];
       const normalizedCode = row.code.toLowerCase();
       if (list.some((item) => item.code.toLowerCase() === normalizedCode)) {
         return;
@@ -537,7 +611,7 @@ export class SettingsCatalogsService {
         status: row.status === 'pending' ? 'draft' : row.status === 'draft' ? 'draft' : 'active',
         origin: 'hrm',
       });
-      extByKey.set(row.catalog_key, list);
+      extByKey.set(storageKey, list);
     };
     for (const row of extRes.rows) {
       mergeExtensionRow(row);
@@ -547,11 +621,12 @@ export class SettingsCatalogsService {
     }
 
     const keys = new Set<string>();
-    for (const c of synced.data) {
-      keys.add(c.key);
+    for (const syncedRow of synced.data) {
+      const key = this.tryNormalizeOverviewCatalogKey(syncedRow.key);
+      if (key) keys.add(key);
     }
     for (const k of extByKey.keys()) {
-      keys.add(k);
+      if (isValidCatalogKeyFormat(k)) keys.add(k.trim().toLowerCase());
     }
 
     const catalogs: SettingsCatalogOverviewRow[] = [];
@@ -602,25 +677,140 @@ export class SettingsCatalogsService {
         effectiveItems: effectiveForFamily(fam.familyId, fam.aliases),
         aliases: [...fam.aliases],
         familyId: fam.familyId,
+        ...(isLeaveTypesGroupRefCatalogKey(catalogKey)
+          ? { tenantWriter: LEAVE_TYPES_TENANT_WRITER_META }
+          : {}),
       });
     }
+
+    // Synthesize PC/KT catalog overview — dedicated table SoT (not extension_items).
+    const allowFam = resolveCatalogFamily('allowance_deduction_types');
+    if (!catalogs.some((c) => c.catalogKey === allowFam.storageKey)) {
+      let allowItems: SettingsCatalogItem[] = [];
+      try {
+        const allowRes = await this.db.query<{ code: string; name_vi: string; status: string }>(
+          `SELECT code, name_vi, status FROM public.hrm_allowance_deduction_types
+           WHERE company_id = $1 AND archived_at IS NULL AND status <> 'retired'
+           ORDER BY sort_order ASC, code ASC
+           LIMIT 50;`,
+          [c],
+        );
+        allowItems = allowRes.rows.map((r) => ({
+          code: r.code,
+          label: r.name_vi,
+          unit: null,
+          status: r.status === 'draft' ? 'draft' : 'active',
+          origin: 'hrm' as const,
+        }));
+      } catch {
+        allowItems = [];
+      }
+      catalogs.push({
+        catalogKey: allowFam.storageKey,
+        catalog_key: allowFam.storageKey,
+        key: allowFam.storageKey,
+        name: 'Phụ cấp / khấu trừ',
+        domain: 'SET',
+        xbosVersion: null,
+        xbosSyncedAt: null,
+        xbosItems: [],
+        hrmExtensionItems: allowItems,
+        extension_items: allowItems,
+        extensionItems: allowItems,
+        items: allowItems,
+        effectiveItems: allowItems,
+        aliases: [...allowFam.aliases],
+        familyId: allowFam.familyId,
+      });
+    }
+
+    // O4: open pay_comp family for Settings FE when XBOS salary_components 404 / unsynced.
+    // Honest empty — no payroll starter dual-write (starters ≠ picker SoT).
+    const scFam = resolveCatalogFamily('salary_components');
+    if (!catalogs.some((c) => c.familyId === scFam.familyId)) {
+      const empty: SettingsCatalogItem[] = [];
+      catalogs.push({
+        catalogKey: scFam.storageKey,
+        catalog_key: scFam.storageKey,
+        key: scFam.storageKey,
+        name: 'Thành phần lương (danh mục)',
+        domain: 'PAY',
+        xbosVersion: null,
+        xbosSyncedAt: null,
+        xbosItems: empty,
+        hrmExtensionItems: empty,
+        extension_items: empty,
+        extensionItems: empty,
+        items: empty,
+        effectiveItems: empty,
+        aliases: [...scFam.aliases],
+        familyId: scFam.familyId,
+      });
+    }
+
     return { catalogs };
   }
 
+  /**
+   * Bulk pull XBOS→HRM (XBOS-DM-HRM-10 / UC-HRM-06). Not apply-to-members / not clone.
+   * Parallel batches keep FE proxy under ~proxy timeout (sequential 74 keys was ~35s).
+   */
   async syncAllFromXbos(
     tenantId: string,
     companyId: string,
     authorization?: string,
-  ): Promise<{ pulledKeys: string[] }> {
-    const remote = await this.catalogSync.listRemoteCatalogsFromXbos(tenantId, companyId, authorization);
-    const pulledKeys: string[] = [];
-    for (const entry of remote.data as Array<{ key?: string }>) {
-      const key = typeof entry?.key === 'string' ? entry.key : null;
-      if (!key) continue;
-      await this.catalogSync.pullCatalogFromXbos(key, tenantId, companyId, authorization);
-      pulledKeys.push(key);
+  ): Promise<{ pulledKeys: string[]; skippedKeys: string[] }> {
+    try {
+      const remote = await this.catalogSync.listRemoteCatalogsFromXbos(
+        tenantId,
+        companyId,
+        authorization,
+      );
+      const keys = (remote.data as Array<{ key?: string }>)
+        .map((entry) => (typeof entry?.key === 'string' ? entry.key.trim() : ''))
+        .filter((key) => key.length > 0);
+      const pulledKeys: string[] = [];
+      const skippedKeys: string[] = [];
+      // concurrency 4 — giảm deadlock XBOS khi fan-out holding SoT vào member OU.
+      const concurrency = 4;
+
+      for (let i = 0; i < keys.length; i += concurrency) {
+        const batch = keys.slice(i, i + concurrency);
+        const settled = await Promise.allSettled(
+          batch.map(async (key) => {
+            await this.catalogSync.pullCatalogFromXbos(key, tenantId, companyId, authorization);
+            return key;
+          }),
+        );
+        for (let j = 0; j < settled.length; j += 1) {
+          const result = settled[j];
+          const key = batch[j];
+          if (result.status === 'fulfilled') {
+            pulledKeys.push(result.value);
+            continue;
+          }
+          const reason = result.reason;
+          if (reason instanceof ApiException && reason.code === 'HRM-SYNC-002') {
+            skippedKeys.push(key);
+            continue;
+          }
+          // Soft-skip transient XBOS 5xx (deadlock) — không abort cả bulk (leave_types vẫn về).
+          if (
+            reason instanceof ApiException &&
+            reason.code === 'HRM-SYNC-001' &&
+            /XBOS API error 5\d\d/i.test(reason.message)
+          ) {
+            skippedKeys.push(key);
+            continue;
+          }
+          throw mapXbosUpstreamException(reason);
+        }
+      }
+
+      return { pulledKeys, skippedKeys };
+    } catch (e) {
+      throw mapXbosUpstreamException(e);
     }
-    return { pulledKeys };
   }
 
   async submitExtensionItemsForApproval(
@@ -899,6 +1089,7 @@ export class SettingsCatalogsService {
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();
     const inputKey = this.normalizeCatalogKey(catalogKey);
+    assertLeaveTypesExtensionMutateForbidden(inputKey);
     // E1-B MD families → storageKey; other extension catalogs (employee fields) keep literal key.
     const ck = isE1bMasterCatalogKey(inputKey)
       ? await this.resolveWriteStorageKey(t, c, inputKey)
@@ -918,8 +1109,7 @@ export class SettingsCatalogsService {
       statuses.push(row.status ?? 'active');
     }
 
-    await this.db.query(
-      `
+    const insertSql = `
       INSERT INTO public.hrm_catalog_extension_items (tenant_id, company_id, catalog_key, code, label, unit, status)
       SELECT $1, $2, $3, u.code, u.label, u.unit, u.status
       FROM unnest($4::text[], $5::text[], $6::text[], $7::text[]) AS u(code, label, unit, status)
@@ -928,9 +1118,27 @@ export class SettingsCatalogsService {
         label = EXCLUDED.label,
         unit = EXCLUDED.unit,
         status = EXCLUDED.status
-    `,
-      [t, c, ck, codes, labels, units, statuses],
-    );
+    `;
+    const insertParams: unknown[] = [t, c, ck, codes, labels, units, statuses];
+
+    // F-EMP-TOK-03 — allow-list EMP field catalogs: same TX → custom.emp.* (Option B′)
+    if (isEmpExtensionFieldCatalogKey(ck) || isEmpExtensionFieldCatalogKey(inputKey)) {
+      await this.db.withTransaction(async (query) => {
+        await query(insertSql, insertParams);
+        for (let i = 0; i < items.length; i += 1) {
+          const status = (statuses[i] ?? 'active').toLowerCase();
+          await this.registerEmpExtensionMergeToken(query, {
+            companyId: c,
+            code: codes[i] ?? '',
+            labelVi: labels[i] ?? codes[i] ?? '',
+            active: status === 'active',
+          });
+        }
+      });
+      return { upserted: items.length, storageKey: ck };
+    }
+
+    await this.db.query(insertSql, insertParams);
     return { upserted: items.length, storageKey: ck };
   }
 
@@ -956,39 +1164,111 @@ export class SettingsCatalogsService {
    * Soft-deactivate extension item (status=draft) — AC-SC-POS prefer stop over hard delete.
    * XBOS-origin codes cannot be deleted here (extension-only); missing extension → 404.
    * E1-B: locate across family aliases; prefer storageKey row.
+   * F-EMP-TOK-03: allow-list EMP field catalogs soft-retire matching custom.emp.* same TX.
    */
   async deleteCatalogItem(tenantId: string, body: Pick<SettingsCatalogItemMutationDto, 'company_id' | 'category_key' | 'item_key'>) {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
     const c = body.company_id.trim().toLowerCase();
     const inputKey = this.normalizeCatalogKey(body.category_key);
+    assertLeaveTypesExtensionMutateForbidden(inputKey);
     const fam = resolveCatalogFamily(inputKey);
     const code = body.item_key.trim();
     const tryKeys = isE1bMasterCatalogKey(inputKey)
       ? catalogAliasTryList(inputKey)
       : [inputKey];
 
-    for (const catalogKey of tryKeys) {
-      const res = await this.db.query<{ code: string; catalog_key: string }>(
+    const runUpdate = async (
+      query: HrmDbQueryFn,
+      catalogKey: string,
+    ): Promise<{ code: string; catalog_key: string } | null> => {
+      const res = await query<{ code: string; catalog_key: string }>(
         `UPDATE public.hrm_catalog_extension_items
          SET status = 'draft'
          WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3 AND code = $4
          RETURNING code, catalog_key`,
         [t, c, catalogKey, code],
       );
-      if (res.rows[0]) {
+      return res.rows[0] ?? null;
+    };
+
+    if (isEmpExtensionFieldCatalogKey(inputKey)) {
+      const hit = await this.db.withTransaction(async (query) => {
+        for (const catalogKey of tryKeys) {
+          const row = await runUpdate(query, catalogKey);
+          if (row) {
+            await this.registerEmpExtensionMergeToken(query, {
+              companyId: c,
+              code: row.code,
+              labelVi: row.code,
+              active: false,
+            });
+            return row;
+          }
+        }
+        return null;
+      });
+      if (hit) {
         return {
-          item_key: res.rows[0].code,
-          category_key: res.rows[0].catalog_key,
+          item_key: hit.code,
+          category_key: hit.catalog_key,
           status: 'draft' as const,
         };
       }
+    } else {
+      for (const catalogKey of tryKeys) {
+        const res = await this.db.query<{ code: string; catalog_key: string }>(
+          `UPDATE public.hrm_catalog_extension_items
+           SET status = 'draft'
+           WHERE tenant_id = $1 AND company_id = $2 AND catalog_key = $3 AND code = $4
+           RETURNING code, catalog_key`,
+          [t, c, catalogKey, code],
+        );
+        if (res.rows[0]) {
+          return {
+            item_key: res.rows[0].code,
+            category_key: res.rows[0].catalog_key,
+            status: 'draft' as const,
+          };
+        }
+      }
     }
+
     throw new ApiException(
       'HRM-SET-404',
       `Catalog item not found in HRM extension for family '${fam.familyId}' (cannot hard-delete XBOS master)`,
       HttpStatus.NOT_FOUND,
     );
+  }
+
+  /** F-EMP-TOK-03 — map ApiException on token format fail; rethrow others for TX rollback. */
+  private async registerEmpExtensionMergeToken(
+    query: HrmDbQueryFn,
+    args: {
+      companyId: string;
+      code: string;
+      labelVi: string;
+      active: boolean;
+    },
+  ): Promise<void> {
+    try {
+      await upsertEmpExtensionFieldMergeToken(query, {
+        companyId: args.companyId,
+        code: args.code,
+        labelVi: args.labelVi,
+        active: args.active,
+      });
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === 'HRM-PLT-CAT-CODE-INVALID') {
+        throw new ApiException(
+          HRM_PLT_CAT_CODE_INVALID,
+          err instanceof Error ? err.message : 'tokenKey format invalid',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw err;
+    }
   }
 
   async requestFieldRemoval(
@@ -999,6 +1279,7 @@ export class SettingsCatalogsService {
   ) {
     await this.ensureExtensionSchema();
     const inputKey = this.normalizeCatalogKey(catalogKey);
+    assertLeaveTypesExtensionMutateForbidden(inputKey);
     const code = payload.code.trim();
     const t = tenantId.trim().toLowerCase();
     const c = companyId.trim().toLowerCase();

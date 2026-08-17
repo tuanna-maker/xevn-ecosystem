@@ -21,6 +21,12 @@
  * must_keep:  FL-01 list-only · U65 · no invent upsert · soft U72 maps untouched · HOLD_DEPLOY
  * SOLID:      Page presentation; hook server state; pure UX helpers
  * LastVerified: lib/fleetCatalogUx.test.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03 W1-B-02-EMP-FE-FLEET-01
+ * change_mode: ADD (restore)
+ * What: Restore pages/Fleet.tsx + useFleetVehicles + fleetCatalogUx from stash 43c479a
+ * Why: App.tsx lazy import ./pages/Fleet missing → Vite 500 whitescreen blocks /hr/employees J-HRM-02
+ * must_keep: FL-01 list-only · Employees/EmployeeProfile routes · App.tsx route table · U65 · no invent create
  */
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

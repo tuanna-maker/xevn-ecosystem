@@ -1,4 +1,16 @@
-import type { HrmJobRequisition, HrmJobRequisitionStatus } from '@/integrations/hrmApi';
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-JD-YCTD-REF-FE-01
+ * change_mode: ADD
+ * What: filterBindableJobTemplates · composeLocalYctdPreview · resolveRequisitionJdDisplay
+ * Why: SRS REC-02 Diễn biến 1a–1d · F-YCTD-JD-01/02/05 — picker Hiệu lực + preview + F5 jd ref
+ * must_keep: soft FK job_template_id · empty CTA · no job_postings SoT
+ * LastVerified: docs/qa/evidence/po-hrm-jd-yctd-ref-fe-01.md
+ */
+import type {
+  HrmJobRequisition,
+  HrmJobRequisitionStatus,
+  HrmYctdJdPreview,
+} from '@/integrations/hrmApi';
 import {
   departmentOptionsFromCatalog,
   type CatalogPickerOption,
@@ -13,9 +25,27 @@ export const REQUISITION_JD_TEMPLATE_REQUIRED_VI =
   'Chọn JD từ thư viện trước khi lưu yêu cầu tuyển dụng.';
 
 export const REQUISITION_EMPTY_JD_LIBRARY_HINT_VI =
-  'Chưa có JD trong thư viện — tạo JD trước, rồi quay lại chọn cho yêu cầu tuyển dụng.';
+  'Chưa có JD Hiệu lực trong thư viện — tạo/ kích hoạt JD trước, rồi quay lại chọn cho yêu cầu tuyển dụng.';
 
 export const REQUISITION_OPEN_JD_LIBRARY_CTA_VI = 'Mở Thư viện JD';
+
+/** FE surface when BE returns HRM-JD-YCTD-STATUS (Diễn biến 1d). */
+export const REQUISITION_JD_STATUS_BLOCKED_VI =
+  'JD đã chọn không còn Hiệu lực (Nháp/Ngừng). Chọn JD Hiệu lực khác từ thư viện.';
+
+const NON_BINDABLE_STATUS = new Set([
+  'draft',
+  'nhap',
+  'nháp',
+  'retired',
+  'archived',
+  'inactive',
+  'ngung',
+  'ngừng',
+  'paused',
+  'disabled',
+  'stopped',
+]);
 
 /**
  * BM-AC-05-02 / AC-CD-F6-02 / sponsor JD-only —
@@ -48,7 +78,77 @@ type JobTemplateLike = {
   position_name?: string | null;
   job_description?: string | null;
   requirements?: string | null;
+  short_description?: string | null;
+  is_active?: boolean | null;
+  status?: string | null;
 };
+
+/**
+ * F-YCTD-JD-01 — client defense: picker chỉ Hiệu lực (BE bindable=true authoritative).
+ * Prefer status=active ∧ is_active≠false; status absent → migrate dual-assert is_active.
+ */
+export function isJobTemplateBindableForYctd(
+  tpl: Pick<JobTemplateLike, 'is_active' | 'status'>,
+): boolean {
+  if (tpl.is_active === false) return false;
+  const status = (tpl.status ?? '').toLowerCase().trim();
+  if (status) {
+    if (NON_BINDABLE_STATUS.has(status)) return false;
+    if (status === 'active' || status === 'hieu_luc' || status === 'hiệu lực') {
+      return tpl.is_active !== false;
+    }
+    return false;
+  }
+  // Dual-assert migrate: status null → is_active only (API-01 §6.5).
+  return tpl.is_active === true || tpl.is_active === undefined;
+}
+
+export function filterBindableJobTemplates<T extends JobTemplateLike>(
+  rows: readonly T[],
+): readonly T[] {
+  return rows.filter((row) => isJobTemplateBindableForYctd(row));
+}
+
+/** Local preview fallback when preview=yctd endpoint not ready / network blip (not STATUS). */
+export function composeLocalYctdPreview(tpl: JobTemplateLike): HrmYctdJdPreview {
+  const short =
+    tpl.short_description?.trim() ||
+    tpl.job_description?.trim() ||
+    '';
+  return {
+    job_template_id: tpl.id,
+    job_description_id: tpl.id,
+    code: tpl.code?.trim() || '',
+    title: tpl.title?.trim() || '',
+    short_description: short,
+    requirements_preview: tpl.requirements?.trim() || undefined,
+    status: 'active',
+  };
+}
+
+/** F-YCTD-JD-05 — list/detail display after 2xx + F5. */
+export function resolveRequisitionJdDisplay(
+  row: Pick<HrmJobRequisition, 'jd_code' | 'jd_title' | 'job_template_id' | 'job_description_id'>,
+  templates: readonly JobTemplateLike[] = [],
+): string {
+  const code = row.jd_code?.trim() ?? '';
+  const title = row.jd_title?.trim() ?? '';
+  if (code && title) return `${code} · ${title}`;
+  if (title) return title;
+  if (code) return code;
+  const tplId = (row.job_template_id || row.job_description_id || '').trim();
+  if (tplId) {
+    const tpl = templates.find((t) => t.id === tplId);
+    if (tpl) {
+      const tCode = tpl.code?.trim() ?? '';
+      const tTitle = tpl.title?.trim() ?? '';
+      if (tCode && tTitle) return `${tCode} · ${tTitle}`;
+      if (tTitle) return tTitle;
+      if (tCode) return tCode;
+    }
+  }
+  return '—';
+}
 
 function templateRowId(row: JobTemplateLike): string {
   const raw = row.id;
@@ -268,7 +368,14 @@ export function normalizeRequisitionHeadcount(value: unknown): number | null {
 }
 
 export function mapRequisitionStatus(status: HrmJobRequisition['status']): JobRequisitionUiStatus {
-  if (status === 'open' || status === 'approved' || status === 'pending_approval') return 'active';
+  if (
+    status === 'open' ||
+    status === 'approved' ||
+    status === 'pending_approval' ||
+    status === 'open_for_hire'
+  ) {
+    return 'active';
+  }
   if (status === 'on_hold' || status === 'draft') return 'paused';
   return 'closed';
 }
@@ -280,7 +387,7 @@ export function nestStatusMatchesFilter(
   return mapRequisitionStatus(nestStatus) === filter;
 }
 
-/** Local PATCH statuses (UF-HRM-12) — exclude pending_approval (set by WF submit). */
+/** Local PATCH statuses (UF-HRM-12) — exclude pending_approval / open_for_hire (WF/transitions). */
 export const REQUISITION_LOCAL_STATUSES = ['open', 'closed', 'on_hold'] as const satisfies readonly HrmJobRequisitionStatus[];
 
 export const REQUISITION_STATUS_LABEL_VI: Record<HrmJobRequisitionStatus, string> = {
@@ -291,6 +398,8 @@ export const REQUISITION_STATUS_LABEL_VI: Record<HrmJobRequisitionStatus, string
   pending_approval: 'Chờ duyệt QT',
   approved: 'Đã duyệt',
   rejected: 'Từ chối',
+  open_for_hire: 'Mở nhận hồ sơ',
+  cancelled: 'Đã hủy',
 };
 
 export const EMPLOYMENT_TYPE_OPTIONS = [

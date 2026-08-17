@@ -9,18 +9,36 @@
  * WorkItem: XEVN-THM-FE-W1
  * Coded: 2026-07-22
  * Callers: shell layouts (Command Center / dashboard)
- * Callees: AuthContext · GlobalFilterContext · formatRoleCodeVi
+ * Callees: AuthContext · GlobalFilterContext · authSession membership*Display
  * FEActions: chọn membership → selectMembership; đăng xuất → logout
- * BEChain: N/A (chrome only)
+ * BEChain: memberships *_label từ XBOS auth (OS 28)
  * Impact: Thiếu mark → brand test FAIL; chữ nhạt → L-CONTRAST FAIL
  * must_keep: mark+wordmark luôn hiện; cấm stats strip / emoji / purple gradient avatar
- * SOLID: Chỉ chrome shell — không chứa nghiệp vụ module
+ * SOLID: Chỉ chrome shell — khôngロジ nghiệp vụ module
  * LastVerified: verify:xevn:theme-contrast + visual TopHeader
  *
  * @CODE-MEMORY-CHANGE
  * WorkItem: XEVN-THM-FE-W1 · 2026-07-22
  * Change: ADD mark 40 + wordmark; sticky glass; pale slate/gray classes → xevn tokens; bỏ purple avatar
  * must_keep: brand axis trái; membership/profile phải
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: W1-B-04-AUTH-FE · 2026-08-03
+ * Change: Membership picker bind tenant_label / company_label / role_label từ BE;
+ *         bỏ formatRoleCodeVi invent (module thiếu + vi phạm OS 28).
+ * must_keep: selectMembership(tenantId); fallback nhãn chỉ «—»
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: W1-B-04-AUTH-FE-CC-CHIP-01 · 2026-08-03
+ * Change: Caller ADD — ExecutiveDashboardLayout mounts TopHeader trên /command-center*
+ *         (trước chỉ MainLayout /dashboard/* → chip missing sau login CC).
+ * must_keep: data-testid portal-membership-switcher|static; BE *_label via authSession helpers
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: PO-HRM-UI-BRAND-W3-PORT-A · 2026-08-05
+ * change_mode: UPGRADE
+ * Change: Membership hover `slate-100` → `xevn-background`; cite ADR-20260805 §8–§9 (PORT-06)
+ * must_keep: sticky glass · safe-inline · mark+wordmark · BE *_label · no stats strip
  */
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -37,7 +55,12 @@ import {
 } from 'lucide-react';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { formatRoleCodeVi } from '../../integrations/scopeRoleLabels';
+import {
+  MEMBERSHIP_LABEL_FALLBACK,
+  membershipCompanyDisplay,
+  membershipRoleDisplay,
+  membershipTenantDisplay,
+} from '../../integrations/authSession';
 
 const TopHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +74,11 @@ const TopHeader: React.FC = () => {
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   const showMembershipSwitcher = tenants.length > 1 && tenantScopeStatus === 'ready';
-  const roleLabel = formatRoleCodeVi(selectedTenant.roleCode);
+  const roleLabel = membershipRoleDisplay(selectedTenant);
+  const tenantLabel = membershipTenantDisplay(selectedTenant);
+  const companyLabel = membershipCompanyDisplay(selectedTenant);
+  const kindLabel =
+    (selectedTenant.tenant_kind_label ?? '').trim() || MEMBERSHIP_LABEL_FALLBACK;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -123,22 +150,20 @@ const TopHeader: React.FC = () => {
                 type="button"
                 disabled={membershipSwitching}
                 onClick={() => setIsTenantDropdownOpen(!isTenantDropdownOpen)}
-                className="flex min-w-0 max-w-[min(280px,42vw)] items-center gap-2.5 rounded-input border border-xevn-border bg-xevn-background px-3 py-1.5 transition hover:bg-slate-100 disabled:opacity-70"
+                className="flex min-w-0 max-w-[min(280px,42vw)] items-center gap-2.5 rounded-input border border-xevn-border bg-xevn-background px-3 py-1.5 transition hover:bg-xevn-surface disabled:opacity-70"
                 data-testid="portal-membership-switcher"
               >
                 <div
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold text-white"
                   style={{ backgroundColor: selectedTenant.color }}
                 >
-                  {selectedTenant.shortName.charAt(0)}
+                  {(selectedTenant.shortName || tenantLabel).charAt(0) || 'X'}
                 </div>
                 <div className="min-w-0 flex-1 text-left">
                   <p className="text-xs font-medium text-xevn-textSecondary">Membership đang làm việc</p>
-                  <p className="truncate text-sm font-semibold text-xevn-text">
-                    {selectedTenant.name || selectedTenant.shortName}
-                  </p>
+                  <p className="truncate text-sm font-semibold text-xevn-text">{tenantLabel}</p>
                   <p className="truncate text-xs text-xevn-textSecondary">
-                    {selectedTenant.shortName} · {roleLabel}
+                    {companyLabel} · {roleLabel}
                   </p>
                 </div>
                 {membershipSwitching ? (
@@ -177,12 +202,12 @@ const TopHeader: React.FC = () => {
                         </div>
                         <div className="flex-1 text-left">
                           <p className="text-sm font-semibold text-xevn-text">
-                            {tenant.name || tenant.shortName}
+                            {membershipTenantDisplay(tenant)}
                           </p>
                           <p className="text-xs text-xevn-textSecondary">
-                            {tenant.shortName} ·{' '}
-                            {tenant.isMaster ? 'Tập đoàn' : 'Thành viên'} ·{' '}
-                            {formatRoleCodeVi(tenant.roleCode)}
+                            {membershipCompanyDisplay(tenant)} ·{' '}
+                            {(tenant.tenant_kind_label ?? '').trim() || MEMBERSHIP_LABEL_FALLBACK} ·{' '}
+                            {membershipRoleDisplay(tenant)}
                           </p>
                         </div>
                         {selectedTenant.tenantId === tenant.tenantId && (
@@ -210,15 +235,13 @@ const TopHeader: React.FC = () => {
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold text-white"
                 style={{ backgroundColor: selectedTenant.color }}
               >
-                {selectedTenant.shortName.charAt(0)}
+                {(selectedTenant.shortName || tenantLabel).charAt(0) || 'X'}
               </div>
               <div className="min-w-0 flex-1 text-left">
                 <p className="text-xs font-medium text-xevn-textSecondary">Phạm vi làm việc</p>
-                <p className="truncate text-sm font-semibold text-xevn-text">
-                  {selectedTenant.name || selectedTenant.shortName}
-                </p>
+                <p className="truncate text-sm font-semibold text-xevn-text">{tenantLabel}</p>
                 <p className="truncate text-xs text-xevn-textSecondary">
-                  {selectedTenant.shortName} · {roleLabel}
+                  {companyLabel} · {kindLabel} · {roleLabel}
                 </p>
               </div>
             </div>

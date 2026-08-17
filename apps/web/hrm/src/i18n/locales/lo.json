@@ -575,6 +575,7 @@
       "workHistory": "ປະຫວັດການເຮັດວຽກ",
       "degrees": "ປະລິນຍາ",
       "certificates": "ໃບຢັ້ງຢືນ",
+      "documents": "Documents",
       "skills": "ທັກສະ",
       "family": "ຂໍ້ມູນຄອບຄົວ"
     },
@@ -588,6 +589,7 @@
       "workHistory": "ປະຫວັດການເຮັດວຽກ",
       "degrees": "ລະດັບການສຶກສາ",
       "certificates": "ໃບຢັ້ງຢືນວິຊາຊີບ",
+      "documents": "Employee document checklist",
       "skills": "ທັກສະວິຊາຊີບ ແລະ ທັກສະອ່ອນ",
       "family": "ຂໍ້ມູນສະມາຊິກຄອບຄົວ"
     },

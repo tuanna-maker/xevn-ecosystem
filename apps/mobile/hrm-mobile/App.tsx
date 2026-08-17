@@ -11,6 +11,7 @@ import { RealtimeProvider } from './src/context/RealtimeContext';
 import { useQaLoginDeepLink } from './src/hooks/useQaLoginDeepLink';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ThemeProvider } from './src/theme/Theme';
+import { BrandFontsProvider } from './src/bootstrap/BrandFontsProvider';
 
 function QaLoginDeepLinkBridge() {
   useQaLoginDeepLink();
@@ -30,6 +31,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <ThemeProvider>
+      <BrandFontsProvider>
       <AppErrorBoundary resetKey={resetKey} onRetry={onRetry}>
         <AuthProvider key={resetKey}>
           <QaLoginDeepLinkBridge />
@@ -49,6 +51,7 @@ export default function App() {
           </NetworkProvider>
         </AuthProvider>
       </AppErrorBoundary>
+      </BrandFontsProvider>
       </ThemeProvider>
     </SafeAreaProvider>
     </GestureHandlerRootView>

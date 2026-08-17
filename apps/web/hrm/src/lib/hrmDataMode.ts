@@ -92,3 +92,12 @@ export function clampHrmPageSize(requested?: number): number {
   const n = requested ?? HRM_API_MAX_PAGE_SIZE;
   return Math.min(Math.max(1, n), HRM_API_MAX_PAGE_SIZE);
 }
+
+/**
+ * Nest HRM fetch base is `VITE_HRM_API_ORIGIN` + path, or relative `/api/hrm/*` when origin is empty
+ * (portal Vite proxy at :5173/:8088). Inbox/reminders must not gate only on absolute origin.
+ */
+export function isHrmNestApiReachable(): boolean {
+  if (envTrim('VITE_HRM_API_ORIGIN')) return true;
+  return isHrmApiDataMode();
+}

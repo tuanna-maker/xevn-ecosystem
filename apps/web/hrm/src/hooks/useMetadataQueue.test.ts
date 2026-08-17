@@ -14,4 +14,8 @@ describe('formatMetadataDisplayValue', () => {
   it('stringifies object values', () => {
     expect(formatMetadataDisplayValue({ code: 'A1' })).toBe('{"code":"A1"}');
   });
+
+  it('unwraps single-key value wrapper from plain-text submit', () => {
+    expect(formatMetadataDisplayValue({ value: 'Chuyên viên QA' })).toBe('Chuyên viên QA');
+  });
 });

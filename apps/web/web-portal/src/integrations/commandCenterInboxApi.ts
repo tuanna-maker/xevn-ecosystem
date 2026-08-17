@@ -1,8 +1,37 @@
+/**
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: R-SPINE-WEB-APPROVE-UX-01 · 2026-08-03
+ * change_mode: ADD
+ * What: map businessType=hrm_leave + helpers isHrmLeaveInboxTask / inboxApproveActionLabelVi («Duyệt»)
+ * Why: QC GWC — CC leave tasks visible but Duyệt not actionable (label was Xử lý nhanh / aria mismatch)
+ * must_keep: U65 zero-seed; cardId=task id; recruitment inbox labels unchanged
+ */
 import type { UnifiedTask, PortalStatusNormalized } from '../data/command-center-mock';
 import { MASTER_TENANT_ID } from '../constants/tenant';
 import { resolveWorkflowBusinessTypeLabel } from '../utils/workflowDisplayLabels';
 import { getStoredUser } from './authSession';
 import { listWorkflowTasks, type WorkflowStepTaskRow } from './workflowEngineApi';
+
+/** True when inbox card is HRM leave approval (FE-origin or WF). */
+export function isHrmLeaveInboxTask(task: {
+  businessType?: string;
+  subtitle?: string;
+  title?: string;
+}): boolean {
+  const bt = (task.businessType ?? '').trim().toLowerCase();
+  if (bt === 'hrm_leave' || bt.endsWith('_leave')) return true;
+  const blob = `${task.subtitle ?? ''} ${task.title ?? ''}`.toLowerCase();
+  return blob.includes('nghỉ phép') || blob.includes('hrm_leave');
+}
+
+/** HDSD/QA look for «Duyệt» on leave; other WF keep «Xử lý nhanh». */
+export function inboxApproveActionLabelVi(task: {
+  businessType?: string;
+  subtitle?: string;
+  title?: string;
+}): string {
+  return isHrmLeaveInboxTask(task) ? 'Duyệt' : 'Xử lý nhanh';
+}
 
 /** Logged-in portal user id (email) for workflow inbox assignee filter. */
 export function resolveInboxAssigneeUserId(): string | undefined {
@@ -37,7 +66,10 @@ export function mapWorkflowTaskToUnifiedTask(row: WorkflowStepTaskRow): UnifiedT
   const businessType = String(row.business_type ?? 'workflow');
   const typeLabel = resolveWorkflowBusinessTypeLabel(businessType);
   const workflowName = row.workflow_name?.trim();
+  // PO-E2E-SPINE-01-BE-INBOX-01 — BE display-ready subject_title / display_title (YCTD stamp)
+  const displayReady = row.display_title?.trim() || row.subject_title?.trim() || '';
   const title =
+    displayReady ||
     workflowName ||
     (businessType.toLowerCase() === 'hrm_leave'
       ? `Yêu cầu ${typeLabel.toLowerCase()}`
@@ -52,6 +84,7 @@ export function mapWorkflowTaskToUnifiedTask(row: WorkflowStepTaskRow): UnifiedT
     moduleCode: mapBusinessTypeToModule(businessType),
     title,
     subtitle: typeLabel,
+    businessType,
     assigneeUserId: String(row.assignee_user_id ?? ''),
     assigneeName: String(row.assignee_user_id ?? 'Chưa gán'),
     workflowHatKey: row.hat_key ? String(row.hat_key) : undefined,
@@ -64,8 +97,9 @@ export function mapWorkflowTaskToUnifiedTask(row: WorkflowStepTaskRow): UnifiedT
 export async function fetchCommandCenterInboxTasks(
   tenantId = MASTER_TENANT_ID,
   assigneeUserId?: string,
+  companyId?: string | null,
 ): Promise<UnifiedTask[]> {
   const assignee = assigneeUserId ?? resolveInboxAssigneeUserId();
-  const rows = await listWorkflowTasks(tenantId, 'pending', assignee);
+  const rows = await listWorkflowTasks(tenantId, 'pending', assignee, companyId);
   return rows.map(mapWorkflowTaskToUnifiedTask);
 }

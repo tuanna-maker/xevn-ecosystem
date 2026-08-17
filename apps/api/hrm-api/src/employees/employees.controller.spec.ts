@@ -1,6 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createHmac } from 'node:crypto';
+import { EmpDocumentChecklistService } from './emp-document-checklist.service';
+import { EmpDocumentTypeService } from './emp-document-type.service';
+import { EmpEmploymentStatusService } from './emp-employment-status.service';
+import { EmpEmploymentTypeService } from './emp-employment-type.service';
+import { EmpStatusReasonService } from './emp-status-reason.service';
+import { EmployeeDependentsService } from './employee-dependents.service';
 import { EmployeeProfileService } from './employee-profile.service';
+import { EmployeeRewardDisciplineService } from './employee-reward-discipline.service';
 import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
 
@@ -33,6 +40,7 @@ describe('EmployeesController', () => {
     getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
     getEmployeeDirectoryById: jest.fn().mockResolvedValue({ id: 'e1', full_name: 'Directory User' }),
     updateEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
+    activateEmployee: jest.fn().mockResolvedValue({ id: 'e1', status: 'active' }),
     archiveEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
     restoreEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
   };
@@ -45,11 +53,84 @@ describe('EmployeesController', () => {
       providers: [
         { provide: EmployeesService, useValue: serviceMock },
         {
+          provide: EmployeeDependentsService,
+          useValue: {
+            listDependents: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            getDependentById: jest.fn(),
+            createDependent: jest.fn(),
+            updateDependent: jest.fn(),
+            softDeleteDependent: jest.fn(),
+          },
+        },
+        {
+          provide: EmployeeRewardDisciplineService,
+          useValue: {
+            listRewards: jest.fn(),
+            listDiscipline: jest.fn(),
+            createReward: jest.fn(),
+            createDiscipline: jest.fn(),
+          },
+        },
+        {
+          provide: EmpDocumentChecklistService,
+          useValue: {
+            listChecklist: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            getChecklistItemById: jest.fn(),
+            createChecklistItem: jest.fn(),
+            updateChecklistItem: jest.fn(),
+            softArchiveChecklistItem: jest.fn(),
+          },
+        },
+        {
           provide: EmployeeProfileService,
           useValue: {
             listDegrees: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             listTraining: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             listAssets: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+          },
+        },
+        {
+          provide: EmpDocumentTypeService,
+          useValue: {
+            listDocumentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            getDocumentTypeById: jest.fn(),
+            upsertDocumentType: jest.fn(),
+            patchDocumentType: jest.fn(),
+            retireDocumentType: jest.fn(),
+          },
+        },
+        {
+          provide: EmpEmploymentTypeService,
+          useValue: {
+            listEmploymentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            getEmploymentTypeById: jest.fn(),
+            upsertEmploymentType: jest.fn(),
+            patchEmploymentType: jest.fn(),
+            retireEmploymentType: jest.fn(),
+          },
+        },
+        {
+          provide: EmpEmploymentStatusService,
+          useValue: {
+            listEmploymentStatuses: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            getEmploymentStatusById: jest.fn(),
+            upsertEmploymentStatus: jest.fn(),
+            patchEmploymentStatus: jest.fn(),
+            retireEmploymentStatus: jest.fn(),
+          },
+        },
+        {
+          provide: EmpStatusReasonService,
+          useValue: {
+            listStatusReasons: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            getStatusReasonById: jest.fn(),
+            upsertStatusReason: jest.fn(),
+            patchStatusReason: jest.fn(),
+            retireStatusReason: jest.fn(),
           },
         },
       ],
@@ -147,6 +228,14 @@ describe('EmployeesController', () => {
     expect(updated.code).toBe('HRM-EMP-202');
     expect(archived.code).toBe('HRM-EMP-203');
     expect(restored.code).toBe('HRM-EMP-204');
+    // W1-B-02-EMP — PATCH passes scopeContext like list/get (FR-UC-HRM-21 parity).
+    expect(serviceMock.updateEmployee).toHaveBeenCalledWith(
+      '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+      { full_name: 'Employee Updated' },
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      undefined,
+      { tenantId: 'xevn' },
+    );
     expect(serviceMock.restoreEmployee).toHaveBeenCalledWith(
       '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
       '78b8a663-f5e5-4f4d-a020-b8f950ec2037',

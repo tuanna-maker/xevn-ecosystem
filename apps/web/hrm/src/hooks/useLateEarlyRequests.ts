@@ -1,3 +1,24 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     Attendance → Quản lý đơn → Đăng ký đi muộn, về sớm (LateEarlyRequestTab)
+ * UC:         FR-HRM-AT · ATT-C4 late-early · matrix #20
+ * SRS:        docs/hrm/SRS.md · chấm công / đơn đi muộn về sớm
+ * Purpose:    Hook list + create/approve/reject/delete đơn đi muộn/về sớm qua Nest late-early-requests;
+ *             toast i18n hk.lateEarly.*; refetch sau mutate.
+ * WorkItem:   PO-MFD-M2-ATT-REQUESTS-FE-LOADING-01
+ * Coded:      2026-08-04
+ * Callers:    LateEarlyRequestTab.tsx → useLateEarlyRequests()
+ * Callees:    listLateEarlyRequests, createLateEarlyRequest, approve/reject/deleteLateEarlyRequest
+ * must_keep:  create/approve/reject contracts; U65 no seed; OT hook untouched
+ * SOLID:      Một hook sở hữu fetch + mutate; không helper i18n không ổn định trong deps
+ * LastVerified: docs/qa/evidence/po-mfd-m2-att-requests-fe-loading-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04 PO-MFD-M2-ATT-REQUESTS-FE-LOADING-01
+ * change_mode: FIX
+ * What: Bỏ helper `h` tái tạo mỗi render khỏi deps useCallback; dùng trực tiếp t('hk.lateEarly.*')
+ * Why: fetchRequests đổi identity → useEffect storm GET late-early-requests → isLoading mãi → CTA không mount
+ * must_keep: create/approve/reject/delete late-early contracts; OT + update tabs LIVE; U65 no seed
+ */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,7 +50,6 @@ export function useLateEarlyRequests() {
   const { currentCompanyId, profile, memberships } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const h = (key: string): string => t(`hk.lateEarly.${key}`) as string;
   const [requests, setRequests] = useState<LateEarlyRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,28 +60,46 @@ export function useLateEarlyRequests() {
   );
 
   const fetchRequests = useCallback(async () => {
-    if (!currentCompanyId) return;
+    if (!currentCompanyId) {
+      setRequests([]);
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
       const result = await listLateEarlyRequests({ company_id: currentCompanyId });
       setRequests(result.data || []);
     } catch (error: unknown) {
       console.error('Error fetching late/early requests:', error);
-      toast({ title: t('messages.error'), description: h('fetchError'), variant: 'destructive' });
-    } finally { setIsLoading(false); }
-  }, [currentCompanyId, toast, t, h]);
+      toast({
+        title: t('messages.error'),
+        description: t('hk.lateEarly.fetchError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentCompanyId, toast, t]);
 
-  useEffect(() => { fetchRequests(); }, [fetchRequests]);
+  useEffect(() => {
+    void fetchRequests();
+  }, [fetchRequests]);
 
   const createRequest = async (data: LateEarlyRequestFormData): Promise<LateEarlyRequest | null> => {
     if (!currentCompanyId) return null;
     try {
       const newRequest = await createLateEarlyRequest({ company_id: currentCompanyId, ...data });
-      setRequests(prev => [newRequest, ...prev]);
-      toast({ title: t('messages.success'), description: h('createSuccess') }); return newRequest;
+      setRequests((prev) => [newRequest, ...prev]);
+      toast({ title: t('messages.success'), description: t('hk.lateEarly.createSuccess') });
+      return newRequest;
     } catch (error: unknown) {
       console.error('Error creating late/early request:', error);
-      toast({ title: t('messages.error'), description: h('createError'), variant: 'destructive' }); return null;
+      toast({
+        title: t('messages.error'),
+        description: t('hk.lateEarly.createError'),
+        variant: 'destructive',
+      });
+      return null;
     }
   };
 
@@ -71,12 +109,16 @@ export function useLateEarlyRequests() {
         reviewer_name: reviewerName,
         reviewer_employee_id: reviewerEmployeeId,
       });
-      setRequests(prev => prev.map(r => r.id === id ? updated : r));
-      toast({ title: t('messages.success'), description: h('approveSuccess') });
+      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      toast({ title: t('messages.success'), description: t('hk.lateEarly.approveSuccess') });
       return true;
     } catch (error: unknown) {
       console.error('Error approving late/early request:', error);
-      toast({ title: t('messages.error'), description: h('updateError'), variant: 'destructive' });
+      toast({
+        title: t('messages.error'),
+        description: t('hk.lateEarly.updateError'),
+        variant: 'destructive',
+      });
       return false;
     }
   };
@@ -88,12 +130,16 @@ export function useLateEarlyRequests() {
         reviewer_employee_id: reviewerEmployeeId,
         rejected_reason: reason,
       });
-      setRequests(prev => prev.map(r => r.id === id ? updated : r));
-      toast({ title: t('messages.success'), description: h('rejectSuccess') });
+      setRequests((prev) => prev.map((r) => (r.id === id ? updated : r)));
+      toast({ title: t('messages.success'), description: t('hk.lateEarly.rejectSuccess') });
       return true;
     } catch (error: unknown) {
       console.error('Error rejecting late/early request:', error);
-      toast({ title: t('messages.error'), description: h('updateError'), variant: 'destructive' });
+      toast({
+        title: t('messages.error'),
+        description: t('hk.lateEarly.updateError'),
+        variant: 'destructive',
+      });
       return false;
     }
   };
@@ -101,11 +147,17 @@ export function useLateEarlyRequests() {
   const deleteRequest = async (id: string): Promise<boolean> => {
     try {
       await deleteLateEarlyRequest(id);
-      setRequests(prev => prev.filter(r => r.id !== id));
-      toast({ title: t('messages.success'), description: h('deleteSuccess') }); return true;
+      setRequests((prev) => prev.filter((r) => r.id !== id));
+      toast({ title: t('messages.success'), description: t('hk.lateEarly.deleteSuccess') });
+      return true;
     } catch (error: unknown) {
       console.error('Error deleting late/early request:', error);
-      toast({ title: t('messages.error'), description: h('deleteError'), variant: 'destructive' }); return false;
+      toast({
+        title: t('messages.error'),
+        description: t('hk.lateEarly.deleteError'),
+        variant: 'destructive',
+      });
+      return false;
     }
   };
 

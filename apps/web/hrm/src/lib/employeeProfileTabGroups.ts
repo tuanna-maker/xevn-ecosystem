@@ -10,6 +10,27 @@
  * Callers:    pages/EmployeeProfile.tsx
  * must_keep:  id tab ổn định (pin localStorage `employee-pinned-tabs`); Core luôn 1 click
  * LastVerified: docs/qa/evidence/d-ux-profile-tabs-01-20260728.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-03
+ * WorkItem: W1-B-02-EMP-FE-PROFILE-01 · D-HRM-EMP-PROFILE-PERM-FALLBACK-01
+ * change_mode: ADD (restore)
+ * What: Khôi phục employeeProfileTabGroups từ stash 43c479a — import của EmployeeProfile
+ * Why: QA RET3 Vite 500 thiếu module → #root trống trên detail
+ * SRS/BR: UX-UI-ERP-ANALYSIS Lane C · J-HRM-02
+ * must_keep: PROFILE_CORE_TAB_IDS · pin ids · Employees list · FE-LIBS-01 · Fleet · U65
+ * LastVerified: docs/qa/evidence/w1b-02-emp-fe-profile-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-E2E-LINK-EMP-FE-03
+ * change_mode: ADD
+ * What: parseProfileTabParam — deep-link ?tab=insurance (SI timeline under HR group)
+ * Why: R-EMP-SI-FE-ACTION-UI — nested popover tab not opened by text click → timelineRoot=false
+ * must_keep: PROFILE_CORE_TAB_IDS · pin ids · U65 · D2/D6 untouched
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-03-CLUSTER-FE-01
+ * change_mode: ADD
+ * What: ProfileTabId `documents` under career — checklist giấy tờ (UC-BP-CORE-03)
+ * Why: F-CORE-CHK-01 bind · deep-link ?tab=documents · J-HRM-CORE-03-04
+ * must_keep: PROFILE_CORE_TAB_IDS · pin ids · Nest /core DENY · U65 · sealed CORE peers
  */
 
 export type ProfileTabGroupId = 'core' | 'hr' | 'career' | 'personal';
@@ -28,6 +49,7 @@ export type ProfileTabId =
   | 'workHistory'
   | 'degrees'
   | 'certificates'
+  | 'documents'
   | 'skills'
   | 'family';
 
@@ -45,7 +67,7 @@ export const PROFILE_GROUP_TAB_IDS: Record<
   readonly ProfileTabId[]
 > = {
   hr: ['insurance', 'training', 'assets', 'rewards'],
-  career: ['cv', 'kpi', 'workHistory', 'degrees', 'certificates', 'skills'],
+  career: ['cv', 'kpi', 'workHistory', 'degrees', 'certificates', 'documents', 'skills'],
   personal: ['family'],
 };
 
@@ -80,4 +102,18 @@ export function resolveProfileTabGroup(tabId: string): ProfileTabGroupId | null 
 export function isPinnableProfileTab(tabId: string): boolean {
   const group = resolveProfileTabGroup(tabId);
   return group !== null && group !== 'core';
+}
+
+/**
+ * Parse `?tab=` deep-link for EmployeeProfile (U65 / J-HRM / SI timeline).
+ * Accepts exact ProfileTabId only — never invents tabs.
+ */
+export function parseProfileTabParam(
+  raw: string | null | undefined,
+): ProfileTabId | null {
+  const id = (raw ?? '').trim();
+  if (!id) return null;
+  return (PROFILE_ALL_TAB_IDS as readonly string[]).includes(id)
+    ? (id as ProfileTabId)
+    : null;
 }

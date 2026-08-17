@@ -20,9 +20,19 @@
 - Empty seed: message shown, no mock row when `VITE_ALLOW_MOCK_FALLBACK=false`
 - API stopped: actionable banner
 
+## World-standard test log (U78 / OS 31) — bắt buộc mọi wave
+
+Mọi wave capability / QA cũng cần cặp **OS 31 test-log md+json** (không thay bằng narrative này):
+
+- `docs/qa/evidence/<WI-or-capability>-test-log.md`
+- `docs/qa/evidence/<WI-or-capability>-test-log.json` — schema `xevn-test-log/v1`
+- SoT: `_vibe-team-os/31-WORLD-STANDARD-TEST-LOG.md` · project pointer: `docs/qa/WORLD_STANDARD_TEST_LOG.md`
+- PM dispatch: `test_log_required: true`
+
 ## Verdict
 
 - [ ] PASS — QC may set `e2e_pass=true` in `xevn_ecosystem_capabilities`
 - [ ] FAIL — defect link
+- [ ] Test-log md+json attached (U78)
 
 `evidence_path`: docs/qa/evidence/<capability_code>.md

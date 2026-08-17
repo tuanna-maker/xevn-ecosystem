@@ -44,6 +44,35 @@
  * What: createContract sends contract_code + position_key (E1-A required) + department snapshot
  * Why: QA RET-03-HRM-R5 — form-ready 🟢 but POST 400 missing position_key
  * must_keep: G-CI-01 open-ended expiry omit; F5 salary off body
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-04
+ * WorkItem: PO-UC-TC-W4-FE-CI01-IFRAME-01
+ * change_mode: FIX
+ * What: mapApiContract prefers API `contract_code` for list/search/display (fallback `{employee_code}-HD`)
+ * Why: QA R-W4E4-CI01-CODE-DISPLAY — F5 search by POST code HD-* empty though row exists
+ * must_keep: Leave L2; DEPT VAL; /hr create path; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-06
+ * WorkItem: PO-HRM-CONTRACT-LEGAL-PRINT-FE-03
+ * change_mode: ADD
+ * What: Contract + FormData `work_location` map/create/PATCH — Đ.21.c for can_issue
+ * Why: QA-01-R2 R-CTR-PRINT-CAN-ISSUE — registry had no work_location → can_issue=false
+ * must_keep: UF-HRM-02 CRUD; F5 salary off body; FE-02 preview body no company_id
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-07
+ * WorkItem: PO-HRM-CONTRACT-LEGAL-PRINT-XEVN-TPL-FE-EDIT-01
+ * change_mode: FIX
+ * What: mapApiContract passthrough pack_code / template_id / template_code từ list API
+ * Why: R-CTR-XEVN-TPL-FE-EDIT-RESTORE — F5 mở Sửa cần row giữ bind mẫu #9 (không drop)
+ * must_keep: UF-HRM-02 · print-spine · Q-CTR · printable=false · U65
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-CORE-09-CLUSTER-FE-01
+ * change_mode: ADD · preserve_default
+ * What: statusLabelVi FE-derive (R-CORE-09-DISP-01) · preserve terminated ≠ expired ·
+ *       omitBlankContractTemplateFields on create (AC-CTR-XEVN-08 registry without template)
+ * Why: API-01 CONFIRMED RETAIN · UC-BP-CORE-09 · Nest /core DENY · printable=false
+ * must_keep: UF-HRM-02 · 09a–d ≠ CORE-09 DONE · CORE-07 seals · U65 zero-seed
+ * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-core-09-cluster-fe-01.md
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -54,10 +83,16 @@ import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { isListFetchFailureEmpty } from '@/lib/hrmListLoadFailure';
 import { validateContractDatesForSubmit } from '@/lib/contractEndDatePolicy';
 import {
+  omitBlankContractTemplateFields,
+  resolveContractStatusLabelVi,
+} from '@/lib/contractCore09Ring';
+import {
   createEmployeeContract,
   deleteEmployeeContract,
   listEmployeeContracts,
   updateEmployeeContract,
+  type HrmContractClauseLayoutItem,
+  type HrmContractPreviewSummary,
   type HrmContractRecord,
   type HrmEmployeeRecord,
 } from '@/integrations/hrmApi';
@@ -70,6 +105,7 @@ export interface Contract {
   employee_name: string;
   employee_avatar: string | null;
   department: string | null;
+  department_key?: string | null;
   contract_type: string;
   effective_date: string | null;
   expiry_date: string | null;
@@ -81,6 +117,38 @@ export interface Contract {
   company_id: string;
   source: ContractSource;
   employee_id?: string;
+  /** Đ.21.c — nơi làm việc (LEGAL-PRINT can_issue). */
+  work_location?: string | null;
+  /** LEGAL-PRINT — denorm pack/template trên row (F5 edit restore). */
+  pack_code?: string | null;
+  template_id?: string | null;
+  template_code?: string | null;
+  /** R-CORE-09-DISP-01 — BE display-ready or FE-derive. */
+  statusLabelVi?: string | null;
+  /** Detail GET — UV/NV display (OS 28 display-ready). */
+  subject_type?: 'candidate' | 'employee' | string | null;
+  candidate_label?: string | null;
+  signing_date?: string | null;
+  contract_abstract?: string | null;
+  contract_name?: string | null;
+  work_arrangement?: string | null;
+  work_form_label_vi?: string | null;
+  salary_ratio_percent?: number | null;
+  /** GET detail layout bind — PO-HRM-CTR-WORKSPACE-FE-LAYOUT-BIND-01 */
+  clause_ids?: string[] | null;
+  print_overlay_clause_ids?: string[] | null;
+  clause_layout?: HrmContractClauseLayoutItem[] | null;
+  can_issue?: boolean | null;
+  preview_summary?: HrmContractPreviewSummary | null;
+}
+
+/** Party B label — employee_name then candidate_label (list/get parity). */
+export function resolveContractPartyDisplayName(row: HrmContractRecord): string {
+  const employee = row.employee_name?.trim();
+  if (employee) return employee;
+  const candidate = row.candidate_label?.trim() || row.candidate_name?.trim();
+  if (candidate) return candidate;
+  return '—';
 }
 
 export interface ContractFormData {
@@ -98,6 +166,13 @@ export interface ContractFormData {
   /** E1-A — required on POST /contracts-insurance/contracts (D-HDSD-MUTATE-FE-08). */
   position_key?: string;
   position?: string;
+  /** LEGAL-PRINT overlay — optional until BE EXPAND live. */
+  pack_code?: string;
+  template_id?: string;
+  /** Open catalog — any active template_code from API. */
+  template_code?: string;
+  /** Đ.21.c — Nơi làm việc (persist for validatePreview / can_issue). */
+  work_location?: string;
 }
 
 /** Nest @Max(100) — one page per request; progressive append for remainder. */
@@ -107,43 +182,71 @@ export const HRM_CONTRACTS_LIST_PAGE_SIZE = HRM_API_MAX_PAGE_SIZE;
 export const isContractsFetchFailureEmpty = isListFetchFailureEmpty;
 
 function mapApiStatus(status: HrmContractRecord['status']): string {
-  if (status === 'terminated') return 'expired';
+  // R-CORE-09-DISP-01 — preserve terminated (DENY collapse → expired).
   return status;
 }
 
 export function mapApiContract(row: HrmContractRecord, employee?: HrmEmployeeRecord): Contract {
+  const apiCode =
+    typeof row.contract_code === 'string' ? row.contract_code.trim() : '';
   const code =
-    row.employee_code != null
+    apiCode ||
+    (row.employee_code != null
       ? `${row.employee_code}-HD`
       : employee?.employee_code != null
         ? `${employee.employee_code}-HD`
-        : `HD-${row.id.slice(0, 8).toUpperCase()}`;
+        : `HD-${row.id.slice(0, 8).toUpperCase()}`);
   const name =
-    (row.employee_name && row.employee_name.trim()) ||
-    employee?.full_name ||
-    '—';
+    (() => {
+      const party = resolveContractPartyDisplayName(row);
+      return party !== '—' ? party : employee?.full_name || '—';
+    })();
   const dept =
     (row.department && row.department.trim()) ||
     (employee?.custom_fields as { department?: string } | undefined)?.department ||
     employee?.job_title_key ||
     null;
+  const rawStatus = mapApiStatus(row.status);
+  const statusLabelVi = resolveContractStatusLabelVi(
+    rawStatus,
+    row.statusLabelVi ?? row.status_label_vi ?? row.status_label ?? null,
+  );
   return {
     id: row.id,
     contract_code: code,
     employee_name: name,
     employee_avatar: null,
     department: dept,
+    department_key: row.department_key?.trim() || null,
     contract_type: row.contract_type,
     effective_date: row.start_date,
     expiry_date: row.end_date,
-    status: mapApiStatus(row.status),
+    status: rawStatus,
+    statusLabelVi,
     created_by: null,
     created_at: row.created_at,
     file_url: null,
-    notes: null,
+    notes: row.notes?.trim() || null,
     company_id: row.company_id,
     source: 'employee_contracts',
     employee_id: row.employee_id,
+    work_location: row.work_location ?? null,
+    pack_code: row.pack_code ?? null,
+    template_id: row.template_id ?? null,
+    template_code: row.template_code ?? null,
+    subject_type: row.subject_type ?? null,
+    candidate_label: row.candidate_label ?? row.candidate_name ?? null,
+    signing_date: row.signing_date ?? row.signed_at ?? null,
+    contract_abstract: row.contract_abstract?.trim() || null,
+    contract_name: row.contract_name?.trim() || null,
+    work_arrangement: row.work_arrangement ?? null,
+    work_form_label_vi: row.work_form_label_vi ?? null,
+    salary_ratio_percent: row.salary_ratio_percent ?? null,
+    clause_ids: row.clause_ids ?? null,
+    print_overlay_clause_ids: row.print_overlay_clause_ids ?? null,
+    clause_layout: row.clause_layout ?? null,
+    can_issue: row.can_issue ?? null,
+    preview_summary: row.preview_summary ?? null,
   };
 }
 
@@ -340,6 +443,11 @@ export function useContracts(selectedType: string = 'all') {
           toast.error('Chọn vị trí từ danh mục chức danh (Cài đặt → Danh mục nghiệp vụ).');
           return false;
         }
+        const tplFields = omitBlankContractTemplateFields({
+          template_id: data.template_id,
+          template_code: data.template_code,
+          pack_code: data.pack_code,
+        });
         await createEmployeeContract({
           company_id: currentCompanyId,
           employee_id: data.employee_id,
@@ -350,6 +458,11 @@ export function useContracts(selectedType: string = 'all') {
           position_key: positionKey,
           ...(data.position?.trim() ? { position: data.position.trim() } : {}),
           ...(data.department?.trim() ? { department: data.department.trim() } : {}),
+          ...tplFields,
+          ...(data.work_location?.trim()
+            ? { work_location: data.work_location.trim() }
+            : {}),
+          ...(data.notes?.trim() ? { notes: data.notes.trim() } : {}),
         });
       }
       toast.success('Thêm hợp đồng thành công');
@@ -369,6 +482,20 @@ export function useContracts(selectedType: string = 'all') {
           start_date: data.effective_date ? formatDate(data.effective_date) : undefined,
           end_date: data.expiry_date ? formatDate(data.expiry_date) : undefined,
           status: mapUiStatusToApi(data.status),
+          ...(data.pack_code?.trim() ? { pack_code: data.pack_code.trim() } : {}),
+          ...(data.template_id?.trim()
+            ? { template_id: data.template_id.trim() }
+            : data.template_id === ''
+              ? { template_id: null }
+              : {}),
+          ...(data.template_code?.trim()
+            ? { template_code: data.template_code.trim().toUpperCase() }
+            : data.template_code === ''
+              ? { template_code: null }
+              : {}),
+          ...(data.work_location !== undefined
+            ? { work_location: data.work_location.trim() || null }
+            : {}),
         });
       }
       toast.success('Cập nhật hợp đồng thành công');

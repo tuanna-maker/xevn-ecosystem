@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 
-import { borderWidth, colors } from '../theme/tokens';
+import { borderWidth, colors, brand } from '../theme/tokens';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -359,9 +359,9 @@ function MainTabs() {
 
             backgroundColor: colors.surface,
 
-            borderTopColor: colors.border,
+            borderTopColor: colors.primary,
 
-            borderTopWidth: borderWidth.thin,
+            borderTopWidth: brand.barWidth,
 
             height: tabBarHeight,
 
