@@ -228,8 +228,6 @@ const createSchema = z
         message: REQUISITION_JD_TEMPLATE_REQUIRED_VI,
       }),
     /** Snapshot từ JD (BR-CD-F6-02); được chỉnh bản chép sau khi chọn template. */
-    job_description: z.string().max(5000).optional(),
-    requirements: z.string().max(5000).optional(),
     headcount_mode: z.enum(['in_plan', 'out_of_plan'], {
       required_error: 'Chọn trong hoặc ngoài định biên',
     }),
@@ -504,8 +502,6 @@ export function JobRequisitionsTab({
       employment_type: 'full_time',
       headcount: 1,
       job_template_id: '',
-      job_description: '',
-      requirements: '',
       headcount_mode: 'out_of_plan',
       headcount_cell_id: '',
       hire_reason: 'new',
@@ -587,8 +583,6 @@ export function JobRequisitionsTab({
     (templateId: string) => {
       if (!isRequisitionJobTemplateSelected(templateId)) {
         createForm.setValue('job_template_id', '', { shouldValidate: true });
-        createForm.setValue('job_description', '');
-        createForm.setValue('requirements', '');
         setJdPreview(null);
         return;
       }
@@ -617,8 +611,6 @@ export function JobRequisitionsTab({
       if (hc == null) {
         createForm.setValue('headcount', 1, { shouldValidate: true });
       }
-      createForm.setValue('job_description', tpl.job_description ?? '');
-      createForm.setValue('requirements', tpl.requirements ?? '');
       setJdPreview(composeLocalYctdPreview(tpl));
       if (
         createForm.getValues('headcount_mode') === 'out_of_plan' &&
@@ -724,8 +716,6 @@ export function JobRequisitionsTab({
           employment_type: 'full_time',
           headcount: presetHc ?? 1,
           job_template_id: '',
-          job_description: '',
-          requirements: '',
           headcount_mode: presetMode,
           headcount_cell_id: presetCell,
           hire_reason: 'new',
@@ -854,12 +844,6 @@ export function JobRequisitionsTab({
         const preview = await getJobDescriptionTemplateYctdPreview(templateId, effectiveCompanyId);
         if (cancelled) return;
         setJdPreview(preview);
-        if (preview.short_description && !createForm.getValues('job_description')?.trim()) {
-          createForm.setValue('job_description', preview.short_description, { shouldValidate: false });
-        }
-        if (preview.requirements_preview && !createForm.getValues('requirements')?.trim()) {
-          createForm.setValue('requirements', preview.requirements_preview, { shouldValidate: false });
-        }
         createForm.clearErrors('job_template_id');
       } catch (error: unknown) {
         if (cancelled) return;
@@ -1063,8 +1047,6 @@ export function JobRequisitionsTab({
         department: values.department.trim(),
         employment_type: values.employment_type,
         headcount,
-        job_description: values.job_description?.trim() || undefined,
-        requirements: values.requirements?.trim() || undefined,
         job_template_id: jobTemplateId,
         headcount_mode: mode,
         headcount_cell_id:
@@ -1092,8 +1074,6 @@ export function JobRequisitionsTab({
         employment_type: 'full_time',
         headcount: 1,
         job_template_id: '',
-        job_description: '',
-        requirements: '',
         headcount_mode: 'out_of_plan',
         headcount_cell_id: '',
         hire_reason: 'new',
@@ -2099,51 +2079,6 @@ export function JobRequisitionsTab({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={createForm.control}
-                name="job_description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mô tả công việc (snapshot từ JD)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={4}
-                        disabled={!jdSnapshotUnlocked}
-                        placeholder={
-                          jdSnapshotUnlocked
-                            ? 'Chép từ JD — có thể chỉnh bản chép trên yêu cầu này'
-                            : 'Chọn JD ở trên để điền mô tả'
-                        }
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={createForm.control}
-                name="requirements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Yêu cầu (snapshot từ JD)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={3}
-                        disabled={!jdSnapshotUnlocked}
-                        placeholder={
-                          jdSnapshotUnlocked
-                            ? 'Chép từ JD — có thể chỉnh bản chép trên yêu cầu này'
-                            : 'Chọn JD ở trên để điền yêu cầu'
-                        }
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                   Hủy
                 </Button>
@@ -2535,18 +2470,6 @@ export function JobRequisitionsTab({
               ) : null}
               {requisitionLocked(detailRow) ? (
                 <p className="text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
-              ) : null}
-              {detailRow.job_description ? (
-                <div>
-                  <p className="text-xs text-muted-foreground">Mô tả công việc (snapshot)</p>
-                  <p className="whitespace-pre-wrap text-sm">{detailRow.job_description}</p>
-                </div>
-              ) : null}
-              {detailRow.requirements ? (
-                <div>
-                  <p className="text-xs text-muted-foreground">Yêu cầu (snapshot)</p>
-                  <p className="whitespace-pre-wrap text-sm">{detailRow.requirements}</p>
-                </div>
               ) : null}
 
               {detailApprovalChain?.showTransitionActions ? (

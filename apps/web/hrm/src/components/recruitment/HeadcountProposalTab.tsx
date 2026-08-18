@@ -134,8 +134,7 @@ interface HeadcountProposal {
   expected_start_date: string | null;
   salary_budget_min: number | null;
   salary_budget_max: number | null;
-  job_description: string | null;
-  requirements: string | null;
+  job_template_id?: string | null;
   requested_by: string;
   approved_by: string | null;
   approved_at: string | null;
@@ -380,8 +379,7 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
     expected_start_date: z.date().optional(),
     salary_budget_min: z.number().optional(),
     salary_budget_max: z.number().optional(),
-    job_description: z.string().max(5000).optional(),
-    requirements: z.string().max(3000).optional(),
+    job_template_id: z.string().optional(),
     requested_by: z.string().min(1, hp('validation.requestedByRequired')).max(100),
     notes: z.string().max(1000).optional(),
   }), [t]);
@@ -400,6 +398,7 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
       priority: 'medium',
       justification: '',
       requested_by: '',
+      job_template_id: '',
       notes: '',
     },
   });
@@ -609,8 +608,7 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
         position: proposal.position_name,
         department: proposal.department,
         headcount: proposal.requested_headcount,
-        description: proposal.job_description || `Tuyển dụng ${proposal.position_name} cho ${proposal.department}. ${proposal.justification || ''}`,
-        requirements: proposal.requirements || '',
+        job_template_id: proposal.job_template_id || '',
         salary_min: proposal.salary_budget_min,
         salary_max: proposal.salary_budget_max,
         deadline: proposal.expected_start_date,
@@ -1312,35 +1310,19 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
 
                 <FormField
                   control={form.control}
-                  name="job_description"
+                  name="job_template_id"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Mô tả công việc</FormLabel>
+                      <FormLabel>Tham chiếu JD / Mô tả công việc (từ thư viện)</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Mô tả chi tiết công việc của vị trí này..."
-                          className="min-h-[100px]"
-                          {...field} 
+                        <Input
+                          placeholder="Chọn mã JD hoặc để trống nếu chưa có JD chính thức..."
+                          {...field}
                         />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="requirements"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Yêu cầu ứng viên</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Các yêu cầu về kỹ năng, kinh nghiệm, bằng cấp..."
-                          className="min-h-[100px]"
-                          {...field} 
-                        />
-                      </FormControl>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        JD sẽ được đính kèm khi đề xuất được duyệt. Việc nhập liệu thủ công đã bị vô hiệu hóa.
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1420,6 +1402,12 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
                   <p className="text-sm text-muted-foreground">Số lượng hiện tại</p>
                   <p className="font-medium">{viewingProposal.current_headcount} người</p>
                 </div>
+                {viewingProposal.job_template_id && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Mã Tham Chiếu JD</p>
+                    <p className="font-medium">{viewingProposal.job_template_id}</p>
+                  </div>
+                )}
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Loại đề xuất</p>
                   <Badge className={cn('text-xs', proposalTypeConfig[viewingProposal.proposal_type].color)}>
